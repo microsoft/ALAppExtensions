@@ -36,34 +36,34 @@ table 42064 "SL Upgrade Settings"
                     Error(OnlyBackroundCanSpecifyDurationErr);
             end;
         }
-        field(5; "Collect All Errors"; Boolean)
+        field(4; "Collect All Errors"; Boolean)
         {
             Caption = 'Collect all errors';
             DataClassification = CustomerContent;
             InitValue = true;
         }
-        field(6; "Data Upgrade Started"; DateTime)
+        field(5; "Data Upgrade Started"; DateTime)
         {
             Caption = 'Data Upgrade Started';
             DataClassification = CustomerContent;
         }
-        field(7; "Log All Record Changes"; Boolean)
+        field(6; "Log All Record Changes"; Boolean)
         {
             Caption = 'Log all record changes';
             DataClassification = CustomerContent;
         }
-        field(8; "One Step Upgrade"; Boolean)
+        field(7; "One Step Upgrade"; Boolean)
         {
             Caption = 'Run upgrade after replication';
             DataClassification = CustomerContent;
             InitValue = true;
         }
-        field(9; "One Step Upgrade Delay"; Duration)
+        field(8; "One Step Upgrade Delay"; Duration)
         {
             Caption = 'Delay to run the upgrade after replication';
             DataClassification = CustomerContent;
         }
-        field(10; "Replication Completed"; DateTime)
+        field(9; "Replication Completed"; DateTime)
         {
             Caption = 'Replication Completed';
             DataClassification = CustomerContent;
@@ -91,7 +91,7 @@ table 42064 "SL Upgrade Settings"
 
     internal procedure GetUpgradeDelay(): Duration
     begin
-        exit(30 * 1000); // 30 seconds
+        exit(60 * 1000); // 60 seconds
     end;
 
     var

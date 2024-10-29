@@ -179,7 +179,6 @@ codeunit 42013 "SL Hybrid Management"
         FailedHybridCompanyStatus: Record "Hybrid Company Status";
         SLUpgradeSettings: Record "SL Upgrade Settings";
         HybridSLWizard: Codeunit "SL Hybrid Wizard";
-
     begin
         if Handled then
             exit;
@@ -249,13 +248,11 @@ codeunit 42013 "SL Hybrid Management"
     var
         SLHybridWizard: Codeunit "SL Hybrid Wizard";
     begin
-
         if SLHybridWizard.GetSLMigrationEnabled() then
             OpenNewUI := true;
     end;
 
     internal procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
-    var
     begin
         InvokeCompanyUpgrade(HybridReplicationSummary, CompanyName, GetMinimalDelayDuration());
     end;

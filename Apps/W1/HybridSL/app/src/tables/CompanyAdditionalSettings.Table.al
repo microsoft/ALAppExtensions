@@ -22,7 +22,7 @@ table 42061 "SL Company Additional Settings"
             DataClassification = OrganizationIdentifiableInformation;
             TableRelation = "Hybrid Company".Name;
         }
-        field(7; "Migrate Inactive Customers"; Boolean)
+        field(2; "Migrate Inactive Customers"; Boolean)
         {
             InitValue = false;
 
@@ -42,7 +42,7 @@ table 42061 "SL Company Additional Settings"
                 SLCompanyMigrationSettings.Modify();
             end;
         }
-        field(8; "Migrate Inactive Vendors"; Boolean)
+        field(3; "Migrate Inactive Vendors"; Boolean)
         {
             InitValue = false;
 
@@ -62,13 +62,12 @@ table 42061 "SL Company Additional Settings"
                 SLCompanyMigrationSettings.Modify();
             end;
         }
-        field(11; "Migrate Vendor Classes"; Boolean)
+        field(4; "Migrate Vendor Classes"; Boolean)
         {
             InitValue = false;
 
             trigger OnValidate()
             begin
-
                 if Rec."Migrate Vendor Classes" then begin
                     Rec.Validate("Migrate Payables Module", true);
 
@@ -77,7 +76,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(12; "Migrate Customer Classes"; Boolean)
+        field(5; "Migrate Customer Classes"; Boolean)
         {
             InitValue = false;
 
@@ -91,7 +90,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(13; "Migrate Item Classes"; Boolean)
+        field(6; "Migrate Item Classes"; Boolean)
         {
             InitValue = false;
 
@@ -105,14 +104,14 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(14; "Oldest GL Year to Migrate"; Integer)
+        field(7; "Oldest GL Year to Migrate"; Integer)
         {
             trigger OnValidate()
             begin
                 Rec.Validate("Oldest Hist. Year to Migrate", Rec."Oldest GL Year to Migrate");
             end;
         }
-        field(16; "Migrate Payables Module"; Boolean)
+        field(8; "Migrate Payables Module"; Boolean)
         {
             InitValue = true;
 
@@ -127,7 +126,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(17; "Migrate Receivables Module"; Boolean)
+        field(9; "Migrate Receivables Module"; Boolean)
         {
             InitValue = true;
 
@@ -141,7 +140,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(18; "Migrate Inventory Module"; Boolean)
+        field(10; "Migrate Inventory Module"; Boolean)
         {
             InitValue = true;
 
@@ -157,7 +156,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(19; "Global Dimension 1"; Text[30])
+        field(11; "Global Dimension 1"; Text[30])
         {
             Description = 'Global Dimension 1 for the company';
             TableRelation = "SL Segment Name"."Segment Name" where("Company Name" = field(Name));
@@ -176,7 +175,7 @@ table 42061 "SL Company Additional Settings"
                 SLCompanyMigrationSettings.Modify();
             end;
         }
-        field(20; "Global Dimension 2"; Text[30])
+        field(12; "Global Dimension 2"; Text[30])
         {
             Description = 'Global Dimension 2 for the company';
             TableRelation = "SL Segment Name"."Segment Name" where("Company Name" = field(Name));
@@ -195,7 +194,7 @@ table 42061 "SL Company Additional Settings"
                 SLCompanyMigrationSettings.Modify();
             end;
         }
-        field(21; "Migrate Open POs"; Boolean)
+        field(13; "Migrate Open POs"; Boolean)
         {
             InitValue = false;
 
@@ -210,7 +209,7 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(22; "Migrate Only GL Master"; Boolean)
+        field(14; "Migrate Only GL Master"; Boolean)
         {
             InitValue = false;
 
@@ -221,7 +220,7 @@ table 42061 "SL Company Additional Settings"
                         Rec.Validate("Migrate GL Module", true);
             end;
         }
-        field(24; "Migrate Only Payables Master"; Boolean)
+        field(15; "Migrate Only Payables Master"; Boolean)
         {
             InitValue = false;
 
@@ -236,7 +235,7 @@ table 42061 "SL Company Additional Settings"
                             Rec.Validate("Migrate GL Module", true);
             end;
         }
-        field(25; "Migrate Only Rec. Master"; Boolean)
+        field(16; "Migrate Only Rec. Master"; Boolean)
         {
             InitValue = false;
 
@@ -251,7 +250,7 @@ table 42061 "SL Company Additional Settings"
                             Rec.Validate("Migrate GL Module", true);
             end;
         }
-        field(26; "Migrate Only Inventory Master"; Boolean)
+        field(17; "Migrate Only Inventory Master"; Boolean)
         {
             InitValue = false;
 
@@ -266,7 +265,7 @@ table 42061 "SL Company Additional Settings"
                             Rec.Validate("Migrate GL Module", true);
             end;
         }
-        field(27; "Migrate Inactive Items"; Boolean)
+        field(18; "Migrate Inactive Items"; Boolean)
         {
             InitValue = false;
 
@@ -276,7 +275,7 @@ table 42061 "SL Company Additional Settings"
                     Rec.Validate("Migrate Inventory Module", true);
             end;
         }
-        field(28; "Migrate Discontinued Items"; Boolean)
+        field(19; "Migrate Discontinued Items"; Boolean)
         {
             InitValue = false;
 
@@ -286,48 +285,48 @@ table 42061 "SL Company Additional Settings"
                     Rec.Validate("Migrate Inventory Module", true);
             end;
         }
-        field(29; "Oldest Hist. Year to Migrate"; Integer)
+        field(20; "Oldest Hist. Year to Migrate"; Integer)
         {
         }
-        field(30; "Migrate Hist. GL Trx."; Boolean)
-        {
-            InitValue = false;
-        }
-        field(31; "Migrate Hist. AR Trx."; Boolean)
+        field(21; "Migrate Hist. GL Trx."; Boolean)
         {
             InitValue = false;
         }
-        field(32; "Migrate Hist. AP Trx."; Boolean)
+        field(22; "Migrate Hist. AR Trx."; Boolean)
         {
             InitValue = false;
         }
-        field(33; "Migrate Hist. Inv. Trx."; Boolean)
+        field(23; "Migrate Hist. AP Trx."; Boolean)
         {
             InitValue = false;
         }
-        field(34; "Migrate Hist. Purch. Trx."; Boolean)
+        field(24; "Migrate Hist. Inv. Trx."; Boolean)
         {
             InitValue = false;
         }
-        field(35; "Migration Completed"; Boolean)
+        field(25; "Migrate Hist. Purch. Trx."; Boolean)
+        {
+            InitValue = false;
+        }
+        field(26; "Migration Completed"; Boolean)
         {
             CalcFormula = exist("Hybrid Company Status" where(Name = field(Name), "Upgrade Status" = const(Completed)));
             Editable = false;
             FieldClass = FlowField;
         }
-        field(36; "Skip Posting Account Batches"; Boolean)
+        field(27; "Skip Posting Account Batches"; Boolean)
         {
             InitValue = false;
         }
-        field(37; "Skip Posting Customer Batches"; Boolean)
+        field(28; "Skip Posting Customer Batches"; Boolean)
         {
             InitValue = false;
         }
-        field(38; "Skip Posting Vendor Batches"; Boolean)
+        field(29; "Skip Posting Vendor Batches"; Boolean)
         {
             InitValue = false;
         }
-        field(40; "Migrate GL Module"; Boolean)
+        field(30; "Migrate GL Module"; Boolean)
         {
             InitValue = true;
 
@@ -362,11 +361,11 @@ table 42061 "SL Company Additional Settings"
                 end;
             end;
         }
-        field(41; "Skip Posting Item Batches"; Boolean)
+        field(31; "Skip Posting Item Batches"; Boolean)
         {
             InitValue = false;
         }
-        field(42; "Has Hybrid Company"; Boolean)
+        field(32; "Has Hybrid Company"; Boolean)
         {
             CalcFormula = exist("Hybrid Company" where(Name = field(Name)));
             Editable = false;
@@ -386,17 +385,15 @@ table 42061 "SL Company Additional Settings"
     var
         CurrentCompanyName: Text[50];
     begin
-#pragma warning disable AA0139
-        CurrentCompanyName := CompanyName();
+        CurrentCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(CurrentCompanyName));
 
         if Name = CurrentCompanyName then
             exit;
 
         if not Rec.Get(CurrentCompanyName) then begin
-            Rec.Name := CurrentCompanyName;
+            Rec.Name := CopyStr(CurrentCompanyName, 1, MaxStrLen(Rec.Name));
             Rec.Insert();
         end;
-#pragma warning restore AA0139
     end;
 
     // Modules

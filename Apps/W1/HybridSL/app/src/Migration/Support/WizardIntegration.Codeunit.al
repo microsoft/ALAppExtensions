@@ -192,7 +192,6 @@ codeunit 42005 "SL Wizard Integration"
         DataMigratorRegistration: Record "Data Migrator Registration";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-
         if not EnvironmentInformation.IsSaaS() then
             exit;
 
