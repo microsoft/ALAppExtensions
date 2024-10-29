@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.EServices.EDocumentConnector.Avalara;
+namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Customer;
@@ -10,7 +10,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using System.Threading;
-codeunit 148191 "Integration Tests"
+codeunit 148193 "Integration Tests"
 {
 
     Subtype = Test;

@@ -1,9 +1,9 @@
 {
-    "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8e",
-    "name":  "E-Document Connector - Avalara Tests",
+    "id":  "9867c080-e9e7-476e-8245-717d3e124344",
+    "name":  "E-Document Connector - Tietoevry Tests",
     "publisher":  "Microsoft",
-    "brief":  "E-Document Connector - Avalara Tests",
-    "description":  "E-Document Connector - Avalara Tests",
+    "brief":  "E-Document Connector - Tietoevry Tests",
+    "description":  "E-Document Connector - Tietoevry Tests",
     "version":  "26.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -19,8 +19,8 @@
                             "version": "26.0.0.0"
                         },
                         {
-                            "id":  "f35c56a6-7c5f-4dbe-89c4-fef5145d00f4",
-                            "name":  "E-Document Connector - Avalara",
+                            "id":  "d852a468-263e-49e5-bfda-f09e33342b89",
+                            "name":  "E-Document Connector - Tietoevry",
                             "publisher":  "Microsoft",
                             "version": "26.0.0.0"
                         },
@@ -67,8 +67,8 @@
     "platform":  "26.0.0.0",
     "idRanges":  [
                      {
-                         "from":  148191,
-                         "to":  148192
+                         "from":  148193,
+                         "to":  148194
                      }
                  ],
     "resourceExposurePolicy":  {

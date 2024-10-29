@@ -25,6 +25,13 @@
                             "version":  "26.0.0.0"
                         }
                      ],
+                     "internalsVisibleTo": [
+                        {
+                            "id":  "9867c080-e9e7-476e-8245-717d3e124344",
+                            "name":  "E-Document Connector - Tietoevry Tests",
+                            "publisher":  "Microsoft"
+                        }
+    ],                     
     "screenshots":  [
 
                     ],
