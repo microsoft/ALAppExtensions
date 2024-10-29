@@ -57,7 +57,7 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         ShopifyTaxArea: Record "Shpfy Tax Area";
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
@@ -184,7 +184,7 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
@@ -430,6 +430,11 @@ codeunit 30166 "Shpfy Process Order"
     begin
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
+    end;
+
+    internal procedure SetShopifyShop(Shop: Record "Shpfy Shop")
+    begin
+        ShopifyShop := Shop;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]
