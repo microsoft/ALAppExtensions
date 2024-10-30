@@ -43,6 +43,7 @@ codeunit 139647 "Shpfy Company Import Test"
     procedure UnitTestImportCompanyWithLocation()
     var
         ShopifyCompany: Record "Shpfy Company";
+        LocationValues: Dictionary of [Text, Text];
         EmptyGuid: Guid;
     begin
         // [SCENARIO] Importing a company with location with defined payment term.
@@ -50,12 +51,14 @@ codeunit 139647 "Shpfy Company Import Test"
 
         // [GIVEN] Shopify company
         CreateCompany(ShopifyCompany, EmptyGuid);
+        // [GIVEN] Company location values in Shopify
+        CreateLocationValues(LocationValues);
 
         // [WHEN] Invoke CompanyImport
-        InvokeCompanyImport(ShopifyCompany);
+        InvokeCompanyImport(ShopifyCompany, LocationValues);
 
         // [THEN] Location is created with the correct payment term and all other .
-        AssertShopifyCompanyLocationValues(ShopifyCompany);
+        VerifyShopifyCompanyLocationValues(ShopifyCompany, LocationValues);
     end;
 
     [Test]
@@ -194,33 +197,53 @@ codeunit 139647 "Shpfy Company Import Test"
         TempShopifyCustomer.Insert(false);
     end;
 
-    local procedure InvokeCompanyImport(var ShopifyCompany: Record "Shpfy Company")
+    local procedure InvokeCompanyImport(var ShopifyCompany: Record "Shpfy Company"; LocationValues: Dictionary of [Text, Text])
     var
         CompanyImport: Codeunit "Shpfy Company Import";
         CompanyImportSubs: Codeunit "Shpfy Company Import Subs.";
     begin
         BindSubscription(CompanyImportSubs);
+        CompanyImportSubs.SetLocationValues(LocationValues);
         CompanyImport.SetShop(Shop);
         ShopifyCompany.SetRange("Id", ShopifyCompany.Id);
         CompanyImport.Run(ShopifyCompany);
         UnbindSubscription(CompanyImportSubs);
     end;
 
-    local procedure AssertShopifyCompanyLocationValues(var ShopifyCompany: Record "Shpfy Company")
+    local procedure VerifyShopifyCompanyLocationValues(var ShopifyCompany: Record "Shpfy Company"; LocationValues: Dictionary of [Text, Text])
     var
         CompanyLocation: Record "Shpfy Company Location";
+        Id, PaymentTermsId : BigInteger;
     begin
+        Evaluate(Id, LocationValues.Get('id'));
+        Evaluate(PaymentTermsId, LocationValues.Get('paymentTermsTemplateId'));
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
         LibraryAssert.IsTrue(CompanyLocation.FindFirst(), 'Company location does not exist');
-        LibraryAssert.IsTrue(CompanyLocation."Shpfy Payment Terms Id" <> 0, 'Payment Terms Id not imported');
-        LibraryAssert.AreEqual('XYZ1234', CompanyLocation."Tax Registration Id", 'Tax Registration id not imported');
-        LibraryAssert.AreEqual('Address', CompanyLocation.Address, 'Address not imported');
-        LibraryAssert.AreEqual('Address 2', CompanyLocation."Address 2", 'Address 2 not imported');
-        LibraryAssert.AreEqual('111', CompanyLocation."Phone No.", 'Phone No. not imported');
-        LibraryAssert.AreEqual('1111', CompanyLocation.Zip, 'Zip not imported');
-        LibraryAssert.AreEqual('City', CompanyLocation.City, 'City not imported');
-        LibraryAssert.AreEqual('US', CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
-        LibraryAssert.AreEqual('CA', CompanyLocation."Province Code", 'Province Code not imported');
-        LibraryAssert.AreEqual('California', CompanyLocation."Province Name", 'Province Name not imported');
+        LibraryAssert.AreEqual(Id, CompanyLocation.Id, 'Id not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('address'), CompanyLocation.Address, 'Address not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('address2'), CompanyLocation."Address 2", 'Address 2 not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('phone'), CompanyLocation."Phone No.", 'Phone No. not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('zip'), CompanyLocation.Zip, 'Zip not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('city'), CompanyLocation.City, 'City not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('country'), CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('zoneCode'), CompanyLocation."Province Code", 'Province Code not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('province'), CompanyLocation."Province Name", 'Province Name not imported');
+        LibraryAssert.AreEqual(PaymentTermsId, CompanyLocation."Shpfy Payment Terms Id", 'Payment Terms Id not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('taxRegistrationId'), CompanyLocation."Tax Registration Id", 'Tax Registration id not imported');
+    end;
+
+    local procedure CreateLocationValues(LocationValues: Dictionary of [Text, Text])
+    begin
+        LocationValues.Add('id', Format(Any.IntegerInRange(10000, 99999)));
+        LocationValues.Add('address', Any.AlphanumericText(20));
+        LocationValues.Add('address2', Any.AlphanumericText(20));
+        LocationValues.Add('phone', Format(Any.IntegerInRange(1000, 9999)));
+        LocationValues.Add('zip', Format(Any.IntegerInRange(1000, 9999)));
+        LocationValues.Add('city', Any.AlphanumericText(20));
+        LocationValues.Add('country', Any.AlphanumericText(2));
+        LocationValues.Add('zoneCode', Any.AlphanumericText(2));
+        LocationValues.Add('province', Any.AlphanumericText(20));
+        LocationValues.Add('paymentTermsTemplateId', Format(Any.IntegerInRange(10000, 99999)));
+        LocationValues.Add('taxRegistrationId', Any.AlphanumericText(50));
     end;
 }

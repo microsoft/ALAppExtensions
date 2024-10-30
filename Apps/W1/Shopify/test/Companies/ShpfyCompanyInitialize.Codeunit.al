@@ -103,7 +103,7 @@ codeunit 139638 "Shpfy Company Initialize"
         exit('buyerExperienceConfiguration: {paymentTermsTemplateId: \"gid://shopify/PaymentTermsTemplate/%1\"}');
     end;
 
-    internal procedure CreateLocationResponse(): Text
+    internal procedure CreateLocationResponse(LocationValues: Dictionary of [Text, Text]): Text
     var
         Any: Codeunit Any;
         JObject: JsonObject;
@@ -114,18 +114,18 @@ codeunit 139638 "Shpfy Company Initialize"
         JPaymentTerms: JsonObject;
         LocationResponse: Text;
     begin
-        JNode.Add('id', StrSubstNo('gid://shopify/CompanyLocation/%1', Any.IntegerInRange(1000, 99999)));
-        JBillingAddress.Add('address1', 'Address');
-        JBillingAddress.Add('address2', 'Address 2');
-        JBillingAddress.Add('city', 'City');
-        JBillingAddress.Add('countryCode', 'US');
-        JBillingAddress.Add('zip', '1111');
-        JBillingAddress.Add('phone', '111');
-        JBillingAddress.Add('zoneCode', 'CA');
-        JBillingAddress.Add('province', 'California');
+        JNode.Add('id', StrSubstNo('gid://shopify/CompanyLocation/%1', LocationValues.Get('id')));
+        JBillingAddress.Add('address1', LocationValues.Get('address1'));
+        JBillingAddress.Add('address2', LocationValues.Get('address2'));
+        JBillingAddress.Add('city', LocationValues.Get('city'));
+        JBillingAddress.Add('countryCode', LocationValues.Get('countryCode'));
+        JBillingAddress.Add('zip', LocationValues.Get('zip'));
+        JBillingAddress.Add('phone', LocationValues.Get('phone'));
+        JBillingAddress.Add('zoneCode', LocationValues.Get('zoneCode'));
+        JBillingAddress.Add('province', LocationValues.Get('province'));
         JNode.Add('billingAddress', JBillingAddress);
-        JNode.Add('taxRegistrationId', 'XYZ1234');
-        JPaymentTerms.ReadFrom('{"paymentTermsTemplate": {id: "gid://shopify/PaymentTermsTemplate/111"}}');
+        JNode.Add('taxRegistrationId', LocationValues.Get('taxRegistrationId'));
+        JPaymentTerms.ReadFrom(StrSubstNo('{"paymentTermsTemplate": {id: "gid://shopify/PaymentTermsTemplate/%1"}}', LocationValues.Get('paymentTermsTemplateId')));
         JNode.Add('buyerExperienceConfiguration', JPaymentTerms);
         JEdges.Add(JNode);
         JCompanyLocations.Add('edges', JEdges);

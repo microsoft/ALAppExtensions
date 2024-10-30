@@ -3,6 +3,7 @@ codeunit 139630 "Shpfy Company Import Subs."
     EventSubscriberInstance = Manual;
 
     var
+        LocationValues: Dictionary of [Text, Text];
         CompanyImportExecuted: Boolean;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
@@ -58,7 +59,7 @@ codeunit 139630 "Shpfy Company Import Subs."
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
     begin
-        Body := CompanyInitialize.CreateLocationResponse();
+        Body := CompanyInitialize.CreateLocationResponse(LocationValues);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -68,5 +69,9 @@ codeunit 139630 "Shpfy Company Import Subs."
         exit(CompanyImportExecuted);
     end;
 
+    internal procedure SetLocationValues(NewLocationValues: Dictionary of [Text, Text])
+    begin
+        LocationValues := NewLocationValues;
+    end;
 
 }
