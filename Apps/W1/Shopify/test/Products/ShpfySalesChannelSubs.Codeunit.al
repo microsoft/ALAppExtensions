@@ -4,6 +4,7 @@ codeunit 139617 "Shpfy Sales Channel Subs."
 
     var
         GraphQueryTxt: Text;
+        JEdges: JsonArray;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
     local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
@@ -23,6 +24,7 @@ codeunit 139617 "Shpfy Sales Channel Subs."
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
         ProductCreateTok: Label '{"query":"mutation {productCreate(', locked = true;
+        GQLSalesChannels: Codeunit "Shpfy GQL SalesChannels";
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -39,6 +41,8 @@ codeunit 139617 "Shpfy Sales Channel Subs."
                                     end;
                                 GraphQlQuery.Contains(ProductCreateTok):
                                     HttpResponseMessage := GetCreateProductResponse();
+                                GraphQlQuery = GQLSalesChannels.GetGraphQL():
+                                    HttpResponseMessage := GetSalesChannelsResponse();
                             end;
                 end;
         end;
@@ -64,8 +68,25 @@ codeunit 139617 "Shpfy Sales Channel Subs."
         exit(HttpResponseMessage);
     end;
 
+    local procedure GetSalesChannelsResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        BodyTxt: Text;
+        EdgesTxt: Text;
+    begin
+        JEdges.WriteTo(EdgesTxt);
+        BodyTxt := StrSubstNo('{ "data": { "publications": { "edges": %1 } }}', EdgesTxt);
+        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
     procedure GetGraphQueryTxt(): Text
     begin
         exit(GraphQueryTxt);
+    end;
+
+    procedure SetJEdges(NewJEdges: JsonArray)
+    begin
+        this.JEdges := NewJEdges;
     end;
 }

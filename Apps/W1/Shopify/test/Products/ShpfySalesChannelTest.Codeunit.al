@@ -23,7 +23,6 @@ codeunit 139616 "Shpfy Sales Channel Test"
     procedure UnitTestImportSalesChannelTest()
     var
         SalesChannel: Record "Shpfy Sales Channel";
-        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
         JPublications: JsonArray;
     begin
         // [SCENARIO] Importing sales channel from Shopify to Business Central.
@@ -32,8 +31,8 @@ codeunit 139616 "Shpfy Sales Channel Test"
         // [GIVEN] Shopify response with sales channel data.
         JPublications := SalesChannelHelper.GetDefaultShopifySalesChannelResponse(Any.IntegerInRange(10000, 99999), Any.IntegerInRange(10000, 99999));
 
-        // [WHEN] Invoking the procedure: SalesChannelAPI.ProcessPublications(JPublications, Shop.Code)
-        SalesChannelAPI.ProcessPublications(JPublications, Shop.Code);
+        // [WHEN] Invoking the procedure: SalesChannelAPI.RetrieveSalesChannelsFromShopify
+        InvokeRetrieveSalesChannelsFromShopify(JPublications);
 
         // [THEN] The sales channels are imported to Business Central.
         SalesChannel.SetRange("Shop Code", Shop.Code);
@@ -47,7 +46,6 @@ codeunit 139616 "Shpfy Sales Channel Test"
     procedure UnitTestRemoveNotExistingChannelsTest()
     var
         SalesChannel: Record "Shpfy Sales Channel";
-        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
         JPublications: JsonArray;
         OnlineStoreId, POSId, AdditionalChannelId : BigInteger;
     begin
@@ -64,8 +62,8 @@ codeunit 139616 "Shpfy Sales Channel Test"
         // [GIVEN] Shopify response with default sales channel data.
         JPublications := SalesChannelHelper.GetDefaultShopifySalesChannelResponse(OnlineStoreId, POSId);
 
-        // [WHEN] Invoking the procedure: SalesChannelAPI.ProcessPublications(JPublications, Shop.Code) for empty json array.
-        SalesChannelAPI.ProcessPublications(JPublications, Shop.Code);
+        // [WHEN] Invoking the procedure: SalesChannelAPI.InvokeRetreiveSalesChannelsFromShopify
+        InvokeRetrieveSalesChannelsFromShopify(JPublications);
 
         // [THEN] The additional sales channel is removed from Business Central.
         SalesChannel.SetRange("Shop Code", Shop.Code);
@@ -280,5 +278,16 @@ codeunit 139616 "Shpfy Sales Channel Test"
         ShpfyVariant.Id := Id;
         ShpfyVariant."Product Id" := ShopifyProduct.Id;
         ShpfyVariant.Insert(false);
+    end;
+
+    local procedure InvokeRetrieveSalesChannelsFromShopify(var JPublications: JsonArray)
+    var
+        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
+        SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
+    begin
+        BindSubscription(SalesChannelSubs);
+        SalesChannelSubs.SetJEdges(JPublications);
+        SalesChannelAPI.RetrieveSalesChannelsFromShopify(Shop.Code);
+        UnbindSubscription(SalesChannelSubs);
     end;
 }
