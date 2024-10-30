@@ -583,7 +583,7 @@ codeunit 30176 "Shpfy Product API"
         if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
             exit;
 
-        if not GetSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
+        if not FilterSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 
         GraphQuery := CreateProductPublishGraphQuery(ShopifyProduct, SalesChannel);
@@ -591,7 +591,7 @@ codeunit 30176 "Shpfy Product API"
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
     end;
 
-    local procedure GetSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
+    local procedure FilterSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
     var
         SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
     begin
