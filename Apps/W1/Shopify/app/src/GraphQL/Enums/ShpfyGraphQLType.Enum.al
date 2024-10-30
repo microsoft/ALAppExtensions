@@ -495,4 +495,9 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Sales Channels';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL SalesChannels";
     }
+    value(103; GetNextSalesChannels)
+    {
+        Caption = 'Get Next Sales Channels';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Get Next S. Channels";
+    }
 }

@@ -12,7 +12,7 @@ codeunit 30375 "Shpfy GQL Get Next S. Channels" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-
+        exit('{"query" : "{publications(first: 25, after:\"{{After}}\", catalogType: APP) { pageInfo{ hasNextPage } edges { cursor node { id catalog { id ... on AppCatalog { apps(first: 1) { edges { node { id handle title } } } } } } } } }"}');
     end;
 
     /// <summary>

@@ -20,24 +20,27 @@ codeunit 30372 "Shpfy Sales Channel API"
         GraphQLType: Enum "Shpfy GraphQL Type";
         JResponse: JsonToken;
         JPublications: JsonArray;
-    begin
-        CommunicationMgt.SetShop(ShopCode);
-        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetSalesChannels);
-        if JsonHelper.GetJsonArray(JResponse, JPublications, 'data.publications.edges') then
-            ProcessPublications(JPublications, ShopCode);
-    end;
-
-    /// <summary>
-    /// Processes the sales channels from Shopify.
-    /// </summary>
-    /// <param name="JPublications">The array of sales channels data from Shopify.</param>
-    /// <param name="ShopCode">The code of the shop.</param>
-    internal procedure ProcessPublications(JPublications: JsonArray; ShopCode: Code[20])
-    var
+        Cursor: Text;
+        Parameters: Dictionary of [Text, Text];
         CurrentChannels: List of [BigInteger];
     begin
         CurrentChannels := CollectChannels(ShopCode);
-        InsertNewChannels(JPublications, ShopCode, CurrentChannels);
+
+        CommunicationMgt.SetShop(ShopCode);
+        GraphQLType := GraphQLType::GetSalesChannels;
+
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JsonHelper.GetJsonArray(JResponse, JPublications, 'data.publications.edges') then begin
+                ExtractSalesChannels(JPublications, ShopCode, CurrentChannels, Cursor);
+                if Parameters.ContainsKey('After') then
+                    Parameters.Set('After', Cursor)
+                else
+                    Parameters.Add('After', Cursor);
+                GraphQLType := GraphQLType::GetNextSalesChannels;
+            end;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.publications.pageInfo.hasNextPage');
+
         RemoveNotExistingChannels(CurrentChannels);
     end;
 
@@ -65,7 +68,7 @@ codeunit 30372 "Shpfy Sales Channel API"
         end;
     end;
 
-    local procedure InsertNewChannels(JPublications: JsonArray; ShopCode: Code[20]; CurrentChannels: List of [BigInteger])
+    local procedure ExtractSalesChannels(JPublications: JsonArray; ShopCode: Code[20]; CurrentChannels: List of [BigInteger]; var Cursor: Text)
     var
         SalesChannel: Record "Shpfy Sales Channel";
         JPublication: JsonToken;
@@ -75,6 +78,7 @@ codeunit 30372 "Shpfy Sales Channel API"
         Handle: Text;
     begin
         foreach JPublication in JPublications do begin
+            Cursor := JsonHelper.GetValueAsText(JPublication, 'cursor');
             ChannelId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JPublication, '$.node.id'));
             if not SalesChannel.Get(ChannelId) then begin
                 SalesChannel.Init();

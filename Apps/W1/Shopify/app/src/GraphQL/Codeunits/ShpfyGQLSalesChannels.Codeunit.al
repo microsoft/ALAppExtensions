@@ -13,7 +13,7 @@ codeunit 30371 "Shpfy GQL SalesChannels" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "{publications(first: 10, catalogType: APP) { edges { node { id catalog { id ... on AppCatalog { apps(first: 1) { edges { node { id handle title } } } } } } } } }"}');
+        exit('{"query": "{publications(first: 25, catalogType: APP) { pageInfo{ hasNextPage } edges { cursor node { id catalog { id ... on AppCatalog { apps(first: 1) { edges { node { id handle title } } } } } } } } }"}');
     end;
 
     /// <summary>
