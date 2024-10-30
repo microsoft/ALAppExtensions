@@ -12,11 +12,13 @@ table 6381 "Logiq Connection User Setup"
         field(1; "User ID"; Text[50])
         {
             Caption = 'User ID';
+            DataClassification = EndUserIdentifiableInformation;
             TableRelation = User."User Name";
         }
         field(21; Username; Text[100])
         {
             Caption = 'Username';
+            DataClassification = EndUserIdentifiableInformation;
             ToolTip = 'Specifies the user name.';
         }
         field(22; Password; Guid)
