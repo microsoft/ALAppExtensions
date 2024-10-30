@@ -133,4 +133,9 @@ codeunit 139638 "Shpfy Company Initialize"
         JObject.WriteTo(LocationResponse);
         exit(LocationResponse);
     end;
+
+    internal procedure TaxIdGQLNode(CompanyLocation: Record "Shpfy Company Location"): Text
+    begin
+        exit(StrSubstNo('locationId: \"gid://shopify/CompanyLocation/%1\", taxId: \"%2\"', CompanyLocation.Id, CompanyLocation."Tax Registration Id"));
+    end;
 }
