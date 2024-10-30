@@ -4,11 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
+using Microsoft.EServices.EDocumentConnector.Logiq;
+
 permissionset 6361 "EDocConnector - Edit"
 {
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "EDocConnector - Read";
 
-    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM;
+    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM
+                  tabledata "Logiq Connection Setup" = IM,
+                  tabledata "Logiq Connection User Setup" = IM;
 }
