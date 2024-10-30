@@ -223,6 +223,33 @@ codeunit 139637 "Shpfy Company API Test"
         LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.TaxIdGQLNode(CompanyLocation)), 'Tax Registration Id');
     end;
 
+    [Test]
+    procedure UnitTestCreateCompanyGraphQueryWithExternalId()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Creating the GrapghQL query to create a new company in Shopify with external id.
+        Initialize();
+
+        // [GIVEN] Customer record
+        CreateCustomer(Customer);
+        // [GIVEN] Shopify Company connected with customer
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify Customer connected with customer
+        CreateShopifyCustomer(ShopifyCustomer, Customer.SystemId);
+
+        // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
+
+        // [THEN] The external id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.ExternalIdGQLNode(Customer)), 'External Id');
+    end;
+
 
     local procedure Initialize()
     begin
@@ -244,5 +271,20 @@ codeunit 139637 "Shpfy Company API Test"
         CompanyAPI.UpdateCompany(ShopifyCompany, CompanyLocation);
         GraphQL := CompanyAPISubs.GetExecutedQuery();
         UnbindSubscription(CompanyAPISubs);
+    end;
+
+    local procedure CreateCustomer(var Customer: Record Customer)
+    begin
+        Customer.Init();
+        Customer."No." := Any.AlphanumericText(20);
+        Customer.Insert(false);
+    end;
+
+    local procedure CreateShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"; CustomerSystemId: Guid)
+    begin
+        ShopifyCustomer.Init();
+        ShopifyCustomer.Id := Any.IntegerInRange(10000, 99999);
+        ShopifyCustomer."Customer SystemId" := CustomerSystemId;
+        ShopifyCustomer.Insert(false);
     end;
 }

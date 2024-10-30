@@ -138,4 +138,9 @@ codeunit 139638 "Shpfy Company Initialize"
     begin
         exit(StrSubstNo('locationId: \"gid://shopify/CompanyLocation/%1\", taxId: \"%2\"', CompanyLocation.Id, CompanyLocation."Tax Registration Id"));
     end;
+
+    internal procedure ExternalIdGQLNode(Customer: Record Customer): Text
+    begin
+        exit(StrSubstNo('externalId: \"%1\"', Customer."No."));
+    end;
 }
