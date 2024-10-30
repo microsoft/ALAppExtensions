@@ -20,11 +20,12 @@ codeunit 139617 "Shpfy Sales Channel Subs."
 
     local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
+        GQLSalesChannels: Codeunit "Shpfy GQL SalesChannels";
         Uri: Text;
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
         ProductCreateTok: Label '{"query":"mutation {productCreate(', locked = true;
-        GQLSalesChannels: Codeunit "Shpfy GQL SalesChannels";
+
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -80,12 +81,12 @@ codeunit 139617 "Shpfy Sales Channel Subs."
         exit(HttpResponseMessage);
     end;
 
-    procedure GetGraphQueryTxt(): Text
+    internal procedure GetGraphQueryTxt(): Text
     begin
         exit(GraphQueryTxt);
     end;
 
-    procedure SetJEdges(NewJEdges: JsonArray)
+    internal procedure SetJEdges(NewJEdges: JsonArray)
     begin
         this.JEdges := NewJEdges;
     end;
