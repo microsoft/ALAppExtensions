@@ -176,7 +176,6 @@ codeunit 42005 "SL Wizard Integration"
         if not EnvironmentInformation.IsSaaS() then
             exit;
 
-        DataMigratorRegistration.Reset();
         DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
         if not DataMigratorRegistration.FindSet() then
             if not DataMigratorRegistration.RegisterDataMigrator(GetCurrentCodeUnitNumber(), CopyStr(DataMigratorDescTxt, 1, 250)) then begin
@@ -195,7 +194,6 @@ codeunit 42005 "SL Wizard Integration"
         if not EnvironmentInformation.IsSaaS() then
             exit;
 
-        DataMigratorRegistration.Reset();
         DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
         if DataMigratorRegistration.FindSet() then
             DataMigratorRegistration.Delete();

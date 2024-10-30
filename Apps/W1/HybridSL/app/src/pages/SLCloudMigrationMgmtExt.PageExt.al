@@ -8,6 +8,7 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
             {
                 Editable = false;
                 ShowCaption = false;
+                Visible = SLMigrationEnabled;
                 group("SL Cloud Migration")
                 {
                     ShowCaption = false;
@@ -88,6 +89,7 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
                 Enabled = HasCompletedSetupWizard;
                 Image = Setup;
                 ToolTip = 'Configure migration settings for SL';
+                Visible = SLMigrationEnabled;
 
                 trigger OnAction()
                 var
@@ -108,6 +110,7 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
                 Enabled = HasCompletedSetupWizard;
                 Image = Archive;
                 ToolTip = 'Rerun SL Historical Snapshot';
+                Visible = SLMigrationEnabled;
 
                 trigger OnAction()
                 var
@@ -134,20 +137,26 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
 
     trigger OnOpenPage()
     var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCompany: Record "Hybrid Company";
         SLConfiguration: Record "SL Migration Config";
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLHybridWizard: Codeunit "SL Hybrid Wizard";
     begin
-        HybridCompany.SetRange(Replicate, true);
-        HasCompletedSetupWizard := not HybridCompany.IsEmpty();
+        if IntelligentCloudSetup.Get() then
+            SLMigrationEnabled := SLHybridWizard.CanHandle(IntelligentCloudSetup."Product ID");
 
+        if SLMigrationEnabled then begin
+            HybridCompany.SetRange(Replicate, true);
+            HasCompletedSetupWizard := not HybridCompany.IsEmpty();
 
-        if HybridCompany.Get(CompanyName()) then begin
-            SLConfiguration.GetSingleInstance();
-            if GetHasCompletedMigration() then
-                if SLCompanyAdditionalSettings.GetMigrateHistory() then
-                    if not SLConfiguration.HasHistoricalJobRan() then
-                        ShowSLHistoricalJobNeedsToRunNotification();
+            if HybridCompany.Get(CompanyName()) then begin
+                SLConfiguration.GetSingleInstance();
+                if GetHasCompletedMigration() then
+                    if SLCompanyAdditionalSettings.GetMigrateHistory() then
+                        if not SLConfiguration.HasHistoricalJobRan() then
+                            ShowSLHistoricalJobNeedsToRunNotification();
+            end;
         end;
     end;
 
@@ -218,6 +227,7 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
 
     var
         HasCompletedSetupWizard: Boolean;
+        SLMigrationEnabled: Boolean;
         MigrationErrorCount: Integer;
         FailedCompanyCount: Integer;
         FailedBatchCount: Integer;
