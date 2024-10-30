@@ -172,7 +172,7 @@ page 30157 "Shpfy Company Card"
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ToolTip = 'Add metafields to a product. This can be used for adding custom data fields to products in Shopify.';
+                ToolTip = 'Add metafields to a company. This can be used for adding custom data fields to compoanies in Shopify.';
 
                 trigger OnAction()
                 var

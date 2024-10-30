@@ -180,7 +180,7 @@ page 30156 "Shpfy Companies"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ToolTip = 'Add metafields to a product. This can be used for adding custom data fields to products in Shopify.';
+                ToolTip = 'Add metafields to a company. This can be used for adding custom data fields to companies in Shopify.';
 
                 trigger OnAction()
                 var

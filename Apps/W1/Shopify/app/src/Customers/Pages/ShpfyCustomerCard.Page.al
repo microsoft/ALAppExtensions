@@ -195,7 +195,7 @@ page 30106 "Shpfy Customer Card"
                 PromotedCategory = Category4;
                 PromotedIsBig = true;
                 PromotedOnly = true;
-                ToolTip = 'Add metafields to a product. This can be used for adding custom data fields to products in Shopify.';
+                ToolTip = 'Add metafields to a customer. This can be used for adding custom data fields to customers in Shopify.';
 
                 trigger OnAction()
                 var
