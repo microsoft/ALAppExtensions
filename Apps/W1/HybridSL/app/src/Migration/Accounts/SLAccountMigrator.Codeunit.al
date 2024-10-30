@@ -113,7 +113,6 @@ codeunit 42000 "SL Account Migrator"
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
         PostingGroupCode: Text;
     begin
-        MigrationSlAccountTrans.Reset();
         MigrationSlAccountTrans.SetCurrentKey(Year, PERIODID, AcctNum);
         MigrationSlAccountTrans.SetFilter(AcctNum, '= %1', MigrationSLAccount.AcctNum);
         if MigrationSlAccountTrans.FindSet() then

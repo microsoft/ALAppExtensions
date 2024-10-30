@@ -24,13 +24,11 @@ codeunit 42002 "SL Populate Account History"
         SLLedgerID: Text[10];
         SLYtdNetIncAcct: Text[10];
     begin
-        SLGLSetup.Reset();
         if SLGLSetup.FindFirst() then begin
             SLLedgerID := CopyStr(SLGLSetup.LedgerID.Trim(), 1, MaxStrLen(SLLedgerID));
             SLYtdNetIncAcct := CopyStr(SLGLSetup.YtdNetIncAcct.Trim(), 1, MaxStrLen(SLYtdNetIncAcct));
         end;
 
-        SLGLAcctBalbyPeriodWrkTbl.Reset();
         if SLGLAcctBalbyPeriodWrkTbl.FindFirst() then
             SLGLAcctBalbyPeriodWrkTbl.DeleteAll();
 
@@ -475,12 +473,9 @@ codeunit 42002 "SL Populate Account History"
         NbrOfSegments := 0;
         NbrOfSegments := GetNumberOfSegments();
 
-        SLAccountTransactionsTbl.Reset();
         if SLAccountTransactionsTbl.FindFirst() then
             SLAccountTransactionsTbl.DeleteAll();
-        SLAccountTransactionsTbl.Reset();
 
-        SLGLAcctBalbyPeriodWrkTbl.Reset();
         if SLGLAcctBalbyPeriodWrkTbl.FindSet() then
             repeat
                 case NbrOfSegments of
@@ -660,7 +655,6 @@ codeunit 42002 "SL Populate Account History"
         NbrSegments: Integer;
     begin
         NbrSegments := 0;
-        SLFlexDef.Reset();
         SLFlexDef.SetRange(FieldClassName, 'SUBACCOUNT');
         if SLFlexDef.FindFirst() then begin
             SegLen1 := SLFlexDef.SegLength00;

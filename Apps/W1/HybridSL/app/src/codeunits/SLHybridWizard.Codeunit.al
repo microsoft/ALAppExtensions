@@ -199,7 +199,6 @@ codeunit 42012 "SL Hybrid Wizard"
     var
         SLCompanyMigrationSettings: Record "SL Company Migration Settings";
     begin
-        SLCompanyMigrationSettings.Reset();
         SLCompanyMigrationSettings.SetRange(Replicate, true);
         SLCompanyMigrationSettings.SetRange(ProcessesAreRunning, true);
         if SLCompanyMigrationSettings.IsEmpty() then

@@ -35,9 +35,8 @@ codeunit 42020 "SL Dimensions"
     internal procedure InsertSegmentName()
     begin
         Clear(SLSegmentName);
-#pragma warning disable AA0139
         SLSegmentName."Segment Number" := SegmentNbr;
-        SLSegmentName."Company Name" := MigratingCompanyList.Get(1);
+        SLSegmentName."Company Name" := CopyStr(MigratingCompanyList.Get(1), 1, MaxStrLen(SLSegmentName."Company Name"));
         case SegmentNbr of
             0:
                 SLSegmentName."Segment Name" := SLFlexDef.Descr00;
@@ -56,7 +55,6 @@ codeunit 42020 "SL Dimensions"
             7:
                 SLSegmentName."Segment Name" := SLFlexDef.Descr07;
         end;
-#pragma warning restore AA0139
         SLSegmentName.Insert();
     end;
 
@@ -70,112 +68,116 @@ codeunit 42020 "SL Dimensions"
         if not SLFlexDef.FindFirst() then
             exit;
         SegmentNbr := 0;
-
-        SLSegments.Reset();
         SLSegments.DeleteAll();
         repeat
-#pragma warning disable AA0022
-#pragma warning disable AA0139
-            if SegmentNbr = 0 then begin
-                if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr00) then
-                    SLSegments.Id := SLFlexDef.Descr00.Trim() + 's'
-                else
-                    SLSegments.Id := SLFlexDef.Descr00.Trim();
-                SLSegments.Name := SLFlexDef.Descr00.Trim();
-                SLSegments.CodeCaption := SLFlexDef.Descr00.Trim() + ' Code';
-                SLSegments.FilterCaption := SLFlexDef.Descr00.Trim() + ' Filter';
-                SLSegments.SegmentNumber := SegmentNbr + 1;
-                SLSegments.Insert();
-                Commit();
-            end else
-                if SegmentNbr = 1 then begin
-                    if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr01) then
-                        SLSegments.Id := SLFlexDef.Descr01.Trim() + 's'
-                    else
-                        SLSegments.Id := SLFlexDef.Descr01.Trim();
-                    SLSegments.Name := SLFlexDef.Descr01.Trim();
-                    SLSegments.CodeCaption := SLFlexDef.Descr01.Trim() + ' Code';
-                    SLSegments.FilterCaption := SLFlexDef.Descr01.Trim() + ' Filter';
-                    SLSegments.SegmentNumber := SegmentNbr + 1;
-                    SLSegments.Insert();
-                    Commit();
-                end else
-                    if SegmentNbr = 2 then begin
+            case SegmentNbr of
+                0:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr00) then
+                            SLSegments.Id := SLFlexDef.Descr00.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr00;
+                        SLSegments.Name := SLFlexDef.Descr00;
+                        SLSegments.CodeCaption := SLFlexDef.Descr00.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr00.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                1:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr01) then
+                            SLSegments.Id := SLFlexDef.Descr01.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr01;
+                        SLSegments.Name := SLFlexDef.Descr01;
+                        SLSegments.CodeCaption := SLFlexDef.Descr01.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr01.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                2:
+                    begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr02) then
                             SLSegments.Id := SLFlexDef.Descr02.Trim() + 's'
                         else
-                            SLSegments.Id := SLFlexDef.Descr02.Trim();
-                        SLSegments.Name := SLFlexDef.Descr02.Trim();
+                            SLSegments.Id := SLFlexDef.Descr02;
+                        SLSegments.Name := SLFlexDef.Descr02;
                         SLSegments.CodeCaption := SLFlexDef.Descr02.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr02.Trim() + ' Filter';
                         SLSegments.SegmentNumber := SegmentNbr + 1;
                         SLSegments.Insert();
                         Commit();
-                    end else
-                        if SegmentNbr = 3 then begin
-                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr03) then
-                                SLSegments.Id := SLFlexDef.Descr03.Trim() + 's'
-                            else
-                                SLSegments.Id := SLFlexDef.Descr03.Trim();
-                            SLSegments.Name := SLFlexDef.Descr03.Trim();
-                            SLSegments.CodeCaption := SLFlexDef.Descr03.Trim() + ' Code';
-                            SLSegments.FilterCaption := SLFlexDef.Descr03.Trim() + ' Filter';
-                            SLSegments.SegmentNumber := SegmentNbr + 1;
-                            SLSegments.Insert();
-                            Commit();
-                        end else
-                            if SegmentNbr = 4 then begin
-                                if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr04) then
-                                    SLSegments.Id := SLFlexDef.Descr04.Trim() + 's'
-                                else
-                                    SLSegments.Id := SLFlexDef.Descr04.Trim();
-                                SLSegments.Name := SLFlexDef.Descr04.Trim();
-                                SLSegments.CodeCaption := SLFlexDef.Descr04.Trim() + ' Code';
-                                SLSegments.FilterCaption := SLFlexDef.Descr04.Trim() + ' Filter';
-                                SLSegments.SegmentNumber := SegmentNbr + 1;
-                                SLSegments.Insert();
-                                Commit();
-                            end else
-                                if SegmentNbr = 5 then begin
-                                    if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr05) then
-                                        SLSegments.Id := SLFlexDef.Descr05.Trim() + 's'
-                                    else
-                                        SLSegments.Id := SLFlexDef.Descr05.Trim();
-                                    SLSegments.Name := SLFlexDef.Descr05.Trim();
-                                    SLSegments.CodeCaption := SLFlexDef.Descr05.Trim() + ' Code';
-                                    SLSegments.FilterCaption := SLFlexDef.Descr05.Trim() + ' Filter';
-                                    SLSegments.SegmentNumber := SegmentNbr + 1;
-                                    SLSegments.Insert();
-                                    Commit();
-                                end else
-                                    if SegmentNbr = 6 then begin
-                                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr06) then
-                                            SLSegments.Id := SLFlexDef.Descr06.Trim() + 's'
-                                        else
-                                            SLSegments.Id := SLFlexDef.Descr06.Trim();
-                                        SLSegments.Name := SLFlexDef.Descr06.Trim();
-                                        SLSegments.CodeCaption := SLFlexDef.Descr06.Trim() + ' Code';
-                                        SLSegments.FilterCaption := SLFlexDef.Descr06.Trim() + ' Filter';
-                                        SLSegments.SegmentNumber := SegmentNbr + 1;
-                                        SLSegments.Insert();
-                                        Commit();
-                                    end else
-                                        if SegmentNbr = 7 then begin
-                                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr07) then
-                                                SLSegments.Id := SLFlexDef.Descr07.Trim() + 's'
-                                            else
-                                                SLSegments.Id := SLFlexDef.Descr07.Trim();
-                                            SLSegments.Name := SLFlexDef.Descr07.Trim();
-                                            SLSegments.CodeCaption := SLFlexDef.Descr07.Trim() + ' Code';
-                                            SLSegments.FilterCaption := SLFlexDef.Descr07.Trim() + ' Filter';
-                                            SLSegments.SegmentNumber := SegmentNbr + 1;
-                                            SLSegments.Insert();
-                                            Commit();
-                                        end;
+                    end;
+                3:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr03) then
+                            SLSegments.Id := SLFlexDef.Descr03.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr03;
+                        SLSegments.Name := SLFlexDef.Descr03;
+                        SLSegments.CodeCaption := SLFlexDef.Descr03.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr03.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                4:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr04) then
+                            SLSegments.Id := SLFlexDef.Descr04.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr04;
+                        SLSegments.Name := SLFlexDef.Descr04;
+                        SLSegments.CodeCaption := SLFlexDef.Descr04.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr04.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                5:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr05) then
+                            SLSegments.Id := SLFlexDef.Descr05.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr05;
+                        SLSegments.Name := SLFlexDef.Descr05;
+                        SLSegments.CodeCaption := SLFlexDef.Descr05.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr05.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                6:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr06) then
+                            SLSegments.Id := SLFlexDef.Descr06.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr06;
+                        SLSegments.Name := SLFlexDef.Descr06;
+                        SLSegments.CodeCaption := SLFlexDef.Descr06.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr06.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+                7:
+                    begin
+                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr07) then
+                            SLSegments.Id := SLFlexDef.Descr07.Trim() + 's'
+                        else
+                            SLSegments.Id := SLFlexDef.Descr07;
+                        SLSegments.Name := SLFlexDef.Descr07;
+                        SLSegments.CodeCaption := SLFlexDef.Descr07.Trim() + ' Code';
+                        SLSegments.FilterCaption := SLFlexDef.Descr07.Trim() + ' Filter';
+                        SLSegments.SegmentNumber := SegmentNbr + 1;
+                        SLSegments.Insert();
+                        Commit();
+                    end;
+            end;
             SegmentNbr += 1;
         until SegmentNbr = SLFlexDef.NumberSegments;
-#pragma warning restore AA0022
-#pragma warning restore AA0139
     end;
 
     internal procedure FlexDefDescInSLSubaccountSegDesc(flexDefDesc: Text[15]): Boolean
@@ -206,101 +208,104 @@ codeunit 42020 "SL Dimensions"
         if not SLFlexDef.FindFirst() then
             exit;
 
-        SLCodes.Reset();
         SLCodes.DeleteAll();
-
-        SLSegdef.Reset();
         SLSegdef.SetCurrentKey(SegNumber);
         SLSegdef.Ascending(true);
         SLSegdef.SetFilter(FieldClassName, 'SUBACCOUNT');
         if SLSegdef.FindSet() then
             repeat
-#pragma warning disable AA0022
-#pragma warning disable AA0139
-                if SLSegdef.SegNumber.Trim() = '1' then begin
-                    if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr00) then
-                        SLCodes.Id := SLFlexDef.Descr00.Trim() + 's'
-                    else
-                        SLCodes.Id := SLFlexDef.Descr00.Trim();
-                    SLCodes.Name := SLSegdef.ID;
-                    SLCodes.Description := SLSegdef.Description;
-                    SLCodes.Insert();
-                    Commit();
-                end else
-                    if SLSegdef.SegNumber.Trim() = '2' then begin
-                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr01) then
-                            SLCodes.Id := SLFlexDef.Descr01.Trim() + 's'
-                        else
-                            SLCodes.Id := SLFlexDef.Descr01.Trim();
-                        SLCodes.Name := SLSegdef.ID;
-                        SLCodes.Description := SLSegdef.Description;
-                        SLCodes.Insert();
-                        Commit();
-                    end else
-                        if SLSegdef.SegNumber.Trim() = '3' then begin
-                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr02) then
-                                SLCodes.Id := SLFlexDef.Descr02.Trim() + 's'
+                case SLSegdef.SegNumber.Trim() of
+                    '1':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr00) then
+                                SLCodes.Id := SLFlexDef.Descr00.Trim() + 's'
                             else
-                                SLCodes.Id := SLFlexDef.Descr02.Trim();
+                                SLCodes.Id := SLFlexDef.Descr00;
                             SLCodes.Name := SLSegdef.ID;
                             SLCodes.Description := SLSegdef.Description;
                             SLCodes.Insert();
                             Commit();
-                        end else
-                            if SLSegdef.SegNumber.Trim() = '4' then begin
-                                if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr03) then
-                                    SLCodes.Id := SLFlexDef.Descr03.Trim() + 's'
-                                else
-                                    SLCodes.Id := SLFlexDef.Descr03.Trim();
-                                SLCodes.Name := SLSegdef.ID;
-                                SLCodes.Description := SLSegdef.Description;
-                                SLCodes.Insert();
-                                Commit();
-                            end else
-                                if SLSegdef.SegNumber.Trim() = '5' then begin
-                                    if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr04) then
-                                        SLCodes.Id := SLFlexDef.Descr04.Trim() + 's'
-                                    else
-                                        SLCodes.Id := SLFlexDef.Descr04.Trim();
-                                    SLCodes.Name := SLSegdef.ID;
-                                    SLCodes.Description := SLSegdef.Description;
-                                    SLCodes.Insert();
-                                    Commit();
-                                end else
-                                    if SLSegdef.SegNumber.Trim() = '6' then begin
-                                        if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr05) then
-                                            SLCodes.Id := SLFlexDef.Descr05.Trim() + 's'
-                                        else
-                                            SLCodes.Id := SLFlexDef.Descr05.Trim();
-                                        SLCodes.Name := SLSegdef.ID;
-                                        SLCodes.Description := SLSegdef.Description;
-                                        SLCodes.Insert();
-                                        Commit();
-                                    end else
-                                        if SLSegdef.SegNumber.Trim() = '7' then begin
-                                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr06) then
-                                                SLCodes.Id := SLFlexDef.Descr06.Trim() + 's'
-                                            else
-                                                SLCodes.Id := SLFlexDef.Descr06.Trim();
-                                            SLCodes.Name := SLSegdef.ID;
-                                            SLCodes.Description := SLSegdef.Description;
-                                            SLCodes.Insert();
-                                            Commit();
-                                        end else
-                                            if SLSegdef.SegNumber.Trim() = '8' then begin
-                                                if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr07) then
-                                                    SLCodes.Id := SLFlexDef.Descr07.Trim() + 's'
-                                                else
-                                                    SLCodes.Id := SLFlexDef.Descr07.Trim();
-                                                SLCodes.Name := SLSegdef.ID;
-                                                SLCodes.Description := SLSegdef.Description;
-                                                SLCodes.Insert();
-                                                Commit();
-                                            end;
-            until SLSegdef.Next() = 0;
+                        end;
+                    '2':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr01) then
+                                SLCodes.Id := SLFlexDef.Descr01.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr01;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '3':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr02) then
+                                SLCodes.Id := SLFlexDef.Descr02.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr02;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '4':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr03) then
+                                SLCodes.Id := SLFlexDef.Descr03.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr03;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '5':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr04) then
+                                SLCodes.Id := SLFlexDef.Descr04.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr04;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '6':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr05) then
+                                SLCodes.Id := SLFlexDef.Descr05.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr05;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '7':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr06) then
+                                SLCodes.Id := SLFlexDef.Descr06.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr06;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                    '8':
+                        begin
+                            if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr07) then
+                                SLCodes.Id := SLFlexDef.Descr07.Trim() + 's'
+                            else
+                                SLCodes.Id := SLFlexDef.Descr07;
+                            SLCodes.Name := SLSegdef.ID;
+                            SLCodes.Description := SLSegdef.Description;
+                            SLCodes.Insert();
+                            Commit();
+                        end;
+                end;
 
-#pragma warning restore AA0022
-#pragma warning restore AA0139
+            until SLSegdef.Next() = 0;
     end;
 
     var

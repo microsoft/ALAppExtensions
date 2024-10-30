@@ -77,9 +77,6 @@ codeunit 42025 SLPopulateHistTables
         end;
 
         if SLCompanyAdditionalSettings.GetMigrateHistAPTrx() then begin
-            SLAPDoc.Reset();
-            SLAPAdjust.Reset();
-            SLAPTran.Reset();
             SLAPDoc.SetFilter(CpnyID, '= %1', CompanyName);
             SLAPTran.SetFilter(CpnyID, '= %1', CompanyName);
             if InitialHistYear > 0 then begin
@@ -99,14 +96,6 @@ codeunit 42025 SLPopulateHistTables
         end;
 
         if SLCompanyAdditionalSettings.GetMigrateHistARTrx() then begin
-            SLARDoc.Reset();
-            SLARAdjust.Reset();
-            SLARTran.Reset();
-            SLSOHeader.Reset();
-            SLSOLine.Reset();
-            SLSOShipHeader.Reset();
-            SLSOShipLine.Reset();
-            SLSOType.Reset();
             SLARDoc.SetFilter(CpnyID, '= %1', CompanyName);
             SLARTran.SetFilter(CpnyID, '= %1', CompanyName);
             SLSOHeader.SetFilter(CpnyID, '= %1', CompanyName);
@@ -150,8 +139,6 @@ codeunit 42025 SLPopulateHistTables
         end;
 
         if SLCompanyAdditionalSettings.GetMigrateHistGLTrx() then begin
-            SLBatch.Reset();
-            SLGLTran.Reset();
             SLBatch.SetFilter(CpnyID, '= %1', CompanyName);
             SLGLTran.SetFilter(CpnyID, '= %1', CompanyName);
             if InitialHistYear > 0 then begin
@@ -167,8 +154,6 @@ codeunit 42025 SLPopulateHistTables
         end;
 
         if SLCompanyAdditionalSettings.GetMigrateHistInvTrx() then begin
-            SLINTran.Reset();
-            SLLotSerT.Reset();
             SLINTran.SetFilter(CpnyID, '= %1', CompanyName);
             SLLotSerT.SetFilter(CpnyID, '= %1', CompanyName);
             if InitialHistYear > 0 then begin
@@ -184,10 +169,6 @@ codeunit 42025 SLPopulateHistTables
         end;
 
         if SLCompanyAdditionalSettings.GetMigrateHistPurchTrx() then begin
-            SLPOReceipt.Reset();
-            SLPOTran.Reset();
-            SLPurchOrd.Reset();
-            SLPurOrdDet.Reset();
             SLPOReceipt.SetFilter(CpnyID, '= %1', CompanyName);
             SLPOTran.SetFilter(CpnyID, '= %1', CompanyName);
             SLPurchOrd.SetFilter(CpnyID, '= %1', CompanyName);

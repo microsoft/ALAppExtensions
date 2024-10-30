@@ -203,7 +203,6 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
 
         SLMigrationErrors.Init();
 
-        DataMigrationError.Reset();
         DataMigrationError.SetRange("Migration Type", MigrationTypeTxt);
         TotalErrors := DataMigrationError.Count();
 

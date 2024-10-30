@@ -245,7 +245,6 @@ codeunit 42023 "SL Helper Functions"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
-        GeneralLedgerSetup.Reset();
         if GeneralLedgerSetup.FindFirst() then
             if Flag then begin
                 Flag := false;
@@ -264,7 +263,6 @@ codeunit 42023 "SL Helper Functions"
         SLSegments: Record "SL Segments";
         Dimension: Record Dimension;
     begin
-        SLSegments.Reset();
         if not SLSegments.FindSet() then
             exit;
 
@@ -372,7 +370,6 @@ codeunit 42023 "SL Helper Functions"
         OnSkipPostingAccountBatches(SkipPosting);
         if not SkipPosting then begin
             // Post the Account batches
-            GenJournalBatch.Reset();
             GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
             GenJournalBatch.SetFilter(Name, PostingGroupCodeTxt + '*');
             if GenJournalBatch.FindSet() then
@@ -465,7 +462,6 @@ codeunit 42023 "SL Helper Functions"
         OnSkipPostingAccountBatches(SkipPosting);
         if not SkipPosting then begin
             // GL
-            GenJournalBatch.Reset();
             GenJournalBatch.SetRange("Journal Template Name", GeneralTemplateNameTxt);
 
             if GenJournalBatch.FindSet() then
@@ -626,7 +622,6 @@ codeunit 42023 "SL Helper Functions"
                     i := i + 1;
                 end;
             until SLSegments.Next() = 0;
-        SLSegments.Reset();
         if Modified then
             GeneralLedgerSetup.Modify();
     end;
