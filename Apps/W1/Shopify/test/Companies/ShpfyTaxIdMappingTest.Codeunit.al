@@ -24,12 +24,10 @@ codeunit 139628 "Shpfy Tax Id Mapping Test"
         // [SCENARIO] GetTaxRegistrationId for Tax Registration No. implementation of mapping
         Initialize();
 
-        // [GIVEN] Customer record with Tax Registration No.
+        // [GIVEN] Registration No.
         RegistrationNo := Any.AlphanumericText(50);
-        Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
-        Customer."Registration Number" := RegistrationNo;
-        Customer.Insert(false);
+        // [GIVEN] Customer
+        CreateCustomerWithRegistrationNo(Customer, RegistrationNo);
         // [GIVEN] TaxRegistrationIdMapping interface is "Registration No."
         TaxRegistrationIdMapping := Enum::"Shpfy Comp. Tax Id Mapping"::"Registration No.";
 
@@ -51,12 +49,10 @@ codeunit 139628 "Shpfy Tax Id Mapping Test"
         // [SCENARIO] GetTaxRegistrationId for VAT Registration No. implementation of mapping
         Initialize();
 
-        // [GIVEN] Customer record with VAT Registration No.
+        // [GIVEN] VAT Registration No.
         VATRegistrationNo := Any.AlphanumericText(20);
-        Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
-        Customer."VAT Registration No." := VATRegistrationNo;
-        Customer.Insert(false);
+        // [GIVEN] Customer
+        CreateCustomerWithVATRegNo(Customer, VATRegistrationNo);
         // [GIVEN] TaxRegistrationIdMapping interface is "VAT Registration No."
         TaxRegistrationIdMapping := Enum::"Shpfy Comp. Tax Id Mapping"::"VAT Registration No.";
 
@@ -81,15 +77,9 @@ codeunit 139628 "Shpfy Tax Id Mapping Test"
         // [GIVEN] Registration No. 
         RegistrationNo := Any.AlphanumericText(50);
         // [GIVEN] Customer record with Registration No.
-        Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
-        Customer."Registration Number" := RegistrationNo;
-        Customer.Insert(false);
+        CreateCustomerWithRegistrationNo(Customer, RegistrationNo);
         // [GIVEN] CompanyLocation record with Tax Registration Id
-        CompanyLocation.Init();
-        CompanyLocation.Id := Any.IntegerInRange(10000, 99999);
-        CompanyLocation."Tax Registration Id" := RegistrationNo;
-        CompanyLocation.Insert(false);
+        CreateLocationWithTaxId(CompanyLocation, RegistrationNo);
         // [GIVEN] TaxRegistrationIdMapping interface is "Registration No."
         TaxRegistrationIdMapping := Enum::"Shpfy Comp. Tax Id Mapping"::"Registration No.";
 
@@ -114,15 +104,9 @@ codeunit 139628 "Shpfy Tax Id Mapping Test"
         // [GIVEN] VAT Registration No.
         VATRegistrationNo := Any.AlphanumericText(20);
         // [GIVEN] Customer record with VAT Registration No.
-        Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
-        Customer."VAT Registration No." := VATRegistrationNo;
-        Customer.Insert(false);
+        CreateCustomerWithRegistrationNo(Customer, VATRegistrationNo);
         // [GIVEN] CompanyLocation record with Tax Registration Id
-        CompanyLocation.Init();
-        CompanyLocation.Id := Any.IntegerInRange(10000, 99999);
-        CompanyLocation."Tax Registration Id" := VATRegistrationNo;
-        CompanyLocation.Insert(false);
+        CreateLocationWithTaxId(CompanyLocation, VATRegistrationNo);
         // [GIVEN] TaxRegistrationIdMapping interface is "VAT Registration No."
         TaxRegistrationIdMapping := Enum::"Shpfy Comp. Tax Id Mapping"::"VAT Registration No.";
 
@@ -146,5 +130,27 @@ codeunit 139628 "Shpfy Tax Id Mapping Test"
         Commit();
     end;
 
+    local procedure CreateCustomerWithRegistrationNo(var Customer: Record Customer; var RegistrationNo: Text[50])
+    begin
+        Customer.Init();
+        Customer."No." := Any.AlphanumericText(20);
+        Customer."Registration Number" := RegistrationNo;
+        Customer.Insert(false);
+    end;
 
+    local procedure CreateCustomerWithVATRegNo(var Customer: Record Customer; var VATRegistrationNo: Text[20])
+    begin
+        Customer.Init();
+        Customer."No." := Any.AlphanumericText(20);
+        Customer."VAT Registration No." := VATRegistrationNo;
+        Customer.Insert(false);
+    end;
+
+    local procedure CreateLocationWithTaxId(var CompanyLocation: Record "Shpfy Company Location"; var RegistrationNo: Text[50])
+    begin
+        CompanyLocation.Init();
+        CompanyLocation.Id := Any.IntegerInRange(10000, 99999);
+        CompanyLocation."Tax Registration Id" := RegistrationNo;
+        CompanyLocation.Insert(false);
+    end;
 }

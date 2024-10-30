@@ -194,7 +194,7 @@ codeunit 139637 "Shpfy Company API Test"
         InvokeUpdateCompany(ShopifyCompany, CompanyLocation, GraphQL);
 
         // [THEN] The payment terms id is present in query.
-        LibraryAssert.IsTrue(GraphQL.Contains(StrSubstNo(CompanyInitialize.PaymentTermsGQLNode(), CompanyLocation."Shpfy Payment Terms Id")), 'Payment terms modification miisong');
+        LibraryAssert.IsTrue(GraphQL.Contains(StrSubstNo(CompanyInitialize.PaymentTermsGQLNode(), CompanyLocation."Shpfy Payment Terms Id")), 'Payment terms modification missing in query.');
     end;
 
     [Test]
@@ -220,7 +220,7 @@ codeunit 139637 "Shpfy Company API Test"
         InvokeUpdateCompany(ShopifyCompany, CompanyLocation, GraphQL);
 
         // [THEN] The tax id is present in query.
-        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.TaxIdGQLNode(CompanyLocation)), 'Tax Registration Id');
+        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.TaxIdGQLNode(CompanyLocation)), 'Tax Registration Id  missing in query.');
     end;
 
     [Test]
@@ -247,7 +247,7 @@ codeunit 139637 "Shpfy Company API Test"
         GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
 
         // [THEN] The external id is present in query.
-        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.ExternalIdGQLNode(Customer)), 'External Id');
+        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.ExternalIdGQLNode(Customer)), 'externalId missing in query.');
     end;
 
 

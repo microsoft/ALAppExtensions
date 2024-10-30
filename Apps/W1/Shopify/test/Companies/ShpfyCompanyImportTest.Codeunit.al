@@ -43,16 +43,13 @@ codeunit 139647 "Shpfy Company Import Test"
     procedure UnitTestImportCompanyWithLocation()
     var
         ShopifyCompany: Record "Shpfy Company";
+        EmptyGuid: Guid;
     begin
         // [SCENARIO] Importing a company with location with defined payment term.
         Initialize();
 
         // [GIVEN] Shopify company
-        ShopifyCompany.Init();
-        ShopifyCompany.Id := Any.IntegerInRange(10000, 99999);
-        ShopifyCompany."Shop Id" := Shop."Shop Id";
-        ShopifyCompany."Created At" := CurrentDateTime() - 1;
-        ShopifyCompany.Insert(false);
+        CreateCompany(ShopifyCompany, EmptyGuid);
 
         // [WHEN] Invoke CompanyImport
         InvokeCompanyImport(ShopifyCompany);
@@ -79,7 +76,7 @@ codeunit 139647 "Shpfy Company Import Test"
         // [GIVEN] Shopify payment terms
         ShopifyPaymentTermsId := CreateShopifyPaymentTerms(PaymentTermsCode);
         // [GIVEN] Customer record with payment terms
-        CreateCustomer(Customer, PaymentTermsCode);
+        CreateCustomerWithPaymentTerms(Customer, PaymentTermsCode);
         // [GIVEN] Shopify Company
         CreateCompany(ShopifyCompany, Customer.SystemId);
         // [GIVEN] Company Location
@@ -150,7 +147,7 @@ codeunit 139647 "Shpfy Company Import Test"
         exit(PaymentTerms.Code);
     end;
 
-    local procedure CreateShopifyPaymentTerms(var PaymentTermsCode: Code[10]): BigInteger
+    local procedure CreateShopifyPaymentTerms(PaymentTermsCode: Code[10]): BigInteger
     var
         ShopifyPaymentTerms: Record "Shpfy Payment Terms";
     begin
@@ -161,7 +158,7 @@ codeunit 139647 "Shpfy Company Import Test"
         exit(ShopifyPaymentTerms.Id);
     end;
 
-    local procedure CreateCustomer(var Customer: Record Customer; PaymentTermsCode: Code[10])
+    local procedure CreateCustomerWithPaymentTerms(var Customer: Record Customer; PaymentTermsCode: Code[10])
     begin
         Customer.Init();
         Customer."No." := Any.AlphanumericText(20);
@@ -174,6 +171,7 @@ codeunit 139647 "Shpfy Company Import Test"
         ShopifyCompany.Init();
         ShopifyCompany.Id := Any.IntegerInRange(10000, 99999);
         ShopifyCompany."Customer SystemId" := CustomerSystemId;
+        ShopifyCompany."Shop Id" := Shop."Shop Id";
         ShopifyCompany.Insert(false);
     end;
 
