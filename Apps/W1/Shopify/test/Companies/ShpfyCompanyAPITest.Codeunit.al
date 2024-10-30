@@ -142,4 +142,29 @@ codeunit 139637 "Shpfy Company API Test"
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Id", CompanyContactId, 'Company Contact Id');
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Customer Id", CustomerId, 'Customer Id');
     end;
+
+    [Test]
+    procedure UnitTestCreateCompanyWithPaymentTerms()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Export company with payment terms.
+
+        // [GIVEN] Shopify company
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify company location with payment terms id
+        CompanyLocation := CompanyInitialize.CreateShopifyCompanyLocation(ShopifyCompany);
+        CompanyLocation."Shpfy Payment Terms Id" := LibraryRandom.RandIntInRange(1000, 9999);
+
+        // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
+
+        // [THEN] The payment terms id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(StrSubstNo(CompanyInitialize.PaymentTermsGQLNode(), CompanyLocation."Shpfy Payment Terms Id")), 'Payment Terms Id');
+    end;
 }

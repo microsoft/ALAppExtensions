@@ -71,22 +71,13 @@ codeunit 139636 "Shpfy Company Export Test"
         // [GIVEN] Payment terms
         PaymentTermsCode := CreatePaymentTerms();
         // [GIVEN] Shopify payment terms
-        CreateShopifyPaymentTerms(PaymentTermsCode);
+        ShopifyPaymentTermsId := CreateShopifyPaymentTerms(PaymentTermsCode);
         // [GIVEN] Customer record with payment terms
-        Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
-        Customer."Payment Terms Code" := PaymentTermsCode;
-        Customer.Insert(false);
+        CreateCustomer(Customer, PaymentTermsCode);
         // [GIVEN] Shopify Company 
-        ShopifyCompany.Init();
-        ShopifyCompany.Id := Any.IntegerInRange(10000, 99999);
-        ShopifyCompany."Customer SystemId" := Customer.SystemId;
-        ShopifyCompany.Insert(false);
+        CreateCompany(ShopifyCompany, Customer.SystemId);
         // [GIVEN] Company Location
-        CompanyLocation.Init();
-        CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
-        CompanyLocation.Id := Any.IntegerInRange(10000, 99999);
-        CompanyLocation.Insert(false);
+        CreateCompanyLocation(CompanyLocation, ShopifyCompany.SystemId, ShopifyPaymentTermsId);
 
         // [WHEN] Invoke FillInShopifyCompany
         CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
@@ -115,6 +106,7 @@ codeunit 139636 "Shpfy Company Export Test"
         PaymentTerms.Init();
         PaymentTerms.Code := Any.AlphanumericText(10);
         PaymentTerms.Insert(false);
+        exit(PaymentTerms.Code);
     end;
 
     local procedure CreateShopifyPaymentTerms(var PaymentTermsCode: Code[10]): BigInteger
@@ -126,5 +118,30 @@ codeunit 139636 "Shpfy Company Export Test"
         ShopifyPaymentTerms."Payment Terms Code" := PaymentTermsCode;
         ShopifyPaymentTerms.Insert(false);
         exit(ShopifyPaymentTerms.Id);
+    end;
+
+    local procedure CreateCustomer(var Customer: Record Customer; PaymentTermsCode: Code[10])
+    begin
+        Customer.Init();
+        Customer."No." := Any.AlphanumericText(20);
+        Customer."Payment Terms Code" := PaymentTermsCode;
+        Customer.Insert(false);
+    end;
+
+    local procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; CustomerSystemId: Guid)
+    begin
+        ShopifyCompany.Init();
+        ShopifyCompany.Id := Any.IntegerInRange(10000, 99999);
+        ShopifyCompany."Customer SystemId" := CustomerSystemId;
+        ShopifyCompany.Insert(false);
+    end;
+
+    local procedure CreateCompanyLocation(var CompanyLocation: Record "Shpfy Company Location"; ShopifyCompanySystemId: Guid; PaymentTermsId: BigInteger)
+    begin
+        CompanyLocation.Init();
+        CompanyLocation."Company SystemId" := ShopifyCompanySystemId;
+        CompanyLocation.Id := Any.IntegerInRange(10000, 99999);
+        CompanyLocation."Shpfy Payment Terms Id" := PaymentTermsId;
+        CompanyLocation.Insert(false);
     end;
 }

@@ -190,7 +190,7 @@ codeunit 30124 "Shpfy Update Customer"
         Shop := ShopifyShop;
     end;
 
-    local procedure GetPaymentTermsCodeFromShopifyPaymentTermsId(ShpfyPaymentTermsId: BigInteger): Code[10]
+    internal procedure GetPaymentTermsCodeFromShopifyPaymentTermsId(ShpfyPaymentTermsId: BigInteger): Code[10]
     var
         ShpfyPaymentTerms: Record "Shpfy Payment Terms";
     begin
