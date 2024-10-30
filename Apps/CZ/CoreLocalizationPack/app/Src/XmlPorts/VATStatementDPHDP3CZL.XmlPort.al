@@ -1169,13 +1169,15 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                 begin
                     VATStatementName.SetRange("Statement Template Name", VATStatementTemplateName);
                     VATStatementName.SetRange(Name, VATStatementNameCode);
-                    VATStatementName.FindFirst();
                 end;
 
                 trigger OnAfterGetRecord()
                 var
                     VATStatementLine: Record "VAT Statement Line";
                 begin
+                    if XMLTagAmount.Count() <> 0 then
+                        exit;
+
                     VATStatementLine.Reset();
                     VATStatementLine.SetRange("Statement Template Name", VATStatementName."Statement Template Name");
                     VATStatementLine.SetRange("Statement Name", VATStatementName.Name);
@@ -1232,6 +1234,14 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     procedure ClearVariables()
     begin
         ClearAll();
+    end;
+
+    procedure SetData(var VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL")
+    begin
+        if VATStmtReportLineDataCZL.FindSet() then
+            repeat
+                AddAmount(VATStmtReportLineDataCZL."XML Code", VATStmtReportLineDataCZL.Amount);
+            until VATStmtReportLineDataCZL.Next() = 0;
     end;
 
     procedure SetXMLParams(NewXMLParams: Text)

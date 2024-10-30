@@ -224,7 +224,6 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
         XMLRootNode: XmlElement;
         AttachmentNode: XmlNode;
         XMLNodes: XmlNodeList;
-
     begin
         XMLDocument.GetRoot(XMLRootNode);
         if XMLRootNode.SelectNodes(AttachmentXPath, XMLNodes) then

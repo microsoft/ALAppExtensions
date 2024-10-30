@@ -111,6 +111,42 @@ page 6211 "Sustainability Account Card"
                 {
                     ToolTip = 'Specifies the N2O balance at date on this account.';
                 }
+                field("Net Change (Water)"; Rec."Net Change (Water)")
+                {
+                    ToolTip = 'Specifies the Water net change on this account.';
+                }
+                field("Balance (Water)"; Rec."Balance (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance on this account.';
+                }
+                field("Balance at Date (Water)"; Rec."Balance at Date (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance at date on this account.';
+                }
+                field("Net Change (Disch. Water)"; Rec."Net Change (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water net change on this account.';
+                }
+                field("Balance (Disch. Water)"; Rec."Balance (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance on this account.';
+                }
+                field("Balance at Date (Disch. Water)"; Rec."Balance at Date (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance at date on this account.';
+                }
+                field("Net Change (Waste)"; Rec."Net Change (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste net change on this account.';
+                }
+                field("Balance (Waste)"; Rec."Balance (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance on this account.';
+                }
+                field("Balance at Date (Waste)"; Rec."Balance at Date (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance at date on this account.';
+                }
             }
             group(DimensionsGr)
             {

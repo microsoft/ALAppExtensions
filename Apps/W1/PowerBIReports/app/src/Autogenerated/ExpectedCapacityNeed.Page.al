@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37044 "Expected Capacity Need"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Expected Capacity Need';
     AboutTitle = 'About Expected Capacity Need';
     AboutText = 'View the total hours scheduled to be performed for each Work Centre Group and/or Work Centre broken down by production order status and production order to analyze your requirement on factory resources.';

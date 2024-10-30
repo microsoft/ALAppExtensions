@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37007 "Sales Actual vs. Budget Qty."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Actual vs. Budget Quantity';
     AboutTitle = 'About Sales Actual vs. Budget Quantity';
     AboutText = 'The Sales Actual vs. Budget Quantity report provides a comparative analysis of sales quantity to budget quantity. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';

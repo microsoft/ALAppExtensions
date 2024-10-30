@@ -105,7 +105,9 @@ codeunit 18467 "Subcontracting Post Batch"
         Item: Record Item;
         ItemTrackingCode: Record "Item Tracking Code";
         ItemTrackingSetup: Record "Item Tracking Setup";
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
         ItemTrackingManagement: Codeunit "Item Tracking Management";
+        ItemJnlPostBatch: Codeunit "Item Jnl.-Post Batch";
 
         Inbound: Boolean;
         SNRequired: Boolean;
@@ -193,7 +195,12 @@ codeunit 18467 "Subcontracting Post Batch"
         if Item."Item Tracking Code" <> '' then
             SubcontractingPost.TransferTrackingToItemJnlLine(SubOrderCompList, ItemJnlLine, SubOrderCompList."Quantity To Send", 0);
 
-        ItemJnlPostLine.RunWithCheck(ItemJnlLine);
+        if ItemJnlLine."Value Entry Type" <> ItemJnlLine."Value Entry Type"::Revaluation then begin
+            if not ItemJnlPostLine.RunWithCheck(ItemJnlLine) then
+                ItemJnlPostLine.CheckItemTracking();
+            ItemJnlPostLine.CollectTrackingSpecification(TempTrackingSpecification);
+            ItemJnlPostBatch.PostWhseJnlLine(ItemJnlLine, ItemJnlLine.Quantity, ItemJnlLine."Quantity (Base)", TempTrackingSpecification);
+        end;
     end;
 
     procedure PostPurchOrder(MultiSubOrderDet: Record "Multiple Subcon. Order Details")

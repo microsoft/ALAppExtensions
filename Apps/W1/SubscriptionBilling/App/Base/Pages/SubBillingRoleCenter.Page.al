@@ -6,12 +6,14 @@ using Microsoft.Sales.History;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+#if not CLEAN26
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Project.Ledger;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Resources.Ledger;
 using Microsoft.Finance.GeneralLedger.Journal;
+#endif
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
@@ -86,13 +88,50 @@ page 8084 "Sub. Billing Role Center"
                     ToolTip = 'Create purchase credit memos to mirror sales credit memos that vendors send to you for incorrect or damaged items that you have paid for and then returned to the vendor. If you need more control of the purchase return process, such as warehouse documents for the physical handling, use purchase return orders, in which purchase credit memos are integrated. Purchase credit memos can be created automatically from PDF or image files from your vendors by using the Incoming Documents feature. Note: If you have not yet paid for an erroneous purchase, you can simply cancel the posted purchase invoice to automatically revert the financial transaction.';
                 }
             }
+            group(UsageData)
+            {
+                Caption = 'Usage Data';
+                action(UsageDataSuppliers)
+                {
+                    Caption = 'Usage Data Suppliers';
+                    RunObject = page "Usage Data Suppliers";
+                    ToolTip = 'Opens the list of Usage Data Suppliers.';
+                }
+                action(UsageDataImports)
+                {
+                    Caption = 'Usage Data Imports';
+                    RunObject = page "Usage Data Imports";
+                    ToolTip = 'Opens the list of Usage Data Imports.';
+                }
+                action(UsageDataSubscriptions)
+                {
+                    Caption = 'Usage Data Subscriptions';
+                    RunObject = page "Usage Data Subscriptions";
+                    ToolTip = 'Opens the list of Usage Data Subscriptions.';
+                }
+                action(UsageDataSupplierReferences)
+                {
+                    Caption = 'Usage Data Supplier References';
+                    RunObject = page "Usage Data Supp. References";
+                    ToolTip = 'Opens the list of Usage Data Supplier References.';
+                }
+            }
+#if not CLEAN26
             group(Job)
             {
+                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                Visible = false;
                 Caption = 'Projects';
                 Image = Job;
                 ToolTip = 'Create, plan, and execute tasks in project management. ';
                 action(Jobs)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Projects';
                     Image = Job;
                     RunObject = Page "Job List";
@@ -100,6 +139,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(Open)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Open';
                     RunObject = Page "Job List";
                     RunPageView = where(Status = filter(Open));
@@ -107,6 +150,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsPlannedAndQuotd)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Planned and Quoted';
                     RunObject = Page "Job List";
                     RunPageView = where(Status = filter(Quote | Planning));
@@ -114,6 +161,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsComplet)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Completed';
                     RunObject = Page "Job List";
                     RunPageView = where(Status = filter(Completed));
@@ -121,6 +172,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsUnassign)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Unassigned';
                     RunObject = Page "Job List";
                     RunPageView = where("Person Responsible" = filter(''));
@@ -128,6 +183,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobTasks)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     ApplicationArea = Suite;
                     Caption = 'Project Tasks';
                     RunObject = Page "Job Task List";
@@ -135,6 +194,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobRegister)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Project Registers';
                     Image = JobRegisters;
                     RunObject = Page "Job Registers";
@@ -142,12 +205,20 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobPlanningLines)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Project Planning Lines';
                     RunObject = Page "Job Planning Lines";
                     ToolTip = 'Open the list of ongoing project planning lines for the project. You use this window to plan what items, resources, and general ledger expenses that you expect to use on a project (budget) or you can specify what you actually agreed with your customer that he should pay for the project (billable).';
                 }
                 action(JobJournals)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Project Journals';
                     RunObject = Page "Job Journal Batches";
                     RunPageView = where(Recurring = const(false));
@@ -155,6 +226,10 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobGLJournals)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Project G/L Journals';
                     RunObject = Page "General Journal Batches";
                     RunPageView = where("Template Type" = const(Jobs),
@@ -163,12 +238,17 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(RecurringJobJournals)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Recurring Project Journals';
                     RunObject = Page "Job Journal Batches";
                     RunPageView = where(Recurring = const(true));
                     ToolTip = 'Reuse preset journal lines to record recurring project expenses or usage in the project ledger.';
                 }
             }
+#endif
             group(PostedDocuments)
             {
                 Caption = 'Posted Documents';
@@ -207,13 +287,19 @@ page 8084 "Sub. Billing Role Center"
                     RunObject = Page "G/L Registers";
                     ToolTip = 'View auditing details for all G/L entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
+#if not CLEAN26
                 action(JobRegisters)
                 {
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Project Registers';
                     Image = JobRegisters;
                     RunObject = Page "Job Registers";
                     ToolTip = 'View auditing details for all item ledger entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
+#endif
                 action(ItemRegisters)
                 {
                     Caption = 'Item Registers';
@@ -221,13 +307,19 @@ page 8084 "Sub. Billing Role Center"
                     RunObject = Page "Item Registers";
                     ToolTip = 'View auditing details for all item ledger entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
+#if not CLEAN26
                 action(ResourceRegisters)
                 {
+                    ObsoleteReason = 'Removed as it resources are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Resource Registers';
                     Image = ResourceRegisters;
                     RunObject = Page "Resource Registers";
                     ToolTip = 'View auditing details for all resource ledger entries. Every time an entry is posted, a register is created in which you can see the first and last number of its entries in order to document when entries were posted.';
                 }
+#endif
             }
             group("Setup")
             {
@@ -282,15 +374,20 @@ page 8084 "Sub. Billing Role Center"
                 RunObject = Page "Vendor List";
                 ToolTip = 'View or edit detailed information for the vendors that you trade with. From each vendor card, you can open related information, such as purchase statistics and ongoing orders, and you can define special prices and line discounts that you grant if certain conditions are met.';
             }
+#if not CLEAN26
             action(JobsList)
             {
+                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                Visible = false;
                 ApplicationArea = Jobs;
                 Caption = 'Projects';
                 Image = Job;
                 RunObject = Page "Job List";
                 ToolTip = 'Define a project activity by creating a project card with integrated project tasks and project planning lines, structured in two layers. The project task enables you to set up project planning lines and to post consumption to the project. The project planning lines specify the detailed use of resources, items, and various general ledger expenses.';
             }
-
+#endif
             action(ItemsList)
             {
                 ApplicationArea = Jobs;
@@ -352,6 +449,14 @@ page 8084 "Sub. Billing Role Center"
                     RunPageMode = Create;
                     ToolTip = 'Create a new Service Commitment Package.';
                 }
+                action(ServiceObject)
+                {
+                    Caption = 'Service Object';
+                    Image = NewOrder;
+                    RunObject = Page "Service Object";
+                    RunPageMode = Create;
+                    ToolTip = 'Create a new Service Object.';
+                }
                 action(CustomerContract)
                 {
                     Caption = 'Customer Contract';
@@ -367,6 +472,34 @@ page 8084 "Sub. Billing Role Center"
                     RunObject = Page "Vendor Contract";
                     RunPageMode = Create;
                     ToolTip = 'Create a new Vendor Contract.';
+                }
+            }
+            group(Reports)
+            {
+                Caption = 'Reports';
+                action(OverviewOfContractComponents)
+                {
+                    ApplicationArea = Jobs;
+                    Caption = 'Overview of Contract Components';
+                    Image = "Report";
+                    RunObject = Report "Overview Of Contract Comp";
+                    ToolTip = 'Analyze components of your contracts.';
+                }
+                action(CustomerContractDeferralsAnalysis)
+                {
+                    ApplicationArea = Jobs;
+                    Caption = 'Customer Contract Deferrals Analysis';
+                    Image = "Report";
+                    RunObject = Report "Cust. Contr. Def. Analysis";
+                    ToolTip = 'Analyze customer contract deferrals.';
+                }
+                action(VendorContractDeferralsAnalysis)
+                {
+                    ApplicationArea = Jobs;
+                    Caption = 'Vendor Contract Deferrals Analysis';
+                    Image = "Report";
+                    RunObject = Report "Vend Contr. Def. Analysis";
+                    ToolTip = 'Analyze vendor contract deferrals.';
                 }
             }
             group(History)

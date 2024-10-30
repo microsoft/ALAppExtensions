@@ -6,9 +6,8 @@ using Microsoft.Purchases.Vendor;
 report 8053 "Vend Contr. Def. Analysis"
 {
     Caption = 'Vendor Contract Deferrals Analysis';
-    DefaultLayout = RDLC;
-    PreviewMode = PrintLayout;
-    RDLCLayout = './Deferrals/Reports/VendContrDeferrals.rdl';
+    DefaultRenderingLayout = "VendContrDefAnalysis.xlsx";
+    ExcelLayoutMultipleDataSheets = true;
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
 
@@ -18,96 +17,17 @@ report 8053 "Vend Contr. Def. Analysis"
         {
             DataItemTableView = sorting("No.");
 
-            column(ContractDeferralsCaption; ContractDeferralsCaptionLbl)
-            {
-            }
-            column(CompanyName; CompanyName())
-            {
-            }
-            column(PrintoutDate; CurrentDateTime)
-            {
-            }
-            column(PageNoCaption; PageNoCaptionLbl)
-            {
-            }
-            column(UserID; UserId())
-            {
-            }
-            column(EvaluationPeriodCaption; EvaluationPeriodCaptionLbl)
-            {
-            }
-            column(DocPostDateFilter; DocPostDateFilter)
-            {
-            }
-            column(TableHeader_NoCaption; FieldCaption("No."))
-            {
-            }
-            column(TableHeader_PaytoVendorNoCaption; PayToVendorNoCaptionLbl)
-            {
-            }
-            column(TableHeader_PayToVendorNameCaption; PayToVendorNameCaptionLbl)
-            {
-            }
-            column(TableHeader_BalanceBroughtForwardCaption; BalanceBroughtForwardCaptionLbl)
-            {
-            }
-            column(TableHeader_InvoicedInPeriodCaption; InvoicedInPeriodCaptionLbl)
-            {
-            }
-            column(TableHeader_ReleasedInPeriodCaption; ReleasedInPeriodCaptionLbl)
-            {
-            }
-            column(TableHeader_DeadlineValueCaption; DeadlineValueCaptionLbl)
-            {
-            }
-            column(TableHeader_ReleasedUntilCaption; ReleasedUntilCaptionLbl)
-            {
-            }
-            column(TableHeader_ToReleaseInPeriodCaption; ToReleaseInPeriodCaptionLbl)
-            {
-            }
-            column(TableHeader_BalanceAfterPeriodCaption; BalanceAfterPeriodCaptionLbl)
-            {
-            }
-            column(TableHeader_DateLastReleaseCaption; DateLastReleaseCaptionLbl)
-            {
-            }
-            column(TotalCaption; TotalCaptionLbl)
-            {
-            }
-            column(ContractHeader_No; "No.")
-            {
-            }
-            column(ContractHeader_PaytoVendorNo; "Pay-to Vendor No.")
-            {
-            }
-            column(ContractHeader_PayToName; "Pay-to Name")
-            {
-            }
-            column(ContractHeader_BalanceBroughtForward; BalanceBroughtForward)
-            {
-            }
-            column(ContractHeader_InvoicedInPeriod; InvoicedInPeriod)
-            {
-            }
-            column(ContractHeader_ReleasedInPeriod; ReleasedInPeriod)
-            {
-            }
-            column(ContractHeader_DeadlineValue; BalanceBroughtForward + InvoicedInPeriod - ReleasedInPeriod)
-            {
-            }
-            column(ContractHeader_ReleasedUntil; Format(ReleasedUntil))
-            {
-            }
-            column(ContractHeader_ToReleaseInPeriod; ToReleaseInPeriod)
-            {
-            }
-            column(ContractHeader_BalanceAfterPeriod; ToReleaseAfterPeriod)
-            {
-            }
-            column(ContractHeader_DateLastRelease; Format(DateLastRelease))
-            {
-            }
+            column(ContractNo; "No.") { IncludeCaption = true; }
+            column(PaytoVendorNo; "Pay-to Vendor No.") { IncludeCaption = true; }
+            column(PayToName; "Pay-to Name") { IncludeCaption = true; }
+            column(BalanceBroughtForward; BalanceBroughtForward) { }
+            column(InvoicedInPeriod; InvoicedInPeriod) { }
+            column(ReleasedInPeriod; ReleasedInPeriod) { }
+            column(DeadlineValue; BalanceBroughtForward + InvoicedInPeriod - ReleasedInPeriod) { }
+            column(ReleasedUntil; ReleasedUntil) { }
+            column(ToReleaseInPeriod; ToReleaseInPeriod) { }
+            column(BalanceAfterPeriod; ToReleaseAfterPeriod) { }
+            column(DateLastRelease; DateLastRelease) { }
 
             trigger OnAfterGetRecord()
             begin
@@ -208,7 +128,31 @@ report 8053 "Vend Contr. Def. Analysis"
                 SetPeriodFilter();
         end;
     }
-
+    rendering
+    {
+        layout("VendContrDefAnalysis.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Deferrals/Reports/VendContrDefAnalysis.xlsx';
+            Caption = 'Vendor Contract Deferrals Analysis (Excel)';
+            Summary = 'The Vendor Contract Deferrals Analysis (Excel) provides an excel layout that is relatively easy for an end-user to modify. Report uses Query connections';
+        }
+    }
+    labels
+    {
+        ContractDeferralsLbl = 'Vendor Contract Deferrals';
+        DeferralsLbl = 'Deferrals';
+        EvaluationPeriodLbl = 'Evaluation Period';
+        BalanceBroughtForwardLbl = 'Balance Brought Forward';
+        InvoicedInPeriodLbl = 'Invoiced in Period';
+        ReleasedInPeriodLbl = 'Released In Period';
+        DeadlineValueLbl = 'Deadline Value';
+        ReleasedUntilLbl = 'Released until';
+        ToReleaseInPeriodLbl = 'To release in Period';
+        BalanceAfterPeriodLbl = 'Balance after Period';
+        DateLastReleaseLbl = 'Date last Release';
+        DataRetrieved = 'Data retrieved:';
+    }
     var
         ContractNoFilter: Text;
         VendorNoFilter: Text;
@@ -226,20 +170,6 @@ report 8053 "Vend Contr. Def. Analysis"
         DateLastRelease: Date;
         PeriodEvaluationErrorLbl: Label 'Please enter a valid evaluation period in the form ''Date1..Date2''.';
         StartEndDateEvalErrorLbl: Label 'Ending Date must be greater than Starting Date.';
-        ContractDeferralsCaptionLbl: Label 'Vendor Contract Deferrals';
-        PageNoCaptionLbl: Label 'Page';
-        EvaluationPeriodCaptionLbl: Label 'Evaluation Period';
-        PayToVendorNoCaptionLbl: Label 'Pay-to Vendor No.';
-        PayToVendorNameCaptionLbl: Label 'Pay to Name';
-        BalanceBroughtForwardCaptionLbl: Label 'Balance Brought Forward';
-        InvoicedInPeriodCaptionLbl: Label 'Invoiced in Period';
-        ReleasedInPeriodCaptionLbl: Label 'Released In Period';
-        DeadlineValueCaptionLbl: Label 'Deadline Value';
-        ReleasedUntilCaptionLbl: Label 'Released until';
-        ToReleaseInPeriodCaptionLbl: Label 'To release in Period';
-        BalanceAfterPeriodCaptionLbl: Label 'Balance after Period';
-        DateLastReleaseCaptionLbl: Label 'Date last Release';
-        TotalCaptionLbl: Label 'Total';
 
     local procedure VendorContrDeferralsExist(SourceContractNo: Code[20]): Boolean
     var

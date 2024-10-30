@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA16
 namespace Microsoft.DataMigration.GP;
 
 table 4098 "GP Item Transaction"
@@ -75,3 +76,4 @@ table 4098 "GP Item Transaction"
         }
     }
 }
+#endif

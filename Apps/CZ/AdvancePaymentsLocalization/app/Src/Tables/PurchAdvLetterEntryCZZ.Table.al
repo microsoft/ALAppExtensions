@@ -263,6 +263,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     procedure CalcUsageVATAmountLines(var PurchInvHeader: Record "Purch. Inv. Header"; var VATAmountLine: Record "VAT Amount Line")
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        VatEntry: Record "VAT Entry";
     begin
         PurchAdvLetterEntryCZZ.SetRange("Document No.", PurchInvHeader."No.");
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
@@ -279,6 +280,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
                 VATAmountLine."Amount Including VAT" := PurchAdvLetterEntryCZZ.Amount;
                 VATAmountLine."VAT Base (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Base Amount (LCY)";
                 VATAmountLine."VAT Amount (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Amount (LCY)";
+                if PurchAdvLetterEntryCZZ."VAT Entry No." <> 0 then
+                    if VATEntry.Get(PurchAdvLetterEntryCZZ."VAT Entry No.") then begin
+                        VATAmountLine."Additional-Currency Base CZL" := VATEntry."Additional-Currency Base";
+                        VATAmountLine."Additional-Currency Amount CZL" := VATEntry."Additional-Currency Amount";
+                    end;
                 if PurchInvHeader."Prices Including VAT" then
                     VATAmountLine."Line Amount" := VATAmountLine."Amount Including VAT"
                 else

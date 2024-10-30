@@ -38,7 +38,7 @@ table 1070 "MS - PayPal Standard Account"
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
-                MSPayPalConsentProvidedLbl: Label 'MS Pay Pal - consent provided by UserSecurityId %1.', Locked = true;
+                MSPayPalConsentProvidedLbl: Label 'MS PayPal - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if not xRec."Enabled" and Rec."Enabled" then
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();

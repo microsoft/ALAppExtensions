@@ -6,9 +6,6 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Purchases.Vendor;
-#if not CLEAN25
-using Microsoft.Finance.VAT.Calculation;
-#endif
 
 codeunit 139692 "Contract Renewal Test"
 {
@@ -717,7 +714,6 @@ codeunit 139692 "Contract Renewal Test"
         until SalesServiceCommitment.Next() = 0;
     end;
 
-#if not CLEAN25
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,SelectContractRenewalHandler')]
     [Test]
     procedure CheckVatCalculationForContractRenewalServiceCommitmentRhytmInReports()
@@ -734,14 +730,13 @@ codeunit 139692 "Contract Renewal Test"
         Evaluate(NewRenewalTerm, '<7W>');
         TestContractRenewalPeriodCalculation(NewRenewalTerm);
     end;
-#endif
-#if not CLEAN25
+
     local procedure TestContractRenewalPeriodCalculation(NewRenewalTerm: DateFormula)
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         SalesServiceCommitment: Record "Sales Service Commitment";
-        TempVatAmountLines: Record "VAT Amount Line" temporary;
+        TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
         DateFormulaManagement: Codeunit "Date Formula Management";
         SalesQuoteNo: Code[20];
         PriceRatio: Decimal;
@@ -765,12 +760,11 @@ codeunit 139692 "Contract Renewal Test"
             ExpectedCalculatedLineAmount += SalesServiceCommitment."Service Amount" * PriceRatio;
         until SalesLine.Next() = 0;
 
-        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempVatAmountLines, UniqueRhythmDictionary);
-        Assert.AreEqual(UniqueRhythmDictionary.Count, TempVatAmountLines.Count, 'VAT Amount Line for Contract Renewal not created properly.');
-        TempVatAmountLines.CalcSums("Line Amount");
-        Assert.AreEqual(ExpectedCalculatedLineAmount, TempVatAmountLines."Line Amount", 'Contract Renewal Sales Quote VAT Line Amount not calculated properly.');
+        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
+        Assert.AreEqual(UniqueRhythmDictionary.Count, TempSalesServiceCommitmentBuff.Count, 'VAT Amount Line for Contract Renewal not created properly.');
+        TempSalesServiceCommitmentBuff.CalcSums("Line Amount");
+        Assert.AreEqual(ExpectedCalculatedLineAmount, TempSalesServiceCommitmentBuff."Line Amount", 'Contract Renewal Sales Quote VAT Line Amount not calculated properly.');
     end;
-#endif
 
     local procedure UpdateContractLinesWithNewRenealTerm(NewRenewalTerm: DateFormula)
     var

@@ -87,7 +87,7 @@ codeunit 1850 "Sales Forecast Handler"
             WorkDate());
 
         OnAfterHasMinimumSIHistData(ItemNo, HasMinimumHistoryLoc, NumberOfPeriodsWithHistoryLoc, MSSalesForecastSetup."Period Type", WorkDate(), Status);
-        HasMinimumHistory := (HasMinimumHistory OR HasMinimumHistoryLoc);
+        HasMinimumHistory := (HasMinimumHistory or HasMinimumHistoryLoc);
         if NumberOfPeriodsWithHistoryLoc > NumberOfPeriodsWithHistory then
             NumberOfPeriodsWithHistory := NumberOfPeriodsWithHistoryLoc; // Otherwise, NumberOfPeriodsWithHistory is already the bigger number
         if not HasMinimumHistory then begin
@@ -297,12 +297,12 @@ codeunit 1850 "Sales Forecast Handler"
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; VAR TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit");
+    procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; var TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; var Status: Option " ","Missing API","Not enough historical data","Out of limit");
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit");
+    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var Status: Option " ","Missing API","Not enough historical data","Out of limit");
     begin
     end;
 }

@@ -24,7 +24,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     AdditionalSearchTerms = 'settle vat value added tax,report vat value added tax';
     ApplicationArea = Basic, Suite;
     Caption = 'Calculate and Post VAT Settlement';
-    Permissions = tabledata "VAT Entry" = imd;
+    Permissions = tabledata "VAT Entry" = rimd;
     UsageCategory = ReportsAndAnalysis;
 
     dataset
@@ -726,8 +726,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     begin
         OnBeforePreReport("VAT Posting Setup");
 
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.TestIsVATDateEnabledCZL();
         if PostingDate = 0D then
             Error(PostingDateErr);
         if DocNo = '' then
@@ -741,11 +739,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                 CurrReport.Quit();
 
         VATPostingSetupFilter := "VAT Posting Setup".GetFilters();
-            if EndDateReq = 0D then
-                VATEntry.SetFilter("VAT Reporting Date", '%1..', EntrdStartDate)
-            else
-                VATEntry.SetRange("VAT Reporting Date", EntrdStartDate, EndDateReq);
-            VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
+        if EndDateReq = 0D then
+            VATEntry.SetFilter("VAT Reporting Date", '%1..', EntrdStartDate)
+        else
+            VATEntry.SetRange("VAT Reporting Date", EntrdStartDate, EndDateReq);
+        VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
         Clear(GenJnlPostLine);
         OnAfterPreReport();
     end;
