@@ -13,6 +13,7 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         LibraryAssert: Codeunit "Library Assert";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
+        OrdersAPISubscriber: Codeunit "Shpfy Orders API Subscriber";
         IsInitialized: Boolean;
 
     trigger OnRun()
@@ -37,10 +38,12 @@ codeunit 139576 "Shpfy Shipping Charges Test"
 
         // [GIVEN] Shopify Shop
         Shop := CommunicationMgt.GetShopRecord();
-        ImportOrder.SetShop(Shop.Code);
 
         // [GIVEN] Shopify order is imported
+        BindSubscription(OrdersAPISubscriber);
+        ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -84,8 +87,10 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         Shop := CommunicationMgt.GetShopRecord();
 
         // [GIVEN] Shopify order is imported
+        BindSubscription(OrdersAPISubscriber);
         ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -126,8 +131,10 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         Shop := CommunicationMgt.GetShopRecord();
 
         // [GIVEN] Shopify order is imported
+        BindSubscription(OrdersAPISubscriber);
         ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -173,8 +180,10 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         Shop := CommunicationMgt.GetShopRecord();
 
         // [GIVEN] Shopify order is imported
+        BindSubscription(OrdersAPISubscriber);
         ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -221,8 +230,10 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         Shop := CommunicationMgt.GetShopRecord();
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
+        BindSubscription(OrdersAPISubscriber);
         ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -270,8 +281,10 @@ codeunit 139576 "Shpfy Shipping Charges Test"
         Shop := CommunicationMgt.GetShopRecord();
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
+        BindSubscription(OrdersAPISubscriber);
         ImportOrder.SetShop(Shop.Code);
         ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [GIVEN] Order shipping charges are created for the Shopify order
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
@@ -309,19 +322,17 @@ codeunit 139576 "Shpfy Shipping Charges Test"
     #region Local Procedures
     local procedure Initialize()
     var
-        OrdersAPISubscriber: Codeunit "Shpfy Orders API Subscriber";
-        DateFormula: DateFormula;
+        ShippingTime: DateFormula;
     begin
         if IsInitialized then
             exit;
 
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        if BindSubscription(OrdersAPISubscriber) then;
 
-        Evaluate(DateFormula, '<1W>');
+        Evaluate(ShippingTime, '<1W>');
         CreateShipmentMethod(ShipmentMethod);
         LibraryInventory.CreateShippingAgent(ShippingAgent);
-        LibraryInventory.CreateShippingAgentService(ShippingAgentServices, ShippingAgent.Code, DateFormula);
+        LibraryInventory.CreateShippingAgentService(ShippingAgentServices, ShippingAgent.Code, ShippingTime);
 
         Commit();
 
