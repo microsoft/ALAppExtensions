@@ -43,7 +43,7 @@ codeunit 30313 "Shpfy Metafield Owner Company" implements "Shpfy IMetafield Owne
 
     procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
     begin
-        exit(Shop."Can Update Shopify Companies");
+        exit((Shop."Can Update Shopify Companies") and (Shop."Company Import From Shopify" <> Enum::"Shpfy Company Import Range"::AllCompanies));
     end;
 
 }
