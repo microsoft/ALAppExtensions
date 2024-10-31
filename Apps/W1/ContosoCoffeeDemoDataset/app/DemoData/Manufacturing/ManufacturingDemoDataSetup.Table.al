@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 4760 "Manufacturing Demo Data Setup"
 {
     ObsoleteReason = 'The table is moved to "Manufacturing Module Setup" table';
@@ -101,3 +102,4 @@ table 4760 "Manufacturing Demo Data Setup"
         }
     }
 }
+#endif

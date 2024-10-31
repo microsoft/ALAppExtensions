@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37013 "Purchases Moving Annual Total"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Moving Annual Total';
     AboutTitle = 'About Purchases Moving Annual Total';
     AboutText = 'The Purchases Moving Annual Total report provides a rolling 12-month view of procurement figures, tracking current year to the previous year''s performance. ';

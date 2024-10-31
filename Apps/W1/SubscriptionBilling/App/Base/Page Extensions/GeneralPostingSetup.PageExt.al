@@ -6,7 +6,7 @@ pageextension 8070 "General Posting Setup" extends "General Posting Setup"
 {
     layout
     {
-        addafter("Purch. FA Disc. Account")
+        addlast(Control1)
         {
             field(CustomerContractAccount; Rec."Customer Contract Account")
             {

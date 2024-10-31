@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37043 "Allocated Hours"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Allocated Hours';
     AboutTitle = 'About Allocated Hours';
     AboutText = 'View the number of hours remaining for production allocated to each Work Centre in a specified period. Allows you to determine if a Work Centre is under or overloaded and requires rescheduling.';

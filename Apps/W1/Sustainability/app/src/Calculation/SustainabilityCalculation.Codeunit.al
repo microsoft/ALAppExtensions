@@ -53,6 +53,16 @@ codeunit 6215 "Sustainability Calculation"
         end;
     end;
 
+    internal procedure CalculateWaterOrWaste(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        case SustainAccountCategory."Calculation Foundation" of
+            Enum::"Calculation Foundation"::Custom:
+                CalculateCustomEmissions(SustainabilityJnlLine, SustainAccountSubcategory);
+            else
+                Error(CalculationNotSupportedErr, SustainAccountCategory."Calculation Foundation", SustainAccountCategory."Emission Scope");
+        end;
+    end;
+
     local procedure CalculateFuelOrElectricityEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
         SustainabilityJnlLine.Validate("Emission CO2", SustainabilityJnlLine."Fuel/Electricity" * SustainAccountSubcategory."Emission Factor CO2");
@@ -87,6 +97,12 @@ codeunit 6215 "Sustainability Calculation"
         SustainabilityJnlLine.Validate("Emission CH4", SustainabilityJnlLine."Custom Amount" * SustainAccountSubcategory."Emission Factor CH4");
 
         SustainabilityJnlLine.Validate("Emission N2O", SustainabilityJnlLine."Custom Amount" * SustainAccountSubcategory."Emission Factor N2O");
+
+        SustainabilityJnlLine.Validate("Water Intensity", SustainabilityJnlLine."Custom Amount" * SustainAccountSubcategory."Water Intensity Factor");
+
+        SustainabilityJnlLine.Validate("Waste Intensity", SustainabilityJnlLine."Custom Amount" * SustainAccountSubcategory."Waste Intensity Factor");
+
+        SustainabilityJnlLine.Validate("Discharged Into Water", SustainabilityJnlLine."Custom Amount" * SustainAccountSubcategory."Discharged Into Water Factor");
     end;
 
     local procedure CalculateInstallationEmission(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Decimal

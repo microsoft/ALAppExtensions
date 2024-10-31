@@ -31,16 +31,23 @@ codeunit 31140 "VAT Statement Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnCalcLineTotalWithBaseOnCaseElse', '', false, false)]
-    local procedure CalcFormulaOnCalcLineTotalWithBaseOnCaseElse(var VATStmtLine2: Record "VAT Statement Line"; var Amount: Decimal; var TotalAmount: Decimal; PrintInIntegers: Boolean)
+    local procedure CalcFormulaOnCalcLineTotalWithBaseOnCaseElse(var VATStmtLine2: Record "VAT Statement Line"; var Amount: Decimal; var TotalAmount: Decimal; var TotalBase: Decimal; PrintInIntegers: Boolean)
+    var
+        Base: Decimal;
     begin
         if VATStmtLine2.Type <> VATStmtLine2.Type::"Formula CZL" then
             exit;
-        Amount := EvaluateExpression(VATStmtLine2."Row Totaling", VATStmtLine2);
+        EvaluateExpression(VATStmtLine2."Row Totaling", VATStmtLine2, Amount, Base);
         if VATStmtLine2."Calculate with" = 1 then
             Amount := -Amount;
         if PrintInIntegers and VATStmtLine2.Print then
             Amount := Round(Amount, 1, VATStatement.GetAmtRoundingDirectionCZL());
         TotalAmount := TotalAmount + Amount;
+        if VATStmtLine2."Calculate with" = 1 then
+            Base := -Base;
+        if PrintInIntegers and VATStmtLine2.Print then
+            Base := Round(Base, 1, VATStatement.GetAmtRoundingDirectionCZL());
+        TotalBase := TotalBase + Base;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnCalcLineTotalOnBeforeCalcTotalAmountAccountTotaling', '', false, false)]
@@ -94,32 +101,26 @@ codeunit 31140 "VAT Statement Handler CZL"
         exit(Amount + AmountToAdd);
     end;
 
-    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"): Decimal
-    var
-        CallLevel: Integer;
+    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"; var Amount: Decimal; var Base: Decimal)
     begin
-        CallLevel := 0;
-        exit(EvaluateExpression(Expression, VATStatementLine, CallLevel));
+        EvaluateExpression(Expression, VATStatementLine, 0, Amount, Base);
     end;
 
-    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"; CallLevel: Integer): Decimal
+    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"; CallLevel: Integer; var Amount: Decimal; var Base: Decimal)
     var
-        Result: Decimal;
-        Parantheses: Integer;
+        Parantheses, i, OperatorNo, VATStmtLineID : Integer;
         Operator: Char;
-        LeftOperand: Text;
-        RightOperand: Text;
-        LeftResult: Decimal;
-        RightResult: Decimal;
-        i: Integer;
+        LeftOperand, RightOperand : Text;
+        LineTotalAmount, LineTotalBase : Decimal; 
+        LeftAmount, RightAmount : Decimal;
+        LeftBase, RightBase : Decimal;
+        ResultAmount, ResultBase : Decimal;
         IsExpression: Boolean;
         IsFilter: Boolean;
         Operators: Text[8];
-        OperatorNo: Integer;
-        VATStmtLineID: Integer;
-        LineTotalAmount: Decimal;
     begin
-        Result := 0;
+        ResultAmount := 0;
+        ResultBase := 0;
 
         CallLevel := CallLevel + 1;
         if CallLevel > 25 then
@@ -157,32 +158,48 @@ codeunit 31140 "VAT Statement Handler CZL"
                 else
                     RightOperand := '';
                 Operator := Expression[i];
-                LeftResult :=
-                  EvaluateExpression(LeftOperand, VATStatementLine, CallLevel);
-                RightResult :=
-                  EvaluateExpression(RightOperand, VATStatementLine, CallLevel);
+                EvaluateExpression(LeftOperand, VATStatementLine, CallLevel, LeftAmount, LeftBase);
+                EvaluateExpression(RightOperand, VATStatementLine, CallLevel, RightAmount, RightBase);
                 case Operator of
                     '^':
-                        Result := Power(LeftResult, RightResult);
+                        begin
+                            ResultAmount := Power(LeftAmount, RightAmount);
+                            ResultBase := Power(LeftBase, RightBase);
+                        end;
                     '*':
-                        Result := LeftResult * RightResult;
+                        begin
+                            ResultAmount := LeftAmount * RightAmount;
+                            ResultBase := LeftBase * RightBase;
+                        end;
                     '/':
-                        if RightResult = 0 then begin
-                            Result := 0;
-                            Error(DivideByZeroErr);
-                        end else
-                            Result := LeftResult / RightResult;
+                        begin
+                            if RightAmount = 0 then begin
+                                ResultAmount := 0;
+                                Error(DivideByZeroErr);
+                            end else
+                                ResultAmount := LeftAmount / RightAmount;
+                            if RightBase = 0 then begin
+                                ResultBase := 0;
+                                Error(DivideByZeroErr);
+                            end else
+                                ResultBase := LeftBase / RightBase;
+                        end;
                     '+':
-                        Result := LeftResult + RightResult;
+                        begin
+                            ResultAmount := LeftAmount + RightAmount;
+                            ResultBase := LeftBase + RightBase;
+                        end;
                     '-':
-                        Result := LeftResult - RightResult;
+                        begin
+                            ResultAmount := LeftAmount - RightAmount;
+                            ResultBase := LeftBase - RightBase;
+                        end;
                 end;
             end else
                 if (Expression[1] = '(') and (Expression[StrLen(Expression)] = ')') then
-                    Result :=
-                      EvaluateExpression(
+                    EvaluateExpression(
                         CopyStr(Expression, 2, StrLen(Expression) - 2),
-                        VATStatementLine, CallLevel)
+                        VATStatementLine, CallLevel, ResultAmount, ResultBase)
                 else begin
                     IsFilter :=
                       (StrPos(Expression, '..') +
@@ -192,7 +209,7 @@ codeunit 31140 "VAT Statement Handler CZL"
                        StrPos(Expression, '&') +
                        StrPos(Expression, '=') > 0);
                     if (StrLen(Expression) > 10) and (not IsFilter) then
-                        Evaluate(Result, Expression)
+                        Evaluate(ResultAmount, Expression)
                     else begin
                         VATStatementLine.SetRange("Statement Template Name", VATStatementLine."Statement Template Name");
                         VATStatementLine.SetRange("Statement Name", VATStatementLine."Statement Name");
@@ -202,18 +219,20 @@ codeunit 31140 "VAT Statement Handler CZL"
                         if VATStatementLine.Find('-') then
                             repeat
                                 if VATStatementLine."Line No." <> VATStmtLineID then begin
-                                    VATStatement.CalcLineTotal(VATStatementLine, LineTotalAmount, 0);
-                                    Result := Result + LineTotalAmount;
+                                    VATStatement.CalcLineTotalWithBase(VATStatementLine, LineTotalAmount, LineTotalBase, 0);
+                                    ResultAmount += LineTotalAmount;
+                                    ResultBase += LineTotalBase;
                                 end
                             until VATStatementLine.Next() = 0
                         else
-                            if IsFilter or (not Evaluate(Result, Expression)) then
+                            if IsFilter or (not Evaluate(ResultAmount, Expression)) then
                                 Error(InvalidValueErr);
                     end
                 end;
         end;
         CallLevel := CallLevel - 1;
-        exit(Result);
+        Amount := ResultAmount;
+        Base := ResultBase;
     end;
 
     procedure Initialize(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; NewStartDate: Date; NewEndDate: Date; NewSettlementNoFilter: Text[50]; NewRoundingDirection: Option)

@@ -7,11 +7,18 @@
   "version": "26.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
-  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/unitedstates/introduction-to-the-irs-forms",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "ExtensionLogo.png",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
+      "name": "_Exclude_Business_Events_",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
   "screenshots": [],
   "platform": "26.0.0.0",
   "internalsVisibleTo": [

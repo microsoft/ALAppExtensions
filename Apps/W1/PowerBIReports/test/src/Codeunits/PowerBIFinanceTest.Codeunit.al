@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using Microsoft.PowerBIReports;
@@ -87,7 +81,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for vendor ledger entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Finance.PowerBIReports."Vendor Ledger Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('vleEntryNo eq %1', VendorLedgerEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'vleEntryNo eq ' + Format(VendorLedgerEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -104,7 +98,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.dvleEntryNo == %1)]', Format(DetailedVendLedgerEntry."Entry No."))), 'Vendor ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.dvleEntryNo == ' + Format(Format(DetailedVendLedgerEntry."Entry No.") + ')]')), 'Vendor ledger entry not found.');
         Assert.AreEqual(Format(VendorLedgerEntry."Due Date", 0, 9), JsonMgt.GetValue('vleDueDate'), 'Due date did not match.');
         Assert.AreEqual(Format(VendorLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('vlePostingDate'), 'Posting date did not match.');
         Assert.AreEqual(Format(VendorLedgerEntry."Document Date", 0, 9), JsonMgt.GetValue('vleDocumentDate'), 'Document date did not match.');
@@ -175,7 +169,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for customer ledger entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Customer Ledger Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('cleEntryNo eq %1', CustomerLedgerEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'cleEntryNo eq ' + Format(CustomerLedgerEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -192,7 +186,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.dcleEntryNo == %1)]', Format(DetailedCustLedgerEntry."Entry No."))), 'Customer ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.dcleEntryNo == ' + Format(Format(DetailedCustLedgerEntry."Entry No.") + ')]')), 'Customer ledger entry not found.');
         Assert.AreEqual(Format(CustomerLedgerEntry."Due Date", 0, 9), JsonMgt.GetValue('cleDueDate'), 'Due date did not match.');
         Assert.AreEqual(Format(CustomerLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('clePostingDate'), 'Posting date did not match.');
         Assert.AreEqual(Format(CustomerLedgerEntry."Document Date", 0, 9), JsonMgt.GetValue('cleDocumentDate'), 'Document date did not match.');
@@ -237,7 +231,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for G/L account is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G/L Accounts", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('accountNo eq ''%1''', GLAccount."No."));
+        UriBuilder.AddQueryParameter('$filter', 'accountNo eq ''' + Format(GLAccount."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -251,7 +245,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.accountNo == ''%1'')]', GLAccount."No.")), 'G/L account not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.accountNo == ''' + Format(GLAccount."No.") + ''')]'), 'G/L account not found.');
         Assert.AreEqual(GLAccount.Name, JsonMgt.GetValue('accountName'), 'Account name did not match.');
         Assert.AreEqual(Format(GLAccount."Account Type"), JsonMgt.GetValue('accountType'), 'Account type did not match.');
         Assert.AreEqual(Format(GLAccount."Income/Balance"), JsonMgt.GetValue('incomeBalance'), 'Income/Balance did not match.');
@@ -275,7 +269,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for G/L account category is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G/L Account Categories", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('entryNo eq %1', GLAccountCategory."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(GLAccountCategory."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -289,7 +283,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', GLAccountCategory."Entry No.")), 'G/L account category not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(GLAccountCategory."Entry No.") + ')]'), 'G/L account category not found.');
         Assert.AreEqual(GLAccountCategory.Description, JsonMgt.GetValue('description'), 'Description did not match.');
         Assert.AreEqual(Format(GLAccountCategory."Parent Entry No."), JsonMgt.GetValue('parentEntryNo'), 'Parent entry no. did not match.');
         Assert.AreEqual(GLAccountCategory."Presentation Order", JsonMgt.GetValue('presentationOrder'), 'Presentation order did not match.');
@@ -311,7 +305,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for G/L budget is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G/L Budgets", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('budgetName eq ''%1''', GLBudgetName.Name));
+        UriBuilder.AddQueryParameter('$filter', 'budgetName eq ''' + Format(GLBudgetName.Name) + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -325,7 +319,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.budgetName == ''%1'')]', GLBudgetName.Name)), 'G/L budget name not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.budgetName == ''' + Format(GLBudgetName.Name) + ''')]'), 'G/L budget name not found.');
         Assert.AreEqual(GLBudgetName.Description, JsonMgt.GetValue('budgetDescription'), 'Budget description did not match.');
     end;
 
@@ -352,7 +346,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for G/L budget entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Finance.PowerBIReports."G/L Budget Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('budgetName eq ''%1''', GLBudgetEntry."Budget Name"));
+        UriBuilder.AddQueryParameter('$filter', 'budgetName eq ''' + Format(GLBudgetEntry."Budget Name") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -370,7 +364,7 @@ codeunit 139876 "PowerBI Finance Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', GLBudgetEntry."Entry No.")), 'G/L budget entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(GLBudgetEntry."Entry No.") + ')]'), 'G/L budget entry not found.');
         Assert.AreEqual(Format(GLBudgetEntry.Date, 0, 9), JsonMgt.GetValue('budgetDate'), 'Budget date did not match.');
         Assert.AreEqual(Format(GLBudgetEntry.Amount / 1.0, 0, 9), JsonMgt.GetValue('budgetAmount'), 'Budget amount did not match.');
         Assert.AreEqual(Format(GLBudgetEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID did not match.');
@@ -414,7 +408,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for income statement G/L entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G/L Entries - Income Statement", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('accountNo eq ''%1''', GLAccount."No."));
+        UriBuilder.AddQueryParameter('$filter', 'accountNo eq ''' + Format(GLAccount."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -452,7 +446,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for income statement G/L entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G\L Entries - Balance Sheet", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''%1''', GLAccount."No."));
+        UriBuilder.AddQueryParameter('$filter', 'glAccountNo eq ''' + Format(GLAccount."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -492,7 +486,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for balance sheet G/L entry outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"G\L Entries - Balance Sheet", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''%1''', GLAccount."No."));
+        UriBuilder.AddQueryParameter('$filter', 'glAccountNo eq ''' + Format(GLAccount."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -537,7 +531,9 @@ codeunit 139876 "PowerBI Finance Test"
         GenJnlLine.FindLast();
         LibERM.PostGeneralJnlLine(GenJnlLine);
         SourceCodeSetup.Get();
+#pragma warning disable AA0210
         GLEntry.SetRange("Source Code", SourceCodeSetup."Close Income Statement");
+#pragma warning restore AA0210
         GLEntry.SetFilter("G/L Account No.", '%1|%2', GLAccount."No.", BalGLAccount."No.");
 
         Commit();
@@ -545,7 +541,7 @@ codeunit 139876 "PowerBI Finance Test"
         // [WHEN] Get request for income statement G/L entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Finance.PowerBIReports."G/L Entries - Closing", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''%1'' or glAccountNo eq ''%2''', GLAccount."No.", BalGLAccount."No."));
+        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''' + GLAccount."No." + ''' or glAccountNo eq ''' + BalGLAccount."No." + ''''));
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -576,7 +572,7 @@ codeunit 139876 "PowerBI Finance Test"
     begin
         JsonMgt.InitializeObject(Response);
         if EntryShouldExist then begin
-            Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', GLEntry."Entry No.")), 'G/L entry not found.');
+            Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(GLEntry."Entry No.") + ')]'), 'G/L entry not found.');
             Assert.AreEqual(Format(GLAccount."Income/Balance"), JsonMgt.GetValue('incomeBalance'), 'Income/Balance did not match.');
             Assert.AreEqual(Format(GLEntry."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Posting date did not match.');
             Assert.AreEqual(Format(GLEntry.Amount / 1.0, 0, 9), JsonMgt.GetValue('amount'), 'Amount did not match.');
@@ -586,7 +582,7 @@ codeunit 139876 "PowerBI Finance Test"
             Assert.AreEqual(Format(GLEntry."Source Type"), JsonMgt.GetValue('sourceType'), 'Source type did not match.');
             Assert.AreEqual(GLEntry."Source No.", JsonMgt.GetValue('sourceNo'), 'Source no. did not match.');
         end else
-            Assert.IsFalse(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', GLEntry."Entry No.")), 'G/L entry should not be found.');
+            Assert.IsFalse(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(GLEntry."Entry No.") + ')]'), 'G/L entry should not be found.');
     end;
 
     local procedure RunCloseIncomeStatement(GenJournalLine: Record "Gen. Journal Line"; DocumentNo: Code[20])
@@ -678,7 +674,7 @@ codeunit 139876 "PowerBI Finance Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := StrSubstNo(Format(Today()) + '..' + Format(Today() + 10));
 
         // [WHEN] GenerateFinanceReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateFinanceReportDateFilter();
@@ -716,9 +712,3 @@ codeunit 139876 "PowerBI Finance Test"
         PBISetup.Insert();
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

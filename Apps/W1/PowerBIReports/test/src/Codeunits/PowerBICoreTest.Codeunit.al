@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using Microsoft.PowerBIReports;
@@ -42,7 +36,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -70,7 +64,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Sales Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Sales Date Formula")) + '..';
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -121,7 +115,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -149,7 +143,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Purch. Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Purch. Date Formula")) + '..';
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -200,7 +194,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -228,7 +222,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Manufacturing Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Manufacturing Date Formula")) + '..';
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -279,7 +273,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Format(CreateDateTime(Today(), 0T)), Format(CreateDateTime(Today() + 10, 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(Today(), 0T)) + '..' + Format(CreateDateTime(Today() + 10, 0T));
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
@@ -307,7 +301,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)) + '..';
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
@@ -357,7 +351,7 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateFinanceReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateFinanceReportDateFilter();
@@ -400,9 +394,3 @@ codeunit 139875 "PowerBI Core Test"
         PermissionsMock.Assign('PowerBI Report Admin');
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

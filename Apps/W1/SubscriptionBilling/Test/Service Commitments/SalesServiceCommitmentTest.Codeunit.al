@@ -22,10 +22,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Ledger;
-#if not CLEAN25
 using Microsoft.Finance.VAT.Setup;
-using Microsoft.Finance.VAT.Calculation;
-#endif
 
 codeunit 139915 "Sales Service Commitment Test"
 {
@@ -92,9 +89,7 @@ codeunit 139915 "Sales Service Commitment Test"
         SerialNo: array[10] of Code[50];
         NoOfServiceObjects: Integer;
         CurrentQty: Decimal;
-#if not CLEAN25
         XmlParameters: Text;
-#endif
 
     local procedure Setup()
     begin
@@ -511,7 +506,7 @@ codeunit 139915 "Sales Service Commitment Test"
 
         FetchSalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
         ReleaseSalesDoc.PerformManualReopen(SalesHeader);
-        FetchSalesLine.Validate("Shipment Date", WorkDate());//set shipment date for next delivery 
+        FetchSalesLine.Validate("Shipment Date", WorkDate());//set shipment date for next delivery
         FetchSalesLine.Validate("Qty. to Invoice", 1);
         FetchSalesLine.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
@@ -696,7 +691,7 @@ codeunit 139915 "Sales Service Commitment Test"
         //Quantity=2; Qty. to Ship=1; Quantity Shipped=Quantity Invoiced=2
         //Post
         ReleaseSalesDoc.PerformManualReopen(SalesHeader);
-        FetchSalesLine.Validate("Shipment Date", WorkDate());//set shipment date for next delivery 
+        FetchSalesLine.Validate("Shipment Date", WorkDate());//set shipment date for next delivery
         FetchSalesLine.Validate("Qty. to Ship", 1);
         FetchSalesLine.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
@@ -1166,7 +1161,6 @@ codeunit 139915 "Sales Service Commitment Test"
         until SalesServiceCommitment.Next() = 0;
     end;
 
-#if not CLEAN25
     local procedure SetupSalesLineForTotalAndVatCalculation(var NewItem: Record Item; SetupServiceItemWithPackage: Boolean; ReferentVatPercent: Decimal)
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1186,8 +1180,7 @@ codeunit 139915 "Sales Service Commitment Test"
         ContractTestLibrary.UpdateItemUnitCostAndPrice(NewItem, LibraryRandom.RandDec(10000, 2), LibraryRandom.RandDec(10000, 2), false);
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, NewItem."No.", LibraryRandom.RandInt(100));
     end;
-#endif
-#if not CLEAN25
+
     [Test]
     [HandlerFunctions('SalesOrderConfRequestPageHandler')]
     procedure CheckIsServiceItemExcludedFromTotalsInReports()
@@ -1231,18 +1224,16 @@ codeunit 139915 "Sales Service Commitment Test"
         LibraryReportDataset.AssertElementWithValueExists('TotalVATAmount', SalesLine."Amount Including VAT" - SalesLine.Amount); // TotalAmountVAT
         LibraryReportDataset.AssertElementWithValueExists('TotalAmountIncludingVAT', SalesLine."Amount Including VAT"); // TotalAmountInclVAT
     end;
-#endif
-#if not CLEAN25
+
     [RequestPageHandler]
     procedure SalesOrderConfRequestPageHandler(var StandardSalesOrderConf: TestRequestPage "Standard Sales - Order Conf.")
     begin
     end;
-#endif
-#if not CLEAN25
+
     [Test]
     procedure CheckVatCalculationForServiceCommitmentRhytmInReports()
     var
-        TempVatAmountLines: Record "VAT Amount Line" temporary;
+        TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
         Item3: Record Item;
         Item4: Record Item;
         UniqueRhythmDictionary: Dictionary of [Code[20], Text];
@@ -1286,13 +1277,13 @@ codeunit 139915 "Sales Service Commitment Test"
         ExpectedVATAmount += (SalesServiceCommitment."Service Amount" / 24 * 3) * SalesLine."VAT %" / 100;
         ExpectedVATAmount := Round(ExpectedVATAmount, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
 
-        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempVatAmountLines, UniqueRhythmDictionary);
+        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
 
-        AssertThat.AreEqual(UniqueRhythmDictionary.Count + 1, TempVatAmountLines.Count, 'Service Items VAT Lines not created properly.');
-        TempVatAmountLines.CalcSums("VAT Amount");
-        AssertThat.AreEqual(ExpectedVATAmount, TempVatAmountLines."VAT Amount", 'Service Items VAT Amount not calculated properly.');
+        AssertThat.AreEqual(UniqueRhythmDictionary.Count + 1, TempSalesServiceCommitmentBuff.Count, 'Service Items VAT Lines not created properly.');
+        TempSalesServiceCommitmentBuff.CalcSums("VAT Amount");
+        AssertThat.AreEqual(ExpectedVATAmount, TempSalesServiceCommitmentBuff."VAT Amount", 'Service Items VAT Amount not calculated properly.');
     end;
-#endif
+
     [Test]
     procedure CheckShippedNotInvoicedIsZeroForServiceCommitmentItemAfterPostingSalesOrder()
     begin

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37049 "Released Production Orders"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Released Production Orders';
     AboutTitle = 'About Released Production Orders';
     AboutText = 'View how your released production orders are tracking by comparing Expected Quantity vs Finished Quantity';

@@ -171,7 +171,12 @@ codeunit 4016 "Hybrid GP Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Message Management", 'OnResolveMessageCode', '', false, false)]
     local procedure GetGPMessageOnResolveMessageCode(MessageCode: Code[10]; InnerMessage: Text; var Message: Text)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         if Message <> '' then
             exit;
 

@@ -58,7 +58,7 @@ table 30151 "Shpfy Company Location"
             DataClassification = CustomerContent;
             Editable = false;
         }
-        field(10; "Province Code"; Code[2])
+        field(10; "Province Code"; Code[10])
         {
             Caption = 'Province';
             DataClassification = CustomerContent;

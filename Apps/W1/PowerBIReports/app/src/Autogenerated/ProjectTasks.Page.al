@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37034 "Project Tasks"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Project Tasks';
     AboutTitle = 'About Project Tasks';
     AboutText = 'The Project Task report details tasks related to each project, with metrics for each task clearly outlined. It presents tasks in a table matrix in a hierarchical view, making it easy to navigate and analyze project task information.';

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37025 "Purchase and Sales Quantity"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchase and Sales Quantity';
     AboutTitle = 'About Purchase and Sales Quantity';
     AboutText = 'The Purchase and Sales Quantity report offers insight into inventory movements by visualizing Net Quantity Purchased and Net Quantity Sold across time. The table matrix breaks down purchases and sales by item and item category code, targeting insights into supply from purchases and demand from sales. ';

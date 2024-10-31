@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37040 "Current Utilization"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Current Utilization';
     AboutTitle = 'About Current Utilization';
     AboutText = 'View the current Weeks Utilisation % by comparing Capacity Used to Available Capacity in Hours. View all or some Work Centres to measure throughput and efficiency.';

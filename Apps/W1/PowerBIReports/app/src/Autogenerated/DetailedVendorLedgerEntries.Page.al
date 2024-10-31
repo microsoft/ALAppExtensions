@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36996 "Detailed Vendor Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Detailed Vendor Ledger Entries';
     AboutTitle = 'About Detailed Vendor Ledger Entries';
     AboutText = 'The Detailed Vendor Ledger Entries report provides granular detail about the entries posted to Vendor Ledger and Detailed Vendor Ledger.';

@@ -92,6 +92,7 @@ table 31260 "Match Bank Payment Buffer CZB"
             Caption = 'Dimension Set ID';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA22
         field(45; "Letter No."; Code[20])
         {
             Caption = 'Letter No.';
@@ -99,6 +100,7 @@ table 31260 "Match Bank Payment Buffer CZB"
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
             ObsoleteTag = '22.0';
         }
+#endif
     }
 
     keys

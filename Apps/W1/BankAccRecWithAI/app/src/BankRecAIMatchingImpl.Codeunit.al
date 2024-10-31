@@ -497,16 +497,19 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
     procedure HasReservedWords(Input: Text): Boolean
     begin
-        if StrPos(LowerCase(Input), '<|im_start|>') > 0 then
+        if StrPos(LowerCase(Input).Replace(' ', ''), '<|im_start|>') > 0 then
             exit(true);
 
-        if StrPos(LowerCase(Input), '<|im_end|>') > 0 then
+        if StrPos(LowerCase(Input).Replace(' ', ''), '<|im_end|>') > 0 then
             exit(true);
 
-        if StrPos(LowerCase(Input), '<|start|>') > 0 then
+        if StrPos(LowerCase(Input).Replace(' ', ''), '<|start|>') > 0 then
             exit(true);
 
-        if StrPos(LowerCase(Input), '<|end|>') > 0 then
+        if StrPos(LowerCase(Input).Replace(' ', ''), '<|end|>') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input).Replace(' ', ''), '**task**') > 0 then
             exit(true);
 
         exit(false)

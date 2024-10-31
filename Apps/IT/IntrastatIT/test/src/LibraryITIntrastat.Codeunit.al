@@ -846,10 +846,4 @@ codeunit 139512 "Library - IT Intrastat"
         IntrastatReportLine.Modify(true);
         exit(Item."Net Weight");
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnAfterCheckFeatureEnabled', '', true, true)]
-    local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
-    begin
-        IsEnabled := true;
-    end;
 }

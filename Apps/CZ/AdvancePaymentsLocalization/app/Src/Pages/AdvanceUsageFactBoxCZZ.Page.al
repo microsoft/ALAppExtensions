@@ -108,7 +108,7 @@ page 31216 "Advance Usage FactBox CZZ"
         TempAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ" temporary;
         TempSalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ" temporary;
         TempPurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ" temporary;
-        DocumentTotalAmount: Decimal;
+        DocumentTotalAmount, DocumentTotalAmountLCY : Decimal;
         AmountToUseVisible, AmountToUseLCYVisible : Boolean;
         AmountUsedVisible, AmountUsedLCYVisible : Boolean;
         TotalAfterDeductionVisible, TotalAfterDeductionLCYVisible : Boolean;
@@ -119,44 +119,48 @@ page 31216 "Advance Usage FactBox CZZ"
     procedure SetDocument(PurchaseHeader: Record "Purchase Header")
     begin
         ClearBuffers();
+        DocumentTotalAmount := CalcDocumentTotalAmount(PurchaseHeader);
+        DocumentTotalAmountLCY := CalcDocumentTotalAmountLCY(PurchaseHeader);
         CollectAssignedAdvances(PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), PurchaseHeader."No.");
         CollectPurchAdvLetterEntries(PurchaseHeader);
-        DocumentTotalAmount := CalcDocumentTotalAmount(PurchaseHeader);
         CurrPage.Update();
     end;
 
     procedure SetDocument(SalesHeader: Record "Sales Header")
     begin
         ClearBuffers();
+        DocumentTotalAmount := CalcDocumentTotalAmount(SalesHeader);
+        DocumentTotalAmountLCY := CalcDocumentTotalAmountLCY(SalesHeader);
         CollectAssignedAdvances(SalesHeader.GetAdvLetterUsageDocTypeCZZ(), SalesHeader."No.");
         CollectSalesAdvLetterEntries(SalesHeader);
-        DocumentTotalAmount := CalcDocumentTotalAmount(SalesHeader);
         CurrPage.Update();
     end;
 
     procedure SetDocument(PurchInvHeader: Record "Purch. Inv. Header")
     begin
         ClearBuffers();
+        DocumentTotalAmount := CalcDocumentTotalAmount(PurchInvHeader);
+        DocumentTotalAmountLCY := CalcDocumentTotalAmountLCY(PurchInvHeader);
         CollectAssignedAdvances("Adv. Letter Usage Doc.Type CZZ"::"Posted Purchase Invoice", PurchInvHeader."No.");
         CollectPurchAdvLetterEntries(PurchInvHeader);
-        DocumentTotalAmount := CalcDocumentTotalAmount(PurchInvHeader);
         CurrPage.Update();
     end;
 
     procedure SetDocument(SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
         ClearBuffers();
+        DocumentTotalAmount := CalcDocumentTotalAmount(SalesInvoiceHeader);
+        DocumentTotalAmountLCY := CalcDocumentTotalAmountLCY(SalesInvoiceHeader);
         CollectAssignedAdvances("Adv. Letter Usage Doc.Type CZZ"::"Posted Sales Invoice", SalesInvoiceHeader."No.");
         CollectSalesAdvLetterEntries(SalesInvoiceHeader);
-        DocumentTotalAmount := CalcDocumentTotalAmount(SalesInvoiceHeader);
         CurrPage.Update();
     end;
 
     procedure SetDocument(Job: Record Job)
     begin
         ClearBuffers();
-        CollectAssignedAdvances(Job."No.");
         DocumentTotalAmount := CalcDocumentTotalAmount(Job);
+        CollectAssignedAdvances(Job."No.");
         JobInLCY := Job."Currency Code" = '';
         IsJob := true;
         CurrPage.Update();
@@ -199,8 +203,8 @@ page 31216 "Advance Usage FactBox CZZ"
     begin
         PurchAdvLetterManagementCZZ.PostAdvancePaymentUsagePreview(
             PurchaseHeader,
-            TempAdvanceLetterApplicationCZZ.Amount,
-            TempAdvanceLetterApplicationCZZ."Amount (LCY)",
+            GetAmountUsed(),
+            GetAmountUsedLCY(),
             TempPurchAdvLetterEntryCZZ);
         TempPurchAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1&<>%2&<>%3',
             TempPurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage",
@@ -231,8 +235,8 @@ page 31216 "Advance Usage FactBox CZZ"
     begin
         SalesAdvLetterManagementCZZ.PostAdvancePaymentUsagePreview(
             SalesHeader,
-            TempAdvanceLetterApplicationCZZ.Amount,
-            TempAdvanceLetterApplicationCZZ."Amount (LCY)",
+            GetAmountUsed(),
+            GetAmountUsedLCY(),
             TempSalesAdvLetterEntryCZZ);
         TempSalesAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1&<>%2&<>%3',
             TempSalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage",
@@ -269,6 +273,11 @@ page 31216 "Advance Usage FactBox CZZ"
         exit(TempVATAmountLine.GetTotalAmountInclVAT());
     end;
 
+    local procedure CalcDocumentTotalAmountLCY(PurchaseHeader: Record "Purchase Header"): Decimal
+    begin
+        exit(CalcAmountLCY(DocumentTotalAmount, PurchaseHeader."Currency Factor"))
+    end;
+
     local procedure CalcDocumentTotalAmount(SalesHeader: Record "Sales Header"): Decimal
     var
         TempSalesLine: Record "Sales Line" temporary;
@@ -281,16 +290,31 @@ page 31216 "Advance Usage FactBox CZZ"
         exit(TempVATAmountLine.GetTotalAmountInclVAT());
     end;
 
+    local procedure CalcDocumentTotalAmountLCY(SalesHeader: Record "Sales Header"): Decimal
+    begin
+        exit(CalcAmountLCY(DocumentTotalAmount, SalesHeader."Currency Factor"))
+    end;
+
     local procedure CalcDocumentTotalAmount(PurchInvHeader: Record "Purch. Inv. Header"): Decimal
     begin
         PurchInvHeader.CalcFields("Amount Including VAT");
         exit(PurchInvHeader."Amount Including VAT");
     end;
 
+    local procedure CalcDocumentTotalAmountLCY(PurchInvHeader: Record "Purch. Inv. Header"): Decimal
+    begin
+        exit(CalcAmountLCY(DocumentTotalAmount, PurchInvHeader."Currency Factor"))
+    end;
+
     local procedure CalcDocumentTotalAmount(SalesInvoiceHeader: Record "Sales Invoice Header"): Decimal
     begin
         SalesInvoiceHeader.CalcFields("Amount Including VAT");
         exit(SalesInvoiceHeader."Amount Including VAT");
+    end;
+
+    local procedure CalcDocumentTotalAmountLCY(SalesInvoiceHeader: Record "Sales Invoice Header"): Decimal
+    begin
+        exit(CalcAmountLCY(DocumentTotalAmount, SalesInvoiceHeader."Currency Factor"))
     end;
 
     local procedure CalcDocumentTotalAmount(Job: Record Job) TotalAmount: Decimal
@@ -305,6 +329,13 @@ page 31216 "Advance Usage FactBox CZZ"
             repeat
                 TotalAmount += JobPlanningLine.CalcLineAmountIncludingVAT();
             until JobPlanningLine.Next() = 0;
+    end;
+
+    local procedure CalcAmountLCY(Amount: Decimal; CurrencyFactor: Decimal): Decimal
+    begin
+        if CurrencyFactor = 0 then
+            CurrencyFactor := 1;
+        exit(Amount / CurrencyFactor);
     end;
 
     local procedure ClearBuffers()
@@ -343,12 +374,16 @@ page 31216 "Advance Usage FactBox CZZ"
     local procedure GetAmountUsed(): Decimal
     begin
         TempAdvanceLetterApplicationCZZ.CalcSums(Amount);
+        if DocumentTotalAmount <= TempAdvanceLetterApplicationCZZ.Amount then
+            exit(DocumentTotalAmount);
         exit(TempAdvanceLetterApplicationCZZ.Amount);
     end;
 
     local procedure GetAmountUsedLCY(): Decimal
     begin
         TempAdvanceLetterApplicationCZZ.CalcSums("Amount (LCY)");
+        if DocumentTotalAmountLCY <= TempAdvanceLetterApplicationCZZ."Amount (LCY)" then
+            exit(DocumentTotalAmountLCY);
         exit(TempAdvanceLetterApplicationCZZ."Amount (LCY)");
     end;
 

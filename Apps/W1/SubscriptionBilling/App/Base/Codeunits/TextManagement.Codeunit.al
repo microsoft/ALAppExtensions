@@ -54,6 +54,7 @@ codeunit 8021 "Text Management"
         TextEditor.SetContent(Content);
         TextEditor.SetSize(100, 100);
         TextEditor.SetAutoResize(true);
+        TextEditor.RunModal();
     end;
 
     procedure ReadBlobText(RecRef: RecordRef; FieldNo: Integer): Text

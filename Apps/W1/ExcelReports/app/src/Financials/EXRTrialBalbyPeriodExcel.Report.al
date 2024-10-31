@@ -8,6 +8,7 @@ namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Company;
+using Microsoft.ExcelReports;
 
 report 4408 "EXR Trial Bal by Period Excel"
 {
@@ -122,6 +123,7 @@ report 4408 "EXR Trial Bal by Period Excel"
     begin
         TrialBalanceByPeriod.SecurityFiltering(SecurityFilter::Filtered);
         CompanyInformation.Get();
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Trial Bal by Period Excel");
 
         ReportingPeriodStartDate.Add(TrialBalanceByPeriod.GetRangeMin("Date Filter"));
         ThisReportingStartDate := TrialBalanceByPeriod.GetRangeMin("Date Filter");
@@ -132,6 +134,9 @@ report 4408 "EXR Trial Bal by Period Excel"
         until ThisReportingStartDate >= TrialBalanceByPeriod.GetRangeMax("Date Filter");
         ReportingPeriodEndDate.Add(CalcDate('<-1D>', ThisReportingStartDate));
     end;
+
+    var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
 
     protected var
         CompanyInformation: Record "Company Information";

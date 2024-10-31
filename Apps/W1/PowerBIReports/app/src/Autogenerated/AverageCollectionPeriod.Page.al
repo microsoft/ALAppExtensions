@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36992 "Average Collection Period"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Average Collection Period';
     AboutTitle = 'About Average Collection Period';
     AboutText = 'The Average Collection Period report analyses trends in the average collection period over time. It includes supporting details such as the Number of Days, Accounts Receivable, and Accounts Receivable (Average) to provide context and enhance the analysis.';

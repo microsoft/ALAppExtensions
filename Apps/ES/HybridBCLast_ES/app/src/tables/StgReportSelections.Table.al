@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA23
 table 4034 "Stg Report Selections"
 {
     ObsoleteState = Removed;
@@ -26,3 +27,4 @@ table 4034 "Stg Report Selections"
         }
     }
 }
+#endif

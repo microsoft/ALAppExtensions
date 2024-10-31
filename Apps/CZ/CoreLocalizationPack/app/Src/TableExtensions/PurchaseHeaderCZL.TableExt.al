@@ -393,7 +393,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 
         if ("Currency Factor" <> xRec."Currency Factor") and
            ("Currency Factor" <> "VAT Currency Factor CZL") and
-           (("VAT Reporting Date" = xRec."VAT Reporting Date") or (xRec."VAT Reporting Date" = 0D))
+           ("VAT Reporting Date" = "Posting Date")
         then begin
             "VAT Currency Factor CZL" := "Currency Factor";
             if (xRec."Currency Factor" = xRec."VAT Currency Factor CZL") or

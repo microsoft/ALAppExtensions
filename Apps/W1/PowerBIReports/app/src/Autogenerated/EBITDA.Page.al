@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36991 "EBITDA"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'EBITDA';
     AboutTitle = 'About EBITDA';
     AboutText = 'The EBITDA report focuses on two key profitability metrics: EBITDA and EBIT. These figures are visualized over time to reveal trends, while Operating Revenue and Operating Expenses are also highlighted to provide supporting context for both measures.';
