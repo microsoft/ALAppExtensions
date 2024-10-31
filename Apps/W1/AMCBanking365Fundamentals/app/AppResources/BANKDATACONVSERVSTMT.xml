@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="BANKDATACONVSERVSTMT" Name="AMC Banking Service - Bank Statement" Type="0" ExternalDataHandlingCodeunit="20114" FileType="0" ReadingWritingCodeunit="20125">
+    <DataExchLineDef LineType="0" Code="BANKDATACONVSERVSTMT" Name="BANKDATACONVSERVSTMT" ColumnCount="0">
+      <DataExchMapping TableId="274" Name="AMC Banking Service - Bank Statement" MappingCodeunit="20126" PreMappingCodeunit="20127" PostMappingCodeunit="20128" />
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

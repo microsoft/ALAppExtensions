@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="BANKDATACONVSERVCT" Name="AMC Banking Service - Credit Transfer" Type="1" ReadingWritingXMLport="20101" ExternalDataHandlingCodeunit="20113" FileType="0" ReadingWritingCodeunit="20120" ValidationCodeunit="20107" UserFeedbackCodeunit="20111">
+    <DataExchLineDef LineType="0" Code="BANKDATACONVSERVCT" Name="BANKDATACONVSERVCT" ColumnCount="0">
+      <DataExchMapping TableId="1226" Name="AMC Banking Service - Credit Transfer" MappingCodeunit="20112" />
+    </DataExchLineDef>
+  </DataExchDef>
+</root>
