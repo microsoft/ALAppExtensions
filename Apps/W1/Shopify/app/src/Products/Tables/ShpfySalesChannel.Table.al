@@ -37,7 +37,7 @@ table 30160 "Shpfy Sales Channel"
         {
             Caption = 'Default';
             Editable = false;
-            ToolTip = 'Indicates if the sales channel is the default one. Used for new products publication if any other channel is chosen.';
+            ToolTip = 'Indicates if the sales channel is the default one. Used for new products publication if no other channel is selected';
         }
     }
     keys
