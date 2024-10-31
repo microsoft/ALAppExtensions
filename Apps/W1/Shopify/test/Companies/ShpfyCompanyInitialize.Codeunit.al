@@ -3,7 +3,6 @@ codeunit 139638 "Shpfy Company Initialize"
     SingleInstance = true;
 
     var
-
         Any: Codeunit Any;
 
     internal procedure CreateShopifyCompanyLocation() CompanyLocation: Record "Shpfy Company Location"
@@ -96,5 +95,51 @@ codeunit 139638 "Shpfy Company Initialize"
     begin
         JResult.ReadFrom(StrSubstNo(ResultLbl, Name, CompanyContactId, CustomerId, CompanyLocationId));
         exit(JResult);
+    end;
+
+    internal procedure PaymentTermsGQLNode(): Text
+    begin
+        exit('buyerExperienceConfiguration: {paymentTermsTemplateId: \"gid://shopify/PaymentTermsTemplate/%1\"}');
+    end;
+
+    internal procedure CreateLocationResponse(LocationValues: Dictionary of [Text, Text]): Text
+    var
+        Any: Codeunit Any;
+        JObject: JsonObject;
+        JCompanyLocations: JsonObject;
+        JEdges: JsonArray;
+        JNode: JsonObject;
+        JBillingAddress: JsonObject;
+        JPaymentTerms: JsonObject;
+        LocationResponse: Text;
+    begin
+        JNode.Add('id', StrSubstNo('gid://shopify/CompanyLocation/%1', LocationValues.Get('id')));
+        JBillingAddress.Add('address1', LocationValues.Get('address1'));
+        JBillingAddress.Add('address2', LocationValues.Get('address2'));
+        JBillingAddress.Add('city', LocationValues.Get('city'));
+        JBillingAddress.Add('countryCode', LocationValues.Get('countryCode'));
+        JBillingAddress.Add('zip', LocationValues.Get('zip'));
+        JBillingAddress.Add('phone', LocationValues.Get('phone'));
+        JBillingAddress.Add('zoneCode', LocationValues.Get('zoneCode'));
+        JBillingAddress.Add('province', LocationValues.Get('province'));
+        JNode.Add('billingAddress', JBillingAddress);
+        JNode.Add('taxRegistrationId', LocationValues.Get('taxRegistrationId'));
+        JPaymentTerms.ReadFrom(StrSubstNo('{"paymentTermsTemplate": {id: "gid://shopify/PaymentTermsTemplate/%1"}}', LocationValues.Get('paymentTermsTemplateId')));
+        JNode.Add('buyerExperienceConfiguration', JPaymentTerms);
+        JEdges.Add(JNode);
+        JCompanyLocations.Add('edges', JEdges);
+        JObject.Add('companyLocations', JCompanyLocations);
+        JObject.WriteTo(LocationResponse);
+        exit(LocationResponse);
+    end;
+
+    internal procedure TaxIdGQLNode(CompanyLocation: Record "Shpfy Company Location"): Text
+    begin
+        exit(StrSubstNo('locationId: \"gid://shopify/CompanyLocation/%1\", taxId: \"%2\"', CompanyLocation.Id, CompanyLocation."Tax Registration Id"));
+    end;
+
+    internal procedure ExternalIdGQLNode(Customer: Record Customer): Text
+    begin
+        exit(StrSubstNo('externalId: \"%1\"', Customer."No."));
     end;
 }

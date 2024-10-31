@@ -4,15 +4,20 @@ codeunit 139637 "Shpfy Company API Test"
     TestPermissions = Disabled;
 
     var
+        Shop: Record "Shpfy Shop";
+        Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         LibraryRandom: Codeunit "Library - Random";
+        InitializeTest: Codeunit "Shpfy Initialize Test";
         CompanyInitialize: Codeunit "Shpfy Company Initialize";
+        IsInitialized: Boolean;
 
     [Test]
     procedure UnitTestCreateCompanyGraphQuery()
     var
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
         CompanyAPI: Codeunit "Shpfy Company API";
         GraphQL: Text;
     begin
@@ -25,7 +30,7 @@ codeunit 139637 "Shpfy Company API Test"
         // [GIVEN] ShpfyCompanyLocation
 
         // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
-        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation);
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
 
         // [THEN] CompanyInitialize.CreateCompanyGraphQLResult() = GraphQL.
         LibraryAssert.AreEqual(CompanyInitialize.CreateCompanyGraphQLResult(), GraphQL, 'CreateCompanyGraphQuery');
@@ -140,6 +145,146 @@ codeunit 139637 "Shpfy Company API Test"
         LibraryAssert.AreEqual(ShopifyCompany.Name, Name, 'Name');
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Id", CompanyContactId, 'Company Contact Id');
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Customer Id", CustomerId, 'Customer Id');
-        LibraryAssert.AreEqual(ShopifyCompany."Location Id", CompanyLocationId, 'Company Location Id');
+    end;
+
+    [Test]
+    procedure UnitTestCreateCompanyWithPaymentTerms()
+    var
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Export company with payment terms.
+
+        // [GIVEN] Shopify company
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify company location with payment terms id
+        CompanyLocation := CompanyInitialize.CreateShopifyCompanyLocation(ShopifyCompany);
+        CompanyLocation."Shpfy Payment Terms Id" := LibraryRandom.RandIntInRange(1000, 9999);
+
+        // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
+
+        // [THEN] The payment terms id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(StrSubstNo(CompanyInitialize.PaymentTermsGQLNode(), CompanyLocation."Shpfy Payment Terms Id")), 'Payment Terms Id');
+    end;
+
+    [Test]
+    procedure UnitTestUpdateCompanyWithPaymentTerms()
+    var
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Update Shopify company with payment terms.
+        Initialize();
+
+        // [GIVEN] Shopify company
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify company location with payment terms id
+        CompanyLocation := CompanyInitialize.CreateShopifyCompanyLocation(ShopifyCompany);
+        CompanyLocation."Shpfy Payment Terms Id" := LibraryRandom.RandIntInRange(1000, 9999);
+        CompanyLocation.Modify(false);
+        // [GIVEN] Shopify company location with changed payment terms id
+        CompanyLocation."Shpfy Payment Terms Id" := LibraryRandom.RandIntInRange(1000, 9999);
+
+        // [WHEN] Invoke CompanyAPI.UpdateCompany
+        InvokeUpdateCompany(ShopifyCompany, CompanyLocation, GraphQL);
+
+        // [THEN] The payment terms id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(StrSubstNo(CompanyInitialize.PaymentTermsGQLNode(), CompanyLocation."Shpfy Payment Terms Id")), 'Payment terms modification missing in query.');
+    end;
+
+    [Test]
+    procedure UnitTestUpdateCompanyLocationWithTaxId()
+    var
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Update Shopify company location with tax id.
+        Initialize();
+
+        // [GIVEN] Shopify company
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify company location with tax id
+        CompanyLocation := CompanyInitialize.CreateShopifyCompanyLocation(ShopifyCompany);
+        CompanyLocation."Tax Registration Id" := Any.AlphanumericText(20);
+        CompanyLocation.Modify(false);
+        // [GIVEN] Shopify company location with changed tax id
+        CompanyLocation."Tax Registration Id" := Any.AlphanumericText(20);
+
+        // [WHEN] Invoke CompanyAPI.UpdateCompany
+        InvokeUpdateCompany(ShopifyCompany, CompanyLocation, GraphQL);
+
+        // [THEN] The tax id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.TaxIdGQLNode(CompanyLocation)), 'Tax Registration Id  missing in query.');
+    end;
+
+    [Test]
+    procedure UnitTestCreateCompanyGraphQueryWithExternalId()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        GraphQL: Text;
+    begin
+        // [SCENARIO] Creating the GrapghQL query to create a new company in Shopify with external id.
+        Initialize();
+
+        // [GIVEN] Customer record
+        CreateCustomer(Customer);
+        // [GIVEN] Shopify Company connected with customer
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        // [GIVEN] Shopify Customer connected with customer
+        CreateShopifyCustomer(ShopifyCustomer, Customer.SystemId);
+
+        // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
+
+        // [THEN] The external id is present in query.
+        LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.ExternalIdGQLNode(Customer)), 'externalId missing in query.');
+    end;
+
+
+    local procedure Initialize()
+    begin
+        Any.SetDefaultSeed();
+
+        if IsInitialized then
+            exit;
+        Shop := InitializeTest.CreateShop();
+        IsInitialized := true;
+    end;
+
+    local procedure InvokeUpdateCompany(var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location"; var GraphQL: Text)
+    var
+        CompanyAPI: Codeunit "Shpfy Company API";
+        CompanyAPISubs: Codeunit "Shpfy Company API Subs.";
+    begin
+        BindSubscription(CompanyAPISubs);
+        CompanyAPI.SetShop(Shop);
+        CompanyAPI.UpdateCompany(ShopifyCompany, CompanyLocation);
+        GraphQL := CompanyAPISubs.GetExecutedQuery();
+        UnbindSubscription(CompanyAPISubs);
+    end;
+
+    local procedure CreateCustomer(var Customer: Record Customer)
+    begin
+        Customer.Init();
+        Customer."No." := Any.AlphanumericText(20);
+        Customer.Insert(false);
+    end;
+
+    local procedure CreateShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"; CustomerSystemId: Guid)
+    begin
+        ShopifyCustomer.Init();
+        ShopifyCustomer.Id := Any.IntegerInRange(10000, 99999);
+        ShopifyCustomer."Customer SystemId" := CustomerSystemId;
+        ShopifyCustomer.Insert(false);
     end;
 }

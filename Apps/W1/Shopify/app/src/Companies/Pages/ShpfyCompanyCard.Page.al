@@ -163,6 +163,18 @@ page 30157 "Shpfy Company Card"
                 RunPageLink = "Company SystemId" = field(SystemId);
                 ToolTip = 'View a list of Shopify catalogs for the company.';
             }
+            action(ShopifyLocations)
+            {
+                ApplicationArea = All;
+                Caption = 'Shopify Locations';
+                Image = Warehouse;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                RunObject = Page "Shpfy Comp. Locations";
+                RunPageLink = "Company SystemId" = field(SystemId);
+                ToolTip = 'View a list of Shopify company locations.';
+            }
         }
 
     }

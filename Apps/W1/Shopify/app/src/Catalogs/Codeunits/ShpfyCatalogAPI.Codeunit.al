@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Customer;
 
 /// <summary>
 /// Codeunit Shpfy Catalog API (ID 30290).
@@ -15,7 +16,7 @@ codeunit 30290 "Shpfy Catalog API"
         JsonHelper: Codeunit "Shpfy Json Helper";
         ShopifyCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
 
-    internal procedure CreateCatalog(ShopifyCompany: Record "Shpfy Company")
+    internal procedure CreateCatalog(ShopifyCompany: Record "Shpfy Company"; Customer: Record Customer)
     var
         Catalog: Record "Shpfy Catalog";
         GraphQLType: Enum "Shpfy GraphQL Type";
@@ -32,6 +33,7 @@ codeunit 30290 "Shpfy Catalog API"
             Catalog."Shop Code" := Shop.Code;
             Catalog.Name := ShopifyCompany.Name;
             Catalog."Company SystemId" := ShopifyCompany.SystemId;
+            Catalog."Customer No." := Customer."No.";
             Catalog.Insert();
             CreatePublication(Catalog);
             CreatePriceList(Catalog);

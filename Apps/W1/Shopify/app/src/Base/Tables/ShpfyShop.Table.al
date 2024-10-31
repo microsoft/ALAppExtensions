@@ -793,6 +793,11 @@ table 30102 "Shpfy Shop"
             Caption = 'Weight Unit';
             DataClassification = CustomerContent;
         }
+        field(130; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
+        {
+            Caption = 'Company Tax Id Mapping';
+            DataClassification = CustomerContent;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
