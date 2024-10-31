@@ -220,12 +220,12 @@ codeunit 139647 "Shpfy Company Import Test"
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
         LibraryAssert.IsTrue(CompanyLocation.FindFirst(), 'Company location does not exist');
         LibraryAssert.AreEqual(Id, CompanyLocation.Id, 'Id not imported');
-        LibraryAssert.AreEqual(LocationValues.Get('address'), CompanyLocation.Address, 'Address not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('address1'), CompanyLocation.Address, 'Address not imported');
         LibraryAssert.AreEqual(LocationValues.Get('address2'), CompanyLocation."Address 2", 'Address 2 not imported');
         LibraryAssert.AreEqual(LocationValues.Get('phone'), CompanyLocation."Phone No.", 'Phone No. not imported');
         LibraryAssert.AreEqual(LocationValues.Get('zip'), CompanyLocation.Zip, 'Zip not imported');
         LibraryAssert.AreEqual(LocationValues.Get('city'), CompanyLocation.City, 'City not imported');
-        LibraryAssert.AreEqual(LocationValues.Get('country'), CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('countryCode'), CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
         LibraryAssert.AreEqual(LocationValues.Get('zoneCode'), CompanyLocation."Province Code", 'Province Code not imported');
         LibraryAssert.AreEqual(LocationValues.Get('province'), CompanyLocation."Province Name", 'Province Name not imported');
         LibraryAssert.AreEqual(PaymentTermsId, CompanyLocation."Shpfy Payment Terms Id", 'Payment Terms Id not imported');
@@ -235,12 +235,12 @@ codeunit 139647 "Shpfy Company Import Test"
     local procedure CreateLocationValues(LocationValues: Dictionary of [Text, Text])
     begin
         LocationValues.Add('id', Format(Any.IntegerInRange(10000, 99999)));
-        LocationValues.Add('address', Any.AlphanumericText(20));
+        LocationValues.Add('address1', Any.AlphanumericText(20));
         LocationValues.Add('address2', Any.AlphanumericText(20));
         LocationValues.Add('phone', Format(Any.IntegerInRange(1000, 9999)));
         LocationValues.Add('zip', Format(Any.IntegerInRange(1000, 9999)));
         LocationValues.Add('city', Any.AlphanumericText(20));
-        LocationValues.Add('country', Any.AlphanumericText(2));
+        LocationValues.Add('countryCode', Any.AlphanumericText(2));
         LocationValues.Add('zoneCode', Any.AlphanumericText(2));
         LocationValues.Add('province', Any.AlphanumericText(20));
         LocationValues.Add('paymentTermsTemplateId', Format(Any.IntegerInRange(10000, 99999)));

@@ -3,7 +3,6 @@ codeunit 139638 "Shpfy Company Initialize"
     SingleInstance = true;
 
     var
-
         Any: Codeunit Any;
 
     internal procedure CreateShopifyCompanyLocation() CompanyLocation: Record "Shpfy Company Location"
