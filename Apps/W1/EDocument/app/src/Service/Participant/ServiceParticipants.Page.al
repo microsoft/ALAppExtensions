@@ -27,25 +27,21 @@ page 6150 "Service Participants"
                 {
                     ApplicationArea = All;
                     Caption = 'E-Document Service';
-                    ToolTip = 'Specifies the E-Document service for which the participant is associated.';
                 }
                 field("Participant Type"; Rec."Participant Type")
                 {
                     ApplicationArea = All;
                     Caption = 'Participant Type';
-                    ToolTip = 'Specifies the type of participant associated with the E-Document service.';
                 }
                 field(Participant; Rec.Participant)
                 {
                     ApplicationArea = All;
                     Caption = 'Participant';
-                    ToolTip = 'Specifies the participant associated with the E-Document service.';
                 }
                 field("Participant Identifier"; Rec."Participant Identifier")
                 {
                     ApplicationArea = All;
                     Caption = 'Participant Identifier';
-                    ToolTip = 'Specifies the identifier of the participant associated with the E-Document service.';
                 }
             }
         }
