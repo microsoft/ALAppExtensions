@@ -225,8 +225,8 @@ codeunit 139647 "Shpfy Company Import Test"
         LibraryAssert.AreEqual(LocationValues.Get('phone'), CompanyLocation."Phone No.", 'Phone No. not imported');
         LibraryAssert.AreEqual(LocationValues.Get('zip'), CompanyLocation.Zip, 'Zip not imported');
         LibraryAssert.AreEqual(LocationValues.Get('city'), CompanyLocation.City, 'City not imported');
-        LibraryAssert.AreEqual(LocationValues.Get('countryCode'), CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
-        LibraryAssert.AreEqual(LocationValues.Get('zoneCode'), CompanyLocation."Province Code", 'Province Code not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('countryCode').ToUpper(), CompanyLocation."Country/Region Code", 'Country/Region Code not imported');
+        LibraryAssert.AreEqual(LocationValues.Get('zoneCode').ToUpper(), CompanyLocation."Province Code", 'Province Code not imported');
         LibraryAssert.AreEqual(LocationValues.Get('province'), CompanyLocation."Province Name", 'Province Name not imported');
         LibraryAssert.AreEqual(PaymentTermsId, CompanyLocation."Shpfy Payment Terms Id", 'Payment Terms Id not imported');
         LibraryAssert.AreEqual(LocationValues.Get('taxRegistrationId'), CompanyLocation."Tax Registration Id", 'Tax Registration id not imported');
