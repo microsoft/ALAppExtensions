@@ -1,4 +1,4 @@
-codeunit 139623 "Shpfy Customer Metafields Test"
+codeunit 139548 "Shpfy Customer Metafields Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

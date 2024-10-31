@@ -1,4 +1,4 @@
-codeunit 139624 "Shpfy Metafields Helper"
+codeunit 139549 "Shpfy Metafields Helper"
 {
     procedure CreateMetafieldsResult(ResourceID: BigInteger; Namespace: Text; OwnerType: Text; MetafieldKey: Text; MetafieldValue: Text): JsonArray
     var
