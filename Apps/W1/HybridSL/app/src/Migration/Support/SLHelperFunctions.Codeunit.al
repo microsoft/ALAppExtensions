@@ -125,15 +125,15 @@ codeunit 42023 "SL Helper Functions"
 
     internal procedure GetNumberOfAccounts(): Integer;
     var
-        MigrationSlAccount: Record "SL Account Staging";
+        SLAccountStaging: Record "SL Account Staging";
     begin
-        exit(MigrationSlAccount.Count());
+        exit(SLAccountStaging.Count());
     end;
 
     internal procedure GetNumberOfCustomers(): Integer;
     var
-        SLCustomer: Record "SL Customer";
         SLCompanyAdditonalSettings: Record "SL Company Additional Settings";
+        SLCustomer: Record "SL Customer";
     begin
         if not SLCompanyAdditonalSettings.GetReceivablesModuleEnabled() then
             exit(0);
@@ -205,11 +205,11 @@ codeunit 42023 "SL Helper Functions"
         exit(Value.TrimEnd());
     end;
 
-    internal procedure ConvertAccountCategory(MigrationSLAccount: Record "SL Account Staging"): Option
+    internal procedure ConvertAccountCategory(SLAccountStaging: Record "SL Account Staging"): Option
     var
         AccountCategoryType: Option ,Assets,Liabilities,Equity,Income,"Cost of Goods Sold",Expense;
     begin
-        case MigrationSLAccount.AccountCategory of
+        case SLAccountStaging.AccountCategory of
             1:
                 exit(AccountCategoryType::Assets);
             2:
@@ -221,21 +221,21 @@ codeunit 42023 "SL Helper Functions"
         end;
     end;
 
-    internal procedure ConvertDebitCreditType(MigrationSLAccount: Record "SL Account Staging"): Option
+    internal procedure ConvertDebitCreditType(SLAccountStaging: Record "SL Account Staging"): Option
     var
         DebitCreditType: Option Both,Debit,Credit;
     begin
-        if MigrationSLAccount.DebitCredit = 0 then
+        if SLAccountStaging.DebitCredit = 0 then
             exit(DebitCreditType::Both);
 
         exit(DebitCreditType::Both);
     end;
 
-    internal procedure ConvertIncomeBalanceType(MigrationSLAccount: Record "SL Account Staging"): Option
+    internal procedure ConvertIncomeBalanceType(SLAccountStaging: Record "SL Account Staging"): Option
     var
         IncomeBalanceType: Option "Income Statement","Balance Sheet";
     begin
-        if MigrationSLAccount.IncomeBalance then
+        if SLAccountStaging.IncomeBalance then
             exit(IncomeBalanceType::"Balance Sheet");
 
         exit(IncomeBalanceType::"Income Statement");
@@ -262,28 +262,31 @@ codeunit 42023 "SL Helper Functions"
     var
         SLSegments: Record "SL Segments";
         Dimension: Record Dimension;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        DimCode: Code[20];
     begin
-        if not SLSegments.FindSet() then
-            exit;
+        if SLSegments.FindSet() then begin
+            repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLSegments.RecordId()));
+                DimCode := CheckDimensionName(SLSegments.Id);
+                if not Dimension.Get(DimCode) then begin
+                    Dimension.Init();
+                    Dimension.Validate(Code, DimCode);
+                    Dimension.Validate(Name, SLSegments.Name);
+                    Dimension.Validate("Code Caption", SLSegments.CodeCaption);
+                    Dimension.Validate("Filter Caption", SLSegments.FilterCaption);
+                    Dimension.Insert();
+                end;
+            until SLSegments.Next() = 0;
 
-        repeat
-            if not Dimension.Get(SLSegments.Id) then begin
-                Dimension.Init();
-                Dimension.Validate(Code, CheckDimensionName(SLSegments.Id));
-                Dimension.Validate(Name, SLSegments.Name);
-                Dimension.Validate("Code Caption", SLSegments.CodeCaption);
-                Dimension.Validate("Filter Caption", SLSegments.FilterCaption);
-                Dimension.Insert();
-                Commit();
-            end;
-        until SLSegments.Next() = 0;
+            CreateDimensionValues();
+        end;
 
-        CreateDimensionValues();
         Session.LogMessage('0000BBF', 'Created Dimensions', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetDimensionsCreated();
     end;
 
-    internal procedure CheckDimensionName(Name: Text[20]): Text[21]
+    internal procedure CheckDimensionName(Name: Text[50]): Code[20]
     var
         GLAccount: Record "G/L Account";
         BusinessUnit: Record "Business Unit";
@@ -295,29 +298,29 @@ codeunit 42023 "SL Helper Functions"
             (UpperCase(Name) = UpperCase(Item.TableCaption)) or
             (UpperCase(Name) = UpperCase(Location.TableCaption)) or
             (UpperCase(Name) = UpperCase(PeriodTxt))) then
-            exit(Name + 's');
+            exit(CopyStr(Name + 's', 1, 20));
 
-        exit(Name);
+        exit(CopyStr(Name, 1, 20));
     end;
 
     internal procedure CreateDimensionValues()
     var
         SLCodes: Record "SL Codes";
         DimensionValue: Record "Dimension Value";
+        DimCode: Code[20];
     begin
-        if not SLCodes.FindSet() then
-            exit;
-
-        repeat
-            if not DimensionValue.Get(CheckDimensionName(SLCodes.Id), SLCodes.Name) then begin
-                DimensionValue.Init();
-                DimensionValue.Validate("Dimension Code", CheckDimensionName(SLCodes.Id));
-                DimensionValue.Validate(Code, SLCodes.Name);
-                DimensionValue.Validate(Name, SLCodes.Description);
-                DimensionValue.Insert();
-                Commit();
-            end;
-        until SLCodes.Next() = 0;
+        SLCodes.SetFilter(SLCodes.Name, '<> %1', '');
+        if SLCodes.FindSet() then
+            repeat
+                DimCode := CheckDimensionName(SLCodes.Id);
+                if not DimensionValue.Get(DimCode, SLCodes.Name) then begin
+                    DimensionValue.Init();
+                    DimensionValue.Validate("Dimension Code", DimCode);
+                    DimensionValue.Validate(Code, SLCodes.Name);
+                    DimensionValue.Validate(Name, SLCodes.Description);
+                    DimensionValue.Insert(true);
+                end;
+            until SLCodes.Next() = 0;
     end;
 
     internal procedure GetTelemetryCategory(): Text
@@ -1020,6 +1023,27 @@ codeunit 42023 "SL Helper Functions"
         SLConfiguration.Modify();
     end;
 
+    internal procedure CreatePreMigrationData(): Boolean
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+    begin
+        CreateDimensions();
+        if not DimensionsCreated() then
+            exit(false);
+
+        if SLCompanyAdditionalSettings.GetInventoryModuleEnabled() then begin
+            CreateItemTrackingCodes();
+            if not ItemTrackingCodesCreated() then
+                exit(false);
+
+            CreateLocations();
+            if not LocationsCreated() then
+                exit(false);
+        end;
+
+        exit(true)
+    end;
+
     internal procedure CheckMigrationStatus()
     begin
         SLConfiguration.GetSingleInstance();
@@ -1047,6 +1071,24 @@ codeunit 42023 "SL Helper Functions"
         DataMigrationError."Scheduled For Retry" := false;
         DataMigrationError."Error Message" := ErrorMessage;
         DataMigrationError.Insert();
+    end;
+
+    internal procedure DimensionsCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Dimensions Created");
+    end;
+
+    internal procedure ItemTrackingCodesCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Item Tracking Codes Created");
+    end;
+
+    internal procedure LocationsCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Locations Created");
     end;
 
     [IntegrationEvent(false, false)]

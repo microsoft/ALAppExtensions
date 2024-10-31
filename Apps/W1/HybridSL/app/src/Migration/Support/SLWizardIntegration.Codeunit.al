@@ -142,7 +142,7 @@ codeunit 42005 "SL Wizard Integration"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnCreatePostMigrationData, '', true, true)]
     local procedure OnCreatePostMigrationDataSubscriber(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
     var
-        MigrationSLConfig: Record "SL Migration Config";
+        SLMigrationConfig: Record "SL Migration Config";
         SLMigrationErrorHandler: Codeunit "SL Migration Error Handler";
         Flag: Boolean;
     begin
@@ -156,8 +156,8 @@ codeunit 42005 "SL Wizard Integration"
             UnRegisterSLDataMigrator();
 
         Codeunit.Run(Codeunit::"Categ. Generate Acc. Schedules");
-        if MigrationSLConfig.Get() then
-            if MigrationSLConfig."Updated GL Setup" then begin
+        if SLMigrationConfig.Get() then
+            if SLMigrationConfig."Updated GL Setup" then begin
                 Flag := true;
                 SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;

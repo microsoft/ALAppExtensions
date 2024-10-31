@@ -25,28 +25,15 @@ codeunit 42001 "SL Cloud Migration"
         SLHelperFunctions: Codeunit "SL Helper Functions";
         SLMigrationErrorHandler: Codeunit "SL Migration Error Handler";
         HybridHandleSLUpgradeError: Codeunit "SL Hybrid Handle Upgrade Error";
-        SLPopulateAccounts: Codeunit "SL Populate Accounts";
-        SLPopulateFiscalPeriods: Codeunit "SL Populate Fiscal Periods";
-        SLDimensions: Codeunit "SL Dimensions";
         Success: Boolean;
     begin
         SLMigrationErrorHandler.ClearErrorOccurred();
-        ClearLastError();
-        SLPopulateFiscalPeriods.CreateFiscalPeriodsFromGLSetup();
-        SLDimensions.InsertSLSegmentsForDimensionSets();
-        SLDimensions.CreateSLCodes();
-        SLPopulateAccounts.PopulateSLAccounts();
-        Commit();
 
-        Codeunit.Run(Codeunit::"SL Populate Account History");
+        ClearLastError();
         OnUpgradeSLCompany(Success);
+
         if not Success then begin
             HybridHandleSLUpgradeError.MarkUpgradeFailed(Rec);
-            Commit();
-
-            HybridCompanyStatus.Get(CompanyName);
-            HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Failed;
-            HybridCompanyStatus.Modify();
             Commit();
 
             SLHelperFunctions.CheckAndLogErrors();
@@ -100,8 +87,8 @@ codeunit 42001 "SL Cloud Migration"
             else
                 Session.LogMessage('000029K', CompanyFailedToMigrateMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SLHelperFunctions.GetTelemetryCategory());
         end;
-        Commit();
 
+        Commit();
         HybridCompanyStatus.Get(CompanyName);
         HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Completed;
         HybridCompanyStatus.Modify();
@@ -120,28 +107,36 @@ codeunit 42001 "SL Cloud Migration"
     var
         SLCompanyMigrationSettings: Record "SL Company Migration Settings";
         DataMigrationEntity: Record "Data Migration Entity";
-        MigrationSLConfig: Record "SL Migration Config";
-        Dimension: Record Dimension;
-        DimensionValue: Record "Dimension Value";
-        SLHelperFunctions: Codeunit "SL Helper Functions";
+        SLMigrationConfig: Record "SL Migration Config";
         DataMigrationFacade: Codeunit "Data Migration Facade";
+        SLDimensions: Codeunit "SL Dimensions";
+        SLHelperFunctions: Codeunit "SL Helper Functions";
+        SLPopulateAccounts: Codeunit "SL Populate Accounts";
+        SLPopulateAccountHistory: Codeunit "SL Populate Account History";
+        SLPopulateFiscalPeriods: Codeunit "SL Populate Fiscal Periods";
         WizardIntegration: Codeunit "SL Wizard Integration";
         Flag: Boolean;
     begin
-        MigrationSLConfig.GetSingleInstance();
         Session.LogMessage('0000BBH', InitiateMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SLHelperFunctions.GetTelemetryCategory());
-        MigrationSLConfig."Post Transactions" := true;
+
         SelectLatestVersion();
         SLHelperFunctions.SetProcessesRunning(true);
 
+        SLPopulateFiscalPeriods.CreateFiscalPeriodsFromGLSetup();
+        SLDimensions.InsertSLSegmentsForDimensionSets();
+        SLDimensions.CreateSLCodes();
+        SLPopulateAccounts.PopulateSLAccounts();
+        SLPopulateAccountHistory.Run();
+        Commit();
+
         Flag := false;
+        SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
         if Flag then begin
-            MigrationSLConfig.GetSingleInstance();
-            MigrationSLConfig."Updated GL Setup" := true;
-            MigrationSLConfig.Modify();
+            SLMigrationConfig.GetSingleInstance();
+            SLMigrationConfig."Updated GL Setup" := true;
+            SLMigrationConfig.Modify();
         end;
 
-        DataMigrationEntity.DeleteAll();
         if not WizardIntegration.RegisterSLDataMigrator() then begin
             SLHelperFunctions.GetLastError();
             SLHelperFunctions.SetProcessesRunning(false);
@@ -155,14 +150,11 @@ codeunit 42001 "SL Cloud Migration"
 
         CreateDataMigrationEntites(DataMigrationEntity);
 
-        SLHelperFunctions.CreateItemTrackingCodes();
-        SLHelperFunctions.CreateLocations();
-
-        if not Dimension.IsEmpty() then
-            Dimension.DeleteAll();
-        if not DimensionValue.IsEmpty() then
-            DimensionValue.DeleteAll();
-        SLHelperFunctions.CreateDimensions();
+        if not SLHelperFunctions.CreatePreMigrationData() then begin
+            SLHelperFunctions.GetLastError();
+            SLHelperFunctions.SetProcessesRunning(false);
+            exit;
+        end;
 
         Commit();
         if SLCompanyMigrationSettings.Get(CompanyName()) then begin
@@ -223,96 +215,6 @@ codeunit 42001 "SL Cloud Migration"
 
         if SLCompanyAdditionalSettings.GetInventoryModuleEnabled() then
             CreateDataMigrationStatusRecords(Database::Item, ItemsToMigrateCount, Database::"SL Inventory", Codeunit::"SL Item Migrator");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnIsCloudMigrationCompleted, '', false, false)]
-    local procedure HandleIsCloudMigrationCompleted(SourceProduct: Text; var CloudMigrationCompleted: Boolean)
-    var
-        HybridSLWizard: Codeunit "SL Hybrid Wizard";
-    begin
-        if SourceProduct <> HybridSLWizard.ProductIdTxt() then
-            exit;
-
-        CloudMigrationCompleted := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnInsertDefaultTableMappings, '', false, false)]
-    local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
-    var
-        HybridSLWizard: Codeunit "SL Hybrid Wizard";
-    begin
-        if ProductID <> HybridSLWizard.ProductIdTxt() then
-            exit;
-
-        // Accounts
-        UpdateOrInsertRecord(Database::"SL Account", 'Account');
-        UpdateOrInsertRecord(Database::"SL AcctHist", 'AcctHist');
-        UpdateOrInsertRecord(Database::"SL Batch", 'Batch');
-        UpdateOrInsertRecord(Database::"SL GLSetup", 'GLSetup');
-        UpdateOrInsertRecord(Database::"SL GLTran", 'GLTran');
-        // Payables
-        UpdateOrInsertRecord(Database::"SL AP_Balances", 'AP_Balances');
-        UpdateOrInsertRecord(Database::"SL APAdjust", 'APAdjust');
-        UpdateOrInsertRecord(Database::"SL APDoc", 'APDoc');
-        UpdateOrInsertRecord(Database::"SL APSetup", 'APSetup');
-        UpdateOrInsertRecord(Database::"SL APTran", 'APTran');
-        UpdateOrInsertRecord(Database::"SL POAddress", 'POAddress');
-        UpdateOrInsertRecord(Database::"SL POReceipt", 'POReceipt');
-        UpdateOrInsertRecord(Database::"SL POSetup", 'POSetup');
-        UpdateOrInsertRecord(Database::"SL POTran", 'POTran');
-        UpdateOrInsertRecord(Database::"SL PurchOrd", 'PurchOrd');
-        UpdateOrInsertRecord(Database::"SL PurOrdDet", 'PurOrdDet');
-        UpdateOrInsertRecord(Database::"SL Vendor", 'Vendor');
-        // Receivables
-        UpdateOrInsertRecord(Database::"SL AR_Balances", 'AR_Balances');
-        UpdateOrInsertRecord(Database::"SL ARAdjust", 'ARAdjust');
-        UpdateOrInsertRecord(Database::"SL ARDoc", 'ARDoc');
-        UpdateOrInsertRecord(Database::"SL ARSetup", 'ARSetup');
-        UpdateOrInsertRecord(Database::"SL ARTran", 'ARTran');
-        UpdateOrInsertRecord(Database::"SL Customer", 'Customer');
-        UpdateOrInsertRecord(Database::"SL SOAddress", 'SOAddress');
-        UpdateOrInsertRecord(Database::"SL SOHeader", 'SOHeader');
-        UpdateOrInsertRecord(Database::"SL SOLine", 'SOLine');
-        UpdateOrInsertRecord(Database::"SL SOSetup", 'SOSetup');
-        UpdateOrInsertRecord(Database::"SL SOShipHeader", 'SOShipHeader');
-        UpdateOrInsertRecord(Database::"SL SOShipLine", 'SOShipLine');
-        UpdateOrInsertRecord(Database::"SL SOShipLot", 'SOShipLot');
-        UpdateOrInsertRecord(Database::"SL SOType", 'SOType');
-        // Items
-        UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
-        UpdateOrInsertRecord(Database::"SL INTran", 'INTran');
-        UpdateOrInsertRecord(Database::"SL Inventory", 'Inventory');
-        UpdateOrInsertRecord(Database::"SL InventoryADG", 'InventoryADG');
-        UpdateOrInsertRecord(Database::"SL ItemCost", 'ItemCost');
-        UpdateOrInsertRecord(Database::"SL ItemSite", 'ItemSite');
-        UpdateOrInsertRecord(Database::"SL LotSerMst", 'LotSerMst');
-        UpdateOrInsertRecord(Database::"SL LotSerT", 'LotSerT');
-        UpdateOrInsertRecord(Database::"SL Site", 'Site');
-        // Misc
-        UpdateOrInsertRecord(Database::"SL FlexDef", 'FlexDef');
-        UpdateOrInsertRecord(Database::"SL SegDef", 'SegDef');
-        UpdateOrInsertRecord(Database::"SL Terms", 'Terms');
-    end;
-
-    internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
-    begin
-        UpdateOrInsertRecord(TableID, SourceTableName, true);
-    end;
-
-    internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128]; PerCompanyTable: Boolean)
-    var
-        MigrationTableMapping: Record "Migration Table Mapping";
-        CurrentModuleInfo: ModuleInfo;
-    begin
-        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
-        if MigrationTableMapping.Get(CurrentModuleInfo.Id(), TableID) then
-            MigrationTableMapping.Delete();
-
-        MigrationTableMapping."App ID" := CurrentModuleInfo.Id();
-        MigrationTableMapping.Validate("Table ID", TableID);
-        MigrationTableMapping."Data Per Company" := PerCompanyTable;
-        MigrationTableMapping."Source Table Name" := SourceTableName;
-        MigrationTableMapping.Insert();
     end;
 
     [IntegrationEvent(false, false, true)]
