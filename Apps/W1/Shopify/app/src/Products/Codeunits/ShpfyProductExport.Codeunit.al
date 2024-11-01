@@ -66,6 +66,9 @@ codeunit 30178 "Shpfy Product Export"
         BulkOperationInput: TextBuilder;
         GraphQueryList: List of [TextBuilder];
         VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the item is blocked or sales blocked.';
+        ItemIsBlockedLbl: Label 'Item is blocked.';
+        ItemIsDraftLbl: Label 'Shopify product is in draft status.';
+        ItemIsArchivedLbl: Label 'Shopify product is archived.';
 
     /// <summary> 
     /// Creates html body for a product from extended text, marketing text and attributes.
@@ -552,9 +555,6 @@ codeunit 30178 "Shpfy Product Export"
         RecordRef1: RecordRef;
         RecordRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
-        ItemIsBlockedLbl: Label 'Item is blocked.';
-        ItemIsDraftLbl: Label 'Shopify product is in draft status.';
-        ItemIsArchivedLbl: Label 'Shopify product is archived.';
     begin
         if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
             case Shop."Action for Removed Products" of
