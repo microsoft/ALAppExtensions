@@ -42,6 +42,8 @@ codeunit 30116 "Shpfy Customer Export"
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
+        EmptyEmailAddressLbl: Label 'Customer has no e-mail address.';
+        CustomerWithPhoneNoOrEmailExistsLbl: Label 'Customer already exists with the same e-mail or phone.';
 
 
     /// <summary> 
@@ -52,7 +54,6 @@ codeunit 30116 "Shpfy Customer Export"
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
-        EmptyEmailAddressLbl: Label 'Customer has no e-mail address.';
     begin
         if Customer."E-Mail" = '' then begin
             SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
@@ -246,7 +247,6 @@ codeunit 30116 "Shpfy Customer Export"
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
-        CustomerWithPhoneNoOrEmailExistsLbl: Label 'Customer already exists with the same e-mail or phone.';
     begin
         ShopifyCustomer.Get(CustomerID);
         if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then begin

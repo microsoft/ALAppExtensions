@@ -57,7 +57,7 @@ page 30166 "Shpfy Skipped Records"
             action(Show)
             {
                 ApplicationArea = All;
-                Caption = 'Show record';
+                Caption = 'Show Record';
                 Image = View;
                 ToolTip = 'Show the details of the selected record.';
 
