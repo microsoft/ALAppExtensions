@@ -38,4 +38,13 @@ if ($disabledTests)
     $parameters["disabledTests"] = $disabledTests
 }
 
+$installedApps = Get-BcContainerAppInfo -containerName $parameters.ContainerName -tenantSpecificProperties -sort DependenciesLast
+$appsToBeUnPublished = (Get-ConfigValue -ConfigType "BuildConfig" -Key "AppsNotToBePublished")
+$installedApps | ForEach-Object {
+    if ($_.Name -in $appsToBeUnPublished) {
+        Write-Host "Unpublishing $($_.Name)"
+        Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
+    }
+}
+
 Run-TestsInBcContainer @parameters
