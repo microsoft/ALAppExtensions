@@ -22,31 +22,31 @@ codeunit 6146 "E-Document Send"
     local procedure Send()
     begin
 #if not CLEAN26
-        IEDocIntegration := EDocumentService."Service Integration";
-        if IEDocIntegration is Send then begin
-            SendInterface := EDocumentService."Service Integration";
-            SendInterface.Send(EDocument, EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, IsAsyncValue);
+        IEDocIntegration := this.EDocumentService."Service Integration";
+        if IEDocIntegration is Sender then begin
+            SendInterface := this.EDocumentService."Service Integration";
+            SendInterface.Send(this.EDocument, this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.IsAsyncValue);
         end else
-            IEDocIntegration.Send(EDocument, TempBlob, IsAsyncValue, HttpRequestMessage, HttpResponseMessage);
+            IEDocIntegration.Send(this.EDocument, this.TempBlob, this.IsAsyncValue, this.HttpRequestMessage, this.HttpResponseMessage);
 
 #else
-        SendInterface := EDocumentService."Service Integration";
-        SendInterface.Send(EDocument, EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, IsAsyncValue);
+        SendInterface := this.EDocumentService."Service Integration";
+        SendInterface.Send(this.EDocument, this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.IsAsyncValue);
 #endif
     end;
 
     local procedure SendBatch()
     begin
 #if not CLEAN26
-        IEDocIntegration := EDocumentService."Service Integration";
-        if IEDocIntegration is Send then begin
-            SendInterface := EDocumentService."Service Integration";
-            SendInterface.SendBatch(EDocument, EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, IsAsyncValue);
+        IEDocIntegration := this.EDocumentService."Service Integration";
+        if IEDocIntegration is Sender then begin
+            SendInterface := this.EDocumentService."Service Integration";
+            SendInterface.SendBatch(this.EDocument, this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.IsAsyncValue);
         end else
-            IEDocIntegration.SendBatch(EDocument, TempBlob, IsAsyncValue, HttpRequestMessage, HttpResponseMessage);
+            IEDocIntegration.SendBatch(this.EDocument, this.TempBlob, this.IsAsyncValue, this.HttpRequestMessage, this.HttpResponseMessage);
 #else
-        SendInterface := EDocumentService."Service Integration";
-        SendInterface.SendBatch(EDocument, EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, IsAsyncValue);
+        SendInterface := this.EDocumentService."Service Integration";
+        SendInterface.SendBatch(this.EDocument, this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.IsAsyncValue);
 #endif
     end;
 
@@ -68,7 +68,7 @@ codeunit 6146 "E-Document Send"
 
     procedure IsAsync(): Boolean
     begin
-        exit(IsAsyncValue);
+        exit(this.IsAsyncValue);
     end;
 
     var
@@ -80,6 +80,6 @@ codeunit 6146 "E-Document Send"
 #if not CLEAN26
         IEDocIntegration: Interface "E-Document Integration";
 #endif
-        SendInterface: Interface Send;
+        SendInterface: Interface Sender;
         IsAsyncValue: Boolean;
 }

@@ -8,9 +8,9 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 using System.Utilities;
 
 #if not CLEAN26
-codeunit 6128 "E-Document No Integration" implements "E-Document Integration", Send, Receive, "Default Int. Actions"
+codeunit 6128 "E-Document No Integration" implements "E-Document Integration", Sender, Receiver, "Default Int. Actions"
 #else
-codeunit 6128 "E-Document No Integration" implements Send, Receive, "Default Int. Actions"
+codeunit 6128 "E-Document No Integration" implements Sender, Receiver, "Default Int. Actions"
 #endif
 {
     Access = Internal;
@@ -81,11 +81,16 @@ codeunit 6128 "E-Document No Integration" implements Send, Receive, "Default Int
     begin
     end;
 
-    procedure SentDocumentApproval(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
+    procedure GetSentDocumentApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     begin
     end;
 
-    procedure SentDocumentCancellation(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
+    procedure GetSentDocumentCancelationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     begin
+    end;
+
+    procedure MarkDocumentFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; var IsRun: Boolean)
+    begin
+        IsRun := false;
     end;
 }

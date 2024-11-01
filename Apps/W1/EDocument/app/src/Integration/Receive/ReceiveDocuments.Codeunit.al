@@ -8,6 +8,9 @@ using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
+/// <summary>
+/// Codeunit to run ReceiveDocuments from Receive Interface
+/// </summary>
 codeunit 6179 "Receive Documents"
 {
     Access = Internal;
@@ -16,14 +19,14 @@ codeunit 6179 "Receive Documents"
     begin
         EDocumentService.TestField(Code);
 #if not CLEAN26
-        EDocIntegration := EDocumentService."Service Integration";
-        if EDocIntegration is Receive then begin
-            ReceiveInterface := EDocumentService."Service Integration";
-            ReceiveInterface.ReceiveDocuments(EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, Count);
+        EDocIntegration := this.EDocumentService."Service Integration";
+        if EDocIntegration is Receiver then begin
+            ReceiveInterface := this.EDocumentService."Service Integration";
+            ReceiveInterface.ReceiveDocuments(this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.Count);
         end;
 #else
-        ReceiveInterface := EDocumentService."Service Integration";
-        ReceiveInterface.ReceiveDocuments(EDocumentService, TempBlob, HttpRequestMessage, HttpResponseMessage, Count);
+        ReceiveInterface := this.EDocumentService."Service Integration";
+        ReceiveInterface.ReceiveDocuments(this.EDocumentService, this.TempBlob, this.HttpRequestMessage, this.HttpResponseMessage, this.Count);
 #endif
     end;
 
@@ -51,7 +54,7 @@ codeunit 6179 "Receive Documents"
         TempBlob: Codeunit "Temp Blob";
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
-        ReceiveInterface: Interface Receive;
+        ReceiveInterface: Interface Receiver;
 #if not CLEAN26
         EDocIntegration: Interface "E-Document Integration";
 #endif

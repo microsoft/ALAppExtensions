@@ -13,16 +13,16 @@ codeunit 6149 "E-Document Response"
     trigger OnRun()
     begin
 #if not CLEAN26
-        IEDocIntegration := EDocumentService."Service Integration";
-        if IEDocIntegration is Send then begin
-            SendInterface := EDocumentService."Service Integration";
-            Result := SendInterface.GetResponse(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
+        IEDocIntegration := this.EDocumentService."Service Integration";
+        if IEDocIntegration is Sender then begin
+            SendInterface := this.EDocumentService."Service Integration";
+            Result := SendInterface.GetResponse(this.EDocument, this.EDocumentService, this.HttpRequestMessage, this.HttpResponseMessage);
         end else
-            Result := IEDocIntegration.GetResponse(EDocument, HttpRequestMessage, HttpResponseMessage);
+            Result := IEDocIntegration.GetResponse(this.EDocument, this.HttpRequestMessage, this.HttpResponseMessage);
 
 #else
-        SendInterface := EDocumentService."Service Integration";
-        Result := SendInterface.GetResponse(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
+        SendInterface := this.EDocumentService."Service Integration";
+        Result := SendInterface.GetResponse(this.EDocument, this.EDocumentService, this.HttpRequestMessage, this.HttpResponseMessage);
 #endif
     end;
 
@@ -53,6 +53,6 @@ codeunit 6149 "E-Document Response"
 #if not CLEAN26
         IEDocIntegration: Interface "E-Document Integration";
 #endif
-        SendInterface: Interface Send;
+        SendInterface: Interface Sender;
         Result: Boolean;
 }

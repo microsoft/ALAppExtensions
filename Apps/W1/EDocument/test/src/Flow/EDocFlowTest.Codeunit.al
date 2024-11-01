@@ -125,8 +125,10 @@ codeunit 139631 "E-Doc. Flow Test"
         Assert.AreEqual(EDocument.RecordId, ErrorMessage."Context Record ID", WrongValueErr);
     end;
 
+#pragma warning disable AS0018
 #if not CLEAN26
     [Test]
+    [Obsolete('Obsolete in 26.0', '26.0')]
     procedure EDocFlowGetServiceInFlowSuccess()
     var
         EDocService: Record "E-Document Service";
@@ -154,6 +156,7 @@ codeunit 139631 "E-Doc. Flow Test"
     end;
 
     [Test]
+    [Obsolete('Obsolete in 26.0', '26.0')]
     procedure EDocFlowGetServicesInFlowSuccess()
     var
         EDocService: Record "E-Document Service";
@@ -182,6 +185,7 @@ codeunit 139631 "E-Doc. Flow Test"
         Assert.AreEqual(ServiceCodeB, EDocService.Code, WrongValueErr);
     end;
 #endif
+#pragma warning restore AS0018
 
     local procedure Initialize()
     var

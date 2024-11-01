@@ -12,14 +12,14 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 /// </summary>
 codeunit 6178 "E-Document Action Runner"
 {
-    Access = Public;
+    Access = Internal;
 
     trigger OnRun()
     var
-        IAction: Interface "Integration Action";
+        IAction: Interface "Action Invoker";
     begin
         IAction := ActionType;
-        UpdateStatusBool := IAction.InvokeAction(ActionType, this.EDocument, this.EDocumentService, this.HttpRequestMessage, this.HttpResponseMessage, EDocumentServiceStatus);
+        UpdateStatusBool := IAction.InvokeAction(this.EDocument, this.EDocumentService, this.HttpRequestMessage, this.HttpResponseMessage, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -27,10 +27,10 @@ codeunit 6178 "E-Document Action Runner"
     /// </summary>
     procedure GetFallbackStatus(): Enum "E-Document Service Status"
     var
-        IAction: Interface "Integration Action";
+        IAction: Interface "Action Invoker";
     begin
         IAction := ActionType;
-        exit(IAction.GetFallbackStatus(ActionType, this.EDocument, this.EDocumentService));
+        exit(IAction.GetFallbackStatus(this.EDocument, this.EDocumentService));
     end;
 
     /// <summary>
@@ -53,16 +53,29 @@ codeunit 6178 "E-Document Action Runner"
         ResponseMessage := this.HttpResponseMessage;
     end;
 
+    /// <summary>
+    /// Gets the status of the E-Document Service
+    /// </summary>
     procedure GetStatus(): Enum "E-Document Service Status"
     begin
         exit(EDocumentServiceStatus);
     end;
 
+    /// <summary>
+    /// Returns if running action lead to update in service status.
+    /// Certain actions dont need to update service status, like asking if document was approved. 
+    /// </summary>
+    /// <returns>True if service status should be updated</returns>
     procedure UpdateStatus(): Boolean
     begin
         exit(UpdateStatusBool);
     end;
 
+    /// <summary>
+    /// Sets the action type for the E-Document Action.
+    /// The implementation of the action that will run is determined by the ActionType.
+    /// </summary>
+    /// <param name="Action"></param>
     procedure SetActionType(Action: Enum "Integration Action Type")
     begin
         ActionType := Action;

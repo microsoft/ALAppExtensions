@@ -241,7 +241,7 @@ page 6121 "E-Document"
                         if EDocServices.RunModal() = Action::LookupOK then begin
                             EDocServices.GetRecord(EDocService);
                             EDocumentErrorHelper.ClearErrorMessages(Rec);
-                            EDocIntegrationManagement.SentDocApproval(Rec, EDocService);
+                            EDocIntegrationManagement.SentDocumentApproval(Rec, EDocService);
                         end
                     end;
                 }
@@ -261,7 +261,7 @@ page 6121 "E-Document"
                         if EDocServices.RunModal() = Action::LookupOK then begin
                             EDocServices.GetRecord(EDocService);
                             EDocumentErrorHelper.ClearErrorMessages(Rec);
-                            EDocIntegrationManagement.SentDocCancellation(Rec, EDocService);
+                            EDocIntegrationManagement.SentDocumentCancelation(Rec, EDocService);
                         end
                     end;
                 }

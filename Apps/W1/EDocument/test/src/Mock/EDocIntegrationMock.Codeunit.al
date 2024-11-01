@@ -1,6 +1,11 @@
+#pragma warning disable AS0018
 #if not CLEAN26
 codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
 {
+    ObsoleteTag = '26.0';
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Obsolete in 26.0';
+
     procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
     begin
         OnSend(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
@@ -77,3 +82,4 @@ codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
 
 }
 #endif
+#pragma warning restore AS0018

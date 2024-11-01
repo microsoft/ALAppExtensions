@@ -8,22 +8,25 @@ using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
+/// <summary>
+/// Codeunit to run DownloadDocument from Receive Interface
+/// </summary>
 codeunit 6180 "Download Document"
 {
     Access = Internal;
 
     trigger OnRun()
     begin
-        EDocumentService.TestField(Code);
+        this.EDocumentService.TestField(Code);
 #if not CLEAN26
-        EDocIntegration := EDocumentService."Service Integration";
-        if EDocIntegration is Receive then begin
-            ReceiveInterface := EDocumentService."Service Integration";
-            ReceiveInterface.DownloadDocument(EDocument, EDocumentService, DocumentsBlob, DownloadedBlob, HttpRequestMessage, HttpResponseMessage);
+        EDocIntegration := this.EDocumentService."Service Integration";
+        if EDocIntegration is Receiver then begin
+            ReceiveInterface := this.EDocumentService."Service Integration";
+            ReceiveInterface.DownloadDocument(this.EDocument, this.EDocumentService, this.DocumentsBlob, this.DownloadedBlob, this.HttpRequestMessage, this.HttpResponseMessage);
         end;
 #else
-        ReceiveInterface := EDocumentService."Service Integration";
-        ReceiveInterface.DownloadDocument(EDocument, EDocumentService, DocumentsBlob, DownloadedBlob, HttpRequestMessage, HttpResponseMessage);
+        ReceiveInterface := this.EDocumentService."Service Integration";
+        ReceiveInterface.DownloadDocument(this.EDocument, this.EDocumentService, this.DocumentsBlob, this.DownloadedBlob, this.HttpRequestMessage, this.HttpResponseMessage);
 #endif
     end;
 
@@ -49,7 +52,7 @@ codeunit 6180 "Download Document"
         DocumentsBlob, DownloadedBlob : Codeunit "Temp Blob";
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
-        ReceiveInterface: Interface Receive;
+        ReceiveInterface: Interface Receiver;
 #if not CLEAN26
         EDocIntegration: Interface "E-Document Integration";
 #endif

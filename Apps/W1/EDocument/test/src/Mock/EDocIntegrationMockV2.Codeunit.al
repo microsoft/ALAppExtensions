@@ -1,5 +1,8 @@
-codeunit 139658 "E-Doc. Integration Mock V2" implements Send, Receive, "Default Int. Actions"
+codeunit 139658 "E-Doc. Integration Mock V2" implements Sender, Receiver, "Default Int. Actions"
 {
+
+    Access = Internal;
+
     procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var IsAsync: Boolean)
     begin
         OnSend(EDocument, EDocumentService, TempBlob, IsAsync, HttpRequest, HttpResponse);
@@ -28,7 +31,7 @@ codeunit 139658 "E-Doc. Integration Mock V2" implements Send, Receive, "Default 
         OnDownloadDocument(EDocument, EDocumentService, DocumentsBlob, DocumentBlob, HttpRequestMessage, HttpResponseMessage);
     end;
 
-    procedure SentDocumentApproval(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
+    procedure GetSentDocumentApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     var
         Update: Boolean;
     begin
@@ -36,7 +39,7 @@ codeunit 139658 "E-Doc. Integration Mock V2" implements Send, Receive, "Default 
         exit(Update);
     end;
 
-    procedure SentDocumentCancellation(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
+    procedure GetSentDocumentCancelationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     begin
 
     end;

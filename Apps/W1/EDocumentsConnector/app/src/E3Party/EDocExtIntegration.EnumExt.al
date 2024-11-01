@@ -5,11 +5,12 @@
 namespace Microsoft.EServices.EDocumentConnector;
 
 using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 
 enumextension 6363 "E-Doc. Ext. Integration" extends "E-Document Integration"
 {
     value(6361; "Pagero")
     {
-        Implementation = "E-Document Integration" = "Pagero Integration Impl.";
+        Implementation = Sender = "Pagero Integration Impl.", Receiver = "Pagero Integration Impl.", "Default Int. Actions" = "Pagero Integration Impl.";
     }
 }

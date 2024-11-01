@@ -1495,10 +1495,11 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 
+#pragma warning disable AS0018
 #if not CLEAN26
 
     [Test]
-    procedure InterfaceAsyncSendingSuccess26()
+    internal procedure InterfaceAsyncSendingSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1547,7 +1548,7 @@ codeunit 139624 "E-Doc E2E Test"
 
 
     [Test]
-    procedure InterfaceSyncSendingSuccess26()
+    internal procedure InterfaceSyncSendingSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1578,7 +1579,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnSendSyncRuntimeFailure26()
+    internal procedure InterfaceOnSendSyncRuntimeFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1610,7 +1611,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnSendSyncLoggedErrorFailure26()
+    internal procedure InterfaceOnSendSyncLoggedErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1642,7 +1643,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnSendAsyncRuntimeFailure26()
+    internal procedure InterfaceOnSendAsyncRuntimeFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1679,7 +1680,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnSendAsyncLoggedErrorFailure26()
+    internal procedure InterfaceOnSendAsyncLoggedErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1714,7 +1715,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnGetResponseLoggedErrorFailure26()
+    internal procedure InterfaceOnGetResponseLoggedErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1775,7 +1776,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnGetResponseThrowErrorFailure26()
+    internal procedure InterfaceOnGetResponseThrowErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1834,7 +1835,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnGetResponseReturnFalseThenTrueSuccess26()
+    internal procedure InterfaceOnGetResponseReturnFalseThenTrueSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1884,7 +1885,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure InterfaceOnGetResponseReturnTrueSuccess26()
+    internal procedure InterfaceOnGetResponseReturnTrueSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1921,7 +1922,7 @@ codeunit 139624 "E-Doc E2E Test"
 
     [Test]
     [HandlerFunctions('EDocServicesPageHandler')]
-    procedure InterfaceOnGetApprovalReturnFalseSuccess26()
+    internal procedure InterfaceOnGetApprovalReturnFalseSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -1969,7 +1970,7 @@ codeunit 139624 "E-Doc E2E Test"
 
     [Test]
     [HandlerFunctions('EDocServicesPageHandler')]
-    procedure InterfaceOnGetApprovalReturnTrueSuccess26()
+    internal procedure InterfaceOnGetApprovalReturnTrueSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -2018,7 +2019,7 @@ codeunit 139624 "E-Doc E2E Test"
 
     [Test]
     [HandlerFunctions('EDocServicesPageHandler')]
-    procedure InterfaceOnGetApprovalThrowErrorFailure26()
+    internal procedure InterfaceOnGetApprovalThrowErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -2069,7 +2070,7 @@ codeunit 139624 "E-Doc E2E Test"
 
     [Test]
     [HandlerFunctions('EDocServicesPageHandler')]
-    procedure InterfaceOnGetApprovalLoggedErrorFailure26()
+    internal procedure InterfaceOnGetApprovalLoggedErrorFailure26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -2123,7 +2124,7 @@ codeunit 139624 "E-Doc E2E Test"
 
     [Test]
     [HandlerFunctions('EDocServicesPageHandler')]
-    procedure UIClickSendInWhenPendingResponseSuccess26()
+    internal procedure UIClickSendInWhenPendingResponseSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -2157,7 +2158,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure PostDocumentNoDefaultOrElectronicProfile26()
+    internal procedure PostDocumentNoDefaultOrElectronicProfile26()
     var
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocument: Record "E-Document";
@@ -2192,7 +2193,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
-    procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess26()
+    internal procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess26()
     var
         PurchaseHeader: Record "Purchase Header";
         NullGuid: Guid;
@@ -2220,5 +2221,6 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 #endif
+#pragma warning restore AS0018
 
 }

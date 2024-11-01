@@ -1443,13 +1443,14 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseField.SetRange("No.", 10705);
     end;
 
+#pragma warning disable AS0018
 #if not CLEAN26
 
     // Tests inside CLEAN26 are testing the interfaces that is to be removed when CLEAN26 tags are removed.
     // Until then, the tests are kept.
 
     [Test]
-    procedure ReceiveSinglePurchaseInvoice26()
+    internal procedure ReceiveSinglePurchaseInvoice26()
     var
         EDocService: Record "E-Document Service";
         EDocServicePage: TestPage "E-Document Service";
@@ -1526,7 +1527,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment26()
+    internal procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment26()
     var
         EDocService: Record "E-Document Service";
         Item: Record Item;
@@ -1623,7 +1624,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveSinglePurchaseInvoice_PEPPOLDataExch_WithAttachment26()
+    internal procedure ReceiveSinglePurchaseInvoice_PEPPOLDataExch_WithAttachment26()
     var
         EDocService: Record "E-Document Service";
         Item: Record Item;
@@ -1725,7 +1726,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [Test]
     [HandlerFunctions('SelectPOHandlerFirst')]
-    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_ToOrder26()
+    internal procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_ToOrder26()
     var
         EDocService: Record "E-Document Service";
         EDocument: Record "E-Document";
@@ -1826,7 +1827,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [Test]
     [HandlerFunctions('SelectPOHandler')]
-    procedure ReceiveToPurchaseOrderLink26()
+    internal procedure ReceiveToPurchaseOrderLink26()
     var
         Vendor1: Record Vendor;
         EDocService: Record "E-Document Service";
@@ -1898,7 +1899,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveToPurchaseOrderLinkWithOrderNo26()
+    internal procedure ReceiveToPurchaseOrderLinkWithOrderNo26()
     var
         EDocService: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
@@ -1996,7 +1997,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [Test]
     [HandlerFunctions('SelectPOHandlerCancel')]
-    procedure ReceiveToPurchaseOrderCreated26()
+    internal procedure ReceiveToPurchaseOrderCreated26()
     var
         PurchHeader: Record "Purchase Header";
         EDocService: Record "E-Document Service";
@@ -2066,7 +2067,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveFivePurchaseInvoices26()
+    internal procedure ReceiveFivePurchaseInvoices26()
     var
         EDocument: Record "E-Document";
         EDocService: Record "E-Document Service";
@@ -2155,7 +2156,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveSinglePurchaseCreditMemo26()
+    internal procedure ReceiveSinglePurchaseCreditMemo26()
     var
         EDocService: Record "E-Document Service";
         EDocReceiveTest: Codeunit "E-Doc. Receive Test";
@@ -2241,7 +2242,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveFivePurchaseCreditMemos26()
+    internal procedure ReceiveFivePurchaseCreditMemos26()
     var
         EDocument: Record "E-Document";
         EDocService: Record "E-Document Service";
@@ -2340,7 +2341,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveSinglePurchaseInvoiceToJournal26()
+    internal procedure ReceiveSinglePurchaseInvoiceToJournal26()
     var
         EDocService: Record "E-Document Service";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -2420,7 +2421,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveMultiPurchaseInvoicesToJournal26()
+    internal procedure ReceiveMultiPurchaseInvoicesToJournal26()
     var
         EDocService: Record "E-Document Service";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -2503,7 +2504,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveSinglePurchaseCreditMemoToJournal26()
+    internal procedure ReceiveSinglePurchaseCreditMemoToJournal26()
     var
         EDocService: Record "E-Document Service";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -2583,7 +2584,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    procedure ReceiveMultiCreditMemosToJournal26()
+    internal procedure ReceiveMultiCreditMemosToJournal26()
     var
         EDocService: Record "E-Document Service";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -2667,7 +2668,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [Test]
     [HandlerFunctions('ConfirmHandler')]
-    procedure GetBasicInfoFromReceivedDocumentError26()
+    internal procedure GetBasicInfoFromReceivedDocumentError26()
     var
         EDocService: Record "E-Document Service";
         EDocServicePage: TestPage "E-Document Service";
@@ -2715,7 +2716,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [Test]
     [HandlerFunctions('ConfirmHandler')]
-    procedure GetCompleteInfoFromReceivedDocumentError26()
+    internal procedure GetCompleteInfoFromReceivedDocumentError26()
     var
         EDocService: Record "E-Document Service";
         EDocServicePage: TestPage "E-Document Service";
@@ -2763,5 +2764,6 @@ codeunit 139628 "E-Doc. Receive Test"
 
 
 #endif
+#pragma warning restore AS0018
 
 }

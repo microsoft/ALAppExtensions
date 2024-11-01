@@ -10,22 +10,22 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 /// Type of actions that can be performed on an E-Document
 /// Actions are invoked using the InvokeAction method in Integration Management
 /// </summary>
-enum 6170 "Integration Action Type" implements "Integration Action"
+enum 6170 "Integration Action Type" implements "Action Invoker"
 {
     Access = Public;
     Extensible = true;
 
     value(0; "No Action")
     {
-        Implementation = "Integration Action" = "No Int. Action";
+        Implementation = "Action Invoker" = "No Int. Action";
     }
     value(1; "Sent Document Approval")
     {
-        Implementation = "Integration Action" = "Send Doc Approval";
+        Implementation = "Action Invoker" = "Sent Document Approval";
     }
-    value(2; "Sent Document Cancellation")
+    value(2; "Sent Document cancelation")
     {
-        Implementation = "Integration Action" = "Send Doc Cancellation";
+        Implementation = "Action Invoker" = "Sent Document Cancelation";
     }
 
 }

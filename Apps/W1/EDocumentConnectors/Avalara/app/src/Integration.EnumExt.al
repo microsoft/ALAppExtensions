@@ -5,11 +5,12 @@
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 
 enumextension 6370 Integration extends "E-Document Integration"
 {
     value(6370; "Avalara")
     {
-        Implementation = "E-Document Integration" = "Integration Impl.";
+        Implementation = Sender = "Integration Impl.", Receiver = "Integration Impl.", "Default Int. Actions" = "Integration Impl.";
     }
 }

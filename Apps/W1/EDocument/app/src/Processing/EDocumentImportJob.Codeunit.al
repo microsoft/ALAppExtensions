@@ -25,8 +25,8 @@ codeunit 6147 "E-Document Import Job"
         EDocumentService.Get(Rec."Record ID to Process");
 
         EDocIntegration := EDocumentService."Service Integration";
-        if EDocIntegration is Receive then begin
-            EDocIntegrationMgt.ReceiveDocument(EDocumentService);
+        if EDocIntegration is Receiver then begin
+            EDocIntegrationMgt.ReceiveDocuments(EDocumentService);
             EDocImport.ProcessReceivedDocuments(EDocumentService, EDocument);
             exit;
         end;
@@ -42,7 +42,7 @@ codeunit 6147 "E-Document Import Job"
         EDocImport: Codeunit "E-Doc. Import";
     begin
         EDocumentService.Get(Rec."Record ID to Process");
-        EDocIntegrationMgt.ReceiveDocument(EDocumentService);
+        EDocIntegrationMgt.ReceiveDocuments(EDocumentService);
         EDocImport.ProcessReceivedDocuments(EDocumentService, EDocument);
     end;
 #endif

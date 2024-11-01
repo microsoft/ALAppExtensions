@@ -80,27 +80,6 @@ codeunit 6134 "E-Doc. Integration Management"
     #region Receive
 
 #if not CLEAN26
-    internal procedure Receive(EDocService: Record "E-Document Service")
-    var
-        EDocIntegration: Interface "E-Document Integration";
-    begin
-        EDocIntegration := EDocService."Service Integration";
-        if EDocIntegration is Receive then
-            ReceiveDocument(EDocService)
-        else
-            ReceiveDocument(EDocService, EDocIntegration);
-    end;
-#else
-    internal procedure Receive(EDocService: Record "E-Document Service")
-    var
-        ReceiveInterface: Interface Receive;
-    begin
-        ReceiveInterface := EDocService."Service Integration";
-        ReceiveDocument(EDocService)
-    end;
-#endif
-
-#if not CLEAN26
     internal procedure ReceiveDocument(EDocService: Record "E-Document Service"; EDocIntegration: Interface "E-Document Integration")
     var
         EDocument, EDocument2 : Record "E-Document";
@@ -134,7 +113,7 @@ codeunit 6134 "E-Doc. Integration Management"
             IsProcessed := false;
             EDocument.Init();
             EDocument."Index In Batch" := I;
-            EDocImport.OnBeforeInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse, IsCreated, IsProcessed);
+            EDocImport.BeforeInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse, IsCreated, IsProcessed);
 
             if not IsCreated then begin
                 EDocument."Entry No" := 0;
@@ -154,7 +133,7 @@ codeunit 6134 "E-Doc. Integration Management"
                 EDocumentProcessing.InsertServiceStatus(EDocument, EDocService, EDocumentServiceStatus);
                 EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocumentServiceStatus);
 
-                EDocImport.OnAfterInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse);
+                EDocImport.AfterInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse);
             end;
 
             if not IsProcessed then
@@ -173,54 +152,79 @@ codeunit 6134 "E-Doc. Integration Management"
     end;
 #endif
 
-    internal procedure ReceiveDocument(var EDocumentService: Record "E-Document Service")
+    internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service")
     var
         EDocument: Record "E-Document";
-        EDocLog: Record "E-Document Log";
-        DocumentsBlob, DocumentBlob : Codeunit "Temp Blob";
-        SharedHttpResponse, HttpResponse : HttpResponseMessage;
-        SharedHttpRequest, HttpRequest : HttpRequestMessage;
-        Index, Count, ErrorCount : Integer;
-        Success, SharedStorageInserted : Boolean;
-        SharedStorageNo: Integer;
+        DocumentsBlob: Codeunit "Temp Blob";
+        SharedHttpResponse: HttpResponseMessage;
+        SharedHttpRequest: HttpRequestMessage;
+        Index, Count, SharedStorageNo : Integer;
+        SharedStorageInserted: Boolean;
     begin
-        Count := ReceiveDocuments(EDocumentService, DocumentsBlob, SharedHttpRequest, SharedHttpResponse);
+        Count := RunReceiveDocuments(EDocumentService, DocumentsBlob, SharedHttpRequest, SharedHttpResponse);
         if not DocumentsBlob.HasValue() then
             exit;
 
         for Index := 1 to Count do begin
-
-            Clear(EDocument);
-            Clear(DocumentBlob);
 
             EDocument."Entry No" := 0;
             EDocument."Index In Batch" := Index;
             EDocument.Direction := EDocument.Direction::Incoming;
             EDocument.Insert();
 
-            ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
-            DownloadDocument(EDocument, EDocumentService, DocumentsBlob, DocumentBlob, HttpRequest, HttpResponse);
-            Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-
-            if not Success or not DocumentBlob.HasValue() then
-                EDocument.Delete()
-            else begin
+            if ReceiveSingleDocument(EDocument, EDocumentService, DocumentsBlob) then begin
 
                 if not SharedStorageInserted then begin
                     SharedStorageInserted := true;
                     SharedStorageNo := EDocumentLog.InsertDataStorage(DocumentsBlob);
                 end;
 
-                EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Imported);
-                EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
-                EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
-                EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
-
                 // Insert shared data for all imported documents
-                EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, SharedHttpRequest, SharedHttpResponse);
                 EDocumentLog.InsertLog(EDocument, EDocumentService, SharedStorageNo, Enum::"E-Document Service Status"::"Batch Imported");
-            end;
+                EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, SharedHttpRequest, SharedHttpResponse);
+
+            end else
+                EDocument.Delete();
         end;
+    end;
+
+    local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentsBlob: Codeunit "Temp Blob"): Boolean
+    var
+        DocumentBlob: Codeunit "Temp Blob";
+        Receiver: Interface Receiver;
+        HttpResponse, HttpResponseFetch : HttpResponseMessage;
+        HttpRequest, HttpRequestFetch : HttpRequestMessage;
+        ErrorCount: Integer;
+        Success, Fetchable : Boolean;
+    begin
+        ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
+        RunDownloadDocument(EDocument, EDocumentService, DocumentsBlob, DocumentBlob, HttpRequest, HttpResponse);
+        Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
+
+        if (not Success) or (not DocumentBlob.HasValue()) then
+            exit;
+
+        Receiver := EDocumentService."Service Integration";
+        Fetchable := Receiver is Fetchable;
+
+        if Fetchable then begin
+            ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
+            RunMarkFetched(EDocument, EDocumentService, DocumentBlob, HttpRequestFetch, HttpResponseFetch);
+            Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
+
+            if not Success then
+                exit;
+        end;
+
+        // Insert logs for downloading document
+        InsertLogAndEDocumentStatus(EDocument, EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Imported);
+        EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+
+        // Insert logs for marking document as fetched
+        if Fetchable then
+            EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestFetch, HttpResponseFetch);
+
+        exit(true);
     end;
 
 
@@ -256,7 +260,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
     end;
 
-    internal procedure SentDocApproval(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure SentDocumentApproval(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
 #if not CLEAN26
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -298,7 +302,7 @@ codeunit 6134 "E-Doc. Integration Management"
 #endif
     end;
 
-    internal procedure SentDocCancellation(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure SentDocumentCancelation(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
 #if not CLEAN26
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -315,7 +319,7 @@ codeunit 6134 "E-Doc. Integration Management"
 #if not CLEAN26
         EDocIntegration := EDocumentService."Service Integration";
         if EDocIntegration is "Default Int. Actions" then begin
-            InvokeAction(EDocument, EDocumentService, Enum::"Integration Action Type"::"Sent Document Cancellation");
+            InvokeAction(EDocument, EDocumentService, Enum::"Integration Action Type"::"Sent Document cancelation");
             exit;
         end;
 
@@ -335,7 +339,7 @@ codeunit 6134 "E-Doc. Integration Management"
             EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
         end;
 #else
-        InvokeAction(EDocument, EDocumentService, Enum::"Integration Action Type"::"Sent Document Cancellation");
+        InvokeAction(EDocument, EDocumentService, Enum::"Integration Action Type"::"Sent Document cancelation");
 #endif
     end;
 
@@ -389,7 +393,7 @@ codeunit 6134 "E-Doc. Integration Management"
         Telemetry.LogMessage('0000LBO', EDocTelemetrySendBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
-    local procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage) Count: Integer
+    local procedure RunReceiveDocuments(var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage) Count: Integer
     var
         ReceiveDocs: Codeunit "Receive Documents";
         TelemetryDimensions: Dictionary of [Text, Text];
@@ -408,7 +412,24 @@ codeunit 6134 "E-Doc. Integration Management"
         Telemetry.LogMessage('0000O0B', EDocTelemetryReceiveDocsScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
-    local procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentsBlob: Codeunit "Temp Blob"; var DocumentBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    local procedure RunMarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    var
+        MarkFetched: Codeunit "Mark Fetched";
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        // Commit needed for "if codeunit run" pattern when catching errors.
+        Commit();
+        Telemetry.LogMessage('0000O2X', EDocTelemetryReciveDownloadDocScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
+
+        MarkFetched.SetParameters(EDocument, EDocumentService, DocumentBlob);
+        if not MarkFetched.Run() then
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
+
+        MarkFetched.GetParameters(EDocument, EDocumentService, HttpRequest, HttpResponse);
+        Telemetry.LogMessage('0000O2Y', EDocTelemetryReciveDownloadDocScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+    end;
+
+    local procedure RunDownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentsBlob: Codeunit "Temp Blob"; var DocumentBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
         DownloadDoc: Codeunit "Download Document";
         TelemetryDimensions: Dictionary of [Text, Text];
@@ -454,6 +475,13 @@ codeunit 6134 "E-Doc. Integration Management"
     begin
         EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+    end;
+
+    local procedure InsertLogAndEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; EDocServiceStatus: Enum "E-Document Service Status")
+    begin
+        EDocumentLog.InsertLog(EDocument, EDocumentService, DocumentBlob, EDocServiceStatus);
+        EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
         EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
     end;
 
@@ -514,13 +542,13 @@ codeunit 6134 "E-Doc. Integration Management"
 
 #if not CLEAN26
     [IntegrationEvent(false, false)]
-    [Obsolete('This event is obsoleted for SentDocumentApproval in "Default Int. Actions" interface.', '26.0')]
+    [Obsolete('This event is obsoleted for GetSentDocumentApprovalStatus in "Default Int. Actions" interface.', '26.0')]
     local procedure OnCancelEDocumentReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    [Obsolete('This event is obsoleted for SentDocumentCancellation in "Default Int. Actions" interface.', '26.0')]
+    [Obsolete('This event is obsoleted for GetSentDocumentCancelationStatus in "Default Int. Actions" interface.', '26.0')]
     local procedure OnGetEDocumentApprovalReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
     begin
     end;

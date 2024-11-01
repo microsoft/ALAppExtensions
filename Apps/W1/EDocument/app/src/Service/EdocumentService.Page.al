@@ -291,8 +291,8 @@ page 6133 "E-Document Service"
         EDocIntegration: Interface "E-Document Integration";
     begin
         EDocIntegration := Rec."Service Integration";
-        if EDocIntegration is Receive then begin
-            EDocIntegrationMgt.ReceiveDocument(Rec);
+        if EDocIntegration is Receiver then begin
+            EDocIntegrationMgt.ReceiveDocuments(Rec);
             EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
 
             if FailedEDocument."Entry No" <> 0 then
@@ -310,13 +310,13 @@ page 6133 "E-Document Service"
         EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocIntegrationMgt.ReceiveDocument(Rec);
+        EDocIntegrationMgt.ReceiveDocuments(Rec);
         EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
 
         if FailedEDocument."Entry No" <> 0 then
             if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
                 Page.Run(Page::"E-Document", FailedEDocument);
-        
+
     end;
 #endif
 

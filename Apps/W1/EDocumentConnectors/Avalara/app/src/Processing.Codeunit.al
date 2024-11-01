@@ -90,9 +90,8 @@ codeunit 6379 Processing
     /// <summary>
     /// Calls Avalara API for SubmitDocument.
     /// </summary>
-    procedure SendEDocument(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure SendEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        EDocumentService: Record "E-Document Service";
         Request: Codeunit Requests;
         HttpExecutor: Codeunit "Http Executor";
         MetaData: Codeunit Metadata;
@@ -109,7 +108,6 @@ codeunit 6379 Processing
                 MetaData.SetDataFormat('ubl-creditnote');
         end;
 
-        EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
         SetMandateForMetaData(EDocumentService, MetaData);
 
         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
@@ -147,7 +145,7 @@ codeunit 6379 Processing
     /// <summary>
     /// Lookup documents for last XX days. 
     /// </summary>
-    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Count: Integer)
     var
         OutStream: OutStream;
         ArrayOfDocuments: Text;
@@ -156,10 +154,13 @@ codeunit 6379 Processing
     begin
         EndDate := CalcDate('<-1M>', Today());
         Response := ReceiveDocumentInner(TempBlob, HttpRequest, HttpResponse, StrSubstNo(AvalaraGetDocsPathTxt, FormatDateTime(EndDate), FormatDateTime(Today())));
-        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+
+        RemoveExistingDocumentsFromResponse(Response);
         Response.WriteTo(ArrayOfDocuments);
+        Count := Response.Count();
+
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.Write(ArrayOfDocuments);
-        HttpResponse.Content.WriteFrom(ArrayOfDocuments);
     end;
 
     /// <summary>
@@ -211,6 +212,43 @@ codeunit 6379 Processing
         exit(Values);
     end;
 
+
+    /// <summary>
+    /// Download document XML from Avalara API
+    /// </summary>
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentsBlob: codeunit "Temp Blob"; var DocumentBlob: codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    var
+        Request: Codeunit Requests;
+        HttpExecutor: Codeunit "Http Executor";
+        ResponseContent: Text;
+        InStream: InStream;
+        ContentData, DocumentId : Text;
+        OutStream: OutStream;
+    begin
+        DocumentsBlob.CreateInStream(InStream, TextEncoding::UTF8);
+        InStream.ReadText(ContentData);
+        if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId) then begin
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
+            exit;
+        end;
+        if DocumentId = '' then begin
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
+            exit;
+        end;
+
+        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
+        EDocument.Modify();
+
+        Request.Init();
+        Request.Authenticate().CreateDownloadRequest(DocumentId);
+        ResponseContent := HttpExecutor.ExecuteHttpRequest(Request, HttpResponseMessage);
+        HttpRequestMessage := Request.GetRequest();
+
+        Clear(DocumentBlob);
+        DocumentBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(ResponseContent);
+    end;
+
     /// <summary>
     /// Get number of documents in batch
     /// </summary>
@@ -227,71 +265,31 @@ codeunit 6379 Processing
     end;
 
     /// <summary>
-    /// Filter out received documents that are already downloaded.
-    /// Needed as Avalara API does not support marking documents as fetched.
+    /// Remove document ids from array that are already created as E-Documents.
     /// </summary>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", 'OnBeforeInsertImportedEdocument', '', false, false)]
-    local procedure OnBeforeInsertEdocumentCheck(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
+    local procedure RemoveExistingDocumentsFromResponse(var Documents: JsonArray)
     var
-        EDocument2: Record "E-Document";
-        ContentData, DocumentId : Text;
+        DocumentId: Text;
+        I: Integer;
+        NewArray: JsonArray;
     begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Avalara then
-            exit;
-
-        HttpResponse.Content.ReadAs(ContentData);
-        if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId) then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-            exit;
+        for I := 0 to Documents.Count() - 1 do begin
+            DocumentId := GetDocumentIdFromArray(Documents, I);
+            if not DocumentExists(DocumentId) then
+                NewArray.Add(DocumentId);
         end;
-        if DocumentId = '' then
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-
-        // Decide if document exists
-        EDocument2.SetRange("Document Id", DocumentId);
-        IsCreated := not EDocument2.IsEmpty();
-        IsProcessed := IsCreated;
+        Documents := NewArray;
     end;
 
     /// <summary>
-    /// Get Document Id and store it E-Document.
-    /// Create Request to Download XML based on Document Id, and store it in TempBlob. 
+    /// Check if E-Document with Document Id exists in E-Document table
     /// </summary>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", OnAfterInsertImportedEdocument, '', false, false)]
-    local procedure OnAfterInsertEdocumentReadDocumentIdAndDownloadContent(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    local procedure DocumentExists(DocumentId: Text): Boolean
     var
-        Request: Codeunit Requests;
-        HttpExecutor: Codeunit "Http Executor";
-        ResponseContent: Text;
-        HttpResponseLocal: HttpResponseMessage;
-        ContentData, DocumentId : Text;
-        OutStream: OutStream;
+        EDocument: Record "E-Document";
     begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Avalara then
-            exit;
-
-        HttpResponse.Content.ReadAs(ContentData);
-        if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId) then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-            exit;
-        end;
-        if DocumentId = '' then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-            exit;
-        end;
-
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
-        EDocument.Modify();
-
-        Request.Init();
-        Request.Authenticate().CreateDownloadRequest(DocumentId);
-        ResponseContent := HttpExecutor.ExecuteHttpRequest(Request, HttpResponseLocal);
-        EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, Request.GetRequest(), HttpResponseLocal);
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-        OutStream.WriteText(ResponseContent);
-        EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
+        EDocument.SetRange("Document Id", DocumentId);
+        exit(not EDocument.IsEmpty());
     end;
 
     /// <summary>
@@ -466,7 +464,7 @@ codeunit 6379 Processing
     local procedure ParseReceivedDocument(InputTxt: Text; Index: Integer; var DocumentId: Text): Boolean
     var
         ValueArray: JsonArray;
-        DocumentJsonToken, IdToken : JsonToken;
+        IdToken: JsonToken;
     begin
         ValueArray.ReadFrom(InputTxt);
         if Index > ValueArray.Count then
@@ -475,11 +473,22 @@ codeunit 6379 Processing
         if Index = 0 then
             Index := 1;
 
-        ValueArray.Get(Index - 1, DocumentJsonToken);
-        DocumentJsonToken.AsObject().Get('id', IdToken);
+        // Minus 1 as index is 1 based for AL, but 0 for JSON
+        ValueArray.Get(Index - 1, IdToken);
         DocumentId := IdToken.AsValue().AsText();
-
         exit(true);
+    end;
+
+    /// <summary>
+    /// Returns id from json array
+    /// </summary>
+    local procedure GetDocumentIdFromArray(DocumentArray: JsonArray; Index: Integer): Text
+    var
+        DocumentJsonToken, IdToken : JsonToken;
+    begin
+        DocumentArray.Get(Index, DocumentJsonToken);
+        DocumentJsonToken.AsObject().Get('id', IdToken);
+        exit(IdToken.AsValue().AsText());
     end;
 
     /// <summary>
@@ -507,8 +516,7 @@ codeunit 6379 Processing
     var
         TempMandates: Record Mandate temporary;
         TempAvalaraCompanies: Record "Company" temporary;
-        EDocumentHelper: Codeunit "E-Document Helper";
-        EDocumentLogHelper: Codeunit "E-Document Log Helper";
+        // EDocumentLogHelper: Codeunit "E-Document Log Helper";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         IncorrectDocumentIdInResponseErr: Label 'Document ID returned by API does not match E-Document.';
         DocumentIdNotFoundErr: Label 'Document ID not found in response.';

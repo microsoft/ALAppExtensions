@@ -906,16 +906,4 @@ codeunit 139616 "E-Doc Log Test"
         end;
     end;
 
-
-    #region Old Tests - To be removed
-
-#if not CLEAN26
-
-
-#endif
-
-
-    #endregion
-
-
 }

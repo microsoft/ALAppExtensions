@@ -315,7 +315,6 @@ codeunit 6140 "E-Doc. Import"
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
-
     begin
         EDocumentServiceStatus.SetRange("E-Document Service Code", EDocService.Code);
         EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Imported);
@@ -626,6 +625,18 @@ codeunit 6140 "E-Doc. Import"
         HideDialogs := Hide;
     end;
 
+#if not CLEAN26
+    internal procedure AfterInsertImportedEdocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    begin
+        OnAfterInsertImportedEdocument(EDocument, EDocumentService, TempBlob, EDocCount, HttpRequest, HttpResponse);
+    end;
+
+    internal procedure BeforeInsertImportedEdocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
+    begin
+        OnBeforeInsertImportedEdocument(EDocument, EDocumentService, TempBlob, EDocCount, HttpRequest, HttpResponse, IsCreated, IsProcessed);
+    end;
+#endif
+
     var
         EDocumentLog: Codeunit "E-Document Log";
         EDocImportHelper: Codeunit "E-Document Import Helper";
@@ -686,13 +697,17 @@ codeunit 6140 "E-Doc. Import"
     begin
     end;
 
+#if not CLEAN26
     [IntegrationEvent(false, false)]
-    internal procedure OnAfterInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    [Obsolete('This event is removed. Use new Receiver interface instead', '26.0')]
+    local procedure OnAfterInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    internal procedure OnBeforeInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
+    [Obsolete('This event is removed. Use new Receiver interface instead', '26.0')]
+    local procedure OnBeforeInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
     begin
     end;
+#endif
 }

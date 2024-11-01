@@ -66,6 +66,7 @@ interface "E-Document Integration"
     /// <param name="HttpRequest">The HTTP request message object that you should use when sending the request.</param>
     /// <param name="HttpResponse">The HTTP response object that you should use when sending the request.</param>
     /// <remarks>If http response is populated, the response content and headers will be logged automatically to communication logs.</remarks>
+    [Obsolete('Replaced by GetSentDocumentApprovalStatus method in "Default Int. Actions" interface.', '26.0')]
     procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
 
     /// <summary>
@@ -75,6 +76,7 @@ interface "E-Document Integration"
     /// <param name="HttpRequest">The HTTP request message object that you should use when sending the request.</param>
     /// <param name="HttpResponse">The HTTP response object that you should use when sending the request.</param>
     /// <remarks>If http response is populated, the response content and headers will be logged automatically to communication logs.</remarks>
+    [Obsolete('Replaced by GetSentDocumentCancelationStatus method in "Default Int. Actions" interface.', '26.0')]
     procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
 
     /// <summary>
@@ -87,12 +89,14 @@ interface "E-Document Integration"
     /// <param name="HttpRequest">The HTTP request message object that you should use when sending the request.</param>
     /// <param name="HttpResponse">The HTTP response object that you should use when sending the request.</param>
     /// <remarks>If http response is populated, the response content and headers will be logged automatically to communication logs.</remarks>
+    [Obsolete('Replaced by ReceiveDocuments method in Receive interface.', '26.0')]
     procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
 
     /// <summary>
     /// Use it to define how many received documents in batch import.
     /// </summary>
     /// <param name="TempBlob">The tempblob that was received from the external service.</param>
+    [Obsolete('Removed, now part of ReceiveDocuments method in Receive interface.', '26.0')]
     procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer;
 
     /// <summary>
@@ -100,6 +104,7 @@ interface "E-Document Integration"
     /// </summary>
     /// <param name="SetupPage">The E-Document integration page id.</param>
     /// <param name="SetupTable">The E-Dcoument integration table id.</param>
+    [Obsolete('Replaced by OpenServiceIntegrationSetupPage method in "Default Int. Actions" interface.', '26.0')]
     procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer);
 }
 #endif

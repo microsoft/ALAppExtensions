@@ -15,7 +15,7 @@ codeunit 139659 "E-Doc. Line Matching Test"
         LibraryPermission: Codeunit "Library - Lower Permissions";
         IsInitialized: Boolean;
 
-    procedure Initialize()
+    procedure Initialize(Integration: Enum "E-Document Integration")
     begin
         LibraryPermission.SetOutsideO365Scope();
         if IsInitialized then
@@ -250,11 +250,11 @@ codeunit 139659 "E-Doc. Line Matching Test"
         EDocImportedLine.Insert();
     end;
 
-
+#pragma warning disable AS0018
 #if not CLEAN26
 
     [Test]
-    procedure MatchOneImportLineToOnePOLineSuccess26()
+    internal procedure MatchOneImportLineToOnePOLineSuccess26()
     var
         EDocument: Record "E-Document";
         EDocImportedLine: Record "E-Doc. Imported Line";
@@ -318,5 +318,6 @@ codeunit 139659 "E-Doc. Line Matching Test"
     end;
 
 #endif
+#pragma warning restore AS0018
 
 }

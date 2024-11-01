@@ -7,13 +7,18 @@ namespace Microsoft.eServices.EDocument.Integration.Action;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-codeunit 6176 "No Int. Action" implements "Integration Action"
+/// <summary>
+/// This codeunit is used to implement the Integration Action interface. It is used to provide a default implementation for the Integration Action interface.
+/// </summary>
+codeunit 6176 "No Int. Action" implements "Action Invoker"
 {
-    procedure InvokeAction(ActionType: Enum "Integration Action Type"; var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
+    Access = Internal;
+
+    procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     begin
     end;
 
-    procedure GetFallbackStatus(ActionType: Enum "Integration Action Type"; var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"): Enum "E-Document Service Status"
+    procedure GetFallbackStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"): Enum "E-Document Service Status"
     begin
     end;
 

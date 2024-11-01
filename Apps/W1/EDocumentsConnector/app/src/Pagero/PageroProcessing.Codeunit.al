@@ -17,16 +17,13 @@ codeunit 6369 "Pagero Processing"
     Permissions = tabledata "E-Document" = m,
                   tabledata "E-Document Service Status" = m;
 
-    procedure SendEDocument(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure SendEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
-        EdocumentService: Record "E-Document Service";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         IsAsync := true;
-
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
-        EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
 
         case EDocumentServiceStatus.Status of
             EDocumentServiceStatus.Status::Exported:
@@ -35,16 +32,16 @@ codeunit 6369 "Pagero Processing"
                 if EDocument."File Id" = '' then
                     SendEDocument(EDocument, TempBlob, HttpRequest, HttpResponse)
                 else
-                    RestartEDocument(EDocument, HttpRequest, HttpResponse);
+                    RestartEDocument(EDocument, EDocumentService, HttpRequest, HttpResponse);
         end;
 
         FeatureTelemetry.LogUptake('0000MSC', ExternalServiceTok, Enum::"Feature Uptake Status"::Used);
     end;
 
-    procedure GetDocumentResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    procedure GetDocumentResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
     begin
-        if not CheckIfDocumentStatusSuccessful(EDocument, HttpRequest, HttpResponse) then
+        if not CheckIfDocumentStatusSuccessful(EDocument, EDocumentService, HttpRequest, HttpResponse) then
             exit(false);
 
         if not PageroConnection.GetADocument(EDocument, HttpRequest, HttpResponse) then
@@ -53,26 +50,24 @@ codeunit 6369 "Pagero Processing"
         exit(true);
     end;
 
-    procedure CancelEDocument(EDocument: Record "E-Document"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage): Boolean
+    procedure CancelEDocument(EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     var
-        EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
-        EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
 
         if not (EDocumentServiceStatus.Status in [EDocumentServiceStatus.Status::"Cancel Error", EDocumentServiceStatus.Status::"Sending Error"]) then
             Error(CancelCheckStatusErr, EDocumentServiceStatus.Status);
 
-        if PageroConnection.HandleSendActionRequest(EDocument, HttpRequest, HttpResponse, 'Cancel', false) then
+        if PageroConnection.HandleSendActionRequest(EDocument, HttpRequest, HttpResponse, 'Cancel', false) then begin
+            Status := Enum::"E-Document Service Status"::Canceled;
             exit(true);
+        end;
+        exit(false);
     end;
 
-    procedure RestartEDocument(EDocument: Record "E-Document"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage): Boolean
-    var
-        EDocumentService: Record "E-Document Service";
+    procedure RestartEDocument(EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage): Boolean
     begin
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
         if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
             exit;
 
@@ -80,33 +75,36 @@ codeunit 6369 "Pagero Processing"
             exit(true);
     end;
 
-    procedure GetDocumentApproval(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    procedure GetDocumentApproval(EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; var Status: Enum "E-Document Service Status"): Boolean
     var
-        EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         PageroAPIRequests: Codeunit "Pagero API Requests";
         HttpContentResponse: HttpContent;
-        Status, StatusDescription : Text;
+        StatusText, StatusDescription : Text;
     begin
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
-        EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         if EDocumentServiceStatus.Status <> EDocumentServiceStatus.Status::Sent then
             Error(GetApprovalCheckStatusErr, EDocumentServiceStatus.Status);
 
         PageroAPIRequests.GetADocument(EDocument, HttpRequestMessage, HttpResponseMessage);
 
         HttpContentResponse := HttpResponseMessage.Content;
-        if ParseGetADocumentApprovalResponse(HttpContentResponse, Status, StatusDescription) then
-            case Status of
+        if ParseGetADocumentApprovalResponse(HttpContentResponse, StatusText, StatusDescription) then
+            case StatusText of
                 'Accepted':
-                    exit(true);
+                    begin
+                        Status := Enum::"E-Document Service Status"::Approved;
+                        exit(true);
+                    end;
                 'Rejected':
                     begin
+                        Status := Enum::"E-Document Service Status"::Rejected;
                         if StatusDescription <> '' then
-                            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                        exit(false);
+                            EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument."Entry No", 'Reason: ' + StatusDescription);
+                        exit(true);
                     end;
             end;
+        // Return false. We have no update for the document
         exit(false);
     end;
 
@@ -182,7 +180,7 @@ codeunit 6369 "Pagero Processing"
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
     end;
 
-    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure ReceiveDocument(var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; var Count: Integer)
     var
         ContentData: Text;
         OutStream: OutStream;
@@ -194,6 +192,40 @@ codeunit 6369 "Pagero Processing"
 
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.WriteText(ContentData);
+
+        Count := GetDocumentCountInBatch(TempBlob);
+    end;
+
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentsBlob: codeunit "Temp Blob"; var DocumentBlob: codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    var
+        DocumentOutStream: OutStream;
+        Instream: InStream;
+        ContentData, DocumentId, FileId : Text;
+    begin
+        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
+            exit;
+
+        DocumentsBlob.CreateInStream(Instream);
+        Instream.ReadText(ContentData);
+        if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId, FileId) then begin
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
+            exit;
+        end;
+
+        PageroConnection.HandleGetTargetDocumentRequest(DocumentId, HttpRequestMessage, HttpResponseMessage, false);
+
+        HttpResponseMessage.Content.ReadAs(ContentData);
+        if ContentData = '' then
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(CouldNotRetrieveDocumentErr, DocumentId));
+
+        Clear(DocumentBlob);
+        DocumentBlob.CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
+        DocumentOutStream.WriteText(ContentData);
+
+        FetchEDocument(EDocument, EDocumentService, DocumentId);
+
+        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
+        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
     end;
 
     procedure ApproveEDocument(EDocument: Record "E-Document")
@@ -283,9 +315,11 @@ codeunit 6369 "Pagero Processing"
 
     local procedure DeleteRelatedDocument(EDocument: Record "E-Document")
     var
+        EDocument2: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
         RelatedRecordID: RecordID;
         RelatedRecordRef: RecordRef;
+        NullGuid: Guid;
     begin
         RelatedRecordID := EDocument."Document Record ID";
         RelatedRecordRef := RelatedRecordID.GetRecord();
@@ -295,6 +329,13 @@ codeunit 6369 "Pagero Processing"
             database::"Purchase Header":
                 begin
                     RelatedRecordRef.SetTable(PurchaseHeader);
+                    if EDocument.SystemId <> PurchaseHeader."E-Document Link" then begin
+                        EDocument2.ReadIsolation(IsolationLevel::ReadUncommitted);
+                        EDocument2.GetBySystemId(PurchaseHeader."E-Document Link");
+                        Error(CannotRejectErr, PurchaseHeader."No.", EDocument2."Entry No");
+                    end;
+
+                    PurchaseHeader.Validate("E-Document Link", NullGuid);
                     PurchaseHeader.Delete(true);
                 end;
         end;
@@ -303,8 +344,7 @@ codeunit 6369 "Pagero Processing"
     procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
     var
         ResponseInstream: InStream;
-        ResponseTxt:
-                Text;
+        ResponseTxt: Text;
     begin
         TempBlob.CreateInStream(ResponseInstream);
         ResponseInstream.ReadText(ResponseTxt);
@@ -361,9 +401,8 @@ codeunit 6369 "Pagero Processing"
         exit(JsonManagement.GetCollectionCount());
     end;
 
-    local procedure CheckIfDocumentStatusSuccessful(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    local procedure CheckIfDocumentStatusSuccessful(EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var HttpRequestMessage: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        EDocumentService: Record "E-Document Service";
         Telemetry: Codeunit Telemetry;
         Status, FilepartID, ErrorDescription : Text;
     begin
@@ -371,7 +410,6 @@ codeunit 6369 "Pagero Processing"
             exit(false);
 
         if IsFilePartsDocumentProcessed(HttpResponse, Status, FilepartID, ErrorDescription) then begin
-            EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
             EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponse);
             exit(true);
         end;
@@ -586,55 +624,6 @@ codeunit 6369 "Pagero Processing"
             EDocumentServices.GetRecord(EDocumentService);
     end;
 
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Management", 'OnGetEDocumentApprovalReturnsFalse', '', false, false)]
-    local procedure OnGetEDocumentApprovalReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
-    var
-        HttpContentResponse: HttpContent;
-        Status, StatusDescription : Text;
-    begin
-        HttpContentResponse := HttpResponse.Content;
-        if not ParseGetADocumentApprovalResponse(HttpContentResponse, Status, StatusDescription) then
-            IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", 'OnAfterInsertImportedEdocument', '', false, false)]
-    local procedure OnAfterInsertEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    var
-        LocalHttpRequest: HttpRequestMessage;
-        LocalHttpResponse: HttpResponseMessage;
-        DocumentOutStream: OutStream;
-        ContentData, DocumentId, FileId : Text;
-    begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
-            exit;
-
-        HttpResponse.Content.ReadAs(ContentData);
-        if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId, FileId) then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-            exit;
-        end;
-
-        PageroConnection.HandleGetTargetDocumentRequest(DocumentId, LocalHttpRequest, LocalHttpResponse, false);
-        EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
-
-        LocalHttpResponse.Content.ReadAs(ContentData);
-        if ContentData = '' then
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(CouldNotRetrieveDocumentErr, DocumentId));
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
-        DocumentOutStream.WriteText(ContentData);
-
-        FetchEDocument(EDocument, EDocumentService, DocumentId);
-
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
-        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
-
-        EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
-    end;
-
-
     var
         PageroConnection: Codeunit "Pagero Connection";
         EDocumentHelper: Codeunit "E-Document Helper";
@@ -646,6 +635,7 @@ codeunit 6369 "Pagero Processing"
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
         DocumentIdNotFoundErr: Label 'Document ID not found in response';
         ParseErr: Label 'Failed to parse document from Pagero API';
+        CannotRejectErr: Label 'Failed to delete purchase document %1 as it is currently linked to another E-Document %2', Comment = '%1 - Purchase header Document No., %2 - E-Document Entry No.';
         WrongParseStatusErr: Label 'Got unexected status from Pagero API: %1', Comment = '%1 - Status that we received from API', Locked = true;
         PageroAwaitingInteractionStatusLbl: Label 'AwaitingInteraction', Locked = true;
         PageroErrorStatusLbl: Label 'Error', Locked = true;
