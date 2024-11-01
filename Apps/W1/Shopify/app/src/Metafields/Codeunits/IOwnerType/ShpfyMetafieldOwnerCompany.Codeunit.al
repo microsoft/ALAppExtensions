@@ -1,10 +1,11 @@
 namespace Microsoft.Integration.Shopify;
 
-codeunit 30335 "Shpfy Metafield Owner Variant" implements "Shpfy IMetafield Owner Type"
+codeunit 30366 "Shpfy Metafield Owner Company" implements "Shpfy IMetafield Owner Type"
 {
+
     procedure GetTableId(): Integer
     begin
-        exit(Database::"Shpfy Variant");
+        exit(Database::"Shpfy Company");
     end;
 
     procedure RetrieveMetafieldIdsFromShopify(OwnerId: BigInteger) MetafieldIds: Dictionary of [BigInteger, DateTime]
@@ -20,10 +21,10 @@ codeunit 30335 "Shpfy Metafield Owner Variant" implements "Shpfy IMetafield Owne
         Id: BigInteger;
         UpdatedAt: DateTime;
     begin
-        Parameters.Add('VariantId', Format(OwnerId));
-        GraphQLType := GraphQLType::VariantMetafieldIds;
+        Parameters.Add('CompanyId', Format(OwnerId));
+        GraphQLType := GraphQLType::CompanyMetafieldIds;
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-        if JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.product.metafields.edges') then
+        if JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.company.metafields.edges') then
             foreach JItem in JMetafields do
                 if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                     Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'legacyResourceId'));
@@ -34,14 +35,15 @@ codeunit 30335 "Shpfy Metafield Owner Variant" implements "Shpfy IMetafield Owne
 
     procedure GetShopCode(OwnerId: BigInteger): Code[20]
     var
-        Variant: Record "Shpfy Variant";
+        Company: Record "Shpfy Company";
     begin
-        Variant.Get(OwnerId);
-        exit(Variant."Shop Code");
+        Company.Get(OwnerId);
+        exit(Company."Shop Code");
     end;
 
     procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
     begin
-        exit((Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products"));
+        exit((Shop."Can Update Shopify Companies") and (Shop."Company Import From Shopify" <> Enum::"Shpfy Company Import Range"::AllCompanies));
     end;
+
 }

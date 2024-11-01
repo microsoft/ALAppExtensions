@@ -200,6 +200,15 @@ codeunit 30284 "Shpfy Company Export"
             ShopifyCompany.Modify();
             CompanyLocation.Modify();
         end;
+
+        UpdateMetafields(ShopifyCompany.Id);
+    end;
+
+    local procedure UpdateMetafields(ComppanyId: BigInteger)
+    var
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Company", ComppanyId);
     end;
 
     internal procedure SetCreateCompanies(NewCustomers: Boolean)

@@ -356,12 +356,14 @@ codeunit 30114 "Shpfy Customer API"
     internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject) Result: Boolean
     var
         CustomerAddress: Record "Shpfy Customer Address";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         NodeId: BigInteger;
         UpdatedAt: DateTime;
         JAddresses: JsonArray;
         JTags: JsonArray;
         JAddress: JsonObject;
         JItem: JsonToken;
+        JMetafields: JsonArray;
         Ids: List of [BigInteger];
         OutStream: OutStream;
         StateString: Text;
@@ -462,6 +464,9 @@ codeunit 30114 "Shpfy Customer API"
                     CustomerAddress.Modify(false);
                 end;
             end;
+
+            if JsonHelper.GetJsonArray(JCustomer, JMetafields, 'metafields.edges') then
+                MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Customer", ShopifyCustomer.Id);
         end;
     end;
 
