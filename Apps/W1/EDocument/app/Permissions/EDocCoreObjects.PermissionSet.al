@@ -8,7 +8,7 @@ using Microsoft.eServices.EDocument.IO;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.EServices.EDocument.OrderMatch.Copilot;
-using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 permissionset 6100 "E-Doc. Core - Objects"
 {
@@ -69,6 +69,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Doc. PO AOAI Function" = X,
         codeunit "E-Doc. PO Copilot Matching" = X,
         codeunit "E-Doc. Attachment Processor" = X,
+        codeunit "Service Participant" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,
@@ -90,5 +91,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Doc Service Supported Types" = X,
         page "E-Doc. PO Copilot Prop" = X,
         page "E-Doc. PO Match Prop. Sub" = X,
-        page "E-Doc. Order Match Act." = X;
+        page "E-Doc. Order Match Act." = X,
+        page "Service Participants" = X;
 }

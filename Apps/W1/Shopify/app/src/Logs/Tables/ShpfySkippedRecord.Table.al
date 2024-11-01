@@ -19,7 +19,6 @@ table 30159 "Shpfy Skipped Record"
             AutoIncrement = true;
             Caption = 'Entry No.';
             ToolTip = 'Specifies the number of the entry, as assigned from the specific number series when the entry was created.';
-
         }
         field(2; "Shopify Id"; BigInteger)
         {
@@ -84,7 +83,7 @@ table 30159 "Shpfy Skipped Record"
                 exit(AllObjWithCaption."Object Caption");
     end;
 
-    local procedure GetRecDescription() Result: Text
+    local procedure GetRecDescription() Result: Text[250]
     var
         RecRef: RecordRef;
         PKFilter: Text;

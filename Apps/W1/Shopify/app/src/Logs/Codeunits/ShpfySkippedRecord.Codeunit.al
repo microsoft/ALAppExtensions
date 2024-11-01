@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy Skip Record (ID 30313).
+/// Codeunit Shpfy Skipped Record (ID 30313).
 /// </summary>
 codeunit 30313 "Shpfy Skipped Record"
 {
