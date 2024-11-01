@@ -53,6 +53,13 @@ codeunit 6204 "Trans. Storage Error Handler"
             exit;
         end;
 
+        // do not schedule new task if current task failed with Out Of Memory error
+        if ErrorText.Contains('OutOfMemory') then
+            exit;
+
+        if TransStorageScheduleTask.IsValidTaskExist() then
+            exit;
+
         ExportDateTime := CurrentDateTime() + Random(3) * 5 * 60 * 1000;   // 5 - 15 minutes
         TransStorageScheduleTask.CreateTaskToExport(ExportDateTime, false);
         TransactStorageExportState."Number Of Attempts" -= 1;

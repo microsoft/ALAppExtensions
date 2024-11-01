@@ -135,6 +135,9 @@ page 30100 "Shpfy Activities"
     trigger OnOpenPage()
     var
         Shop: Record "Shpfy Shop";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ApiVersion: Text;
+        ApiVersionExpiryDateTime: DateTime;
     begin
         Rec.Reset();
         if not Rec.Get() then
@@ -146,6 +149,14 @@ page 30100 "Shpfy Activities"
 
         Shop.SetRange("B2B Enabled", true);
         B2BEnabled := not Shop.IsEmpty();
+
+        Shop.Reset();
+        Shop.SetRange(Enabled, true);
+        if Shop.FindFirst() then begin
+            ApiVersion := CommunicationMgt.GetApiVersion();
+            ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
+            Shop.CheckApiVersionExpiryDate(ApiVersion, ApiVersionExpiryDateTime);
+        end;
     end;
 
     var

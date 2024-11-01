@@ -171,6 +171,24 @@ page 30156 "Shpfy Companies"
                 end;
 
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Add metafields to a company. This can be used for adding custom data fields to companies in Shopify.';
+
+                trigger OnAction()
+                var
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Metafields.RunForResource(Database::"Shpfy Company", Rec.Id, Rec."Shop Code");
+                end;
+            }
         }
     }
 }

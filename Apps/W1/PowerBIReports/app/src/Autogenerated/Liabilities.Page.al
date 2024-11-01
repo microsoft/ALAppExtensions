@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36990 "Liabilities"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Liabilities';
     AboutTitle = 'About Liabilities';
     AboutText = 'The Liabilities report provides a snapshot of liability account balances as of a specific date. It also highlights key performance metrics influenced by liabilities, such as the Debt Ratio and Debt-to-Equity Ratio.';

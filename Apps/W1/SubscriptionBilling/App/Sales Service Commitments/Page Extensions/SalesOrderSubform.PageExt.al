@@ -47,7 +47,7 @@ pageextension 8076 "Sales Order Subform" extends "Sales Order Subform"
     }
     actions
     {
-        addfirst(processing)
+        addlast("Related Information")
         {
             action(ShowSalesServiceCommitments)
             {
@@ -59,12 +59,12 @@ pageextension 8076 "Sales Order Subform" extends "Sales Order Subform"
                 ToolTip = 'Shows the service commitments for the sales line.';
             }
         }
-        addlast("&Line")
+        addlast("F&unctions")
         {
             action(AddSalesServiceCommitment)
             {
                 ApplicationArea = All;
-                Caption = 'Add Service';
+                Caption = 'Add Service Commitments';
                 Image = ExpandDepositLine;
                 ToolTip = 'Shows all service commitments for the item. Service commitments can be added, changed or removed.';
 

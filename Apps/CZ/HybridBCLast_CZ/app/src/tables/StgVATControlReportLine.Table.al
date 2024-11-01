@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA24
 table 11717 "Stg VAT Control Report Line"
 {
     ReplicateData = false;
@@ -37,4 +38,4 @@ table 11717 "Stg VAT Control Report Line"
         }
     }
 }
-
+#endif

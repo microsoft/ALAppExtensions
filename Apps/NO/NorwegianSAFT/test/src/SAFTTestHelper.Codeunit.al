@@ -436,6 +436,9 @@ codeunit 148099 "SAF-T Test Helper"
         VATReportingCode: Record "VAT Reporting Code";
     begin
         VATPostingSetup.FindSet();
+        VATPostingSetup.Validate("Sale VAT Reporting Code", '');
+        VATPostingSetup.Validate("Purch. VAT Reporting Code", '');
+        VATPostingSetup.Modify(true);
         VATPostingSetup.Next(); // do not specify any value for Standard Tax Code in order to verify that NA value will be exported in the XML file
         VATReportingCode.FindSet();
         repeat

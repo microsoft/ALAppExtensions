@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37010 "Purchases Decomposition"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Decomposition';
     AboutTitle = 'About Purchases Decomposition';
     AboutText = 'The Purchases Decomposition report visually breaks down Purchase Amount into its contributing factors, allowing users to explore and analyze data hierarchies in detail.';

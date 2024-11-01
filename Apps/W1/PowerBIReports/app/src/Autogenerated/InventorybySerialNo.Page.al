@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37030 "Inventory by Serial No."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Inventory by Serial No.';
     AboutTitle = 'About Inventory by Serial No.';
     AboutText = 'The Inventory by Serial report displays inventory quantities categorized by serial number. The decomposition tree enhances this report by allowing users to drill down into inventory data, breaking down quantities by various dimensions such as location, item category, or vendor.';

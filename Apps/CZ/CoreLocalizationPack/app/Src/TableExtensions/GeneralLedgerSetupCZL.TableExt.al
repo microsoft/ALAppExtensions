@@ -166,6 +166,11 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
             Caption = 'Default Original Document VAT Date';
             DataClassification = CustomerContent;
         }
+        field(31091; "Functional Currency CZL"; Boolean)
+        {
+            Caption = 'Functional Currency';
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure InitVATDateCZL()

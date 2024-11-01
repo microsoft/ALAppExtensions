@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 1360 "MS - WorldPay Standard Account"
 {
     Caption = 'WorldPay Payments Standard Account';
@@ -53,4 +54,4 @@ table 1360 "MS - WorldPay Standard Account"
     {
     }
 }
-
+#endif

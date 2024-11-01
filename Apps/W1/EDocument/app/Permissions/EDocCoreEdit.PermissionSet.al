@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 permissionset 6102 "E-Doc. Core - Edit"
 {
@@ -27,5 +28,6 @@ permissionset 6102 "E-Doc. Core - Edit"
         tabledata "E-Doc. Service Data Exch. Def." = IMD,
         tabledata "E-Doc. Service Supported Type" = IMD,
         tabledata "E-Doc. Imported Line" = IMD,
-        tabledata "E-Doc. Order Match" = IMD;
+        tabledata "E-Doc. Order Match" = IMD,
+        tabledata "Service Participant" = IMD;
 }

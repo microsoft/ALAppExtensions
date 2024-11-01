@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37008 "Sales Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Actual vs. Budget Amount';
     AboutTitle = 'About Sales Actual vs. Budget Amount';
     AboutText = 'The Sales Actual vs. Budget Amount report provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';

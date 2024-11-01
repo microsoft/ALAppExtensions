@@ -27,7 +27,7 @@ table 30107 "Shpfy Customer Template"
             DataClassification = CustomerContent;
             Caption = 'Country/Region Code';
         }
-
+#if not CLEANSCHEMA25
         field(3; "Customer Template Code"; Code[10])
         {
             DataClassification = CustomerContent;
@@ -38,6 +38,7 @@ table 30107 "Shpfy Customer Template"
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
         }
+#endif
         field(4; "Default Customer No."; code[20])
         {
             DataClassification = CustomerContent;

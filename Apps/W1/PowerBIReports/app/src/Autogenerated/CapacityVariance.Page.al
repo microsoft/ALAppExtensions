@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37047 "Capacity Variance"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Capacity Variance';
     AboutTitle = 'About Capacity Variance';
     AboutText = 'View your capacity cost variance % viewed over a timeline you can define to see trends. Analyze by each production order and filter by Work Centre to see the detail behind the overall percentages.';

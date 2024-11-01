@@ -45,6 +45,9 @@ codeunit 6218 "Sustainability Calc. Mgt."
 
             Enum::"Emission Scope"::"Scope 3":
                 SustainabilityCalculation.CalculateScope3Emissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
+
+            Enum::"Emission Scope"::"Water/Waste":
+                SustainabilityCalculation.CalculateWaterOrWaste(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
         end;
 
         if not SustainAccountCategory.CO2 then
@@ -55,6 +58,15 @@ codeunit 6218 "Sustainability Calc. Mgt."
 
         if not SustainAccountCategory.N2O then
             SustainabilityJnlLine.Validate("Emission N2O", 0);
+
+        if not SustainAccountCategory."Water Intensity" then
+            SustainabilityJnlLine.Validate("Water Intensity", 0);
+
+        if not SustainAccountCategory."Waste Intensity" then
+            SustainabilityJnlLine.Validate("Waste Intensity", 0);
+
+        if not SustainAccountCategory."Discharged Into Water" then
+            SustainabilityJnlLine.Validate("Discharged Into Water", 0);
     end;
 
     /// <summary>

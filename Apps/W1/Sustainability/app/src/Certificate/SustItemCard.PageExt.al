@@ -20,17 +20,17 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 {
                     ApplicationArea = Basic, Suite;
                     Enabled = Rec."GHG Credit";
-                    ToolTip = 'Specifies the Carbon Credit Per UOM of Item';
+                    ToolTip = 'Specifies the Carbon Credit Per UOM of the Item.';
                 }
                 field("Sust. Cert. No."; Rec."Sust. Cert. No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Sust. Cert. No. of Item';
+                    ToolTip = 'Specifies the Sustainability Certificate Number of the Item.';
                 }
                 field("Sust. Cert. Name"; Rec."Sust. Cert. Name")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Sust. Cert. Name of Item';
+                    ToolTip = 'Specifies the Sustainability Certificate Name of the Item.';
                 }
             }
         }

@@ -4,6 +4,7 @@ using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Ledger;
+using Microsoft.ExcelReports;
 
 report 4411 "EXR Fixed Asset Details Excel"
 {
@@ -127,6 +128,13 @@ report 4411 "EXR Fixed Asset Details Excel"
     }
 
     var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
         DepreciationBookCode: Code[20];
         PrintReversedEntries, IncludeInactive : Boolean;
+
+    trigger OnPreReport()
+    begin
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Fixed Asset Details Excel");
+    end;
+
 }

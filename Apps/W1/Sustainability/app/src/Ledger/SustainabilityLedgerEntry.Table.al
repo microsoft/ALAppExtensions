@@ -190,6 +190,32 @@ table 6216 "Sustainability Ledger Entry"
             Caption = 'Carbon Fee';
             DecimalPlaces = 2 : 5;
         }
+        field(34; "Water Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Water Intensity';
+        }
+        field(35; "Discharged Into Water"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Discharged Into Water';
+        }
+        field(36; "Waste Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Waste Intensity';
+        }
+        field(37; "Water/Waste Intensity Type"; Enum "Water/Waste Intensity Type")
+        {
+            Caption = 'Water/Waste Intensity Type';
+        }
+        field(38; "Water Type"; Enum "Water Type")
+        {
+            Caption = 'Water Type';
+        }
         field(5146; "Emission Scope"; Enum "Emission Scope")
         {
             Caption = 'Emission Scope';

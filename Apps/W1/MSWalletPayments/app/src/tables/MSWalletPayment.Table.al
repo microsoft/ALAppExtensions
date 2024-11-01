@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA23
 table 1085 "MS - Wallet Payment"
 {
     ObsoleteState = Removed;
@@ -57,3 +58,4 @@ table 1085 "MS - Wallet Payment"
         MODIFY();
     end;
 }
+#endif

@@ -164,7 +164,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         FastlinkEditAccountExtraParamsTok: Label 'providerAccountId=%1&flow=edit&callback=%2', Locked = true;
         BankAccountNameDisplayLbl: Label '%1 - %2', Locked = true;
         LabelDateExprTok: Label '<%1D>', Locked = true;
-        UserRequestingTransactionsTelemetryTxt: Label 'User requesting transactions for provider account id %1, from %2 to %3.', Locked = true;
 
     procedure SetValuesToDefault(var MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup");
     var
@@ -1042,7 +1041,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
     local procedure GetRefreshBankDate(OnlineBankID: Text; OnlineBankAccountID: Text; var AccountNode: XmlNode): DateTime;
     var
-        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RefreshDateTime: DateTime;
         RefreshDateTimeTxt: Text;
         ProviderId: Text;
@@ -1059,8 +1057,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000A08', ProviderId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok, 'ConsentId', ConsentId);
-        if MSYodleeBankServiceSetup.Get() then
-            Session.LogMessage('0000F76', MSYodleeBankServiceSetup."Consumer Name", Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('00006PN', OnlineBankID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         RefreshDateTimeTxt := FindNodeText(AccountNode, '/root/root/account/lastUpdated');
         if Evaluate(RefreshDateTime, RefreshDateTimeTxt, 9) then;
@@ -1150,8 +1146,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         // the call(s) below will populate it with new response(s)
         if BankFeedTextList.Count() > 0 then
             BankFeedTextList.RemoveRange(1, BankFeedTextList.Count());
-
-        Session.LogMessage('0000JWP', StrSubstNo(UserRequestingTransactionsTelemetryTxt, OnlineBankAccountId, FromDate, ToDate), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
 
         PaginationLink := ExecuteWebServiceRequest(
             YodleeAPIStrings.GetTransactionSearchURL(OnlineBankAccountId, FromDate, ToDate),
@@ -2258,7 +2252,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         Dimensions.Add('Bank Name', ProviderName);
         Dimensions.Add('ProviderAccountId', MSYodleeBankAccLink."Online Bank Account ID");
         Dimensions.Add('NumberOfTransactionsImported', Format(NumberOfLinesImported));
-        Session.LogMessage('0000JQ5', Format(NumberOfLinesImported), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnRegisterVideo', '', false, false)]

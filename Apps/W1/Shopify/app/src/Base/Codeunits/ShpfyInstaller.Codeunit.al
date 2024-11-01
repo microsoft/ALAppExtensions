@@ -27,24 +27,27 @@ codeunit 30273 "Shpfy Installer"
     var
         LogEntry: Record "Shpfy Log Entry";
         DataCapture: Record "Shpfy Data Capture";
+        SkippedRecord: Record "Shpfy Skipped Record";
         RetentionPolicySetup: Codeunit "Retention Policy Setup";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         UpgradeTag: Codeunit "Upgrade Tag";
         IsInitialSetup: Boolean;
     begin
-        IsInitialSetup := not UpgradeTag.HasUpgradeTag(GetShopifyLogEntryAddedToAllowedListUpgradeTag());
+        IsInitialSetup := not UpgradeTag.HasUpgradeTag(GetShopifyRetentionPolicySetupUpgradeTag());
         if not (IsInitialSetup or ForceUpdate) then
             exit;
 
         RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Log Entry", LogEntry.FieldNo(SystemCreatedAt));
         RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Data Capture", DataCapture.FieldNo(SystemModifiedAt));
+        RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Skipped Record", SkippedRecord.FieldNo(SystemCreatedAt));
 
         if not IsInitialSetup then
             exit;
 
         CreateRetentionPolicySetup(Database::"Shpfy Log Entry", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
         CreateRetentionPolicySetup(Database::"Shpfy Data Capture", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
-        UpgradeTag.SetUpgradeTag(GetShopifyLogEntryAddedToAllowedListUpgradeTag());
+        CreateRetentionPolicySetup(Database::"Shpfy Skipped Record", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
+        UpgradeTag.SetUpgradeTag(GetShopifyRetentionPolicySetupUpgradeTag());
     end;
 
     local procedure CreateRetentionPolicySetup(TableId: Integer; RetentionPeriodCode: Code[20])
@@ -149,9 +152,9 @@ codeunit 30273 "Shpfy Installer"
         exit('MS-522567-ShopifyCueSetupAdded-20240326');
     end;
 
-    local procedure GetShopifyLogEntryAddedToAllowedListUpgradeTag(): Code[250]
+    local procedure GetShopifyRetentionPolicySetupUpgradeTag(): Code[250]
     begin
-        exit('MS-474464-ShopifyLogEntryAdded-20230601');
+        exit('MS-473306-ShopifyRetentionPolicySetupAdded-20241029');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reten. Pol. Allowed Tables", OnRefreshAllowedTables, '', false, false)]

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37021 "Purch. Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Actual vs. Budget Amount';
     AboutTitle = 'About Purchases Actual vs. Budget Amount';
     AboutText = 'The Purchases Actual vs. Budget Amount report offers a comparative analysis of purchase amounts against budgeted amounts. It includes variance and variance percentage metrics to clearly show how actual purchases align with budgeted targets.';

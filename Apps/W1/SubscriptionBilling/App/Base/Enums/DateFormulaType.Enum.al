@@ -37,4 +37,24 @@ enum 8061 "Date Formula Type"
     {
         Caption = 'Empty';
     }
+    value(100; Days)
+    {
+        Caption = 'Days';
+    }
+    value(101; Weeks)
+    {
+        Caption = 'Weeks';
+    }
+    value(102; Months)
+    {
+        Caption = 'Months';
+    }
+    value(103; Quarters)
+    {
+        Caption = 'Quarters';
+    }
+    value(104; Years)
+    {
+        Caption = 'Years';
+    }
 }

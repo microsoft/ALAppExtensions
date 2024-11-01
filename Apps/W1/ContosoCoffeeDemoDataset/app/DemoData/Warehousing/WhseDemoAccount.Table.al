@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 4762 "Whse. Demo Account"
 {
     TableType = Temporary;
@@ -22,3 +23,4 @@ table 4762 "Whse. Demo Account"
         }
     }
 }
+#endif
