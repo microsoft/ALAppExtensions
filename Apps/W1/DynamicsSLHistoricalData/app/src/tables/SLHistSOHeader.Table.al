@@ -107,675 +107,675 @@ table 42813 "SL Hist. SOHeader"
         {
             Caption = 'BillState';
         }
-        field(251; BillThruProject; Integer)
+        field(26; BillThruProject; Integer)
         {
             Caption = 'BillThruProject';
         }
-        field(26; BillZip; Text[10])
+        field(27; BillZip; Text[10])
         {
             Caption = 'BillZip';
         }
-        field(27; BlktOrdNbr; Text[15])
+        field(28; BlktOrdNbr; Text[15])
         {
             Caption = 'BlktOrdNbr';
         }
-        field(28; BookCntr; Integer)
+        field(29; BookCntr; Integer)
         {
             Caption = 'BookCntr';
         }
-        field(29; BookCntrMisc; Integer)
+        field(30; BookCntrMisc; Integer)
         {
             Caption = 'BookCntrMisc';
         }
-        field(30; BuildAssyTime; Integer)
+        field(31; BuildAssyTime; Integer)
         {
             Caption = 'BuildAssyTime';
         }
-        field(31; BuildAvailDate; DateTime)
+        field(32; BuildAvailDate; DateTime)
         {
             Caption = 'BuildAvailDate';
         }
-        field(32; BuildInvtID; Text[30])
+        field(33; BuildInvtID; Text[30])
         {
             Caption = 'BuildInvtID';
         }
-        field(33; BuildQty; Decimal)
+        field(34; BuildQty; Decimal)
         {
             Caption = 'BuildQty';
         }
-        field(34; BuildQtyUpdated; Decimal)
+        field(35; BuildQtyUpdated; Decimal)
         {
             Caption = 'BuildQtyUpdated';
         }
-        field(35; BuildSiteID; Text[10])
+        field(36; BuildSiteID; Text[10])
         {
             Caption = 'BuildSiteID';
         }
-        field(36; BuyerID; Text[10])
+        field(37; BuyerID; Text[10])
         {
             Caption = 'BuyerID';
         }
-        field(37; BuyerName; Text[60])
+        field(38; BuyerName; Text[60])
         {
             Caption = 'BuyerName';
         }
-        field(38; CancelDate; DateTime)
+        field(39; CancelDate; DateTime)
         {
             Caption = 'CancelDate';
         }
-        field(39; Cancelled; Integer)
+        field(40; Cancelled; Integer)
         {
             Caption = 'Cancelled';
         }
-        field(40; CancelShippers; Integer)
+        field(41; CancelShippers; Integer)
         {
             Caption = 'CancelShippers';
         }
-        field(41; CertID; Text[2])
+        field(42; CertID; Text[2])
         {
             Caption = 'CertID';
         }
-        field(42; CertNoteID; Integer)
+        field(43; CertNoteID; Integer)
         {
             Caption = 'CertNoteID';
         }
-        field(43; ChainDisc; Text[15])
+        field(44; ChainDisc; Text[15])
         {
             Caption = 'ChainDisc';
         }
-        field(44; CmmnPct; Decimal)
+        field(45; CmmnPct; Decimal)
         {
             Caption = 'CmmnPct';
         }
-        field(45; ConsolInv; Integer)
+        field(46; ConsolInv; Integer)
         {
             Caption = 'ConsolInv';
         }
-        field(46; ContractNbr; Text[30])
+        field(47; ContractNbr; Text[30])
         {
             Caption = 'ContractNbr';
         }
-        field(47; CpnyID; Text[10])
+        field(48; CpnyID; Text[10])
         {
             Caption = 'CpnyID';
         }
-        field(48; CreditApprDays; Integer)
+        field(49; CreditApprDays; Integer)
         {
             Caption = 'CreditApprDays';
         }
-        field(49; CreditApprLimit; Decimal)
+        field(50; CreditApprLimit; Decimal)
         {
             Caption = 'CreditApprLimit';
         }
-        field(50; CreditChk; Integer)
+        field(51; CreditChk; Integer)
         {
             Caption = 'CreditChk';
         }
-        field(51; CreditHold; Integer)
+        field(52; CreditHold; Integer)
         {
             Caption = 'CreditHold';
         }
-        field(52; CreditHoldDate; DateTime)
+        field(53; CreditHoldDate; DateTime)
         {
             Caption = 'CreditHoldDate';
         }
-        field(53; Crtd_DateTime; DateTime)
+        field(54; Crtd_DateTime; DateTime)
         {
             Caption = 'Crtd_DateTime';
         }
-        field(54; Crtd_Prog; Text[8])
+        field(55; Crtd_Prog; Text[8])
         {
             Caption = 'Crtd_Prog';
         }
-        field(55; Crtd_User; Text[10])
+        field(56; Crtd_User; Text[10])
         {
             Caption = 'Crtd_User';
         }
-        field(56; CuryBalDue; Decimal)
+        field(57; CuryBalDue; Decimal)
         {
             Caption = 'CuryBalDue';
         }
-        field(57; CuryEffDate; DateTime)
+        field(58; CuryEffDate; DateTime)
         {
             Caption = 'CuryEffDate';
         }
-        field(58; CuryID; Text[4])
+        field(59; CuryID; Text[4])
         {
             Caption = 'CuryID';
         }
-        field(59; CuryMultDiv; Text[1])
+        field(60; CuryMultDiv; Text[1])
         {
             Caption = 'CuryMultDiv';
         }
-        field(60; CuryPremFrtAmtAppld; Decimal)
+        field(61; CuryPremFrtAmtAppld; Decimal)
         {
             Caption = 'CuryPremFrtAmtAppld';
         }
-        field(61; CuryRate; Decimal)
+        field(62; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
         }
-        field(62; CuryRateType; Text[6])
+        field(63; CuryRateType; Text[6])
         {
             Caption = 'CuryRateType';
         }
-        field(63; CuryTotFrt; Decimal)
+        field(64; CuryTotFrt; Decimal)
         {
             Caption = 'CuryTotFrt';
         }
-        field(64; CuryTotLineDisc; Decimal)
+        field(65; CuryTotLineDisc; Decimal)
         {
             Caption = 'CuryTotLineDisc';
         }
-        field(65; CuryTotMerch; Decimal)
+        field(66; CuryTotMerch; Decimal)
         {
             Caption = 'CuryTotMerch';
         }
-        field(66; CuryTotMisc; Decimal)
+        field(67; CuryTotMisc; Decimal)
         {
             Caption = 'CuryTotMisc';
         }
-        field(67; CuryTotOrd; Decimal)
+        field(68; CuryTotOrd; Decimal)
         {
             Caption = 'CuryTotOrd';
         }
-        field(68; CuryTotPmt; Decimal)
+        field(69; CuryTotPmt; Decimal)
         {
             Caption = 'CuryTotPmt';
         }
-        field(69; CuryTotPremFrt; Decimal)
+        field(70; CuryTotPremFrt; Decimal)
         {
             Caption = 'CuryTotPremFrt';
         }
-        field(70; CuryTotTax; Decimal)
+        field(71; CuryTotTax; Decimal)
         {
             Caption = 'CuryTotTax';
         }
-        field(71; CuryTotTxbl; Decimal)
+        field(72; CuryTotTxbl; Decimal)
         {
             Caption = 'CuryTotTxbl';
         }
-        field(72; CuryUnshippedBalance; Decimal)
+        field(73; CuryUnshippedBalance; Decimal)
         {
             Caption = 'CuryUnshippedBalance';
         }
-        field(73; CuryWholeOrdDisc; Decimal)
+        field(74; CuryWholeOrdDisc; Decimal)
         {
             Caption = 'CuryWholeOrdDisc';
         }
-        field(74; CustGLClassID; Text[4])
+        field(75; CustGLClassID; Text[4])
         {
             Caption = 'CustGLClassID';
         }
-        field(75; CustID; Text[15])
+        field(76; CustID; Text[15])
         {
             Caption = 'CustID';
         }
-        field(76; CustOrdNbr; Text[25])
+        field(77; CustOrdNbr; Text[25])
         {
             Caption = 'CustOrdNbr';
         }
-        field(77; DateCancelled; DateTime)
+        field(78; DateCancelled; DateTime)
         {
             Caption = 'DateCancelled';
         }
-        field(78; Dept; Text[30])
+        field(79; Dept; Text[30])
         {
             Caption = 'Dept';
         }
-        field(79; DiscAcct; Text[10])
+        field(80; DiscAcct; Text[10])
         {
             Caption = 'DiscAcct';
         }
-        field(80; DiscPct; Decimal)
+        field(81; DiscPct; Decimal)
         {
             Caption = 'DiscPct';
         }
-        field(81; DiscSub; Text[24])
+        field(82; DiscSub; Text[24])
         {
             Caption = 'DiscSub';
         }
-        field(82; Div; Text[30])
+        field(83; Div; Text[30])
         {
             Caption = 'Div';
         }
-        field(83; DropShip; Integer)
+        field(84; DropShip; Integer)
         {
             Caption = 'DropShip';
         }
-        field(84; EDI810; Integer)
+        field(85; EDI810; Integer)
         {
             Caption = 'EDI810';
         }
-        field(85; EDI856; Integer)
+        field(86; EDI856; Integer)
         {
             Caption = 'EDI856';
         }
-        field(86; EDIPOID; Text[10])
+        field(87; EDIPOID; Text[10])
         {
             Caption = 'EDIPOID';
         }
-        field(87; EventCntr; Integer)
+        field(88; EventCntr; Integer)
         {
             Caption = 'EventCntr';
         }
-        field(88; FOBID; Text[15])
+        field(89; FOBID; Text[15])
         {
             Caption = 'FOBID';
         }
-        field(89; FrtAcct; Text[10])
+        field(90; FrtAcct; Text[10])
         {
             Caption = 'FrtAcct';
         }
-        field(90; FrtCollect; Integer)
+        field(91; FrtCollect; Integer)
         {
             Caption = 'FrtCollect';
         }
-        field(91; FrtSub; Text[24])
+        field(92; FrtSub; Text[24])
         {
             Caption = 'FrtSub';
         }
-        field(92; FrtTermsID; Text[10])
+        field(93; FrtTermsID; Text[10])
         {
             Caption = 'FrtTermsID';
         }
-        field(93; GeoCode; Text[10])
+        field(94; GeoCode; Text[10])
         {
             Caption = 'GeoCode';
         }
-        field(94; InvcDate; DateTime)
+        field(95; InvcDate; DateTime)
         {
             Caption = 'InvcDate';
         }
-        field(95; InvcNbr; Text[15])
+        field(96; InvcNbr; Text[15])
         {
             Caption = 'InvcNbr';
         }
-        field(96; IRDemand; Integer)
+        field(97; IRDemand; Integer)
         {
             Caption = 'IRDemand';
         }
-        field(97; LanguageID; Text[4])
+        field(98; LanguageID; Text[4])
         {
             Caption = 'LanguageID';
         }
-        field(98; LineCntr; Integer)
+        field(99; LineCntr; Integer)
         {
             Caption = 'LineCntr';
         }
-        field(99; LostSaleID; Text[2])
+        field(100; LostSaleID; Text[2])
         {
             Caption = 'LostSaleID';
         }
-        field(100; LUpd_DateTime; DateTime)
+        field(101; LUpd_DateTime; DateTime)
         {
             Caption = 'LUpd_DateTime';
         }
-        field(101; LUpd_Prog; Text[8])
+        field(102; LUpd_Prog; Text[8])
         {
             Caption = 'LUpd_Prog';
         }
-        field(102; LUpd_User; Text[10])
+        field(103; LUpd_User; Text[10])
         {
             Caption = 'LUpd_User';
         }
-        field(103; MarkFor; Integer)
+        field(104; MarkFor; Integer)
         {
             Caption = 'MarkFor';
         }
-        field(104; MiscChrgCntr; Integer)
+        field(105; MiscChrgCntr; Integer)
         {
             Caption = 'MiscChrgCntr';
         }
-        field(105; NextFunctionClass; Text[4])
+        field(106; NextFunctionClass; Text[4])
         {
             Caption = 'NextFunctionClass';
         }
-        field(106; NextFunctionID; Text[8])
+        field(107; NextFunctionID; Text[8])
         {
             Caption = 'NextFunctionID';
         }
-        field(107; NoteId; Integer)
+        field(108; NoteId; Integer)
         {
             Caption = 'NoteId';
         }
-        field(108; OrdDate; DateTime)
+        field(109; OrdDate; DateTime)
         {
             Caption = 'OrdDate';
         }
-        field(109; OrdNbr; Text[15])
+        field(110; OrdNbr; Text[15])
         {
             Caption = 'OrdNbr';
         }
-        field(110; OrigOrdNbr; Text[15])
+        field(111; OrigOrdNbr; Text[15])
         {
             Caption = 'OrigOrdNbr';
         }
-        field(111; PC_Status; Text[1])
+        field(112; PC_Status; Text[1])
         {
             Caption = 'PC_Status';
         }
-        field(112; PerPost; Text[6])
+        field(113; PerPost; Text[6])
         {
             Caption = 'PerPost';
         }
-        field(113; PmtCntr; Integer)
+        field(114; PmtCntr; Integer)
         {
             Caption = 'PmtCntr';
         }
-        field(114; PremFrtAmtApplied; Decimal)
+        field(115; PremFrtAmtApplied; Decimal)
         {
             Caption = 'PremFrtAmtApplied';
         }
-        field(115; Priority; Integer)
+        field(116; Priority; Integer)
         {
             Caption = 'Priority';
         }
-        field(116; ProjectID; Text[16])
+        field(117; ProjectID; Text[16])
         {
             Caption = 'ProjectID';
         }
-        field(117; QuoteDate; DateTime)
+        field(118; QuoteDate; DateTime)
         {
             Caption = 'QuoteDate';
         }
-        field(118; Released; Integer)
+        field(119; Released; Integer)
         {
             Caption = 'Released';
         }
-        field(119; ReleaseValue; Decimal)
+        field(120; ReleaseValue; Decimal)
         {
             Caption = 'ReleaseValue';
         }
-        field(120; RequireStepAssy; Integer)
+        field(121; RequireStepAssy; Integer)
         {
             Caption = 'RequireStepAssy';
         }
-        field(121; RequireStepInsp; Integer)
+        field(122; RequireStepInsp; Integer)
         {
             Caption = 'RequireStepInsp';
         }
-        field(122; RlseForInvc; Integer)
+        field(123; RlseForInvc; Integer)
         {
             Caption = 'RlseForInvc';
         }
-        field(123; S4Future01; Text[30])
+        field(124; S4Future01; Text[30])
         {
             Caption = 'S4Future01';
         }
-        field(124; S4Future02; Text[30])
+        field(125; S4Future02; Text[30])
         {
             Caption = 'S4Future02';
         }
-        field(125; S4Future03; Decimal)
+        field(126; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
         }
-        field(126; S4Future04; Decimal)
+        field(127; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
         }
-        field(127; S4Future05; Decimal)
+        field(128; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
         }
-        field(128; S4Future06; Decimal)
+        field(129; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
         }
-        field(129; S4Future07; DateTime)
+        field(130; S4Future07; DateTime)
         {
             Caption = 'S4Future07';
         }
-        field(130; S4Future08; DateTime)
+        field(131; S4Future08; DateTime)
         {
             Caption = 'S4Future08';
         }
-        field(131; S4Future09; Integer)
+        field(132; S4Future09; Integer)
         {
             Caption = 'S4Future09';
         }
-        field(132; S4Future10; Integer)
+        field(133; S4Future10; Integer)
         {
             Caption = 'S4Future10';
         }
-        field(133; S4Future11; Text[10])
+        field(134; S4Future11; Text[10])
         {
             Caption = 'S4Future11';
         }
-        field(134; S4Future12; Text[10])
+        field(135; S4Future12; Text[10])
         {
             Caption = 'S4Future12';
         }
-        field(135; SellingSiteID; Text[10])
+        field(136; SellingSiteID; Text[10])
         {
             Caption = 'SellingSiteID';
         }
-        field(136; SFOOrdNbr; Text[15])
+        field(137; SFOOrdNbr; Text[15])
         {
             Caption = 'SFOOrdNbr';
         }
-        field(137; ShipAddr1; Text[60])
+        field(138; ShipAddr1; Text[60])
         {
             Caption = 'ShipAddr1';
         }
-        field(138; ShipAddr2; Text[60])
+        field(139; ShipAddr2; Text[60])
         {
             Caption = 'ShipAddr2';
         }
-        field(139; ShipAddrID; Text[10])
+        field(140; ShipAddrID; Text[10])
         {
             Caption = 'ShipAddrID';
         }
-        field(140; ShipAddrSpecial; Integer)
+        field(141; ShipAddrSpecial; Integer)
         {
             Caption = 'ShipAddrSpecial';
         }
-        field(141; ShipAttn; Text[30])
+        field(142; ShipAttn; Text[30])
         {
             Caption = 'ShipAttn';
         }
-        field(142; ShipCity; Text[30])
+        field(143; ShipCity; Text[30])
         {
             Caption = 'ShipCity';
         }
-        field(143; ShipCmplt; Integer)
+        field(144; ShipCmplt; Integer)
         {
             Caption = 'ShipCmplt';
         }
-        field(144; ShipCountry; Text[3])
+        field(145; ShipCountry; Text[3])
         {
             Caption = 'ShipCountry';
         }
-        field(145; ShipCustID; Text[15])
+        field(146; ShipCustID; Text[15])
         {
             Caption = 'ShipCustID';
         }
-        field(146; ShipGeoCode; Text[10])
+        field(147; ShipGeoCode; Text[10])
         {
             Caption = 'ShipGeoCode';
         }
-        field(147; ShipName; Text[60])
+        field(148; ShipName; Text[60])
         {
             Caption = 'ShipName';
         }
-        field(148; ShipPhone; Text[30])
+        field(149; ShipPhone; Text[30])
         {
             Caption = 'ShipPhone';
         }
-        field(149; ShipSiteID; Text[10])
+        field(150; ShipSiteID; Text[10])
         {
             Caption = 'ShipSiteID';
         }
-        field(150; ShipState; Text[3])
+        field(151; ShipState; Text[3])
         {
             Caption = 'ShipState';
         }
-        field(151; ShiptoID; Text[10])
+        field(152; ShiptoID; Text[10])
         {
             Caption = 'ShiptoID';
         }
-        field(152; ShiptoType; Text[1])
+        field(153; ShiptoType; Text[1])
         {
             Caption = 'ShiptoType';
         }
-        field(153; ShipVendID; Text[15])
+        field(154; ShipVendID; Text[15])
         {
             Caption = 'ShipVendID';
         }
-        field(154; ShipViaID; Text[15])
+        field(155; ShipViaID; Text[15])
         {
             Caption = 'ShipViaID';
         }
-        field(155; ShipZip; Text[10])
+        field(156; ShipZip; Text[10])
         {
             Caption = 'ShipZip';
         }
-        field(156; SlsperID; Text[10])
+        field(157; SlsperID; Text[10])
         {
             Caption = 'SlsperID';
         }
-        field(157; SOTypeID; Text[4])
+        field(158; SOTypeID; Text[4])
         {
             Caption = 'SOTypeID';
         }
-        field(158; Status; Text[1])
+        field(159; Status; Text[1])
         {
             Caption = 'Status';
         }
-        field(159; TaxID00; Text[10])
+        field(160; TaxID00; Text[10])
         {
             Caption = 'TaxID00';
         }
-        field(160; TaxID01; Text[10])
+        field(161; TaxID01; Text[10])
         {
             Caption = 'TaxID01';
         }
-        field(161; TaxID02; Text[10])
+        field(162; TaxID02; Text[10])
         {
             Caption = 'TaxID02';
         }
-        field(162; TaxID03; Text[10])
+        field(163; TaxID03; Text[10])
         {
             Caption = 'TaxID03';
         }
-        field(163; TermsID; Text[2])
+        field(164; TermsID; Text[2])
         {
             Caption = 'TermsID';
         }
-        field(164; TotCommCost; Decimal)
+        field(165; TotCommCost; Decimal)
         {
             Caption = 'TotCommCost';
         }
-        field(165; TotCost; Decimal)
+        field(166; TotCost; Decimal)
         {
             Caption = 'TotCost';
         }
-        field(166; TotFrt; Decimal)
+        field(167; TotFrt; Decimal)
         {
             Caption = 'TotFrt';
         }
-        field(167; TotLineDisc; Decimal)
+        field(168; TotLineDisc; Decimal)
         {
             Caption = 'TotLineDisc';
         }
-        field(168; TotMerch; Decimal)
+        field(169; TotMerch; Decimal)
         {
             Caption = 'TotMerch';
         }
-        field(169; TotMisc; Decimal)
+        field(170; TotMisc; Decimal)
         {
             Caption = 'TotMisc';
         }
-        field(170; TotOrd; Decimal)
+        field(171; TotOrd; Decimal)
         {
             Caption = 'TotOrd';
         }
-        field(171; TotPmt; Decimal)
+        field(172; TotPmt; Decimal)
         {
             Caption = 'TotPmt';
         }
-        field(172; TotPremFrt; Decimal)
+        field(173; TotPremFrt; Decimal)
         {
             Caption = 'TotPremFrt';
         }
-        field(173; TotShipWght; Decimal)
+        field(174; TotShipWght; Decimal)
         {
             Caption = 'TotShipWght';
         }
-        field(174; TotTax; Decimal)
+        field(175; TotTax; Decimal)
         {
             Caption = 'TotTax';
         }
-        field(175; TotTxbl; Decimal)
+        field(176; TotTxbl; Decimal)
         {
             Caption = 'TotTxbl';
         }
-        field(176; UnshippedBalance; Decimal)
+        field(177; UnshippedBalance; Decimal)
         {
             Caption = 'UnshippedBalance';
         }
-        field(177; User1; Text[30])
+        field(178; User1; Text[30])
         {
             Caption = 'User1';
         }
-        field(178; User10; DateTime)
+        field(179; User10; DateTime)
         {
             Caption = 'User10';
         }
-        field(179; User2; Text[30])
+        field(180; User2; Text[30])
         {
             Caption = 'User2';
         }
-        field(180; User3; Text[30])
+        field(181; User3; Text[30])
         {
             Caption = 'User3';
         }
-        field(181; User4; Text[30])
+        field(182; User4; Text[30])
         {
             Caption = 'User4';
         }
-        field(182; User5; Decimal)
+        field(183; User5; Decimal)
         {
             Caption = 'User5';
         }
-        field(183; User6; Decimal)
+        field(184; User6; Decimal)
         {
             Caption = 'User6';
         }
-        field(184; User7; Text[10])
+        field(185; User7; Text[10])
         {
             Caption = 'User7';
         }
-        field(185; User8; Text[10])
+        field(186; User8; Text[10])
         {
             Caption = 'User8';
         }
-        field(186; User9; DateTime)
+        field(187; User9; DateTime)
         {
             Caption = 'User9';
         }
-        field(187; VendAddrID; Text[10])
+        field(188; VendAddrID; Text[10])
         {
             Caption = 'VendAddrID';
         }
-        field(188; WeekendDelivery; Integer)
+        field(189; WeekendDelivery; Integer)
         {
             Caption = 'WeekendDelivery';
         }
-        field(189; WholeOrdDisc; Decimal)
+        field(190; WholeOrdDisc; Decimal)
         {
             Caption = 'WholeOrdDisc';
         }
-        field(190; WorkflowID; Integer)
+        field(191; WorkflowID; Integer)
         {
             Caption = 'WorkflowID';
         }
-        field(191; WorkflowStatus; Text[1])
+        field(192; WorkflowStatus; Text[1])
         {
             Caption = 'WorkflowStatus';
         }
-        field(192; WSID; Integer)
+        field(193; WSID; Integer)
         {
             Caption = 'WSID';
         }

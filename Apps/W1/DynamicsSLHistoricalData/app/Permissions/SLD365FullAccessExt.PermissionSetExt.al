@@ -14,6 +14,8 @@ permissionsetextension 42801 "SL D365 Full Access Ext." extends "D365 FULL ACCES
                   tabledata "SL Hist. GLTran" = RIMD,
                   tabledata "SL Hist. INTran" = RIMD,
                   tabledata "SL Hist. LotSerT" = RIMD,
+                  tabledata "SL Hist. Migration Cur. Status" = RIMD,
+                  tabledata "SL Hist. Migration Step Status" = RIMD,
                   tabledata "SL Hist. POReceipt" = RIMD,
                   tabledata "SL Hist. POTran" = RIMD,
                   tabledata "SL Hist. PurchOrd" = RIMD,
