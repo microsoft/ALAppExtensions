@@ -39,45 +39,12 @@ codeunit 30116 "Shpfy Customer Export"
     var
         Shop: Record "Shpfy Shop";
         CustomerApi: Codeunit "Shpfy Customer API";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
+        EmptyEmailAddressLbl: Label 'Customer has no e-mail address.';
+        CustomerWithPhoneNoOrEmailExistsLbl: Label 'Customer already exists with the same e-mail or phone.';
 
-    /// <summary> 
-    /// Add Or Update Metadata.
-    /// </summary>
-    /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    /// <param name="MetadataFieldRef">Parameter of type FieldRef.</param>
-    internal procedure AddOrUpdateMetadata(ShopifyCustomer: Record "Shpfy Customer"; MetadataFieldRef: FieldRef)
-    var
-        Metafield: Record "Shpfy Metafield";
-        Name: Text;
-    begin
-        Metafield.SetRange("Parent Table No.", Database::"Shpfy Customer");
-        Metafield.SetRange("Owner Id", ShopifyCustomer.Id);
-        Metafield.SetRange(Namespace, 'Microsoft.Dynamics365.BusinessCentral');
-        Name := CleanName(MetadataFieldRef);
-        Metafield.SetRange(Name, Name);
-        if Metafield.FindFirst() then begin
-            if Metafield.Value <> Format(MetadataFieldRef.Value) then;
-        end else begin
-            Clear(Metafield);
-            Metafield.Namespace := 'Microsoft.Dynamics365.BusinessCentral';
-            Metafield.Validate("Parent Table No.", Database::"Shpfy Customer");
-            Metafield."Owner Id" := ShopifyCustomer.Id;
-            Metafield.Type := Metafield.Type::single_line_text_field;
-            Metafield.Value := Format(MetadataFieldRef.Value);
-        end;
-    end;
-
-    /// <summary> 
-    /// Clean Name.
-    /// </summary>
-    /// <param name="FieldRef">Parameter of type FieldRef.</param>
-    /// <returns>Return value of type Text.</returns>
-    local procedure CleanName(FieldRef: FieldRef): Text
-    begin
-        exit(DelChr(FieldRef.Record().Name, '=', ' %.-+') + '.' + DelChr(FieldRef.Name, '=', ' %-+'));
-    end;
 
     /// <summary> 
     /// Create Shopify Customer.
@@ -88,8 +55,10 @@ codeunit 30116 "Shpfy Customer Export"
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
     begin
-        if Customer."E-Mail" = '' then
+        if Customer."E-Mail" = '' then begin
+            SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
+        end;
 
         Clear(ShopifyCustomer);
         Clear(CustomerAddress);
@@ -101,7 +70,8 @@ codeunit 30116 "Shpfy Customer Export"
                 ShopifyCustomer.Insert();
                 CustomerAddress.Insert();
             end;
-        MetadataFields(Customer, ShopifyCustomer);
+
+        UpdateMetafields(ShopifyCustomer.Id);
     end;
 
     /// <summary> 
@@ -225,25 +195,6 @@ codeunit 30116 "Shpfy Customer Export"
     end;
 
     /// <summary> 
-    /// Metadata Fields.
-    /// </summary>
-    /// <param name="Customer">Parameter of type Record Customer.</param>
-    /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    local procedure MetadataFields(Customer: Record Customer; ShopifyCustomer: Record "Shpfy Customer")
-    var
-        RecordRef: RecordRef;
-    begin
-        RecordRef.GetTable(Customer);
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("No.")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("VAT Bus. Posting Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("VAT Registration No.")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo(SystemId)));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Disc. Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Price Group")));
-        AddOrUpdateMetadata(ShopifyCustomer, RecordRef.Field(Customer.FieldNo("Customer Posting Group")));
-    end;
-
-    /// <summary> 
     /// Set Shop.
     /// </summary>
     /// <param name="Code">Parameter of type Code[20].</param>
@@ -298,8 +249,10 @@ codeunit 30116 "Shpfy Customer Export"
         CustomerAddress: Record "Shpfy Customer Address";
     begin
         ShopifyCustomer.Get(CustomerID);
-        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then
+        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then begin
+            SkippedRecord.LogSkippedRecord(ShopifyCustomer.Id, Customer.RecordId, CustomerWithPhoneNoOrEmailExistsLbl, Shop);
             exit;  // An other customer with the same e-mail or phone is the source of it.
+        end;
 
         CustomerAddress.SetRange("Customer Id", CustomerId);
         CustomerAddress.SetRange(Default, true);
@@ -313,10 +266,19 @@ codeunit 30116 "Shpfy Customer Export"
             ShopifyCustomer.Modify();
             CustomerAddress.Modify();
         end;
+
+        UpdateMetafields(ShopifyCustomer.Id);
     end;
 
     internal procedure SetCreateCustomers(NewCustomers: Boolean)
     begin
         CreateCustomers := NewCustomers;
+    end;
+
+    local procedure UpdateMetafields(CustomerId: BigInteger)
+    var
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Customer", CustomerId);
     end;
 }
