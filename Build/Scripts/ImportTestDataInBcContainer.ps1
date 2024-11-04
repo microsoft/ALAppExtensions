@@ -5,6 +5,8 @@ Param(
     [string]$containerName
 )
 
+Import-Module "$PSScriptRoot\EnlistmentHelperFunctions.psm1"
+
 function Get-NavDefaultCompanyName
 {
     return "CRONUS International Ltd."
@@ -14,9 +16,7 @@ if ($PSCmdlet.ParameterSetName -eq 'ALGo') {
     $containerName = $parameters.ContainerName
 }
 
-# Get the repoversion
-Import-Module "$PSScriptRoot\EnlistmentHelperFunctions.psm1"
-
+# Unpublish apps that should not be published
 $installedApps = Get-BcContainerAppInfo -containerName $parameters.ContainerName -tenantSpecificProperties -sort DependenciesLast
 $appsToBeUnPublished = (Get-ConfigValue -ConfigType "BuildConfig" -Key "AppsNotToBePublished")
 $installedApps | ForEach-Object {
@@ -26,6 +26,7 @@ $installedApps | ForEach-Object {
     }
 }
 
+# Import test data
 try {
     $repoVersion = Get-ConfigValue -ConfigType "AL-GO" -Key "RepoVersion"
     $DemoDataType = "EXTENDED"
