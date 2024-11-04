@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37026 "Item Availability"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Item Availability';
     AboutTitle = 'About Item Availability';
     AboutText = 'The Item Availability report visualizes Quantity on Hand versus Projected Available Balance over time, helping track inventory trends. A table matrix breaks down this data by item, offering metrics such as Inventory, Projected Available Balance, Gross Requirements, Scheduled Receipts, Planned Order Receipts, and Planned Order Releases. Providing a comprehensive view of item availability, aiding in effective inventory management and planning.';

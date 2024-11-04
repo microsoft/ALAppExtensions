@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36997 "Detailed Cust. Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Detailed Cust. Ledger Entries';
     AboutTitle = 'About Detailed Cust. Ledger Entries';
     AboutText = 'The Detailed Customer Ledger Entries report provides granular detail about the entries posted to Customer Ledger and Detailed Customer Sub Ledger.';

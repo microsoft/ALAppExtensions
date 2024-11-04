@@ -43,6 +43,8 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetOriginalVATAmountsInVATEntriesUpgradeTag());
         PerCompanyUpgradeTags.Add(GetFunctionalCurrencyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetEnableNonDeductibleVATCZUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetVATReportUpgradeTag());
+        PerCompanyUpgradeTags.Add(SetEnableNonDeductibleVATCZUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -188,5 +190,15 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetEnableNonDeductibleVATCZUpgradeTag(): Code[250]
     begin
         exit('CZL-543968-EnableNonDeductibleVATCZUpgradeTag-20240812');
+    end;
+
+    procedure GetVATReportUpgradeTag(): code[250]
+    begin
+        exit('CZL-534204-VATReportUpgradeTag-20240808');
+    end;
+
+    procedure SetEnableNonDeductibleVATCZUpgradeTag(): Code[250]
+    begin
+        exit('CZL-554704-SetEnableNonDeductibleVATCZUpgradeTag-20241017');
     end;
 }

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37058 "Inventory Valuation by Loc."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Inventory Valuation by Location';
     AboutTitle = 'About Inventory Valuation by Location';
     AboutText = 'The Inventory Valuation by Location report features a Treemap that visualizes ending balance quantities by location. It also includes a table matrix providing a detailed view of ending balances and showing fluctuations in inventory over the specified period.';

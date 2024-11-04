@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA27
 namespace Microsoft.Integration.SyncBase;
 
 table 2402 "Sync Mapping"
@@ -46,4 +47,4 @@ table 2402 "Sync Mapping"
     {
     }
 }
-
+#endif

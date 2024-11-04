@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37022 "Inventory Overview"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Inventory Overview';
     AboutTitle = 'About Inventory Overview';
     AboutText = 'The Inventory Overview report offers a dashboard view of inventory, featuring key elements such as inventory by location, a comparison of inventory balance versus projected available balance, and key metrics like scheduled receipt quantities and gross requirements.';

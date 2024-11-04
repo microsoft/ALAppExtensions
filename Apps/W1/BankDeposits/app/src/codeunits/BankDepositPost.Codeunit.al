@@ -219,7 +219,8 @@ codeunit 1690 "Bank Deposit-Post"
         GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
         GenJournalLine."Source No." := BankDepositHeader."Bank Account No.";
         GenJournalLine."Source Currency Code" := BankDepositHeader."Currency Code";
-        GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
+        if BankDepositHeader."Reason Code" <> '' then
+            GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
         GenJournalLine."Source Currency Amount" := SourceCurrencyAmount;
     end;
 
@@ -463,6 +464,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositLine."Dimension Set ID" := PostingGenJournalLine."Dimension Set ID";
         PostedBankDepositLine."Posting Date" := CurrentBankDepositHeader."Posting Date";
         PostedBankDepositLine."External Document No." := PostingGenJournalLine."External Document No.";
+        PostedBankDepositLine."Reason Code" := PostingGenJournalLine."Reason Code";
         case PostingGenJournalLine."Account Type" of
             PostingGenJournalLine."Account Type"::"G/L Account",
             PostingGenJournalLine."Account Type"::"Bank Account":

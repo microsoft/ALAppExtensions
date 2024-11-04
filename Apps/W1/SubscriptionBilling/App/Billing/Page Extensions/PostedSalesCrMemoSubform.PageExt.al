@@ -6,7 +6,7 @@ pageextension 8065 "Posted Sales Cr. Memo Subform" extends "Posted Sales Cr. Mem
 {
     actions
     {
-        addlast(Processing)
+        addlast("&Line")
         {
             action(ShowArchivedBillingLines)
             {

@@ -14,17 +14,22 @@ table 11512 "Swiss QR-Bill Setup"
 
     fields
     {
-        field(1; "Primary key"; Code[10]) { }
+        field(1; "Primary key"; Code[10])
+        {
+        }
+#if not CLEANSCHEMA23
         field(2; "Swiss-Cross Image"; Media)
         {
             ObsoleteState = Removed;
             ObsoleteTag = '23.0';
             ObsoleteReason = 'Use W1 codeunit 4113 "Swiss QR Code Helper"';
         }
+#endif
         field(3; "Address Type"; enum "Swiss QR-Bill Address Type")
         {
             Caption = 'Address Type';
         }
+#if not CLEANSCHEMA26
         field(6; "Umlaut Chars Encode Mode"; Enum "Swiss QR-Bill Umlaut Encoding")
         {
             Caption = 'German Umlaut Chars Encoding Mode';
@@ -32,6 +37,7 @@ table 11512 "Swiss QR-Bill Setup"
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
         }
+#endif
         field(8; "Default Layout"; Code[20])
         {
             Caption = 'Default QR-Bill Layout';

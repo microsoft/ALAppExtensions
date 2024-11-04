@@ -55,7 +55,6 @@
       "to": 149999
     }
   ],
-  "runtime": "13.0",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206176",
   "resourceExposurePolicy": {
     "allowDebugging": true,
@@ -66,5 +65,8 @@
   "features": [
     "TranslationFile",
     "GenerateCaptions"
+  ],
+  "resourceFolders": [
+    ".resources"
   ]
 }

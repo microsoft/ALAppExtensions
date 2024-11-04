@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37032 "Bin Contents by Item Tracking"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Bin Contents by Item Tracking';
     AboutTitle = 'About Bin Contents by Item Tracking';
     AboutText = 'The Bin Contents by Item Tracking report provides a detailed view of warehouse quantities by Item, Location, Bin Code, Zone Code, Lot number or Serial number. ';

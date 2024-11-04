@@ -3,7 +3,6 @@ namespace Microsoft.Sales.Document.Test;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Warehouse.ADCS;
-using Microsoft.Service.Test;
 using Microsoft.Foundation.ExtendedText;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Sales.Document;
@@ -25,7 +24,7 @@ codeunit 139780 "Search Item Test"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
-        LibraryService: Codeunit "Library - Service";
+        LibraryInventory: Codeunit "Library - Inventory";
         NoSuggestionGeneratedErr: Label 'Copilot could not find the requested items. Please rephrase the description.';
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
@@ -837,8 +836,8 @@ codeunit 139780 "Search Item Test"
         ExtendedTextHeader: Record "Extended Text Header";
         ExtendedTextLine: Record "Extended Text Line";
     begin
-        LibraryService.CreateExtendedTextHeaderItem(ExtendedTextHeader, ItemNo);
-        LibraryService.CreateExtendedTextLineItem(ExtendedTextLine, ExtendedTextHeader);
+        LibraryInventory.CreateExtendedTextHeaderItem(ExtendedTextHeader, ItemNo);
+        LibraryInventory.CreateExtendedTextLineItem(ExtendedTextLine, ExtendedTextHeader);
         ExtendedTextLine.Validate(Text, LibraryUtility.GenerateGUID());
         ExtendedTextLine.Modify(true);
         ExtText := ExtendedTextLine.Text;

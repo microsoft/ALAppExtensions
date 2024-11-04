@@ -221,6 +221,18 @@ table 1691 "Posted Bank Deposit Header"
         DimensionManagement.ShowDimensionSet("Dimension Set ID", TableCaption() + ' ' + "No.");
     end;
 
+    internal procedure IsReversed(): Boolean
+    var
+        GLRegister: Record "G/L Register";
+        GLRegNo: Integer;
+    begin
+        if not Rec.FindGLRegisterNo(GLRegNo) then
+            exit(false);
+
+        GLRegister.Get(GLRegNo);
+        exit(GLRegister.Reversed);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUndoPostedBankDeposit(var PostedBankDepositHeader: Record "Posted Bank Deposit Header")
     begin

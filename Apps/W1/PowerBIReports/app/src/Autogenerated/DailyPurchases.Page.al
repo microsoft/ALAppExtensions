@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37011 "Daily Purchases"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Daily Purchases';
     AboutTitle = 'About Daily Purchases';
     AboutText = 'The Daily Purchases report offers a detailed analysis of purchase amounts by weekday. The tabular report highlights purchasing trends by using conditional formatting to display purchase figures in a gradient from low to high.';

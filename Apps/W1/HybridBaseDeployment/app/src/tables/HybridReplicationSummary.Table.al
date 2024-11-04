@@ -28,6 +28,7 @@ table 4001 "Hybrid Replication Summary"
             Description = 'The end date time of the replication run.';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA15
         field(4; "Replication Type"; Option)
         {
             Description = 'The type of trigger for the replication run.';
@@ -37,6 +38,7 @@ table 4001 "Hybrid Replication Summary"
             ObsoleteReason = 'Moved to Trigger Type';
             ObsoleteTag = '15.4';
         }
+#endif
         field(5; "Status"; Option)
         {
             Description = 'The status of the replication run.';

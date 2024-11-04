@@ -94,6 +94,45 @@ page 6210 "Chart of Sustain. Accounts"
                 {
                     ToolTip = 'Specifies the balance of N2O on the account.';
                 }
+                field("Net Change (Water)"; Rec."Net Change (Water)")
+                {
+                    ToolTip = 'Specifies the Water net change on this account.';
+                }
+                field("Balance at Date (Water)"; Rec."Balance at Date (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Water)"; Rec."Balance (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance on this account.';
+                }
+                field("Net Change (Disch. Water)"; Rec."Net Change (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water net change on this account.';
+                }
+                field("Balance at Date (Disch. Water)"; Rec."Balance at Date (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Disch. Water)"; Rec."Balance (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance on this account.';
+                }
+                field("Net Change (Waste)"; Rec."Net Change (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste net change on this account.';
+                }
+                field("Balance at Date (Waste)"; Rec."Balance at Date (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Waste)"; Rec."Balance (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance on this account.';
+                }
                 field(Category; Rec.Category)
                 {
                     ToolTip = 'Specifies the category of the sustainability account.';

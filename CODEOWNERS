@@ -9,5 +9,5 @@
 /Build @microsoft/d365-bc-engineering-systems
 /CODEOWNERS @microsoft/d365-bc-engineering-systems
 
-/Apps/W1/EDocument @Groenbech96 @WaelAbuSeada @aholstrup1
-/Apps/W1/EDocumentsConnector @Groenbech96 @WaelAbuSeada @aholstrup1
+/Apps/W1/EDocument @microsoft/d365-bc-integrations @microsoft/d365-bc-engineering-systems
+/Apps/W1/EDocumentsConnector @microsoft/d365-bc-integrations @microsoft/d365-bc-engineering-systems

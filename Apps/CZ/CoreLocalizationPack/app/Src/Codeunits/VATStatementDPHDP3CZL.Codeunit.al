@@ -238,6 +238,14 @@ codeunit 11788 "VAT Statement DPHDP3 CZL" implements "VAT Statement Export CZL"
         VATAttributeCodeCZL.Validate(Code, AttributeCode);
         VATAttributeCodeCZL.Validate(Description, StrSubstNo(Description, LeftPadCode(Format(LineNo), 3, '0')));
         VATAttributeCodeCZL.Validate("XML Code", XmlCode);
+        case Apendix of
+            'Z':
+                VATAttributeCodeCZL.Validate("VAT Report Amount Type", "VAT Report Amount Type CZL"::Base);
+            'D', 'S', 'B':
+                VATAttributeCodeCZL.Validate("VAT Report Amount Type", "VAT Report Amount Type CZL"::Amount);
+            'K':
+                VATAttributeCodeCZL.Validate("VAT Report Amount Type", "VAT Report Amount Type CZL"::"Reduced Amount");
+        end;
         VATAttributeCodeCZL.Insert();
     end;
 

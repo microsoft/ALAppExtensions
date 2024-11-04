@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA25
 namespace Microsoft.DataMigration.GP;
 
 table 40103 "GP POPPOLine"
@@ -557,3 +558,4 @@ table 40103 "GP POPPOLine"
         }
     }
 }
+#endif

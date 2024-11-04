@@ -5,6 +5,7 @@ using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Setup;
 using Microsoft.Foundation.Period;
 using Microsoft.FixedAssets.Ledger;
+using Microsoft.ExcelReports;
 
 report 4413 "EXR Fixed Asset Projected"
 {
@@ -191,11 +192,13 @@ report 4413 "EXR Fixed Asset Projected"
             Error(SpecifyStartingAndEndingDatesErr);
         if StartDateProjection > EndDateProjection then
             Error(SpecifyStartingAndEndingDatesErr);
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Fixed Asset Projected");
     end;
 
     var
         GlobalDepreciationBook: Record "Depreciation Book";
         GlobalFADepreciationBook: Record "FA Depreciation Book";
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
         CalculateDepreciation: Codeunit "Calculate Depreciation";
         DepreciationCalculation: Codeunit "Depreciation Calculation";
         FADateCalculation: Codeunit "FA Date Calculation";

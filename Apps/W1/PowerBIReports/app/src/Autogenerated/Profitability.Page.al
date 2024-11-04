@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36989 "Profitability"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Profitability';
     AboutTitle = 'About Profitability';
     AboutText = 'The Profitability report highlights Gross Profit and Net Profit, visualizing these metrics over time. It also provides detailed insights into net margins, gross profit margins, and the underlying revenue, cost and expense figures that drive them.';

@@ -13,6 +13,14 @@ pageextension 36953 "Business Manager Role Center" extends "Business Manager Rol
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for finance';
+                action("Finance Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Finance Report';
+                    Image = "PowerBI";
+                    RunObject = page "Finance Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all financial report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Financial Overview")
                 {
                     ApplicationArea = Basic, Suite;
@@ -124,6 +132,14 @@ pageextension 36953 "Business Manager Role Center" extends "Business Manager Rol
                     Image = "PowerBI";
                     RunObject = page "Detailed Cust. Ledger Entries";
                     Tooltip = 'Open a Power BI Report that provides granular detail about the entries posted to Customer Ledger and Detailed Customer Sub Ledger.';
+                }
+                action("Inventory Valuation Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Valuation Report';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Valuation Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all inventory valuation report pages, conveniently embedded into a single page for easy access.';
                 }
                 action("Inventory Valuation Overview")
                 {

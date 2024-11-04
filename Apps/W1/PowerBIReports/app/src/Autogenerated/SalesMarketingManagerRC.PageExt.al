@@ -13,6 +13,13 @@ pageextension 36960 "Sales & Marketing Manager RC" extends "Sales & Marketing Ma
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for sales';
+                action("Sales Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Sales Report";
+                }
                 action("Sales Overview (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;

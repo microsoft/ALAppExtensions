@@ -7,7 +7,7 @@ codeunit 139563 "Shpfy Test Shopify"
         LibraryAssert: Codeunit "Library Assert";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         InitializeTest: Codeunit "Shpfy Initialize Test";
-
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
 
     [Test]
     procedure UnitTestConfigureShop()
@@ -35,8 +35,22 @@ codeunit 139563 "Shpfy Test Shopify"
         // [WHEN] The Shop is created.
         Shop := InitializeTest.CreateShop();
         CommunicationMgt.SetTestInProgress(false);
+        SetupKeyVaultExpiryDate(CommunicationMgt.GetApiVersion());
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [THEN] Test connection action should fail when invoked to call Shopify API.
         asserterror Shop.TestConnection();
+        LibraryAssert.ExpectedError('The Shopify Admin API used by your current Shopify connector is no longer supported. To continue using the Shopify connector, please upgrade the Shopify connector and your Business Central environment.');
+    end;
+
+    local procedure SetupKeyVaultExpiryDate(ApiVersion: Text)
+    var
+        AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
+        MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+    begin
+        MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
+        MockAzureKeyvaultSecretProvider.AddSecretMapping('AllowedApplicationSecrets', 'ShopifyApiVersionExpiryDate');
+        MockAzureKeyvaultSecretProvider.AddSecretMapping('ShopifyApiVersionExpiryDate', '{"' + ApiVersion + '": "' + Format(CurrentDateTime().Date().Year, 0, 9) + '-' + Format(CurrentDateTime().Date().Month, 0, 9) + '-' + Format(CurrentDateTime().Date().Day, 0, 9) + '"}');
+        AzureKeyVaultTestLibrary.SetAzureKeyVaultSecretProvider(MockAzureKeyvaultSecretProvider);
     end;
 }

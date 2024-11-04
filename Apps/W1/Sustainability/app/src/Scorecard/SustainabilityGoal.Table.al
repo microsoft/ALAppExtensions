@@ -224,6 +224,50 @@ table 6219 "Sustainability Goal"
             FieldClass = FlowFilter;
             TableRelation = "Responsibility Center";
         }
+        field(27; "Baseline for Water Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Baseline for Water Intensity';
+            FieldClass = FlowField;
+            CalcFormula = sum("Sustainability Ledger Entry"."Water Intensity" where("Posting Date" = field("Baseline Period"), "Country/Region Code" = field("Country/Region Code Filter"), "Responsibility Center" = field("Responsibility Center Filter")));
+            Editable = false;
+        }
+        field(28; "Baseline for Waste Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Baseline for Waste Intensity';
+            FieldClass = FlowField;
+            CalcFormula = sum("Sustainability Ledger Entry"."Waste Intensity" where("Posting Date" = field("Baseline Period"), "Country/Region Code" = field("Country/Region Code Filter"), "Responsibility Center" = field("Responsibility Center Filter")));
+            Editable = false;
+        }
+        field(29; "Current Value for Water Int."; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            FieldClass = FlowField;
+            CalcFormula = sum("Sustainability Ledger Entry"."Water Intensity" where("Posting Date" = field("Current Period Filter"), "Country/Region Code" = field("Country/Region Code Filter"), "Responsibility Center" = field("Responsibility Center Filter")));
+            Editable = false;
+            Caption = 'Current Value for Water Intensity';
+        }
+        field(30; "Current Value for Waste Int."; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            FieldClass = FlowField;
+            CalcFormula = sum("Sustainability Ledger Entry"."Waste Intensity" where("Posting Date" = field("Current Period Filter"), "Country/Region Code" = field("Country/Region Code Filter"), "Responsibility Center" = field("Responsibility Center Filter")));
+            Editable = false;
+            Caption = 'Current Value for Waste Intensity';
+        }
+        field(31; "Target Value for Water Int."; Decimal)
+        {
+            Caption = 'Target Value for Water Intensity';
+        }
+        field(32; "Target Value for Waste Int."; Decimal)
+        {
+            Caption = 'Target Value for Waste Intensity';
+        }
     }
 
     keys
@@ -377,10 +421,14 @@ table 6219 "Sustainability Goal"
         SustainabilityGoals."Current Value for CO2" := 0;
         SustainabilityGoals."Current Value for CH4" := 0;
         SustainabilityGoals."Current Value for N2O" := 0;
+        SustainabilityGoals."Current Value for Water Int." := 0;
+        SustainabilityGoals."Current Value for Waste Int." := 0;
 
         SustainabilityGoals."Baseline for CO2" := 0;
         SustainabilityGoals."Baseline for CH4" := 0;
         SustainabilityGoals."Baseline for N2O" := 0;
+        SustainabilityGoals."Baseline for Water Intensity" := 0;
+        SustainabilityGoals."Baseline for Waste Intensity" := 0;
 
         if not SustainabilityGoals2.Get(SustainabilityGoals."Scorecard No.", SustainabilityGoals."No.", SustainabilityGoals."Line No.") then
             exit;
@@ -389,16 +437,20 @@ table 6219 "Sustainability Goal"
         SustainabilityGoals2.UpdateBaselineDateFilter(SustainabilityGoals."Baseline Start Date", SustainabilityGoals."Baseline End Date");
         SustainabilityGoals2.UpdateFlowFiltersOnRecord();
 
-        SustainabilityGoals2.CalcFields("Current Value for CO2", "Current Value for CH4", "Current Value for N2O");
-        SustainabilityGoals2.CalcFields("Baseline for CO2", "Baseline for CH4", "Baseline for N2O");
+        SustainabilityGoals2.CalcFields("Current Value for CO2", "Current Value for CH4", "Current Value for N2O", "Current Value for Water Int.", "Current Value for Waste Int.");
+        SustainabilityGoals2.CalcFields("Baseline for CO2", "Baseline for CH4", "Baseline for N2O", "Baseline for Water Intensity", "Baseline for Waste Intensity");
 
         SustainabilityGoals."Current Value for CO2" := SustainabilityGoals2."Current Value for CO2";
         SustainabilityGoals."Current Value for CH4" := SustainabilityGoals2."Current Value for CH4";
         SustainabilityGoals."Current Value for N2O" := SustainabilityGoals2."Current Value for N2O";
+        SustainabilityGoals."Current Value for Water Int." := SustainabilityGoals2."Current Value for Water Int.";
+        SustainabilityGoals."Current Value for Waste Int." := SustainabilityGoals2."Current Value for Waste Int.";
 
         SustainabilityGoals."Baseline for CO2" := SustainabilityGoals2."Baseline for CO2";
         SustainabilityGoals."Baseline for CH4" := SustainabilityGoals2."Baseline for CH4";
         SustainabilityGoals."Baseline for N2O" := SustainabilityGoals2."Baseline for N2O";
+        SustainabilityGoals."Baseline for Water Intensity" := SustainabilityGoals2."Baseline for Water Intensity";
+        SustainabilityGoals."Baseline for Waste Intensity" := SustainabilityGoals2."Baseline for Waste Intensity";
     end;
 
     var

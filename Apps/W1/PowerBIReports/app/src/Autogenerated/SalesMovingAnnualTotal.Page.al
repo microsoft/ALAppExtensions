@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37001 "Sales Moving Annual Total"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Moving Annual Total';
     AboutTitle = 'About Sales Moving Annual Total';
     AboutText = 'The Sales Moving Annual Total report provides a rolling 12-month view of sales figures, tracking the current year to the previous year''s performance. ';
