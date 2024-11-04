@@ -245,7 +245,7 @@ codeunit 139611 "Shpfy Order Refund Test"
         //[GIVEN] Processed Shopify Order
         CerateProcessedShopifyOrder(OrderId, OrderLineId);
         // [GIVEN] Shopify Return
-        CreateShopifyReturn(ReturnId, OrderId, Shop.Code);
+        CreateShopifyReturn(ReturnId, OrderId);
         // [GIVEN] Refund Header
         RefundId := OrderRefundsHelper.CreateRefundHeader(OrderId, ReturnId, 156.38, Shop.Code);
         // [GIVEN] Refund line without location
@@ -291,7 +291,7 @@ codeunit 139611 "Shpfy Order Refund Test"
         //[GIVEN] Processed Shopify Order
         CerateProcessedShopifyOrder(OrderId, OrderLineId);
         // [GIVEN] Shopify Return
-        CreateShopifyReturn(ReturnId, OrderId, Shop.Code);
+        CreateShopifyReturn(ReturnId, OrderId);
         // [GIVEN] Refund Header
         RefundId := OrderRefundsHelper.CreateRefundHeader(OrderId, ReturnId, 156.38, Shop.Code);
         // [GIVEN] Refund line without location
@@ -348,7 +348,7 @@ codeunit 139611 "Shpfy Order Refund Test"
         OrderRefundsHelper.ProcessShopifyOrder(OrderId);
     end;
 
-    local procedure CreateShopifyReturn(var ReturnId: BigInteger; OrderId: BigInteger; ShopCode: Code[20])
+    local procedure CreateShopifyReturn(var ReturnId: BigInteger; OrderId: BigInteger)
     var
         OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
     begin
