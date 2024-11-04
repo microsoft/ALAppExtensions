@@ -42,7 +42,8 @@ if ($disabledTests)
 $installedApps = Get-BcContainerAppInfo -containerName $parameters.containerName | Select-Object -ExpandProperty AppId
 $extensionId = $parameters.extensionId
 if ($extensionId -in $installedApps) {
-    Run-TestsInBcContainer @parameters
+    return Run-TestsInBcContainer @parameters
 } else {
     Write-Host "Extension $extensionId is not installed in container $containerName. Skipping tests."
+    return $true
 }
