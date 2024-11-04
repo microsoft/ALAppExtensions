@@ -1,7 +1,0 @@
-[
-    {
-        "codeunitId": 139610 ,
-        "CodeunitName": "SendRemittanceAdvice",
-        "Method": "SendRemittanceAdviceFromVendorLedgerEntry"
-    }
-]
