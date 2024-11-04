@@ -1,0 +1,12 @@
+[
+    {
+        "codeunitId": 139534 ,
+        "CodeunitName": "Connect. Apps Visibility Tests",
+        "Method": "TestPaymentJournalActionVisible"
+    },
+    {
+        "codeunitId": 139534 ,
+        "CodeunitName": "Connect. Apps Visibility Tests",
+        "Method": "TestPaymentJournalActionNotVisible"
+    }
+]

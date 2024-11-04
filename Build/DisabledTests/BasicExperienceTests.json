@@ -1,0 +1,12 @@
+[
+    {
+        "codeunitId": 139502,
+        "CodeunitName": "Test Basic BF",
+        "Method": "TestBasicApplicationAreaAfterInstall"
+    },
+    {
+        "codeunitId": 139502,
+        "CodeunitName": "Test Basic BF",
+        "Method": "TestSetExperienceTierToBasicExt"
+    }
+]
