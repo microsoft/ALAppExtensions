@@ -40,6 +40,7 @@ if ($disabledTests)
 
 
 $installedApps = Get-BcContainerAppInfo -containerName $parameters.containerName | Select-Object -ExpandProperty AppId
+$extensionId = $parameters.extensionId
 if ($extensionId -in $installedApps) {
     Run-TestsInBcContainer @parameters
 } else {
