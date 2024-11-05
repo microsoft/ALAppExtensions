@@ -26,6 +26,8 @@ permissionsetextension 42000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CL
                   tabledata "SL Codes" = RIMD,
                   tabledata "SL Customer" = RIMD,
                   tabledata "SL GLTran" = RIMD,
+                  tabledata "SL Hist. Source Error" = RIMD,
+                  tabledata "SL Hist. Source Progress" = RIMD,
                   tabledata "SL INSetup" = RIMD,
                   tabledata "SL INTran" = RIMD,
                   tabledata "SL Inventory" = RIMD,

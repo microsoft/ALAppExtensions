@@ -27,6 +27,8 @@ permissionsetextension 42003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Codes" = RIMD,
                   tabledata "SL Customer" = RIMD,
                   tabledata "SL GLTran" = RIMD,
+                  tabledata "SL Hist. Source Error" = RIMD,
+                  tabledata "SL Hist. Source Progress" = RIMD,
                   tabledata "SL INSetup" = RIMD,
                   tabledata "SL INTran" = RIMD,
                   tabledata "SL Inventory" = RIMD,
