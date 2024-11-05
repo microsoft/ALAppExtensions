@@ -1,6 +1,5 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Foundation.Reporting;
 using System.Telemetry;
 
@@ -72,7 +71,7 @@ page 1696 "Posted Bank Deposit List"
                     ToolTip = 'Specifies the currency code of the bank account that the deposit was deposited in.';
                     Visible = false;
                 }
-                field(Reversed; GLRegisterReversed)
+                field(Reversed; Rec.IsReversed())
                 {
                     ApplicationArea = Suite;
                     Editable = false;
@@ -191,20 +190,6 @@ page 1696 "Posted Bank Deposit List"
         }
     }
 
-    trigger OnAfterGetCurrRecord()
-    var
-        GLRegister: Record "G/L Register";
-        GLRegNo: Integer;
-    begin
-        GLRegisterReversed := false;
-
-        if Rec.FindGLRegisterNo(GLRegNo) then begin
-            GLRegister.Get(GLRegNo);
-            if GLRegister.Reversed then
-                GLRegisterReversed := true;
-        end;
-    end;
-
     trigger OnInit()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -213,7 +198,6 @@ page 1696 "Posted Bank Deposit List"
     end;
 
     var
-        GLRegisterReversed: Boolean;
         BankDepositReportSelectionErr: Label 'Bank deposit report has not been set up.';
         UndoPostingQst: Label 'This will reverse all ledger entries that are related to the lines of the bank deposit. Do you want to continue?';
         BankDepositNonGUISessionErr: Label 'To undo the posting of a bank deposit, you must sign in to Business Central from a web browser.';

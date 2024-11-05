@@ -20,6 +20,7 @@ table 30116 "Shpfy Order Attribute"
             Caption = 'Key';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(3; Value; Text[250])
         {
             Caption = 'Value';
@@ -33,6 +34,7 @@ table 30116 "Shpfy Order Attribute"
             ObsoleteTag = '27.0';
 #endif
         }
+#endif
         field(4; "Attribute Value"; Text[2048])
         {
             Caption = 'Value';

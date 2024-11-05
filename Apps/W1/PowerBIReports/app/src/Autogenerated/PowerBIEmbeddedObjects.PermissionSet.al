@@ -74,6 +74,13 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Production Scrap" = X,
         page "Inventory Valuation Overview" = X,
         page "Inventory Valuation by Item" = X,
-        page "Inventory Valuation by Loc." = X;
+        page "Inventory Valuation by Loc." = X,
+        page "Finance Report" = X,
+        page "Sales Report" = X,
+        page "Purchases Report" = X,
+        page "Projects Report" = X,
+        page "Manufacturing Report" = X,
+        page "Inventory Report" = X,
+        page "Inventory Valuation Report" = X;
 }
 

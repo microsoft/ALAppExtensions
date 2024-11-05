@@ -3,6 +3,7 @@ namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Consolidation;
+using Microsoft.ExcelReports;
 
 report 4410 "EXR Consolidated Trial Balance"
 {
@@ -130,6 +131,8 @@ report 4410 "EXR Consolidated Trial Balance"
             Error(EnterAnEndingDateErr);
         if BusinessUnit.IsEmpty() then
             Error(NoBusinessUnitsErr);
+
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Consolidated Trial Balance");
         GLAccounts.SetRange("Date Filter", StartingDate, EndingDate);
 
         TrialBalance.ConfigureTrialBalance(true, true);
@@ -137,6 +140,7 @@ report 4410 "EXR Consolidated Trial Balance"
     end;
 
     var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
         IndentedAccountName: Text;
         StartingDate, EndingDate : Date;
         EnterAnEndingDateErr: Label 'Please enter an ending date.';

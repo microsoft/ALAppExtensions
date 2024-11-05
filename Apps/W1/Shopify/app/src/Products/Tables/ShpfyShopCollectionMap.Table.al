@@ -46,7 +46,6 @@ table 30128 "Shpfy Shop Collection Map"
             OptionCaption = ' ,Tax Group,VAT Prod. Posting Group';
             DataClassification = CustomerContent;
         }
-#pragma warning disable AS0086
         field(4; "Product Group Code"; Code[20])
         {
             Caption = 'Product Group Code';
@@ -54,7 +53,6 @@ table 30128 "Shpfy Shop Collection Map"
             TableRelation = if ("Product Collection" = const("Tax Group")) "Tax Group".Code else
             if ("Product Collection" = const("VAT Prod. Posting Group")) "VAT Product Posting Group".Code;
         }
-#pragma warning disable AS0086
         field(5; "Collection Id"; BigInteger)
         {
             Caption = 'Collection Id';
@@ -67,7 +65,7 @@ table 30128 "Shpfy Shop Collection Map"
             Caption = 'Collection Name';
             DataClassification = CustomerContent;
         }
-
+#if not CLEANSCHEMA25
         field(7; "Item Template Code"; Code[10])
         {
             Caption = 'Item Template Code';
@@ -78,7 +76,7 @@ table 30128 "Shpfy Shop Collection Map"
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
         }
-
+#endif
         field(8; "Default for Export"; Boolean)
         {
             Caption = 'Default for Export';

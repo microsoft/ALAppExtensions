@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36986 "Balance Sheet by Month"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Balance Sheet by Month';
     AboutTitle = 'About Balance Sheet by Month';
     AboutText = 'The Balance Sheet by Month report provides a month-to-month comparative view of the balance at date for balance sheet accounts. ';

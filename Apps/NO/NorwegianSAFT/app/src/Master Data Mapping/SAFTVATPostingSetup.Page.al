@@ -57,14 +57,12 @@ page 10678 "SAF-T VAT Posting Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for sales reporting.';
                     ShowMandatory = SalesStandardTaxCodeMandatory;
-                    Visible = false;
                 }
                 field("Purch. VAT Reporting Code"; Rec."Purch. VAT Reporting Code")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for purchase reporting.';
                     ShowMandatory = PurchStandardTaxCodeMandatory;
-                    Visible = false;
                 }
                 field("Sales SAF-T Tax Code"; "Sales SAF-T Tax Code")
                 {

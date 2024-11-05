@@ -99,7 +99,7 @@ codeunit 1951 "LP Model Management"
             exit(true);
 
         EVALUATE(Enabled, EnabledText);
-        EXIT(Enabled);
+        exit(Enabled);
     end;
 
     local procedure NewHistoricalDataAvailable(LastPostingDate: Date): Boolean
@@ -182,24 +182,23 @@ codeunit 1951 "LP Model Management"
             end;
         end;
 
-        with LPMLInputData do
-            Features += FieldCaption("Base Amount") + ',' +
-                        FieldCaption("Payment Terms Days") + ',' +
-                        FieldCaption(Corrected) + ',' +
-                        FieldCaption("No. Paid Invoices") + ',' +
-                        FieldCaption("No. Paid Late Invoices") + ',' +
-                        FieldCaption("Ratio Paid Late/Paid Invoices") + ',' +
-                        FieldCaption("Total Paid Invoices Amount") + ',' +
-                        FieldCaption("Total Paid Late Inv. Amount") + ',' +
-                        FieldCaption("Ratio PaidLateAmnt/PaidAmnt") + ',' +
-                        FieldCaption("Average Days Late") + ',' +
-                        FieldCaption("No. Outstanding Inv.") + ',' +
-                        FieldCaption("No. Outstanding Late Inv.") + ',' +
-                        FieldCaption("Ratio NoOutstngLate/NoOutstng") + ',' +
-                        FieldCaption("Total Outstng Invoices Amt.") + ',' +
-                        FieldCaption("Total Outstng Late Inv. Amt.") + ',' +
-                        FieldCaption("Ratio AmtLate/Amt Outstng Inv") + ',' +
-                        FieldCaption("Average Outstanding Days Late");
+        Features += LPMLInputData.FieldCaption("Base Amount") + ',' +
+            LPMLInputData.FieldCaption("Payment Terms Days") + ',' +
+            LPMLInputData.FieldCaption(Corrected) + ',' +
+            LPMLInputData.FieldCaption("No. Paid Invoices") + ',' +
+            LPMLInputData.FieldCaption("No. Paid Late Invoices") + ',' +
+            LPMLInputData.FieldCaption("Ratio Paid Late/Paid Invoices") + ',' +
+            LPMLInputData.FieldCaption("Total Paid Invoices Amount") + ',' +
+            LPMLInputData.FieldCaption("Total Paid Late Inv. Amount") + ',' +
+            LPMLInputData.FieldCaption("Ratio PaidLateAmnt/PaidAmnt") + ',' +
+            LPMLInputData.FieldCaption("Average Days Late") + ',' +
+            LPMLInputData.FieldCaption("No. Outstanding Inv.") + ',' +
+            LPMLInputData.FieldCaption("No. Outstanding Late Inv.") + ',' +
+            LPMLInputData.FieldCaption("Ratio NoOutstngLate/NoOutstng") + ',' +
+            LPMLInputData.FieldCaption("Total Outstng Invoices Amt.") + ',' +
+            LPMLInputData.FieldCaption("Total Outstng Late Inv. Amt.") + ',' +
+            LPMLInputData.FieldCaption("Ratio AmtLate/Amt Outstng Inv") + ',' +
+            LPMLInputData.FieldCaption("Average Outstanding Days Late");
 
         if LPPredictionMgt.GetAzureMLCredentials(LPMachineLearningSetup, ApiURI, ApiKey) then
             MLPredictionManagement.Initialize(ApiURI, ApiKey, LPPredictionMgt.GetDefaultTimeoutSeconds())

@@ -60,6 +60,7 @@ table 5024 "Service Declaration Line"
             Caption = 'Item Charge No.';
             TableRelation = "Item Charge";
         }
+#if not CLEANSCHEMA25
         field(14; "VAT Registration No."; Text[20])
         {
             Caption = 'VAT Registration No.';
@@ -67,6 +68,7 @@ table 5024 "Service Declaration Line"
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
         }
+#endif
         field(15; "VAT Reg. No."; Text[50])
         {
             Caption = 'Partner VAT ID';

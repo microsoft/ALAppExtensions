@@ -13,6 +13,13 @@ pageextension 36964 "Manufacturing Manager RC" extends "Manufacturing Manager RC
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for manufacturing';
+                action("Manufacturing Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Manufacturing Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Manufacturing Report";
+                }
                 action("Current Utilization (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;

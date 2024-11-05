@@ -20,7 +20,7 @@ pageextension 8054 "Item Card" extends "Item Card"
                 end;
             }
         }
-        addbefore(ItemAttributesFactbox)
+        addbefore(Control1900383207)
         {
             part(ItemServCommitmentsFactbox; "Item Serv. Commitments Factbox")
             {
@@ -74,7 +74,7 @@ pageextension 8054 "Item Card" extends "Item Card"
                 end;
             }
         }
-        addfirst(Category_Category4)
+        addlast(Category_Category4)
         {
             actionref(ServiceCommitments_Promoted; ServiceCommitments)
             {

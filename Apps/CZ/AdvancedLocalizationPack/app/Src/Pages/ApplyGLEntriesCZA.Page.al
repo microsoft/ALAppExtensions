@@ -422,11 +422,9 @@ page 31284 "Apply G/L Entries CZA"
         ApplyGLEntry: Record "G/L Entry";
     begin
         ShowAppliedEntries := false;
-        if not PostingDone then begin
-            ApplyGLEntry := TempGLEntry;
-            if ApplyGLEntry.FindFirst() then
+        if not PostingDone then
+            if ApplyGLEntry.Get(TempGLEntry."Entry No.") then
                 GLEntryPostApplicationCZA.SetApplyingGLEntry(ApplyGLEntry, false, '');
-        end;
     end;
 
     trigger OnOpenPage()

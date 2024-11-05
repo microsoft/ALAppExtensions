@@ -72,10 +72,10 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
 
                 trigger OnAssistEdit()
                 begin
+                    Clear(ChangeExchangeRate);
                     ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     if ChangeExchangeRate.RunModal() = Action::OK then
                         Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
-
                     Clear(ChangeExchangeRate);
                 end;
             }
@@ -87,9 +87,8 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                 ToolTip = 'Specifies VAT currency code of purchase invoice';
 
                 trigger OnAssistEdit()
-                var
-                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
+                    Clear(ChangeExchangeRate);
                     if Rec."VAT Reporting Date" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
@@ -99,6 +98,7 @@ pageextension 11739 "Purchase Invoice CZL" extends "Purchase Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
+                    Clear(ChangeExchangeRate);
                 end;
             }
         }

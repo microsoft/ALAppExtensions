@@ -29,7 +29,7 @@ page 6233 "Sustainability Scorecard"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Owner';
-                    ToolTip = 'Specifies the value of the Owner field.';
+                    ToolTip = 'Specifies the Owner field value. Only users designated as Sustainability Managers in the User Setup page can be selected as the owner.';
                 }
             }
         }

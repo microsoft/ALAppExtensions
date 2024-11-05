@@ -27,7 +27,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         Vendor: Record Vendor;
         IRS1099Form: Record "IRS 1099 Form";
         TempIRS1099Form: Record "IRS 1099 Form" temporary;
-        TempAppliedVendLedgEntry: Record "Vendor Ledger Entry" temporary;
+        IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer";
         EntryNo: Integer;
     begin
         if IRS1099CalcParameters."Period No." = '' then
@@ -53,50 +53,50 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
 
         if IRS1099CalcParameters."Vendor No." <> '' then
             Vendor.SetRange("No.", IRS1099CalcParameters."Vendor No.");
-        if not Vendor.Findset() then
+        if Vendor.IsEmpty() then
             error(NoVendorsGivenFilterErr);
-        repeat
-            TempAppliedVendLedgEntry.Reset();
-            TempAppliedVendLedgEntry.DeleteAll();
-            GetAppliedVendorEntries(TempAppliedVendLedgEntry, TempIRS1099Form, Vendor."No.", IRSReportingPeriod);
-            TransferVengLedgEntryBufferToVendFormBoxBuffer(TempVendFormBoxBuffer, TempAppliedVendLedgEntry, EntryNo, IRS1099CalcParameters."Period No.");
-            FinalizeVendFormBoxBuffer(TempVendFormBoxBuffer, EntryNo, IRSReportingPeriod."No.", Vendor."No.");
-        until Vendor.Next() = 0;
+        GetAppliedVendorEntries(IRS1099VendEntryBuffer, TempIRS1099Form, IRS1099CalcParameters."Vendor No.", IRSReportingPeriod);
+        TransferVengLedgEntryBufferToVendFormBoxBuffer(TempVendFormBoxBuffer, IRS1099VendEntryBuffer, EntryNo, IRS1099CalcParameters."Period No.");
+        FinalizeVendFormBoxBuffer(TempVendFormBoxBuffer, EntryNo, IRSReportingPeriod."No.");
     end;
 
-    local procedure GetAppliedVendorEntries(var TempAppliedVendLedgEntry: Record "Vendor Ledger Entry" temporary; var TempIRS1099Form: Record "IRS 1099 Form" temporary;
+    local procedure GetAppliedVendorEntries(var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var TempIRS1099Form: Record "IRS 1099 Form" temporary;
                                           VendorNo: Code[20]; IRSReportingPeriod: Record "IRS Reporting Period");
     var
-        PmtDtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry";
-        InvDtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry";
         PmtVendLedgEntry: Record "Vendor Ledger Entry";
-        TempInteger: Record "Integer" temporary;
     begin
-        TempAppliedVendLedgEntry.Reset();
-        TempAppliedVendLedgEntry.DeleteAll();
-
-        FilterPaymentVendorLedgerEntries(PmtVendLedgEntry, VendorNo, IRSReportingPeriod);
+        FilterPaymentVendorLedgerEntries(PmtVendLedgEntry, IRSReportingPeriod);
         if PmtVendLedgEntry.FindSet() then
             repeat
-                FilterApplicationDetailedVendorLedgerEntries(PmtDtldVendLedgEntry, PmtVendLedgEntry);
-                if PmtDtldVendLedgEntry.FindSet() then
-                    repeat
-                        FindRelatedApplicationDetailedVendorLedgerEntries(InvDtldVendLedgEntry, PmtVendLedgEntry, PmtDtldVendLedgEntry);
-                        repeat
-                            if TryCacheEntryNo(TempInteger, InvDtldVendLedgEntry."Entry No.") then
-                                UpdateTempVendLedgEntryBuffer(
-                                    TempAppliedVendLedgEntry, TempIRS1099Form, InvDtldVendLedgEntry, PmtVendLedgEntry);
-                        until InvDtldVendLedgEntry.Next() = 0;
-                    until PmtDtldVendLedgEntry.Next() = 0;
+                GetAppliedVendorEntriesFromtPmtEntry(IRS1099VendEntryBuffer, TempIRS1099Form, PmtVendLedgEntry, VendorNo);
             until PmtVendLedgEntry.Next() = 0;
     end;
 
-    local procedure FilterPaymentVendorLedgerEntries(var VendLedgEntry: Record "Vendor Ledger Entry"; VendorNo: Code[20]; IRSReportingPeriod: Record "IRS Reporting Period")
+    local procedure GetAppliedVendorEntriesFromtPmtEntry(var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var TempIRS1099Form: Record "IRS 1099 Form" temporary; PmtVendLedgEntry: Record "Vendor Ledger Entry"; VendorNo: Code[20])
+    var
+        PmtDtldVendLedgEntry, InvDtldVendLedgEntry : Record "Detailed Vendor Ledg. Entry";
+        TempInteger: Record "Integer" temporary;
+        PaymentDiscountEntries: List of [Integer];
+    begin
+        if (VendorNo <> '') and (PmtVendLedgEntry."Vendor No." <> VendorNo) then
+            exit;
+        FilterApplicationDetailedVendorLedgerEntries(PmtDtldVendLedgEntry, PmtVendLedgEntry);
+        if PmtDtldVendLedgEntry.FindSet() then
+            repeat
+                FindRelatedApplicationDetailedVendorLedgerEntries(InvDtldVendLedgEntry, PmtVendLedgEntry, PmtDtldVendLedgEntry);
+                repeat
+                    if TryCacheEntryNo(TempInteger, InvDtldVendLedgEntry."Entry No.") then
+                        UpdateTempVendLedgEntryBuffer(
+                            IRS1099VendEntryBuffer, TempIRS1099Form, PaymentDiscountEntries, InvDtldVendLedgEntry, PmtVendLedgEntry);
+                until InvDtldVendLedgEntry.Next() = 0;
+            until PmtDtldVendLedgEntry.Next() = 0;
+    end;
+
+    local procedure FilterPaymentVendorLedgerEntries(var VendLedgEntry: Record "Vendor Ledger Entry"; IRSReportingPeriod: Record "IRS Reporting Period")
     begin
         VendLedgEntry.SetCurrentKey("Document Type", "Vendor No.", "Posting Date");
         VendLedgEntry.SetLoadFields("Document Type", "Vendor No.", "Posting Date", "Closed by Entry No.");
         VendLedgEntry.SetFilter("Document Type", '%1|%2', VendLedgEntry."Document Type"::Payment, VendLedgEntry."Document Type"::Refund);
-        VendLedgEntry.SetRange("Vendor No.", VendorNo);
         VendLedgEntry.SetRange("Posting Date", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
     end;
 
@@ -121,7 +121,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         DtldVendLedgEntry.FindSet();
     end;
 
-    local procedure UpdateTempVendLedgEntryBuffer(var TempAppliedVendLedgEntry: Record "Vendor Ledger Entry" temporary; var TempIRS1099Form: Record "IRS 1099 Form" temporary; InvDtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry"; PmtVendLedgEntry: Record "Vendor Ledger Entry")
+    local procedure UpdateTempVendLedgEntryBuffer(var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var TempIRS1099Form: Record "IRS 1099 Form" temporary; var PaymentDiscountEntries: List of [Integer]; InvDtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry"; PmtVendLedgEntry: Record "Vendor Ledger Entry")
     var
         InvVendLedgEntry: Record "Vendor Ledger Entry";
         ClosingVendLedgEntry: Record "Vendor Ledger Entry";
@@ -140,76 +140,86 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         if not TempIRS1099Form.FindFirst() then
             exit;
 
-        TempAppliedVendLedgEntry := InvVendLedgEntry;
-        if TempAppliedVendLedgEntry.Find() then begin
-            TempAppliedVendLedgEntry."Amount to Apply" += AmountToApply;
-            TempAppliedVendLedgEntry.Modify();
+        IRS1099VendEntryBuffer."Entry No." := InvVendLedgEntry."Entry No.";
+        if IRS1099VendEntryBuffer.Find() then begin
+            IRS1099VendEntryBuffer."Amount to Apply" += AmountToApply;
+            IRS1099VendEntryBuffer.Modify();
         end else begin
-            TempAppliedVendLedgEntry := InvVendLedgEntry;
-            TempAppliedVendLedgEntry."Amount to Apply" := AmountToApply;
+            IRS1099VendEntryBuffer."Vendor No." := InvDtldVendLedgEntry."Vendor No.";
+            IRS1099VendEntryBuffer."IRS 1099 Form No." := InvVendLedgEntry."IRS 1099 Form No.";
+            IRS1099VendEntryBuffer."IRS 1099 Form Box No." := InvVendLedgEntry."IRS 1099 Form Box No.";
+            InvVendLedgEntry.CalcFields(Amount);
+            IRS1099VendEntryBuffer.Amount := InvVendLedgEntry.Amount;
+            IRS1099VendEntryBuffer."Amount to Apply" := AmountToApply;
+            IRS1099VendEntryBuffer."IRS 1099 Reporting Amount" := InvVendLedgEntry."IRS 1099 Reporting Amount";
 
             if PmtVendLedgEntry."Closed by Entry No." <> 0 then begin
                 ClosingVendLedgEntry.Get(InvDtldVendLedgEntry."Vendor Ledger Entry No.");
-                if ClosingVendLedgEntry."Closed by Entry No." <> TempAppliedVendLedgEntry."Entry No." then
-                    TempAppliedVendLedgEntry."Pmt. Disc. Rcd.(LCY)" := 0;
-                TempAppliedVendLedgEntry."Amount to Apply" +=
-                    GetPaymentDiscount(ClosingVendLedgEntry."Closed by Entry No.");
+                if ClosingVendLedgEntry."Closed by Entry No." <> IRS1099VendEntryBuffer."Entry No." then
+                    IRS1099VendEntryBuffer."Pmt. Disc. Rcd.(LCY)" := 0;
+                if not PaymentDiscountEntries.Contains(ClosingVendLedgEntry."Closed by Entry No.") then begin
+                    IRS1099VendEntryBuffer."Amount to Apply" +=
+                        GetPaymentDiscount(ClosingVendLedgEntry."Closed by Entry No.");
+                    PaymentDiscountEntries.Add(ClosingVendLedgEntry."Closed by Entry No.");
+                end;
             end;
-            TempAppliedVendLedgEntry.Insert();
+            IRS1099VendEntryBuffer.Insert();
         end;
     end;
 
-    local procedure TransferVengLedgEntryBufferToVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var TempAppliedVendLedgEntry: Record "Vendor Ledger Entry" temporary; var EntryNo: Integer; PeriodNo: Code[20])
+    local procedure TransferVengLedgEntryBufferToVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var EntryNo: Integer; PeriodNo: Code[20])
     begin
-        if not TempAppliedVendLedgEntry.FindSet() then
+        if not IRS1099VendEntryBuffer.FindSet() then
             exit;
         repeat
             if not FindVendFormBoxBuffer(
-                TempVendFormBoxBuffer, PeriodNo, TempAppliedVendLedgEntry."Vendor No.", TempAppliedVendLedgEntry."IRS 1099 Form No.",
-                TempAppliedVendLedgEntry."IRS 1099 Form Box No.")
+                TempVendFormBoxBuffer, PeriodNo, IRS1099VendEntryBuffer."Vendor No.", IRS1099VendEntryBuffer."IRS 1099 Form No.",
+                IRS1099VendEntryBuffer."IRS 1099 Form Box No.")
             then
-                InsertVendFormBoxBufferFromVendLedgEntry(TempVendFormBoxBuffer, EntryNo, TempAppliedVendLedgEntry, PeriodNo);
-            TempAppliedVendLedgEntry.CalcFields(Amount);
+                InsertVendFormBoxBufferFromVendLedgEntry(TempVendFormBoxBuffer, EntryNo, IRS1099VendEntryBuffer, PeriodNo);
             TempVendFormBoxBuffer.Amount +=
-                -TempAppliedVendLedgEntry."Amount to Apply" * TempAppliedVendLedgEntry."IRS 1099 Reporting Amount" / TempAppliedVendLedgEntry.Amount;
+                -IRS1099VendEntryBuffer."Amount to Apply" * IRS1099VendEntryBuffer."IRS 1099 Reporting Amount" / IRS1099VendEntryBuffer.Amount;
             TempVendFormBoxBuffer.Modify();
             if IRSFormsSetup."Collect Details For Line" then
-                InsertVendEntryIntoBuffer(TempVendFormBoxBuffer, EntryNo, TempAppliedVendLedgEntry."Entry No.");
-        until TempAppliedVendLedgEntry.Next() = 0;
+                InsertVendEntryIntoBuffer(TempVendFormBoxBuffer, EntryNo, IRS1099VendEntryBuffer."Entry No.");
+        until IRS1099VendEntryBuffer.Next() = 0;
     end;
 
-    local procedure AddAdjustmentsToVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20]; VendorNo: Code[20]): Boolean
+    local procedure AddAdjustmentsToVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20]): Boolean
     var
         IRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
     begin
         IRS1099VendorFormBoxAdj.SetRange("Period No.", PeriodNo);
-        IRS1099VendorFormBoxAdj.SetRange("Vendor No.", VendorNo);
         if not IRS1099VendorFormBoxAdj.FindSet() then
             exit(false);
+        TempVendFormBoxBuffer.Reset();
+        TempVendFormBoxBuffer.SetRange("Period No.", PeriodNo);
         repeat
-            TempVendFormBoxBuffer.Init();
-            EntryNo += 1;
-            TempVendFormBoxBuffer."Entry No." := EntryNo;
-            TempVendFormBoxBuffer."Period No." := PeriodNo;
-            TempVendFormBoxBuffer."Vendor No." := IRS1099VendorFormBoxAdj."Vendor No.";
-            TempVendFormBoxBuffer."Form No." := IRS1099VendorFormBoxAdj."Form No.";
-            TempVendFormBoxBuffer."Form Box No." := IRS1099VendorFormBoxAdj."Form Box No.";
-            TempVendFormBoxBuffer.Insert();
+            TempVendFormBoxBuffer.SetRange("Vendor No.", IRS1099VendorFormBoxAdj."Vendor No.");
+            TempVendFormBoxBuffer.SetRange("Form No.", IRS1099VendorFormBoxAdj."Form No.");
+            TempVendFormBoxBuffer.SetRange("Form Box No.", IRS1099VendorFormBoxAdj."Form Box No.");
+            if not TempVendFormBoxBuffer.FindFirst() then begin
+                TempVendFormBoxBuffer.Init();
+                EntryNo += 1;
+                TempVendFormBoxBuffer."Entry No." := EntryNo;
+                TempVendFormBoxBuffer."Period No." := PeriodNo;
+                TempVendFormBoxBuffer."Vendor No." := IRS1099VendorFormBoxAdj."Vendor No.";
+                TempVendFormBoxBuffer."Form No." := IRS1099VendorFormBoxAdj."Form No.";
+                TempVendFormBoxBuffer."Form Box No." := IRS1099VendorFormBoxAdj."Form Box No.";
+                TempVendFormBoxBuffer.Insert();
+            end;
         until IRS1099VendorFormBoxAdj.Next() = 0;
         exit(true);
     end;
 
-    local procedure FinalizeVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20]; VendorNo: Code[20])
+    local procedure FinalizeVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20])
     begin
+        AddAdjustmentsToVendFormBoxBuffer(TempVendFormBoxBuffer, EntryNo, PeriodNo);
         TempVendFormBoxBuffer.Reset();
-        TempVendFormBoxBuffer.SetRange("Vendor No.", VendorNo);
         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
         TempVendFormBoxBuffer.SetAutoCalcFields("Adjustment Amount", "Minimum Reportable Amount");
         if not TempVendFormBoxBuffer.FindSet() then
-            if AddAdjustmentsToVendFormBoxBuffer(TempVendFormBoxBuffer, EntryNo, PeriodNo, VendorNo) then
-                TempVendFormBoxBuffer.FindSet()
-            else
-                exit;
+            exit;
 
         repeat
             TempVendFormBoxBuffer."Reporting Amount" := TempVendFormBoxBuffer.Amount + TempVendFormBoxBuffer."Adjustment Amount";
@@ -227,15 +237,15 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         exit(TempVendFormBoxBuffer.FindFirst());
     end;
 
-    local procedure InsertVendFormBoxBufferFromVendLedgEntry(var VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; VendLedgEntry: Record "Vendor Ledger Entry"; PeriodNo: Code[20])
+    local procedure InsertVendFormBoxBufferFromVendLedgEntry(var VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; PeriodNo: Code[20])
     begin
         VendFormBoxBuffer.Init();
         EntryNo += 1;
         VendFormBoxBuffer."Entry No." := EntryNo;
         VendFormBoxBuffer."Period No." := PeriodNo;
-        VendFormBoxBuffer."Vendor No." := VendLedgEntry."Vendor No.";
-        VendFormBoxBuffer."Form No." := VendLedgEntry."IRS 1099 Form No.";
-        VendFormBoxBuffer."Form Box No." := VendLedgEntry."IRS 1099 Form Box No.";
+        VendFormBoxBuffer."Vendor No." := IRS1099VendEntryBuffer."Vendor No.";
+        VendFormBoxBuffer."Form No." := IRS1099VendEntryBuffer."IRS 1099 Form No.";
+        VendFormBoxBuffer."Form Box No." := IRS1099VendEntryBuffer."IRS 1099 Form Box No.";
         VendFormBoxBuffer.CalcFields("Adjustment Amount");
         VendFormBoxBuffer."Reporting Amount" += VendFormBoxBuffer."Adjustment Amount";
         VendFormBoxBuffer.Insert();

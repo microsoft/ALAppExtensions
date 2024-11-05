@@ -215,6 +215,31 @@ page 6219 "Sustainability Journal"
                         CurrPage.Update();
                     end;
                 }
+                field("Water Intensity"; Rec."Water Intensity")
+                {
+                    Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the Water Intensity of the entry.';
+                }
+                field("Discharged Into Water"; Rec."Discharged Into Water")
+                {
+                    Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the Discharged Into Water of the entry.';
+                }
+                field("Waste Intensity"; Rec."Waste Intensity")
+                {
+                    Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the Waste Intensity of the entry.';
+                }
+                field("Water/Waste Intensity Type"; Rec."Water/Waste Intensity Type")
+                {
+                    Editable = EnableWater or EnableWaste;
+                    ToolTip = 'Specifies the Water/Waste Intensity Type of the entry.';
+                }
+                field("Water Type"; Rec."Water Type")
+                {
+                    Editable = EnableWater;
+                    ToolTip = 'Specifies the Water Type of the entry.';
+                }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ToolTip = 'Specifies the country/region code of the journal line.';
@@ -479,7 +504,7 @@ page 6219 "Sustainability Journal"
         CurrentJournalBatchName: Code[10];
         ShortcutDimCode: array[8] of Code[20];
         DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8 : Boolean;
-        IsRecurringView: Boolean;
+        IsRecurringView, EnableWater, EnableWaste : Boolean;
         InvalidDocumentTypeErr: Label 'You cannot use Document type %1 on Sustainability Journal Line.', Comment = ' %1 = Document Type';
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -494,6 +519,12 @@ page 6219 "Sustainability Journal"
         DimMgt: Codeunit DimensionManagement;
     begin
         DimMgt.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
+        InitializeAndEnableIntensityControl();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        InitializeAndEnableIntensityControl();
     end;
 
     trigger OnInit()
@@ -541,5 +572,22 @@ page 6219 "Sustainability Journal"
     begin
         IsRecurringView := true;
         CurrPage.Caption(RecurringSustainabilityJnl.Caption());
+    end;
+
+    local procedure InitializeAndEnableIntensityControl()
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        InitializeIntensityControl();
+        if SustAccountCategory.Get(Rec."Account Category") then begin
+            EnableWater := SustAccountCategory."Water Intensity" or SustAccountCategory."Discharged Into Water";
+            EnableWaste := SustAccountCategory."Waste Intensity";
+        end;
+    end;
+
+    local procedure InitializeIntensityControl()
+    begin
+        EnableWater := false;
+        EnableWaste := false;
     end;
 }

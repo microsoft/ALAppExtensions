@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36987 "Budget Comparison"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Budget Comparison';
     AboutTitle = 'About Budget Comparison';
     AboutText = 'The Budget Comparison report presents a month-to-month analysis of Net Change against Budget Amounts for both Balance Sheet and Income Statement accounts. Featuring variance and variance percentage metrics, providing a clear view of how actual performance compares to budgeted targets.';

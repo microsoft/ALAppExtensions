@@ -5603,6 +5603,18 @@ End Function
         <Field Name="TotalLineAmountFormat">
           <DataField>TotalLineAmountFormat</DataField>
         </Field>
+        <Field Name="GreetingText">
+          <DataField>GreetingText</DataField>
+        </Field>
+        <Field Name="BodyText">
+          <DataField>BodyText</DataField>
+        </Field>
+        <Field Name="ClosingText">
+          <DataField>ClosingText</DataField>
+        </Field>
+        <Field Name="DescriptionText">
+          <DataField>DescriptionText</DataField>
+        </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>
         </Field>

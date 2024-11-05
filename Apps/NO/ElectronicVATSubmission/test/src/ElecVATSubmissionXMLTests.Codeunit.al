@@ -515,6 +515,35 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
             VATStatementReportLine.Base + VATStatementReportLine."Non-Deductible Base", VATStatementReportLine.Amount + VATStatementReportLine."Non-Deductible Amount");
     end;
 
+    [Test]
+    procedure VATCode81NegativeValueWithNote()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        // [SCENARIO 544346] Stan can report the negative VAT for code 81 with a note in the electronic VAT declaration
+
+        Initialize();
+        SetVATRegNoInCompanyInfo(GetVATRegNoWithLetters());
+        // [GIVEN] VAT return with "VAT %" = 25, Base = -150, Amount = -35 and Note = "This is correction"
+        InsertMonthlyElecVATReportHeader(VATReportHeader);
+        // [GIVEN] VAT Code is 81 
+        LibraryElecVATSubmission.InsertVATStatementReportLineWithBoxNo(VATStatementReportLine, VATReportHeader, GetReverseChargeVATCode());
+        VATStatementReportLine.Base := -VATStatementReportLine.Base;
+        VATStatementReportLine.Amount := -VATStatementReportLine.Amount;
+        VATStatementReportLine.Note := LibraryUtility.GenerateGUID();
+        VATStatementReportLine.Modify();
+
+        // [WHEN] Generate Electronic VAT declaration message
+        VATReportMediator.Generate(VATReportHeader);
+
+        // [THEN] XML message is generated with two mvaSpesifikasjonslinje/merknad/beskrivelse = "This is correction"
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        VerifyVATNotesValueInSubmissionMessage(VATReportHeader, VATStatementReportLine.Note);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");
@@ -715,5 +744,20 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         TempXMLBuffer.FindNodesByXPath(
             TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad/utvalgtMerknad');
         Assert.RecordCount(TempXMLBuffer, 0);
+    end;
+
+    local procedure VerifyVATNotesValueInSubmissionMessage(VATReportHeader: Record "VAT Report Header"; VATNoteValue: Text)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        VATReportMediator.Generate(VATReportHeader);
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        TempXMLBuffer.FindNodesByXPath(
+            TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad/beskrivelse');
+        Assert.RecordCount(TempXMLBuffer, 2);
+        TempXMLBuffer.TestField(Value, VATNoteValue);
+        TempXMLBuffer.Next();
+        TempXMLBuffer.TestField(Value, VATNoteValue);
     end;
 }

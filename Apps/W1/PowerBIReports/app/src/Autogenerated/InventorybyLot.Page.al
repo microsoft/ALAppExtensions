@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37029 "Inventory by Lot"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Inventory by Lot';
     AboutTitle = 'About Inventory by Lot';
     AboutText = 'The Inventory by Lot Number report displays inventory quantities categorized by lot number, providing detailed insights into specific batches of stock. A decomposition tree enhances this by allowing users to drill down into inventory data, breaking down lot quantities by various dimensions such as location, item category, or vendor.';

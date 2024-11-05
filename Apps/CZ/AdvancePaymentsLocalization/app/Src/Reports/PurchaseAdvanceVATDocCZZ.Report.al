@@ -9,6 +9,7 @@ using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
@@ -74,7 +75,19 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                     column(LCYCode_GeneralLedgerSetup; "LCY Code")
                     {
                     }
+                    column(VATCurrencyCode; VATCurrencyCode)
+                    {
+                    }
                 }
+
+                trigger OnAfterGetRecord()
+                begin
+                    UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+                    if UseFunctionalCurrency then
+                        VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                    else
+                        VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                end;
             }
 
             trigger OnAfterGetRecord()
@@ -273,6 +286,8 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                         DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"), "Auxiliary Entry" = const(false));
 
                         trigger OnAfterGetRecord()
+                        var
+                            VATEntry: Record "VAT Entry";
                         begin
                             TempVATAmountLine.Init();
                             TempVATAmountLine."VAT Identifier" := "VAT Identifier";
@@ -282,6 +297,10 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                             TempVATAmountLine."Amount Including VAT" := "Amount";
                             TempVATAmountLine."VAT Base (LCY) CZL" := "VAT Base Amount (LCY)";
                             TempVATAmountLine."VAT Amount (LCY) CZL" := "VAT Amount (LCY)";
+                            if VATEntry.Get("VAT Entry No.") then begin
+                                TempVATAmountLine."Additional-Currency Base CZL" := VATEntry."Additional-Currency Base";
+                                TempVATAmountLine."Additional-Currency Amount CZL" := VATEntry."Additional-Currency Amount";
+                            end;
                             TempVATAmountLine.InsertLine();
                         end;
 
@@ -371,6 +390,8 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    AdditionalCurrencyFactor: Decimal;
                 begin
                     CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                     CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
@@ -397,6 +418,18 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                             CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                     end else
                         CalculatedExchRate := 1;
+
+                    if UseFunctionalCurrency then begin
+                        AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempPurchAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
+                        if (AdditionalCurrencyFactor <> 0) and (AdditionalCurrencyFactor <> 1) then begin
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "General Ledger Setup"."Additional Reporting Currency", 1);
+                            CalculatedExchRate := Round(1 / AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                            ExchRateText :=
+                              StrSubstNo(Text009Txt, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
+                               CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                        end else
+                            CalculatedExchRate := 1;
+                    end;
 
                     FormatAddress.FormatAddr(VendAddr, "Pay-to Name", "Pay-to Name 2", "Pay-to Contact", "Pay-to Address", "Pay-to Address 2",
                       "Pay-to City", "Pay-to Post Code", "Pay-to County", "Pay-to Country/Region Code");
@@ -490,6 +523,8 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
         CalculatedExchRate: Decimal;
         CopyNo: Integer;
         NoOfCop: Integer;
+        UseFunctionalCurrency: Boolean;
+        VATCurrencyCode: Code[10];
 
     local procedure IsCreditMemo(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"): Boolean
     var

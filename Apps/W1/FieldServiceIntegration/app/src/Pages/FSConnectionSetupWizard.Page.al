@@ -414,6 +414,7 @@ page 6613 "FS Connection Setup Wizard"
         end else begin
             InitializeDefaultAuthenticationType();
             InitializeDefaultProxyVersion();
+            InitializeDefaultTemplateAndBatch();
         end;
         Rec.Insert();
         Step := Step::Start;
@@ -569,6 +570,8 @@ page 6613 "FS Connection Setup Wizard"
     end;
 
     local procedure ShowItemAvailabilityStep()
+    var
+        CDSConnectionSetup: Record "CDS Connection Setup";
     begin
         BackActionEnabled := true;
         NextActionEnabled := false;
@@ -578,8 +581,13 @@ page 6613 "FS Connection Setup Wizard"
         SimpleActionEnabled := false;
         RefreshActionEnabled := true;
         ItemAvailabilityStepVisible := true;
-        VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
-        Rec.SetupVirtualTables(VirtualTableAppInstalled);
+        CDSConnectionSetup.Get();
+        if CDSConnectionSetup."Business Events Enabled" then
+            VirtualTableAppInstalled := true
+        else begin
+            VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
+            Rec.SetupVirtualTables(VirtualTableAppInstalled);
+        end;
     end;
 
     local procedure FinalizeSetup(): Boolean
@@ -626,6 +634,11 @@ page 6613 "FS Connection Setup Wizard"
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
     begin
         Rec.Validate("Proxy Version", CRMIntegrationManagement.GetLastProxyVersionItem());
+    end;
+
+    local procedure InitializeDefaultTemplateAndBatch()
+    begin
+        Rec.InitializeDefaultTemplateAndBatch();
     end;
 
     local procedure GetVirtualTablesAppSourceLink(): Text

@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 1361 "MS - WorldPay Std. Template"
 {
     Caption = 'WorldPay Payments Standard Account Template';
@@ -47,4 +48,4 @@ table 1361 "MS - WorldPay Std. Template"
         fieldgroup(Description; Description) { }
     }
 }
-
+#endif

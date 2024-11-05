@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37048 "Average Productions Times"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Average Productions Times';
     AboutTitle = 'About Average Productions Times';
     AboutText = 'View the average time spent for Setup, Run and Stop times per unit for each manufactured Item. Expand to see the times for each production order to determine why fluctuations occurred.';

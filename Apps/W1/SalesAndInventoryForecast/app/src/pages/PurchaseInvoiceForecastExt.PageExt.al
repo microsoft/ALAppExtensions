@@ -16,7 +16,7 @@ pageextension 1857 PurchaseInvoiceForecastExt extends "Purchase Invoice"
             {
                 ApplicationArea = Basic, Suite;
                 Provider = PurchLines;
-                SubPageLink = "No." = Field("No.");
+                SubPageLink = "No." = field("No.");
                 UpdatePropagation = Both;
             }
         }

@@ -1,14 +1,10 @@
 namespace Microsoft.SubscriptionBilling;
-#if not CLEAN25
+
 using System.Text;
-#endif
 using Microsoft.Utilities;
 using Microsoft.Sales.Document;
 using Microsoft.Inventory.Item;
-#if not CLEAN25
-using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.Currency;
-#endif
 codeunit 8073 "Sales Report Printout Mgmt."
 {
     Access = Internal;
@@ -91,26 +87,20 @@ codeunit 8073 "Sales Report Printout Mgmt."
 
     procedure FillServiceCommitmentsGroupPerPeriod(var SalesHeader: Record "Sales Header"; var GroupPerPeriod: Record "Name/Value Buffer")
     var
-#if not CLEAN25
         SalesServiceCommitment: Record "Sales Service Commitment";
-        TempVatAmountLines: Record "VAT Amount Line" temporary;
-#endif
+        TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
         FormatDocument: Codeunit "Format Document";
         TotalText: Text[50];
         TotalInclVATText: Text[50];
         TotalExclVATText: Text[50];
-#if not CLEAN25
         UniqueRhythmDictionary: Dictionary of [Code[20], Text];
         IsHandled: Boolean;
-#endif
     begin
         FormatDocument.SetTotalLabels(SalesHeader.GetCurrencySymbol(), TotalText, TotalInclVATText, TotalExclVATText);
-#if not CLEAN25
-        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempVatAmountLines, UniqueRhythmDictionary);
-        OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader, TempVatAmountLines, GroupPerPeriod, UniqueRhythmDictionary, TotalText, TotalInclVATText, TotalExclVATText, IsHandled);
+        SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
+        OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader, TempSalesServiceCommitmentBuff, GroupPerPeriod, UniqueRhythmDictionary, TotalText, TotalInclVATText, TotalExclVATText, IsHandled);
         if not IsHandled then
-            FillServiceCommitmentsGroupPerPeriod(TempVatAmountLines, GroupPerPeriod, UniqueRhythmDictionary, SalesHeader."Currency Code", TotalInclVATText, TotalExclVATText);
-#endif            
+            FillServiceCommitmentsGroupPerPeriod(TempSalesServiceCommitmentBuff, GroupPerPeriod, UniqueRhythmDictionary, SalesHeader."Currency Code", TotalInclVATText, TotalExclVATText);
     end;
 
     procedure FillServiceCommitmentsForLine(var SalesHeader: Record "Sales Header"; var SalesLineServiceCommitments: Record "Sales Line"; var SalesLineServiceCommitmentsCaption: Record "Name/Value Buffer")
@@ -167,8 +157,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
         Line.MarkedOnly(false);
     end;
 
-#if not CLEAN25
-    local procedure FillServiceCommitmentsGroupPerPeriod(var TempVatAmountLines: Record "VAT Amount Line" temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; CurrencyCode: Code[10]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50])
+    local procedure FillServiceCommitmentsGroupPerPeriod(var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; CurrencyCode: Code[10]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50])
     var
         Currency: Record Currency;
         AutoFormat: Codeunit "Auto Format";
@@ -185,32 +174,30 @@ codeunit 8073 "Sales Report Printout Mgmt."
     begin
         Currency.Initialize(CurrencyCode);
         foreach RhythmIdentifier in UniqueRhythmDictionary.Keys() do begin
-            TempVatAmountLines.Reset();
-            TempVatAmountLines.SetRange("VAT Identifier", RhythmIdentifier);
-            TempVatAmountLines.CalcSums("VAT Base");
+            TempSalesServiceCommitmentBuff.Reset();
+            TempSalesServiceCommitmentBuff.SetRange("Rhythm Identifier", RhythmIdentifier);
+            TempSalesServiceCommitmentBuff.CalcSums("VAT Base");
             BillingRhythmPlaceholderTxt := BillingRhythmLbl;
             if RhythmIdentifier = ContractRenewalMgt.GetContractRenewalIdentifierLabel() then
                 BillingRhythmPlaceholderTxt := PlaceholderLbl;
             // Set VAT Header with Total
-            FormatTotal := Format(TempVatAmountLines."VAT Base", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
+            FormatTotal := Format(TempSalesServiceCommitmentBuff."VAT Base", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
             ReportFormatting.AddValueToBuffer(GroupPerPeriod, TotalExclVATText, FormatTotal, StrSubstNo(BillingRhythmPlaceholderTxt, UniqueRhythmDictionary.Get(RhythmIdentifier)));
             // Set Body with VAT entries
-            if TempVatAmountLines.FindSet() then
+            if TempSalesServiceCommitmentBuff.FindSet() then
                 repeat
-                    FormatDecimal := Format(TempVatAmountLines."VAT Amount", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
-                    ReportFormatting.AddValueToBuffer(GroupPerPeriod, VATTextLbl + ' [' + Format(TempVatAmountLines."VAT %") + '%]', FormatDecimal, StrSubstNo(BillingRhythmPlaceholderTxt, UniqueRhythmDictionary.Get(RhythmIdentifier)));
-                until TempVatAmountLines.Next() = 0;
+                    FormatDecimal := Format(TempSalesServiceCommitmentBuff."VAT Amount", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
+                    ReportFormatting.AddValueToBuffer(GroupPerPeriod, VATTextLbl + ' [' + Format(TempSalesServiceCommitmentBuff."VAT %") + '%]', FormatDecimal, StrSubstNo(BillingRhythmPlaceholderTxt, UniqueRhythmDictionary.Get(RhythmIdentifier)));
+                until TempSalesServiceCommitmentBuff.Next() = 0;
             // Set VAT Footer with Total
-            TempVatAmountLines.CalcSums("Amount Including VAT");
-            FormatTotal := Format(TempVatAmountLines."Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
+            TempSalesServiceCommitmentBuff.CalcSums("Amount Including VAT");
+            FormatTotal := Format(TempSalesServiceCommitmentBuff."Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(AutoFormatType::AmountFormat, Currency.Code));
             ReportFormatting.AddValueToBuffer(GroupPerPeriod, TotalInclVATText, FormatTotal, StrSubstNo(BillingRhythmPlaceholderTxt, UniqueRhythmDictionary.Get(RhythmIdentifier)));
         end;
     end;
-#endif
-#if not CLEAN25
+
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader: Record "Sales Header"; var TempVatAmountLines: Record "VAT Amount Line" temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; TotalText: Text[50]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50]; var IsHandled: Boolean)
+    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader: Record "Sales Header"; var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; TotalText: Text[50]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50]; var IsHandled: Boolean)
     begin
     end;
-#endif
 }

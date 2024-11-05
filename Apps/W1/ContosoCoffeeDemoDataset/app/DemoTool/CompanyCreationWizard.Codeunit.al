@@ -1,6 +1,10 @@
+#pragma warning disable AS0072
 codeunit 4786 "Company Creation Wizard"
 {
     Permissions = tabledata "Assisted Company Setup Status" = rm;
+    ObsoleteTag = '25.0';
+    ObsoleteReason = 'Changing the way demo data is generated, for more infromation see https://go.microsoft.com/fwlink/?linkid=2288084';
+    ObsoleteState = Pending;
 
     [EventSubscriber(ObjectType::Page, Page::"Company Creation Wizard", 'OnOpenPageCheckAdditionalDemoData', '', false, false)]
     local procedure SetAdditionalDemoDataVisible(var AdditionalDemoDataVisible: Boolean)
@@ -37,3 +41,4 @@ codeunit 4786 "Company Creation Wizard"
         ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
         ContosoCoffeeDemoDatasetInitilizationTok: Label '%1: installation initialized from Company Creation wizard', Locked = true;
 }
+#pragma warning restore AS0072
