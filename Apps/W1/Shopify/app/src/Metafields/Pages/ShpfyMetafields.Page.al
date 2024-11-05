@@ -42,6 +42,9 @@ page 30163 "Shpfy Metafields"
                     var
                         IMetafieldType: Interface "Shpfy IMetafield Type";
                     begin
+                        if not IsPageEditable then
+                            exit;
+
                         IMetafieldType := Rec.Type;
 
                         if IMetafieldType.HasAssistEdit() then
@@ -91,9 +94,12 @@ page 30163 "Shpfy Metafields"
     internal procedure RunForResource(ParentTableId: Integer; OwnerId: BigInteger; ShopCode: Code[20])
     var
         Metafield: Record "Shpfy Metafield";
+        IMetafieldOwnerType: Interface "Shpfy IMetafield Owner Type";
     begin
         Shop.Get(ShopCode);
-        IsPageEditable := (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products");
+
+        IMetafieldOwnerType := Metafield.GetOwnerType(ParentTableId);
+        IsPageEditable := IMetafieldOwnerType.CanEditMetafields(Shop);
 
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);

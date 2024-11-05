@@ -186,6 +186,8 @@ table 30101 "Shpfy Metafield"
                 exit("Owner Type"::Product);
             Database::"Shpfy Variant":
                 exit("Owner Type"::ProductVariant);
+            Database::"Shpfy Company":
+                exit("Owner Type"::Company);
         end;
     end;
 

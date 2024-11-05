@@ -7,7 +7,7 @@ pageextension 8062 "Sales Invoice Subform" extends "Sales Invoice Subform"
 
     actions
     {
-        addlast(Processing)
+        addlast("Related Information")
         {
             action(ShowBillingLines)
             {

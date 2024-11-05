@@ -36,8 +36,11 @@ codeunit 30284 "Shpfy Company Export"
         Shop: Record "Shpfy Shop";
         CompanyAPI: Codeunit "Shpfy Company API";
         CatalogAPI: Codeunit "Shpfy Catalog API";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
+        EmptyEmailAddressLbl: Label 'Customer (Company) has no e-mail address.';
+        CompanyWithPhoneNoOrEmailExistsLbl: Label 'Company already exists with the same e-mail or phone.';
 
     local procedure CreateShopifyCompany(Customer: Record Customer)
     var
@@ -45,8 +48,10 @@ codeunit 30284 "Shpfy Company Export"
         ShopifyCustomer: Record "Shpfy Customer";
         CompanyLocation: Record "Shpfy Company Location";
     begin
-        if Customer."E-Mail" = '' then
+        if Customer."E-Mail" = '' then begin
+            SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
+        end;
 
         if CreateCompanyMainContact(Customer, ShopifyCustomer) then
             if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then
@@ -182,8 +187,10 @@ codeunit 30284 "Shpfy Company Export"
         CompanyLocation: Record "Shpfy Company Location";
     begin
         ShopifyCompany.Get(CompanyId);
-        if ShopifyCompany."Customer SystemId" <> Customer.SystemId then
+        if ShopifyCompany."Customer SystemId" <> Customer.SystemId then begin
+            SkippedRecord.LogSkippedRecord(ShopifyCompany.Id, Customer.RecordId, CompanyWithPhoneNoOrEmailExistsLbl, Shop);
             exit;
+        end;
 
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
         CompanyLocation.FindFirst();
@@ -193,6 +200,15 @@ codeunit 30284 "Shpfy Company Export"
             ShopifyCompany.Modify();
             CompanyLocation.Modify();
         end;
+
+        UpdateMetafields(ShopifyCompany.Id);
+    end;
+
+    local procedure UpdateMetafields(ComppanyId: BigInteger)
+    var
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Company", ComppanyId);
     end;
 
     internal procedure SetCreateCompanies(NewCustomers: Boolean)

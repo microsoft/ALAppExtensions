@@ -63,6 +63,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Shop Collection Map" = R,
         tabledata "Shpfy Shop Inventory" = R,
         tabledata "Shpfy Shop Location" = R,
+        tabledata "Shpfy Skipped Record" = R,
         tabledata "Shpfy Synchronization Info" = R,
         tabledata "Shpfy Tag" = R,
         tabledata "Shpfy Tax Area" = R,

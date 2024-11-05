@@ -16,14 +16,14 @@ pageextension 1854 ItemCardForecastExtension extends "Item Card"
             part(ItemForecast; "Sales Forecast")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field("No.");
-                Visible = "Has Sales Forecast";
+                SubPageLink = "No." = field("No.");
+                Visible = Rec."Has Sales Forecast";
             }
             part(ItemForecastNoChart; "Sales Forecast No Chart")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "No." = Field("No.");
-                Visible = not "Has Sales Forecast";
+                SubPageLink = "No." = field("No.");
+                Visible = not Rec."Has Sales Forecast";
             }
         }
     }

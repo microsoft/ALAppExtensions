@@ -163,6 +163,24 @@ page 30157 "Shpfy Company Card"
                 RunPageLink = "Company SystemId" = field(SystemId);
                 ToolTip = 'View a list of Shopify catalogs for the company.';
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Add metafields to a company. This can be used for adding custom data fields to compoanies in Shopify.';
+
+                trigger OnAction()
+                var
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Metafields.RunForResource(Database::"Shpfy Company", Rec.Id, Rec."Shop Code");
+                end;
+            }
         }
 
     }

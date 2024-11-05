@@ -289,7 +289,7 @@ codeunit 31235 "FA Disposal Handler CZF"
             CalculateDisposal.CalcGainLoss(FANo, DeprBookCode, EntryAmounts);
             for i := 1 to 14 do
                 if EntryAmounts[i] <> 0 then begin
-                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(i);
+                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(i);
                     FALedgEntry."FA Posting Type" := "FA Ledger Entry FA Posting Type".FromInteger(CalculateDisposal.SetFAPostingType(i));
                     FALedgEntry.Amount := EntryAmounts[i];
                     if i = 1 then
@@ -324,12 +324,12 @@ codeunit 31235 "FA Disposal Handler CZF"
                                             10:
                                                 FAPostingType := FAPostingType::BookVal;
                                         end;
-                                        FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(4);
+                                        FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(4);
                                         FALedgEntry."FA Posting Type" := CalculateDisposal.SetFAPostingType(4);
                                         FALedgEntry.Amount := -EntryAmounts[i];
                                         FAInsertLedgEntry.InsertFA(FALedgEntry);
                                         if i in [3, 5, 6, 10] then begin
-                                            FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(i);
+                                            FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(i);
                                             FALedgEntry."FA Posting Type" := CalculateDisposal.SetFAPostingType(i);
                                             FALedgEntry.Amount := EntryAmounts[i];
                                         end;
@@ -345,7 +345,7 @@ codeunit 31235 "FA Disposal Handler CZF"
             CalculateDisposal.CalcSecondGainLoss(FANo, DeprBookCode, FALedgEntry.Amount, EntryAmounts);
             for i := 1 to 2 do
                 if EntryAmounts[i] <> 0 then begin
-                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(i);
+                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(i);
                     FALedgEntry."FA Posting Type" := "FA Ledger Entry FA Posting Type".FromInteger(CalculateDisposal.SetFAPostingType(i));
                     FALedgEntry.Amount := EntryAmounts[i];
                     if i = 1 then
@@ -372,7 +372,7 @@ codeunit 31235 "FA Disposal Handler CZF"
                 if EntryNumbers[i] <> 0 then begin
                     FALedgEntry.Amount := EntryAmounts[i];
                     FALedgEntry."Entry No." := EntryNumbers[i];
-                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(i);
+                    FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(i);
                     FALedgEntry."FA Posting Type" := "FA Ledger Entry FA Posting Type".FromInteger(CalculateDisposal.SetFAPostingType(i));
                     if i = 1 then
                         FALedgEntry."Result on Disposal" := FALedgEntry."Result on Disposal"::Gain;
@@ -406,13 +406,13 @@ codeunit 31235 "FA Disposal Handler CZF"
                                             10:
                                                 FAPostingType := FAPostingType::BookVal;
                                         end;
-                                        FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(4);
+                                        FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(4);
                                         FALedgEntry."FA Posting Type" := CalculateDisposal.SetFAPostingType(4);
                                         FALedgEntry.Amount := -EntryAmounts[i];
                                         FALedgEntry."Entry No." := EntryNumbers[i] + 1;
                                         FAInsertLedgEntry.InsertFA(FALedgEntry);
                                         if i in [3, 5, 6, 10] then begin
-                                            FALedgEntry."FA Posting Category" := CalculateDisposal.SetFAPostingCategory(i);
+                                            FALedgEntry."FA Posting Category" := CalculateDisposal.SetFALedgerPostingCategory(i);
                                             FALedgEntry."FA Posting Type" := CalculateDisposal.SetFAPostingType(i);
                                             FALedgEntry.Amount := EntryAmounts[i];
                                         end;
