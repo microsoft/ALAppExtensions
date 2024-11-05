@@ -20,7 +20,7 @@ codeunit 139617 "Shpfy Sales Channel Subs."
 
     local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
-        GQLSalesChannels: Codeunit "Shpfy GQL SalesChannels";
+        GQLGetSalesChannels: Codeunit "Shpfy GQL Get SalesChannels";
         Uri: Text;
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
@@ -42,7 +42,7 @@ codeunit 139617 "Shpfy Sales Channel Subs."
                                     end;
                                 GraphQlQuery.Contains(ProductCreateTok):
                                     HttpResponseMessage := GetCreateProductResponse();
-                                GraphQlQuery = GQLSalesChannels.GetGraphQL():
+                                GraphQlQuery = GQLGetSalesChannels.GetGraphQL():
                                     HttpResponseMessage := GetSalesChannelsResponse();
                             end;
                 end;

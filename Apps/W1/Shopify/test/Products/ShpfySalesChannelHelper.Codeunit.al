@@ -5,7 +5,6 @@ codeunit 139618 "Shpfy Sales Channel Helper"
 {
     internal procedure GetDefaultShopifySalesChannelResponse(OnlineStoreId: BigInteger; POSId: BigInteger): JsonArray
     var
-        Any: Codeunit Any;
         JPublications: JsonArray;
         NodesTxt: Text;
         ResponseTok: Label '[ { "node": { "id": "gid://shopify/Publication/%1", "catalog": {"apps": { "edges": [ { "node": { "handle": "online_store", "title": "Online Store" } } ] } } } }, { "node": { "id": "gid://shopify/Publication/%2", "catalog": { "apps": { "edges": [ { "node": {"handle": "pos", "title": "Point of Sale" } } ] } } } } ]', Locked = true;
