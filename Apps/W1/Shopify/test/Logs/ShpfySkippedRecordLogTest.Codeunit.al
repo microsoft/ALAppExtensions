@@ -19,6 +19,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogEmptyCustomerEmail()
     var
+
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
     begin
@@ -64,6 +65,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogProductItemBlocked()
     var
+
         Item: Record Item;
         ShpfyItem: Record "Shpfy Product";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -121,6 +123,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogProductItemBlockedAndProductIsDraft()
     var
+
         Item: Record Item;
         ShpfyProduct: Record "Shpfy Product";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -287,7 +290,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Shopify Customer
         CreateShopifyCustomer(Customer);
         // [GIVEN] Payment Terms Code
-        PaymentTermsCode := Any.AlphanumericText(10);
+        PaymentTermsCode := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(PaymentTermsCode));
         // [GIVEN] Sales Invoice
         CreateSalesInvoiceHeader(SalesInvoiceHeader, Customer."No.", PaymentTermsCode);
 
@@ -589,7 +592,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecordCodeunit: Codeunit "Shpfy Skipped Record";
         RecordID: RecordID;
         ShopifyId: BigInteger;
-        TableId: Integer;
     begin
         // [SCENARIO] Skip logging when setup in shop for logging is Disabled.
         Initialize();
@@ -604,7 +606,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
         // [THEN] No record is created in shopify skipped record table.
         SkippedRecord.SetRange("Shopify Id", ShopifyId);
-        SkippedRecord.SetRange("Table Id", TableId);
+        SkippedRecord.SetRange("Record ID", RecordID);
         LibraryAssert.IsTrue(SkippedRecord.IsEmpty(), 'Skipped record is created');
     end;
 

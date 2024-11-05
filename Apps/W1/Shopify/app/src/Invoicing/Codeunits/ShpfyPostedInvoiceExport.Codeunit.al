@@ -24,6 +24,15 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         ExportPostedSalesInvoiceToShopify(Rec);
     end;
 
+    var
+        CustomerNotExistInShopifyLbl: Label 'Customer does not exists as Shopify company or customer.';
+        PaymentTermsNotExistLbl: Label 'Payment terms %1 do not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
+        CustomerNoIsDefaultCustomerNoLbl: Label 'Bill-to customer no. is the default customer no. for Shopify shop.';
+        CustomerTemplateExistsLbl: Label 'Shopify customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
+        NoLinesInSalesInvoiceLbl: Label 'No relevant sales invoice lines exist.';
+        InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
+        EmptyNoInLineLbl: Label 'No. field is empty in Sales Invoice Line.';
+
     /// <summary> 
     /// Sets a global shopify shop to be used for posted invoice export.
     /// </summary>
@@ -93,10 +102,6 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     var
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
-        CustomerNotExistInShopifyLbl: Label 'Customer does not exists as Shopify company or customer.';
-        PaymentTermsNotExistLbl: Label 'Payment terms %1 do not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
-        CustomerNoIsDefaultCustomerNoLbl: Label 'Bill-to customer no. is the default customer no. for Shopify shop.';
-        CustomerTemplateExistsLbl: Label 'Shopify customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
     begin
         ShopifyCompany.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
         if ShopifyCompany.IsEmpty() then begin
@@ -158,9 +163,6 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     local procedure CheckSalesInvoiceHeaderLines(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
-        NoLinesInSalesInvoiceLbl: Label 'No relevant sales invoice lines exist.';
-        InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
-        EmptyNoInLineLbl: Label 'No. field is empty in Sales Invoice Line.';
     begin
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");

@@ -186,6 +186,27 @@ page 30106 "Shpfy Customer Card"
                 RunPageLink = "Customer Id" = Field(Id);
                 ToolTip = 'View a list of Shopify orders for the customer.';
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Add metafields to a customer. This can be used for adding custom data fields to customers in Shopify.';
+
+                trigger OnAction()
+                var
+                    Shop: Record "Shpfy Shop";
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Shop.SetRange("Shop Id", Rec."Shop Id");
+                    Shop.FindFirst();
+                    Metafields.RunForResource(Database::"Shpfy Customer", Rec.Id, Shop.Code);
+                end;
+            }
         }
 
     }
