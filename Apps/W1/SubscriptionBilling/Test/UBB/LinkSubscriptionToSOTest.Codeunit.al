@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 
-codeunit 139890 "Link Subscription To SO Test"
+codeunit 148158 "Link Subscription To SO Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

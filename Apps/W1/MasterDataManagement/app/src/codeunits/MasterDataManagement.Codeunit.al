@@ -38,7 +38,7 @@ codeunit 7233 "Master Data Management"
                   tabledata "Master Data Management Setup" = r;
 
     var
-
+        CachedDoesJobActOnTable: Dictionary of [Text, Boolean];
         IntegrationTableMappingNotFoundErr: Label 'No %1 was found for table %2.', Comment = '%1 = Integration Table Mapping caption, %2 = Table caption for the table which is not mapped';
         UpdateNowUniDirectionQst: Label 'Send data update to source company.,Get data update from source company.';
         UpdateNowBiDirectionQst: Label 'Send data update to source company.,Get data update from source company.,Merge data.';
@@ -1561,11 +1561,13 @@ codeunit 7233 "Master Data Management"
         MasterDataManagementSetup: Record "Master Data Management Setup";
         MasterDataMgtSubscriber: Record "Master Data Mgt. Subscriber";
         JobQueueEntry: Record "Job Queue Entry";
+        JobQueueEntryUpdate: Record "Job Queue Entry";
         ScheduledTask: Record "Scheduled Task";
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         NewEarliestStartDateTime: DateTime;
         ShouldReactivateJob: Boolean;
         CurrentCompanyName: Text;
+        RescheduleOffsetInMs: Integer;
     begin
         if not MasterDataMgtSubscriber.ReadPermission() then
             exit;
@@ -1573,10 +1575,20 @@ codeunit 7233 "Master Data Management"
         if not MasterDataMgtSubscriber.FindSet() then
             exit;
 
+        if not UserCanRescheduleJob() then
+            exit;
+
+        // reschedule the synch job in 30 seconds from now, to give time to the user to make further changes
+        RescheduleOffSetInMs := 30000;
+        OnBeforeRescheduleJobQueueEntries(TableNo, RescheduleOffSetInMs);
+        if RescheduleOffSetInMs < 5000 then
+            RescheduleOffSetInMs := 5000;
+
         CurrentCompanyName := CompanyName();
         repeat
             if MasterDataManagementSetup.ChangeCompany(MasterDataMgtSubscriber."Company Name") then begin
                 JobQueueEntry.ChangeCompany(MasterDataMgtSubscriber."Company Name");
+                JobQueueEntryUpdate.ChangeCompany(MasterDataMgtSubscriber."Company Name");
                 if MasterDataManagementSetup.Get() then
                     ShouldReactivateJob := MasterDataManagementSetup."Is Enabled" and (MasterDataManagementSetup."Company Name" = CurrentCompanyName)
                 else
@@ -1586,31 +1598,37 @@ codeunit 7233 "Master Data Management"
                     if IsDataSynchRecord(TableNo, MasterDataMgtSubscriber."Company Name") then
                         if not IsEventDrivenReschedulingDisabled(TableNo, MasterDataMgtSubscriber."Company Name") then
                             if not DataUpgradeMgt.IsUpgradeInProgress() then begin
+                                JobQueueEntryUpdate.ReadIsolation := IsolationLevel::UpdLock;
                                 JobQueueEntry.Reset();
                                 JobQueueEntry.ReadIsolation := IsolationLevel::ReadUncommitted;
+                                JobQueueEntry.SetLoadFields(Status, "System Task ID", "Object Type to Run", "Object ID to Run", "Record ID to Process", Description);
                                 JobQueueEntry.SetFilter(Status, Format(JobQueueEntry.Status::Ready) + '|' + Format(JobQueueEntry.Status::"On Hold with Inactivity Timeout"));
                                 JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
                                 JobQueueEntry.SetFilter("Object ID to Run", '%1|%2|%3', Codeunit::"Integration Synch. Job Runner", Codeunit::"Int. Coupling Job Runner", Codeunit::"Int. Uncouple Job Runner");
                                 JobQueueEntry.SetRange("Recurring Job", true);
-                                if UserCanRescheduleJob() then
-                                    if JobQueueEntry.FindSet() then
-                                        repeat
-                                            // The rescheduled task might start while the current transaction is not committed yet.
-                                            // Therefore the task will restart with a delay to lower a risk of use of "old" data.
-                                            ScheduledTask.ReadIsolation := IsolationLevel::ReadUncommitted;
-                                            NewEarliestStartDateTime := CurrentDateTime() + 2000;
+                                JobQueueEntry.SetFilter("Parameter String", '%1|%2', '', Format(TableNo));
+                                JobQueueEntry.SetRange(Scheduled, true);
+                                if JobQueueEntry.FindSet() then
+                                    repeat
+                                        // The rescheduled task might start while the current transaction is not committed yet.
+                                        // Therefore the task will restart with a delay to lower a risk of use of "old" data.
+                                        ScheduledTask.ReadIsolation := IsolationLevel::ReadUncommitted;
+                                        NewEarliestStartDateTime := CurrentDateTime() + RescheduleOffSetInMs;
+                                        if DoesJobActOnTable(JobQueueEntry, TableNo, MasterDataMgtSubscriber."Company Name") then
                                             if ScheduledTask.Get(JobQueueEntry."System Task ID") then
-                                                if (NewEarliestStartDateTime + 5000) < ScheduledTask."Not Before" then
-                                                    if DoesJobActOnTable(JobQueueEntry, TableNo, MasterDataMgtSubscriber."Company Name") then
-                                                        if TaskScheduler.SetTaskReady(ScheduledTask.ID, NewEarliestStartDateTime) then
-                                                            if JobQueueEntry.Find() then begin
-                                                                JobQueueEntry.RefreshLocked();
-                                                                JobQueueEntry.Status := JobQueueEntry.Status::Ready;
-                                                                JobQueueEntry."Earliest Start Date/Time" := NewEarliestStartDateTime;
-                                                                JobQueueEntry.Modify();
+                                                if (NewEarliestStartDateTime + RescheduleOffSetInMs) < ScheduledTask."Not Before" then
+                                                    if TaskScheduler.SetTaskReady(ScheduledTask.ID, NewEarliestStartDateTime) then begin
+                                                        JobQueueEntryUpdate.ID := JobQueueEntry.ID;
+                                                        if JobQueueEntryUpdate.GetRecLockedExtendedTimeout() then
+                                                            if JobQueueEntryUpdate.Status in [JobQueueEntry.Status::Ready, JobQueueEntry.Status::"On Hold with Inactivity Timeout"] then begin
+                                                                JobQueueEntryUpdate.Status := JobQueueEntry.Status::Ready;
+                                                                JobQueueEntryUpdate."Earliest Start Date/Time" := NewEarliestStartDateTime;
+                                                                JobQueueEntryUpdate."Parameter String" := Format(TableNo);
+                                                                JobQueueEntryUpdate.Modify();
                                                                 Session.LogMessage('0000JB1', StrSubstNo(RescheduledTaskTxt, Format(ScheduledTask.ID), Format(JobQueueEntry.ID), JobQueueEntry.Description, Format(NewEarliestStartDateTime)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                                                             end;
-                                        until JobQueueEntry.Next() = 0;
+                                                    end;
+                                    until JobQueueEntry.Next() = 0;
                             end
             end
         until MasterDataMgtSubscriber.Next() = 0;
@@ -1620,7 +1638,16 @@ codeunit 7233 "Master Data Management"
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
         RecRef: RecordRef;
+        CacheKey: Text;
+        ActsOnTable: Boolean;
     begin
+        if JobQueueEntry."Record ID to Process".TableNo <> DATABASE::"Integration Table Mapping" then
+            exit(false);
+
+        CacheKey := CompanyName + '$' + Format(JobQueueEntry.ID) + '$' + Format(TableNo);
+        if CachedDoesJobActOnTable.ContainsKey(CacheKey) then
+            exit(CachedDoesJobActOnTable.Get(CacheKey));
+
         if not TryOpen(RecRef, DATABASE::"Integration Table Mapping") then
             exit(false);
 
@@ -1628,12 +1655,13 @@ codeunit 7233 "Master Data Management"
             exit(false);
 
         IntegrationTableMapping.ChangeCompany(CompanyName);
-        if RecRef.Get(JobQueueEntry."Record ID to Process") and
-           (RecRef.Number = DATABASE::"Integration Table Mapping")
-        then begin
-            RecRef.SetTable(IntegrationTableMapping);
-            exit(IntegrationTableMapping."Table ID" = TableNo);
+        if JobQueueEntry."Record ID to Process".TableNo = DATABASE::"Integration Table Mapping" then begin
+            if RecRef.Get(JobQueueEntry."Record ID to Process") then
+                RecRef.SetTable(IntegrationTableMapping);
+            ActsOnTable := IntegrationTableMapping."Table ID" = TableNo;
         end;
+        CachedDoesJobActOnTable.Add(CacheKey, ActsOnTable);
+        exit(ActsOnTable);
     end;
 
     internal procedure UserCanRescheduleJob(): Boolean
@@ -2460,6 +2488,16 @@ codeunit 7233 "Master Data Management"
 
     [IntegrationEvent(false, false)]
     internal procedure OnSetSourceCompanyName(var SourceCompanyName: Text[30]; TableID: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRescheduleJobQueueEntries(TableNo: Integer; var RescheduleOffSetInMs: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnRenameDestination(var RenamedDestinationRecordRef: RecordRef; var SourcePrimaryKeyRef: KeyRef; var Handled: Boolean)
     begin
     end;
 }

@@ -16,25 +16,41 @@ codeunit 4810 IntrastatReportManagement
         ReceptFileNameLbl: Label 'Receipt-%1.txt', Comment = '%1 - Statistics Period';
         ShipmentFileNameLbl: Label 'Shipment-%1.txt', Comment = '%1 - Statistics Period';
         ZipFileNameLbl: Label 'Intrastat-%1.zip', Comment = '%1 - Statistics Period';
+#pragma warning disable AS0072
+#if not CLEAN25
         FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new Intrastat Report feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
         NewFeatureEnabledMessageTxt: Label 'The Intrastat Report extension is enabled, which means you can''t use the %1 page. You''ve been redirected to the %2 page for the extension.', Comment = '%1 - old page caption, %2 - new page caption';
+#endif
+#pragma warning restore AS0072
         DisableNotificationTxt: Label 'Disable this notification';
+#pragma warning disable AS0072        
+#if not CLEAN25
         LearnMoreTxt: Label 'Learn more';
         IntrastatAwarenessNotificationNameTxt: Label 'Notify the user about the Intrastat Report extension.';
         IntrastatAwarenessNotificationDescriptionTxt: Label 'Alert users about the capabilities of the Intrastat Report extension.';
         IntrastatAwarenessNotificationTxt: Label 'This version of Intrastat will be deprecated. We recommend that you enable the Intrastat Report extension.';
+#endif
+#pragma warning restore AS0072  
         SupplementaryUnitUpdateNotificationNameTxt: Label 'Notify the user about the %1 update.', Comment = '%1 - Supplementary Unit of Measure caption';
         SupplementaryUnitUpdateNotificationDescriptionTxt: Label 'Alert users about the update of %1 during %2 change.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
         SupplementaryUnitUpdateNotificationTxt: Label '%1 was updated, due to change of %2.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
         ImportDefaultIntrastatDataExchDefConfirmQst: Label 'This will create the default Intrastat %1 . \\All existing default Intrastat %1 will be overwritten.\\Do you want to continue?', Comment = '%1 - Data Exchange Definition caption';
         AssistedSetupTxt: Label 'Set up Intrastat reporting';
         AssistedSetupDescriptionTxt: Label 'The Intrastat reporting makes it easy to export the Intrastat report in the format that the authorities in your country require.';
+#pragma warning disable AS0072
+#if not CLEAN25
         UserDisabledNotificationTxt: Label 'The user disabled notification %1.', Locked = true;
         IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
         IntrastatFeatureAwarenessNotificationIdTok: Label 'dcd4e71a-8c6a-44fc-9642-54f931e5e7d9', Locked = true;
+#endif        
+#pragma warning restore AS0072
         SupplementaryUnitUpdateNotificationIdTok: Label '52f2c034-1857-4922-99cb-448c09e01474', Locked = true;
+#pragma warning disable AS0072
+#if not CLEAN25
         IntrastatCoreAppIdTok: Label '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', Locked = true;
         IntrastatTelemetryCategoryTok: Label 'AL Intrastat', Locked = true;
+#endif
+#pragma warning restore AS0072
         LearnMoreLinkTok: Label 'https://go.microsoft.com/fwlink/?linkid=2283605', Locked = true;
         RangeCrossingErr: Label 'There is a conflict in checklist rules for ''%1'' in ''%2'' (field must be both blank and not blank). Please review filters in %3.', Comment = '%1=caption of a field, %2=key of record, %3=caption of report checklist page';
         DataExchangeXMLTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><root><DataExchDef Code="INTRA-2022" Name="Intrastat Report 2022" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="4813" ColumnSeparator="1" FileType="1" ReadingWritingCodeunit="1276"><DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="9"><DataExchColumnDef ColumnNo="1" Name="Tariff No." Show="false" DataType="0" Length="8" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="2" Name="Country/Region Code" Show="false" DataType="0" Length="3" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="3" Name="Transaction Type" Show="false" DataType="0" Length="2" TextPaddingRequired="true" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="4" Name="Quantity" Show="false" DataType="0" Length="11" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="5" Name="Total Weight" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="6" Name="Statistical Value" Show="false" DataType="0" Length="11" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="7" Name="Internal Ref. No." Show="false" DataType="0" Length="30" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="8" Name="Partner Tax ID" Show="false" DataType="0" Length="20" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="9" Name="Country/Region of Origin Code" Show="false" DataType="0" Length="3" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchMapping TableId="4812" Name="" KeyIndex="5" MappingCodeunit="1269"><DataExchFieldMapping ColumnNo="1" FieldID="5" Optional="true" TransformationRule="TRIMALL"><TransformationRules><Code>TRIMALL</Code><Description>Removes all spaces</Description><TransformationType>5</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="2" FieldID="7" Optional="true" /><DataExchFieldMapping ColumnNo="3" FieldID="8" Optional="true" /><DataExchFieldMapping ColumnNo="4" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="5" FieldID="21" Optional="true" TransformationRule="ROUNDUPTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDUPTOINT</Code><Description>Round up to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>&gt;</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="6" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="7" FieldID="23" Optional="true" /><DataExchFieldMapping ColumnNo="8" FieldID="29" Optional="true" /><DataExchFieldMapping ColumnNo="9" FieldID="24" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP"><TransformationRules><Code>EUCOUNTRYCODELOOKUP</Code><Description>EU Country Lookup</Description><TransformationType>13</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>9</TableID><SourceFieldID>1</SourceFieldID><TargetFieldID>7</TargetFieldID><FieldLookupRule>1</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules></DataExchFieldMapping><DataExchFieldGrouping FieldID="3" /><DataExchFieldGrouping FieldID="5" /><DataExchFieldGrouping FieldID="7" /><DataExchFieldGrouping FieldID="8" /><DataExchFieldGrouping FieldID="9" /><DataExchFieldGrouping FieldID="24" /><DataExchFieldGrouping FieldID="29" /></DataExchMapping></DataExchLineDef></DataExchDef></root>',
@@ -906,14 +922,16 @@ codeunit 4810 IntrastatReportManagement
         ItemUOM.Modify(true);
     end;
 
+#pragma warning disable AS0072
+#if not CLEAN25
+    [Obsolete('Pending removal.', '25.0')]
     procedure IsFeatureEnabled() IsEnabled: Boolean
-    var
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
     begin
-        IsEnabled := FeatureMgtFacade.IsEnabled(GetIntrastatFeatureKeyId());
+        IsEnabled := true;
         OnAfterCheckFeatureEnabled(IsEnabled);
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     procedure NotifyUserAboutIntrastatFeature()
     var
         MyNotifications: Record "My Notifications";
@@ -931,11 +949,13 @@ codeunit 4810 IntrastatReportManagement
             end;
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     procedure LearnMore(HostNotification: Notification)
     begin
         Hyperlink(LearnMoreLinkTok);
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     procedure DisableNotification(HostNotification: Notification)
     var
         MyNotifications: Record "My Notifications";
@@ -948,7 +968,8 @@ codeunit 4810 IntrastatReportManagement
             MyNotifications.InsertDefault(NotificationId, IntrastatAwarenessNotificationNameTxt, IntrastatAwarenessNotificationDescriptionTxt, false);
         Session.LogMessage('0000I9Q', StrSubstNo(UserDisabledNotificationTxt, HostNotification.GetData('NotificationId')), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntrastatTelemetryCategoryTok);
     end;
-
+#endif
+#pragma warning restore AS0072
     internal procedure NotifyUserAboutSupplementaryUnitUpdate()
     var
         Item: Record Item;
@@ -979,16 +1000,21 @@ codeunit 4810 IntrastatReportManagement
                 StrSubstNo(SupplementaryUnitUpdateNotificationDescriptionTxt, Item.FieldCaption("Supplementary Unit of Measure"), Item.FieldCaption("Tariff No.")), false);
     end;
 
+#pragma warning disable AS0072
+#if not CLEAN25
+    [Obsolete('Pending removal.', '25.0')]
     procedure ShowNotEnabledMessage(PageCaption: Text)
     begin
         Message(FeatureNotEnabledMessageTxt, PageCaption);
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     procedure ShowFeatureEnabledMessage(OldPageCaption: Text; NewPageCaption: Text)
     begin
         Message(NewFeatureEnabledMessageTxt, OldPageCaption, NewPageCaption);
     end;
-
+#endif
+#pragma warning restore AS0072
     procedure IsCustomerPrivatePerson(Customer: Record Customer): Boolean;
     begin
         if Customer."Intrastat Partner Type" <> "Partner Type"::" " then
@@ -1005,33 +1031,43 @@ codeunit 4810 IntrastatReportManagement
             exit(Vendor."Partner Type" = "Partner Type"::Person);
     end;
 
+#pragma warning disable AS0072
+#if not CLEAN25
+    [Obsolete('Pending removal.', '25.0')]
     local procedure GetIntrastatFeatureKeyId(): Text[50]
     begin
         exit(IntrastatFeatureKeyIdTok);
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     local procedure GetIntrastatFeatureAwarenessNotificationId(): Guid;
     begin
         exit(IntrastatFeatureAwarenessNotificationIdTok);
     end;
-
+#endif
+#pragma warning restore AS0072
     local procedure GetSupplementaryUnitUpdateNotificationId(): Guid;
     begin
         exit(SupplementaryUnitUpdateNotificationIdTok);
     end;
 
+#pragma warning disable AS0072
+#if not CLEAN25
+    [Obsolete('Pending removal.', '25.0')]
     local procedure GetAppId(): Guid;
     begin
         exit(IntrastatCoreAppIdTok);
     end;
 
+    [Obsolete('Pending removal.', '25.0')]
     local procedure IsInstalledByAppId(AppID: Guid): Boolean
     var
         NAVAppInstalledApp: Record "NAV App Installed App";
     begin
         exit(NAVAppInstalledApp.Get(AppID));
     end;
-
+#endif
+#pragma warning restore AS0072
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
     local procedure InsertIntoAssistedSetup()
     var
@@ -1093,11 +1129,15 @@ codeunit 4810 IntrastatReportManagement
     begin
     end;
 
+#pragma warning disable AS0072
+#if not CLEAN25
+    [Obsolete('Pending removal.', '25.0')]
     [IntegrationEvent(true, false)]
     local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
     begin
     end;
-
+#endif
+#pragma warning restore AS0072
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
     begin

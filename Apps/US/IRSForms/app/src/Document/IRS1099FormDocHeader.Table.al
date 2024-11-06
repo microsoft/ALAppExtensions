@@ -96,6 +96,12 @@ table 10035 "IRS 1099 Form Doc. Header"
                         Rec."Vendor E-Mail" := xRec."Vendor E-Mail";
             end;
         }
+        field(100; "Vendor Name"; Text[100])
+        {
+            CalcFormula = lookup(Vendor.Name where("No." = field("Vendor No.")));
+            FieldClass = FlowField;
+            Editable = false;
+        }
     }
 
     keys

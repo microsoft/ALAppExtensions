@@ -118,10 +118,6 @@ codeunit 18466 "Subcontracting Post"
         QuantitySent: Decimal;
         IsHandled: Boolean;
     begin
-#if not CLEAN23
-        OnBeforeSubcontractComponentSendPost(ItemJnlLine, DeliveryChallanHeader, SubOrderCompList);
-#endif
-
         ItemJnlLine.Init();
         ItemJnlLine."Posting Date" := DeliveryChallanHeader."Challan Date";
         ItemJnlLine."Document Date" := DeliveryChallanHeader."Challan Date";
@@ -2414,17 +2410,6 @@ codeunit 18466 "Subcontracting Post"
             ItemJournalLine."New Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
         end
     end;
-
-#if not CLEAN23
-    [Obsolete('Replaced by new integration event OnBeforeSubcontCompSendPost', '23.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeSubcontractComponentSendPost(
-        var ItemJrnlLine: Record "Item Journal Line";
-        DeliveryChallanHeader: Record "Delivery Challan Header";
-        SubOrderCompList: Record "Sub Order Component List")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSubcontractComponentSendPost(

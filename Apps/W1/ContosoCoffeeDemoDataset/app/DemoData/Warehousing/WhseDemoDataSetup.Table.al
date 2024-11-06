@@ -1,16 +1,12 @@
+#if not CLEANSCHEMA26
 table 4763 "Whse Demo Data Setup"
 {
     DataClassification = CustomerContent;
     ObsoleteReason = 'The table is moved to "Warehouse Module Setup" table';
     InherentEntitlements = rimdX;
     InherentPermissions = rimdX;
-#if not CLEAN23
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
-#endif
 
     fields
     {
@@ -214,3 +210,4 @@ table 4763 "Whse Demo Data Setup"
         }
     }
 }
+#endif

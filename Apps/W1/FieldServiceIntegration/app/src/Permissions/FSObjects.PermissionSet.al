@@ -14,6 +14,8 @@ permissionset 6612 "FS - Objects"
                 codeunit "FS Assisted Setup Subscriber" = X,
                 codeunit "FS Data Classification" = X,
                 codeunit "FS Install" = X,
+                codeunit "FS Upgrade" = X,
+                codeunit "FS Integration Mgt." = X,
                 codeunit "FS Int. Table Subscriber" = X,
                 codeunit "FS Integration Mgt." = X,
                 codeunit "FS Lookup FS Tables" = X,

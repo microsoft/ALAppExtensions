@@ -192,6 +192,7 @@ codeunit 6225 "Sust. Purchase Subscriber"
 
     local procedure CanPostSustainabilityJnlLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; CO2ToPost: Decimal; CH4ToPost: Decimal; N2OToPost: Decimal): Boolean
     var
+        SustAccountCategory: Record "Sustain. Account Category";
         SustainAccountSubcategory: Record "Sustain. Account Subcategory";
     begin
         if not PurchaseHeader.Invoice then
@@ -199,6 +200,10 @@ codeunit 6225 "Sust. Purchase Subscriber"
 
         if PurchaseLine."Sust. Account No." = '' then
             exit(false);
+
+        if SustAccountCategory.Get(PurchaseLine."Sust. Account Category") then
+            if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
+                Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, PurchaseLine."Sust. Account No.");
 
         if SustainAccountSubcategory.Get(PurchaseLine."Sust. Account Category", PurchaseLine."Sust. Account Subcategory") then
             if not SustainAccountSubcategory."Renewable Energy" then
@@ -213,4 +218,5 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
         SustPreviewPostInstance: Codeunit "Sust. Preview Post Instance";
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
+        NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in purchase document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

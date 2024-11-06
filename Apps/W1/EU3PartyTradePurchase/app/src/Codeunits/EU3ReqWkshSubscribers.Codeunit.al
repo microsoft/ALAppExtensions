@@ -19,14 +19,7 @@ codeunit 4882 "EU3 Req. Wksh. Subscribers"
     local procedure OnAfterInsertPurchOrderHeader(var RequisitionLine: Record "Requisition Line"; var PurchaseOrderHeader: Record "Purchase Header"; CommitIsSuppressed: Boolean; SpecialOrder: Boolean)
     var
         SalesHeader: Record "Sales Header";
-#if not CLEAN23
-        EU3PartyTradeFeatureMgt: Codeunit "EU3 Party Trade Feature Mgt.";
-#endif
     begin
-#if not CLEAN23
-        if not EU3PartyTradeFeatureMgt.IsEnabled() then
-            exit;
-#endif
         if (RequisitionLine."Sales Order No." = '') or (RequisitionLine."Sales Order Line No." = 0) or (not RequisitionLine."Drop Shipment") then
             exit;
 

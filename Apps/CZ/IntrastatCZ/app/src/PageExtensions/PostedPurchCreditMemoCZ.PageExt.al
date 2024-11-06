@@ -10,13 +10,7 @@ pageextension 31349 "Posted Purch. Credit Memo CZ" extends "Posted Purchase Cred
 {
     layout
     {
-#if not CLEAN23
-#pragma warning disable AL0432
-        addlast("Foreign Trade")
-#pragma warning restore AL0432
-#else
         addlast("Foreign Trade CZL")
-#endif
         {
             field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
             {

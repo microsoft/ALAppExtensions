@@ -416,7 +416,7 @@ codeunit 30189 "Shpfy Variant API"
                 end;
                 GraphQuery.Append('\"]');
             end;
-        if (ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost") or (ShopifyVariant.Weight <> xShopifyVariant.Weight) or (ShopifyVariant.SKU <> xShopifyVariant.SKU) then begin
+        if (ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost") or (ShopifyVariant.Weight <> xShopifyVariant.Weight) or (ShopifyVariant.SKU <> xShopifyVariant.SKU) or UpdateDefaultVariant then begin
             HasChange := true;
             GraphQuery.Append(', inventoryItem: {tracked: ');
             if Shop."Inventory Tracked" then
@@ -471,11 +471,7 @@ codeunit 30189 "Shpfy Variant API"
         Price: Text;
         CompareAtPrice: Text;
     begin
-#if not CLEAN23
-        IsBulkOperationEnabled := BulkOperationMgt.IsBulkOperationFeatureEnabled() and (RecordCount >= BulkOperationMgt.GetBulkOperationThreshold());
-#else
         IsBulkOperationEnabled := RecordCount >= BulkOperationMgt.GetBulkOperationThreshold();
-#endif
         GraphQuery.Append('{"query":"mutation { productVariantUpdate(input: {id: \"gid://shopify/ProductVariant/');
         GraphQuery.Append(Format(ShopifyVariant.Id));
         GraphQuery.Append('\"');

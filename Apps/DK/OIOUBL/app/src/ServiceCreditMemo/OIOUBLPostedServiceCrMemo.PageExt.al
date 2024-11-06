@@ -19,17 +19,6 @@ pageextension 13680 "OIOUBL-Posted Service Cr Memo" extends "Posted Service Cred
                 ApplicationArea = Service;
             }
         }
-
-        addafter("Responsibility Center")
-        {
-            field("Your Reference"; "Your Reference")
-            {
-                Tooltip = 'Specifies the customer''s reference. This is used in the exported electronic document.';
-                ApplicationArea = Service;
-                Editable = False;
-            }
-        }
-
         addafter("Bill-to Contact")
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")

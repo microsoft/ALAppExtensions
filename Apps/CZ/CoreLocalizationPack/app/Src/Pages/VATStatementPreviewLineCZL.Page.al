@@ -100,9 +100,6 @@ page 31136 "VAT Statement Preview Line CZL"
                     ApplicationArea = VAT;
                     ToolTip = 'Specifies whether or not totals for transactions involving EU 3-party trades are displayed in the VAT Statement.';
                     Visible = false;
-#if not CLEAN23
-                    Enabled = EU3PartyTradeFeatureEnabled;
-#endif
                 }
                 field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
                 {

@@ -32,15 +32,19 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
 
     var
         TypeHelper: Codeunit "Type Helper";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         ConnectionMethodWebClientTxt: Label 'WEB_APP_VIA_SERVER', Locked = true;
         ProdNameTxt: Label 'Microsoft Dynamics 365 Business Central', Locked = true;
         ProdNameOnPremSuffixTxt: Label ' OnPrem', Locked = true;
-        DefaultProdVersionTxt: Label '22.0.0.0', Locked = true;
+        DefaultProdVersionTxt: Label '25.0.0.0', Locked = true;
         IPAddressErr: Label 'Public IP address lookup failed. Specify a service that will return the public IP address of the current user.';
         IPAddressOkTxt: Label 'Public IP address lookup was successful.';
         LicenseTxt: Label 'Microsoft_Dynamics_365_Business_Central,AadTenantId=%1,TenantId=%2,Start=%3,End=%4', Locked = true;
         ClientScreensTxt: Label 'width=%1&height=%2&scaling-factor=1&colour-depth=%3', Locked = true;
         ClientWindowTxt: Label 'width=%1&height=%2', Locked = true;
+        HMRCFraudPreventHeadersTok: label 'HMRC Fraud Prevention Headers', Locked = true;
+        NoFPHeadersFromJSErr: Label 'No FP headers were returned from JS.', Locked = true;
 
     internal procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
     var
@@ -69,6 +73,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         MTDWebClientFPHeaders: Page "MTD Web Client FP Headers";
         vendorIP: Text;
         clientIP: Text;
+        VendorForwarded: Text;
     begin
         VATReportSetup.Get();
         VATReportSetup.TestField("MTD FP Public IP Service URL");
@@ -83,13 +88,14 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         Commit();
         MTDWebClientFPHeaders.RunModal();
 
-        if GetVendorIP(vendorIP, VATReportSetup."MTD FP Public IP Service URL") then;
-        if MTDSessionFraudPrevHdr.Get('Gov-Client-Public-IP') then
-            clientIP := MTDSessionFraudPrevHdr.Value
-        else
-            clientIP := 'error';
+        if GetVendorIP(vendorIP) then;
         MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', vendorIP);
-        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', 'by=' + vendorIP + '&for=' + clientIP);
+
+        if MTDSessionFraudPrevHdr.Get('Gov-Client-Public-IP') then
+            clientIP := MTDSessionFraudPrevHdr.Value;
+        if (clientIP <> '') and (vendorIP <> '') then
+            VendorForwarded := 'by=' + vendorIP + '&for=' + clientIP;
+        MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Forwarded', VendorForwarded);
     end;
 
     local procedure CopySessionHeaders(var JObject: JsonObject)
@@ -182,6 +188,9 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
     begin
+        if JSHeadersJson.Keys.Count = 0 then
+            FeatureTelemetry.LogError('0000NRM', HMRCFraudPreventHeadersTok, '', NoFPHeadersFromJSErr);
+
         MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP', GetJsonValue(JSHeadersJson, 'publicIP'));
         MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Public-IP-Timestamp', GetJsonValue(JSHeadersJson, 'timestamp'));
         MTDSessionFraudPrevHdr.SafeInsert('Gov-Client-Device-ID', GetJsonValue(JSHeadersJson, 'deviceID'));
@@ -211,36 +220,21 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     end;
 
     [TryFunction]
-    internal procedure GetVendorIP(var Result: Text; url: Text)
-    var
-        Matches: Record Matches;
-        Regex: Codeunit Regex;
-        HttpClient: HttpClient;
-        HttpResponseMessage: HttpResponseMessage;
-        Content: Text;
-        RegExString: Text;
+    internal procedure GetVendorIP(var Result: Text)
     begin
-        Result := 'error';
-        HttpClient.Get(url, HttpResponseMessage);
-        HttpResponseMessage.Content().ReadAs(Content);
-        RegExString := '([0-9]{1,3}(\.[0-9]{1,3}){3})|(([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4}))';
-        Regex.Match(Content, RegExString, 0, Matches);
-        if Matches.FindFirst() then
-            Result := Matches.ReadValue();
+        Result := '';
+        if MTDOAuth20Mgt.GetServerPublicIPFromTenantSettings(Result) then
+            if Result <> '' then
+                exit;
+
+        if MTDOAuth20Mgt.GetServerPublicIPFromAzureFunction(Result) then;
     end;
 
     internal procedure TestPublicIPServiceURL(url: Text)
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         MTDWebClientFPHeaders: Page "MTD Web Client FP Headers";
-        Result: Text;
     begin
-        if not GetVendorIP(Result, url) then
-            Error(IPAddressErr);
-
-        if (Result = '') or (Result = 'error') then
-            Error(IPAddressErr);
-
         MTDSessionFraudPrevHdr.DeleteAll();
         MTDWebClientFPHeaders.SetPublicIPServiceURL(url);
         Commit();
@@ -248,7 +242,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         if not MTDSessionFraudPrevHdr.Get('Gov-Client-Public-IP') then
             Error(IPAddressErr);
 
-        if (MTDSessionFraudPrevHdr.Value = '') or (MTDSessionFraudPrevHdr.Value = 'error') then
+        if MTDSessionFraudPrevHdr.Value = '' then
             Error(IPAddressErr);
 
         Message(IPAddressOkTxt);

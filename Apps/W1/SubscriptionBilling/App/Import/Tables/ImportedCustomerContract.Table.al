@@ -10,6 +10,7 @@ using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Currency;
+using System.Security.AccessControl;
 
 table 8010 "Imported Customer Contract"
 {
@@ -214,7 +215,10 @@ table 8010 "Imported Customer Contract"
         field(102; "Processed by"; Code[50])
         {
             Caption = 'Processed by';
+            DataClassification = EndUserIdentifiableInformation;
+            TableRelation = User."User Name";
             Editable = false;
+            ValidateTableRelation = false;
         }
         field(103; "Processed at"; DateTime)
         {

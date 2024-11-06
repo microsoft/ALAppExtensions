@@ -12,8 +12,4 @@ enumextension 6363 "E-Doc. Ext. Integration" extends "E-Document Integration"
     {
         Implementation = "E-Document Integration" = "Pagero Integration Impl.";
     }
-    value(6362; "Avalara")
-    {
-        Implementation = "E-Document Integration" = Microsoft.EServices.EDocumentConnector.Avalara."Integration Impl.";
-    }
 }

@@ -18,6 +18,7 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             Caption = 'Primary Key';
         }
+#if not CLEANSCHEMA24
         field(2; "Dimension No. Series Code"; Code[20])
         {
             DataClassification = CustomerContent;
@@ -26,25 +27,23 @@ table 10670 "SAF-T Setup"
             ObsoleteReason = 'Replaced with Dimension No.';
             ObsoleteTag = '24.0';
         }
+#endif
         field(3; "Last Tax Code"; Integer)
         {
             DataClassification = CustomerContent;
             Caption = 'Last Tax Code';
         }
+#if not CLEANSCHEMA26
         field(4; "Not Applicable VAT Code"; Code[20])
         {
             Caption = 'Not Applicable VAT Code';
             DataClassification = CustomerContent;
             TableRelation = "VAT Code";
             ObsoleteReason = 'Use the field "Not Applic. VAT Code" instead';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
+#endif
         field(5; "Dimension No."; Integer)
         {
             DataClassification = CustomerContent;

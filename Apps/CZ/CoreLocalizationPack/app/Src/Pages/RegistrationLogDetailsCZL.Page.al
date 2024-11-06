@@ -133,7 +133,7 @@ page 31208 "Registration Log Details CZL"
 
     trigger OnAfterGetCurrRecord()
     begin
-        AcceptEnabled := (Rec.Status = Rec.Status::"Not Valid") and (Rec.Response <> '');
+        AcceptEnabled := Rec.Status = Rec.Status::"Not Valid";
         ResetEnabled := Rec.Status = Rec.Status::Accepted;
     end;
 
@@ -148,7 +148,6 @@ page 31208 "Registration Log Details CZL"
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin
         RegistrationLogDetail.Copy(Rec);
-        RegistrationLogDetail.SetFilter(Response, '<>%1', '');
         RegistrationLogDetail.SetRange(Status, Before);
         RegistrationLogDetail.ModifyAll(Status, After);
 
@@ -160,8 +159,6 @@ page 31208 "Registration Log Details CZL"
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin
         RegistrationLogDetail.CopyFilters(Rec);
-        RegistrationLogDetail.SetFilter(Response, '<>%1', '');
-
         RegistrationLogDetail.SetRange(Status, RegistrationLogDetail.Status::"Not Valid");
         AcceptAllEnabled := not RegistrationLogDetail.IsEmpty();
 

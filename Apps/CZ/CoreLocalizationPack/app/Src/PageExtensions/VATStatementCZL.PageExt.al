@@ -168,6 +168,17 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 ToolTip = 'Print reconciliation G/L entries and VAT entries.';
             }
         }
+        addlast(navigation)
+        {
+            action(VATReturnsCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'VAT Returns';
+                RunObject = page "VAT Report List";
+                Image = VATLedger;
+                Tooltip = 'Open the VAT Returns page.';
+            }
+        }
         addfirst(Category_Process)
         {
             actionref(ExportCZL_Promoted; ExportCZL)

@@ -28,5 +28,15 @@ tableextension 36954 "Setup - Manufacturing" extends "PowerBI Reports Setup"
             Caption = 'Manufacturing Report Date Formula';
             DataClassification = CustomerContent;
         }
+        field(36978; "Manufacturing Report Id"; Guid)
+        {
+            Caption = 'Manufacturing Report ID';
+            DataClassification = CustomerContent;
+        }
+        field(36979; "Manufacturing Report Name"; Text[200])
+        {
+            Caption = 'Manufacturing Report Name';
+            DataClassification = CustomerContent;
+        }
     }
 }

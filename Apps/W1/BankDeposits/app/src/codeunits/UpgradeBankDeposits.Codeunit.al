@@ -2,9 +2,6 @@ namespace Microsoft.Bank.Deposit;
 
 using System.Environment;
 using System.Upgrade;
-#if not CLEAN23
-using Microsoft.Finance.GeneralLedger.Setup;
-#endif
 using Microsoft.Foundation.Reporting;
 using System.Reflection;
 using Microsoft.Bank.Reconciliation;
@@ -29,12 +26,6 @@ codeunit 1714 "Upgrade Bank Deposits"
             exit;
         if UpgradeTag.HasUpgradeTag(UpgTagDefBankDeposits.GetNADepositsUpgradeTag()) then
             exit;
-#if not CLEAN23
-        if FeatureWasAlreadyEnabled() then begin
-            UpgradeTag.SetUpgradeTag(UpgTagDefBankDeposits.GetNADepositsUpgradeTag());
-            exit;
-        end;
-#endif
         UpgradeNADepositsIntoBankDeposits();
         UpgradeNABankRecWorksheetsIntoBankReconciliations();
 #if not CLEAN24
@@ -43,19 +34,6 @@ codeunit 1714 "Upgrade Bank Deposits"
         SetReportSelections();
         UpgradeTag.SetUpgradeTag(UpgTagDefBankDeposits.GetNADepositsUpgradeTag());
     end;
-
-#if not CLEAN23
-    local procedure FeatureWasAlreadyEnabled(): Boolean
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        RecordRef: RecordRef;
-    begin
-        if not GeneralLedgerSetup.Get() then
-            exit(true);
-        RecordRef.GetTable(GeneralLedgerSetup);
-        exit(RecordRef.Field(10120).Value); // "Bank Recon. with Auto. Match"
-    end;
-#endif
 
     local procedure SetReportSelections()
     var

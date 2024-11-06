@@ -9,6 +9,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Payables;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.ExcelReports;
 
 report 4403 "EXR Aged Acc Payable Excel"
 {
@@ -265,6 +266,9 @@ report 4403 "EXR Aged Acc Payable Excel"
         CurrencyCodeDisplay = 'Currency Code';
     }
 
+    var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+
     protected var
         TempEXRAgingReportBuffer: Record "EXR Aging Report Buffer" temporary;
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -285,6 +289,7 @@ report 4403 "EXR Aged Acc Payable Excel"
 
     trigger OnPreReport()
     begin
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Aged Acc Payable Excel");
         InitReport();
         BindSubscription(GlobalEXTAgedAccCaptionHandler);
         GlobalEXTAgedAccCaptionHandler.SetGlobalEXRAgingReportBuffer(TempEXRAgingReportBuffer);

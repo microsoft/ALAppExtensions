@@ -48,13 +48,13 @@ page 6245 "Emission Fees"
                 field("Carbon Fee"; Rec."Carbon Fee")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies internal carbon fee that a company charges itself for each unit of CO2 equivalent that it emits.';
+                    ToolTip = 'Specifies internal carbon fee that a company charges itself for each unit of CO2 equivalent that it emits. It can be configured only if the Emission Type is CO2, and it will be calculated not based on CO2 emission but based on CO2e.';
                 }
                 field("Carbon Equivalent Factor"; Rec."Carbon Equivalent Factor")
                 {
                     Editable = not (Rec."Emission Type" = Rec."Emission Type"::CO2);
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the coefficient that converts the impact of various greenhouse gases into the equivalent amount of carbon dioxide based on their global warming potential.';
+                    ToolTip = 'Specifies the coefficient that converts the impact of various greenhouse gases into the equivalent amount of carbon dioxide based on their global warming potential. for CO2 it will be 1 by default and you cannot change this value. For other gases you need to add coefficients. If you use for example that 1 kilogram of CH4 is equivalent to 28 kilograms of CO2, to calculate this coefficient you need to use value 1/28.';
                 }
             }
         }

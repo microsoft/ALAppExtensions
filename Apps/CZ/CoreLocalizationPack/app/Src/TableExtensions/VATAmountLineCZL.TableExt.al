@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Calculation;
 
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
@@ -32,9 +33,30 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
             DataClassification = CustomerContent;
             Editable = false;
         }
+#pragma warning disable AS0072
+        field(11784; "Additional-Currency Amount CZL"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetAdditionalCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Amount';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(11785; "Additional-Currency Base CZL"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetAdditionalCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Base';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+#pragma warning restore AS0072
     }
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
         DocumentType: Enum "Gen. Journal Document Type";
         DocumentNo: Code[20];
         PostingDate: Date;
@@ -46,15 +68,22 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
     procedure UpdateVATEntryLCYAmountsCZL(Variant: Variant)
     var
         Currency: Record Currency;
+        CurrencyAdditional: Record Currency;
         TempTotalVATAmountLine: Record "VAT Amount Line" temporary;
         TempVATEntry: Record "VAT Entry" temporary;
         Factor: Decimal;
+        FactorAdditionalCurrency: Decimal;
         SingleLine: Boolean;
     begin
         if Rec.IsEmpty() then
             exit;
         Clear(Currency);
         Currency.InitRoundingPrecision();
+        Clear(CurrencyAdditional);
+        if GetAdditionalCurrencyCode() <> '' then begin
+            CurrencyAdditional.Get(GetAdditionalCurrencyCode());
+            CurrencyAdditional.InitRoundingPrecision();
+        end;
 
         SumPositiveAndNegativeVATAmountLines(TempTotalVATAmountLine);
         GetDocumentVATEntryBuffer(Variant, TempVATEntry);
@@ -67,6 +96,8 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                 if Rec.Positive or SingleLine then begin
                     Rec."VAT Base (LCY) CZL" := TempTotalVATAmountLine."VAT Base (LCY) CZL";
                     Rec."VAT Amount (LCY) CZL" := TempTotalVATAmountLine."VAT Amount (LCY) CZL";
+                    Rec."Additional-Currency Amount CZL" := TempTotalVATAmountLine."Additional-Currency Amount CZL";
+                    Rec."Additional-Currency Base CZL" := TempTotalVATAmountLine."Additional-Currency Base CZL";
                 end else begin
                     if (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount") = 0 then
                         Factor := VATCurrFactor
@@ -77,6 +108,18 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                     Rec."VAT Amount (LCY) CZL" := Round((Rec."VAT Amount" * Factor), Currency."Amount Rounding Precision");
                     TempTotalVATAmountLine."VAT Base (LCY) CZL" -= Rec."VAT Base (LCY) CZL";
                     TempTotalVATAmountLine."VAT Amount (LCY) CZL" -= Rec."VAT Amount (LCY) CZL";
+
+                    if GetAdditionalCurrencyCode() <> '' then begin
+                        if (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount") = 0 then
+                            FactorAdditionalCurrency := VATCurrFactor
+                        else
+                            FactorAdditionalCurrency := (TempTotalVATAmountLine."Additional-Currency Base CZL" + TempTotalVATAmountLine."Additional-Currency Amount CZL") /
+                                (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount");
+                        Rec."Additional-Currency Base CZL" := Round((Rec."VAT Base" * FactorAdditionalCurrency), CurrencyAdditional."Amount Rounding Precision");
+                        Rec."Additional-Currency Amount CZL" := Round((Rec."VAT Amount" * FactorAdditionalCurrency), CurrencyAdditional."Amount Rounding Precision");
+                        TempTotalVATAmountLine."Additional-Currency Base CZL" -= Rec."Additional-Currency Base CZL";
+                        TempTotalVATAmountLine."Additional-Currency Amount CZL" -= Rec."Additional-Currency Amount CZL";
+                    end;
                     TempTotalVATAmountLine.Modify();
                 end;
                 Rec.Modify();
@@ -223,6 +266,8 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                 if TempTotalVATAmountLine.Get(Rec."VAT Identifier", Rec."VAT Calculation Type", Rec."Tax Group Code", Rec."Use Tax", false) then begin
                     TempTotalVATAmountLine."VAT Base" += Rec."VAT Base";
                     TempTotalVATAmountLine."VAT Amount" += Rec."VAT Amount";
+                    TempTotalVATAmountLine."Additional-Currency Base CZL" += Rec."Additional-Currency Base CZL";
+                    TempTotalVATAmountLine."Additional-Currency Amount CZL" += Rec."Additional-Currency Amount CZL";
                     TempTotalVATAmountLine.Modify();
                 end else begin
                     TempTotalVATAmountLine.Init();
@@ -233,6 +278,8 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                     TempTotalVATAmountLine.Positive := false;
                     TempTotalVATAmountLine."VAT Base" := Rec."VAT Base";
                     TempTotalVATAmountLine."VAT Amount" := Rec."VAT Amount";
+                    TempTotalVATAmountLine."Additional-Currency Base CZL" := Rec."Additional-Currency Base CZL";
+                    TempTotalVATAmountLine."Additional-Currency Amount CZL" := Rec."Additional-Currency Amount CZL";
                     TempTotalVATAmountLine.Insert();
                 end;
             until Rec.Next() = 0;
@@ -250,6 +297,8 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                     repeat
                         TempTotalVATAmountLine."VAT Base (LCY) CZL" += Sign * TempVATEntry.Base;
                         TempTotalVATAmountLine."VAT Amount (LCY) CZL" += Sign * TempVATEntry.Amount;
+                        TempTotalVATAmountLine."Additional-Currency Amount CZL" += Sign * TempVATEntry."Additional-Currency Amount";
+                        TempTotalVATAmountLine."Additional-Currency Base CZL" += Sign * TempVATEntry."Additional-Currency Base";
                     until TempVATEntry.Next() = 0;
                 TempTotalVATAmountLine.Modify();
             until TempTotalVATAmountLine.Next() = 0;
@@ -265,6 +314,12 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         TransactionNo := NewTransactionNo;
         Sign := NewSign;
         VATCurrFactor := NewVATCurrFactor;
+    end;
+
+    local procedure GetAdditionalCurrencyCode(): Code[10]
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 
     [IntegrationEvent(true, false)]

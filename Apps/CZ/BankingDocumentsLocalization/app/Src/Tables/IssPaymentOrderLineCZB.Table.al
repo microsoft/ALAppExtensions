@@ -187,6 +187,7 @@ table 31259 "Iss. Payment Order Line CZB"
             Caption = 'Name';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA22
         field(150; "Letter Type"; Option)
         {
             Caption = 'Letter Type';
@@ -210,6 +211,7 @@ table 31259 "Iss. Payment Order Line CZB"
             ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
             ObsoleteTag = '22.0';
         }
+#endif
         field(190; "VAT Unreliable Payer"; Boolean)
         {
             Caption = 'VAT Unreliable Payer';

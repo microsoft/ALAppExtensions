@@ -786,6 +786,164 @@ codeunit 139769 "Bank Deposit Posting Tests"
         Assert.AreEqual(AppliedVendorLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
     end;
 
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler,ReverseEntriesPageHandler,MessageHandler')]
+    procedure PostedBankDepositShowsReversed()
+    var
+        GLAccount: Record "G/L Account";
+        BankAccount: Record "Bank Account";
+        Vendor: Record Vendor;
+        BankDepositHeader: array[3] of Record "Bank Deposit Header";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        i: Integer;
+    begin
+        // [SCENARIO 551014] Reversed field shows correct value on posted bank deposits
+        Initialize();
+        PostedBankDepositHeader.DeleteAll();
+
+        // [GIVEN] Create GL Account X, Vendor X and Bank Account X
+        LibraryERM.CreateGLAccount(GLAccount);
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryERM.CreateBankAccount(BankAccount);
+
+        // [GIVEN] Create and post Bank Deposit X, Y and Z
+        for i := 1 to ArrayLen(BankDepositHeader) do
+            SetupAndPostBankDeposit(BankDepositHeader[i], GLAccount."No.", Vendor."No.", BankAccount."No.");
+
+        // [GIVEN] Reverse Bank Deposit Y
+        PostedBankDepositHeader.Get(BankDepositHeader[2]."No.");
+        PostedBankDepositHeader.ReverseTransactions();
+
+        // [THEN] Posted Bank Deposit X has reversed = false
+        // [THEN] Posted Bank Deposit Y has reversed = true
+        // [THEN] Posted Bank Deposit Z has reversed = false
+        VerifyReversedOnPostedBankDepositList();
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PopulateReasonCodeWhenPostingBankDepositInVendorLedgerEntry()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLAccount: Record "G/L Account";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        ReasonCode: Record "Reason Code";
+        Vendor: Record Vendor;
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        // [SCENARIO 549436] Posting a Bank Deposit with a Reason Code populate the Reason Code in the Vendor Ledger Entries posting.
+        Initialize();
+
+        // [GIVEN] Create GL Account.
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Create a Vendor.
+        LibraryPurchase.CreateVendor(Vendor);
+
+        // [GIVEN] CReate General Journal Batch.
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+
+        // [GIVEN] Create Bank Deposit Header with Bank Account.
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+
+        // [GIVEN] Create Reason Code.
+        LibraryERM.CreateReasonCode(ReasonCode);
+
+        // [GIVEN] Create General Journal Line and Validate Reason Code.
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine,
+            BankDepositHeader."Journal Template Name",
+            BankDepositHeader."Journal Batch Name",
+            GenJournalLine."Document Type"::" ",
+            GenJournalLine."Account Type"::Vendor,
+            Vendor."No.",
+            LibraryRandom.RandInt(1000));
+        GenJournalLine.Validate("Reason Code", ReasonCode.Code);
+        GenJournalLine.Modify(true);
+
+        // [GIVEN] Update Bank Deposit Header.
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+
+        // [WHEN] Post Bank Deposit.
+        PostBankDeposit(BankDepositHeader);
+
+        // [THEN] Reason Code must be populated in Vendor Ledger Entry.
+        VendorLedgerEntry.SetRange("Vendor No.", Vendor."No.");
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::" ");
+        VendorLedgerEntry.FindLast();
+        VendorLedgerEntry.TestField("Reason Code", ReasonCode.Code);
+
+        // [THEN] Reason Code must be populated in Posted Bank Deposit Line.
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        PostedBankDepositLine.FindFirst();
+        PostedBankDepositLine.TestField("Reason Code", ReasonCode.Code);
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PopulateReasonCodeWhenPostingBankDepositInCustomerLedgerEntry()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        Customer: Record Customer;
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLAccount: Record "G/L Account";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        ReasonCode: Record "Reason Code";
+    begin
+        // [SCENARIO 549436] Posting a Bank Deposit with a Reason Code populate the Reason Code in the Customer Ledger Entries posting.
+        Initialize();
+
+        // [GIVEN] Create GL Account.
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Create a Customer.
+        LibrarySales.CreateCustomer(Customer);
+
+        // [GIVEN] CReate General Journal Batch.
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+
+        // [GIVEN] Create Bank Deposit Header with Bank Account.
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+
+        // [GIVEN] Create Reason Code.
+        LibraryERM.CreateReasonCode(ReasonCode);
+
+        // [GIVEN] Create General Journal Line and Validate Reason Code.
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine,
+            BankDepositHeader."Journal Template Name",
+            BankDepositHeader."Journal Batch Name",
+            GenJournalLine."Document Type"::" ",
+            GenJournalLine."Account Type"::Customer,
+            Customer."No.",
+            LibraryRandom.RandInt(1000));
+        GenJournalLine.Validate("Reason Code", ReasonCode.Code);
+        GenJournalLine.Modify(true);
+
+        // [GIVEN] Update Bank Deposit Header.
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+
+        // [WHEN] Post Bank Deposit.
+        PostBankDeposit(BankDepositHeader);
+
+        // [THEN] Reason Code must be populated in Customer Ledger Entry.
+        CustLedgerEntry.SetRange("Customer No.", Customer."No.");
+        CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::" ");
+        CustLedgerEntry.FindLast();
+        CustLedgerEntry.TestField("Reason Code", ReasonCode.Code);
+
+        // [THEN] Reason Code must be populated in Posted Bank Deposit Line.
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        PostedBankDepositLine.FindFirst();
+        PostedBankDepositLine.TestField("Reason Code", ReasonCode.Code);
+    end;
+
     local procedure Initialize()
     var
         InventorySetup: Record "Inventory Setup";
@@ -1060,16 +1218,42 @@ codeunit 139769 "Bank Deposit Posting Tests"
         exit(GenJournalBatch.Name);
     end;
 
+    local procedure VerifyReversedOnPostedBankDepositList()
+    var
+        PostedBankDepositList: TestPage "Posted Bank Deposit List";
+        ReversedErr: Label 'Reversed field is not calculated correctly.';
+    begin
+        PostedBankDepositList.OpenEdit();
+        PostedBankDepositList.First();
+        Assert.IsFalse(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
+        PostedBankDepositList.Next();
+        Assert.IsTrue(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
+        PostedBankDepositList.Next();
+        Assert.IsFalse(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
+        PostedBankDepositList.Close();
+    end;
+
     [ModalPageHandler]
     procedure GeneralJournalBatchesPageHandler(var GeneralJournalBatches: TestPage "General Journal Batches")
     begin
         GeneralJournalBatches.OK().Invoke();
     end;
 
+    [ModalPageHandler]
+    procedure ReverseEntriesPageHandler(var ReverseTransactionEntries: TestPage "Reverse Transaction Entries")
+    begin
+        ReverseTransactionEntries.Reverse.Invoke();
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
     end;
 
     [IntegrationEvent(false, false)]

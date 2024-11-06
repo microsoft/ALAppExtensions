@@ -1,0 +1,26 @@
+{
+  "name": "Ruleset for first-party extensions in Minor Releases",
+  "includedRuleSets": [
+    {
+      "action": "Default",
+      "path": "./../app.ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AS0077",
+      "action": "Error",
+      "justification": "Adding or removing a var modifier in events is a runtime breaking change."
+    },
+    {
+      "id": "AS0078",
+      "action": "Error",
+      "justification": "Adding or removing a var modifier in procedures is a runtime breaking change."
+    },
+    {
+      "id": "AS0102",
+      "action": "Error",
+      "justification": "Adding a return type on procedures is a runtime breaking change."
+    }
+  ]
+}

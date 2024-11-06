@@ -105,6 +105,21 @@ table 6217 "Sustainability Setup"
         {
             Caption = 'Use Emissions In Purchase Documents';
         }
+        field(17; "Waste Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Waste Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(18; "Water Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Water Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(19; "Disch. Into Water Unit of Meas"; Code[10])
+        {
+            Caption = 'Disch. Into Water Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
     }
 
     keys

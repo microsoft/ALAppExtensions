@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using System.Utilities;
@@ -33,11 +27,11 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Setup;
 using Microsoft.Inventory.PowerBIReports;
 using Microsoft.Service.Test;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139877 "PowerBI Inventory Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -55,6 +49,7 @@ codeunit 139877 "PowerBI Inventory Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -74,7 +69,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for zones is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Zones, '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('locationCode eq ''%1''', Location.Code));
+        UriBuilder.AddODataQueryParameter('$filter', 'locationCode eq ''' + Format(Location.Code) + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -91,7 +86,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.zoneCode == ''%1'')]', Zone.Code)), 'Zone not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.zoneCode == ''' + Format(Zone.Code) + ''')]'), 'Zone not found.');
         Assert.AreEqual(Zone.Description, JsonMgt.GetValue('zoneDescription'), 'Description did not match.');
         Assert.AreEqual(Zone."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
         Assert.AreEqual(Zone."Bin Type Code", JsonMgt.GetValue('binTypeCode'), 'Bin type code did not match.');
@@ -116,7 +111,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for bins is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Bins, '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('locationCode eq ''%1''', Location.Code));
+        UriBuilder.AddODataQueryParameter('$filter', 'locationCode eq ''' + Format(Location.Code) + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -133,7 +128,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.binCode == ''%1'')]', Bin.Code)), 'Bin not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.binCode == ''' + Format(Bin.Code) + ''')]'), 'Bin not found.');
         Assert.AreEqual(Bin.Description, JsonMgt.GetValue('description'), 'Description did not match.');
         Assert.AreEqual(Bin."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
         Assert.AreEqual(Bin."Bin Type Code", JsonMgt.GetValue('binType'), 'Bin type code did not match.');
@@ -164,7 +159,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for sales lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Lines - Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', SalesHeader."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -184,7 +179,7 @@ codeunit 139877 "PowerBI Inventory Test"
     begin
         JsonMgt.InitializeObject(Response);
         if (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."Outstanding Qty. (Base)" <> 0) then begin
-            Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', SalesLine."No.")), 'Sales line not found.');
+            Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(SalesLine."No.") + ''')]'), 'Sales line not found.');
             Assert.AreEqual(Format(SalesLine."Document Type"), JsonMgt.GetValue('documentType'), 'Document type did not match.');
             Assert.AreEqual(SalesLine."Sell-to Customer No.", JsonMgt.GetValue('sellToCustomerNo'), 'Sell-to customer no. did not match.');
             Assert.AreEqual(SalesLine."No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
@@ -195,7 +190,7 @@ codeunit 139877 "PowerBI Inventory Test"
             Assert.AreEqual(Format(SalesLine."Qty. per Unit of Measure" / 1.0, 0, 9), JsonMgt.GetValue('qtyPerUnitOfMeasure'), 'Qty. per unit of measure did not match.');
             Assert.AreEqual(SalesLine."Unit of Measure Code", JsonMgt.GetValue('unitOfMeasureCode'), 'Unit of measure code did not match.');
         end else
-            Assert.IsFalse(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', SalesLine."No.")), 'Sales line not found.');
+            Assert.IsFalse(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(SalesLine."No.") + ''')]'), 'Sales line not found.');
     end;
 
     [Test]
@@ -228,7 +223,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for sales lines outside the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Lines - Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', SalesLine."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(SalesLine."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -260,7 +255,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for purchase lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purchase Lines - Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', PurchHeader."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(PurchHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -280,7 +275,7 @@ codeunit 139877 "PowerBI Inventory Test"
     begin
         JsonMgt.InitializeObject(Response);
         if (PurchLine.Type = PurchLine.Type::Item) and (PurchLine."Outstanding Qty. (Base)" <> 0) then begin
-            Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', PurchLine."No.")), 'Purchase line not found.');
+            Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(PurchLine."No.") + ''')]'), 'Purchase line not found.');
             Assert.AreEqual(Format(PurchLine."Document Type"), JsonMgt.GetValue('documentType'), 'Document type did not match.');
             Assert.AreEqual(PurchLine."Buy-from Vendor No.", JsonMgt.GetValue('buyFromVendorNo'), 'Buy-from vendor no. did not match.');
             Assert.AreEqual(PurchLine."No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
@@ -291,7 +286,7 @@ codeunit 139877 "PowerBI Inventory Test"
             Assert.AreEqual(Format(PurchLine."Qty. per Unit of Measure" / 1.0, 0, 9), JsonMgt.GetValue('qtyPerUnitOfMeasure'), 'Qty. per unit of measure did not match.');
             Assert.AreEqual(PurchLine."Unit of Measure Code", JsonMgt.GetValue('unitOfMeasureCode'), 'Unit of measure code did not match.');
         end else
-            Assert.IsFalse(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', PurchLine."No.")), 'Purchase line not found.');
+            Assert.IsFalse(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(PurchLine."No.") + ''')]'), 'Purchase line not found.');
     end;
 
     [Test]
@@ -324,7 +319,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for purchase lines outside the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purchase Lines - Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', PurchLine."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(PurchLine."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -369,8 +364,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for requisition lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Requisition Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter',
-            StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2'' OR itemNo eq ''%3''', Item1."No.", Item2."No.", Item3."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + ''' OR itemNo eq ''' + Format(Item3."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -390,7 +384,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', RequisitionLine."No.")), 'Requisition line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(RequisitionLine."No.") + ''')]'), 'Requisition line not found.');
         Assert.AreEqual(RequisitionLine."Worksheet Template Name", JsonMgt.GetValue('worksheetTemplateName'), 'Worksheet template name did not match.');
         Assert.AreEqual(RequisitionLine."Journal Batch Name", JsonMgt.GetValue('journalBatchName'), 'Journal batch name did not match.');
         Assert.AreEqual(Format(RequisitionLine."Planning Line Origin"), JsonMgt.GetValue('planningLineOrigin'), 'Planning line origin did not match.');
@@ -467,7 +461,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for transfer lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Transfer Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', TransferHeader."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(TransferHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -484,7 +478,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', TransferLine."Item No.")), 'Transfer line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(TransferLine."Item No.") + ''')]'), 'Transfer line not found.');
         Assert.AreEqual(TransferLine."In-Transit Code", JsonMgt.GetValue('inTransitLocationCode'), 'In-Transit Code did not match.');
         Assert.AreEqual(TransferLine."Transfer-to Code", JsonMgt.GetValue('transferToLocationCode'), 'Transfer-to Code did not match.');
         Assert.AreEqual(TransferLine."Transfer-from Code", JsonMgt.GetValue('transferFromLocationCode'), 'Transfer-from Code did not match.');
@@ -517,7 +511,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for transfer lines outside the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Transfer Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', TransferLine."Document No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(TransferLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -552,7 +546,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for service lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Service Lines - Order", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', ServiceHeader."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(ServiceHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -569,7 +563,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', ServiceLine."No.")), 'Service line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(ServiceLine."No.") + ''')]'), 'Service line not found.');
         Assert.AreEqual(ServiceLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
         Assert.AreEqual(Format(ServiceLine."Outstanding Qty. (Base)" / 1.0, 0, 9), JsonMgt.GetValue('outstandingQtyBase'), 'Outstanding Qty. (Base) did not match.');
         Assert.AreEqual(Format(ServiceLine."Needed by Date", 0, 9), JsonMgt.GetValue('neededByDate'), 'Needed by Date did not match.');
@@ -607,7 +601,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for service lines outside the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Service Lines - Order", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', ServiceLine."Document No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(ServiceLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -647,7 +641,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for item ledger entries is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Inventory.PowerBIReports."Item Ledger Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2''', SalesLine."No.", PurchLine."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(SalesLine."No.") + ''' OR itemNo eq ''' + Format(PurchLine."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -666,7 +660,7 @@ codeunit 139877 "PowerBI Inventory Test"
         BoolText: Text;
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', Format(ItemLedgerEntry."Entry No."))), 'Item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(Format(ItemLedgerEntry."Entry No.") + ')]')), 'Item ledger entry not found.');
         Assert.AreEqual(Format(ItemLedgerEntry."Entry Type"), JsonMgt.GetValue('entryType'), 'Entry type did not match.');
         Assert.AreEqual(Format(ItemLedgerEntry."Source Type"), JsonMgt.GetValue('sourceType'), 'Source type did not match.');
         Assert.AreEqual(ItemLedgerEntry."Source No.", JsonMgt.GetValue('sourceNo'), 'Source no. did not match.');
@@ -715,7 +709,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for warehouse receipt lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Warehouse Activity Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -733,7 +727,7 @@ codeunit 139877 "PowerBI Inventory Test"
         BoolText: Text;
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.actionType == ''%1'')]', Format(WhseActivityLine."Action Type"))), 'Warehouse activity line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.actionType == ''' + Format(Format(WhseActivityLine."Action Type") + ''')]')), 'Warehouse activity line not found.');
         Assert.AreEqual(WhseActivityLine."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         BoolText := 'False';
         if WhseActivityLine."Assemble to Order" then
@@ -772,7 +766,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for warehouse entries is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Warehouse Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -789,7 +783,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', WhseEntry."Item No.")), 'Warehouse entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(WhseEntry."Item No.") + ''')]'), 'Warehouse entry not found.');
         Assert.AreEqual(WhseEntry."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(WhseEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
         Assert.AreEqual(WhseEntry."Lot No.", JsonMgt.GetValue('lotNo'), 'Lot no. did not match.');
@@ -855,7 +849,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for warehouse journal lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Whse. Journal Lines - From Bin", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2''', Item1."No.", Item2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -872,7 +866,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', WhseJournalLine."Item No.")), 'Warehouse journal line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(WhseJournalLine."Item No.") + ''')]'), 'Warehouse journal line not found.');
         Assert.AreEqual(WhseJournalLine."From Bin Code", JsonMgt.GetValue('fromBinCode'), 'From bin code did not match.');
         Assert.AreEqual(WhseJournalLine."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(WhseJournalLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
@@ -904,7 +898,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for warehouse journal lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Whse. Journal Lines - To Bin", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2''', Item1."No.", Item2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -921,7 +915,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', WhseJournalLine."Item No.")), 'Warehouse journal line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(WhseJournalLine."Item No.") + ''')]'), 'Warehouse journal line not found.');
         Assert.AreEqual(WhseJournalLine."To Bin Code", JsonMgt.GetValue('toBinCode'), 'To bin code did not match.');
         Assert.AreEqual(WhseJournalLine."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(WhseJournalLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
@@ -947,7 +941,9 @@ codeunit 139877 "PowerBI Inventory Test"
         LibWhse.CreateFullWMSLocation(Location, 1);
         LibWhse.CreateWarehouseEmployee(WhseEmployee, Location.Code, true);
         Zone.SetRange("Location Code", Location.Code);
+#pragma warning disable AA0210
         Zone.SetRange("Bin Type Code", LibWhse.SelectBinType(false, false, true, true));
+#pragma warning restore AA0210
         Zone.FindFirst();
         LibWhse.FindBin(Bin, Location.Code, Zone.Code, 1);
         LibWhse.CreateWarehouseJournalBatch(WhseJournalBatch, WhseJournalTemplate.Type::Item, Location.Code);
@@ -987,7 +983,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for purchase value entry is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Item", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1005,7 +1001,7 @@ codeunit 139877 "PowerBI Inventory Test"
 
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', ValueEntry."Entry No.")), 'Value entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(ValueEntry."Entry No.") + ')]'), 'Value entry not found.');
         Assert.AreEqual(Format(ValueEntry."Valuation Date", 0, 9), JsonMgt.GetValue('valuationDate'), 'Valuation date did not match.');
         Assert.AreEqual(ValueEntry."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(ValueEntry."Cost Amount (Actual)" / 1.0, 0, 9), JsonMgt.GetValue('costAmountActual'), 'Cost amount (actual) did not match.');
@@ -1030,18 +1026,20 @@ codeunit 139877 "PowerBI Inventory Test"
         Response: Text;
     begin
         // [GIVEN] Value entry exists outside of the query filter
+        PermissionsMock.Assign('SUPER');
         if ValueEntry.FindLast() then;
         ValueEntry.Init();
         ValueEntry."Entry No." += 1;
         ValueEntry."Entry Type" := ValueEntry."Entry Type"::"Direct Cost";
         ValueEntry."Item No." := '';
         ValueEntry.Insert();
+        PermissionsMock.ClearAssignments();
         Commit();
 
         // [WHEN] Get request for the value entry outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Item", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('entryNo eq %1', ValueEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ValueEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1069,7 +1067,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Headers - Order", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1'' OR documentNo eq ''%2''', AssemblyHeader."No.", AssemblyHeader2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + ''' OR documentNo eq ''' + Format(AssemblyHeader2."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
 
@@ -1086,7 +1084,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.documentNo == ''%1'')]', AssemblyHeader."No.")), 'Assembly header not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.documentNo == ''' + Format(AssemblyHeader."No.") + ''')]'), 'Assembly header not found.');
         Assert.AreEqual(AssemblyHeader."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(AssemblyHeader.Quantity / 1.0, 0, 9), JsonMgt.GetValue('quantity'), 'Quantity did not match.');
         Assert.AreEqual(Format(AssemblyHeader."Remaining Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('remainingQtyBase'), 'Remaining quantity (base) did not match.');
@@ -1117,7 +1115,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the assembly header outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Headers - Order", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', AssemblyHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1145,7 +1143,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Lines - Item", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', AssemblyHeader."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the assembly header information
@@ -1161,7 +1159,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', AssemblyLine."No.")), 'Assembly line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(AssemblyLine."No.") + ''')]'), 'Assembly line not found.');
         Assert.AreEqual(Format(AssemblyLine."Remaining Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('remainingQuantity'), 'Remaining quantity (base) did not match.');
         Assert.AreEqual(Format(AssemblyLine."Due Date", 0, 9), JsonMgt.GetValue('dueDate'), 'Due date did not match.');
         Assert.AreEqual(AssemblyLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
@@ -1196,7 +1194,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the assembly line outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Lines - Item", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', AssemblyHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1235,7 +1233,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines - Item", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2''', Item1."No.", Item2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the job planning line information
@@ -1251,7 +1249,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', JobPlanningLine."No.")), 'Job planning line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(JobPlanningLine."No.") + ''')]'), 'Job planning line not found.');
         Assert.AreEqual(Format(JobPlanningLine."Remaining Qty. (Base)" / 1.0, 0, 9), JsonMgt.GetValue('remainingQtyBase'), 'Remaining quantity (base) did not match.');
         Assert.AreEqual(Format(JobPlanningLine."Planning Date", 0, 9), JsonMgt.GetValue('planningDate'), 'Planning date did not match.');
         Assert.AreEqual(JobPlanningLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
@@ -1294,7 +1292,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the job planning line outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines - Item", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', JobPlanningLine."Document No."));
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(JobPlanningLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1339,7 +1337,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Invt.", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production order line information
@@ -1356,7 +1354,7 @@ codeunit 139877 "PowerBI Inventory Test"
 
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.documentNo == ''%1'')]', ProdOrderLine."Prod. Order No.")), 'Production order line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.documentNo == ''' + Format(ProdOrderLine."Prod. Order No.") + ''')]'), 'Production order line not found.');
         Assert.AreEqual(Format(ProdOrderLine.Status), JsonMgt.GetValue('status'), 'Status did not match.');
         Assert.AreEqual(ProdOrderLine."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(ProdOrderLine."Remaining Qty. (Base)" / 1.0, 0, 9), JsonMgt.GetValue('remainingQtyBase'), 'Remaining quantity (base) did not match.');
@@ -1387,7 +1385,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the production order line outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Invt.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', ProdOrderLine."Prod. Order No."));
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(ProdOrderLine."Prod. Order No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1439,7 +1437,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Invt.", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', ItemComp."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(ItemComp."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production order component line information
@@ -1455,7 +1453,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.documentNo == ''%1'')]', ProdOrderComp."Prod. Order No.")), 'Production order component line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.documentNo == ''' + Format(ProdOrderComp."Prod. Order No.") + ''')]'), 'Production order component line not found.');
         Assert.AreEqual(Format(ProdOrderComp.Status), JsonMgt.GetValue('status'), 'Status did not match.');
         Assert.AreEqual(ProdOrderComp."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(ProdOrderComp."Remaining Qty. (Base)" / 1.0, 0, 9), JsonMgt.GetValue('remainingQtyBase'), 'Remaining quantity (base) did not match.');
@@ -1485,7 +1483,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the production order component line outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Invt.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1''', ProdOrderComp."Prod. Order No."));
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(ProdOrderComp."Prod. Order No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1507,7 +1505,9 @@ codeunit 139877 "PowerBI Inventory Test"
         Response: Text;
     begin
         // [GIVEN] Planning component lines are created
+#pragma warning disable AA0210
         ReqWkshTemplate.SetRange(Type, ReqWkshTemplate.Type::"Req.");
+#pragma warning restore AA0210
         ReqWkshTemplate.FindFirst();
         LibPlanning.CreateRequisitionWkshName(RequisitionWkshName, ReqWkshTemplate.Name);
         LibPlanning.CreateRequisitionLine(RequisitionLine, RequisitionWkshName."Worksheet Template Name", RequisitionWkshName.Name);
@@ -1524,7 +1524,7 @@ codeunit 139877 "PowerBI Inventory Test"
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Planning Components", '');
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1'' OR itemNo eq ''%2''', Item1."No.", Item2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the planning component line information
@@ -1540,7 +1540,7 @@ codeunit 139877 "PowerBI Inventory Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', PlanningComponent."Item No.")), 'Planning component not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(PlanningComponent."Item No.") + ''')]'), 'Planning component not found.');
         Assert.AreEqual(PlanningComponent."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(PlanningComponent."Due Date", 0, 9), JsonMgt.GetValue('dueDate'), 'Due date did not match.');
         Assert.AreEqual(PlanningComponent."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
@@ -1572,7 +1572,7 @@ codeunit 139877 "PowerBI Inventory Test"
         // [WHEN] Get request for the planning component line outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Planning Components", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', PlanningComponent."Item No."));
+        UriBuilder.AddQueryParameter('$filter', 'itemNo eq ''' + Format(PlanningComponent."Item No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -1591,9 +1591,3 @@ codeunit 139877 "PowerBI Inventory Test"
         Assert.AreEqual(0, JToken.AsArray().Count(), 'Response contains data outside of the filter.');
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

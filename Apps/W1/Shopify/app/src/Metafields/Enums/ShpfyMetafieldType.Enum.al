@@ -5,23 +5,28 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 enum 30159 "Shpfy Metafield Type" implements "Shpfy IMetafield Type"
 {
-    Access = Internal;
     Caption = 'Shopify  Metafield Type';
-
     Extensible = false;
 
+#if not CLEAN26
     value(0; string)
     {
         Caption = 'String';
         Implementation = "Shpfy IMetafield Type" = "Shpfy Mtfld Type String";
+        ObsoleteReason = 'Use Single line text instead.';
+        ObsoleteTag = '26.0';
+        ObsoleteState = Pending;
     }
 
     value(1; integer)
     {
-        Caption = 'Integer';
+        Caption = 'Legacy Integer';
         Implementation = "Shpfy IMetafield Type" = "Shpfy Mtfld Type Integer";
+        ObsoleteReason = 'Use Integer instead.';
+        ObsoleteTag = '26.0';
+        ObsoleteState = Pending;
     }
-
+#endif
     value(2; json)
     {
         Caption = 'JSON';

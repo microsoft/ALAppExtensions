@@ -63,9 +63,6 @@ page 30101 "Shpfy Shop Card"
                         if not Rec.Enabled then
                             exit;
                         Rec.RequestAccessToken();
-#if not CLEAN23
-                        if BulkOperationMgt.IsBulkOperationFeatureEnabled() then
-#endif
                         BulkOperationMgt.EnableBulkOperations(Rec);
                         Rec."B2B Enabled" := Rec.GetB2BEnabled();
                         Rec."Weight Unit" := Rec.GetShopWeightUnit();
@@ -93,18 +90,6 @@ page 30101 "Shpfy Shop Card"
                     Importance = Additional;
                     ToolTip = 'Specifies the language of the Shopify Shop.';
                 }
-#if not CLEAN23
-                field(LogActivated; Rec."Log Enabled")
-                {
-                    ApplicationArea = All;
-                    Importance = Additional;
-                    ToolTip = 'Specifies whether the log is activated.';
-                    Visible = false;
-                    ObsoleteReason = 'Replaced with field "Logging Mode"';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-#endif
                 field(LoggingMode; Rec."Logging Mode")
                 {
                     ApplicationArea = All;
@@ -1160,9 +1145,6 @@ page 30101 "Shpfy Shop Card"
         IsReturnRefundsVisible: Boolean;
         ApiVersion: Text;
         ApiVersionExpiryDate: Date;
-        ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
-        BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
-        CategoryTok: Label 'Shopify Integration', Locked = true;
 #if not CLEAN24
         ReplaceOrderAttributeValueDisabled: Boolean;
 #endif
@@ -1171,10 +1153,8 @@ page 30101 "Shpfy Shop Card"
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShopMgt: Codeunit "Shpfy Shop Mgt.";
         AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
-
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ApiVersionExpiryDateTime: DateTime;
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
@@ -1182,14 +1162,7 @@ page 30101 "Shpfy Shop Card"
             ApiVersion := CommunicationMgt.GetApiVersion();
             ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
             ApiVersionExpiryDate := DT2Date(ApiVersionExpiryDateTime);
-            if CurrentDateTime() > ApiVersionExpiryDateTime then begin
-                ShopMgt.SendBlockedNotification();
-                Session.LogMessage('0000KNZ', BlockedNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-            end else
-                if Round((ApiVersionExpiryDateTime - CurrentDateTime()) / 1000 / 3600 / 24, 1) <= 30 then begin
-                    ShopMgt.SendExpirationNotification(ApiVersionExpiryDate);
-                    Session.LogMessage('0000KO0', ExpirationNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                end;
+            Rec.CheckApiVersionExpiryDate(ApiVersion, ApiVersionExpiryDateTime);
 
             if AuthenticationMgt.CheckScopeChange(Rec) then
                 if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin

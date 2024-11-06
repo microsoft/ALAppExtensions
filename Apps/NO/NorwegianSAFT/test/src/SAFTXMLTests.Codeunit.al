@@ -1651,6 +1651,70 @@ codeunit 148103 "SAF-T XML Tests"
                 TempXMLBuffer, '/n1:AuditFile/n1:MasterFiles/n1:Suppliers/n1:Supplier/n1:PartyInfo'), 'Vendor dimension is exported.');
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure VendCurrencyInformationExportsCurrencyInformationOnlyForLineThatHasCurrency()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        GenJournalLine: array[3] of Record "Gen. Journal Line";
+    begin
+        // [SCENARIO 539115] SAF-T Export is exporting currency information for a line that is posted with LCY
+        Initialize();
+
+        // [GIVEN] Setup SAF-T
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Four Digit Standard Account", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] Create SAF-T Export Header where "Export Currency Information" is enabled by default
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+        SAFTExportHeader."Starting Date" := WorkDate() + 1;
+        SAFTExportHeader."Ending Date" := WorkDate() + 1;
+        SAFTExportHeader.Modify(true);
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] Create and Post Payment Journal
+        CreateAndPostPaymentJnl(GenJournalLine, SAFTExportHeader);
+
+        // [WHEN] Export G/L Entries to the XML file
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] Two "n1:Transaction/n1:Line/n1:DebitAmount" nodes have been generated
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:DebitAmount'),
+                'No G/L entries exported.');
+        Assert.RecordCount(TempXMLBuffer, 2);
+
+        // [THEN] The first one has "n1:Amount, "n1:CurrencyCode", "n1:CurrencyAmount" and "n1:ExchangeRate"
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 4);
+        VerifyCurrencyAmountInfo(
+            TempChildXMLBuffer, GenJournalLine[1]."Currency Code",
+            GenJournalLine[1].Amount, GenJournalLine[1]."Amount (LCY)", GenJournalLine[1]."Currency Factor");
+
+        // [THEN] The second have only "n1:Amount"
+        TempXMLBuffer.Next();
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(GenJournalLine[2]."Amount (LCY)"));
+
+        // [THEN] Two "n1:Transaction/n1:Line/n1:CreditAmount" nodes have been generated
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:CreditAmount'),
+                'No G/L entries exported.');
+        Assert.RecordCount(TempXMLBuffer, 1);
+
+        // [THEN] The third have only "n1:Amount"
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(GenJournalLine[1]."Amount (LCY)" + GenJournalLine[2]."Amount (LCY)"));
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T XML Tests");
@@ -1907,11 +1971,7 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxTableEntry');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxType', 'MVA');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Description', 'Merverdiavgift');
-#if CLEAN23
         NotApplicationVATCode := SAFTExportMgt.GetNotApplicableVATCode();
-#else
-        NotApplicationVATCode := SAFTExportMgt.GetNotApplicationVATCode();
-#endif
         // Verify first VAT Posting Setup with no standard tax codes
         VerifySingleVATPostingSetup(
             TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
@@ -1921,21 +1981,12 @@ codeunit 148103 "SAF-T XML Tests"
             VATPostingSetup."VAT %", NotApplicationVATCode, false, 100);
         VATPostingSetup.Next();
         repeat
-#if CLEAN23
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Sale VAT Reporting Code", false, 100);
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Purch. VAT Reporting Code", false, 100);
-#else
-            VerifySingleVATPostingSetup(
-                TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Sales SAF-T Standard Tax Code", false, 100);
-            VerifySingleVATPostingSetup(
-                TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Purch. SAF-T Standard Tax Code", false, 100);
-#endif
         until VATPostingSetup.Next() = 0;
     end;
 
@@ -2270,10 +2321,81 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:ExchangeRate', SAFTTestHelper.FormatAmount(ExchangeRate));
     end;
 
+    local procedure CreateAndPostPaymentJnl(
+        var GenJournalLine: array[3] of Record "Gen. Journal Line";
+        SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Vendor: Record Vendor;
+        LibraryJournals: Codeunit "Library - Journals";
+        PaymentJournal: TestPage "Payment Journal";
+    begin
+        CreatePaymentJournalBatch(GenJournalBatch);
+
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor."Currency Code" := GetDifferentCurrencyCode();
+        Vendor.Modify(true);
+
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine[1], GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine[1]."Document Type"::Payment,
+            GenJournalLine[1]."Account Type"::Vendor, Vendor."No.", GenJournalLine[1]."Bal. Account Type"::"G/L Account",
+            '', LibraryRandom.RandInt(100));
+        GenJournalLine[1].Validate("Posting Date", SAFTExportHeader."Ending Date");
+        GenJournalLine[1].Modify(true);
+
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine[2], GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine[2]."Document Type"::Payment,
+            GenJournalLine[2]."Account Type"::Vendor, LibraryPurchase.CreateVendorNo(), GenJournalLine[2]."Bal. Account Type"::"G/L Account",
+            '', LibraryRandom.RandInt(100));
+        GenJournalLine[2]."Document No." := GenJournalLine[1]."Document No.";
+        GenJournalLine[2].Validate("Posting Date", SAFTExportHeader."Ending Date");
+        GenJournalLine[2].Modify(true);
+
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine[3], GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine[3]."Document Type"::Payment,
+            GenJournalLine[3]."Account Type"::"G/L Account", LibraryERM.CreateGLAccountNo(), GenJournalLine[3]."Bal. Account Type"::"G/L Account",
+            '', -(GenJournalLine[1]."Amount (LCY)" + GenJournalLine[2]."Amount (LCY)"));
+        GenJournalLine[3]."Document No." := GenJournalLine[1]."Document No.";
+        GenJournalLine[3].Validate("Posting Date", SAFTExportHeader."Ending Date");
+        GenJournalLine[3].Modify(true);
+
+        PaymentJournal.OpenEdit();
+        PaymentJournal.Post.Invoke();
+    end;
+
+    local procedure CreatePaymentJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::Payments);
+        GenJournalTemplate.DeleteAll();
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::Payments);
+        GenJournalTemplate.Modify(true);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+    end;
+
+    local procedure GetDifferentCurrencyCode(): Code[10]
+    begin
+        exit(LibraryERM.CreateCurrencyWithRandomExchRates());
+    end;
+
+    [MessageHandler]
+    [Scope('OnPrem')]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
     [ConfirmHandler]
     procedure ConfirmYesHandler(Question: Text; var Reply: Boolean)
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Question);
+        Reply := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerYes(Question: Text; var Reply: Boolean)
+    begin
         Reply := true;
     end;
 }

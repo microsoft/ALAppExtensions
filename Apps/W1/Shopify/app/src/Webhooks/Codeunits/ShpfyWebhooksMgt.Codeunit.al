@@ -100,18 +100,19 @@ codeunit 30269 "Shpfy Webhooks Mgt."
             if WebhookSubscription."Company Name" = CompanyName() then begin // checks if this webhook is also enabled for another company
                 Company.FindSet();
                 repeat
-                    SearchShop.ChangeCompany(Company.Name);
-                    SearchShop.SetRange("Shopify URL", Shop."Shopify URL");
-                    if Company.Name = CompanyName() then
-                        SearchShop.SetFilter(Code, '<>%1', Shop.Code);
+                    if SearchShop.ChangeCompany(Company.Name) then begin
+                        SearchShop.SetRange("Shopify URL", Shop."Shopify URL");
+                        if Company.Name = CompanyName() then
+                            SearchShop.SetFilter(Code, '<>%1', Shop.Code);
 
-                    if SearchShop.FindSet() then
-                        repeat
-                            if SearchShop."Bulk Operation Webhook Id" <> '' then begin
-                                FoundCompany := Company.Name;
-                                break;
-                            end;
-                        until SearchShop.Next() = 0;
+                        if SearchShop.FindSet() then
+                            repeat
+                                if SearchShop."Bulk Operation Webhook Id" <> '' then begin
+                                    FoundCompany := Company.Name;
+                                    break;
+                                end;
+                            until SearchShop.Next() = 0;
+                    end;
 
                     if FoundCompany <> '' then
                         break;
@@ -154,18 +155,22 @@ codeunit 30269 "Shpfy Webhooks Mgt."
             if WebhookSubscription."Company Name" = CompanyName() then begin // checks if this webhook is also enabled for another company
                 Company.FindSet();
                 repeat
-                    SearchShop.ChangeCompany(Company.Name);
-                    SearchShop.SetRange("Shopify URL", Shop."Shopify URL");
-                    if Company.Name = CompanyName() then
-                        SearchShop.SetFilter(Code, '<>%1', Shop.Code);
+                    if SearchShop.ChangeCompany(Company.Name) then begin
+                        SearchShop.SetRange("Shopify URL", Shop."Shopify URL");
+                        if Company.Name = CompanyName() then
+                            SearchShop.SetFilter(Code, '<>%1', Shop.Code);
 
-                    if SearchShop.FindSet() then
-                        repeat
-                            if SearchShop."Order Created Webhook Id" <> '' then begin
-                                FoundCompany := Company.Name;
-                                break;
-                            end;
-                        until SearchShop.Next() = 0;
+                        if SearchShop.FindSet() then
+                            repeat
+                                if SearchShop."Order Created Webhook Id" <> '' then begin
+                                    FoundCompany := Company.Name;
+                                    break;
+                                end;
+                            until SearchShop.Next() = 0;
+                    end;
+
+                    if FoundCompany <> '' then
+                        break;
                 until Company.Next() = 0;
 
                 if FoundCompany = '' then begin

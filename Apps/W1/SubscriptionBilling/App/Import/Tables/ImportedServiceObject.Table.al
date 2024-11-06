@@ -3,6 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 using Microsoft.Sales.Customer;
 using Microsoft.CRM.Contact;
 using Microsoft.Inventory.Item;
+using System.Security.AccessControl;
 
 table 8008 "Imported Service Object"
 {
@@ -124,7 +125,10 @@ table 8008 "Imported Service Object"
         field(102; "Processed by"; Code[50])
         {
             Caption = 'Processed by';
+            DataClassification = EndUserIdentifiableInformation;
+            TableRelation = User."User Name";
             Editable = false;
+            ValidateTableRelation = false;
         }
         field(103; "Processed at"; DateTime)
         {

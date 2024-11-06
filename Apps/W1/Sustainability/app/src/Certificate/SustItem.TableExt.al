@@ -10,7 +10,7 @@ tableextension 6220 "Sust. Item" extends Item
         {
             DataClassification = CustomerContent;
             TableRelation = "Sustainability Certificate"."No." where(Type = const(Item));
-            Caption = 'Sust. Certificate No.';
+            Caption = 'Sustainability Certificate No.';
 
             trigger OnValidate()
             begin
@@ -20,7 +20,7 @@ tableextension 6220 "Sust. Item" extends Item
         field(6211; "Sust. Cert. Name"; Text[100])
         {
             DataClassification = CustomerContent;
-            Caption = 'Sust. Certificate Name';
+            Caption = 'Sustainability Certificate Name';
             Editable = false;
 
             trigger OnValidate()

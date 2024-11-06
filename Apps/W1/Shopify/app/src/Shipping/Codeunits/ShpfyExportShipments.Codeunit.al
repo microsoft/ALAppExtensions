@@ -17,6 +17,8 @@ codeunit 30190 "Shpfy Export Shipments"
     var
         ShopifyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShippingEvents: Codeunit "Shpfy Shipping Events";
+        NoCorrespondingFulfillmentLinesLbl: Label 'No corresponding fulfillment lines found.';
+        NoFulfillmentCreatedInShopifyLbl: Label 'Fulfillment was not created in Shopify.';
 
     /// <summary> 
     /// Create Shopify Fulfillment.
@@ -40,6 +42,7 @@ codeunit 30190 "Shpfy Export Shipments"
         ShopifyOrderHeader: Record "Shpfy Order Header";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         JFulfillment: JsonToken;
         JResponse: JsonToken;
         FulfillmentOrderRequest: Text;
@@ -53,10 +56,14 @@ codeunit 30190 "Shpfy Export Shipments"
                 JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillmentCreateV2.fulfillment');
                 if (JFulfillment.IsObject) then
                     SalesShipmentHeader."Shpfy Fulfillment Id" := OrderFulfillments.ImportFulfillment(SalesShipmentHeader."Shpfy Order Id", JFulfillment)
-                else
+                else begin
+                    SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFulfillmentCreatedInShopifyLbl, Shop);
                     SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
-            end else
+                end;
+            end else begin
+                SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoCorrespondingFulfillmentLinesLbl, Shop);
                 SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
+            end;
             SalesShipmentHeader.Modify(true);
         end;
     end;
