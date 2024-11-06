@@ -12,6 +12,8 @@ using Microsoft.Foundation.Shipping;
 using Microsoft.Integration.Graph;
 using Microsoft.Service.Document;
 using Microsoft.API.V2;
+using Microsoft.Integration.Entity;
+using Microsoft.Sales.Receivables;
 
 page 6618 "FS Posted Service Invoice API"
 {
@@ -249,6 +251,11 @@ page 6618 "FS Posted Service Invoice API"
                     Caption = 'Total Amount Including Tax';
                     Editable = false;
                 }
+                field(status; Status)
+                {
+                    Caption = 'Status';
+                    Editable = false;
+                }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
@@ -297,6 +304,7 @@ page 6618 "FS Posted Service Invoice API"
             Clear(PaymentTerms);
         if not ShipmentMethod.Get(Rec."Shipment Method Code") then
             Clear(ShipmentMethod);
+        CalculateStatus();
     end;
 
     var
@@ -308,4 +316,22 @@ page 6618 "FS Posted Service Invoice API"
         ShipmentMethod: Record "Shipment Method";
         CurrencyCode: Code[10];
         CachedCurrencyCode: Code[10];
+        Status: Enum "Invoice Entity Aggregate Status";
+
+    local procedure CalculateStatus()
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.SetCurrentKey("Document No.");
+        CustLedgerEntry.SetRange("Document No.", Rec."No.");
+        CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
+        CustLedgerEntry.SetRange("Posting Date", Rec."Posting Date");
+        CustLedgerEntry.SetRange(Open, true);
+
+        if CustLedgerEntry.IsEmpty() then
+            Status := Status::Paid
+        else
+            Status := Status::Open;
+    end;
+
 }

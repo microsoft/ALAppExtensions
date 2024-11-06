@@ -17,7 +17,6 @@ permissionset 6612 "FS - Objects"
                 codeunit "FS Upgrade" = X,
                 codeunit "FS Integration Mgt." = X,
                 codeunit "FS Int. Table Subscriber" = X,
-                codeunit "FS Integration Mgt." = X,
                 codeunit "FS Lookup FS Tables" = X,
                 codeunit "FS Setup Defaults" = X,
                 page "FS Bookable Resource List" = X,
