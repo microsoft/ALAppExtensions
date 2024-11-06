@@ -5,7 +5,7 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 table 30160 "Shpfy Sales Channel"
 {
-    Caption = 'Shpfy Sales Channel';
+    Caption = 'Shopify Sales Channel';
     DataClassification = CustomerContent;
 
     fields
