@@ -1,4 +1,4 @@
-codeunit 139576 "Shpfy Invoices API Subscriber"
+codeunit 139558 "Shpfy Invoices API Subscriber"
 {
     SingleInstance = true;
     EventSubscriberInstance = Manual;

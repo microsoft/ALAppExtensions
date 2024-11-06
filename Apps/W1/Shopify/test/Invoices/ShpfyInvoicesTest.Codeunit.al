@@ -443,7 +443,6 @@ codeunit 139695 "Shpfy Invoices Test"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
-        InvoiceHeader: Record "Shpfy Invoice Header";
         BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         InvoicesAPISubscriber: Codeunit "Shpfy Invoices API Subscriber";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
