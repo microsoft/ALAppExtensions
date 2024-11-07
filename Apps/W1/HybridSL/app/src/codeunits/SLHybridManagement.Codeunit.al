@@ -22,7 +22,7 @@ codeunit 42013 "SL Hybrid Management"
         CannotContinueUpgradeFailedMsg: Label 'Previous data upgrade has failed. You need to delete the failed companies and to migrate them again.';
         ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
         SLSettingUpgradePendingOnReplicationRunCompletedMsg: Label 'Setting upgrade pending on Replication Run Completed.', Locked = true;
-        SLCloudMigrationReplicationErrorsMsg: Label 'Errors occurred during GP Cloud Migration. Error message: %1.', Locked = true;
+        SLCloudMigrationReplicationErrorsMsg: Label 'Errors occurred during SL Cloud Migration. Error message: %1.', Locked = true;
         StartingHandleInitializationofSLSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofSLSynchronization', Locked = true;
         CannotUseDataMigrationOverviewMsg: Label 'It is not possible to use the Data Migration Overview page to fix the errors that occurred during SL Cloud Migration, it will not be possible to start the Data Upgrade again. Investigate the issue and after fixing the issue, delete the failed companies and migrate them again.';
         ProductIdLbl: Label 'DynamicsSL', Locked = true;

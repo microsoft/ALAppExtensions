@@ -8,6 +8,10 @@ namespace Microsoft.DataMigration.SL;
 using System.Integration;
 using Microsoft.DataMigration;
 using System.Threading;
+using Microsoft.Inventory.Item;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
 using System.Security.User;
 using System.Environment;
 using Microsoft.Finance.FinancialReports;
@@ -19,126 +23,50 @@ codeunit 42005 "SL Wizard Integration"
     var
         SLHelperFunctions: Codeunit "SL Helper Functions";
         DataMigratorDescTxt: Label 'Import from Dynamics SL Cloud';
-        ThatsItTxt: Label 'To check the status of the data migration, go to the %1 page.', Comment = '%1=Page Name';
+        SLSnapshotJobDescriptionTxt: Label 'Migrate SL Historical Snapshot';
+        TelemetrySnapshotFailedToStartSessionMsg: Label 'SL Historical Snapshot could not start a new Session.', Locked = true;
         TelemetrySnapshotScheduledMsg: Label 'SL Historical Snapshot is now scheduled. Mode: %1', Locked = true;
         TelemetrySnapshotToBeScheduledMsg: Label 'SL Historical Snapshot is about to be scheduled. Mode: %1', Locked = true;
-        TelemetrySnapshotFailedToStartSessionMsg: Label 'SL Historical Snapshot could not start a new Session.', Locked = true;
-        SLSnapshotJobDescriptionTxt: Label 'Migrate SL Historical Snapshot';
+        UnableToRegisterMigrationMsg: Label 'Unable to register the SL Cloud Migration.', Locked = true;
+        UnableToUnRegisterMigrationMsg: Label 'Unable to unregister the SL Cloud Migration.', Locked = true;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", OnShowThatsItMessage, '', true, true)]
-    local procedure OnShowThatsItMessageShowSLThatsItMessage(var DataMigratorRegistration: Record "Data Migrator Registration"; var Message: Text)
+    internal procedure RegisterSLDataMigrator(): Boolean
     var
-        DataMigrationOverview: Page "Data Migration Overview";
+        DataMigratorRegistration: Record "Data Migrator Registration";
     begin
-        if DataMigratorRegistration."No." <> GetCurrentCodeUnitNumber() then
-            exit;
-
-        Message := StrSubstNo(ThatsItTxt, DataMigrationOverview.Caption);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", OnEnableTogglingDataMigrationOverviewPage, '', true, true)]
-    local procedure OnEnableTogglingDataMigrationOverviewPage(var DataMigratorRegistration: Record "Data Migrator Registration"; var EnableTogglingOverviewPage: Boolean)
-    begin
-        if DataMigratorRegistration."No." <> GetCurrentCodeUnitNumber() then
-            exit;
-
-        EnableTogglingOverviewPage := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnAfterMigrationFinished, '', true, true)]
-    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
-    var
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-    begin
-        if not (DataMigrationStatus."Migration Type" = SLHelperFunctions.GetMigrationTypeTxt()) then
-            exit;
-        SLHelperFunctions.PostGLTransactions();
-        SLHelperFunctions.SetProcessesRunning(false);
-
-        if SLCompanyAdditionalSettings.GetMigrateHistory() then
-            ScheduleSLHistoricalSnapshotMigration();
-    end;
-
-    internal procedure ScheduleSLHistoricalSnapshotMigration()
-    var
-        SLConfiguration: Record "SL Migration Config";
-        SLUpgradeSettings: Record "SL Upgrade Settings";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        HybridSLManagement: Codeunit "SL Hybrid Management";
-        IsHandled: Boolean;
-        FailoverToSession: Boolean;
-        QueueCategory: Code[10];
-        TimeoutDuration: Duration;
-        OverrideTimeoutDuration: Duration;
-        MaxAttempts: Integer;
-        OverrideMaxAttempts: Integer;
-        SessionID: Integer;
-    begin
-        TimeoutDuration := HybridSLManagement.GetDefaultJobTimeout();
-        MaxAttempts := GetDefaultSLHistoricalMigrationJobMaxAttempts();
-        QueueCategory := HybridCloudManagement.GetJobQueueCategory();
-
-        OnBeforeCreateSLHistoricalMigrationJob(IsHandled, OverrideTimeoutDuration, OverrideMaxAttempts);
-        if IsHandled then begin
-            TimeoutDuration := OverrideTimeoutDuration;
-            MaxAttempts := OverrideMaxAttempts;
-        end;
-
-        FailoverToSession := not CanStartBackgroundJob();
-
-        if not FailoverToSession then begin
-            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Job Queue'), false, false);
-
-            CreateAndScheduleBackgroundJob(Codeunit::SLPopulateHistTables,
-                    TimeoutDuration,
-                    MaxAttempts,
-                    QueueCategory,
-                    SLSnapshotJobDescriptionTxt);
-
-            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Job Queue'), false, true);
-            if SLConfiguration.Get() then begin
-                SLConfiguration."Historical Job Ran" := true;
-                SLConfiguration.Modify();
+        DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
+        if not DataMigratorRegistration.FindSet() then
+            if not DataMigratorRegistration.RegisterDataMigrator(GetCurrentCodeUnitNumber(), CopyStr(DataMigratorDescTxt, 1, 250)) then begin
+                SLHelperFunctions.GetLastError();
+                Session.LogMessage('0000B68', UnableToRegisterMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SLHelperFunctions.GetTelemetryCategory());
+                SLHelperFunctions.SetProcessesRunning(false);
+                exit(false);
             end;
-        end;
-
-        if FailoverToSession then begin
-            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Session'), false, false);
-            if Session.StartSession(SessionID, Codeunit::SLPopulateHistTables, CompanyName(), SLUpgradeSettings, TimeoutDuration) then begin
-                SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Session'), false, true);
-                if SLConfiguration.Get() then begin
-                    SLConfiguration."Historical Job Ran" := true;
-                    SLConfiguration.Modify();
-                end;
-            end else begin
-                SendStartSnapshotResultMessage('', TelemetrySnapshotFailedToStartSessionMsg, true, true);
-                exit;
-            end;
-        end;
-    end;
-
-    internal procedure StartSLHistoricalJobMigrationAction(JobNotRanNotification: Notification)
-    begin
-        ScheduleSLHistoricalSnapshotMigration();
-    end;
-
-    internal procedure CanStartBackgroundJob(): Boolean
-    var
-        JobQueueEntry: Record "Job Queue Entry";
-        UserPermissions: Codeunit "User Permissions";
-    begin
-        if not UserPermissions.IsSuper(UserSecurityId()) then
-            exit(false);
-
-        if not TaskScheduler.CanCreateTask() then
-            exit(false);
-
-        if not JobQueueEntry.WritePermission then
-            exit(false);
 
         exit(true);
     end;
 
+    internal procedure UnRegisterSLDataMigrator()
+    var
+        DataMigratorRegistration: Record "Data Migrator Registration";
+    begin
+        DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
+        if not DataMigratorRegistration.FindSet() then
+            if not DataMigratorRegistration.Delete() then
+                Session.LogMessage('0000B69', UnableToUnRegisterMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SLHelperFunctions.GetTelemetryCategory());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnApplySelectedData', '', true, true)]
+    local procedure OnApplySelectedDataApplySLData(var DataMigratorRegistration: Record "Data Migrator Registration"; var DataMigrationEntity: Record "Data Migration Entity"; var Handled: Boolean)
+    begin
+        if DataMigratorRegistration."No." <> GetCurrentCodeUnitNumber() then
+            exit;
+
+        SendTelemetryForSelectedEntities(DataMigrationEntity);
+        Handled := true;
+    end;
+
+    // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnCreatePostMigrationData, '', true, true)]
     local procedure OnCreatePostMigrationDataSubscriber(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
     var
@@ -163,40 +91,139 @@ codeunit 42005 "SL Wizard Integration"
             end;
     end;
 
+    // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnAfterMigrationFinished, '', true, true)]
+    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLHybridWizard: Codeunit "SL Hybrid Wizard";
+    begin
+        if not SLHybridWizard.GetSLMigrationEnabled() then
+            exit;
+
+        SLHelperFunctions.PostGLTransactions();
+        SLHelperFunctions.SetProcessesRunning(false);
+
+        if SLCompanyAdditionalSettings.GetMigrateHistory() then
+            ScheduleSLHistoricalSnapshotMigration();
+    end;
+
+    internal procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")
+    var
+        EntitiesToMigrateMessage: Text;
+        VendorsTxt: Label 'Vendors: %1; ', Comment = '%1 - Number of vendors', Locked = true;
+        CustomersTxt: Label 'Customers: %1; ', Comment = '%1 - Number of customers', Locked = true;
+        GLAccountsTxt: Label 'GL Accounts: %1; ', Comment = '%1 - Number of GL Accounts', Locked = true;
+        ItemsTxt: Label 'Items: %1; ', Comment = '%1 - Number of items', Locked = true;
+    begin
+        DataMigrationEntity.SetRange(Selected, true);
+        DataMigrationEntity.SetRange("Table ID", Database::Vendor);
+        if DataMigrationEntity.FindFirst() then
+            EntitiesToMigrateMessage += StrSubstNo(VendorsTxt, DataMigrationEntity."No. of Records");
+
+        DataMigrationEntity.SetRange("Table ID", Database::Customer);
+        if DataMigrationEntity.FindFirst() then
+            EntitiesToMigrateMessage += StrSubstNo(CustomersTxt, DataMigrationEntity."No. of Records");
+
+        DataMigrationEntity.SetRange("Table ID", Database::"G/L Account");
+        if DataMigrationEntity.FindFirst() then
+            EntitiesToMigrateMessage += StrSubstNo(GLAccountsTxt, DataMigrationEntity."No. of Records");
+
+        DataMigrationEntity.SetRange("Table ID", Database::Item);
+        if DataMigrationEntity.FindFirst() then
+            EntitiesToMigrateMessage += StrSubstNo(ItemsTxt, DataMigrationEntity."No. of Records");
+
+        Session.LogMessage('00001OA', EntitiesToMigrateMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SLHelperFunctions.GetTelemetryCategory());
+    end;
+
+    internal procedure GetCurrentCodeUnitNumber(): Integer
+    begin
+        exit(Codeunit::"SL Wizard Integration");
+    end;
+
     internal procedure GetDefaultSLHistoricalMigrationJobMaxAttempts(): Integer
     begin
         exit(10);
     end;
 
-    internal procedure RegisterSLDataMigrator(): Boolean
-    var
-        DataMigratorRegistration: Record "Data Migrator Registration";
-        EnvironmentInformation: Codeunit "Environment Information";
+    internal procedure StartSLHistoricalJobMigrationAction(JobNotRanNotification: Notification)
     begin
-        if not EnvironmentInformation.IsSaaS() then
-            exit;
+        ScheduleSLHistoricalSnapshotMigration();
+    end;
 
-        DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
-        if not DataMigratorRegistration.FindSet() then
-            if not DataMigratorRegistration.RegisterDataMigrator(GetCurrentCodeUnitNumber(), CopyStr(DataMigratorDescTxt, 1, 250)) then begin
-                SLHelperFunctions.SetProcessesRunning(false);
-                exit(false);
-            end;
+    internal procedure CanStartBackgroundJob(): Boolean
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        UserPermissions: Codeunit "User Permissions";
+    begin
+        if not UserPermissions.IsSuper(UserSecurityId()) then
+            exit(false);
+
+        if not TaskScheduler.CanCreateTask() then
+            exit(false);
+
+        if not JobQueueEntry.WritePermission then
+            exit(false);
 
         exit(true);
     end;
 
-    internal procedure UnRegisterSLDataMigrator()
+    internal procedure ScheduleSLHistoricalSnapshotMigration()
     var
-        DataMigratorRegistration: Record "Data Migrator Registration";
-        EnvironmentInformation: Codeunit "Environment Information";
+        SLConfiguration: Record "SL Migration Config";
+        SLUpgradeSettings: Record "SL Upgrade Settings";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        HybridSLManagement: Codeunit "SL Hybrid Management";
+        FailoverToSession: Boolean;
+        IsHandled: Boolean;
+        QueueCategory: Code[10];
+        TimeoutDuration: Duration;
+        OverrideTimeoutDuration: Duration;
+        MaxAttempts: Integer;
+        OverrideMaxAttempts: Integer;
+        SessionID: Integer;
     begin
-        if not EnvironmentInformation.IsSaaS() then
-            exit;
+        TimeoutDuration := HybridSLManagement.GetDefaultJobTimeout();
+        MaxAttempts := GetDefaultSLHistoricalMigrationJobMaxAttempts();
+        QueueCategory := HybridCloudManagement.GetJobQueueCategory();
 
-        DataMigratorRegistration.SetFilter("No.", '= %1', GetCurrentCodeUnitNumber());
-        if DataMigratorRegistration.FindSet() then
-            DataMigratorRegistration.Delete();
+        OnBeforeCreateSLHistoricalMigrationJob(IsHandled, OverrideTimeoutDuration, OverrideMaxAttempts);
+        if IsHandled then begin
+            TimeoutDuration := OverrideTimeoutDuration;
+            MaxAttempts := OverrideMaxAttempts;
+        end;
+
+        FailoverToSession := not CanStartBackgroundJob();
+
+        if not FailoverToSession then begin
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Job Queue'), false, false);
+
+            CreateAndScheduleBackgroundJob(Codeunit::"SL Populate Hist. Tables",
+                    TimeoutDuration,
+                    MaxAttempts,
+                    QueueCategory,
+                    SLSnapshotJobDescriptionTxt);
+
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Job Queue'), false, true);
+            if SLConfiguration.Get() then begin
+                SLConfiguration."Historical Job Ran" := true;
+                SLConfiguration.Modify();
+            end;
+        end;
+
+        if FailoverToSession then begin
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Session'), false, false);
+            if Session.StartSession(SessionID, Codeunit::"SL Populate Hist. Tables", CompanyName(), SLUpgradeSettings, TimeoutDuration) then begin
+                SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Session'), false, true);
+                if SLConfiguration.Get() then begin
+                    SLConfiguration."Historical Job Ran" := true;
+                    SLConfiguration.Modify();
+                end;
+            end else begin
+                SendStartSnapshotResultMessage('', TelemetrySnapshotFailedToStartSessionMsg, true, true);
+                exit;
+            end;
+        end;
     end;
 
     internal procedure SendStartSnapshotResultMessage(TelemetryEventId: Text; MessageText: Text; IsError: Boolean; ShouldShowMessage: Boolean)
@@ -210,9 +237,9 @@ codeunit 42005 "SL Wizard Integration"
             Message(MessageText);
     end;
 
-    internal procedure GetCurrentCodeUnitNumber(): Integer
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeCreateSLHistoricalMigrationJob(var IsHandled: Boolean; var TimeoutDuration: Duration; var MaxAttempts: Integer)
     begin
-        exit(Codeunit::"SL Wizard Integration");
     end;
 
     internal procedure CreateAndScheduleBackgroundJob(ObjectIdToRun: Integer; TimeoutDuration: Duration; MaxAttempts: Integer; CategoryCode: Code[10]; Description: Text[250]): Guid
@@ -236,10 +263,5 @@ codeunit 42005 "SL Wizard Integration"
         JobQueueEntryBuffer.Insert();
 
         exit(JobQueueEntryBuffer.SystemId);
-    end;
-
-    [IntegrationEvent(false, false)]
-    internal procedure OnBeforeCreateSLHistoricalMigrationJob(var IsHandled: Boolean; var TimeoutDuration: Duration; var MaxAttempts: Integer)
-    begin
     end;
 }
