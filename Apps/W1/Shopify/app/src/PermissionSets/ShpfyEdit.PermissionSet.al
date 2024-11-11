@@ -63,6 +63,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Shop Collection Map" = IMD,
         tabledata "Shpfy Shop Inventory" = IMD,
         tabledata "Shpfy Shop Location" = IMD,
+        tabledata "Shpfy Skipped Record" = IMD,
         tabledata "Shpfy Synchronization Info" = IMD,
         tabledata "Shpfy Tag" = IMD,
         tabledata "Shpfy Tax Area" = IMD,

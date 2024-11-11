@@ -6,7 +6,7 @@ pageextension 8056 "Vendor Card" extends "Vendor Card"
 {
     actions
     {
-        addafter(NewPurchaseCrMemo)
+        addlast(creation)
         {
             action(NewContract)
             {

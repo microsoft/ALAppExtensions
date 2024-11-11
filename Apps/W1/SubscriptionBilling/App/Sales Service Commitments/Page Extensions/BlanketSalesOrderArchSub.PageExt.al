@@ -18,7 +18,7 @@ pageextension 8010 "Blanket Sales Order Arch. Sub." extends "Blanket Sales Order
 
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitmentArchive)
             {

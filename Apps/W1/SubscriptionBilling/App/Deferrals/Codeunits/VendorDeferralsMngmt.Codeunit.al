@@ -271,13 +271,13 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnAfterPurchCrMemoHeaderInsert, '', false, false)]
-    local procedure InsertVendorDeferralsFromPurchaseCrMemo(var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PurchHeader: Record "Purchase Header")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnAfterPurchCrMemoLineInsert, '', false, false)]
+    local procedure InsertVendorDeferralsFromPurchaseCrMemo(var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; var PurchaseHeader: Record "Purchase Header")
     begin
-        ReleaseVendorContractDeferrals(PurchHeader, PurchCrMemoHdr);
+        ReleaseAndCreditVendorContractDeferrals(PurchaseHeader, PurchCrMemoLine);
     end;
 
-    local procedure ReleaseVendorContractDeferrals(PurchHeader: Record "Purchase Header"; PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
+    local procedure ReleaseAndCreditVendorContractDeferrals(PurchaseHeader: Record "Purchase Header"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line")
     var
         InvoiceVendorContractDeferral: Record "Vendor Contract Deferral";
         CreditMemoVendorContractDeferral: Record "Vendor Contract Deferral";
@@ -286,19 +286,21 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         PurchaseDocuments: Codeunit "Purchase Documents";
         AppliesToDocNo: Code[20];
     begin
-        AppliesToDocNo := GetAppliesToDocNo(PurchHeader);
+        AppliesToDocNo := GetAppliesToDocNo(PurchaseHeader);
         if PurchaseDocuments.IsInvoiceCredited(AppliesToDocNo) then
             exit;
         InvoiceVendorContractDeferral.FilterOnDocumentTypeAndDocumentNo(Enum::"Rec. Billing Document Type"::Invoice, AppliesToDocNo);
+        InvoiceVendorContractDeferral.SetRange("Contract No.", PurchCrMemoLine."Contract No.");
+        InvoiceVendorContractDeferral.SetRange("Contract Line No.", PurchCrMemoLine."Contract Line No.");
         if InvoiceVendorContractDeferral.FindSet() then begin
             ContractDeferralRelease.GetAndTestSourceCode();
             ContractDeferralRelease.SetAllowGUI(false);
             repeat
                 CreditMemoVendorContractDeferral := InvoiceVendorContractDeferral;
                 CreditMemoVendorContractDeferral."Document Type" := Enum::"Rec. Billing Document Type"::"Credit Memo";
-                CreditMemoVendorContractDeferral."Document No." := PurchCrMemoHdr."No.";
+                CreditMemoVendorContractDeferral."Document No." := PurchCrMemoLine."Document No.";
                 CreditMemoVendorContractDeferral."Posting Date" := InvoiceVendorContractDeferral."Posting Date";
-                CreditMemoVendorContractDeferral."Document Posting Date" := PurchCrMemoHdr."Posting Date";
+                CreditMemoVendorContractDeferral."Document Posting Date" := PurchCrMemoLine."Posting Date";
                 CreditMemoVendorContractDeferral."Deferral Base Amount" := InvoiceVendorContractDeferral."Deferral Base Amount" * -1;
                 CreditMemoVendorContractDeferral.Amount := InvoiceVendorContractDeferral.Amount * -1;
                 CreditMemoVendorContractDeferral."Discount Amount" := InvoiceVendorContractDeferral."Discount Amount" * -1;
@@ -310,11 +312,11 @@ codeunit 8068 "Vendor Deferrals Mngmt."
 
                 PurchInvLine.Get(InvoiceVendorContractDeferral."Document No.", InvoiceVendorContractDeferral."Document Line No.");
                 if not InvoiceVendorContractDeferral.Released then begin
-                    ContractDeferralRelease.SetRequestPageParameters(InvoiceVendorContractDeferral."Posting Date", PurchCrMemoHdr."Posting Date");
+                    ContractDeferralRelease.SetRequestPageParameters(InvoiceVendorContractDeferral."Posting Date", PurchCrMemoLine."Posting Date");
                     ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(InvoiceVendorContractDeferral, PurchInvLine."Gen. Bus. Posting Group", PurchInvLine."Gen. Prod. Posting Group");
                     ContractDeferralRelease.PostTempGenJnlLineBufferForVendorDeferrals();
                 end;
-                ContractDeferralRelease.SetRequestPageParameters(CreditMemoVendorContractDeferral."Posting Date", PurchCrMemoHdr."Posting Date");
+                ContractDeferralRelease.SetRequestPageParameters(CreditMemoVendorContractDeferral."Posting Date", PurchCrMemoLine."Posting Date");
                 ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(CreditMemoVendorContractDeferral, PurchInvLine."Gen. Bus. Posting Group", PurchInvLine."Gen. Prod. Posting Group");
                 ContractDeferralRelease.PostTempGenJnlLineBufferForVendorDeferrals();
 

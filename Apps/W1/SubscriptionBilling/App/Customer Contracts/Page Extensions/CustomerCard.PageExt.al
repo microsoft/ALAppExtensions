@@ -6,7 +6,7 @@ pageextension 8051 "Customer Card" extends "Customer Card"
 {
     actions
     {
-        addafter(NewSalesCreditMemo)
+        addlast(creation)
         {
             action(NewContract)
             {
