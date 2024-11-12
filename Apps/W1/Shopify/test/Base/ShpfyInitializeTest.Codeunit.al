@@ -25,7 +25,6 @@ codeunit 139561 "Shpfy Initialize Test"
 
     internal procedure CreateShop(): Record "Shpfy Shop"
     var
-        GLAccount: Record "G/L Account";
         RefundGLAccount: Record "G/L Account";
         Shop: Record "Shpfy Shop";
         VATPostingSetup: Record "VAT Posting Setup";
@@ -43,8 +42,6 @@ codeunit 139561 "Shpfy Initialize Test"
                 exit(Shop);
 
         Code := Any.AlphabeticText(MaxStrLen(Code));
-        GLAccount.SetRange("Direct Posting", true);
-        GLAccount.FindLast();
 
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup,
            VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
@@ -65,7 +62,7 @@ codeunit 139561 "Shpfy Initialize Test"
         CreateVATPostingSetup(PostingGroupCode, PostingGroupCode);
         CreateVATPostingSetup(PostingGroupCode, '');
         CreateVATPostingSetup(PostingGroupCode, RefundGLAccount."VAT Prod. Posting Group");
-        Shop."Shipping Charges Account" := GLAccount."No.";
+        Shop."Shipping Charges Account" := CreateShippingChargesGLAcc(VATPostingSetup, GenPostingType);
         Shop."Customer Posting Group" := PostingGroupCode;
         Shop."Gen. Bus. Posting Group" := PostingGroupCode;
         Shop."VAT Bus. Posting Group" := PostingGroupCode;
@@ -374,6 +371,16 @@ codeunit 139561 "Shpfy Initialize Test"
             GeneralPostingSetup."Gen. Prod. Posting Group" := ProductPostingGroup;
             GeneralPostingSetup.Insert();
         end;
+    end;
+
+    local procedure CreateShippingChargesGLAcc(var VATPostingSetup: Record "VAT Posting Setup"; GenPostingType: Enum "General Posting Type"): Code[20]
+    var
+        ShippingChargesGLAccount: Record "G/L Account";
+    begin
+        ShippingChargesGLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GenPostingType::Sale));
+        ShippingChargesGLAccount."Direct Posting" := true;
+        ShippingChargesGLAccount.Modify(false);
+        exit(ShippingChargesGLAccount."No.");
     end;
 
 }
