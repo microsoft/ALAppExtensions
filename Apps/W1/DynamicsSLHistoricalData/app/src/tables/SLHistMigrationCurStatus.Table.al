@@ -1,7 +1,5 @@
 namespace Microsoft.DataMigration.SL.HistoricalData;
 
-using Microsoft.DataMigration.SL.HistoricalData;
-
 table 42821 "SL Hist. Migration Cur. Status"
 {
     DataClassification = SystemMetadata;
