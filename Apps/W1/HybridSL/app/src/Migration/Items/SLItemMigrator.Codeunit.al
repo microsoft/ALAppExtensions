@@ -91,7 +91,7 @@ codeunit 42026 "SL Item Migrator"
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLInventory.RecordId));
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.StkUnit, SLInventory.StkUnit);
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.DfltPOUnit, SLInventory.DfltPOUnit);
-        ItemDataMigrationFacade.SetUnitListPrice(SLInventory.StkBasePrc);
+        ItemDataMigrationFacade.SetUnitPrice(SLInventory.StkBasePrc);
         if SLInventory.ValMthd <> 'T' then
             ItemDataMigrationFacade.SetUnitCost(SLInventory.LastCost)
         else
