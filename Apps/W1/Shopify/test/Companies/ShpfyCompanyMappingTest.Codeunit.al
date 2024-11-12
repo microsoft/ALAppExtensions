@@ -524,9 +524,9 @@ codeunit 139627 "Shpfy Company Mapping Test"
         Customer.Modify(false);
     end;
 
-    local procedure SetCompTaxIdMapping(ShpfyCompTaxIdMapping: Enum Microsoft.Integration.Shopify."Shpfy Comp. Tax Id Mapping")
+    local procedure SetCompTaxIdMapping(ShopifyCompTaxIdMapping: Enum Microsoft.Integration.Shopify."Shpfy Comp. Tax Id Mapping")
     begin
-        Shop."Shpfy Comp. Tax Id Mapping" := ShpfyCompTaxIdMapping;
+        Shop."Shpfy Comp. Tax Id Mapping" := ShopifyCompTaxIdMapping;
         Shop.Modify(false);
     end;
 

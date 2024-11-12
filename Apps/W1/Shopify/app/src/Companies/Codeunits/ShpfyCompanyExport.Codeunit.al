@@ -88,7 +88,7 @@ codeunit 30284 "Shpfy Company Export"
         TaxArea: Record "Shpfy Tax Area";
         TempShopifyCompany: Record "Shpfy Company" temporary;
         TempCompanyLocation: Record "Shpfy Company Location" temporary;
-        ShpfyTaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
+        TaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
         CountyCodeTooLongErr: Text;
         ShpfyPaymentTermsId: BigInteger;
     begin
@@ -145,10 +145,10 @@ codeunit 30284 "Shpfy Company Export"
 
         CompanyLocation."Phone No." := Customer."Phone No.";
 
-        ShpfyTaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
-        CompanyLocation."Tax Registration Id" := ShpfyTaxRegistrationIdMapping.GetTaxRegistrationId(Customer);
+        TaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
+        CompanyLocation."Tax Registration Id" := TaxRegistrationIdMapping.GetTaxRegistrationId(Customer);
 
-        if GetShpfyPaymentTermsIdFromCustomer(Customer, ShpfyPaymentTermsId) then
+        if GetShopifyPaymentTermsIdFromCustomer(Customer, ShpfyPaymentTermsId) then
             CompanyLocation."Shpfy Payment Terms Id" := ShpfyPaymentTermsId;
 
         if HasDiff(ShopifyCompany, TempShopifyCompany) or HasDiff(CompanyLocation, TempCompanyLocation) then begin
@@ -209,14 +209,14 @@ codeunit 30284 "Shpfy Company Export"
         CreateCustomers := NewCustomers;
     end;
 
-    local procedure GetShpfyPaymentTermsIdFromCustomer(Customer: Record Customer; var ShpfyPaymentTermsId: BigInteger): Boolean
+    local procedure GetShopifyPaymentTermsIdFromCustomer(Customer: Record Customer; var ShpfyPaymentTermsId: BigInteger): Boolean
     var
-        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+        ShopifyPaymentTerms: Record "Shpfy Payment Terms";
     begin
-        ShpfyPaymentTerms.SetRange("Shop Code", Shop.Code);
-        ShpfyPaymentTerms.SetRange("Payment Terms Code", Customer."Payment Terms Code");
-        if ShpfyPaymentTerms.FindFirst() then begin
-            ShpfyPaymentTermsId := ShpfyPaymentTerms.Id;
+        ShopifyPaymentTerms.SetRange("Shop Code", Shop.Code);
+        ShopifyPaymentTerms.SetRange("Payment Terms Code", Customer."Payment Terms Code");
+        if ShopifyPaymentTerms.FindFirst() then begin
+            ShpfyPaymentTermsId := ShopifyPaymentTerms.Id;
             exit(true);
         end;
     end;

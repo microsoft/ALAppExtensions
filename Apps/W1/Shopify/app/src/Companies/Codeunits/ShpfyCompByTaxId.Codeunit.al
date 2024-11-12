@@ -51,16 +51,16 @@ codeunit 30366 "Shpfy Comp. By Tax Id" implements "Shpfy ICompany Mapping", "Shp
     local procedure CreateCompany(CompanyId: BigInteger; ShopCode: Code[20]; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20]
     var
         ShopifyCompany: Record "Shpfy Company";
-        TempCompany: Record "Shpfy Company" temporary;
+        TempShopifyCompany: Record "Shpfy Company" temporary;
         CompanyImport: Codeunit "Shpfy Company Import";
     begin
         CompanyImport.SetShop(ShopCode);
         CompanyImport.SetAllowCreate(AllowCreate);
         CompanyImport.SetTemplateCode(TemplateCode);
-        TempCompany.Id := CompanyId;
-        TempCompany.Insert(false);
+        TempShopifyCompany.Id := CompanyId;
+        TempShopifyCompany.Insert(false);
 
-        CompanyImport.Run(TempCompany);
+        CompanyImport.Run(TempShopifyCompany);
         CompanyImport.GetCompany(ShopifyCompany);
         if ShopifyCompany.Find() then
             ShopifyCompany.CalcFields("Customer No.");
@@ -73,12 +73,12 @@ codeunit 30366 "Shpfy Comp. By Tax Id" implements "Shpfy ICompany Mapping", "Shp
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";
         Shop: Record "Shpfy Shop";
-        ShpfyTaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
+        TaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
     begin
         Clear(Customer);
         Shop.Get(ShopifyCompany."Shop Code");
-        ShpfyTaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
-        ShpfyTaxRegistrationIdMapping.SetMappingFiltersForCustomers(Customer, CompanyLocation);
+        TaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
+        TaxRegistrationIdMapping.SetMappingFiltersForCustomers(Customer, CompanyLocation);
         if Customer.FindFirst() then begin
             ShopifyCompany."Customer SystemId" := Customer.SystemId;
 

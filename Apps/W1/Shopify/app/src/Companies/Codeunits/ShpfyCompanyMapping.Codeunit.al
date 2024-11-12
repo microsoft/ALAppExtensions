@@ -20,14 +20,14 @@ codeunit 30303 "Shpfy Company Mapping"
 
     internal procedure FindMapping(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean;
     var
-        ShpfyCompByEmailPhone: Codeunit "Shpfy Comp. By Email/Phone";
+        CompByEmailPhone: Codeunit "Shpfy Comp. By Email/Phone";
         IMapping: Interface "Shpfy ICompany Mapping";
     begin
         IMapping := Shop."Company Mapping Type";
         if IMapping is "Shpfy IFind Company Mapping" then
             exit((IMapping as "Shpfy IFind Company Mapping").FindMapping(ShopifyCompany, TempShopifyCustomer))
         else
-            ShpfyCompByEmailPhone.FindMapping(ShopifyCompany, TempShopifyCustomer);
+            CompByEmailPhone.FindMapping(ShopifyCompany, TempShopifyCustomer);
     end;
 
     internal procedure SetShop(Code: Code[20])

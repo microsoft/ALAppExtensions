@@ -93,7 +93,7 @@ table 30151 "Shpfy Company Location"
         }
         field(14; "Shpfy Payment Terms Id"; BigInteger)
         {
-            Caption = 'Shpfy Payment Terms Id';
+            Caption = 'Shopify Payment Terms Id';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the Shopify Payment Terms Id which is mapped with Customer''s Payment Terms.';
         }
