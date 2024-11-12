@@ -5,6 +5,5 @@
         "..\\..\\..\\Apps\\W1\\*\\test library",
         "..\\..\\..\\Apps\\W1\\*\\*\\test",
         "..\\..\\..\\Apps\\W1\\*\\*\\test library"
-    ],
-    "doNotRunTests": true
+    ]
 }
