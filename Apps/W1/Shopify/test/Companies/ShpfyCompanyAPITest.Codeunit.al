@@ -250,7 +250,6 @@ codeunit 139637 "Shpfy Company API Test"
         LibraryAssert.IsTrue(GraphQL.Contains(CompanyInitialize.ExternalIdGQLNode(Customer)), 'externalId missing in query.');
     end;
 
-
     local procedure Initialize()
     begin
         Any.SetDefaultSeed();
