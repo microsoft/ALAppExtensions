@@ -69,8 +69,11 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         CannotGetScopeFromKeyVaultErr: Label 'Cannot get Scope from Azure Key Vault using key %1', Locked = true;
         CannotGetEndpointTextFromKeyVaultErr: Label 'Cannot get Endpoint from Azure Key Vault using key %1 ', Locked = true;
         GetPublicIPAddressRequestFailedErr: Label 'Getting server public IP address from Azure Function failed.', Locked = true;
-        EmptyPublicIPAddressErr: Label 'Azure Function returned empty server public IP address.', Locked = true;
-        NonEmptyPublicIPAddressTxt: Label 'Non-empty server public IP address was returned by Azure Function', Locked = true;
+        EmptyPublicIPAddressAzFuncErr: Label 'Azure Function returned empty server public IP address.', Locked = true;
+        NonEmptyPublicIPAddressAzFuncTxt: Label 'Non-empty server public IP address was returned by Azure Function', Locked = true;
+        EmptyPublicIPAddressErr: Label 'Tenant settings returned empty server public IP address.', Locked = true;
+        NonEmptyPublicIPAddressTxt: Label 'Non-empty server public IP address was returned by tenant settings', Locked = true;
+        IPAddressNotMatchPatternErr: Label 'IP address from tenant settings does not match validation pattern %1. ', Locked = true;
         IPv4LoopbackIPAddressTxt: Label '127.0.0.1', Locked = true;
         IPv6LoopbackIPAddressTxt: Label '::1', Locked = true;
 
@@ -507,9 +510,9 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
         AzureFunctionsResponse.GetResultAsText(ServerIPAddress);
         if ServerIPAddress = '' then
-            FeatureTelemetry.LogError('0000NRP', HMRCFraudPreventHeadersTok, '', EmptyPublicIPAddressErr)
+            FeatureTelemetry.LogError('0000NRP', HMRCFraudPreventHeadersTok, '', EmptyPublicIPAddressAzFuncErr)
         else
-            FeatureTelemetry.LogUsage('0000NRW', HMRCFraudPreventHeadersTok, NonEmptyPublicIPAddressTxt);
+            FeatureTelemetry.LogUsage('0000NRW', HMRCFraudPreventHeadersTok, NonEmptyPublicIPAddressAzFuncTxt);
     end;
 
     [NonDebuggable]
@@ -549,6 +552,34 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             FeatureTelemetry.LogError('0000NRV', HMRCFraudPreventHeadersTok, '', StrSubstNo(CannotGetEndpointTextFromKeyVaultErr, AzFuncEndpointTextKeyTok));
             exit;
         end;
+    end;
+
+    [TryFunction]
+    internal procedure GetServerPublicIPFromTenantSettings(var ServerIPAddress: Text)
+    var
+        TenantSettings: DotNet NavTenantSettingsHelper;
+        RegEx: DotNet Regex;
+        IPAddressRegExPattern: Text;
+    begin
+        if not EnvironmentInformation.IsSaaS() then
+            exit;
+
+        ServerIPAddress := TenantSettings.GetPublicIpAddress();
+
+        if ServerIPAddress = '' then begin
+            FeatureTelemetry.LogError('0000O1D', HMRCFraudPreventHeadersTok, '', EmptyPublicIPAddressErr);
+            exit;
+        end;
+
+        IPAddressRegExPattern := '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})';   // IPv4 or IPv6
+        RegEx := RegEx.Regex(IPAddressRegExPattern);
+        if not RegEx.IsMatch(ServerIPAddress) then begin
+            FeatureTelemetry.LogError('0000O1E', HMRCFraudPreventHeadersTok, '', StrSubstNo(IPAddressNotMatchPatternErr, IPAddressRegExPattern));
+            ServerIPAddress := '';
+            exit;
+        end;
+
+        FeatureTelemetry.LogUsage('0000O1F', HMRCFraudPreventHeadersTok, NonEmptyPublicIPAddressTxt);
     end;
 
     local procedure CheckJsonTokenValidity(var JsonObject: JsonObject; TokenKey: Text; ValidationRegExPattern: Text) ErrorText: Text

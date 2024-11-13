@@ -21,6 +21,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
 {
     Subtype = Test;
     Access = Internal;
+    TestPermissions = Disabled;
 
     var
         Assert: Codeunit Assert;

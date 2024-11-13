@@ -175,14 +175,10 @@ codeunit 1956 "LPP Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        with JobQueueEntry do begin
-            SetRange("Object Type to Run", "Object Type to Run"::Codeunit);
-            SetRange("Object ID to Run", Codeunit::"LPP Update");
-            SetRange(Status, Status::"In Process");
-            if FindFirst() then
-                exit(true);
-            exit(false);
-        end;
+        JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"LPP Update");
+        JobQueueEntry.SetRange(Status, JobQueueEntry.Status::"In Process");
+        exit(not JobQueueEntry.IsEmpty());
     end;
 
 }

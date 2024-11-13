@@ -34,7 +34,7 @@ query 1850 "Sales Forecast Query"
                 {
                     DataItemLink = "Item No." = Item."No.";
                     SqlJoinType = InnerJoin;
-                    DataItemTableFilter = "Forecast Data" = Const(Result);
+                    DataItemTableFilter = "Forecast Data" = const(Result);
                     filter(Date; Date)
                     {
                     }

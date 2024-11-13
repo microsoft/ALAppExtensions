@@ -45,7 +45,6 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ClientWindowTxt: Label 'width=%1&height=%2', Locked = true;
         HMRCFraudPreventHeadersTok: label 'HMRC Fraud Prevention Headers', Locked = true;
         NoFPHeadersFromJSErr: Label 'No FP headers were returned from JS.', Locked = true;
-        GetPublicIPAddressRequestFailedErr: Label 'Getting server public IP address from public service failed.', Locked = true;
 
     internal procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
     var
@@ -89,7 +88,7 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         Commit();
         MTDWebClientFPHeaders.RunModal();
 
-        if GetVendorIP(vendorIP, VATReportSetup."MTD FP Public IP Service URL") then;
+        if GetVendorIP(vendorIP) then;
         MTDSessionFraudPrevHdr.SafeInsert('Gov-Vendor-Public-IP', vendorIP);
 
         if MTDSessionFraudPrevHdr.Get('Gov-Client-Public-IP') then
@@ -221,48 +220,21 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
     end;
 
     [TryFunction]
-    internal procedure GetVendorIP(var Result: Text; url: Text)
-    var
-        Matches: Record Matches;
-        Regex: Codeunit Regex;
-        HttpClient: HttpClient;
-        HttpResponseMessage: HttpResponseMessage;
-        CustomDimensions: Dictionary of [Text, Text];
-        Content: Text;
-        RegExString: Text;
+    internal procedure GetVendorIP(var Result: Text)
     begin
         Result := '';
-        if MTDOAuth20Mgt.GetServerPublicIPFromAzureFunction(Result) then
+        if MTDOAuth20Mgt.GetServerPublicIPFromTenantSettings(Result) then
             if Result <> '' then
                 exit;
 
-        HttpClient.Get(url, HttpResponseMessage);
-        if not HttpResponseMessage.IsSuccessStatusCode() then begin
-            CustomDimensions.Add('url', url);
-            CustomDimensions.Add('HttpStatusCode', Format(HttpResponseMessage.HttpStatusCode()));
-            CustomDimensions.Add('ReasonPhrase', HttpResponseMessage.ReasonPhrase);
-            CustomDimensions.Add('IsBlockedByEnvironment', Format(HttpResponseMessage.IsBlockedByEnvironment()));
-            FeatureTelemetry.LogError('0000NRN', HMRCFraudPreventHeadersTok, '', GetPublicIPAddressRequestFailedErr, '', CustomDimensions);
-        end;
-        HttpResponseMessage.Content().ReadAs(Content);
-        RegExString := '([0-9]{1,3}(\.[0-9]{1,3}){3})|(([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4}))';
-        Regex.Match(Content, RegExString, 0, Matches);
-        if Matches.FindFirst() then
-            Result := Matches.ReadValue();
+        if MTDOAuth20Mgt.GetServerPublicIPFromAzureFunction(Result) then;
     end;
 
     internal procedure TestPublicIPServiceURL(url: Text)
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         MTDWebClientFPHeaders: Page "MTD Web Client FP Headers";
-        Result: Text;
     begin
-        if not GetVendorIP(Result, url) then
-            Error(IPAddressErr);
-
-        if Result = '' then
-            Error(IPAddressErr);
-
         MTDSessionFraudPrevHdr.DeleteAll();
         MTDWebClientFPHeaders.SetPublicIPServiceURL(url);
         Commit();

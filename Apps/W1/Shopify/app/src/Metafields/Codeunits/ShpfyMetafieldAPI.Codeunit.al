@@ -156,7 +156,7 @@ codeunit 30316 "Shpfy Metafield API"
         MetafieldIds: List of [BigInteger];
         MetafieldId: BigInteger;
     begin
-        CollectMetafieldIds(OwnerId, MetafieldIds);
+        CollectMetafieldIds(ParentTableNo, OwnerId, MetafieldIds);
 
         foreach JItem in JMetafields do begin
             JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node');
@@ -211,12 +211,12 @@ codeunit 30316 "Shpfy Metafield API"
         exit(true);
     end;
 
-    local procedure CollectMetafieldIds(ProductId: BigInteger; MetafieldIds: List of [BigInteger])
+    local procedure CollectMetafieldIds(ParentTableId: Integer; OwnerId: BigInteger; MetafieldIds: List of [BigInteger])
     var
         Metafield: Record "Shpfy Metafield";
     begin
-        MetaField.SetRange("Parent Table No.", Database::"Shpfy Product");
-        Metafield.SetRange("Owner Id", ProductId);
+        MetaField.SetRange("Parent Table No.", ParentTableId);
+        Metafield.SetRange("Owner Id", OwnerId);
         if Metafield.FindSet() then
             repeat
                 MetafieldIds.Add(Metafield.Id);

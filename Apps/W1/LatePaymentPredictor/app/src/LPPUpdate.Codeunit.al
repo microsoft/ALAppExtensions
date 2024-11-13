@@ -25,7 +25,7 @@ codeunit 1957 "LPP Update"
         CustomerLedgerEntries.SetFilter("Remaining Amt. (LCY)", '<>0');
         CustomerLedgerEntries.SetRange(Open, true);
         CustomerLedgerEntries.SetFilter("Due Date", '>=%1', WorkDate());
-        If CustomerLedgerEntries.FindSet() then
+        if CustomerLedgerEntries.FindSet() then
             repeat
                 if SalesInvoiceHeader.Get(CustomerLedgerEntries."Document No.") then begin
                     LPMLInputData.SetRange(Number, CustomerLedgerEntries."Document No.");
