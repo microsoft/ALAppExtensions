@@ -394,6 +394,7 @@ codeunit 30286 "Shpfy Company API"
     begin
         if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyLocations.edges') then begin
             foreach JLocation in JLocations do begin
+                Clear(CompanyLocation);
                 Cursor := JsonHelper.GetValueAsText(JLocation.AsObject(), 'cursor');
                 CompanyLocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLocation, 'node.id'));
                 if IsDefaultCompanyLocation then
@@ -404,7 +405,7 @@ codeunit 30286 "Shpfy Company API"
                     CompanyLocation.Id := CompanyLocationId;
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
                     CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
-                    CompanyLocation.Insert();
+                    CompanyLocation.Insert(true);
                 end;
 
                 CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
