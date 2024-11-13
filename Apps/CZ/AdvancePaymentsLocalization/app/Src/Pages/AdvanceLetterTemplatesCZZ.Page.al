@@ -72,50 +72,6 @@ page 31179 "Advance Letter Templates CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                 }
-#if not CLEAN23
-#pragma warning disable AL0432,AS0074
-                field("Document Report ID"; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies document report ID.';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteReason = 'Replaced by standard report selection.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-                field("Document Report Caption"; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies document report caption.';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteReason = 'Replaced by standard report selection.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-                field("Invoice/Cr. Memo Report ID"; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies invoice/credit memo report ID';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteReason = 'Replaced by standard report selection.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-                field("Invoice/Cr. Memo Rep. Caption"; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies invoice/credit memo report caption.';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteReason = 'Replaced by standard report selection.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-#pragma warning restore AL0432,AS0074
-#endif
             }
         }
     }

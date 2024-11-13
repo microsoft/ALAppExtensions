@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using System.Utilities;
@@ -14,11 +8,11 @@ using System.Text;
 using Microsoft.Inventory.Item;
 using Microsoft.PowerBIReports;
 using Microsoft.Sales.PowerBIReports;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139881 "PowerBI Sales Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -29,6 +23,8 @@ codeunit 139881 "PowerBI Sales Test"
         LibInv: Codeunit "Library - Inventory";
         LibRandom: Codeunit "Library - Random";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         IsInitialized: Boolean;
         ResponseEmptyErr: Label 'Response should not be empty.';
 
@@ -58,7 +54,7 @@ codeunit 139881 "PowerBI Sales Test"
         // [WHEN] Get request for item budget name is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Names", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('budgetName eq ''%1''', ItemBudgetName.Name));
+        UriBuilder.AddQueryParameter('$filter', 'budgetName eq ''' + Format(ItemBudgetName.Name) + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -72,7 +68,7 @@ codeunit 139881 "PowerBI Sales Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.budgetName == ''%1'')]', ItemBudgetName.Name)), 'Item budget name not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.budgetName == ''' + Format(ItemBudgetName.Name) + ''')]'), 'Item budget name not found.');
         Assert.AreEqual(Format(ItemBudgetName."Analysis Area"), JsonMgt.GetValue('analysisArea'), 'Item Budget name analysis area does not match.');
         Assert.AreEqual(ItemBudgetName.Description, JsonMgt.GetValue('budgetDescription'), 'Item Budget name description does not match.');
     end;
@@ -99,7 +95,7 @@ codeunit 139881 "PowerBI Sales Test"
         // [WHEN] Get request for outstanding sales order line is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Line - Item Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('salesOrderNo eq ''%1''', SalesHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'salesOrderNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -119,7 +115,7 @@ codeunit 139881 "PowerBI Sales Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.lineNo == %1)]', SalesLine."Line No.")), 'Sales line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(SalesLine."Line No.") + ')]'), 'Sales line not found.');
         Assert.AreEqual(Format(SalesHeader."No."), JsonMgt.GetValue('salesOrderNo'), 'Sales order no does not match.');
         Assert.AreEqual(Format(SalesHeader."Document Type"), JsonMgt.GetValue('documentType'), 'Sales header document type does not match.');
         Assert.AreEqual(SalesHeader."Bill-to Customer No.", JsonMgt.GetValue('customerNo'), 'Sales header customer no does not match.');
@@ -160,7 +156,7 @@ codeunit 139881 "PowerBI Sales Test"
         // [WHEN] Get request for outstanding sales order line is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Entries - Sales", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('entryNo eq %1', ItemBudgetEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ItemBudgetEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -174,7 +170,7 @@ codeunit 139881 "PowerBI Sales Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', ItemBudgetEntry."Entry No.")), 'Item budget entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(ItemBudgetEntry."Entry No.") + ')]'), 'Item budget entry not found.');
         Assert.AreEqual(ItemBudgetEntry."Budget Name", JsonMgt.GetValue('budgetName'), 'Item budget entry budget name does not match.');
         Assert.AreEqual(Format(ItemBudgetEntry.Date, 0, 9), JsonMgt.GetValue('entryDate'), 'Item budget entry entry date does not match.');
         Assert.AreEqual(ItemBudgetEntry."Item No.", JsonMgt.GetValue('itemNo'), 'Item budget entry item no does not match.');
@@ -220,7 +216,7 @@ codeunit 139881 "PowerBI Sales Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemLedgerEntryNo == %1)]', ItemLedgerEntry."Entry No.")), 'Sales item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemLedgerEntryNo == ' + Format(ItemLedgerEntry."Entry No.") + ')]'), 'Sales item ledger entry not found.');
         Assert.AreEqual(SalesHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry No."), JsonMgt.GetValue('entryNo'), 'Value entry entry no does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry Type"), JsonMgt.GetValue('entryType'), 'Value entry entry type does not match.');
@@ -260,7 +256,7 @@ codeunit 139881 "PowerBI Sales Test"
         // [WHEN] Get request for shipped not invoiced sales order is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Line - Item Shipped", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('salesOrderNo eq ''%1''', SalesHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'salesOrderNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -280,7 +276,7 @@ codeunit 139881 "PowerBI Sales Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.lineNo == %1)]', SalesLine."Line No.")), 'Sales item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(SalesLine."Line No.") + ')]'), 'Sales item ledger entry not found.');
         Assert.AreEqual(Format(SalesHeader."Document Type"), JsonMgt.GetValue('documentType'), 'Sales header document type does not match.');
         Assert.AreEqual(SalesHeader."Bill-to Customer No.", JsonMgt.GetValue('customerNo'), 'Sales header customer no does not match.');
         Assert.AreEqual(Format(SalesHeader."Order Date", 0, 9), JsonMgt.GetValue('orderDate'), 'Sales header order date does not match.');
@@ -307,6 +303,7 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Start/End Date";
 
@@ -314,8 +311,9 @@ codeunit 139881 "PowerBI Sales Test"
         PBISetup."Item Sales Start Date" := Today();
         PBISetup."Item Sales End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -334,14 +332,16 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Sales Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Sales Date Formula"));
+        ExpectedFilterTxt := '' + Format(CalcDate(PBISetup."Item Sales Date Formula")) + '..';
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -359,8 +359,11 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -379,9 +382,3 @@ codeunit 139881 "PowerBI Sales Test"
         PBISetup.Insert();
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

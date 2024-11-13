@@ -39,6 +39,7 @@ codeunit 30116 "Shpfy Customer Export"
     var
         Shop: Record "Shpfy Shop";
         CustomerApi: Codeunit "Shpfy Customer API";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
 
@@ -64,7 +65,7 @@ codeunit 30116 "Shpfy Customer Export"
             Metafield.Namespace := 'Microsoft.Dynamics365.BusinessCentral';
             Metafield.Validate("Parent Table No.", Database::"Shpfy Customer");
             Metafield."Owner Id" := ShopifyCustomer.Id;
-            Metafield.Type := Metafield.Type::string;
+            Metafield.Type := Metafield.Type::single_line_text_field;
             Metafield.Value := Format(MetadataFieldRef.Value);
         end;
     end;
@@ -87,9 +88,12 @@ codeunit 30116 "Shpfy Customer Export"
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
+        EmptyEmailAddressLbl: Label 'Customer has no e-mail address.';
     begin
-        if Customer."E-Mail" = '' then
+        if Customer."E-Mail" = '' then begin
+            SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
+        end;
 
         Clear(ShopifyCustomer);
         Clear(CustomerAddress);
@@ -296,10 +300,13 @@ codeunit 30116 "Shpfy Customer Export"
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
+        CustomerWithPhoneNoOrEmailExistsLbl: Label 'Customer already exists with the same e-mail or phone.';
     begin
         ShopifyCustomer.Get(CustomerID);
-        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then
+        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then begin
+            SkippedRecord.LogSkippedRecord(ShopifyCustomer.Id, Customer.RecordId, CustomerWithPhoneNoOrEmailExistsLbl, Shop);
             exit;  // An other customer with the same e-mail or phone is the source of it.
+        end;
 
         CustomerAddress.SetRange("Customer Id", CustomerId);
         CustomerAddress.SetRange(Default, true);

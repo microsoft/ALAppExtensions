@@ -26,6 +26,7 @@ table 1853 "MS - Sales Forecast Setup"
             OptionMembers = Day,Week,Month,Quarter,Year;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA18
         field(3; "Show Setup Notification"; Boolean)
         {
             ObsoleteState = Removed;
@@ -35,6 +36,7 @@ table 1853 "MS - Sales Forecast Setup"
             InitValue = true;
             DataClassification = CustomerContent;
         }
+#endif
         field(4; "Stockout Warning Horizon"; Integer)
         {
             DataClassification = CustomerContent;
@@ -104,6 +106,7 @@ table 1853 "MS - Sales Forecast Setup"
             Editable = false;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA18
         field(15; "API Cache Minutes"; Integer)
         {
             Description = 'Default period in minutes for caching the API URI and API Key.';
@@ -137,6 +140,7 @@ table 1853 "MS - Sales Forecast Setup"
             DataClassification = CustomerContent;
             ObsoleteTag = '18.0';
         }
+#endif
         field(19; "Timeseries Model"; Option)
         {
             OptionMembers = ARIMA,ETS,STL,"ETS+ARIMA","ETS+STL",ALL,TBATS;

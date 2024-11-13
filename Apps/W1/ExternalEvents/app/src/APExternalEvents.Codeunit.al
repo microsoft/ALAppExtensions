@@ -30,24 +30,9 @@ codeunit 38503 "AP External Events"
             exit;
         Url := ExternalEventsHelper.CreateLink(CopyStr(VendorApiUrlTok, 1, 250), Vendor.SystemId);
         WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Vendor Card", Vendor), 1, MaxStrLen(WebClientUrl));
-#if not CLEAN23
-        if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Payment then begin
-            EventPurchasePaymentPosted(Vendor.SystemId, Url);
-            EventPurchasePaymentPosted(Vendor.SystemId, Url, WebClientUrl);
-        end;
-#else
         if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Payment then
             EventPurchasePaymentPosted(Vendor.SystemId, Url, WebClientUrl);
-#endif
     end;
-
-#if not CLEAN23
-    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
-    [ExternalBusinessEvent('PurchasePaymentPosted', 'Purchase payment posted', 'This business event is triggered when a vendor payment is posted as part of the Procure to Pay process.', EventCategory::"Accounts Payable")]
-    local procedure EventPurchasePaymentPosted(VendorId: Guid; Url: Text[250])
-    begin
-    end;
-#endif
 
     [ExternalBusinessEvent('PurchasePaymentPosted', 'Purchase payment posted', 'This business event is triggered when a vendor payment is posted as part of the Procure to Pay process.', EventCategory::"Accounts Payable", '1.0')]
     local procedure EventPurchasePaymentPosted(VendorId: Guid; Url: Text[250]; WebClientUrl: Text[250])
@@ -77,9 +62,6 @@ codeunit 38503 "AP External Events"
                 APIId := PurchInvHeader.SystemId;
             Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseInvoiceApiUrlTok, 1, 250), APIId);
             WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Purchase Invoice", PurchInvHeader), 1, MaxStrLen(WebClientUrl));
-#if not CLEAN23
-            MyBusinessEventPurchaseInvoicePosted(APIId, Url);
-#endif
             PurchaseInvoicePosted(APIId, PurchInvHeader.SystemId, Url, WebClientUrl);
         end;
         if PurchCrMemoHdr."No." <> '' then begin
@@ -89,40 +71,14 @@ codeunit 38503 "AP External Events"
                 APIId := PurchCrMemoHdr.SystemId;
             Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseMemoApiUrlTok, 1, 250), APIId);
             WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Purchase Credit Memo", PurchCrMemoHdr), 1, MaxStrLen(WebClientUrl));
-#if not CLEAN23
-            EventCreditMemoInvoicePosted(APIId, Url);
-#endif
             CreditMemoInvoicePosted(APIId, PurchCrMemoHdr.SystemId, Url, WebClientUrl);
         end;
         if PurchRcptHeader."No." <> '' then begin
             Url := ExternalEventsHelper.CreateLink(CopyStr(PurchaseReceiptsApiUrlTok, 1, 250), PurchRcptHeader.SystemId);
             WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Posted Purchase Receipt", PurchRcptHeader), 1, MaxStrLen(WebClientUrl));
-#if not CLEAN23
-            EventPurchaseReceivedPosted(PurchRcptHeader.SystemId, Url);
-#endif
             PurchaseReceiptPosted(PurchRcptHeader.SystemId, Url, WebClientUrl);
         end;
     end;
-
-#if not CLEAN23
-    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
-    [ExternalBusinessEvent('PurchaseInvoicePosted', 'Purchase invoice posted', 'This business event is triggered when a vendor invoice is posted as part of the Procure to Pay process.', EventCategory::"Accounts Payable")]
-    local procedure MyBusinessEventPurchaseInvoicePosted(PurchaseInvoiceId: Guid; Url: Text[250])
-    begin
-    end;
-
-    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
-    [ExternalBusinessEvent('PurchaseCreditMemoPosted', 'Purchase credit memo posted', 'This business event is triggered when a purchase credit memo is posted.', EventCategory::"Accounts Payable")]
-    local procedure EventCreditMemoInvoicePosted(PurchaseInvoiceId: Guid; Url: Text[250])
-    begin
-    end;
-
-    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
-    [ExternalBusinessEvent('PurchaseReceiptPosted', 'Purchase receipt posted', 'This business event is triggered when goods from a purchase order are received by the internal warehouse/external logistics company. This can trigger Finance Department to post a purchase invoice.', EventCategory::"Accounts Payable")]
-    local procedure EventPurchaseReceivedPosted(PurchaseInvoiceId: Guid; Url: Text[250])
-    begin
-    end;
-#endif
 
     [ExternalBusinessEvent('PurchaseInvoicePosted', 'Purchase invoice posted', 'This business event is triggered when a vendor invoice is posted as part of the Procure to Pay process.', EventCategory::"Accounts Payable", '1.0')]
     local procedure PurchaseInvoicePosted(PurchaseInvoiceAPIId: Guid; PurchaseInvoiceSystemId: Guid; Url: Text[250]; WebClientUrl: Text[250])

@@ -185,11 +185,7 @@ codeunit 148101 "SAF-T Wizard Tests"
     procedure MapVATPostingSetup()
     var
         SAFTMappingRange: Record "SAF-T Mapping Range";
-#if CLEAN23
         VATReportingCode: Record "VAT Reporting Code";
-#else
-        VATCode: Record "VAT Code";
-#endif
         VATPostingSetup: Record "VAT Posting Setup";
         AccountingPeriod: Record "Accounting Period";
         SAFTSetupWizard: TestPage "SAF-T Setup Wizard";
@@ -197,6 +193,9 @@ codeunit 148101 "SAF-T Wizard Tests"
         // [SCENARIO 309923] Stan can open VAT Posting Setup mapping page from the wizard and see the number of VAT combinations mapped
 
         Initialize();
+        VATPostingSetup.ModifyAll("Sale VAT Reporting Code", '');
+        VATPostingSetup.ModifyAll("Purch. VAT Reporting Code", '');
+        Commit();
         LibraryPermissions.SetTestabilitySoftwareAsAService(true);
         SAFTSetupWizard.OpenEdit();
         SAFTSetupWizard.ActionNext.Invoke();
@@ -208,21 +207,12 @@ codeunit 148101 "SAF-T Wizard Tests"
         SAFTSetupWizard.ActionNext.Invoke();
         SAFTSetupWizard.ActionNext.Invoke();
 
-#if CLEAN23
         VATReportingCode.FindSet();
         LibraryVariableStorage.Enqueue(VATReportingCode.Code);
         VATReportingCode.Next();
         LibraryVariableStorage.Enqueue(VATReportingCode.Code);
         SAFTSetupWizard.OpenVATMapping.Drilldown();
         SAFTSetupWizard.VATMappedInfo.AssertEquals(StrSubstNo('1/%1', VATPostingSetup.Count()));
-#else
-        VATCode.FindSet();
-        LibraryVariableStorage.Enqueue(VATCode.Code);
-        VATCode.Next();
-        LibraryVariableStorage.Enqueue(VATCode.Code);
-        SAFTSetupWizard.OpenVATMapping.Drilldown();
-        SAFTSetupWizard.VATMappedInfo.AssertEquals(StrSubstNo('1/%1', VATPostingSetup.Count()));
-#endif
 
         LibraryVariableStorage.AssertEmpty();
         LibraryPermissions.SetTestabilitySoftwareAsAService(false);
@@ -332,13 +322,8 @@ codeunit 148101 "SAF-T Wizard Tests"
     [ModalPageHandler]
     procedure MapVATPostingSetupModalPageHander(var SAFTVATPostingSetup: TestPage "SAF-T VAT Posting Setup")
     begin
-#if CLEAN23
         SAFTVATPostingSetup."Sale VAT Reporting Code".SetValue(LibraryVariableStorage.DequeueText());
         SAFTVATPostingSetup."Purch. VAT Reporting Code".SetValue(LibraryVariableStorage.DequeueText());
-#else
-        SAFTVATPostingSetup."Sales SAF-T Standard Tax Code".SetValue(LibraryVariableStorage.DequeueText());
-        SAFTVATPostingSetup."Purch. SAF-T Standard Tax Code".SetValue(LibraryVariableStorage.DequeueText());
-#endif
     end;
 
     [ModalPageHandler]

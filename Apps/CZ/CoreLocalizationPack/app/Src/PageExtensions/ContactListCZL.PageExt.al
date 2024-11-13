@@ -20,18 +20,6 @@ pageextension 31223 "Contact List CZL" extends "Contact List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of contact.';
             }
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of contact.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-            }
-#endif
         }
     }
 }

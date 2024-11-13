@@ -3,8 +3,6 @@ namespace Microsoft.SubscriptionBilling;
 using System.Threading;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.AuditCodes;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.Dimension;
 
 codeunit 8051 "Sub. Billing Installation"
 {
@@ -22,7 +20,6 @@ codeunit 8051 "Sub. Billing Installation"
     procedure InitializeSetupTables()
     begin
         InitServiceContractSetup();
-        InitGeneralLedgerSetup();
         InitSourceCodeSetup();
     end;
 
@@ -55,10 +52,6 @@ codeunit 8051 "Sub. Billing Installation"
         if ServiceContractSetup."Service Object Nos." = '' then begin
             ServiceContractSetup."Service Object Nos." :=
               CreateNoSeries(ServiceObjectCodeLbl, ServiceObjectDescriptionLbl, ServiceObjectNoSeriesLineLbl);
-            ServiceContractSetupModified := true;
-        end;
-        if not ServiceContractSetup."Aut. Insert C. Contr. DimValue" then begin
-            ServiceContractSetup."Aut. Insert C. Contr. DimValue" := true;
             ServiceContractSetupModified := true;
         end;
         if (ServiceContractSetup."Contract Invoice Description" = ServiceContractSetup."Contract Invoice Description"::" ") or
@@ -98,36 +91,6 @@ codeunit 8051 "Sub. Billing Installation"
         NoSeriesLine.Insert(true);
 
         exit(NoSeries.Code);
-    end;
-
-    local procedure InitGeneralLedgerSetup()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        if not GeneralLedgerSetup.Get() then begin
-            GeneralLedgerSetup.Init();
-            GeneralLedgerSetup.Insert(false);
-        end;
-        if GeneralLedgerSetup."Dimension Code Cust. Contr." = '' then begin
-            CreateDimension(CustContractDimensionCodeLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl);
-            GeneralLedgerSetup."Dimension Code Cust. Contr." := CustContractDimensionCodeLbl;
-            GeneralLedgerSetup.Modify(false);
-        end;
-    end;
-
-    internal procedure CreateDimension(DimensionCode: Code[20]; DimensionName: Text; DimensionCodeCaption: Text; DimensionFilterCaption: Text)
-    var
-        Dimension: Record Dimension;
-    begin
-        if Dimension.Get(DimensionCode) then
-            exit;
-
-        Dimension.Init();
-        Dimension.Validate(Code, DimensionCode);
-        Dimension.Name := CopyStr(DimensionName, 1, MaxStrLen(Dimension.Name));
-        Dimension."Code Caption" := CopyStr(DimensionCodeCaption, 1, MaxStrLen(Dimension."Code Caption"));
-        Dimension."Filter Caption" := CopyStr(DimensionFilterCaption, 1, MaxStrLen(Dimension."Filter Caption"));
-        Dimension.Insert(true);
     end;
 
     local procedure InitUpdateServicesDatesJobQueueEntry()
@@ -202,19 +165,17 @@ codeunit 8051 "Sub. Billing Installation"
     var
         CustomerLbl: Label 'Customer';
         CustomerBillingTemplateDescriptionTxt: Label 'Sample template for customer billing';
-        CustomerContractCodeLbl: Label 'CUSTCONTR';
+        CustomerContractCodeLbl: Label 'CUSTCONTR', MaxLength = 20;
         CustomerContractDescriptionLbl: Label 'Customer Contracts';
-        CustomerContractNoSeriesLineLbl: Label 'CUC';
+        CustomerContractNoSeriesLineLbl: Label 'CUC', MaxLength = 14;
         VendorLbl: Label 'Vendor';
         VendorBillingTemplateDescriptionTxt: Label 'Sample template for vendor billing';
-        VendorContractCodeLbl: Label 'VENDCONTR';
+        VendorContractCodeLbl: Label 'VENDCONTR', MaxLength = 20;
         VendorContractDescriptionLbl: Label 'Vendor Contracts';
-        VendorContractNoSeriesLineLbl: Label 'VEC';
-        ServiceObjectCodeLbl: Label 'SERVOBJECT';
+        VendorContractNoSeriesLineLbl: Label 'VEC', MaxLength = 14;
+        ServiceObjectCodeLbl: Label 'SERVOBJECT', MaxLength = 20;
         ServiceObjectDescriptionLbl: Label 'Service Objects';
-        ServiceObjectNoSeriesLineLbl: Label 'SOBJ';
-        CustContractDimensionCodeLbl: Label 'CUSTOMERCONTRACT';
-        CustContractDimensionDescriptionLbl: Label 'Customer Contract Dimension';
-        ContractDeferralReleaseCodeLbl: Label 'CONTDEFREL';
+        ServiceObjectNoSeriesLineLbl: Label 'SOBJ', MaxLength = 14;
+        ContractDeferralReleaseCodeLbl: Label 'CONTDEFREL', MaxLength = 10;
         ContractDeferralsReleaseDescriptionLbl: Label 'Contract Deferrals Release';
 }

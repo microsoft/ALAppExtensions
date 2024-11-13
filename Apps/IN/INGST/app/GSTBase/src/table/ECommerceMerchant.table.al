@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEANSCHEMA26
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,13 +12,9 @@ table 18015 "E-Commerce Merchant"
     Caption = 'E-Commerce Merchant';
     DataCaptionFields = "Customer No.", "Merchant Id";
     ObsoleteReason = 'New table 18017 introduced as "E-Comm. Merchant" with customer No. field length as 20';
-#if CLEAN23
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
-#else
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
-#endif
+
     fields
     {
         field(1; "Customer No."; code[10])
@@ -49,3 +46,4 @@ table 18015 "E-Commerce Merchant"
         }
     }
 }
+#endif

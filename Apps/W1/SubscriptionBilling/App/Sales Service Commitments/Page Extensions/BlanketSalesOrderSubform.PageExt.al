@@ -17,7 +17,7 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
     }
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitments)
             {
@@ -29,12 +29,12 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
                 ToolTip = 'Shows the service commitments for the sales line.';
             }
         }
-        addlast("&Line")
+        addlast("F&unctions")
         {
             action(AddSalesServiceCommitment)
             {
                 ApplicationArea = All;
-                Caption = 'Add Service';
+                Caption = 'Add Service Commitments';
                 Image = ExpandDepositLine;
                 ToolTip = 'Shows all service commitments for the item. Service commitments can be added, changed or removed.';
 

@@ -131,7 +131,7 @@ report 31240 "Calculate Depreciation CZF"
                         FAJournalLine.Validate(FAJournalLine."FA No.", TempFAJournalLine."FA No.");
                         FAJournalLine."Document No." := DocumentNo2;
                         FAJournalLine."Posting No. Series" := NoSeries;
-                        FAJournalLine.Description := PostingDescription;
+                        FAJournalLine.Description := BuildDescription(TempFAJournalLine."FA No.", PostingDate);
                         FAJournalLine.Validate(FAJournalLine."Depreciation Book Code", DeprBookCode);
                         FAJournalLine.Validate(FAJournalLine.Amount, TempFAJournalLine.Amount);
                         FAJournalLine."No. of Depreciation Days" := TempFAJournalLine."No. of Depreciation Days";
@@ -170,7 +170,7 @@ report 31240 "Calculate Depreciation CZF"
                         GenJournalLine."FA Posting Type" := TempGenJournalLine."FA Posting Type";
                         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"Fixed Asset";
                         GenJournalLine.Validate(GenJournalLine."Account No.", TempGenJournalLine."Account No.");
-                        GenJournalLine.Description := PostingDescription;
+                        GenJournalLine.Description := BuildDescription(TempGenJournalLine."Account No.", PostingDate);
                         GenJournalLine."Document No." := DocumentNo2;
                         GenJournalLine."Posting No. Series" := NoSeries;
                         GenJournalLine.Validate(GenJournalLine."Depreciation Book Code", DeprBookCode);
@@ -182,8 +182,11 @@ report 31240 "Calculate Depreciation CZF"
                         OnBeforeGenJnlLineInsert(TempGenJournalLine, GenJournalLine);
                         GenJournalLine.Insert(true);
                         GenJnlLineCreatedCount += 1;
-                        if BalAccount then
+                        if BalAccount then begin
+                            BindSubscription(SuppUpdtSourceHandlerCZF);
                             FAInsertGLAccount.GetBalAcc(GenJournalLine, GenJnlNextLineNo);
+                            UnBindSubscription(SuppUpdtSourceHandlerCZF);
+                        end;
                         OnAfterFAInsertGLAccGetBalAcc(GenJournalLine, GenJnlNextLineNo, BalAccount);
                     until TempGenJournalLine.Next() = 0;
                 OnAfterPostDataItem();
@@ -367,6 +370,7 @@ report 31240 "Calculate Depreciation CZF"
         GeneralLedgerSetup: Record "General Ledger Setup";
         CalculateDepreciation: Codeunit "Calculate Depreciation";
         FAInsertGLAccount: Codeunit "FA Insert G/L Account";
+        SuppUpdtSourceHandlerCZF: Codeunit "Supp. Updt. Source Handler CZF";
         WindowDialog: Dialog;
         DeprAmount: Decimal;
         Custom1Amount: Decimal;
@@ -411,6 +415,11 @@ report 31240 "Calculate Depreciation CZF"
         DocumentNo := DocumentNoFrom;
         PostingDescription := PostingDescriptionFrom;
         BalAccount := BalAccountFrom;
+    end;
+
+    local procedure BuildDescription(FANo: Code[20]; PeriodDate: Date): Text[100]
+    begin
+        exit(StrSubstNo(PostingDescription, FANo, StrSubstNo('%1/%2', Date2DMY(PeriodDate, 3), Date2DMY(PeriodDate, 2))));
     end;
 
     [IntegrationEvent(false, false)]

@@ -27,6 +27,7 @@ codeunit 30273 "Shpfy Installer"
     var
         LogEntry: Record "Shpfy Log Entry";
         DataCapture: Record "Shpfy Data Capture";
+        SkippedRecord: Record "Shpfy Skipped Record";
         RetentionPolicySetup: Codeunit "Retention Policy Setup";
         RetenPolAllowedTables: Codeunit "Reten. Pol. Allowed Tables";
         UpgradeTag: Codeunit "Upgrade Tag";
@@ -38,12 +39,14 @@ codeunit 30273 "Shpfy Installer"
 
         RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Log Entry", LogEntry.FieldNo(SystemCreatedAt));
         RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Data Capture", DataCapture.FieldNo(SystemModifiedAt));
+        RetenPolAllowedTables.AddAllowedTable(Database::"Shpfy Skipped Record", SkippedRecord.FieldNo(SystemCreatedAt));
 
         if not IsInitialSetup then
             exit;
 
         CreateRetentionPolicySetup(Database::"Shpfy Log Entry", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
         CreateRetentionPolicySetup(Database::"Shpfy Data Capture", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
+        CreateRetentionPolicySetup(Database::"Shpfy Skipped Record", RetentionPolicySetup.FindOrCreateRetentionPeriod("Retention Period Enum"::"1 Month"));
         UpgradeTag.SetUpgradeTag(GetShopifyLogEntryAddedToAllowedListUpgradeTag());
     end;
 

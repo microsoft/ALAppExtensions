@@ -149,7 +149,6 @@ codeunit 31447 "Company Bank Acc. Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Inv. Header - Edit", 'OnOnRunOnBeforeTestFieldNo', '', false, false)]
     local procedure SalesInvoiceEditOnRunOnBeforeTestFieldNo(var SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceHeaderRec: Record "Sales Invoice Header")
     begin
-        SalesInvoiceHeader.Validate("Bank Account Code CZL", SalesInvoiceHeaderRec."Company Bank Account Code");
         SalesInvoiceHeader.Validate("Specific Symbol CZL", SalesInvoiceHeaderRec."Specific Symbol CZL");
         SalesInvoiceHeader.Validate("Variable Symbol CZL", SalesInvoiceHeaderRec."Variable Symbol CZL");
         SalesInvoiceHeader.Validate("Constant Symbol CZL", SalesInvoiceHeaderRec."Constant Symbol CZL");
@@ -157,15 +156,28 @@ codeunit 31447 "Company Bank Acc. Handler CZL"
           SalesInvoiceHeader."Bank Account Code CZL", SalesInvoiceHeader."Specific Symbol CZL", SalesInvoiceHeader."Variable Symbol CZL", SalesInvoiceHeader."Constant Symbol CZL");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Inv. Header - Edit", 'OnRunOnBeforeAssignValues', '', false, false)]
+    local procedure SalesInvoiceEditOnRunOnBeforeAssignValues(var SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceHeaderRec: Record "Sales Invoice Header")
+    begin
+        if SalesInvoiceHeader."Company Bank Account Code" <> SalesInvoiceHeaderRec."Company Bank Account Code" then
+            SalesInvoiceHeader.Validate("Bank Account Code CZL", SalesInvoiceHeaderRec."Company Bank Account Code");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Inv. Header - Edit", 'OnOnRunOnBeforeTestFieldNo', '', false, false)]
     local procedure ServiceInvoiceEditOnRunOnBeforeTestFieldNo(var ServiceInvoiceHeader: Record "Service Invoice Header"; ServiceInvoiceHeaderRec: Record "Service Invoice Header")
     begin
-        ServiceInvoiceHeader.Validate("Bank Account Code CZL", ServiceInvoiceHeaderRec."Company Bank Account Code");
         ServiceInvoiceHeader.Validate("Specific Symbol CZL", ServiceInvoiceHeaderRec."Specific Symbol CZL");
         ServiceInvoiceHeader.Validate("Variable Symbol CZL", ServiceInvoiceHeaderRec."Variable Symbol CZL");
         ServiceInvoiceHeader.Validate("Constant Symbol CZL", ServiceInvoiceHeaderRec."Constant Symbol CZL");
         CustLedgerEntryEdit(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."Bill-to Customer No.",
           ServiceInvoiceHeader."Bank Account Code CZL", ServiceInvoiceHeader."Specific Symbol CZL", ServiceInvoiceHeader."Variable Symbol CZL", ServiceInvoiceHeader."Constant Symbol CZL");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Inv. Header - Edit", 'OnRunOnBeforeAssignNewValues', '', false, false)]
+    local procedure ServiceInvoiceEditOnRunOnBeforeAssignNewValues(var ServiceInvoiceHeader: Record "Service Invoice Header"; ServiceInvoiceHeaderRec: Record "Service Invoice Header")
+    begin
+        if ServiceInvoiceHeader."Company Bank Account Code" <> ServiceInvoiceHeaderRec."Company Bank Account Code" then
+            ServiceInvoiceHeader.Validate("Bank Account Code CZL", ServiceInvoiceHeaderRec."Company Bank Account Code");
     end;
 
     local procedure CustLedgerEntryEdit(DocumentNo: Code[20]; CustomerNo: Code[20]; BankAccountCodeCZL: Code[20]; SpecificSymbolCZL: Code[10]; VariableSymbolCZL: Code[10]; ConstantSymbolCZL: Code[10])

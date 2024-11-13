@@ -16,11 +16,5 @@ permissionset 6363 "EDoc. Connector Objects"
                   codeunit "Pagero Connection" = X,
                   codeunit "Pagero Integration Impl." = X,
                   codeunit "Pagero Processing" = X,
-                  codeunit "Pagero Application Response" = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara."Integration Impl." = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara.Processing = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara.Authenticator = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara.Requests = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara."Http Executor" = X,
-                  codeunit Microsoft.EServices.EDocumentConnector.Avalara.Models.Metadata = X;
+                  codeunit "Pagero Application Response" = X;
 }

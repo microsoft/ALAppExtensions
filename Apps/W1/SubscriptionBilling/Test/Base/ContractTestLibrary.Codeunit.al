@@ -34,6 +34,8 @@ codeunit 139685 "Contract Test Library"
         LibraryUtility: Codeunit "Library - Utility";
         ContractsAppInitialized: Boolean;
         PrefixLbl: Label 'ZZZ', Locked = true;
+        CustContractDimensionCodeLbl: Label 'CUSTOMERCONTRACT', Locked = true;
+        CustContractDimensionDescriptionLbl: Label 'Customer Contract Dimension', Locked = true;
 
     #Region General
     procedure EnableNewPricingExperience()
@@ -797,6 +799,42 @@ codeunit 139685 "Contract Test Library"
         LibraryDimension.CreateDimension(Dimension);
         LibraryDimension.CreateDimensionValue(DimensionValue, Dimension.Code);
         DimensionMgt.AppendDimValue(Dimension.Code, DimensionValue.Code, DimensionSetID);
+    end;
+
+    procedure SetAutomaticDimentions(NewValue: Boolean)
+    var
+        ServiceContractSetup: Record "Service Contract Setup";
+    begin
+        ServiceContractSetup.Get();
+        ServiceContractSetup."Aut. Insert C. Contr. DimValue" := NewValue;
+        ServiceContractSetup.Modify();
+    end;
+
+    procedure InsertCustomerContractDimensionCode()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Dimension Code Cust. Contr." = '' then begin
+            CreateDimension(CustContractDimensionCodeLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl);
+            GeneralLedgerSetup."Dimension Code Cust. Contr." := CustContractDimensionCodeLbl;
+            GeneralLedgerSetup.Modify(false);
+        end;
+    end;
+
+    local procedure CreateDimension(DimensionCode: Code[20]; DimensionName: Text; DimensionCodeCaption: Text; DimensionFilterCaption: Text)
+    var
+        Dimension: Record Dimension;
+    begin
+        if Dimension.Get(DimensionCode) then
+            exit;
+
+        Dimension.Init();
+        Dimension.Validate(Code, DimensionCode);
+        Dimension.Name := CopyStr(DimensionName, 1, MaxStrLen(Dimension.Name));
+        Dimension."Code Caption" := CopyStr(DimensionCodeCaption, 1, MaxStrLen(Dimension."Code Caption"));
+        Dimension."Filter Caption" := CopyStr(DimensionFilterCaption, 1, MaxStrLen(Dimension."Filter Caption"));
+        Dimension.Insert(true);
     end;
 
     internal procedure FilterBillingLineArchiveOnContractLine(var FilteredBillingLineArchive: Record "Billing Line Archive"; ContractNo: Code[20]; ContractLineNo: Integer; ServicePartner: Enum "Service Partner")

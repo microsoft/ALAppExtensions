@@ -36,6 +36,7 @@ codeunit 30284 "Shpfy Company Export"
         Shop: Record "Shpfy Shop";
         CompanyAPI: Codeunit "Shpfy Company API";
         CatalogAPI: Codeunit "Shpfy Catalog API";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
 
@@ -44,9 +45,12 @@ codeunit 30284 "Shpfy Company Export"
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
         CompanyLocation: Record "Shpfy Company Location";
+        EmptyEmailAddressLbl: Label 'Customer (Company) has no e-mail address.';
     begin
-        if Customer."E-Mail" = '' then
+        if Customer."E-Mail" = '' then begin
+            SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
+        end;
 
         if CreateCompanyMainContact(Customer, ShopifyCustomer) then
             if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then
@@ -189,10 +193,13 @@ codeunit 30284 "Shpfy Company Export"
     var
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
+        CompanyWithPhoneNoOrEmailExistsLbl: Label 'Company already exists with the same e-mail or phone.';
     begin
         ShopifyCompany.Get(CompanyId);
-        if ShopifyCompany."Customer SystemId" <> Customer.SystemId then
+        if ShopifyCompany."Customer SystemId" <> Customer.SystemId then begin
+            SkippedRecord.LogSkippedRecord(ShopifyCompany.Id, Customer.RecordId, CompanyWithPhoneNoOrEmailExistsLbl, Shop);
             exit;
+        end;
 
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
         CompanyLocation.FindFirst();

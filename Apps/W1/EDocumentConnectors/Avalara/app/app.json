@@ -1,0 +1,55 @@
+{
+    "id":  "f35c56a6-7c5f-4dbe-89c4-fef5145d00f4",
+    "name":  "E-Document Connector - Avalara",
+    "publisher":  "Microsoft",
+    "brief":  "E-Document Connector - Avalara",
+    "description":  "E-Document Connector - Avalara",
+    "version":  "26.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "dependencies":  [
+                        {
+                            "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+                            "name": "E-Document Core",
+                            "publisher": "Microsoft",
+                            "version": "26.0.0.0"
+                        },
+                        {
+                            "id": "d852a468-263e-49e5-bfda-f09e33342b89",
+                            "name": "E-Documents Connector with External Endpoints",
+                            "publisher": "Microsoft",
+                            "version":  "26.0.0.0"
+                        }
+                     ],
+    "internalsVisibleTo": [
+                        {
+                            "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8e",
+                            "name":  "E-Document Connector - Avalara Tests",
+                            "publisher":  "Microsoft"
+                        }
+    ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "26.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  6370,
+                         "to":  6379
+                     }
+                 ],
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  true,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "application":  "26.0.0.0",
+    "target":  "OnPrem",
+    "features": [
+        "TranslationFile"
+    ]
+}

@@ -247,17 +247,8 @@ codeunit 8001 "Contract Renewal Subcribers"
             IsHandled := true;
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnBeforeFillInvoicePostingBuffer, '', false, false)]
-    local procedure OnBeforeFillInvoicePostBuffer(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
-    begin
-        if SalesLine.IsContractRenewal() then
-            IsHandled := true;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnBeforePrepareLine', '', false, false)]
-    local procedure OnBeforePrepareLine(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    local procedure OnBeforeFillInvoicePostingBuffer(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
     begin
         if SalesLine.IsContractRenewal() then
             IsHandled := true;
@@ -277,19 +268,8 @@ codeunit 8001 "Contract Renewal Subcribers"
             IsHandled := true;
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnBeforeRunPostCustomerEntry, '', false, false)]
-    local procedure OnBeforeRunPostCustomerEntry(var SalesHeader: Record "Sales Header"; var TotalSalesLine2: Record "Sales Line"; var TotalSalesLineLCY2: Record "Sales Line"; CommitIsSuppressed: Boolean; PreviewMode: Boolean; DocType: Enum "Gen. Journal Document Type"; DocNo: Code[20]; ExtDocNo: Code[35]; SourceCode: Code[10]; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean)
-    begin
-        if not SalesHeader.Ship then
-            exit;
-        if SalesHeader.HasOnlyContractRenewalLines() then
-            IsHandled := true;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnBeforePostLedgerEntry', '', false, false)]
-    local procedure OnBeforeRunPostLedgerEntry(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    local procedure OnBeforeRunPostCustomerEntry(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     begin
         if not SalesHeader.Ship then
             exit;

@@ -243,6 +243,8 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine."Shpfy Order Line Id" := ShopifyOrderLine."Line Id";
                     SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
+                    if (SalesLine."Document Type" = SalesLine."Document Type"::Order) and (SalesLine.Type = SalesLine.Type::Item) and (SalesLine.Reserve = SalesLine.Reserve::Always) then
+                        SalesLine.AutoReserve(false);
                 end;
                 OrderEvents.OnAfterCreateItemSalesLine(ShopifyOrderHeader, ShopifyOrderLine, SalesHeader, SalesLine);
             until ShopifyOrderLine.Next() = 0;

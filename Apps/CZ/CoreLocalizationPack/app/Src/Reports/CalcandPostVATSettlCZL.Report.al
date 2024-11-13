@@ -24,7 +24,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     AdditionalSearchTerms = 'settle vat value added tax,report vat value added tax';
     ApplicationArea = Basic, Suite;
     Caption = 'Calculate and Post VAT Settlement';
-    Permissions = tabledata "VAT Entry" = imd;
+    Permissions = tabledata "VAT Entry" = rimd;
     UsageCategory = ReportsAndAnalysis;
 
     dataset
@@ -726,8 +726,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     begin
         OnBeforePreReport("VAT Posting Setup");
 
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.TestIsVATDateEnabledCZL();
         if PostingDate = 0D then
             Error(PostingDateErr);
         if DocNo = '' then
@@ -741,11 +739,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                 CurrReport.Quit();
 
         VATPostingSetupFilter := "VAT Posting Setup".GetFilters();
-            if EndDateReq = 0D then
-                VATEntry.SetFilter("VAT Reporting Date", '%1..', EntrdStartDate)
-            else
-                VATEntry.SetRange("VAT Reporting Date", EntrdStartDate, EndDateReq);
-            VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
+        if EndDateReq = 0D then
+            VATEntry.SetFilter("VAT Reporting Date", '%1..', EntrdStartDate)
+        else
+            VATEntry.SetRange("VAT Reporting Date", EntrdStartDate, EndDateReq);
+        VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
         Clear(GenJnlPostLine);
         OnAfterPreReport();
     end;
@@ -948,16 +946,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                     TaxJurisdiction.TestField("Tax Account (Sales)");
         end;
     end;
-#if not CLEAN23
-    [Obsolete('Replaced by GetVATAccountNo function with TaxJurisdiction parameter.', '23.0')]
-    procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"): Code[20]
-    var
-        TaxJurisdiction: Record "Tax Jurisdiction";
-    begin
-        TaxJurisdiction.Get(VATEntry."Tax Jurisdiction Code");
-        exit(GetVATAccountNo(VATEntry, VATPostingSetup, TaxJurisdiction));
-    end;
-#endif
 
     procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; TaxJurisdiction: Record "Tax Jurisdiction"): Code[20]
     var

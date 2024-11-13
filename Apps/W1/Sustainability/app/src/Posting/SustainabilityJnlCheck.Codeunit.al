@@ -61,6 +61,7 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityAccount.TestField("Direct Posting", ErrorInfo.Create());
         SustainabilityJournalMgt.CheckScopeMatchWithBatch(SustainabilityJnlLine);
 
+        TestRequiredFieldsFromWaterOrWasteIntensityForJnlLine(SustainabilityJnlLine);
         TestEmissionCalculationAndAmount(SustainabilityJnlLine);
 
         TestDimensionsForJnlLine(SustainabilityJnlLine);
@@ -79,19 +80,44 @@ codeunit 6216 "Sustainability Jnl.-Check"
     local procedure TestEmissionCalculationAndAmount(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
-        EmissionCO2, EmissionCH4, EmissionN2O : Decimal;
+        EmissionCO2, EmissionCH4, EmissionN2O, WaterIntensity, WasteIntensity, DischargedIntoWater : Decimal;
     begin
-        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) then
+        if AllEmissionsZeroCheck(SustainabilityJnlLine) then
             Error(ErrorInfo.Create(AllEmissionsZeroErr, true, SustainabilityJnlLine));
 
         EmissionCO2 := SustainabilityJnlLine."Emission CO2";
         EmissionCH4 := SustainabilityJnlLine."Emission CH4";
         EmissionN2O := SustainabilityJnlLine."Emission N2O";
+        WaterIntensity := SustainabilityJnlLine."Water Intensity";
+        WasteIntensity := SustainabilityJnlLine."Waste Intensity";
+        DischargedIntoWater := SustainabilityJnlLine."Discharged Into Water";
 
         SustainabilityCalcMgt.CalculationEmissions(SustainabilityJnlLine);
 
         if (EmissionCO2 <> SustainabilityJnlLine."Emission CO2") or (EmissionCH4 <> SustainabilityJnlLine."Emission CH4") or (EmissionN2O <> SustainabilityJnlLine."Emission N2O") then
             Error(ErrorInfo.Create(EmissionCalculationErr, true, SustainabilityJnlLine));
+
+        if (WaterIntensity <> SustainabilityJnlLine."Water Intensity") or (WasteIntensity <> SustainabilityJnlLine."Waste Intensity") or (DischargedIntoWater <> SustainabilityJnlLine."Discharged Into Water") then
+            Error(ErrorInfo.Create(IntensityCalculationErr, true, SustainabilityJnlLine));
+    end;
+
+    local procedure AllEmissionsZeroCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
+    begin
+        if IsRenewableEnergyCheck(SustainabilityJnlLine) then
+            exit(false);
+
+        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) and (SustainabilityJnlLine."Water Intensity" = 0) and (SustainabilityJnlLine."Discharged Into Water" = 0) and (SustainabilityJnlLine."Waste Intensity" = 0) then
+            exit(true);
+
+        exit(false);
+    end;
+
+    local procedure IsRenewableEnergyCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
+    var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        if SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory") then
+            exit(SustainAccountSubcategory."Renewable Energy");
     end;
 
     local procedure TestRequiredFieldsFromSetupForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -104,6 +130,17 @@ codeunit 6216 "Sustainability Jnl.-Check"
 
         if SustainabilitySetup."Resp. Center Mandatory" then
             SustainabilityJnlLine.TestField("Responsibility Center", ErrorInfo.Create());
+    end;
+
+    local procedure TestRequiredFieldsFromWaterOrWasteIntensityForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        if SustAccountCategory.Get(SustainabilityJnlLine."Account Category") then
+            if (SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water") then begin
+                SustainabilityJnlLine.TestField("Water/Waste Intensity Type");
+                SustainabilityJnlLine.Validate("Water/Waste Intensity Type");
+            end;
     end;
 
     local procedure TestDimensionsForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -128,6 +165,7 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityJournalBatchMismatchErr: Label 'The journal batch name must be the same for all lines.';
         AllEmissionsZeroErr: Label 'At least one emission must be specified.';
         EmissionCalculationErr: Label 'The emission calculation is not correct, use the `Recalculate` action on the Journal page to recalculate the emission before posting.';
+        IntensityCalculationErr: Label 'The intensity calculation is not correct, use the `Recalculate` action on the Journal page to recalculate the intensity before posting.';
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCheckSustainabilityJournalLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")

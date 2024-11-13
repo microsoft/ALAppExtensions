@@ -35,6 +35,11 @@ table 11775 "VAT Statement Comment Line CZL"
         {
             Caption = 'Date';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                CheckPeriod();
+            end;
         }
         field(5; Comment; Text[72])
         {
@@ -49,10 +54,14 @@ table 11775 "VAT Statement Comment Line CZL"
             Clustered = true;
         }
     }
+
     trigger OnInsert()
     begin
         CheckCommentsAllowed();
     end;
+
+    var
+        PeriodErr: Label 'The date must be within the period.';
 
     procedure CheckCommentsAllowed()
     var
@@ -60,5 +69,27 @@ table 11775 "VAT Statement Comment Line CZL"
     begin
         VATStatementTemplate.Get("VAT Statement Template Name");
         VATStatementTemplate.TestField("Allow Comments/Attachments CZL");
+    end;
+
+    procedure GetDefaultDate() DefaultDate: Date
+    begin
+        DefaultDate := WorkDate();
+        FilterGroup(2);
+        if GetFilter(Date) <> '' then
+            DefaultDate := GetRangeMax(Date);
+        FilterGroup(0);
+    end;
+
+    local procedure CheckPeriod()
+    var
+        IsOutsidePeriod: Boolean;
+    begin
+        IsOutsidePeriod := false;
+        FilterGroup(2);
+        if GetFilter(Date) <> '' then
+            IsOutsidePeriod := (Date < GetRangeMin(Date)) or (Date > GetRangeMax(Date));
+        FilterGroup(0);
+        if IsOutsidePeriod then
+            Error(PeriodErr);
     end;
 }

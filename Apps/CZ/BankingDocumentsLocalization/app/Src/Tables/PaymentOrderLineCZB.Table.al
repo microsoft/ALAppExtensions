@@ -754,6 +754,7 @@ table 31257 "Payment Order Line CZB"
             Editable = false;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA22
 #pragma warning disable AL0432         
         field(150; "Letter Type"; Option)
         {
@@ -779,6 +780,7 @@ table 31257 "Payment Order Line CZB"
             ObsoleteTag = '22.0';
         }
 #pragma warning restore AL0432 
+#endif
         field(190; "VAT Unreliable Payer"; Boolean)
         {
             Caption = 'VAT Unreliable Payer';
@@ -1377,7 +1379,7 @@ table 31257 "Payment Order Line CZB"
     local procedure OnAfterCollectSuggestedApplication(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     begin
     end;
-    
+
     [IntegrationEvent(true, false)]
     local procedure OnAfterCreateDescription(PlaceholderDescription: Text[100]; PlaceholderValues: List of [Text[100]]; var Description: Text[100])
     begin

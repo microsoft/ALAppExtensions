@@ -205,11 +205,7 @@ codeunit 30176 "Shpfy Product API"
         if Item.Picture.Count > 0 then
             if CreateImageUploadUrl(Item, Url, ResourceUrl, TenantMedia) then
                 if UploadImage(TenantMedia, Url) then
-#if not CLEAN23
-                    if not BulkOperationMgt.IsBulkOperationFeatureEnabled() or (RecordCount < BulkOperationMgt.GetBulkOperationThreshold()) then
-#else
                     if RecordCount <= BulkOperationMgt.GetBulkOperationThreshold() then
-#endif
                         exit(UpdateProductImage(Product, ResourceUrl))
                     else begin
                         IBulkOperation := BulkOperationType::UpdateProductImage;

@@ -49,6 +49,7 @@
                   tabledata "VAT Ctrl. Report Section CZL" = IMD,
                   tabledata "VAT LCY Correction Buffer CZL" = IMD,
                   tabledata "VAT Period CZL" = IMD,
+                  tabledata "VAT Stmt. Report Line Data CZL" = IMD,
                   tabledata "VAT Statement Attachment CZL" = IMD,
                   tabledata "VAT Statement Comment Line CZL" = IMD,
                   tabledata "VIES Declaration Header CZL" = IMD,

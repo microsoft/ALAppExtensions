@@ -36,8 +36,8 @@ codeunit 6205 "Transaction Storage ABS"
         SendBlobBlockForTableErr: Label 'Send blob block to Azure Function failed.', Locked = true;
         ExportOfIncomingDocErr: Label 'Export of incoming document failed.', Locked = true;
         IncomingDocsExportedTxt: Label 'Incoming documents were exported.', Locked = true;
-        CollectedDocsCountTxt: Label 'Collected docs count', Locked = true;
         ExportedDocsCountTxt: Label 'Exported docs count', Locked = true;
+        ExportedDocsTotalSizeTxt: Label 'Exported docs total size', Locked = true;
         TablesExportedTxt: Label 'Tables were exported.', Locked = true;
         ExportedTablesCountTxt: Label 'Exported tables count', Locked = true;
         ExportedToABSTxt: Label 'Exported to Azure Blob Storage using certificate authorized Azure Function', Locked = true;
@@ -117,7 +117,7 @@ codeunit 6205 "Transaction Storage ABS"
             TotalRecordCount := 0;
             repeat
                 TotalRecordCount += TransStorageExportData."Record Count";
-                TransStorageExportData.Content.CreateInStream(InStream);
+                TransStorageExportData.Content.CreateInStream(InStream, TextEncoding::UTF8);
                 InStream.ReadText(JsonData);
                 TableMetadata.Get(TransStorageExportData."Table ID");
                 BlobName :=
@@ -154,8 +154,8 @@ codeunit 6205 "Transaction Storage ABS"
     local procedure WriteIncomingDocumentsToABS(IncomingDocs: Dictionary of [Text, Integer]; AzureFunctionsAuth: Interface "Azure Functions Authentication"; CurrentDate: Date; var ExportLog: JsonObject)
     var
         IncomingDocAttachment: Record "Incoming Document Attachment";
+        TransactStorageExport: Codeunit "Transact. Storage Export";
         AzureFunctionsResponse: Codeunit "Azure Functions Response";
-        TempBlob: Codeunit "Temp Blob";
         IncomingDocKey: Text;
         BlobFolder: Text;
         BlobName: Text;
@@ -167,9 +167,9 @@ codeunit 6205 "Transaction Storage ABS"
         IncomingDocEntryNo: Integer;
         ExportedDocCount: Integer;
         LargeFileCount: Integer;
+        BlobSizeMB: Decimal;
+        ExportedDocTotalSizeMB: Decimal;
         BlobExpirationDate: Date;
-        BlobInStream: InStream;
-        BlobOutStream: OutStream;
     begin
         ContainerName := GetContainerName();
         BlobFolder := GetBlobFolder(CurrentDate);
@@ -184,27 +184,25 @@ codeunit 6205 "Transaction Storage ABS"
                         if IsFileSizeExceedsLimit(IncomingDocAttachment.Content.Length()) then
                             LargeFileCount += 1
                         else begin
-                            Clear(TempBlob);
-                            TempBlob.CreateOutStream(BlobOutStream);
-                            IncomingDocAttachment.Content.CreateInStream(BlobInStream);
-                            CopyStream(BlobOutStream, BlobInStream);
                             AttachmentName := RemoveProhibitedChars(IncomingDocAttachment.Name);
                             FileExtension := RemoveProhibitedChars(IncomingDocAttachment."File Extension");
                             BlobName := StrSubstNo(IncomingDocBlobNameTxt, BlobFolder, IncomingDocKey, AttachmentName, FileExtension);
                             BlobNameToLog := StrSubstNo(IncomingDocBlobNameTxt, BlobFolder, IncomingDocKey, EncodeDocName(AttachmentName), FileExtension);
-                            AzureFunctionsResponse := SendDocumentToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, TempBlob, BlobExpirationDate);
+                            BlobSizeMB := GetDataLengthMB(IncomingDocAttachment.Content.Length);
+                            AzureFunctionsResponse := SendDocumentToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, IncomingDocAttachment, BlobExpirationDate);
                             if not AzureFunctionsResponse.IsSuccessful() then
                                 ProcessBase64FaultResponse(
-                                    AzureFunctionsResponse, EncodeDocName(IncomingDocAttachment.Name), BlobNameToLog, GetDataLengthMB(TempBlob.Length()));
+                                    AzureFunctionsResponse, EncodeDocName(IncomingDocAttachment.Name), BlobNameToLog, BlobSizeMB);
                             ExportedDocCount += 1;
+                            ExportedDocTotalSizeMB += BlobSizeMB;
                         end;
                 until IncomingDocAttachment.Next() = 0;
         end;
         ExportLog.Add(IncomingDocAttachment.TableName, ExportedDocCount);
         if LargeFileCount > 0 then
-            FeatureTelemetry.LogError('0000M7H', TransactionStorageTok, '', StrSubstNo(LargeFileFoundErr, LargeFileCount));
-        CustomDimensions.Add(CollectedDocsCountTxt, Format(IncomingDocAttachment.Count()));
+            TransactStorageExport.LogWarning('0000M7H', StrSubstNo(LargeFileFoundErr, LargeFileCount));
         CustomDimensions.Add(ExportedDocsCountTxt, Format(ExportedDocCount));
+        CustomDimensions.Add(ExportedDocsTotalSizeTxt, Format(ExportedDocTotalSizeMB));
         FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, IncomingDocsExportedTxt, CustomDimensions);
     end;
 
@@ -275,7 +273,7 @@ codeunit 6205 "Transaction Storage ABS"
     end;
 
     [NonDebuggable]
-    local procedure SendDocumentToAzureFunction(var AzureFunctionsAuth: Interface "Azure Functions Authentication"; ContainerName: Text; BlobName: Text; var TempBlob: Codeunit "Temp Blob"; BlobExpirationDate: Date) AzureFunctionsResponse: Codeunit "Azure Functions Response"
+    local procedure SendDocumentToAzureFunction(var AzureFunctionsAuth: Interface "Azure Functions Authentication"; ContainerName: Text; BlobName: Text; var IncomingDocAttachment: Record "Incoming Document Attachment"; BlobExpirationDate: Date) AzureFunctionsResponse: Codeunit "Azure Functions Response"
     var
         AzureFunctions: Codeunit "Azure Functions";
         Base64Convert: Codeunit "Base64 Convert";
@@ -285,7 +283,7 @@ codeunit 6205 "Transaction Storage ABS"
         RequestBody: Text;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
-        Tempblob.CreateInStream(BlobInStream);
+        IncomingDocAttachment.Content.CreateInStream(BlobInStream);
         RequestBodyJson.Add('containerName', ContainerName);
         RequestBodyJson.Add('blobName', BlobName);
         RequestBodyJson.Add('blobContent', Base64Convert.ToBase64(BlobInStream));

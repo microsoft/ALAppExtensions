@@ -67,7 +67,7 @@ table 30151 "Shpfy Company Location"
             Editable = false;
             ToolTip = 'Specifies the name of the company location.';
         }
-        field(10; "Province Code"; Code[2])
+        field(10; "Province Code"; Code[10])
         {
             Caption = 'Province';
             DataClassification = CustomerContent;

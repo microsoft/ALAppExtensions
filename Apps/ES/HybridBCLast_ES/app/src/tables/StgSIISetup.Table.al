@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA23
 table 4033 "Stg SII Setup"
 {
     ObsoleteState = Removed;
@@ -29,3 +30,4 @@ table 4033 "Stg SII Setup"
         }
     }
 }
+#endif

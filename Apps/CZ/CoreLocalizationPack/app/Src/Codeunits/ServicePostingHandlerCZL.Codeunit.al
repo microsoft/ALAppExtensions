@@ -26,101 +26,6 @@ codeunit 31040 "Service Posting Handler CZL"
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnAfterPostInvoicePostBuffer', '', false, false)]
-    local procedure ServPostingVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJournalLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; ServiceHeader: Record "Service Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-        VATCurrFactor: Decimal;
-    begin
-        if ServiceHeader."Currency Factor" <> ServiceHeader."VAT Currency Factor CZL" then begin
-            VATPostingSetup.Get(GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group");
-            VATPostingSetup.TestField("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT");
-            VATPostingSetup.TestField("Sales VAT Curr. Exch. Acc CZL");
-            SourceCodeSetup.Get();
-            SourceCodeSetup.TestField("Sales VAT Delay CZL");
-            GLEntry.Get(GLEntryNo);
-            PostServiceVATCurrencyFactor(ServiceHeader, InvoicePostBuffer, false, 1, true, VATPostingSetup, GenJnlPostLine);
-            if ServiceHeader."VAT Currency Factor CZL" = 0 then
-                VATCurrFactor := 1
-            else
-                VATCurrFactor := ServiceHeader."Currency Factor" / ServiceHeader."VAT Currency Factor CZL";
-            if VATCurrFactor = 0 then
-                VATCurrFactor := 1;
-
-            PostServiceVATCurrencyFactor(ServiceHeader, InvoicePostBuffer, true, VATCurrFactor, false, VATPostingSetup, GenJnlPostLine);
-        end;
-    end;
-
-    local procedure PostServiceVATCurrencyFactor(ServiceHeader: Record "Service Header"; InvoicePostBuffer: Record "Invoice Post. Buffer"; ToPost: Boolean; CurrFactor: Decimal; IsCorrection: Boolean; VATPostingSetup: Record "VAT Posting Setup"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-        Sign: Integer;
-    begin
-        if ToPost then
-            Sign := 1
-        else
-            Sign := -1;
-
-        GenJournalLine.Init();
-        GenJournalLine."Posting Date" := ServiceHeader."Posting Date";
-        GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
-        GenJournalLine."Document Date" := ServiceHeader."Document Date";
-        GenJournalLine.Description := ServiceHeader."Posting Description";
-        GenJournalLine."Reason Code" := ServiceHeader."Reason Code";
-        GenJournalLine."Document Type" := GLEntry."Document Type";
-        GenJournalLine."Document No." := GLEntry."Document No.";
-        GenJournalLine."External Document No." := GLEntry."External Document No.";
-        GenJournalLine."Account No." := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
-        GenJournalLine."System-Created Entry" := InvoicePostBuffer."System-Created Entry";
-        GenJournalLine."Source Currency Code" := ServiceHeader."Currency Code";
-        GetCurrency(ServiceHeader."Currency Code");
-        if IsCorrection then
-            GenJournalLine.Correction := not InvoicePostBuffer."Correction CZL"
-        else
-            GenJournalLine.Correction := InvoicePostBuffer."Correction CZL";
-        GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Sale;
-        GenJournalLine."VAT Bus. Posting Group" := InvoicePostBuffer."VAT Bus. Posting Group";
-        GenJournalLine."VAT Prod. Posting Group" := InvoicePostBuffer."VAT Prod. Posting Group";
-        GenJournalLine."Tax Area Code" := InvoicePostBuffer."Tax Area Code";
-        GenJournalLine."Tax Liable" := InvoicePostBuffer."Tax Liable";
-        GenJournalLine."Tax Group Code" := InvoicePostBuffer."Tax Group Code";
-        GenJournalLine."Use Tax" := InvoicePostBuffer."Use Tax";
-        GenJournalLine."VAT Calculation Type" := InvoicePostBuffer."VAT Calculation Type";
-        GenJournalLine."VAT Base Discount %" := ServiceHeader."VAT Base Discount %";
-        GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
-        GenJournalLine."Shortcut Dimension 1 Code" := InvoicePostBuffer."Global Dimension 1 Code";
-        GenJournalLine."Shortcut Dimension 2 Code" := InvoicePostBuffer."Global Dimension 2 Code";
-        GenJournalLine."Dimension Set ID" := InvoicePostBuffer."Dimension Set ID";
-        GenJournalLine."Job No." := InvoicePostBuffer."Job No.";
-        GenJournalLine."Source Code" := SourceCodeSetup."Sales VAT Delay CZL";
-        GenJournalLine."Bill-to/Pay-to No." := ServiceHeader."Bill-to Customer No.";
-        GenJournalLine."Source Type" := GenJournalLine."Source Type"::Customer;
-        GenJournalLine."Source No." := ServiceHeader."Bill-to Customer No.";
-        GenJournalLine."Posting No. Series" := ServiceHeader."Posting No. Series";
-        GenJournalLine."Bal. Account No." := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
-        GenJournalLine.Quantity := Sign * InvoicePostBuffer.Quantity;
-        GenJournalLine.Amount := Round(Sign * InvoicePostBuffer.Amount * CurrFactor, Currency."Amount Rounding Precision");
-        GenJournalLine."VAT Amount" := Round(Sign * InvoicePostBuffer."VAT Amount" *
-            CurrFactor, Currency."Amount Rounding Precision");
-        GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
-        GenJournalLine."Source Currency Amount" := Round(Sign * InvoicePostBuffer."Amount (ACY)" * CurrFactor,
-            Currency."Amount Rounding Precision");
-        GenJournalLine."Source Curr. VAT Amount" := Round(Sign * InvoicePostBuffer."VAT Amount (ACY)" * CurrFactor,
-            Currency."Amount Rounding Precision");
-        GenJournalLine."Source Curr. VAT Base Amount" := GenJournalLine."Source Currency Amount" - GenJournalLine."Source Curr. VAT Amount";
-        GenJournalLine."VAT Difference" := Round(Sign * InvoicePostBuffer."VAT Difference" * CurrFactor,
-            Currency."Amount Rounding Precision");
-        GenJournalLine."Gen. Bus. Posting Group" := InvoicePostBuffer."Gen. Bus. Posting Group";
-        GenJournalLine."Gen. Prod. Posting Group" := InvoicePostBuffer."Gen. Prod. Posting Group";
-        GenJournalLine.Validate("VAT Delay CZL", true);
-
-        GenJnlPostLine.RunWithCheck(GenJournalLine);
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLinesOnAfterGenJnlLinePost', '', false, false)]
     local procedure ServicePostVATCurrencyFactorOnPostLinesOnAfterGenJnlLinePost(var GenJnlLine: Record "Gen. Journal Line"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; ServiceHeader: Record "Service Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
@@ -262,26 +167,6 @@ codeunit 31040 "Service Posting Handler CZL"
                     end;
             until ServiceLine.Next() = 0;
     end;
-
-#if not CLEAN23
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
-#pragma warning restore AL0432
-    local procedure UpdateSymbolsAndBankAccountOnBeforePostCustomerEntry(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
-    begin
-        GenJournalLine."Specific Symbol CZL" := ServiceHeader."Specific Symbol CZL";
-        if ServiceHeader."Variable Symbol CZL" <> '' then
-            GenJournalLine."Variable Symbol CZL" := ServiceHeader."Variable Symbol CZL"
-        else
-            GenJournalLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJournalLine."Document No.");
-        GenJournalLine."Constant Symbol CZL" := ServiceHeader."Constant Symbol CZL";
-        GenJournalLine."Bank Account Code CZL" := ServiceHeader."Bank Account Code CZL";
-        GenJournalLine."Bank Account No. CZL" := ServiceHeader."Bank Account No. CZL";
-        GenJournalLine."IBAN CZL" := ServiceHeader."IBAN CZL";
-        GenJournalLine."SWIFT Code CZL" := ServiceHeader."SWIFT Code CZL";
-        GenJournalLine."Transit No. CZL" := ServiceHeader."Transit No. CZL";
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure UpdateSymbolsAndBankAccountOnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")

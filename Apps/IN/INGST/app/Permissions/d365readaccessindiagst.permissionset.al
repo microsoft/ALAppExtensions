@@ -35,9 +35,6 @@ permissionset 18360 "D365 Read Access - India GST"
                   tabledata "Dist. Component Amount" = R,
                   tabledata "Delivery Challan Header" = R,
                   tabledata "Delivery Challan Line" = R,
-#if not CLEAN23
-                  tabledata "E-Commerce Merchant" = R,
-#endif
                   tabledata "E-Comm. Merchant" = R,
                   tabledata "GST Application Buffer" = R,
                   tabledata "GST Claim Setoff" = R,

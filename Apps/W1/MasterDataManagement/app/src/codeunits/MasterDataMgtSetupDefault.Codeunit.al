@@ -149,11 +149,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Customer.FieldNo(Customer.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Coupled to CRM"), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -196,11 +192,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Vendor.FieldNo(Vendor.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Coupled to CRM"), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -244,11 +236,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Contact.FieldNo(Contact.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Coupled to CRM"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#else
                 if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -388,11 +376,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Currency.FieldNo(Currency.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Coupled to CRM"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#else
                 if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 

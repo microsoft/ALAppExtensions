@@ -26,6 +26,7 @@ table 8064 "Billing Line Archive"
         field(2; "User ID"; Code[50])
         {
             Caption = 'User ID';
+            DataClassification = EndUserIdentifiableInformation;
             Editable = false;
             TableRelation = User."User Name";
         }

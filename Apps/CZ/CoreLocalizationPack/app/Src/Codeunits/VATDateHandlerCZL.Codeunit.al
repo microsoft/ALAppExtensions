@@ -50,39 +50,6 @@ codeunit 11742 "VAT Date Handler CZL"
         GLEntry."VAT Reporting Date" := GenJournalLine."VAT Reporting Date";
     end;
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareSales', '', false, false)]
-    local procedure UpdateVatDateInvoicePostBufferFromSalesHeader(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesLine: Record "Sales Line")
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
-        InvoicePostBuffer."VAT Date CZL" := SalesHeader."VAT Reporting Date";
-        InvoicePostBuffer."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
-    local procedure UpdateVatDateInvoicePostBufferFromPurchaseHeader(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchaseLine: Record "Purchase Line")
-    var
-        PurchaseHeader: Record "Purchase Header";
-    begin
-        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
-        InvoicePostBuffer."VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
-        InvoicePostBuffer."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareService', '', false, false)]
-    local procedure UpdateVatDateInvoicePostBufferFromServiceHeader(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var ServiceLine: Record "Service Line")
-    var
-        ServiceHeader: Record "Service Header";
-    begin
-        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
-        InvoicePostBuffer."VAT Date CZL" := ServiceHeader."VAT Reporting Date";
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Microsoft.Sales.Posting."Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure UpdateInvoicePostingBufferOnAfterPrepareSales(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var SalesLine: Record "Sales Line")
     var

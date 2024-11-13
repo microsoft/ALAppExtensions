@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using System.Utilities;
@@ -14,11 +8,11 @@ using Microsoft.Inventory.Analysis;
 using Microsoft.Inventory.Ledger;
 using Microsoft.PowerBIReports;
 using Microsoft.Purchases.PowerBIReports;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139880 "PowerBI Purchases Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -30,6 +24,8 @@ codeunit 139880 "PowerBI Purchases Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -52,7 +48,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for outstanding purchase order line is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Item Outstd.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('purchOrderNo eq ''%1''', PurchHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'purchOrderNo eq ''' + Format(PurchHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -103,7 +99,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for the purchase lines outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Item Outstd.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('purchOrderNo eq ''%1'' OR purchOrderNo eq ''%2''', PurchHeader."No.", PurchHeader2."No."));
+        UriBuilder.AddQueryParameter('$filter', 'purchOrderNo eq ''' + PurchHeader."No." + ''' OR purchOrderNo eq ''' + PurchHeader2."No." + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -116,7 +112,7 @@ codeunit 139880 "PowerBI Purchases Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.lineNo == %1)]', PurchLine."Line No.")), 'Purchase line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(PurchLine."Line No.") + ')]'), 'Purchase line not found.');
         Assert.AreEqual(Format(PurchHeader."No."), JsonMgt.GetValue('purchOrderNo'), 'Purchase order no does not match.');
         Assert.AreEqual(Format(PurchHeader."Document Type"), JsonMgt.GetValue('documentType'), 'Purchase header document type does not match.');
         Assert.AreEqual(PurchHeader."Buy-from Vendor No.", JsonMgt.GetValue('vendorNo'), 'Purchase header vendor no does not match.');
@@ -153,7 +149,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for outstanding purchase order line is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Entries - Purch.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('entryNo eq %1', ItemBudgetEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ItemBudgetEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -167,7 +163,7 @@ codeunit 139880 "PowerBI Purchases Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', ItemBudgetEntry."Entry No.")), 'Item budget entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(ItemBudgetEntry."Entry No.") + ')]'), 'Item budget entry not found.');
         Assert.AreEqual(ItemBudgetEntry."Budget Name", JsonMgt.GetValue('budgetName'), 'Item budget entry budget name does not match.');
         Assert.AreEqual(Format(ItemBudgetEntry.Date, 0, 9), JsonMgt.GetValue('entryDate'), 'Item budget entry entry date does not match.');
         Assert.AreEqual(ItemBudgetEntry."Item No.", JsonMgt.GetValue('itemNo'), 'Item budget entry item no does not match.');
@@ -199,7 +195,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for the item budget entries outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Entries - Purch.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('entryNo eq %1', ItemBudgetEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ItemBudgetEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -239,7 +235,7 @@ codeunit 139880 "PowerBI Purchases Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemLedgerEntryNo == %1)]', ItemLedgerEntry."Entry No.")), 'Purchase item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemLedgerEntryNo == ' + Format(ItemLedgerEntry."Entry No.") + ')]'), 'Purchase item ledger entry not found.');
         Assert.AreEqual(PurchaseHeader."Buy-from Vendor No.", JsonMgt.GetValue('vendorNo'), 'Vendor no does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry No."), JsonMgt.GetValue('entryNo'), 'Value entry entry no does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry Type"), JsonMgt.GetValue('entryType'), 'Value entry entry type does not match.');
@@ -264,11 +260,13 @@ codeunit 139880 "PowerBI Purchases Test"
         Response: Text;
     begin
         // [GIVEN] Value entries exist outside of the query filter
+        PermissionsMock.Assign('SUPER');
         if ItemLedgerEntry.FindLast() then;
         ItemLedgerEntry.Init();
         ItemLedgerEntry."Entry No." += 1;
         ItemLedgerEntry."Entry Type" := ItemLedgerEntry."Entry Type"::Sale;
         ItemLedgerEntry.Insert();
+        PermissionsMock.ClearAssignments();
 
         if ValueEntry.FindLast() then;
         ValueEntry."Entry No." += 1;
@@ -282,7 +280,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for the value entries outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Purch.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('itemLedgerEntryNo eq %1', ItemLedgerEntry."Entry No."));
+        UriBuilder.AddQueryParameter('$filter', 'itemLedgerEntryNo eq ' + Format(ItemLedgerEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -311,7 +309,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for received not invoiced purchase order is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Item Received", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('purchaseOrderNo eq ''%1''', PurchaseHeader."No."));
+        UriBuilder.AddQueryParameter('$filter', 'purchaseOrderNo eq ''' + Format(PurchaseHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -331,7 +329,7 @@ codeunit 139880 "PowerBI Purchases Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.lineNo == %1)]', PurchaseLine."Line No.")), 'Purchase item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(PurchaseLine."Line No.") + ')]'), 'Purchase item ledger entry not found.');
         Assert.AreEqual(Format(PurchaseHeader."Document Type"), JsonMgt.GetValue('documentType'), 'Purchase header document type does not match.');
         Assert.AreEqual(PurchaseHeader."Pay-to Vendor No.", JsonMgt.GetValue('vendorNo'), 'Purchase header vendor no does not match.');
         Assert.AreEqual(Format(PurchaseHeader."Order Date", 0, 9), JsonMgt.GetValue('orderDate'), 'Purchase header order date does not match.');
@@ -382,7 +380,7 @@ codeunit 139880 "PowerBI Purchases Test"
         // [WHEN] Get request for the purchase lines outside of the query filter is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Item Received", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('purchaseOrderNo eq ''%1'' OR purchaseOrderNo eq ''%2''', PurchaseHeader."No.", PurchaseHeader2."No."));
+        UriBuilder.AddQueryParameter('$filter', 'purchaseOrderNo eq ''' + Format(PurchaseHeader."No.") + ''' OR purchaseOrderNo eq ''' + Format(PurchaseHeader2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -411,6 +409,7 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Start/End Date";
 
@@ -418,8 +417,9 @@ codeunit 139880 "PowerBI Purchases Test"
         PBISetup."Item Purch. Start Date" := Today();
         PBISetup."Item Purch. End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -438,14 +438,16 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Purch. Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Purch. Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Purch. Date Formula")) + '..';
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -463,8 +465,11 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -483,9 +488,3 @@ codeunit 139880 "PowerBI Purchases Test"
         PBISetup.Insert();
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

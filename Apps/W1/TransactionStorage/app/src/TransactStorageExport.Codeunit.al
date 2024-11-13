@@ -19,17 +19,20 @@ codeunit 6203 "Transact. Storage Export"
                   tabledata "Incoming Document" = r;
 
     var
+        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         ExportStartedTxt: Label 'Export started', Locked = true;
         ExportEndedTxt: Label 'Export ended', Locked = true;
-        TimeDeadlineExceededErr: Label 'Export task timed out. Time deadline: %1 hours. Task time: %2 hours.', Comment = '%1, %2 - number of hours', Locked = true;
+        TaskTimedOutErr: Label 'Export task timed out. Time deadline: %1 hours. Task time: %2 hours.', Comment = '%1, %2 - number of hours', Locked = true;
 
     trigger OnRun()
     var
         TransactStorageExportData: Codeunit "Transact. Storage Export Data";
+        CustomDimensions: Dictionary of [Text, Text];
     begin
-        FeatureTelemetry.LogUsage('0000LK3', TransactionStorageTok, ExportStartedTxt);
+        CustomDimensions.Add('ContainerName', TransactionStorageABS.GetContainerName());
+        FeatureTelemetry.LogUsage('0000LK3', TransactionStorageTok, ExportStartedTxt, CustomDimensions);
         Rec.SetStatusStarted();
         Commit();
 
@@ -37,22 +40,34 @@ codeunit 6203 "Transact. Storage Export"
         TransactStorageExportData.ExportData(Rec."Starting Date/Time");
 
         Rec.SetStatusCompleted();
+        CustomDimensions.Add('TaskRunTimeHours', Format(GetTaskRuntimeHours(Rec."Starting Date/Time", CurrentDateTime())));
         FeatureTelemetry.LogUsage('0000LK4', TransactionStorageTok, ExportEndedTxt);
     end;
 
-    procedure CheckTimeDeadline(TaskStartingDateTime: DateTime)
+    procedure IsTaskTimedOut(TaskStartingDateTime: DateTime; var TaskRunTimeHours: Decimal; var MaxExpectedRunTimeHours: Integer): Boolean
     var
         TransactionStorageSetup: Record "Transaction Storage Setup";
-        TaskTimeHours: Decimal;
     begin
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert(true);
-        if (CurrentDateTime() - TaskStartingDateTime) >= (TransactionStorageSetup."Max. Number of Hours" * 60 * 60 * 1000) then begin
-            TaskTimeHours := Round((CurrentDateTime() - TaskStartingDateTime) / (60 * 60 * 1000), 0.1);
-            FeatureTelemetry.LogError(
-                '0000LNB', TransactionStorageTok, '', StrSubstNo(TimeDeadlineExceededErr, TransactionStorageSetup."Max. Number of Hours", TaskTimeHours));
-            Error('');
-        end;
+        MaxExpectedRunTimeHours := TransactionStorageSetup."Max. Number of Hours";
+        TaskRunTimeHours := GetTaskRuntimeHours(TaskStartingDateTime, CurrentDateTime());
+
+        exit(TaskRunTimeHours > MaxExpectedRunTimeHours);
+    end;
+
+    procedure CheckTaskTimedOut(TaskStartingDateTime: DateTime)
+    var
+        TaskRunTimeHours: Decimal;
+        MaxExpectedRunTimeHours: Integer;
+    begin
+        if IsTaskTimedOut(TaskStartingDateTime, TaskRunTimeHours, MaxExpectedRunTimeHours) then
+            LogWarning('0000LNB', StrSubstNo(TaskTimedOutErr, MaxExpectedRunTimeHours, TaskRunTimeHours));
+    end;
+
+    local procedure GetTaskRuntimeHours(TaskStartingDateTime: DateTime; TaskEndingDateTime: DateTime): Decimal
+    begin
+        exit(Round((TaskEndingDateTime - TaskStartingDateTime) / (60 * 60 * 1000), 0.1));
     end;
 
     procedure GetRecordExportData(var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; var RecRef: RecordRef)
@@ -105,7 +120,6 @@ codeunit 6203 "Transact. Storage Export"
 
     procedure CalcTenantExportStartTime() ExportStartTime: Time
     var
-        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         Convert: DotNet Convert;
         TenantIdTwoFirstChars: Text[2];
         TimeMultiplier: Integer;
@@ -139,10 +153,24 @@ codeunit 6203 "Transact. Storage Export"
 
     local procedure VerifyContainerNameLength()
     var
-        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         ContainerName: Text;
     begin
         ContainerName := TransactionStorageABS.GetContainerName();
         TransactionStorageABS.VerifyContainerNameLength(ContainerName);
+    end;
+
+    procedure LogWarning(EventId: Text; WarningText: Text)
+    var
+        Telemetry: Codeunit Telemetry;
+    begin
+        Telemetry.LogMessage(EventId, WarningText, Verbosity::Warning, DataClassification::SystemMetadata);
+    end;
+
+    procedure LogWarning(EventId: Text; WarningText: Text; CustomDimensions: Dictionary of [Text, Text])
+    var
+        Telemetry: Codeunit Telemetry;
+    begin
+        Telemetry.LogMessage(
+            EventId, WarningText, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 }

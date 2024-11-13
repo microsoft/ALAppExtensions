@@ -17,7 +17,7 @@ pageextension 8079 "Sales Order Archive Subform" extends "Sales Order Archive Su
     }
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitmentArchive)
             {

@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using Microsoft.PowerBIReports;
@@ -11,15 +5,16 @@ using Microsoft.Sales.PowerBIReports;
 using Microsoft.Purchases.PowerBIReports;
 using Microsoft.Manufacturing.PowerBIReports;
 using Microsoft.Finance.PowerBIReports;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139875 "PowerBI Core Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
         Assert: Codeunit Assert;
+        PermissionsMock: Codeunit "Permissions Mock";
 
     [Test]
     procedure TestGenerateItemSalesReportDateFilter_StartEndDate()
@@ -31,6 +26,7 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Start/End Date";
 
@@ -38,8 +34,9 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup."Item Sales Start Date" := Today();
         PBISetup."Item Sales End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -58,14 +55,16 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Sales Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Sales Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Sales Date Formula")) + '..';
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -83,8 +82,11 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
@@ -103,6 +105,7 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Start/End Date";
 
@@ -110,8 +113,9 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup."Item Purch. Start Date" := Today();
         PBISetup."Item Purch. End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -130,14 +134,16 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Purch. Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Purch. Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Purch. Date Formula")) + '..';
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -155,8 +161,11 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();
@@ -175,6 +184,7 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
 
@@ -182,8 +192,9 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup."Manufacturing Start Date" := Today();
         PBISetup."Manufacturing End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -202,14 +213,16 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Manufacturing Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Manufacturing Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Manufacturing Date Formula")) + '..';
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -227,8 +240,11 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -247,6 +263,7 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
 
@@ -254,8 +271,9 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup."Manufacturing Start Date" := Today();
         PBISetup."Manufacturing End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Format(CreateDateTime(Today(), 0T)), Format(CreateDateTime(Today() + 10, 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(Today(), 0T)) + '..' + Format(CreateDateTime(Today() + 10, 0T));
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
@@ -274,14 +292,16 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Manufacturing Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)) + '..';
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
@@ -299,8 +319,11 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
@@ -319,14 +342,16 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateFinanceReportDateFilter
         // [GIVEN] Power BI setup record is created
+        AssignAdminPermissionSet();
         RecreatePBISetup();
 
         // [GIVEN] Mock start & end date values are entered 
         PBISetup."Finance Start Date" := Today();
         PBISetup."Finance End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateFinanceReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateFinanceReportDateFilter();
@@ -343,7 +368,9 @@ codeunit 139875 "PowerBI Core Test"
     begin
         // [SCENARIO] Test GenerateFinanceReportDateFilter
         // [GIVEN] Power BI setup record is created with blank start & end dates
+        AssignAdminPermissionSet();
         RecreatePBISetup();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateFinanceReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateFinanceReportDateFilter();
@@ -361,10 +388,9 @@ codeunit 139875 "PowerBI Core Test"
         PBISetup.Init();
         PBISetup.Insert();
     end;
-}
 
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210
+    procedure AssignAdminPermissionSet()
+    begin
+        PermissionsMock.Assign('PowerBI Report Admin');
+    end;
+}

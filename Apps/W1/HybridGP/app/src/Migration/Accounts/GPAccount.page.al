@@ -1,3 +1,4 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4090 "GP Account"
@@ -8,6 +9,10 @@ page 4090 "GP Account"
     InsertAllowed = false;
     Caption = 'Account Table';
     PromotedActionCategories = 'Related Entities';
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
 
     layout
     {
@@ -74,3 +79,4 @@ page 4090 "GP Account"
         }
     }
 }
+#endif

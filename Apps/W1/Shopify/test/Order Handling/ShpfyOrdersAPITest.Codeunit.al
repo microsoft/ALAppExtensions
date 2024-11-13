@@ -443,6 +443,72 @@ codeunit 139608 "Shpfy Orders API Test"
         LibraryAssert.AreEqual(SalesHeader."Tax Area Code", '', 'Tax Area Code is empty');
     end;
 
+    [Test]
+    procedure UnitTestCreateSalesDocumentReserve()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrderLine: Record "Shpfy Order Line";
+        SalesHeader: Record "Sales Header";
+        ShopifyCustomer: Record "Shpfy Customer";
+        Customer: Record Customer;
+        Item: Record Item;
+        ShopifyVariant: Record "Shpfy Variant";
+        SalesLine: Record "Sales Line";
+        ItemJournalLine: Record "Item Journal Line";
+        ProcessOrders: Codeunit "Shpfy Process Orders";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryRandom: Codeunit "Library - Random";
+        OrderHeaderId: BigInteger;
+    begin
+        // [SCENARIO] If a customer has the reserve option set to always, the order line will be reserved
+        Initialize();
+
+        // [GIVEN] A Shopify sales order
+        Shop := CommunicationMgt.GetShopRecord();
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Reserve := Customer.Reserve::Always;
+        Customer.Modify();
+
+        ShopifyCustomer.Id := LibraryRandom.RandIntInRange(100000, 999999);
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer."Shop Id" := Shop."Shop Id";
+        ShopifyCustomer.Insert();
+
+        OrderHeader."Customer Id" := ShopifyCustomer.Id;
+        OrderHeader."Shop Code" := Shop.Code;
+        OrderHeader."Shopify Order Id" := LibraryRandom.RandIntInRange(100000, 999999);
+        OrderHeaderId := OrderHeader."Shopify Order Id";
+        OrderHeader.Insert();
+
+        LibraryInventory.CreateItem(Item);
+        LibraryInventory.CreateItemJournalLineInItemTemplate(ItemJournalLine, Item."No.", '', '', 10);
+        LibraryInventory.PostItemJournalLine(ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
+        ShopifyVariant."Item SystemId" := Item.SystemId;
+        ShopifyVariant.Id := LibraryRandom.RandIntInRange(100000, 999999);
+        ShopifyVariant."Shop Code" := Shop.Code;
+        ShopifyVariant.Insert();
+        OrderLine."Shopify Order Id" := OrderHeader."Shopify Order Id";
+        OrderLine."Shopify Variant Id" := ShopifyVariant.Id;
+        OrderLine.Quantity := 1;
+        OrderLine.Insert();
+        Commit();
+
+        // [WHEN] Order is processed
+        ProcessOrders.ProcessShopifyOrder(OrderHeader);
+
+        // [THEN] Sales document is created from Shopify order and order line is reserved
+        SalesHeader.SetRange("Shpfy Order Id", OrderHeaderId);
+        LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("No.", Item."No.");
+        SalesLine.FindFirst();
+        SalesLine.CalcFields("Reserved Quantity");
+        LibraryAssert.AreNotEqual(SalesLine."Reserved Quantity", 0, 'Order line is reserved');
+    end;
+
     local procedure CreateTaxArea(var TaxArea: Record "Tax Area"; var ShopifyTaxArea: Record "Shpfy Tax Area"; Shop: Record "Shpfy Shop")
     var
         ShopifyCustomerTemplate: Record "Shpfy Customer Template";

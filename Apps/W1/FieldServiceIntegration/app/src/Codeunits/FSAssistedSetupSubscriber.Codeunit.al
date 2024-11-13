@@ -12,7 +12,7 @@ using Microsoft.Integration.D365Sales;
 codeunit 6613 "FS Assisted Setup Subscriber"
 {
     var
-        CRMConnectionSetupTitleTxt: Label 'Set up a connection to %1', Comment = '%1 = CRM product name';
+        CRMConnectionSetupTitleTxt: Label 'Set up an integration to %1', Comment = '%1 = CRM product name';
         CRMConnectionSetupShortTitleTxt: Label 'Connect to %1', Comment = '%1 = CRM product name', MaxLength = 32;
         FSConnectionSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2270903', Locked = true;
         CRMConnectionSetupDescriptionTxt: Label 'Connect your Dynamics 365 services for better insights. Data is exchanged between the apps for better productivity.';

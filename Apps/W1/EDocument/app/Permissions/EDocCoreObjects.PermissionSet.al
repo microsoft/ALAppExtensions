@@ -8,6 +8,7 @@ using Microsoft.eServices.EDocument.IO;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.EServices.EDocument.OrderMatch.Copilot;
+using Microsoft.eServices.EDocument.Service;
 
 permissionset 6100 "E-Doc. Core - Objects"
 {
@@ -27,6 +28,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Doc. Order Match" = X,
         table "E-Doc. Imported Line" = X,
         table "E-Doc. PO Match Prop. Buffer" = X,
+        table "Service Participant" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
