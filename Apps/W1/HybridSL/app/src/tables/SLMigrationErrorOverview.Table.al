@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42063 "SL Migration Error Overview"
+table 47063 "SL Migration Error Overview"
 {
     Access = Internal;
     Caption = 'SL Migration Error Overview';

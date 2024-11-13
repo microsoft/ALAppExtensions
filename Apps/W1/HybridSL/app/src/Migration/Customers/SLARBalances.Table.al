@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42010 "SL AR_Balances"
+table 47010 "SL AR_Balances"
 {
     Access = Internal;
     Caption = 'SL AR_Balances';

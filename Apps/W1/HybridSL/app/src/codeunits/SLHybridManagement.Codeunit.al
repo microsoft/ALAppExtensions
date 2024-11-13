@@ -9,7 +9,7 @@ using Microsoft.DataMigration;
 using System.Integration;
 using System.Text;
 
-codeunit 42013 "SL Hybrid Management"
+codeunit 47013 "SL Hybrid Management"
 {
     Access = Internal;
 

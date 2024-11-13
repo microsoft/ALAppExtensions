@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42045 "SL Terms"
+table 47045 "SL Terms"
 {
     Access = Internal;
     Caption = 'SL Terms';

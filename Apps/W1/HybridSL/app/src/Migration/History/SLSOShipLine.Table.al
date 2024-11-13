@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42037 "SL SOShipLine"
+table 47037 "SL SOShipLine"
 {
     Access = Internal;
     DataClassification = CustomerContent;

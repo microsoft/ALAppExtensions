@@ -1,4 +1,4 @@
-pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Management"
+pageextension 47001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Management"
 {
     layout
     {

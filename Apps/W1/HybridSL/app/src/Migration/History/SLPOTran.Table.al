@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42033 "SL POTran"
+table 47033 "SL POTran"
 {
     Access = Internal;
     DataClassification = CustomerContent;

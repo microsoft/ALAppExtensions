@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42044 "SL SegDef"
+table 47044 "SL SegDef"
 {
     Access = Internal;
     Caption = 'SL SegDef';

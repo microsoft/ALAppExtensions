@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Security.AccessControl;
 
-permissionsetextension 42002 "SLD365 BASIC ISV - MSL" extends "D365 BASIC ISV"
+permissionsetextension 47002 "SLD365 BASIC ISV - MSL" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "SL AccountTransactions" = RIMD,
                   tabledata "SL Fiscal Periods" = RIMD,

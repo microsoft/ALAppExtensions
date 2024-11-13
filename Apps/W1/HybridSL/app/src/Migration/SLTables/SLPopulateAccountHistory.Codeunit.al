@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-codeunit 42002 "SL Populate Account History"
+codeunit 47002 "SL Populate Account History"
 {
     Access = Internal;
     trigger OnRun()

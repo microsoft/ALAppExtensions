@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42019 "SL Codes"
+table 47019 "SL Codes"
 {
     Access = Internal;
     DataClassification = SystemMetadata;

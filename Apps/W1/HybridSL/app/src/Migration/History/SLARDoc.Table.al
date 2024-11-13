@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42024 "SL ARDoc"
+table 47024 "SL ARDoc"
 {
     Access = Internal;
     DataClassification = CustomerContent;

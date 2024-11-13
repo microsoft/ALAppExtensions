@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42032 "SL POReceipt"
+table 47032 "SL POReceipt"
 {
     Access = Internal;
     DataClassification = CustomerContent;

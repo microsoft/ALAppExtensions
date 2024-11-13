@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42008 "SL Segments"
+table 47008 "SL Segments"
 {
     Access = Internal;
     DataClassification = SystemMetadata;

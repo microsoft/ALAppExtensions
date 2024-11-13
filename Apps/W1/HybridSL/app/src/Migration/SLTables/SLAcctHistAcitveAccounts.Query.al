@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-query 42001 "SL AcctHist Acitve Accounts"
+query 47001 "SL AcctHist Acitve Accounts"
 {
     Caption = 'AcctHist Acitve Accounts';
     QueryType = Normal;

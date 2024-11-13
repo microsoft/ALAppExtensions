@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42051 "SL SOType"
+table 47051 "SL SOType"
 {
     Access = Internal;
     DataClassification = CustomerContent;

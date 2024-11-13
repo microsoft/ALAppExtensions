@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42027 "SL Batch"
+table 47027 "SL Batch"
 {
     Access = Internal;
     DataClassification = CustomerContent;

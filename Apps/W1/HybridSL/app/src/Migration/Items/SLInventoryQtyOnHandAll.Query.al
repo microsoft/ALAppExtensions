@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-query 42000 "SL Inventory QtyOnHand All"
+query 47000 "SL Inventory QtyOnHand All"
 {
     QueryType = Normal;
 

@@ -9,7 +9,7 @@ using System.Integration;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 
-codeunit 42018 "SL Customer Migrator"
+codeunit 47018 "SL Customer Migrator"
 {
     Access = Internal;
 

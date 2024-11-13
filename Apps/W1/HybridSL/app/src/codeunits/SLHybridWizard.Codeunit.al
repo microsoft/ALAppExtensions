@@ -8,7 +8,7 @@ namespace Microsoft.DataMigration.SL;
 using Microsoft.DataMigration;
 using System.Environment;
 
-codeunit 42012 "SL Hybrid Wizard"
+codeunit 47012 "SL Hybrid Wizard"
 {
     Access = Internal;
 

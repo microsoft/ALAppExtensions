@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-codeunit 42003 "SL Populate Fiscal Periods"
+codeunit 47003 "SL Populate Fiscal Periods"
 {
     Access = Internal;
 

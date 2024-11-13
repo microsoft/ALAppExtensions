@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42062 "SL Migration Warnings"
+table 47062 "SL Migration Warnings"
 {
     Access = Internal;
     Caption = 'SL Migration Warnings';

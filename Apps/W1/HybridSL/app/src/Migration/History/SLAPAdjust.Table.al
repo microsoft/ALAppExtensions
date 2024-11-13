@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42023 "SL APAdjust"
+table 47023 "SL APAdjust"
 {
     Access = Internal;
     DataClassification = CustomerContent;

@@ -19,18 +19,14 @@ using Microsoft.Inventory.Costing;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Finance.GeneralLedger.Journal;
-using System.Reflection;
-using Microsoft.Utilities;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Setup;
 using Microsoft.Inventory.Journal;
 using Microsoft.Finance.Consolidation;
 using Microsoft.Inventory.Location;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Inventory.Posting;
 
-codeunit 42023 "SL Helper Functions"
+codeunit 47023 "SL Helper Functions"
 {
     Access = Internal;
     Permissions = tabledata "Dimension Set Entry" = rimd,

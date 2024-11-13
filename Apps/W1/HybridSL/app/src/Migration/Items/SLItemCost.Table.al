@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42020 "SL ItemCost"
+table 47020 "SL ItemCost"
 {
     Access = Internal;
     Caption = 'SL ItemCost';

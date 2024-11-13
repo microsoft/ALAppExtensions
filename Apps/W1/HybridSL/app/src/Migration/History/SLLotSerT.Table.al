@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42029 "SL LotSerT"
+table 47029 "SL LotSerT"
 {
     Access = Internal;
     DataClassification = CustomerContent;

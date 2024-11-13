@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration.SL.HistoricalData;
 
-codeunit 42025 "SL Populate Hist. Tables"
+codeunit 47025 "SL Populate Hist. Tables"
 {
     Access = Internal;
 

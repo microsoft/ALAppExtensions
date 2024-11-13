@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42043 "SL FlexDef"
+table 47043 "SL FlexDef"
 {
     Access = Internal;
     Caption = 'SL FlexDef';

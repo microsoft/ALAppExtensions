@@ -11,7 +11,7 @@ using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Finance.GeneralLedger.Setup;
 
-codeunit 42026 "SL Item Migrator"
+codeunit 47026 "SL Item Migrator"
 {
     Access = Internal;
 

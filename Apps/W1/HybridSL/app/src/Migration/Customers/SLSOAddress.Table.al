@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Sales.Customer;
 
-table 42056 "SL SOAddress"
+table 47056 "SL SOAddress"
 {
     Access = Internal;
     DataClassification = CustomerContent;

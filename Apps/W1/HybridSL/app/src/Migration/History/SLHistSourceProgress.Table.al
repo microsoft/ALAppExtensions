@@ -1,6 +1,6 @@
 namespace Microsoft.DataMigration.SL;
 
-table 42001 "SL Hist. Source Progress"
+table 47001 "SL Hist. Source Progress"
 {
     Caption = 'SL Hist. Source Progress';
     DataClassification = SystemMetadata;

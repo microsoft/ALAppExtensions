@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42022 "SL APTran"
+table 47022 "SL APTran"
 {
     Access = Internal;
     DataClassification = CustomerContent;

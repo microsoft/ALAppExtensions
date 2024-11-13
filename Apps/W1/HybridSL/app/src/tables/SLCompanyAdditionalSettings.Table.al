@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-table 42061 "SL Company Additional Settings"
+table 47061 "SL Company Additional Settings"
 {
     Access = Internal;
     DataClassification = SystemMetadata;

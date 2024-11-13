@@ -9,7 +9,7 @@ using System.Integration;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 
-codeunit 42000 "SL Account Migrator"
+codeunit 47000 "SL Account Migrator"
 {
     Access = Internal;
 

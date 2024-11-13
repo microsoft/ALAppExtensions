@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42013 "SL SOSetup"
+table 47013 "SL SOSetup"
 {
     Access = Internal;
     Caption = 'SL SOSetup';

@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42050 "SL GLTran"
+table 47050 "SL GLTran"
 {
     Access = Internal;
     DataClassification = CustomerContent;

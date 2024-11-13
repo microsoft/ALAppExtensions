@@ -2,7 +2,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration.SL.HistoricalData;
 
-table 42003 "SL Hist. Source Error"
+table 47003 "SL Hist. Source Error"
 {
     Caption = 'SL Hist. Source Error';
     DataClassification = SystemMetadata;

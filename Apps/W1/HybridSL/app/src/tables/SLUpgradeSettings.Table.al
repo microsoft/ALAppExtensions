@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42064 "SL Upgrade Settings"
+table 47064 "SL Upgrade Settings"
 {
     Access = Internal;
     Caption = 'SL Upgrade Settings';

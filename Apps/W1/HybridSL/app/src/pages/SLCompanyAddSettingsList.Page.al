@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-page 42017 "SL Company Add. Settings List"
+page 47017 "SL Company Add. Settings List"
 {
     ApplicationArea = All;
     Caption = 'SL Company Additional Settings List';

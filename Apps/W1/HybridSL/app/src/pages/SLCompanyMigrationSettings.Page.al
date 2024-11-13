@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-page 42010 "SL Company Migration Settings"
+page 47010 "SL Company Migration Settings"
 {
     ApplicationArea = All;
     Caption = 'Select company settings for data migration';

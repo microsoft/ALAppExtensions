@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
 
-codeunit 42024 "SL Migration Error Handler"
+codeunit 47024 "SL Migration Error Handler"
 {
     Access = Internal;
     SingleInstance = true;

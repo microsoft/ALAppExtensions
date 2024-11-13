@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42005 "SL Fiscal Periods"
+table 47005 "SL Fiscal Periods"
 {
     Access = Internal;
     DataClassification = CustomerContent;

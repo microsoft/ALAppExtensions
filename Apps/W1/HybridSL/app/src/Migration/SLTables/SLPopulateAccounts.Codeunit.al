@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-codeunit 42019 "SL Populate Accounts"
+codeunit 47019 "SL Populate Accounts"
 {
     Access = Internal;
     internal procedure PopulateSLAccounts()

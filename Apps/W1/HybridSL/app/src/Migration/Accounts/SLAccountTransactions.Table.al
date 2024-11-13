@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42054 "SL AccountTransactions"
+table 47054 "SL AccountTransactions"
 {
     Access = Internal;
     DataClassification = CustomerContent;

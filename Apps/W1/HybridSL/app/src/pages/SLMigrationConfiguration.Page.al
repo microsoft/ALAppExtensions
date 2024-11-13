@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-page 42018 "SL Migration Configuration"
+page 47018 "SL Migration Configuration"
 {
     ApplicationArea = All;
     Caption = 'SL Company Migration Configuration';

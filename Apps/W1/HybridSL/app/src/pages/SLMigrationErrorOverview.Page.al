@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
 
-page 42020 "SL Migration Error Overview"
+page 47020 "SL Migration Error Overview"
 {
     ApplicationArea = All;
     Caption = 'Migration Error Overview';

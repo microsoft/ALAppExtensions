@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42002 SLPeriodListWrkTbl
+table 47002 SLPeriodListWrkTbl
 {
     Access = Internal;
     Caption = 'SLPeriodListWrkTbl';

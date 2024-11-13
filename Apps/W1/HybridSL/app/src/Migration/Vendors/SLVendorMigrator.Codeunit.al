@@ -11,7 +11,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
 
-codeunit 42021 "SL Vendor Migrator"
+codeunit 47021 "SL Vendor Migrator"
 {
     Access = Internal;
 

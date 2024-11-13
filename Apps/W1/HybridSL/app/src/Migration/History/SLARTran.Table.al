@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42025 "SL ARTran"
+table 47025 "SL ARTran"
 {
     Access = Internal;
     DataClassification = CustomerContent;

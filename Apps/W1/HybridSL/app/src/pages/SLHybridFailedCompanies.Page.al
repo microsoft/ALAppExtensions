@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-page 42024 "SL Hybrid Failed Companies"
+page 47024 "SL Hybrid Failed Companies"
 {
     ApplicationArea = All;
     Caption = 'Companies that failed data transformation.';

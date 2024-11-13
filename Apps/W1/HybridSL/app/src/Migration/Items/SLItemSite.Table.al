@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42041 "SL ItemSite"
+table 47041 "SL ItemSite"
 {
     Access = Internal;
     Caption = 'SL ItemSite';

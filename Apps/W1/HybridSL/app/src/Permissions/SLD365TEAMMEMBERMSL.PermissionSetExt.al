@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Security.AccessControl;
 
-permissionsetextension 42003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBER"
+permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "SL AccountTransactions" = RIMD,
                   tabledata "SL Fiscal Periods" = RIMD,

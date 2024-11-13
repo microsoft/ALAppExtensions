@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-codeunit 42020 "SL Dimensions"
+codeunit 47020 "SL Dimensions"
 {
     Access = Internal;
 

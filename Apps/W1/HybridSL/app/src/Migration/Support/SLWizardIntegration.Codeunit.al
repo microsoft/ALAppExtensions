@@ -13,10 +13,9 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 using System.Security.User;
-using System.Environment;
 using Microsoft.Finance.FinancialReports;
 
-codeunit 42005 "SL Wizard Integration"
+codeunit 47005 "SL Wizard Integration"
 {
     Access = Internal;
 

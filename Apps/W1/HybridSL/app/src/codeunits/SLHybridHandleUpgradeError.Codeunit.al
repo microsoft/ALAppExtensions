@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-codeunit 42015 "SL Hybrid Handle Upgrade Error"
+codeunit 47015 "SL Hybrid Handle Upgrade Error"
 {
     Access = Internal;
     TableNo = "Hybrid Replication Summary";

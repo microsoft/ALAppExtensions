@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42031 "SL PurOrdDet"
+table 47031 "SL PurOrdDet"
 {
     Access = Internal;
     DataClassification = CustomerContent;

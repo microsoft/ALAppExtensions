@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Purchases.Vendor;
 
-table 42055 "SL POAddress"
+table 47055 "SL POAddress"
 {
     Access = Internal;
     DataClassification = CustomerContent;

@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42004 SLGLAcctBalByPeriod
+table 47004 SLGLAcctBalByPeriod
 {
     Access = Internal;
     Caption = 'SLGLAcctBalByPeriod';

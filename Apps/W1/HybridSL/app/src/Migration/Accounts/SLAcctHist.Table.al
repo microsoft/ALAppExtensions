@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42007 "SL AcctHist"
+table 47007 "SL AcctHist"
 {
     Access = Internal;
     Caption = 'SL AcctHist';

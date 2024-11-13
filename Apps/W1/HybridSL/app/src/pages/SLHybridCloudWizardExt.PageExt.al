@@ -1,4 +1,4 @@
-pageextension 42002 "SL Hybrid Cloud Wizard Ext." extends "Hybrid Cloud Setup Wizard"
+pageextension 47002 "SL Hybrid Cloud Wizard Ext." extends "Hybrid Cloud Setup Wizard"
 {
     layout
     {

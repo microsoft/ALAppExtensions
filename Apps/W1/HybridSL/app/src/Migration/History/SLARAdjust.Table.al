@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42026 "SL ARAdjust"
+table 47026 "SL ARAdjust"
 {
     Access = Internal;
     DataClassification = CustomerContent;

@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-page 42021 "SL Migration Warnings"
+page 47021 "SL Migration Warnings"
 {
     ApplicationArea = All;
     Caption = 'SL Migration Warnings';

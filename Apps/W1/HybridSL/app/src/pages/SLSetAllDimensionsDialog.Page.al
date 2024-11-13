@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
 
-page 42019 "SL Set All Dimensions Dialog"
+page 47019 "SL Set All Dimensions Dialog"
 {
     ApplicationArea = All;
     Caption = 'Set All Company Dimensions';

@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 42018 "SL Account Staging Setup"
+table 47018 "SL Account Staging Setup"
 {
     Access = Internal;
     DataClassification = CustomerContent;

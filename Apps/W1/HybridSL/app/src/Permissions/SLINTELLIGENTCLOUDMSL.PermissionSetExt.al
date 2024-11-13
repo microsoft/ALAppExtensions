@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Security.AccessControl;
 
-permissionsetextension 42000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CLOUD"
+permissionsetextension 47000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "SL AccountTransactions" = RIMD,
                   tabledata "SL Fiscal Periods" = RIMD,
