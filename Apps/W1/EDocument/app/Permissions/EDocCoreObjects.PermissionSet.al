@@ -9,7 +9,6 @@ using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.EServices.EDocument.OrderMatch.Copilot;
 using Microsoft.eServices.EDocument.Service.Participant;
-
 permissionset 6100 "E-Doc. Core - Objects"
 {
     Assignable = false;

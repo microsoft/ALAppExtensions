@@ -39,9 +39,17 @@ page 6103 "E-Document Services"
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
                 }
+#if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
                 {
                     ToolTip = 'Specifies service integration for the electronic document setup.';
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Moved to field "Service Integration V2" on "E-Document Service" table';
+                }
+#endif
+                field("Service Integration V2"; Rec."Service Integration V2")
+                {
                 }
             }
         }
