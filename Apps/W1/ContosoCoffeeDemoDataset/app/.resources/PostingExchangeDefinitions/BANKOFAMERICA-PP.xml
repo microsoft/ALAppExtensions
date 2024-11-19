@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="BANKOFAMERICA-PP" Name="BANKOFAMERICA-Positive Pay" Type="4" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="1709" FileType="2" ReadingWritingCodeunit="1708" ValidationCodeunit="1701" UserFeedbackCodeunit="1710">
+    <DataExchLineDef LineType="0" Code="DETAIL" Name="Detail" ColumnCount="8">
+      <DataExchColumnDef ColumnNo="1" Name="Account Number" Show="false" DataType="0" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Record Type Code" Show="false" DataType="0" Length="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Check/Serial Number" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Amount" Show="false" DataType="2" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Date" Show="false" DataType="1" DataFormat="&lt;Year4&gt;&lt;Month,2&gt;&lt;Day,2&gt;" DataFormattingCulture="en-US" Length="8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Filler" Show="false" DataType="0" Length="1" TextPaddingRequired="true" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Payee Name or Additional Data" Show="false" DataType="0" Length="50" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Filler" Show="false" DataType="0" Length="16" TextPaddingRequired="true" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="1241" Name="Positive Pay Detail" MappingCodeunit="1705" PreMappingCodeunit="1704">
+        <DataExchFieldMapping ColumnNo="1" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="4" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="8" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="9" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="2" Code="FOOTER" Name="Footer" ColumnCount="5">
+      <DataExchColumnDef ColumnNo="1" Name="Account Number" Show="false" DataType="0" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Trailer Record Indicator" Show="false" DataType="0" Length="1" Constant="T" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Item Count Total" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Dollar Amount Total" Show="false" DataType="2" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Filler" Show="false" DataType="0" Length="75" TextPaddingRequired="true" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="1242" Name="Positive Pay Footer" MappingCodeunit="1707" PreMappingCodeunit="1706">
+        <DataExchFieldMapping ColumnNo="1" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="8" Optional="true" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="9" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="HEADER" Name="Header" ColumnCount="5">
+      <DataExchColumnDef ColumnNo="1" Name="Account Number" Show="false" DataType="0" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Header Record Indicator" Show="false" DataType="0" Length="1" Constant="H" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Filler" Show="false" DataType="0" Length="22" TextPaddingRequired="true" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Date" Show="false" DataType="1" DataFormat="&lt;Year4&gt;&lt;Month,2&gt;&lt;Day,2&gt;" DataFormattingCulture="en-US" Length="8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Filler" Show="false" DataType="0" Length="67" TextPaddingRequired="true" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="1240" Name="Positive Pay Header" MappingCodeunit="1703" PreMappingCodeunit="1702">
+        <DataExchFieldMapping ColumnNo="1" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="4" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

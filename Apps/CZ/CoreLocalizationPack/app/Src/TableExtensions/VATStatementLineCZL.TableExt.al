@@ -49,6 +49,7 @@ tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
             OptionMembers = " ",Yes,No;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(31073; "EU-3 Party Trade CZL"; Option)
         {
             Caption = 'EU-3 Party Trade';
@@ -64,6 +65,7 @@ tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
 #endif
             ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
         }
+#endif
         field(31110; "VAT Ctrl. Report Section CZL"; Code[20])
         {
             Caption = 'VAT Control Report Section Code';

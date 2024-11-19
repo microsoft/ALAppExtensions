@@ -435,11 +435,6 @@ codeunit 148184 "Sustainability Posting Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4 := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
-
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
 
@@ -455,10 +450,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2 := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4 := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [WHEN] Post a Purchase Document.
         PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -716,11 +716,6 @@ codeunit 148184 "Sustainability Posting Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4 := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
-
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
 
@@ -736,10 +731,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2 := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4 := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [WHEN] Post a Purchase Document.
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -822,12 +822,12 @@ codeunit 148184 "Sustainability Posting Test"
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
         // [WHEN] Save Sustainability fields.
-        LibraryVariableStorage.Enqueue(0);
-        LibraryVariableStorage.Enqueue(0);
-        LibraryVariableStorage.Enqueue(0);
         LibraryVariableStorage.Enqueue(EmissionCO2);
         LibraryVariableStorage.Enqueue(EmissionCH4);
         LibraryVariableStorage.Enqueue(EmissionN2O);
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
 
         // [VERIFY] Verify Sustainability fields in Page "Purchase Order Statistics" after partially posting of Purchase order.
         OpenPurchaseOrderStatistics(PurchaseHeader."No.");
@@ -973,11 +973,6 @@ codeunit 148184 "Sustainability Posting Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4 := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
-
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
 
@@ -993,10 +988,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2 := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4 := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [WHEN] Save Sustainability fields.
         LibraryVariableStorage.Enqueue(EmissionCO2);
@@ -1149,7 +1149,7 @@ codeunit 148184 "Sustainability Posting Test"
         PurchCrMemoSubformPage: TestPage "Purch. Cr. Memo Subform";
         PostedPurchCrMemoSubformPage: TestPage "Posted Purch. Cr. Memo Subform";
         EmissionCO2: Decimal;
-        EmissionCH4P: Decimal;
+        EmissionCH4: Decimal;
         EmissionN2O: Decimal;
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
@@ -1163,11 +1163,6 @@ codeunit 148184 "Sustainability Posting Test"
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
-
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4P := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
@@ -1184,14 +1179,19 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4P);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2 := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4 := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [WHEN] Save Sustainability fields.
         LibraryVariableStorage.Enqueue(EmissionCO2);
-        LibraryVariableStorage.Enqueue(EmissionCH4P);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
         LibraryVariableStorage.Enqueue(EmissionN2O);
         LibraryVariableStorage.Enqueue(0);
         LibraryVariableStorage.Enqueue(0);
@@ -1208,7 +1208,7 @@ codeunit 148184 "Sustainability Posting Test"
         PurchCrMemoSubformPage.Filter.SetFilter("Document No.", CrMemoNo);
         PurchCrMemoSubformPage.Filter.SetFilter("No.", PurchaseLine."No.");
         PurchCrMemoSubformPage."Sust. Account No.".AssertEquals(AccountCode);
-        PurchCrMemoSubformPage."Emission CH4".AssertEquals(EmissionCH4P);
+        PurchCrMemoSubformPage."Emission CH4".AssertEquals(EmissionCH4);
         PurchCrMemoSubformPage."Emission CO2".AssertEquals(EmissionCO2);
         PurchCrMemoSubformPage."Emission N2O".AssertEquals(EmissionN2O);
 
@@ -1224,7 +1224,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedPurchCrMemoSubformPage.Filter.SetFilter("Document No.", PostedCrMemoNo);
         PostedPurchCrMemoSubformPage.Filter.SetFilter("No.", PurchaseLine."No.");
         PostedPurchCrMemoSubformPage."Sust. Account No.".AssertEquals(AccountCode);
-        PostedPurchCrMemoSubformPage."Emission CH4".AssertEquals(EmissionCH4P);
+        PostedPurchCrMemoSubformPage."Emission CH4".AssertEquals(EmissionCH4);
         PostedPurchCrMemoSubformPage."Emission CO2".AssertEquals(EmissionCO2);
         PostedPurchCrMemoSubformPage."Emission N2O".AssertEquals(EmissionN2O);
     end;
@@ -1239,9 +1239,9 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine: Record "Purchase Line";
         SustainabilityGoals: TestPage "Sustainability Goals";
         ScorecardCode: Code[20];
-        EmissionCO2: Decimal;
-        EmissionCH4: Decimal;
-        EmissionN2O: Decimal;
+        EmissionCO2: array[2] of Decimal;
+        EmissionCH4: array[2] of Decimal;
+        EmissionN2O: array[2] of Decimal;
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
@@ -1293,11 +1293,6 @@ codeunit 148184 "Sustainability Posting Test"
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
 
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4 := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
-
         // [GIVEN] Change WorkDate.
         WorkDate(Today);
 
@@ -1320,10 +1315,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2[1] := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4[1] := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O[1] := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [GIVEN] Post Purchase Document.
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -1350,10 +1350,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2 + 1);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4 + 1);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O + 1);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(30));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(100));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(300));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2[2] := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4[2] := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O[2] := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [GIVEN] Post another Purchase Document.
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -1363,17 +1368,17 @@ codeunit 148184 "Sustainability Posting Test"
         SustainabilityGoals.GoToRecord(SustainabilityGoal[1]);
 
         // [VERIFY] Verify Sustainability BaseLine Fields should be filtered based on "Baseline Period" in Sustainability Goals Page.
-        SustainabilityGoals."Baseline for CH4".AssertEquals(EmissionCH4);
-        SustainabilityGoals."Baseline for CO2".AssertEquals(EmissionCO2);
-        SustainabilityGoals."Baseline for N2O".AssertEquals(EmissionN2O);
+        SustainabilityGoals."Baseline for CH4".AssertEquals(EmissionCH4[1]);
+        SustainabilityGoals."Baseline for CO2".AssertEquals(EmissionCO2[1]);
+        SustainabilityGoals."Baseline for N2O".AssertEquals(EmissionN2O[1]);
 
         // [WHEN] Open and Filter Sustainability Goals page.
         SustainabilityGoals.GoToRecord(SustainabilityGoal[2]);
 
         // [VERIFY] Verify Sustainability BaseLine Fields should be filtered based on "Baseline Period" in Sustainability Goals Page.
-        SustainabilityGoals."Baseline for CH4".AssertEquals(EmissionCH4 + 1);
-        SustainabilityGoals."Baseline for CO2".AssertEquals(EmissionCO2 + 1);
-        SustainabilityGoals."Baseline for N2O".AssertEquals(EmissionN2O + 1);
+        SustainabilityGoals."Baseline for CH4".AssertEquals(EmissionCH4[2]);
+        SustainabilityGoals."Baseline for CO2".AssertEquals(EmissionCO2[2]);
+        SustainabilityGoals."Baseline for N2O".AssertEquals(EmissionN2O[2]);
     end;
 
     [Test]
@@ -1386,9 +1391,9 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine: Record "Purchase Line";
         SustainabilityGoals: TestPage "Sustainability Goals";
         ScorecardCode: Code[20];
-        EmissionCO2: Decimal;
-        EmissionCH4: Decimal;
-        EmissionN2O: Decimal;
+        EmissionCO2: array[2] of Decimal;
+        EmissionCH4: array[2] of Decimal;
+        EmissionN2O: array[2] of Decimal;
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
@@ -1436,11 +1441,6 @@ codeunit 148184 "Sustainability Posting Test"
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
 
-        // [GIVEN] Generate Emission.
-        EmissionCO2 := LibraryRandom.RandInt(20);
-        EmissionCH4 := LibraryRandom.RandInt(5);
-        EmissionN2O := LibraryRandom.RandInt(5);
-
         // [GIVEN] Change WorkDate.
         WorkDate(Today);
 
@@ -1463,10 +1463,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(100));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(200));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(300));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2[1] := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4[1] := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O[1] := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [GIVEN] Post Purchase Document.
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -1493,10 +1498,15 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2", EmissionCO2 + 1);
-        PurchaseLine.Validate("Emission CH4", EmissionCH4 + 1);
-        PurchaseLine.Validate("Emission N2O", EmissionN2O + 1);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(500));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(600));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(700));
         PurchaseLine.Modify();
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2[2] := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4[2] := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O[2] := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
 
         // [GIVEN] Post another Purchase Document.
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -1522,9 +1532,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [VERIFY] Verify Sustainability Current Value Fields should be filtered based on Start And End Date in Sustainability Goals Page.
         SustainabilityGoals.OpenView();
         SustainabilityGoals.GoToRecord(SustainabilityGoal[1]);
-        SustainabilityGoals."Current Value for CH4".AssertEquals(EmissionCH4);
-        SustainabilityGoals."Current Value for CO2".AssertEquals(EmissionCO2);
-        SustainabilityGoals."Current Value for N2O".AssertEquals(EmissionN2O);
+        SustainabilityGoals."Current Value for CH4".AssertEquals(EmissionCH4[1]);
+        SustainabilityGoals."Current Value for CO2".AssertEquals(EmissionCO2[1]);
+        SustainabilityGoals."Current Value for N2O".AssertEquals(EmissionN2O[1]);
         SustainabilityGoals.Close();
 
         // [WHEN] Open and Filter Sustainability Goals page.
@@ -1549,9 +1559,9 @@ codeunit 148184 "Sustainability Posting Test"
         SustainabilityGoals.OpenView();
         SustainabilityGoals.Filter.SetFilter("Current Period Filter", Format(Today + 1));
         SustainabilityGoals.GoToRecord(SustainabilityGoal[2]);
-        SustainabilityGoals."Current Value for CH4".AssertEquals(EmissionCH4 + 1);
-        SustainabilityGoals."Current Value for CO2".AssertEquals(EmissionCO2 + 1);
-        SustainabilityGoals."Current Value for N2O".AssertEquals(EmissionN2O + 1);
+        SustainabilityGoals."Current Value for CH4".AssertEquals(EmissionCH4[2]);
+        SustainabilityGoals."Current Value for CO2".AssertEquals(EmissionCO2[2]);
+        SustainabilityGoals."Current Value for N2O".AssertEquals(EmissionN2O[2]);
         SustainabilityGoals.Close();
     end;
 

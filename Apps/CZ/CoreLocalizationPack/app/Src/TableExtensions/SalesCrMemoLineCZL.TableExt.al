@@ -17,6 +17,7 @@ tableextension 11758 "Sales Cr.Memo Line CZL" extends "Sales Cr.Memo Line"
             TableRelation = "Tariff Number";
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31066; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
@@ -34,5 +35,6 @@ tableextension 11758 "Sales Cr.Memo Line CZL" extends "Sales Cr.Memo Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
     }
 }

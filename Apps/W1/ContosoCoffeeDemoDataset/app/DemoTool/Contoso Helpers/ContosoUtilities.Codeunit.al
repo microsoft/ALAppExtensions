@@ -80,4 +80,14 @@ codeunit 5142 "Contoso Utilities"
     begin
         exit(DefaultBatchNameLbl);
     end;
+
+    procedure GetTempBlobFromFile(FilePath: Text) result: Codeunit "Temp Blob"
+    var
+        ObjInStream: InStream;
+        OutStr: OutStream;
+    begin
+        NavApp.GetResource(FilePath, ObjInStream);
+        result.CreateOutStream(OutStr);
+        CopyStream(OutStr, ObjInStream);
+    end;
 }

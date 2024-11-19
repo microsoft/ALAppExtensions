@@ -37,9 +37,7 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         GeneralPostingSetup: Record "General Posting Setup";
         BillingLine: Record "Billing Line";
     begin
-        BillingLine.SetRange("Document Type", BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"));
-        BillingLine.SetRange("Document No.", PurchLine."Document No.");
-        BillingLine.SetRange("Document Line No.", PurchLine."Line No.");
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         BillingLine.SetFilter("Billing from", '>=%1', PurchLine."Recurring Billing from");
         BillingLine.SetFilter("Billing to", '<=%1', PurchLine."Recurring Billing to");
         if not BillingLine.FindFirst() then
@@ -79,8 +77,20 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnPostPurchLineOnBeforeInsertCrMemoLine, '', false, false)]
+    local procedure InsertVendorDeferralsFromPurchaseInvoiceOnPostPurchLineOnBeforeInsertCrMemoLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; xPurchaseLine: Record "Purchase Line");
+    begin
+        if (PurchaseLine.Quantity >= 0) or (PurchaseLine."Direct Unit Cost" >= 0) then
+            exit;
+
+        if GetAppliesToDocNo(PurchaseHeader) <> '' then
+            exit;
+
+        InsertContractDeferrals(PurchaseHeader, PurchaseLine, PurchaseHeader."Posting No.");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnPostPurchLineOnBeforeInsertInvoiceLine, '', false, false)]
-    local procedure InsertVendorDeferralsFromPurchaseInvoice(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
+    local procedure InsertVendorDeferralsFromPurchaseInvoiceOnPostPurchLineOnBeforeInsertInvoiceLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
     begin
         InsertContractDeferrals(PurchaseHeader, PurchaseLine, PurchaseHeader."Posting No.");
     end;
@@ -97,15 +107,14 @@ codeunit 8068 "Vendor Deferrals Mngmt."
             exit;
         if PurchaseLine.Quantity = 0 then
             exit;
-        if not PurchaseLine.IsLineAttachedToBillingLine() then
-            exit;
         if PurchaseLine."Recurring Billing from" > PurchaseLine."Recurring Billing to" then
             exit;
         if not (PurchaseLine."Document Type" in [Enum::"Purchase Document Type"::Invoice, Enum::"Purchase Document Type"::"Credit Memo"]) then
             exit;
 
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type"), PurchaseLine."Document No.", PurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         VendContractHeader.Get(BillingLine."Contract No.");
         if VendContractHeader."Without Contract Deferrals" then
             exit;
@@ -331,11 +340,9 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         VendorContractHeader: Record "Vendor Contract";
         BillingLine: Record "Billing Line";
     begin
-        if not PurchaseLine.IsLineAttachedToBillingLine() then
-            exit;
-
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type"), PurchaseLine."Document No.", PurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         VendorContractHeader.Get(BillingLine."Contract No.");
         exit(not VendorContractHeader."Without Contract Deferrals");
     end;

@@ -11,7 +11,7 @@ pageextension 8008 "Vendor Ledger Entries" extends "Vendor Ledger Entries"
             field("Recurring Billing"; Rec."Recurring Billing")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies whether the entry was created via recurring billing.';
+                ToolTip = 'Specifies whether the entry was created by Subscription Billing.';
             }
         }
     }

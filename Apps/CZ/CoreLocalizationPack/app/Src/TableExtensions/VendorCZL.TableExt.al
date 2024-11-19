@@ -43,6 +43,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
                     RegistrationLogMgtCZL.LogVendor(Rec);
             end;
         }
+#if not CLEANSCHEMA26
         field(11770; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
@@ -51,6 +52,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
             ObsoleteTag = '26.0';
             ObsoleteReason = 'Replaced by standard "Registration Number" field.';
         }
+#endif
         field(11771; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';
@@ -90,6 +92,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
             Caption = 'Disable Unreliability Check';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31070; "Transaction Type CZL"; Code[10])
         {
             Caption = 'Transaction Type';
@@ -117,6 +120,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#endif
     }
 
     var

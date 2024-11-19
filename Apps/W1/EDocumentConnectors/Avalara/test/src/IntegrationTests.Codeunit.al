@@ -473,9 +473,16 @@ codeunit 148191 "Integration Tests"
         EDocServicePage.Close();
 
         // Manually fire job queue job to import
+        if EDocument.FindLast() then
+            EDocument.SetFilter("Entry No", '>%1', EDocument."Entry No");
+
         LibraryEDocument.RunImportJob();
 
         // Assert that we have Purchase Invoice created
+#pragma warning disable AA0210
+        EDocument.SetRange("Document Type", EDocument."Document Type"::"Purchase Invoice");
+        EDocument.SetRange("Bill-to/Pay-to No.", Vendor."No.");
+#pragma warning restore AA0210
         EDocument.FindLast();
         PurchaseHeader.Get(EDocument."Document Record ID");
         Assert.AreEqual(Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');

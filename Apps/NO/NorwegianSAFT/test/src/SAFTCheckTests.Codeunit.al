@@ -19,6 +19,7 @@ codeunit 148104 "SAF-T Check Tests"
         SAFTMappingType: Enum "SAF-T Mapping Type";
         IsInitialized: Boolean;
         MappingNotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the  standard account or the grouping code.';
+        Mapping13NotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the category code and mapping number.';
         DimensionWithoutAnalysisCodeErr: Label 'One or more dimensions do not have a SAF-T analysis code. Open the Dimensions page and specify a SAF-T analysis code for each dimension.';
         VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.', Comment = '%1 = Tax Code Field Caption';
         SourceCodeWithoutSAFTCodeErr: Label 'One or more source codes do not have a SAF-T source code. Open the Source Codes page and specify a SAF-T source code for each source code.';
@@ -83,6 +84,35 @@ codeunit 148104 "SAF-T Check Tests"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [HandlerFunctions('SingleErrorLogPageHandler')]
+    procedure ErrorMessageWhenLackOf13Mapping()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 309923] Error Messages page shown with errors on SAF-T file generation
+
+        Initialize();
+        SetupSAFT(SAFTMappingRange, SAFTMappingType::"Four Digit Standard Account");
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+        SAFTExportHeader.Validate(Version, SAFTExportHeader.Version::"1.30");
+        SAFTExportHeader.Modify(true);
+
+        // [GIVEN] Post G/L entries in SAF-T Export period for G/L Account without mapping
+        SAFTTestHelper.PostRandomAmountForNumberOfMasterDataRecords(SAFTExportHeader."Starting Date", 1);
+
+        LibraryVariableStorage.Enqueue(Mapping13NotDoneErr);
+
+        // [WHEN] Generate SAF-T File
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Error log shown with all the missed information
+        // Handles by ErrorLogPageHandler 
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T Check Tests");
@@ -120,6 +150,12 @@ codeunit 148104 "SAF-T Check Tests"
         ErrorMessages.Next();
         ErrorMessages.Description.AssertEquals(LibraryVariableStorage.DequeueText()); // Company Information
         ErrorMessages.Next();
+    end;
+
+    [PageHandler]
+    procedure SingleErrorLogPageHandler(var ErrorMessages: TestPage "Error Messages")
+    begin
+        ErrorMessages.Description.AssertEquals(LibraryVariableStorage.DequeueText()); // mapping not done
     end;
 
 }

@@ -12,10 +12,29 @@ reportextension 11700 "Copy - VAT Posting Setup CZL" extends "Copy - VAT Posting
         {
             trigger OnBeforeAfterGetRecord()
             begin
+                VATPostingSetup.Find();
+                Description := VATPostingSetup.Description;
+                if VATSetup then begin
+                    "Reverse Charge Check CZL" := VATPostingSetup."Reverse Charge Check CZL";
+                    "VAT Coeff. Corr. Account CZL" := VATPostingSetup."VAT Coeff. Corr. Account CZL";
+                    "VAT Rate CZL" := VATPostingSetup."VAT Rate CZL";
+                    "Supplies Mode Code CZL" := VATPostingSetup."Supplies Mode Code CZL";
+                    "Ratio Coefficient CZL" := VATPostingSetup."Ratio Coefficient CZL";
+                    "Corrections Bad Receivable CZL" := VATPostingSetup."Corrections Bad Receivable CZL";
+                    "VAT LCY Corr. Rounding Acc.CZL" := VATPostingSetup."VAT LCY Corr. Rounding Acc.CZL";
+                end;
+                if Sales then
+                    "Sales VAT Curr. Exch. Acc CZL" := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
+                if Purch then
+                    "Purch. VAT Curr. Exch. Acc CZL" := VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
+                if VIESCZL then begin
+                    "VIES Purchase CZL" := VATPostingSetup."VIES Purchase CZL";
+                    "VIES Sales CZL" := VATPostingSetup."VIES Sales CZL";
+                end;
                 if VATSetup or VIESCZL then begin
-                    VATPostingSetup.Find();
                     "VAT Clause Code" := VATPostingSetup."VAT Clause Code";
                     "EU Service" := VATPostingSetup."EU Service";
+                    "Intrastat Service CZL" := VATPostingSetup."Intrastat Service CZL";
                 end;
             end;
         }

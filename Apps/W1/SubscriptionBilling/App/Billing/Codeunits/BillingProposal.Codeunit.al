@@ -14,6 +14,7 @@ codeunit 8062 "Billing Proposal"
         PurchaseHeader: Record "Purchase Header";
         CreateBillingDocuments: Codeunit "Create Billing Documents";
         DateFormulaManagement: Codeunit "Date Formula Management";
+        SessionStore: Codeunit "Session Store";
         CreateBillingDocumentPage: Page "Create Billing Document";
         LastContractNo: Code[20];
         LastPartnerNo: Code[20];
@@ -212,8 +213,6 @@ codeunit 8062 "Billing Proposal"
     var
         ServiceCommitment: Record "Service Commitment";
         BillingLine: Record "Billing Line";
-        UsageDataBilling: Record "Usage Data Billing";
-        SkipServiceCommitment: Boolean;
     begin
         ServiceCommitment.SetRange(Partner, BillingTemplate.Partner);
         ServiceCommitment.SetRange("Contract No.", ContractNo);
@@ -227,48 +226,56 @@ codeunit 8062 "Billing Proposal"
         OnBeforeProcessContractServiceCommitments(ServiceCommitment, BillingDate, BillingToDate, BillingRhythmFilterText, BillingTemplate);
         if ServiceCommitment.FindSet() then
             repeat
-                SkipServiceCommitment := false;
-                FilterBillingLinesOnServiceCommitment(BillingLine, ServiceCommitment);
-                case true of
-                    (ServiceCommitment."Service End Date" <> 0D) and (ServiceCommitment."Next Billing Date" > ServiceCommitment."Service End Date"):
-                        SkipServiceCommitment := true;
-                    BillingLine.FindFirst() and ((BillingLine."Document No." <> '') or (BillingTemplate.Code = '')):
-                        begin
-                            SkipServiceCommitment := true;
-                            case BillingLine.Partner of
-                                Enum::"Service Partner"::Customer:
-                                    if SalesHeader.Get(SalesHeader."Document Type"::"Credit Memo", BillingLine."Document No.") then
-                                        SalesHeader.Mark(true);
-                                Enum::"Service Partner"::Vendor:
-                                    if PurchaseHeader.Get(PurchaseHeader."Document Type"::"Credit Memo", BillingLine."Document No.") then
-                                        PurchaseHeader.Mark(true);
-                            end;
-                        end;
-                    ServiceCommitment."Usage Based Billing":
-                        begin
-                            UsageDataBilling.Reset();
-                            UsageDataBilling.SetCurrentKey("Usage Data Import Entry No.", "Service Commitment Entry No.", Partner, "Document Type", "Charge End Date", "Charge End Time");
-                            UsageDataBilling.FilterOnServiceCommitment(ServiceCommitment);
-                            UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
-                            SkipServiceCommitment := UsageDataBilling.IsEmpty();
-                        end;
-                    else
-                        OnCheckSkipServiceCommitmentOnElse(ServiceCommitment, SkipServiceCommitment);
-                end;
-
-                if not SkipServiceCommitment then begin
-                    CalculateBillingPeriod(ServiceCommitment, BillingDate, BillingToDate);
-                    if FindBillingLine(BillingLine, ServiceCommitment, BillingPeriodStart, CalculateNextBillingToDateForServiceCommitment(ServiceCommitment, BillingPeriodStart)) then
-                        UpdateBillingLine(BillingLine, ServiceCommitment, BillingTemplate, BillingPeriodStart)
-                    else begin
-                        BillingLine.InitNewBillingLine();
-                        UpdateBillingLine(BillingLine, ServiceCommitment, BillingTemplate, BillingPeriodStart);
-                    end;
-                end;
+                ProcessServiceCommitment(ServiceCommitment, BillingLine, BillingTemplate, BillingDate, BillingToDate);
             until ServiceCommitment.Next() = 0;
         OnAfterProcessContractServiceCommitments(ServiceCommitment, BillingDate, BillingToDate, BillingRhythmFilterText);
         if BillingTemplate.IsPartnerCustomer() then
             RecalculateHarmonizedBillingFieldsBasedOnNextBillingDate(BillingLine, ContractNo);
+    end;
+
+    internal procedure ProcessServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var BillingLine: Record "Billing Line"; BillingTemplate: Record "Billing Template"; var BillingDate: Date; var BillingToDate: Date)
+    var
+        UsageDataBilling: Record "Usage Data Billing";
+        SkipServiceCommitment: Boolean;
+    begin
+        SkipServiceCommitment := false;
+        FilterBillingLinesOnServiceCommitment(BillingLine, ServiceCommitment);
+        case true of
+            (ServiceCommitment."Service End Date" <> 0D) and (ServiceCommitment."Next Billing Date" > ServiceCommitment."Service End Date"):
+                SkipServiceCommitment := true;
+            BillingLine.FindFirst() and ((BillingLine."Document No." <> '') or (BillingTemplate.Code = '')):
+                begin
+                    SkipServiceCommitment := true;
+                    case BillingLine.Partner of
+                        Enum::"Service Partner"::Customer:
+                            if SalesHeader.Get(SalesHeader."Document Type"::"Credit Memo", BillingLine."Document No.") then
+                                SalesHeader.Mark(true);
+                        Enum::"Service Partner"::Vendor:
+                            if PurchaseHeader.Get(PurchaseHeader."Document Type"::"Credit Memo", BillingLine."Document No.") then
+                                PurchaseHeader.Mark(true);
+                    end;
+                end;
+            ServiceCommitment."Usage Based Billing":
+                begin
+                    UsageDataBilling.Reset();
+                    UsageDataBilling.SetCurrentKey("Usage Data Import Entry No.", "Service Commitment Entry No.", Partner, "Document Type", "Charge End Date", "Charge End Time");
+                    UsageDataBilling.FilterOnServiceCommitment(ServiceCommitment);
+                    UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
+                    SkipServiceCommitment := UsageDataBilling.IsEmpty();
+                end;
+            else
+                OnCheckSkipServiceCommitmentOnElse(ServiceCommitment, SkipServiceCommitment);
+        end;
+
+        if not SkipServiceCommitment then begin
+            CalculateBillingPeriod(ServiceCommitment, BillingDate, BillingToDate);
+            if FindBillingLine(BillingLine, ServiceCommitment, BillingPeriodStart, CalculateNextBillingToDateForServiceCommitment(ServiceCommitment, BillingPeriodStart)) then
+                UpdateBillingLine(BillingLine, ServiceCommitment, BillingTemplate, BillingPeriodStart)
+            else begin
+                BillingLine.InitNewBillingLine();
+                UpdateBillingLine(BillingLine, ServiceCommitment, BillingTemplate, BillingPeriodStart);
+            end;
+        end;
     end;
 
     local procedure FilterBillingLinesOnServiceCommitment(var BillingLine: Record "Billing Line"; ServiceCommitment: Record "Service Commitment")
@@ -510,7 +517,7 @@ codeunit 8062 "Billing Proposal"
                 BillingPeriodEnd := CustomerContract."Next Billing To" - 1;
     end;
 
-    local procedure CalculateNextBillingToDateForServiceCommitment(ServiceCommitment: Record "Service Commitment"; BillingFromDate: Date) NextBillingToDate: Date
+    internal procedure CalculateNextBillingToDateForServiceCommitment(ServiceCommitment: Record "Service Commitment"; BillingFromDate: Date) NextBillingToDate: Date
     var
         CustomerContract: Record "Customer Contract";
     begin
@@ -701,6 +708,70 @@ codeunit 8062 "Billing Proposal"
     begin
         CreateTempBillingTemplate(TempBillingTemplate, ServicePartner);
         ProcessContractServiceCommitments(TempBillingTemplate, ContractNo, '', BillingDate, BillingToDate, BillingRhythmFilter);
+    end;
+
+    internal procedure CreateBillingProposalForPurchaseHeader(ServicePartner: Enum "Service Partner"; var TempServiceCommitment: Record "Service Commitment" temporary; BillingDate: Date; BillingToDate: Date)
+    var
+        DummyPurchaseLine: Record "Purchase Line";
+    begin
+        CreateBillingProposalForPurchaseLine(ServicePartner, TempServiceCommitment, BillingDate, BillingToDate, DummyPurchaseLine);
+    end;
+
+    internal procedure CreateBillingProposalForPurchaseLine(ServicePartner: Enum "Service Partner"; var TempServiceCommitment: Record "Service Commitment" temporary; BillingDate: Date; BillingToDate: Date; var PurchaseLine: Record "Purchase Line")
+    var
+        TempBillingTemplate: Record "Billing Template" temporary;
+        ServiceCommitment: Record "Service Commitment";
+        BillingLine: Record "Billing Line";
+    begin
+        CreateTempBillingTemplate(TempBillingTemplate, ServicePartner);
+        if TempServiceCommitment.FindSet() then
+            repeat
+                ProcessServiceCommitment(TempServiceCommitment, BillingLine, TempBillingTemplate, BillingDate, BillingToDate);
+                if PurchaseLine."Document No." <> '' then
+                    SyncPurchaseLineAndBillingLine(BillingLine, PurchaseLine);
+                if ServiceCommitment.Get(TempServiceCommitment."Entry No.") then begin
+                    ServiceCommitment."Next Billing Date" := TempServiceCommitment."Next Billing Date";
+                    ServiceCommitment.Modify();
+                end;
+            until TempServiceCommitment.Next() = 0;
+        AddRecurringBillingFlagToExistingPurchaseHeader(PurchaseLine."Document Type", PurchaseLine."Document No.");
+    end;
+
+    internal procedure CreatePurchaseLines(PurchaseHeader: Record "Purchase Header")
+    var
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.SetRange("Billing Template Code", '');
+        if BillingLine.IsEmpty() then
+            exit;
+        CreateBillingDocuments.SetPurchaseHeaderFromExistingPurchaseDocument(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        CreateBillingDocuments.SetSkipRequestPageSelection(true);
+        CreateBillingDocuments.SetHideProcessingFinishedMessage();
+        CreateBillingDocuments.Run(BillingLine);
+    end;
+
+    local procedure SyncPurchaseLineAndBillingLine(var BillingLine: Record "Billing Line"; var PurchaseLine: Record "Purchase Line")
+    begin
+        if PurchaseLine."Document No." = '' then
+            exit;
+        BillingLine."Document Type" := BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type");
+        BillingLine."Document No." := PurchaseLine."Document No.";
+        BillingLine."Document Line No." := PurchaseLine."Line No.";
+        BillingLine.Modify();
+
+        PurchaseLine."Recurring Billing from" := BillingLine."Billing from";
+        PurchaseLine."Recurring Billing to" := BillingLine."Billing to";
+        PurchaseLine.Modify(false);
+    end;
+
+    local procedure AddRecurringBillingFlagToExistingPurchaseHeader(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
+    begin
+        if DocumentNo = '' then
+            exit;
+        SessionStore.SetBooleanKey('SkipContractPurchaseHeaderModifyCheck', true);
+        PurchaseHeader.Get(DocumentType, DocumentNo);
+        PurchaseHeader.SetRecurringBilling();
+        SessionStore.RemoveBooleanKey('SkipContractPurchaseHeaderModifyCheck');
     end;
 
     local procedure BillingProposalCanBeCreatedForContract(ContractNo: Code[20]; ServicePartner: Enum "Service Partner"): Boolean

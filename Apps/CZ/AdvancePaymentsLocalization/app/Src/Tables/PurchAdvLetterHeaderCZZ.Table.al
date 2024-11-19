@@ -1623,6 +1623,20 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         PurchAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
     end;
 
+    procedure CopyDocument()
+    var
+        CopyAdvLetterDocumentCZZ: Report "Copy Adv. Letter Document CZZ";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCopyDocument(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        CopyAdvLetterDocumentCZZ.SetPurchAdvLetterHeader(Rec);
+        CopyAdvLetterDocumentCZZ.RunModal();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
     begin
@@ -1795,6 +1809,11 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateDocumentDateWithPostingDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CurrFieldNo: Integer; var IsHandled: Boolean; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyDocument(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

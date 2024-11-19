@@ -603,6 +603,22 @@ page 31171 "Sales Advance Letter CZZ"
                         SalesAdvLetterManagement.CloseAdvanceLetter(Rec);
                     end;
                 }
+                action(CopyDocument)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Copy Document';
+                    Ellipsis = true;
+                    Enabled = Rec."No." <> '';
+                    Image = CopyDocument;
+                    ToolTip = 'Copy document lines and header information from another sales advance letter to this document. You can copy a sales advance letter into a new sales advance letter to quickly create a similar document.';
+
+                    trigger OnAction()
+                    begin
+                        Rec.CopyDocument();
+                        if Rec.Get(Rec."No.") then;
+                        CurrPage.Update();
+                    end;
+                }
             }
             group("Request Approval")
             {

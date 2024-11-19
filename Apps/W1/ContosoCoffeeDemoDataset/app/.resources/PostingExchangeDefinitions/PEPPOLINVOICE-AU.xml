@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="PEPPOLINVOICE-AU" Name="PEPPOL - Invoice" Type="3" FileType="0" ReadingWritingCodeunit="1203" DataHandlingCodeunit="1214">
+    <DataExchLineDef LineType="0" Code="PEPPOLINVHEADER" Name="PEPPOL - Invoice Header" ColumnCount="47" DataLineTag="/Invoice" Namespace="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+      <DataExchColumnDef ColumnNo="1" Name="ID" Show="true" DataType="0" Description="Vendor Invoice No." Path="/Invoice/cbc:ID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="2" Name="IssueDate" Show="true" DataType="0" Description="Order Date" Path="/Invoice/cbc:IssueDate" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="3" Name="DocumentCurrencyCode" Show="true" DataType="0" Description="Invoice Currency Code" Path="/Invoice/cbc:DocumentCurrencyCode" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="5" Name="OrderReferenceID" Show="true" DataType="0" Description="Vendor Order No." Path="/Invoice/cac:OrderReference/cbc:ID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="6" Name="SupplierEndpointGLNID" Show="true" DataType="0" Description="Buy-from Vendor GLN" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="7" Name="SupplierEndpointVATID" Show="true" DataType="0" Description="Buy-from Vendor VAT Registration No." Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="8" Name="SupplierName" Show="false" DataType="0" Description="Buy-from Vendor Name" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="9" Name="PartyLegalEntityCompanyIDGLN" Show="true" DataType="0" Description="Buy-from Vendor GLN" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="10" Name="PartyLegalEntityCompanyIDVAT" Show="false" DataType="0" Description="Buy-from Vendor VAT Registration No." Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="11" Name="CustomerEndpointIDGLN" Show="true" DataType="0" Description="Company GLN" Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="12" Name="CustomerPartyIdentificationIDGLN" Show="true" DataType="0" Description="Company GLN" Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="13" Name="CustPartyTaxSchemeCompanyID" Show="true" DataType="0" Description="Company VAT Registration No." Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="14" Name="CustPartyLegalEntityCompanyID" Show="true" DataType="0" Description="Company VAT Registration No." Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="16" Name="PartyLegalEntityName" Show="true" DataType="0" Description="Pay-to Vendor Name" Path="/Invoice/cac:PayeeParty/cac:PartyName/cbc:Name" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="17" Name="DiscountAmount" Show="true" DataType="0" Description="Invoice Discount Amount" Path="/Invoice/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="18" Name="DiscountCurrencyID" Show="true" DataType="0" Description="Invoice Discount Currency Code" Path="/Invoice/cac:AllowanceCharge/cbc:Amount/@currencyID[../cbc:ChargeIndicator/text() = 'false']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="19" Name="SupplierPartyIdentificationGLNID" Show="false" DataType="0" Description="Buy-from Vendor GLN" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="20" Name="SupplierPartyIdentificationVATID" Show="false" DataType="0" Description="Buy-from Vendor VAT Registration No." Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="21" Name="ChargeAmount" Show="false" DataType="0" Description="Total Charge Amount" Path="/Invoice/cac:AllowanceCharge/cbc:Amount[../cbc:ChargeIndicator/text() = 'true']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="22" Name="ChargeAmountCurrencyID" Show="false" DataType="0" Description="Charge Amount Currency Code" Path="/Invoice/cac:AllowanceCharge/cbc:Amount/@currencyID[../cbc:ChargeIndicator/text() = 'true']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="23" Name="PrepaidAmount" Show="false" DataType="0" Description="Prepaid Amount" Path="/Invoice/cac:LegalMonetaryTotal/cbc:PrepaidAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="24" Name="PrepaidAmountCurrencyID" Show="false" DataType="0" Description="Prepaid Amount Currency Code" Path="/Invoice/cac:LegalMonetaryTotal/cbc:PrepaidAmount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="25" Name="PayableAmount" Show="true" DataType="0" Description="Total Amount including VAT, excl. Prepaid Amount" Path="/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="26" Name="PayableAmountCurrencyID" Show="true" DataType="0" Description="Total Amount Currency Code" Path="/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="27" Name="SupplierPartyContactReference" Show="false" DataType="0" Description="Your Reference" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="28" Name="CustomerPartyName" Show="false" DataType="0" Description="Company Name" Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="29" Name="CustomerPartyStreetName" Show="false" DataType="0" Description="Company Address" Path="/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="30" Name="SupplierStreetName" Show="false" DataType="0" Description="Buy-from Vendor Address" Path="/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="31" Name="PayeePartyLegalEntityCompanyIDGLN" Show="false" DataType="0" Description="Pay-to Vendor GLN" Path="/Invoice/cac:PayeeParty/cac:PartyLegalEntity/cbc:CompanyID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="32" Name="PayeePartyLegalEntityCompanyIDVAT" Show="false" DataType="0" Description="Pay-to Vendor VAT Registration No." Path="/Invoice/cac:PayeeParty/cac:PartyLegalEntity/cbc:CompanyID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="33" Name="PayeePartyCompanyIDGLN" Show="true" DataType="0" Description="Pay-to Vendor GLN" Path="/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="34" Name="PayeePartyCompanyIDVAT" Show="false" DataType="0" Description="Pay-to Vendor VAT Registration No." Path="/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[@schemeID!='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="35" Name="ChargeReason" Show="false" DataType="0" Description="Charge Reason" Path="/Invoice/cac:AllowanceCharge/cbc:AllowanceChargeReason[../cbc:ChargeIndicator/text() = 'true']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="36" Name="DueDate" Show="true" DataType="0" Description="Due Date" Path="/Invoice/cbc:DueDate" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="37" Name="DocumentType" Show="false" DataType="0" Description="Document Type" Constant="Invoice" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="38" Name="AmountExclVAT" Show="false" DataType="0" Description="Total Amount excluding VAT" Path="/Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="39" Name="Supplier IBAN" Show="false" DataType="0" Description="Buy-from Vendor IBAN" Path="/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID[@schemeID='IBAN']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="40" Name="TaxAmount" Show="false" DataType="0" Description="Total Tax Amount" Path="/Invoice/cac:TaxTotal/cbc:TaxAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="41" Name="Supplier Bank Branch No." Show="false" DataType="0" Description="Buy-from Vendor Bank Branch No." Path="/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="42" Name="Supplier Bank Account No." Show="false" DataType="0" Description="Buy-from Vendor Bank Account No." Path="/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID" TextPaddingRequired="false" />
+      <DataExchMapping TableId="1214" UseAsIntermediateTable="true" Name="PEPPOLSALESINVOICE to Purchase Invoice" MappingCodeunit="1218" PreMappingCodeunit="1217">
+        <DataExchFieldMapping ColumnNo="1" TargetTableID="38" TargetFieldID="68" />
+        <DataExchFieldMapping ColumnNo="2" TargetTableID="38" TargetFieldID="99" />
+        <DataExchFieldMapping ColumnNo="3" TargetTableID="38" TargetFieldID="32" />
+        <DataExchFieldMapping ColumnNo="5" TargetTableID="38" TargetFieldID="66" />
+        <DataExchFieldMapping ColumnNo="6" TargetTableID="38" TargetFieldID="2" />
+        <DataExchFieldMapping ColumnNo="7" TargetTableID="23" TargetFieldID="11620" />
+        <DataExchFieldMapping ColumnNo="8" TargetTableID="38" TargetFieldID="79" />
+        <DataExchFieldMapping ColumnNo="11" Optional="true" TargetTableID="79" TargetFieldID="90" />
+        <DataExchFieldMapping ColumnNo="12" Optional="true" TargetTableID="79" TargetFieldID="90" />
+        <DataExchFieldMapping ColumnNo="13" Optional="true" TargetTableID="79" TargetFieldID="19" />
+        <DataExchFieldMapping ColumnNo="14" Optional="true" TargetTableID="79" TargetFieldID="19" />
+        <DataExchFieldMapping ColumnNo="16" TargetTableID="38" TargetFieldID="5" />
+        <DataExchFieldMapping ColumnNo="17" Optional="true" TargetTableID="38" TargetFieldID="122" />
+        <DataExchFieldMapping ColumnNo="18" Optional="true" TargetTableID="38" TargetFieldID="114" />
+        <DataExchFieldMapping ColumnNo="19" TargetTableID="38" TargetFieldID="2" />
+        <DataExchFieldMapping ColumnNo="20" TargetTableID="23" TargetFieldID="11620" />
+        <DataExchFieldMapping ColumnNo="21" Optional="true" TargetTableID="5805" TargetFieldID="11" />
+        <DataExchFieldMapping ColumnNo="22" Optional="true" TargetTableID="38" TargetFieldID="114" />
+        <DataExchFieldMapping ColumnNo="23" Optional="true" TargetTableID="461" TargetFieldID="3" />
+        <DataExchFieldMapping ColumnNo="24" Optional="true" TargetTableID="38" TargetFieldID="114" />
+        <DataExchFieldMapping ColumnNo="25" Optional="true" TargetTableID="38" TargetFieldID="61" />
+        <DataExchFieldMapping ColumnNo="26" Optional="true" TargetTableID="38" TargetFieldID="114" />
+        <DataExchFieldMapping ColumnNo="27" TargetTableID="38" TargetFieldID="11" />
+        <DataExchFieldMapping ColumnNo="28" Optional="true" TargetTableID="79" TargetFieldID="2" />
+        <DataExchFieldMapping ColumnNo="29" Optional="true" TargetTableID="79" TargetFieldID="4" />
+        <DataExchFieldMapping ColumnNo="30" TargetTableID="38" TargetFieldID="81" />
+        <DataExchFieldMapping ColumnNo="31" TargetTableID="38" TargetFieldID="4" />
+        <DataExchFieldMapping ColumnNo="32" TargetTableID="38" TargetFieldID="11620" />
+        <DataExchFieldMapping ColumnNo="33" TargetTableID="38" TargetFieldID="4" />
+        <DataExchFieldMapping ColumnNo="34" TargetTableID="38" TargetFieldID="11620" />
+        <DataExchFieldMapping ColumnNo="35" Optional="true" TargetTableID="5800" TargetFieldID="2" />
+        <DataExchFieldMapping ColumnNo="36" TargetTableID="38" TargetFieldID="24" />
+        <DataExchFieldMapping ColumnNo="37" TargetTableID="38" TargetFieldID="1" />
+        <DataExchFieldMapping ColumnNo="38" Optional="true" TargetTableID="38" TargetFieldID="60" />
+        <DataExchFieldMapping ColumnNo="39" Optional="true" TargetTableID="288" TargetFieldID="24" />
+        <DataExchFieldMapping ColumnNo="40" TargetTableID="17" TargetFieldID="43" />
+        <DataExchFieldMapping ColumnNo="41" Optional="true" TargetTableID="288" TargetFieldID="13" />
+        <DataExchFieldMapping ColumnNo="42" Optional="true" TargetTableID="288" TargetFieldID="14" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="PEPPOLINVLINES" Name="PEPPOL - Invoice Lines" ColumnCount="18" DataLineTag="/Invoice/cac:InvoiceLine" ParentCode="PEPPOLINVHEADER">
+      <DataExchColumnDef ColumnNo="1" Name="InvoiceLineNote" Show="true" DataType="0" Path="/Invoice/cac:InvoiceLine/cbc:Note" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="2" Name="InvoicedQuantity" Show="true" DataType="0" Description="Quantity" Path="/Invoice/cac:InvoiceLine/cbc:InvoicedQuantity" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="3" Name="unitCode" Show="true" DataType="0" Description="Unit of Measure" Path="/Invoice/cac:InvoiceLine/cbc:InvoicedQuantity/@unitCode" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="4" Name="InvoiceLineExtensionAmount" Show="true" DataType="0" Path="/Invoice/cac:InvoiceLine/cbc:LineExtensionAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="5" Name="LineExtensionAmountCurrencyID" Show="true" DataType="0" Description="Currency Code" Path="/Invoice/cac:InvoiceLine/cbc:LineExtensionAmount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="6" Name="InvLnDiscountAmount" Show="true" DataType="0" Description="Line Discount Amount" Path="/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator[text()='false']]/cbc:Amount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="7" Name="InvLnDiscountAmtCurrID" Show="true" DataType="0" Description="Currency Code" Path="/Invoice/cac:InvoiceLine/cac:AllowanceCharge/cbc:Amount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="8" Name="InvoiceLineTaxAmount" Show="true" DataType="0" Description="Amount Including VAT" Path="/Invoice/cac:InvoiceLine/cac:TaxTotal/cbc:TaxAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="9" Name="currencyID" Show="true" DataType="0" Path="/Invoice/cac:InvoiceLine/cac:TaxTotal/cbc:TaxAmount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Description" Show="true" DataType="0" Description="Description" Path="/Invoice/cac:InvoiceLine/cac:Item/cbc:Description" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Name" Show="true" DataType="0" Description="Name" Path="/Invoice/cac:InvoiceLine/cac:Item/cbc:Name" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="12" Name="SellersItemIdentificationID" Show="true" DataType="0" Description="Vendor's Item No." Path="/Invoice/cac:InvoiceLine/cac:Item/cac:SellersItemIdentification/cbc:ID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="13" Name="StandardItemIdentificationID" Show="true" DataType="0" Description="GLN Schema" Path="/Invoice/cac:InvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID[@schemeID='0088']" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="15" Name="InvoiceLineTaxPercent" Show="true" DataType="0" Description="VAT %" Path="/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="16" Name="InvoiceLinePriceAmount" Show="true" DataType="0" Description="Direct Unit Cost" Path="/Invoice/cac:InvoiceLine/cac:Price/cbc:PriceAmount" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="17" Name="InvLinePriceAmountCurrencyID" Show="true" DataType="0" Description="Currency Code" Path="/Invoice/cac:InvoiceLine/cac:Price/cbc:PriceAmount/@currencyID" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="18" Name="BaseQuantity" Show="true" DataType="0" Description="Quantity (Base)" Path="/Invoice/cac:InvoiceLine/cac:Price/cbc:BaseQuantity" TextPaddingRequired="false" />
+      <DataExchMapping TableId="1214" UseAsIntermediateTable="true" Name="PEPPOLSALESINVOICE to Sales Invoice">
+        <DataExchFieldMapping ColumnNo="2" TargetTableID="39" TargetFieldID="15" />
+        <DataExchFieldMapping ColumnNo="3" TargetTableID="39" TargetFieldID="5407" />
+        <DataExchFieldMapping ColumnNo="4" Optional="true" TargetTableID="39" TargetFieldID="29" />
+        <DataExchFieldMapping ColumnNo="5" TargetTableID="39" TargetFieldID="91" />
+        <DataExchFieldMapping ColumnNo="6" TargetTableID="39" TargetFieldID="28" />
+        <DataExchFieldMapping ColumnNo="7" TargetTableID="39" TargetFieldID="91" />
+        <DataExchFieldMapping ColumnNo="8" Optional="true" TargetTableID="39" TargetFieldID="30" />
+        <DataExchFieldMapping ColumnNo="10" TargetTableID="39" TargetFieldID="12" />
+        <DataExchFieldMapping ColumnNo="11" TargetTableID="39" TargetFieldID="11" />
+        <DataExchFieldMapping ColumnNo="12" Optional="true" TargetTableID="39" TargetFieldID="5725" />
+        <DataExchFieldMapping ColumnNo="13" TargetTableID="39" TargetFieldID="6" />
+        <DataExchFieldMapping ColumnNo="15" Optional="true" TargetTableID="39" TargetFieldID="25" />
+        <DataExchFieldMapping ColumnNo="16" TargetTableID="39" TargetFieldID="22" />
+        <DataExchFieldMapping ColumnNo="17" TargetTableID="39" TargetFieldID="91" />
+        <DataExchFieldMapping ColumnNo="18" Optional="true" TargetTableID="39" TargetFieldID="5415" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

@@ -192,6 +192,10 @@ table 10682 "SAF-T Export Header"
         {
             Caption = 'Total G/L Entry Credit';
         }
+        field(53; "Version"; Enum "SAF-T Version")
+        {
+            Caption = 'Version';
+        }
     }
 
     keys

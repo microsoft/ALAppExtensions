@@ -14,7 +14,7 @@ pageextension 8052 "Customer List" extends "Customer List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Contract';
                 Image = FileContract;
-                RunObject = Page "Customer Contract";
+                RunObject = page "Customer Contract";
                 RunPageLink = "Sell-to Customer No." = field("No.");
                 RunPageMode = Create;
                 ToolTip = 'Create a contract for the customer.';
