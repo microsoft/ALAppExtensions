@@ -8,6 +8,7 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Pricing;
 using Microsoft.CRM.Contact;
+using Microsoft.Pricing.Calculation;
 using Microsoft.Finance.Currency;
 using Microsoft.Pricing.Source;
 using Microsoft.Pricing.Asset;
@@ -43,6 +44,7 @@ codeunit 148157 "Service Object Test"
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryInventory: Codeunit "Library - Inventory";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         AssertThat: Codeunit Assert;
@@ -794,6 +796,85 @@ codeunit 148157 "Service Object Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure TestRecalculateServiceCommitmentsOnChangeVariantCode()
+    var
+        ItemVariant: array[2] of Record "Item Variant";
+        CustomerPrice: array[2] of Decimal;
+    begin
+        // [SCENARIO]: Create Service Object with the Service Commitment, Create Item Variants and create Sales Prices
+        // [SCENARIO]: Change the Variant Code in Service Object and check the value of Calculation Base Amount in Service Commitment
+        // [SCENARIO]: Calculation Base Amount should be recalculated based on value of Variant Code that has been set in Sales Price
+
+        // [GIVEN] New pricing enabled
+        LibraryPriceCalculation.EnableExtendedPriceCalculation();
+        LibraryPriceCalculation.SetupDefaultHandler("Price Calculation Handler"::"Business Central (Version 16.0)");
+        // [GIVEN]: Setup
+        ClearAll();
+        SetupServiceObjectWithServiceCommitment(true, true);
+        ConfirmOption := true;
+        LibrarySales.CreateCustomer(Customer);
+        ServiceObject.Validate("End-User Customer No.", Customer."No."); //ConfirmHandler
+        ServiceObject.Modify(true);
+        CustomerPrice[1] := LibraryRandom.RandDec(100, 2);
+        CustomerPrice[2] := LibraryRandom.RandDec(100, 2);
+        LibraryInventory.CreateItemVariant(ItemVariant[1], Item."No.");
+        LibraryInventory.CreateItemVariant(ItemVariant[2], Item."No.");
+        CreateCustomerSalesPriceWithVariantCode(Item, Customer, WorkDate(), 0, CustomerPrice[1], (CalcDate('<1M>', WorkDate())), ItemVariant[1].Code);
+        CreateCustomerSalesPriceWithVariantCode(Item, Customer, WorkDate(), 0, CustomerPrice[2], (CalcDate('<1M>', WorkDate())), ItemVariant[2].Code);
+
+        // [WHEN]: Change the Variant Code on Service Object
+        ServiceObject.Validate("Variant Code", ItemVariant[1].Code); //ConfirmHandler
+        ServiceObject.Modify(false);
+        FindServiceCommitment(ServiceCommitment, ServiceObject."No.");
+
+        // [THEN]: Calculation Base Amount on Service Commitment should be recalculated based on value related to changed Variant Code
+        AssertThat.AreEqual(CustomerPrice[1], ServiceCommitment."Calculation Base Amount", 'Calculation Base Amount should be taken from Sales Price based on Variant Code');
+
+        // [WHEN]: Change the Variant Code on Service Object
+        ServiceObject.Validate("Variant Code", ItemVariant[2].Code); //ConfirmHandler
+        ServiceObject.Modify(false);
+        FindServiceCommitment(ServiceCommitment, ServiceObject."No.");
+
+        // [THEN]: Calculation Base Amount on Service Commitment should be recalculated based on value related to changed Variant Code
+        AssertThat.AreEqual(CustomerPrice[2], ServiceCommitment."Calculation Base Amount", 'Calculation Base Amount should be taken from Sales Price based on Variant Code');
+    end;
+
+    local procedure FindServiceCommitment(var ServiceCommitmentLine: Record "Service Commitment"; ServiceObjectNo: Code[20])
+    begin
+        ServiceCommitmentLine.SetRange(ServiceCommitmentLine."Service Object No.", ServiceObjectNo);
+        ServiceCommitmentLine.FindFirst();
+    end;
+
+    local procedure CreateCustomerSalesPriceWithVariantCode(SourceItem: Record Item; SourceCustomer: Record Customer; StartingDate: Date; Quantity: Decimal; CustomerPrice: Decimal; EndingDate: Date; VariantCode: Code[10])
+    begin
+        CreateCustomerSalesPriceWithVariantCode(SourceItem, SourceCustomer, StartingDate, EndingDate, Quantity, CustomerPrice, VariantCode);
+    end;
+
+    local procedure CreateCustomerSalesPriceWithVariantCode(SourceItem: Record Item; SourceCustomer: Record Customer; StartingDate: Date; EndingDate: Date; Quantity: Decimal; CustomerPrice: Decimal; VariantCode: Code[10])
+    begin
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Sale, "Price Source Type"::Customer, SourceCustomer."No.");
+        PriceListHeader.Status := "Price Status"::Active;
+        PriceListHeader."Allow Updating Defaults" := true;
+        PriceListHeader."Currency Code" := '';
+        PriceListHeader.Modify(true);
+
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader, "Price Amount Type"::Price, "Price Asset Type"::Item, SourceItem."No.");
+        PriceListLine.Validate("Starting Date", StartingDate);
+        PriceListLine.Validate("Ending Date", EndingDate);
+
+        PriceListLine."Asset Type" := PriceListLine."Asset Type"::Item;
+        PriceListLine."Product No." := SourceItem."No.";
+
+        PriceListLine."Currency Code" := '';
+        PriceListLine.Validate("Variant Code", VariantCode);
+        PriceListLine.Validate("Unit Price", CustomerPrice);
+        PriceListLine.Validate("Minimum Quantity", Quantity);
+        PriceListLine.Status := "Price Status"::Active;
+        PriceListLine.Modify(true);
+    end;
+
+    [Test]
     procedure CheckCalculationBaseAmountAssignmentForCustomerWithBillToCustomer()
     var
         CustomerPrice: array[4] of Decimal;
@@ -976,6 +1057,42 @@ codeunit 148157 "Service Object Test"
             TempServComm.Get(ServCommArchive."Original Entry No.");
             AssertThat.AreEqual(TempServComm."Service Amount", ServCommArchive."Service Amount", 'Service Amount in Service Commitment Archive should be the value of the Service Commitment before the quantity change.');
         until ServCommArchive.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure CheckArchivedServCommVariantCode()
+    var
+        ServiceCommitmentArchive: Record "Service Commitment Archive";
+        ItemVariant: Record "Item Variant";
+        PreviousVariantCode: Code[10];
+    begin
+        // [SCENARIO]: Create Service Object with the Service Commitment, create Item Variant and create Sales Price
+        // [SCENARIO]: Change the Variant Code in Service Object and check the value in Service Commitment Archive
+        // [SCENARIO]: Variant Code in Service Commitment Archive should be the value of the Service Object before the Variant Code change
+
+        // [GIVEN]: Setup
+        ClearAll();
+        SetupServiceObjectWithServiceCommitment(true, true);
+        ConfirmOption := true;
+        LibrarySales.CreateCustomer(Customer);
+        LibraryInventory.CreateItemVariant(ItemVariant, Item."No.");
+        ServiceObject.Validate("End-User Customer No.", Customer."No."); //ConfirmHandler
+        ServiceObject.Validate("Variant Code", ItemVariant.Code); // ConfirmHandler
+        ServiceObject.Modify(true);
+
+        // [WHEN]: Change the Variant Code to create entries in Service Commitment Archive
+        PreviousVariantCode := ServiceObject."Variant Code";
+        LibraryInventory.CreateItemVariant(ItemVariant, Item."No.");
+        ServiceObject.Validate("Variant Code", ItemVariant.Code); // ConfirmHandler
+        ServiceObject.Modify(false);
+
+        // Check if archive has saved the correct (old) Variant Code
+        ServiceCommitmentArchive.SetRange("Service Object No.", ServiceObject."No.");
+#pragma warning disable AA0210
+        ServiceCommitmentArchive.SetRange("Variant Code (Service Object)", PreviousVariantCode);
+#pragma warning restore AA0210
+        AssertThat.RecordIsNotEmpty(ServiceCommitmentArchive);
     end;
 
     [Test]

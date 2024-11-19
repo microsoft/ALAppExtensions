@@ -293,6 +293,7 @@ page 8002 "Extend Contract"
             VendorContract.TestField("No.");
 
         Item.TestField("No.");
+        ErrorIfItemServCommPackageMissingForItem();
 
         if ProvisionStartDate = 0D then
             Error(ProvisionStartDateEmptyErr);
@@ -383,9 +384,27 @@ page 8002 "Extend Contract"
         FillTempServiceCommitmentPackage();
 
         Item.Get(ItemNo);
+        ErrorIfItemServCommPackageMissingForItem();
+
         GetItemCost();
         ContractItemMgt.GetSalesPriceForItem(UnitPrice, ItemNo, QuantityDecimal, CustomerContract."Currency Code", CustomerContract."Sell-to Customer No.", CustomerContract."Bill-to Customer No.");
         CountTotalServiceCommitmentPackage();
+    end;
+
+    local procedure ErrorIfItemServCommPackageMissingForItem()
+    var
+        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemPackageMissingErrorInfo: ErrorInfo;
+    begin
+        ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
+        if ItemServCommitmentPackage.IsEmpty then begin
+            ItemPackageMissingErrorInfo.Title(ItemMissingServCommPackageTxt);
+            ItemPackageMissingErrorInfo.Message(AssignServCommPackageToItemTxt);
+            ItemPackageMissingErrorInfo.RecordId := Item.RecordId;
+            ItemPackageMissingErrorInfo.PageNo := Page::"Item Card";
+            ItemPackageMissingErrorInfo.AddNavigationAction(OpenItemCardTxt);
+            Error(ItemPackageMissingErrorInfo);
+        end;
     end;
 
     local procedure ValidateUsageSupplierNo()
@@ -578,6 +597,9 @@ page 8002 "Extend Contract"
         SubscriptionEntryNoParam: Integer;
         SupplierReferenceEntryNo: Integer;
         SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Service Commitment. The Subscription is already connected to Service Object %1. If necessary, detach the Subscription(s) from the Service Commitment(s).';
+        OpenItemCardTxt: Label 'Open Item Card.';
+        ItemMissingServCommPackageTxt: Label 'No Service Commitment Package is available for this item.';
+        AssignServCommPackageToItemTxt: Label ' In order to extend the contract properly, please make sure that at least one package is assigned.';
 
     protected var
         ItemNo: Code[20];

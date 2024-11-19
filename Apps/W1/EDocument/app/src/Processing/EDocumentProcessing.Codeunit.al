@@ -193,6 +193,7 @@ codeunit 6108 "E-Document Processing"
         PurchaseHeader: Record "Purchase Header";
         Guid: Guid;
     begin
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
         PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
         exit(PurchaseHeader.Count());
     end;

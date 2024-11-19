@@ -5,6 +5,8 @@ codeunit 5167 "Create Employee Template"
         HumanResourcesModuleSetup: Record "Human Resources Module Setup";
         ContosoHumanResource: Codeunit "Contoso Human Resources";
     begin
+        HumanResourcesModuleSetup.Get();
+
         ContosoHumanResource.InsertEmployeeTemplate(AdminCode(), AdministrationStaffLbl, Enum::"Employee Gender"::Male, HumanResourcesModuleSetup."Employee Posting Group");
         ContosoHumanResource.InsertEmployeeTemplate(ITCode(), ITStaffLbl, Enum::"Employee Gender"::Female, HumanResourcesModuleSetup."Employee Posting Group");
     end;

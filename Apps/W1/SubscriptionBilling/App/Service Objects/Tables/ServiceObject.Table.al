@@ -655,6 +655,18 @@ table 8057 "Service Object"
             Editable = false;
             CalcFormula = exist("Service Commitment Archive" where("Service Object No." = field("No.")));
         }
+        field(96; "Variant Code"; Code[10])
+        {
+            Caption = 'Variant Code';
+            TableRelation = "Item Variant".Code where("Item No." = field("Item No."));
+
+            trigger OnValidate()
+            begin
+                Rec.ArchiveServiceCommitments();
+                if Rec."Variant Code" <> xRec."Variant Code" then
+                    RecalculateServiceCommitments(FieldCaption("Variant Code"), false);
+            end;
+        }
         field(107; "No. Series"; Code[20])
         {
             Caption = 'No. Series';
@@ -886,7 +898,6 @@ table 8057 "Service Object"
         ContactIsNotRelatedToAnyCustomerErr: Label 'Contact %1 %2 is not related to a customer.';
         ConfirmEmptyEmailQst: Label 'Contact %1 has no email address specified. The value in the Email field for the End User, %2, will be deleted. Do you want to continue?', Comment = '%1 - Contact No., %2 - Email';
         ServiceCommitmentExistsErr: Label 'Cannot delete %1 while %2 exists.';
-        RecalculateLinesQst: Label 'If you change %1, the existing service commitments prices will be recalculated.\\Do you want to continue?', Comment = '%1: FieldCaption';
         ModifyEndUserCustomerAddressNotificationNameTxt: Label 'Update Sell-to Customer Address';
         ModifyEndUserCustomerAddressNotificationDescriptionTxt: Label 'Warn if the sell-to address on service object is different from the customer''s existing address.';
         ModifyBillToCustomerAddressNotificationNameTxt: Label 'Update Bill-to Customer Address';
@@ -1725,7 +1736,7 @@ table 8057 "Service Object"
             if HideValidationDialog or not GuiAllowed() then
                 Confirmed := true
             else
-                Confirmed := ConfirmManagement.GetResponse(StrSubstNo(RecalculateLinesQst, ChangedFieldName), false);
+                Confirmed := ConfirmManagement.GetResponse(GetRecalculateLinesDialog(ChangedFieldName), false);
 
         if Confirmed then begin
             Modify();
@@ -1740,7 +1751,10 @@ table 8057 "Service Object"
                     ServiceCommitment.Modify(true);
                 until ServiceCommitment.Next() = 0;
         end else
-            Error('');
+            if (not Confirmed) and (FieldCaption("Variant Code") = ChangedFieldName) then
+                Modify()
+            else
+                Error('');
     end;
 
     internal procedure UpdateServicesDates()
@@ -1758,6 +1772,7 @@ table 8057 "Service Object"
                 if (ServiceCommitment."Service End Date" <> 0D) and (Today() > ServiceCommitment."Service End Date") and ServiceCommitment.IsFullyInvoiced() then begin
                     ServiceCommitment."Cancellation Possible Until" := 0D;
                     ServiceCommitment."Term Until" := 0D;
+                    ServiceCommitment.Closed := true;
                     ServiceCommitment.Modify(false);
                     case ServiceCommitment.Partner of
                         ServiceCommitment.Partner::Customer:
@@ -1972,6 +1987,20 @@ table 8057 "Service Object"
     internal procedure SkipInsertServiceCommitmentsFromStandardServCommPackages(Skip: Boolean)
     begin
         SkipInsertServiceCommitments := Skip;
+    end;
+
+    local procedure GetRecalculateLinesDialog(ChangedFieldName: Text): Text
+    var
+        RecalculateLinesQst: Label 'If you change %1, the existing service commitments prices will be recalculated.\\Do you want to continue?', Comment = '%1: FieldCaption';
+        RecalculateLinesFromVariantCodeQst: Label 'The %1 has been changed.\\Do you want to update the price and description?';
+    begin
+        case ChangedFieldName of
+            Rec.FieldName(Rec."Variant Code"):
+                exit(StrSubstNo(RecalculateLinesFromVariantCodeQst, ChangedFieldName));
+            else
+                exit(StrSubstNo(RecalculateLinesQst, ChangedFieldName));
+        end;
+
     end;
 
     [InternalEvent(false, false)]

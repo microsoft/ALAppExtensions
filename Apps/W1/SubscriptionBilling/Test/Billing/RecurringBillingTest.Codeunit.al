@@ -1415,7 +1415,7 @@ codeunit 139688 "Recurring Billing Test"
 
     local procedure CreateServiceCommitmentTemplateSetup(CalcBasePeriodDateFormulaTxt: Text)
     begin
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, CalcBasePeriodDateFormulaTxt, 50, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, CalcBasePeriodDateFormulaTxt, 50, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
     end;
 
     local procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(PeriodCalculation: Enum "Period Calculation"; CalculationRhythmDateFormulaTxt: Text)

@@ -146,7 +146,7 @@ page 8074 "Billing Lines"
                 }
                 field("Update Required"; Rec."Update Required")
                 {
-                    ToolTip = 'Indicates whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
+                    ToolTip = 'Specifies whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                 }

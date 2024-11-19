@@ -400,7 +400,7 @@ page 8068 "Customer Contract Line Subp."
                     Caption = 'Dimensions';
                     Image = Dimensions;
                     Scope = Repeater;
-                    ShortCutKey = 'Shift+Ctrl+D';
+                    ShortcutKey = 'Shift+Ctrl+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                     trigger OnAction()

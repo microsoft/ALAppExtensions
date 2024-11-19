@@ -44,7 +44,8 @@ table 8064 "Billing Line Archive"
         field(21; "Contract Line No."; Integer)
         {
             Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
+            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(30; "Service Object No."; Code[20])
         {

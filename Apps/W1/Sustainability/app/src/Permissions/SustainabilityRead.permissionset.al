@@ -26,6 +26,7 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sustainability Jnl. Batch" = R,
         tabledata "Sustainability Jnl. Line" = R,
         tabledata "Sustainability Ledger Entry" = R,
+        tabledata "Sustainability Value Entry" = R,
         tabledata "Sustainability Setup" = R,
         tabledata "Emission Fee" = R,
         tabledata "Sust. Account (Analysis View)" = R,

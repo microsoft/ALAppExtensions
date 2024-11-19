@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Journal;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Sustainability.Account;
@@ -14,6 +15,19 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
     begin
         if GenJournalLine."Sust. Account No." <> '' then
             GenJournalLine.CheckSustGenJournalLine(GenJournalLine);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterAccountNoOnValidateGetGLAccount', '', false, false)]
+    local procedure OnAfterAccountNoOnValidateGetGLAccount(var GenJournalLine: Record "Gen. Journal Line"; var GLAccount: Record "G/L Account")
+    begin
+        GenJournalLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterAccountNoOnValidateGetGLBalAccount', '', false, false)]
+    local procedure OnAfterAccountNoOnValidateGetGLBalAccount(var GenJournalLine: Record "Gen. Journal Line"; var GLAccount: Record "G/L Account")
+    begin
+        if GenJournalLine."Sust. Account No." = '' then
+            GenJournalLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnCodeOnAfterStartOrContinuePosting', '', false, false)]

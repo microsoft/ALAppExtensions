@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="ECB-EXCHANGE-RATES" Name="European Central Bank Currency Exchange Rates" Type="3" FileType="0" ReadingWritingCodeunit="1203">
+    <DataExchLineDef LineType="0" Code="CURREXCHANGE" Name="Parent Node for Currency Code" ColumnCount="0" DataLineTag="/gesmes:Envelope/Cube/Cube/Cube">
+      <DataExchColumnDef ColumnNo="10000" Name="gesmes:Envelope" Show="false" DataType="0" Path="/gesmes:Envelope" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="20000" Name="xmlns:gesmes" Show="false" DataType="0" Path="/gesmes:Envelope/@xmlns:gesmes" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="30000" Name="xmlns" Show="false" DataType="0" Path="/gesmes:Envelope/@xmlns" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="40000" Name="gesmes:subject" Show="false" DataType="0" Path="/gesmes:Envelope/gesmes:subject" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="50000" Name="gesmes:Sender" Show="false" DataType="0" Path="/gesmes:Envelope/gesmes:Sender" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="60000" Name="gesmes:name" Show="false" DataType="0" Path="/gesmes:Envelope/gesmes:Sender/gesmes:name" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="70000" Name="Cube" Show="false" DataType="0" Path="/gesmes:Envelope/Cube" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="80000" Name="Cube" Show="false" DataType="0" Path="/gesmes:Envelope/Cube/Cube" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="90000" Name="time" Show="false" DataType="0" Path="/gesmes:Envelope/Cube/Cube/@time" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="100000" Name="Cube" Show="false" DataType="0" Path="/gesmes:Envelope/Cube/Cube/Cube" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="110000" Name="currency" Show="false" DataType="0" Path="/gesmes:Envelope/Cube/Cube/Cube/@currency" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="120000" Name="rate" Show="false" DataType="2" Path="/gesmes:Envelope/Cube/Cube/Cube/@rate" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="130000" Name="" Show="false" DataType="2" TextPaddingRequired="false" />
+      <DataExchMapping TableId="330" Name="Mapping for Currency Exchange" MappingCodeunit="1280">
+        <DataExchFieldMapping ColumnNo="90000" FieldID="2" UseDefaultValue="true" />
+        <DataExchFieldMapping ColumnNo="110000" FieldID="1" UseDefaultValue="true" />
+        <DataExchFieldMapping ColumnNo="120000" FieldID="3" UseDefaultValue="true" />
+        <DataExchFieldMapping ColumnNo="130000" FieldID="6" UseDefaultValue="true" DefaultValue="1" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

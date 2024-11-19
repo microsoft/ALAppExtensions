@@ -14,7 +14,7 @@ pageextension 8086 "Source Code Setup" extends "Source Code Setup"
                 field(ContractDeferralsRelease; Rec."Contract Deferrals Release")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Indicates which source code is used in the G/L when posting the release of contract deferrals.';
+                    ToolTip = 'Specifies which source code is used in the G/L when posting the release of contract deferrals (Subscription Billing).';
                 }
             }
         }

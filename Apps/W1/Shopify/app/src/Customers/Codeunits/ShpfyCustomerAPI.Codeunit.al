@@ -15,6 +15,7 @@ codeunit 30114 "Shpfy Customer API"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         CustomerEvents: Codeunit "Shpfy Customer Events";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     /// <summary> 
     /// Add Field To Graph Query.
@@ -231,6 +232,7 @@ codeunit 30114 "Shpfy Customer API"
         Clear(Shop);
         Shop.Get(Code);
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -356,7 +358,6 @@ codeunit 30114 "Shpfy Customer API"
     internal procedure UpdateShopifyCustomerFields(var ShopifyCustomer: Record "Shpfy Customer"; JCustomer: JsonObject) Result: Boolean
     var
         CustomerAddress: Record "Shpfy Customer Address";
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
         NodeId: BigInteger;
         UpdatedAt: DateTime;
         JAddresses: JsonArray;

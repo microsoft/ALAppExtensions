@@ -109,7 +109,7 @@ table 8066 "Customer Contract Deferral"
         field(22; "Contract Line No."; Integer)
         {
             Caption = 'Contract Line No.';
-            TableRelation = "Customer Contract Line"."Line No.";
+            TableRelation = "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(23; "Service Object Description"; Text[100])
         {

@@ -62,7 +62,7 @@ page 8083 "Sales Serv. Comm. Archive List"
                 }
                 field("Agreed Serv. Comm. Start Date"; Rec."Agreed Serv. Comm. Start Date")
                 {
-                    ToolTip = 'Indicates the individually agreed start of the service. Enter a date here to overwrite the determination of the start of service with the start of service formula upon delivery. If the field remains empty, the start of the service is determined upon delivery.';
+                    ToolTip = 'Specifies the individually agreed start of the service. Enter a date here to overwrite the determination of the start of service with the start of service formula upon delivery. If the field remains empty, the start of the service is determined upon delivery.';
                 }
                 field("Initial Term"; Rec."Initial Term")
                 {

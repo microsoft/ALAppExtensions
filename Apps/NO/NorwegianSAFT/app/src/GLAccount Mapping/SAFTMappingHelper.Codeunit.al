@@ -31,6 +31,7 @@ codeunit 10672 "SAF-T Mapping Helper"
         NoGLAccountMappingErr: Label 'No G/L account mapping was created for range ID %1', Comment = '%1 = any integer number';
         MappingExistsErr: Label 'Mapping for category %1 with mapping code %2 already exists for range ID %3.', Comment = '%1 = category no., %2 = mapping code, %3 = any integer number';
         MappingNotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the  standard account or the grouping code.';
+        Mapping13NotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the category code and mapping number.';
         MappingDoneErr: Label 'One or more G/L accounts already have a mapping setup. Create a new mapping range with another mapping type.';
         DimensionWithoutAnalysisCodeErr: Label 'One or more dimensions do not have a SAF-T analysis code. Open the Dimensions page and specify a SAF-T analysis code for each dimension.';
         VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.';
@@ -397,6 +398,28 @@ codeunit 10672 "SAF-T Mapping Helper"
         if not SAFTGLAccountMapping.IsEmpty() then begin
             SAFTMappingRange.Get(MappingRangeCode);
             LogError(SAFTMappingRange, MappingNotDoneErr);
+        end;
+    end;
+
+    procedure VerifyMapping13IsDone(MappingRangeCode: Code[20])
+    var
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(MappingRangeCode);
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", MappingRangeCode);
+        SAFTGLAccountMapping.SetRange("Category No.", '');
+        if not SAFTGLAccountMapping.IsEmpty() then begin
+            SAFTMappingRange.Get(MappingRangeCode);
+            LogError(SAFTMappingRange, Mapping13NotDoneErr);
+            exit;
+        end;
+        SAFTGLAccountMapping.SetRange("Category No.");
+        SAFTGLAccountMapping.SetRange("No.", '');
+        if not SAFTGLAccountMapping.IsEmpty() then begin
+            SAFTMappingRange.Get(MappingRangeCode);
+            LogError(SAFTMappingRange, Mapping13NotDoneErr);
         end;
     end;
 

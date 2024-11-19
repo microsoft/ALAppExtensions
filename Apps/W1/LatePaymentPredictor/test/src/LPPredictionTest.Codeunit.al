@@ -742,8 +742,6 @@ codeunit 139575 "LP Prediction Test"
         AzureAIParams := '{"ApiKeys":["test"],"Limit":"10","ApiUris":["https://services.azureml.net/workspaces/fc0584f5f74a4aa19a55096fc8ebb2b7"],"LimitType":"Month"}'; // non-existing API URI
 
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
-        LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('AllowedApplicationSecrets',
-          'machinelearning,machinelearning-default,background-ml-enabled');
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('machinelearning', AzureAIParams);
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('machinelearning-default', AzureAIParams);
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('background-ml-enabled', '{ "something":false, "mllate": true }');

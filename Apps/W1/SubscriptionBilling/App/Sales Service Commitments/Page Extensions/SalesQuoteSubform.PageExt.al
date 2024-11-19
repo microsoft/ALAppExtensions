@@ -11,7 +11,7 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
             field("Service Commitments"; Rec."Service Commitments")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments for the sales line.';
+                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the sales line.';
             }
             field("Customer Contract No."; CustomerContractNo)
             {
@@ -55,7 +55,7 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
                 ApplicationArea = All;
                 Caption = 'Service Commitments';
                 Image = AllLines;
-                RunObject = Page "Sales Service Commitments";
+                RunObject = page "Sales Service Commitments";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
                 ToolTip = 'Shows the service commitments for the sales line.';
             }

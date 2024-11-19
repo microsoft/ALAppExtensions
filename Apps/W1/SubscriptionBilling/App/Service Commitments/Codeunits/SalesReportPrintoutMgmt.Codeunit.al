@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using System.Text;
+using System.Reflection;
 using Microsoft.Utilities;
 using Microsoft.Sales.Document;
 using Microsoft.Inventory.Item;
@@ -12,7 +13,8 @@ codeunit 8073 "Sales Report Printout Mgmt."
 
     var
         ReportFormatting: Codeunit "Report Formatting";
-        RecurringServicesLbl: Label 'Recurring Services';
+        RecurringServicesTotalLbl: Label 'Recurring Services (*)';
+        RecurringServicesPerLineLbl: Label 'Recurring Services*';
         ServicePriceLbl: Label 'Service Price';
         ServiceDiscountPercLbl: Label 'Service Discount %';
         TotalTextTok: Label 'TotalText', Locked = true;
@@ -126,8 +128,8 @@ codeunit 8073 "Sales Report Printout Mgmt."
                     ShowDiscount := true;
             until SalesServiceCommitment.Next() = 0;
             // Adds captions for Line Details
-            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, TotalTextTok, RecurringServicesLbl);
-            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName(Description), RecurringServicesLbl);
+            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, TotalTextTok, RecurringServicesTotalLbl);
+            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName(Description), RecurringServicesPerLineLbl);
             if ShowDiscount then
                 ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName("Line Discount %"), ServiceDiscountPercLbl);
             ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName("Unit Price"), ServicePriceLbl);
@@ -199,5 +201,43 @@ codeunit 8073 "Sales Report Printout Mgmt."
     [InternalEvent(false, false)]
     local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader: Record "Sales Header"; var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; TotalText: Text[50]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50]; var IsHandled: Boolean)
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Format Document", OnAfterSetSalesLine, '', false, false)]
+    local procedure SalesLineAddMarkToFormattedLineAmount(var SalesLine: Record "Sales Line"; var FormattedLineAmount: Text)
+    begin
+        if CheckAppendAsteriskToFormattedLineAmount(SalesLine) then
+            AppendAsteriskToText(FormattedLineAmount);
+    end;
+
+    local procedure CheckAppendAsteriskToFormattedLineAmount(SourceRecord: Variant): Boolean
+    begin
+        exit(IsServiceCommitmentItem(SourceRecord));
+    end;
+
+    local procedure IsServiceCommitmentItem(SourceRecord: Variant): Boolean
+    var
+        SalesLine: Record "Sales Line";
+        DataTypeManagement: Codeunit "Data Type Management";
+        RecRef: RecordRef;
+        SourceRecordNotDefinedForProcessingErr: Label 'Table %1 %2 has not been defined for processing.';
+    begin
+        DataTypeManagement.GetRecordRef(SourceRecord, RecRef);
+        case RecRef.Number of
+            Database::"Sales Line":
+                begin
+                    RecRef.SetTable(SalesLine);
+                    exit(SalesLine.IsServiceCommitmentItem());
+                end;
+            else
+                Error(SourceRecordNotDefinedForProcessingErr, RecRef.Number, RecRef.Caption());
+        end;
+    end;
+
+    local procedure AppendAsteriskToText(var TextToAppendAsterisk: Text)
+    begin
+        if DelChr(TextToAppendAsterisk) = '' then
+            exit;
+        TextToAppendAsterisk += '*';
     end;
 }

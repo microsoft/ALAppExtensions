@@ -5,6 +5,7 @@ page 8007 "Overdue Service Commitments"
     Caption = 'Overdue Service Commitments';
     PageType = List;
     SourceTable = "Overdue Service Commitments";
+    Editable = false;
     UsageCategory = None;
     SourceTableTemporary = true;
     ApplicationArea = All;
@@ -34,6 +35,10 @@ page 8007 "Overdue Service Commitments"
                 field("Service Commitment Description"; Rec."Service Commitment Description")
                 {
                     ToolTip = 'Specifies the description of the Service Commitment.';
+                    trigger OnAssistEdit()
+                    begin
+                        Rec.OpenServiceObjectCard();
+                    end;
                 }
                 field("Next Billing Date"; Rec."Next Billing Date")
                 {
@@ -78,11 +83,19 @@ page 8007 "Overdue Service Commitments"
                 {
                     ToolTip = 'Specifies the number of the Service Object.';
                     Visible = false;
+                    trigger OnAssistEdit()
+                    begin
+                        Rec.OpenServiceObjectCard();
+                    end;
                 }
                 field("Service Object Description"; Rec."Service Object Description")
                 {
                     ToolTip = 'Specifies the description of the Service Object.';
                     Visible = false;
+                    trigger OnAssistEdit()
+                    begin
+                        Rec.OpenServiceObjectCard();
+                    end;
                 }
                 field("Discount %"; Rec."Discount %")
                 {

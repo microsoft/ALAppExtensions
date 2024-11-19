@@ -18,6 +18,7 @@ tableextension 11729 "Return Shipment Header CZL" extends "Return Shipment Heade
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31068; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -34,6 +35,7 @@ tableextension 11729 "Return Shipment Header CZL" extends "Return Shipment Heade
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
         field(31073; "EU 3-Party Trade CZL"; Boolean)
         {
             Caption = 'EU 3-Party Trade';
