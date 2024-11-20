@@ -35,8 +35,8 @@ pageextension 6161 "E-Doc. Vendor Page" extends "Vendor Card"
 
     trigger OnAfterGetCurrRecord()
     begin
-        Rec.TestField("No.");
-        ParticipantIdCount := ServiceParticipant.GetParticipantIdCount(Enum::"E-Document Source Type"::Vendor, Rec."No.");
+        if Rec."No." <> '' then
+            ParticipantIdCount := ServiceParticipant.GetParticipantIdCount(Enum::"E-Document Source Type"::Vendor, Rec."No.");
     end;
 
 }
