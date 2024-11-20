@@ -1,5 +1,5 @@
 {
-    "id":  "d852a468-263e-49e5-bfda-f09e33342b89",
+    "id":  "3b3c094c-ae7f-43f2-9246-22111b688d2e",
     "name":  "E-Document Connector - Tietoevry",
     "publisher":  "Microsoft",
     "brief":  "E-Document Connector - Tietoevry",
@@ -27,7 +27,7 @@
                      ],
                      "internalsVisibleTo": [
                         {
-                            "id":  "9867c080-e9e7-476e-8245-717d3e124344",
+                            "id":  "985549ff-145a-4b5c-acd1-db6d425f6cbc",
                             "name":  "E-Document Connector - Tietoevry Tests",
                             "publisher":  "Microsoft"
                         }
