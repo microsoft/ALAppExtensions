@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using System.Privacy;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Integration.Action;
 
 table 6103 "E-Document Service"
 {
@@ -30,10 +32,18 @@ table 6103 "E-Document Service"
             Caption = 'Document Format';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA29
         field(4; "Service Integration"; Enum "E-Document Integration")
         {
             Caption = 'Service Integration';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Use Service Integration V2 integration enum instead';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
 
             trigger OnValidate()
             var
@@ -43,7 +53,9 @@ table 6103 "E-Document Service"
                     if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
                         Rec."Service Integration" := xRec."Service Integration";
             end;
+#endif
         }
+#endif
         field(5; "Use Batch Processing"; Boolean)
         {
             Caption = 'Use Batch Processing';
@@ -209,6 +221,27 @@ table 6103 "E-Document Service"
             Caption = 'Batch Recurrent Job Id';
             DataClassification = SystemMetadata;
         }
+        field(27; "Service Integration V2"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration V2';
+            ToolTip = 'Specifies the integration for sending documents to the service.';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                CustConcentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if (xRec."Service Integration V2" = xRec."Service Integration V2"::"No Integration") and (Rec."Service Integration V2" <> xRec."Service Integration V2") then
+                    if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
+                        Rec."Service Integration V2" := xRec."Service Integration V2";
+            end;
+        }
+        field(28; "Sent Actions Integration"; Enum "Sent Document Actions")
+        {
+            Caption = 'Sent Actions For Service';
+            ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
@@ -232,7 +265,11 @@ table 6103 "E-Document Service"
 
     internal procedure ToString(): Text
     begin
+#if not CLEAN26
         exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration", "Use Batch Processing", "Batch Mode"));
+#else
+        exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration V2", "Use Batch Processing", "Batch Mode"));
+#endif
     end;
 
     var

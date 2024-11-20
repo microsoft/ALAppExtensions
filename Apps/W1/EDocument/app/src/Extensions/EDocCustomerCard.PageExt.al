@@ -43,8 +43,8 @@ pageextension 6163 "E-Doc. Customer Card" extends "Customer Card"
 
     trigger OnAfterGetCurrRecord()
     begin
-        Rec.TestField("No.");
-        ParticipantIdCount := ServiceParticipant.GetParticipantIdCount(Enum::"E-Document Source Type"::Customer, Rec."No.");
+        if Rec."No." <> '' then
+            ParticipantIdCount := ServiceParticipant.GetParticipantIdCount(Enum::"E-Document Source Type"::Customer, Rec."No.");
     end;
 
 }
