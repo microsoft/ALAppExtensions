@@ -56,7 +56,7 @@ page 8013 "Imported Customer Contracts"
                 }
                 field("Without Contract Deferrals"; Rec."Without Contract Deferrals")
                 {
-                    ToolTip = 'Indicates whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                    ToolTip = 'Specifies whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
                 }
                 field("Detail Overview"; Rec."Detail Overview")
                 {

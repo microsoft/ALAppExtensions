@@ -9,14 +9,20 @@ codeunit 148187 "Sust. Certificate Test"
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryResource: Codeunit "Library - Resource";
         LibraryInventory: Codeunit "Library - Inventory";
+        LibraryManufacturing: Codeunit "Library - Manufacturing";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
         ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption';
         FieldShouldNotBeEnabledErr: Label '%1 should not be enabled in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
         FieldShouldBeEnabledErr: Label '%1 should be enabled in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
+        FieldShouldBeVisibleErr: Label '%1 should be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
+        FieldShouldNotBeVisibleErr: Label '%1 should not be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
+        ConfirmationForClearEmissionInfoQst: Label 'Changing the Replenishment System to %1 will clear sustainability emission value. Do you want to continue?', Comment = '%1 = Replenishment System';
 
     [Test]
     procedure VerifyHasValueFieldShouldThrowErrorWhenValueIsUpdated()
@@ -726,6 +732,1164 @@ codeunit 148187 "Sust. Certificate Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
     end;
 
+    [Test]
+    procedure VerifyDefaultSustAccountShouldbeVisibleOnGLAccountCardIfGLAccountEmissionsIsEnabled()
+    var
+        GLAccount: Record "G/L Account";
+        SustainabilitySetup: Record "Sustainability Setup";
+        GLAccountCard: TestPage "G/L Account Card";
+        GLAccountNo: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should be visible on "G/L Account Card" page If "G/L Account Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a G/L Account.
+        GLAccountNo := LibraryERM.CreateGLAccountNoWithDirectPosting();
+
+        // [GIVEN] Get a G/L Account.
+        GLAccount.Get(GLAccountNo);
+
+        // [WHEN] Open "G/L Account Card".
+        GLAccountCard.OpenView();
+        GLAccountCard.GoToRecord(GLAccount);
+
+        // [VERIFY] Verify "Default Sust. Account" should not be visible on "G/L Account Card" page If "G/L Account Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            GLAccountCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, GLAccountCard."Default Sust. Account".Caption(), GLAccountCard.Caption()));
+
+        // [GIVEN] Close "G/L Account Card".
+        GLAccountCard.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "G/L Account Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("G/L Account Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "G/L Account Card".
+        GLAccountCard.OpenView();
+        GLAccountCard.GoToRecord(GLAccount);
+
+        // [VERIFY] Verify "Default Sust. Account" should be visible on "G/L Account Card" page If "G/L Account Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            GLAccountCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, GLAccountCard."Default Sust. Account".Caption(), GLAccountCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnItemCardIfItemEmissionsIsEnabled()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Item Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Item Card" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCard."Default Sust. Account".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCard."Default CO2 Emission".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCard."Default CH4 Emission".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCard."Default N2O Emission".Caption(), ItemCard.Caption()));
+
+        // [GIVEN] Close "Item Card".
+        ItemCard.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Item Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ItemCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCard."Default Sust. Account".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCard."Default CO2 Emission".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCard."Default CH4 Emission".Caption(), ItemCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCard."Default N2O Emission".Caption(), ItemCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnItemCategoryCardIfItemEmissionsIsEnabled()
+    var
+        ItemCategory: Record "Item Category";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCategoryCard: TestPage "Item Category Card";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Item Category Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item Category.
+        LibraryInventory.CreateItemCategory(ItemCategory);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Category Card".
+        ItemCategoryCard.OpenView();
+        ItemCategoryCard.GoToRecord(ItemCategory);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Item Category Card" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemCategoryCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCategoryCard."Default Sust. Account".Caption(), ItemCategoryCard.Caption()));
+
+        // [GIVEN] Close "Item Category Card".
+        ItemCategoryCard.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Category Card".
+        ItemCategoryCard.OpenView();
+        ItemCategoryCard.GoToRecord(ItemCategory);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Item Category Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ItemCategoryCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCategoryCard."Default Sust. Account".Caption(), ItemCategoryCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnItemChargesIfItemChargeEmissionsIsEnabled()
+    var
+        ItemCharge: Record "Item Charge";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCharges: TestPage "Item Charges";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Item Charges" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item Charge.
+        LibraryInventory.CreateItemCharge(ItemCharge);
+
+        // [WHEN] Open "Item Charges".
+        ItemCharges.OpenView();
+        ItemCharges.GoToRecord(ItemCharge);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Item Charges" page If "Item Charge Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemCharges."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCharges."Default Sust. Account".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCharges."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCharges."Default CO2 Emission".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCharges."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCharges."Default CH4 Emission".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCharges."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ItemCharges."Default N2O Emission".Caption(), ItemCharges.Caption()));
+
+        // [GIVEN] Close "Item Charges".
+        ItemCharges.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Charge Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Charge Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Charges".
+        ItemCharges.OpenView();
+        ItemCharges.GoToRecord(ItemCharge);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Item Charges" page If "Item Charge Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ItemCharges."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCharges."Default Sust. Account".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCharges."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCharges."Default CO2 Emission".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCharges."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCharges."Default CH4 Emission".Caption(), ItemCharges.Caption()));
+        Assert.AreEqual(
+            true,
+            ItemCharges."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ItemCharges."Default N2O Emission".Caption(), ItemCharges.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnResourceCardIfResourceEmissionsIsEnabled()
+    var
+        Resource: Record Resource;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ResourceCard: TestPage "Resource Card";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Resource Card" page If "Resource Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Resource.
+        LibraryResource.CreateResource(Resource, '');
+
+        // [WHEN] Open "Resource Card".
+        ResourceCard.OpenView();
+        ResourceCard.GoToRecord(Resource);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Resource Card" page If "Resource Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ResourceCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ResourceCard."Default Sust. Account".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ResourceCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ResourceCard."Default CO2 Emission".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ResourceCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ResourceCard."Default CH4 Emission".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ResourceCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ResourceCard."Default N2O Emission".Caption(), ResourceCard.Caption()));
+
+        // [GIVEN] Close "Resource Card".
+        ResourceCard.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Resource Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Resource Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Resource Card".
+        ResourceCard.OpenView();
+        ResourceCard.GoToRecord(Resource);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Resource Card" page If "Resource Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ResourceCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ResourceCard."Default Sust. Account".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ResourceCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ResourceCard."Default CO2 Emission".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ResourceCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ResourceCard."Default CH4 Emission".Caption(), ResourceCard.Caption()));
+        Assert.AreEqual(
+            true,
+            ResourceCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ResourceCard."Default N2O Emission".Caption(), ResourceCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnMachineCenterCardIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterCard: TestPage "Machine Center Card";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, MachineCenterCard."Default Sust. Account".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, MachineCenterCard."Default CO2 Emission".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, MachineCenterCard."Default CH4 Emission".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, MachineCenterCard."Default N2O Emission".Caption(), MachineCenterCard.Caption()));
+
+        // [GIVEN] Close "Machine Center Card".
+        MachineCenterCard.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            MachineCenterCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, MachineCenterCard."Default Sust. Account".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            MachineCenterCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, MachineCenterCard."Default CO2 Emission".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            MachineCenterCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, MachineCenterCard."Default CH4 Emission".Caption(), MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            MachineCenterCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, MachineCenterCard."Default N2O Emission".Caption(), MachineCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeVisibleOnWorkCenterCardIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterCard: TestPage "Work Center Card";
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Work Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify Default Sust. fields should not be visible on "Work Center Card" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, WorkCenterCard."Default Sust. Account".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, WorkCenterCard."Default CO2 Emission".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, WorkCenterCard."Default CH4 Emission".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, WorkCenterCard."Default N2O Emission".Caption(), WorkCenterCard.Caption()));
+
+        // [GIVEN] Close "Work Center Card".
+        WorkCenterCard.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify Default Sust. fields should be visible on "Work Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            WorkCenterCard."Default Sust. Account".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, WorkCenterCard."Default Sust. Account".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            WorkCenterCard."Default CO2 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, WorkCenterCard."Default CO2 Emission".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            WorkCenterCard."Default CH4 Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, WorkCenterCard."Default CH4 Emission".Caption(), WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            true,
+            WorkCenterCard."Default N2O Emission".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, WorkCenterCard."Default N2O Emission".Caption(), WorkCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeClearWhenSustAccountIsRemovedFromItem()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be clear on "Item Card" page When "Default Sust. Account" is changed to blank.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+        ItemCard."Default Sust. Account".SetValue(AccountCode);
+        ItemCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+        ItemCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+        ItemCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [WHEN] Clear "Default Sust. Account".
+        ItemCard."Default Sust. Account".SetValue('');
+
+        // [VERIFY] Verify Default Sust. fields should be clear on "Item Card" page When "Default Sust. Account" is changed to blank.
+        ItemCard."Default Sust. Account".AssertEquals('');
+        ItemCard."Default CO2 Emission".AssertEquals(0);
+        ItemCard."Default CH4 Emission".AssertEquals(0);
+        ItemCard."Default N2O Emission".AssertEquals(0);
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeClearWhenSustAccountIsRemovedFromItemCharge()
+    var
+        ItemCharge: Record "Item Charge";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCharges: TestPage "Item Charges";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be clear on "Item Charges" page When "Default Sust. Account" is changed to blank.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item Charge.
+        LibraryInventory.CreateItemCharge(ItemCharge);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Charge Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Charge Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Item Charges".
+        ItemCharges.OpenView();
+        ItemCharges.GoToRecord(ItemCharge);
+        ItemCharges."Default Sust. Account".SetValue(AccountCode);
+        ItemCharges."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+        ItemCharges."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+        ItemCharges."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [WHEN] Clear "Default Sust. Account".
+        ItemCharges."Default Sust. Account".SetValue('');
+
+        // [VERIFY] Verify Default Sust. fields should be clear on "Item Charges" page When "Default Sust. Account" is changed to blank.
+        ItemCharges."Default Sust. Account".AssertEquals('');
+        ItemCharges."Default CO2 Emission".AssertEquals(0);
+        ItemCharges."Default CH4 Emission".AssertEquals(0);
+        ItemCharges."Default N2O Emission".AssertEquals(0);
+        ItemCharges.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeClearWhenSustAccountIsRemovedFromResource()
+    var
+        Resource: Record Resource;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ResourceCard: TestPage "Resource Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be clear on "Resource Card" page When "Default Sust. Account" is changed to blank.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Resource.
+        LibraryResource.CreateResource(Resource, '');
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Resource Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Resource Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Resource Card".
+        ResourceCard.OpenView();
+        ResourceCard.GoToRecord(Resource);
+        ResourceCard."Default Sust. Account".SetValue(AccountCode);
+        ResourceCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+        ResourceCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+        ResourceCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [WHEN] Clear "Default Sust. Account".
+        ResourceCard."Default Sust. Account".SetValue('');
+
+        // [VERIFY] Verify Default Sust. fields should be clear on "Resource Card" page When "Default Sust. Account" is changed to blank.
+        ResourceCard."Default Sust. Account".AssertEquals('');
+        ResourceCard."Default CO2 Emission".AssertEquals(0);
+        ResourceCard."Default CH4 Emission".AssertEquals(0);
+        ResourceCard."Default N2O Emission".AssertEquals(0);
+        ResourceCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeClearWhenSustAccountIsRemovedFromMachineCenter()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterCard: TestPage "Machine Center Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be clear on "Machine Center Card" page When "Default Sust. Account" is changed to blank.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+        MachineCenterCard."Default Sust. Account".SetValue(AccountCode);
+        MachineCenterCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+        MachineCenterCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+        MachineCenterCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [WHEN] Clear "Default Sust. Account".
+        MachineCenterCard."Default Sust. Account".SetValue('');
+
+        // [VERIFY] Verify Default Sust. fields should be clear on "Machine Center Card" page When "Default Sust. Account" is changed to blank.
+        MachineCenterCard."Default Sust. Account".AssertEquals('');
+        MachineCenterCard."Default CO2 Emission".AssertEquals(0);
+        MachineCenterCard."Default CH4 Emission".AssertEquals(0);
+        MachineCenterCard."Default N2O Emission".AssertEquals(0);
+        MachineCenterCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldbeClearWhenSustAccountIsRemovedFromWorkCenter()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterCard: TestPage "Work Center Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust. fields should be clear on "Work Center Card" page When "Default Sust. Account" is changed to blank.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+        WorkCenterCard."Default Sust. Account".SetValue(AccountCode);
+        WorkCenterCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+        WorkCenterCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+        WorkCenterCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [WHEN] Clear "Default Sust. Account".
+        WorkCenterCard."Default Sust. Account".SetValue('');
+
+        // [VERIFY] Verify Default Sust. fields should be clear on "Work Center Card" page When "Default Sust. Account" is changed to blank.
+        WorkCenterCard."Default Sust. Account".AssertEquals('');
+        WorkCenterCard."Default CO2 Emission".AssertEquals(0);
+        WorkCenterCard."Default CH4 Emission".AssertEquals(0);
+        WorkCenterCard."Default N2O Emission".AssertEquals(0);
+        WorkCenterCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustHaveAValueWhenDefaultEmissionIsUpdatedOnItem()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero on Item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Update "Default CO2 Emission" in Item.
+        asserterror ItemCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default CH4 Emission" in Item.
+        asserterror ItemCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default N2O Emission" in Item.
+        asserterror ItemCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCard."Default Sust. Account".Caption(), Format(''));
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustHaveAValueWhenDefaultEmissionIsUpdatedOnItemCharge()
+    var
+        ItemCharge: Record "Item Charge";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCharges: TestPage "Item Charges";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero on Item Charge.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item Charge.
+        LibraryInventory.CreateItemCharge(ItemCharge);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Charge Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Charge Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Item Charges".
+        ItemCharges.OpenView();
+        ItemCharges.GoToRecord(ItemCharge);
+
+        // [WHEN] Update "Default CO2 Emission" in Item Charge.
+        asserterror ItemCharges."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCharges."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default CH4 Emission" in Item Charge.
+        asserterror ItemCharges."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCharges."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default N2O Emission" in Item Charge.
+        asserterror ItemCharges."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ItemCharges."Default Sust. Account".Caption(), Format(''));
+        ItemCharges.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustHaveAValueWhenDefaultEmissionIsUpdatedOnResource()
+    var
+        Resource: Record Resource;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ResourceCard: TestPage "Resource Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero on Resource.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Resource.
+        LibraryResource.CreateResource(Resource, '');
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Resource Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Resource Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Resource Card".
+        ResourceCard.OpenView();
+        ResourceCard.GoToRecord(Resource);
+
+        // [WHEN] Update "Default CO2 Emission" in Resource.
+        asserterror ResourceCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ResourceCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default CH4 Emission" in Resource.
+        asserterror ResourceCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ResourceCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default N2O Emission" in Resource.
+        asserterror ResourceCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(ResourceCard."Default Sust. Account".Caption(), Format(''));
+        ResourceCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustHaveAValueWhenDefaultEmissionIsUpdatedOnMachineCenter()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterCard: TestPage "Machine Center Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero on Machine Center.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [WHEN] Update "Default CO2 Emission" in Machine Center.
+        asserterror MachineCenterCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(MachineCenterCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default CH4 Emission" in Machine Center.
+        asserterror MachineCenterCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(MachineCenterCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default N2O Emission" in Machine Center.
+        asserterror MachineCenterCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(MachineCenterCard."Default Sust. Account".Caption(), Format(''));
+        MachineCenterCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustHaveAValueWhenDefaultEmissionIsUpdatedOnWorkCenter()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterCard: TestPage "Work Center Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero on Work Center.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [WHEN] Update "Default CO2 Emission" in Work Center.
+        asserterror WorkCenterCard."Default CO2 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(WorkCenterCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default CH4 Emission" in Work Center.
+        asserterror WorkCenterCard."Default CH4 Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(WorkCenterCard."Default Sust. Account".Caption(), Format(''));
+
+        // [WHEN] Update "Default N2O Emission" in Work Center.
+        asserterror WorkCenterCard."Default N2O Emission".SetValue(LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify "Default Sust. Account" should throw error if it's blank When Default Emission Is non-Zero.
+        Assert.ExpectedTestFieldError(WorkCenterCard."Default Sust. Account".Caption(), Format(''));
+        WorkCenterCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustAccountMustBePopulateFromItemCategoryInItem()
+    var
+        Item: Record Item;
+        ItemCategory: Record "Item Category";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify "Default Sust. Account" must be pouplated from Item Category in Item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item Category with "Default Sust. Account".
+        LibraryInventory.CreateItemCategory(ItemCategory);
+        ItemCategory.Validate("Default Sust. Account", AccountCode);
+        ItemCategory.Modify(true);
+
+        // [WHEN] Create an Item with Item Category.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Item Category Code", ItemCategory.Code);
+        Item.Modify(true);
+
+        // [GIVEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify "Default Sust. Account" must be pouplated from Item Category in Item.
+        ItemCard."Default Sust. Account".AssertEquals(AccountCode);
+        ItemCard.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure VerifyDefaultEmissionFieldShouldBeClearWhenReplenishmentSystemIsNonPurchaseOnItem()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Emissions field should be clear when Replenishment System is set to non-purchase on item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item With Default Sust fields.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("Default CH4 Emission", LibraryRandom.RandInt(10));
+        Item.Validate("Default CO2 Emission", LibraryRandom.RandInt(10));
+        Item.Validate("Default N2O Emission", LibraryRandom.RandInt(10));
+        Item.Modify(true);
+
+        // [GIVEN] Save Confirmation Message.
+        LibraryVariableStorage.Enqueue(StrSubstNo(ConfirmationForClearEmissionInfoQst, Item."Replenishment System"::"Prod. Order"));
+
+        // [GIVEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Update "Replenishment System" to non-purchase in Item.
+        ItemCard."Replenishment System".SetValue(Item."Replenishment System"::"Prod. Order");
+
+        // [VERIFY] Verify Default Emissions field should be clear when Replenishment System is set to non-purchase on item.
+        ItemCard."Default Sust. Account".AssertEquals('');
+        ItemCard."Default CH4 Emission".AssertEquals(0);
+        ItemCard."Default CO2 Emission".AssertEquals(0);
+        ItemCard."Default N2O Emission".AssertEquals(0);
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldBeFlowInPurchaseLineFromItem()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilitySetup: Record "Sustainability Setup";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust fields should be poupulate to Purchase line from Item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item With Default Sust fields.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("Default CH4 Emission", LibraryRandom.RandInt(10));
+        Item.Validate("Default CO2 Emission", LibraryRandom.RandInt(10));
+        Item.Validate("Default N2O Emission", LibraryRandom.RandInt(10));
+        Item.Modify(true);
+
+        // [GIVEN] Create Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        PurchaseLine.Init();
+        PurchaseLine.Validate("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.Validate("Document No.", PurchaseHeader."No.");
+        PurchaseLine.Validate(Type, PurchaseLine.Type::Item);
+        PurchaseLine.Insert();
+
+        // [WHEN] Update "No." in Purchase Line.
+        PurchaseLine.Validate("No.", Item."No.");
+        PurchaseLine.Modify(true);
+
+        // [VERIFY] Verify Default Sust fields should be poupulate to Purchase line from Item.
+        Assert.AreEqual(
+            Item."Default Sust. Account",
+            PurchaseLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Sust. Account No."), Item."Default Sust. Account", PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+
+        // [WHEN] Update Quantity in Purchase Line.
+        PurchaseLine.Validate(Quantity, LibraryRandom.RandInt(10));
+        PurchaseLine.Modify(true);
+
+        // [VERIFY] Verify Default Sust fields should be poupulate to Purchase line from Item.
+        Assert.AreEqual(
+            Item."Default Sust. Account",
+            PurchaseLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Sust. Account No."), Item."Default Sust. Account", PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            PurchaseLine.Quantity * Item."Default CH4 Emission",
+            PurchaseLine."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), PurchaseLine.Quantity * Item."Default CH4 Emission", PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            PurchaseLine.Quantity * Item."Default CO2 Emission",
+            PurchaseLine."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), PurchaseLine.Quantity * Item."Default CO2 Emission", PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            PurchaseLine.Quantity * Item."Default N2O Emission",
+            PurchaseLine."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), PurchaseLine.Quantity * Item."Default N2O Emission", PurchaseLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyDefaultSustFieldShouldBeFlowInPurchaseLineFromGLAccount()
+    var
+        GLAccount: Record "G/L Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilitySetup: Record "Sustainability Setup";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537413] Verify Default Sust fields should be poupulate to Purchase line from G/L Account.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a G/L Account With Default Sust fields.
+        GLAccount.Get(LibraryERM.CreateGLAccountWithPurchSetup());
+        GLAccount.Validate("Direct Posting", true);
+        GLAccount.Validate("Default Sust. Account", AccountCode);
+        GLAccount.Modify(true);
+
+        // [GIVEN] Create Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        PurchaseLine.Init();
+        PurchaseLine.Validate("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.Validate("Document No.", PurchaseHeader."No.");
+        PurchaseLine.Validate(Type, PurchaseLine.Type::"G/L Account");
+        PurchaseLine.Insert();
+
+        // [WHEN] Update "No." in Purchase Line.
+        PurchaseLine.Validate("No.", GLAccount."No.");
+        PurchaseLine.Modify(true);
+
+        // [VERIFY] Verify Default Sust fields should be poupulate to Purchase line from Item.
+        Assert.AreEqual(
+            GLAccount."Default Sust. Account",
+            PurchaseLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Sust. Account No."), GLAccount."Default Sust. Account", PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+        Assert.AreEqual(
+            0,
+            PurchaseLine."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Emission CH4"), 0, PurchaseLine.TableCaption()));
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
@@ -770,5 +1934,12 @@ codeunit 148187 "Sust. Certificate Test"
         PostedDocNumber := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
         PurchInvHeader.Get(PostedDocNumber);
         CorrectPostedPurchInvoice.CancelPostedInvoice(PurchInvHeader);
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Question);
+        Reply := true;
     end;
 }

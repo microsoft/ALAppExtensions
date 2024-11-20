@@ -90,6 +90,7 @@ codeunit 139915 "Sales Service Commitment Test"
         NoOfServiceObjects: Integer;
         CurrentQty: Decimal;
         XmlParameters: Text;
+        SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Service Commitment cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Service Commitment.', Locked = true;
 
     local procedure Setup()
     begin
@@ -230,7 +231,56 @@ codeunit 139915 "Sales Service Commitment Test"
     end;
 
     [Test]
-    procedure CheckDeleteSalesServiceCommitmentWhenValidateTypeOrNo()
+    procedure RunNormalSalesServiceCommitmentDeletion()
+    begin
+        //[SCENARIO]: Manual deletion of simple Sales Service Commitment Line should run with no error.
+
+        //[GIVEN]: Setup a new Service Commitment Item
+        Setup();
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+
+        //[WHEN]: A sales line has been created for a Service Commitment Item
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
+
+        //[THEN]: Make sure that Sales Service Commitment Line has been created and can be deleted with no errors
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.FindFirst();
+        SalesServiceCommitment.Delete(true);
+    end;
+
+    [Test]
+    procedure RunSalesServiceCommitmentDeletionForContractRenewal()
+    begin
+        //[SCENARIO]: Manual deletion of Sales Service Commitment Line with Contract Renewal should hit an error when the only remaining Line For Contract Renewal is left in the document
+
+        //[GIVEN]: Setup a new Service Commitment Item
+        Setup();
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+
+        //[WHEN]: Two sales lines has been created for a Service Commitment Item, both of them for Contract Renewal
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.FindFirst();
+        SalesServiceCommitment.Process := SalesServiceCommitment.Process::"Contract Renewal";
+        SalesServiceCommitment.Modify();
+        LibrarySales.CreateSalesLine(SalesLine2, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
+        SalesServiceCommitment2.FilterOnSalesLine(SalesLine2);
+        SalesServiceCommitment2.FindFirst();
+        SalesServiceCommitment2.Process := SalesServiceCommitment.Process::"Contract Renewal";
+        SalesServiceCommitment2.Modify();
+
+        //[THEN]: Make sure that first Sales Service Commitment Line can be deleted with no errors
+        SalesServiceCommitment.Delete(true);
+
+        //[THEN]: Make sure that second Sales Service Commitment Line can not be deleted
+        asserterror SalesServiceCommitment2.Delete(true);
+        AssertThat.ExpectedError(SalesServiceCommitmentCannotBeDeletedErr);
+    end;
+
+    [Test]
+    procedure CheckDeleteSalesServiceCommitmentWhenTypeOrNoChangedForSalesLine()
     begin
         Setup();
         // sales service commitments created for this item
@@ -488,6 +538,7 @@ codeunit 139915 "Sales Service Commitment Test"
 
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
         SalesLine."Qty. to Invoice" := 0;
+        SalesLine."Variant Code" := CopyStr(LibraryRandom.RandText(MaxStrLen(SalesLine."Variant Code")), 1, MaxStrLen(SalesLine."Variant Code"));
         SalesLine.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
         ServiceObject.SetRange("Item No.", Item."No.");
@@ -503,6 +554,7 @@ codeunit 139915 "Sales Service Commitment Test"
         ServiceObject.TestField("Bill-to Customer No.", SalesHeader."Bill-to Customer No.");
         ServiceObject.TestField("Customer Price Group", CustomerPriceGroup1.Code);
         ServiceObject.TestField("Customer Reference", CustomerReference);
+        ServiceObject.TestField("Variant Code", SalesLine."Variant Code");
 
         FetchSalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
         ReleaseSalesDoc.PerformManualReopen(SalesHeader);

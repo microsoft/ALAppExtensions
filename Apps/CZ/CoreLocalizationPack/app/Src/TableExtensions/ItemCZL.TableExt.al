@@ -8,6 +8,7 @@ using Microsoft.Inventory.Ledger;
 
 tableextension 11745 "Item CZL" extends Item
 {
+#if not CLEANSCHEMA25
     fields
     {
         field(31066; "Statistic Indication CZL"; Code[10])
@@ -28,6 +29,7 @@ tableextension 11745 "Item CZL" extends Item
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }
+#endif
 
     procedure CheckOpenItemLedgerEntriesCZL()
     var

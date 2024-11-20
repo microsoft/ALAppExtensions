@@ -25,20 +25,39 @@ codeunit 139629 "Library - E-Document"
             LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
     end;
 
+#if not CLEAN26
+    [Obsolete('Use SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
+    var
+        ServiceCode: Code[20];
+    begin
+        // Create standard service and simple workflow
+        ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+        EDocService.Get(ServiceCode);
+        SetupStandardSalesScenario(Customer, EDocService);
+    end;
+#endif
+
+    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
+    var
+        ServiceCode: Code[20];
+    begin
+        // Create standard service and simple workflow
+        ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+        EDocService.Get(ServiceCode);
+        SetupStandardSalesScenario(Customer, EDocService);
+    end;
+
+    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service")
     var
         CountryRegion: Record "Country/Region";
         DocumentSendingProfile: Record "Document Sending Profile";
         SalesSetup: Record "Sales & Receivables Setup";
         WorkflowSetup: Codeunit "Workflow Setup";
-        ServiceCode, WorkflowCode : Code[20];
+        WorkflowCode: Code[20];
     begin
         WorkflowSetup.InitWorkflow();
         SetupCompanyInfo();
-
-        // Create standard service and simple workflow
-        ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
-        EDocService.Get(ServiceCode);
 
         CreateDocSendingProfile(DocumentSendingProfile);
         WorkflowCode := CreateSimpleFlow(DocumentSendingProfile.Code, EDocService.Code);
@@ -72,7 +91,35 @@ codeunit 139629 "Library - E-Document"
         SalesSetup.Modify();
     end;
 
+#if not CLEAN26
+    [Obsolete('Use SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
+    var
+        ServiceCode: Code[20];
+    begin
+        // Create standard service and simple workflow
+        if EDocService.Code = '' then begin
+            ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+            EDocService.Get(ServiceCode);
+        end;
+        SetupStandardPurchaseScenario(Vendor, EDocService);
+    end;
+#endif
+
+    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
+    var
+        ServiceCode: Code[20];
+    begin
+        // Create standard service and simple workflow
+        if EDocService.Code = '' then begin
+            ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+            EDocService.Get(ServiceCode);
+        end;
+        SetupStandardPurchaseScenario(Vendor, EDocService);
+    end;
+
+
+    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service")
     var
         CountryRegion: Record "Country/Region";
         ItemReference: Record "Item Reference";
@@ -80,16 +127,9 @@ codeunit 139629 "Library - E-Document"
         ItemUnitOfMeasure: Record "Item Unit of Measure";
         WorkflowSetup: Codeunit "Workflow Setup";
         LibraryItemReference: Codeunit "Library - Item Reference";
-        ServiceCode: Code[20];
     begin
         WorkflowSetup.InitWorkflow();
         SetupCompanyInfo();
-
-        // Create standard service and simple workflow
-        if EDocService.Code = '' then begin
-            ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
-            EDocService.Get(ServiceCode);
-        end;
 
         // Create Customer for sales scenario
         LibraryPurchase.CreateVendor(Vendor);
@@ -493,14 +533,32 @@ codeunit 139629 "Library - E-Document"
         exit(EntityName);
     end;
 
-    procedure CreateService(): Code[20]
+#if not CLEAN26
+    [Obsolete('Use CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
+    procedure CreateService(Integration: Enum "E-Document Integration"): Code[20]
     var
         EDocService: Record "E-Document Service";
     begin
         EDocService.Init();
         EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
         EDocService."Document Format" := "E-Document Format"::Mock;
-        EDocService."Service Integration" := "E-Document Integration"::Mock;
+        EDocService."Service Integration" := Integration;
+        EDocService.Insert();
+
+        CreateSupportedDocTypes(EDocService);
+
+        exit(EDocService.Code);
+    end;
+#endif
+
+    procedure CreateService(Integration: Enum "Service Integration"): Code[20]
+    var
+        EDocService: Record "E-Document Service";
+    begin
+        EDocService.Init();
+        EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
+        EDocService."Document Format" := "E-Document Format"::Mock;
+        EDocService."Service Integration V2" := Integration;
         EDocService.Insert();
 
         CreateSupportedDocTypes(EDocService);
@@ -508,6 +566,8 @@ codeunit 139629 "Library - E-Document"
         exit(EDocService.Code);
     end;
 
+#if not CLEAN26
+    [Obsolete('Use CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration"): Code[20]
     var
         EDocService: Record "E-Document Service";
@@ -522,6 +582,23 @@ codeunit 139629 "Library - E-Document"
 
         exit(EDocService.Code);
     end;
+#endif
+
+    procedure CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration"): Code[20]
+    var
+        EDocService: Record "E-Document Service";
+    begin
+        EDocService.Init();
+        EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
+        EDocService."Document Format" := EDocDoucmentFormat;
+        EDocService."Service Integration V2" := EDocIntegration;
+        EDocService.Insert();
+
+        CreateSupportedDocTypes(EDocService);
+
+        exit(EDocService.Code);
+    end;
+
 
     procedure CreateServiceMapping(EDocService: Record "E-Document Service")
     var
@@ -550,37 +627,37 @@ codeunit 139629 "Library - E-Document"
     end;
 
 
-    procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"): Code[20]
-    begin
-        exit(CreateServiceWithMapping(EDocMapping, TransformationRule, false));
-    end;
+    // procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"; Integration: Enum "E-Document Integration"): Code[20]
+    // begin
+    //     exit(CreateServiceWithMapping(EDocMapping, TransformationRule, false, Integration));
+    // end;
 
-    procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"; UseBatching: Boolean): Code[20]
-    var
-        SalesInvHeader: Record "Sales Invoice Header";
-        EDocService: Record "E-Document Service";
-    begin
-        EDocService.Init();
-        EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
-        EDocService."Document Format" := "E-Document Format"::Mock;
-        EDocService."Service Integration" := "E-Document Integration"::Mock;
-        EDocService."Use Batch Processing" := UseBatching;
-        EDocService.Insert();
+    // procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"; UseBatching: Boolean; Integration: Enum "E-Document Integration"): Code[20]
+    // var
+    //     SalesInvHeader: Record "Sales Invoice Header";
+    //     EDocService: Record "E-Document Service";
+    // begin
+    //     EDocService.Init();
+    //     EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
+    //     EDocService."Document Format" := "E-Document Format"::Mock;
+    //     EDocService."Service Integration" := Integration;
+    //     EDocService."Use Batch Processing" := UseBatching;
+    //     EDocService.Insert();
 
-        CreateSupportedDocTypes(EDocService);
+    //     CreateSupportedDocTypes(EDocService);
 
-        // Lower case mapping
-        CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
-        EDocMapping."Table ID" := Database::"Sales Invoice Header";
-        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Name");
-        EDocMapping.Modify();
-        CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
-        EDocMapping."Table ID" := Database::"Sales Invoice Header";
-        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Address");
-        EDocMapping.Modify();
+    //     // Lower case mapping
+    //     CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+    //     EDocMapping."Table ID" := Database::"Sales Invoice Header";
+    //     EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Name");
+    //     EDocMapping.Modify();
+    //     CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+    //     EDocMapping."Table ID" := Database::"Sales Invoice Header";
+    //     EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Address");
+    //     EDocMapping.Modify();
 
-        exit(EDocService.Code);
-    end;
+    //     exit(EDocService.Code);
+    // end;
 
     procedure CreateSupportedDocTypes(EDocService: Record "E-Document Service")
     var
@@ -607,38 +684,80 @@ codeunit 139629 "Library - E-Document"
         EDocServiceSupportedType.Insert();
     end;
 
-    procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
+    procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
     begin
         if not EDocService.Get('TESTRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'TESTRECEIVE';
             EDocService."Document Format" := "E-Document Format"::Mock;
-            EDocService."Service Integration" := "E-Document Integration"::Mock;
+            EDocService."Service Integration V2" := Integration;
             EDocService.Insert();
         end;
     end;
 
-    procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
+#if not CLEAN26
+    [Obsolete('Use CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
+    procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
+    begin
+        if not EDocService.Get('TESTRECEIVE') then begin
+            EDocService.Init();
+            EDocService.Code := 'TESTRECEIVE';
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := Integration;
+            EDocService.Insert();
+        end;
+    end;
+#endif
+
+    procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
     begin
         if not EDocService.Get('BIERRRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'BIERRRECEIVE';
             EDocService."Document Format" := "E-Document Format"::Mock;
-            EDocService."Service Integration" := "E-Document Integration"::Mock;
+            EDocService."Service Integration V2" := Integration;
             EDocService.Insert();
         end;
     end;
 
-    procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
+#if not CLEAN26
+    [Obsolete('Use CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
+    procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
+    begin
+        if not EDocService.Get('BIERRRECEIVE') then begin
+            EDocService.Init();
+            EDocService.Code := 'BIERRRECEIVE';
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := Integration;
+            EDocService.Insert();
+        end;
+    end;
+#endif
+
+    procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
     begin
         if not EDocService.Get('CIERRRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'CIERRRECEIVE';
             EDocService."Document Format" := "E-Document Format"::Mock;
-            EDocService."Service Integration" := "E-Document Integration"::Mock;
+            EDocService."Service Integration V2" := Integration;
             EDocService.Insert();
         end;
     end;
+
+#if not CLEAN26
+    [Obsolete('Use CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
+    procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
+    begin
+        if not EDocService.Get('CIERRRECEIVE') then begin
+            EDocService.Init();
+            EDocService.Code := 'CIERRRECEIVE';
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := Integration;
+            EDocService.Insert();
+        end;
+    end;
+#endif
 
     procedure CreateDirectMapping(var EDocMapping: Record "E-Doc. Mapping"; EDocService: Record "E-Document Service"; FindValue: Text; ReplaceValue: Text)
     begin

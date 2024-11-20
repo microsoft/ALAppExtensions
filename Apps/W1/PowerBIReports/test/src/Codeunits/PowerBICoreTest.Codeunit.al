@@ -392,5 +392,6 @@ codeunit 139875 "PowerBI Core Test"
     procedure AssignAdminPermissionSet()
     begin
         PermissionsMock.Assign('PowerBI Report Admin');
+        PermissionsMock.Assign('D365 BUS FULL ACCESS');
     end;
 }

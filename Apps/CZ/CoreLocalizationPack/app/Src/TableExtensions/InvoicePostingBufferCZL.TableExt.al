@@ -8,6 +8,7 @@ tableextension 31050 "Invoice Posting Buffer CZL" extends "Invoice Posting Buffe
 {
     fields
     {
+#if not CLEANSCHEMA27
         field(11773; "Ext. Amount CZL"; Decimal)
         {
             AutoFormatType = 1;
@@ -36,6 +37,7 @@ tableextension 31050 "Invoice Posting Buffer CZL" extends "Invoice Posting Buffe
 #endif
             ObsoleteReason = 'The field is not used anymore.';
         }
+#endif
         field(11780; "VAT Date CZL"; Date)
         {
             Caption = 'VAT Date';

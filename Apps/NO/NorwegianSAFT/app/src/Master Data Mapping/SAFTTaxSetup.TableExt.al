@@ -34,6 +34,7 @@ tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
                     VerifyTaxCodeExists("Purchase SAF-T Tax Code");
             end;
         }
+#if not CLEANSCHEMA26
         field(10672; "Sales SAF-T Standard Tax Code"; Code[10])
         {
             DataClassification = CustomerContent;
@@ -52,6 +53,7 @@ tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
         }
+#endif
     }
 
     procedure AssignSAFTTaxCodes()

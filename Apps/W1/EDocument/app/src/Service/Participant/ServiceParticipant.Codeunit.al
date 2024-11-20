@@ -17,7 +17,7 @@ codeunit 6170 "Service Participant"
     var
         ServiceParticipant: Record "Service Participant";
     begin
-        ServiceParticipant.SetRange("Participant Type", Enum::"E-Document Source Type"::Vendor);
+        ServiceParticipant.SetRange("Participant Type", Type);
         ServiceParticipant.SetRange(Participant, Participant);
         exit(ServiceParticipant.Count());
     end;

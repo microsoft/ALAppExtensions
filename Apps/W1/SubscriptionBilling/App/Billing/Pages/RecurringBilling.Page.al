@@ -149,7 +149,7 @@ page 8067 "Recurring Billing"
                 }
                 field("Update Required"; Rec."Update Required")
                 {
-                    ToolTip = 'Indicates whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
+                    ToolTip = 'Specifies whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
                     StyleExpr = LineStyleExpr;
                 }
                 field("Document Type"; Rec."Document Type")
@@ -323,7 +323,7 @@ page 8067 "Recurring Billing"
                 Image = Refresh;
                 Scope = Page;
                 ToolTip = 'Refreshes the current view.';
-                ShortCutKey = 'F5';
+                ShortcutKey = 'F5';
 
                 trigger OnAction()
                 begin
@@ -396,7 +396,7 @@ page 8067 "Recurring Billing"
                 Caption = 'Contract Line Dimensions';
                 Image = Dimensions;
                 Scope = Repeater;
-                ShortCutKey = 'Shift+Ctrl+D';
+                ShortcutKey = 'Shift+Ctrl+D';
                 ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                 trigger OnAction()

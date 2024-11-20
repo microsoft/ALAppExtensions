@@ -194,6 +194,7 @@ codeunit 139530 "MigrationQBO Tests"
         Assert.AreEqual(false, AccountMigrator.PreDataIsValid(), 'Should have errored on empty AcctNum.');
     end;
 
+    [HandlerFunctions('ConfirmHandler')]
     [Test]
     procedure TestQBOCustomerImport()
     var
@@ -793,6 +794,13 @@ codeunit 139530 "MigrationQBO Tests"
         MigrationQBAccountSetup.PayablesAccount := AccountNumber;
         MigrationQBAccountSetup.PurchServiceChargeAccount := AccountNumber;
         MigrationQBAccountSetup.Insert();
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
     end;
 }
 

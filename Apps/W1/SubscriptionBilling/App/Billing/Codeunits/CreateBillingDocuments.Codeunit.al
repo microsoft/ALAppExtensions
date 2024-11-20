@@ -35,10 +35,9 @@ codeunit 8060 "Create Billing Documents"
         Window.Update();
         ProcessBillingLines(BillingLine);
         Window.Close();
-        ShowProcessingFinishedMessage := not PostDocuments;
         if PostDocuments then
             PostCreatedDocuments();
-        if ShowProcessingFinishedMessage then
+        if not HideProcessingFinishedMessage then
             ProcessingFinishedMessage();
     end;
 
@@ -518,6 +517,8 @@ codeunit 8060 "Create Billing Documents"
     var
         OldPurchaseHeader: Record "Purchase Header";
     begin
+        if CreateOnlyPurchaseInvoiceLines then
+            exit;
         PurchaseHeader.Init();
         PurchaseHeader."Document Type" := TempBillingLine.GetPurchaseDocumentTypeForContractNo();
         DocumentsCreatedCount += 1;
@@ -595,6 +596,15 @@ codeunit 8060 "Create Billing Documents"
         SessionStore.SetBooleanKey('SkipContractPurchaseHeaderModifyCheck', true);
         PurchaseHeader.Modify(false);
         SessionStore.RemoveBooleanKey('SkipContractPurchaseHeaderModifyCheck');
+    end;
+
+    internal procedure SetPurchaseHeaderFromExistingPurchaseDocument(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
+    begin
+        SessionStore.SetBooleanKey('SkipContractPurchaseHeaderModifyCheck', true);
+        PurchaseHeader.Get(DocumentType, DocumentNo);
+        PurchaseHeader.SetRecurringBilling();
+        SessionStore.RemoveBooleanKey('SkipContractPurchaseHeaderModifyCheck');
+        CreateOnlyPurchaseInvoiceLines := true;
     end;
 
     local procedure CreateTempBillingLines(var BillingLine: Record "Billing Line")
@@ -758,8 +768,8 @@ codeunit 8060 "Create Billing Documents"
         if TempSalesHeader.Count() = 1 then begin
             SalesHeader.Get(TempSalesHeader."Document Type", TempSalesHeader."No.");
             SalesHeader.SendToPosting(Codeunit::"Sales-Post");
-            ShowProcessingFinishedMessage := true;
         end else begin
+            HideProcessingFinishedMessage := true;
             SalesHeader.Reset();
             if TempSalesHeader.FindSet() then
                 repeat
@@ -915,9 +925,9 @@ codeunit 8060 "Create Billing Documents"
         exit(1);
     end;
 
-    internal procedure HideProcessingFinishedMessage()
+    internal procedure SetHideProcessingFinishedMessage()
     begin
-        ShowProcessingFinishedMessage := false;
+        HideProcessingFinishedMessage := true;
     end;
 
     local procedure SetDiscountLineExists(var TempBillingLine2: Record "Billing Line" temporary; var DiscountLineExists: Boolean): Boolean
@@ -1055,7 +1065,7 @@ codeunit 8060 "Create Billing Documents"
         VendorBillingLinesFound: Boolean;
         FirstContractDescriptionLineInserted: Boolean;
         PostDocuments: Boolean;
-        ShowProcessingFinishedMessage: Boolean;
+        HideProcessingFinishedMessage: Boolean;
         Window: Dialog;
         ProgressTxt: Label 'Creating documents...\Partner No. #1#################################\Contract No. #2#################################';
         OnlyOneServicePartnerErr: Label 'You can create documents only for one type of partner at a time (Customer or Vendor). Please check your filters.';
@@ -1075,4 +1085,5 @@ codeunit 8060 "Create Billing Documents"
         SkipRequestPageSelection: Boolean;
         CreateContractInvoice: Boolean;
         ServiceContractSetupFetched: Boolean;
+        CreateOnlyPurchaseInvoiceLines: Boolean;
 }

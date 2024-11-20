@@ -1107,13 +1107,13 @@ codeunit 148155 "Contracts Test"
 
             if RecalculatePrice then begin //if currency code is changed to '', amounts and amonts in lcy in service commitments should be the same
                 ServiceCommitment.TestField(Price,
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Price (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Price (LCY)", CurrencyFactor), Currency."Unit-Amount Rounding Precision"));
 
                 ServiceCommitment.TestField("Service Amount",
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Service Amount (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Service Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
 
                 ServiceCommitment.TestField("Discount Amount",
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Discount Amount (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Customer."Currency Code", ServiceCommitment."Discount Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
             end
             else begin
                 ServiceCommitment.TestField(Price, ServiceCommitment."Price (LCY)");
@@ -1187,8 +1187,8 @@ codeunit 148155 "Contracts Test"
     local procedure GetTotalServiceAmountFromServiceCommitments(): Decimal
     begin
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.", ServiceObject1."No.");
-        ServiceCommitment.CalcSums("Service Amount");
-        exit(ServiceCommitment."Service Amount");
+        ServiceCommitment.FindFirst();
+        exit(Round(ServiceCommitment.Price * ServiceObject1."Quantity Decimal" * 2, Currency."Amount Rounding Precision"));
     end;
 
     local procedure CreateAndPostBillingProposal(BillingDate: Date)
@@ -1277,10 +1277,10 @@ codeunit 148155 "Contracts Test"
 
     local procedure CheckIfClosedServiceCommitmentsAreInvoiced(var SourceServiceCommitment: Record "Service Commitment")
     begin
+        SourceServiceCommitment.SetRange(Closed, true);
         if SourceServiceCommitment.FindSet() then
             repeat
-                if ContractTestLibrary.ServiceCommitmentIsClosed(SourceServiceCommitment) then
-                    SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Service End Date"));
+                SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Service End Date"));
             until SourceServiceCommitment.Next() = 0;
     end;
 

@@ -12,6 +12,8 @@ codeunit 30189 "Shpfy Variant API"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         ProductEvents: Codeunit "Shpfy Product Events";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+
 
     /// <summary> 
     /// Find Shopify Product Variant.
@@ -99,6 +101,10 @@ codeunit 30189 "Shpfy Variant API"
         if ShopifyVariant."Option 2 Name" <> '' then begin
             GraphQuery.Append('\", \"');
             GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Value"));
+        end;
+        if ShopifyVariant."Option 3 Name" <> '' then begin
+            GraphQuery.Append('\", \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 3 Value"));
         end;
         GraphQuery.Append('\"]');
 
@@ -330,22 +336,12 @@ codeunit 30189 "Shpfy Variant API"
     /// <summary> 
     /// Set Shop.
     /// </summary>
-    /// <param name="Code">Parameter of type Code[20].</param>
-    internal procedure SetShop(Code: Code[20])
-    begin
-        Clear(Shop);
-        Shop.Get(Code);
-        CommunicationMgt.SetShop(Shop);
-    end;
-
-    /// <summary> 
-    /// Set Shop.
-    /// </summary>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -406,16 +402,6 @@ codeunit 30189 "Shpfy Variant API"
                 HasChange := true;
                 GraphQuery.Append(', compareAtPrice: null');
             end;
-        if UpdateDefaultVariant then
-            if ProductMultipleVariants or (ShopifyVariant."UoM Option Id" > 0) then begin
-                GraphQuery.Append(', options: [\"');
-                GraphQuery.Append(ShopifyVariant."Option 1 Value");
-                if ShopifyVariant."Option 2 Name" <> '' then begin
-                    GraphQuery.Append('\", \"');
-                    GraphQuery.Append(ShopifyVariant."Option 2 Value");
-                end;
-                GraphQuery.Append('\"]');
-            end;
         if (ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost") or (ShopifyVariant.Weight <> xShopifyVariant.Weight) or (ShopifyVariant.SKU <> xShopifyVariant.SKU) or UpdateDefaultVariant then begin
             HasChange := true;
             GraphQuery.Append(', inventoryItem: {tracked: ');
@@ -447,7 +433,7 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append('}');
         end;
 
-        GraphQuery.Append('}) {productVariant {updatedAt}, userErrors {field, message}}}"}');
+        GraphQuery.Append('}) {productVariant { inventoryItem {legacyResourceId} updatedAt}, userErrors {field, message}}}"}');
 
         if HasChange then begin
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
@@ -457,6 +443,9 @@ codeunit 30189 "Shpfy Variant API"
         end else
             if TitleChanged then
                 ShopifyVariant.Modify();
+
+        if UpdateDefaultVariant then
+            ActivateVariantInventory(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'data.productVariantUpdate.productVariant.inventoryItem.legacyResourceId')));
     end;
 
     internal procedure UpdateProductPrice(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; var BulkOperationInput: TextBuilder; var GraphQueryList: List of [TextBuilder]; RecordCount: Integer)
@@ -533,7 +522,6 @@ codeunit 30189 "Shpfy Variant API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyVariantFields(ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyInventoryItem: Record "Shpfy Inventory Item"; JVariant: JsonObject) Result: Boolean
     var
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
         RecordRef: RecordRef;
         UpdatedAt: DateTime;
         JMetafields: JsonArray;
@@ -642,5 +630,32 @@ codeunit 30189 "Shpfy Variant API"
     begin
         Parameters.Add('VariantId', Format(ShopifyVariantId));
         CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::ProductVariantDelete, Parameters);
+    end;
+
+    local procedure ActivateVariantInventory(InventoryItemId: BigInteger)
+    var
+        ShopLocation: Record "Shpfy Shop Location";
+        IGraphQL: Interface "Shpfy IGraphQL";
+        JInventoryItemUpdates: JsonArray;
+        JInventoryItemUpdate: JsonObject;
+        JGraphQL: JsonObject;
+        LocationIdTxt: Label 'gid://shopify/Location/%1', Locked = true, Comment = '%1 = The location Id';
+    begin
+        IGraphQL := Enum::"Shpfy GraphQL Type"::InventoryActivate;
+        JGraphQL.ReadFrom(IGraphQL.GetGraphQL());
+        JInventoryItemUpdates := JsonHelper.GetJsonArray(JGraphQL, 'variables.inventoryItemUpdates');
+
+        ShopLocation.SetRange("Shop Code", Shop.Code);
+        ShopLocation.SetRange(Active, true);
+        ShopLocation.SetRange("Default Product Location", true);
+        if ShopLocation.FindSet(false) then
+            repeat
+                JInventoryItemUpdate.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
+                JInventoryItemUpdate.Add('activate', true);
+                JInventoryItemUpdates.Add(JInventoryItemUpdate);
+                Clear(JInventoryItemUpdate);
+            until ShopLocation.Next() = 0;
+
+        CommunicationMgt.ExecuteGraphQL(Format(JGraphQL).Replace('{{InventoryItemId}}', Format(InventoryItemId)), IGraphQL.GetExpectedCost());
     end;
 }

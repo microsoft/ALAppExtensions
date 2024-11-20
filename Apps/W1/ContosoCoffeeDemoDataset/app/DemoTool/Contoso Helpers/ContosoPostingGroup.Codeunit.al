@@ -10,7 +10,8 @@ codeunit 5132 "Contoso Posting Group"
         tabledata "Customer Posting Group" = rim,
         tabledata "Vendor Posting Group" = rim,
         tabledata "Inventory Posting Group" = rim,
-        tabledata "Tax Group" = rim;
+        tabledata "Tax Group" = rim,
+        tabledata "Bank Account Posting Group" = rim;
 
     var
         OverwriteData: Boolean;
@@ -140,42 +141,41 @@ codeunit 5132 "Contoso Posting Group"
     end;
 
     procedure InsertCustomerPostingGroup(CustomerGroupCode: Code[20]; Description: Text[100]; ReceivablesAccountNo: Code[20])
-    var
-        CustomerPostingGroup: Record "Customer Posting Group";
-        Exists: Boolean;
     begin
-        if CustomerPostingGroup.Get(CustomerGroupCode) then begin
-            Exists := true;
-
-            if not OverwriteData then
-                exit;
-        end;
-
-        CustomerPostingGroup.Validate(Code, CustomerGroupCode);
-        CustomerPostingGroup.Validate(Description, Description);
-        CustomerPostingGroup.Validate("Receivables Account", ReceivablesAccountNo);
-
-        if Exists then
-            CustomerPostingGroup.Modify(true)
-        else
-            CustomerPostingGroup.Insert(true);
+        InsertCustomerPostingGroup(CustomerGroupCode, ReceivablesAccountNo, '', '', '', '', '', '', '', '', '', '', '', '', Description);
     end;
 
     procedure InsertVendorPostingGroup(VendorGroupCode: Code[20]; Description: Text[100]; PayablesAccountNo: Code[20])
+    begin
+        InsertVendorPostingGroup(VendorGroupCode, PayablesAccountNo, '', '', '', '', '', '', '', '', '', '', Description, false);
+    end;
+
+    procedure InsertVendorPostingGroup(Code: Code[20]; PayablesAccount: Code[20]; ServiceChargeAcc: Code[20]; PaymentDiscDebitAcc: Code[20]; InvoiceRoundingAccount: Code[20]; DebitCurrApplnRndgAcc: Code[20]; CreditCurrApplnRndgAcc: Code[20]; DebitRoundingAccount: Code[20]; CreditRoundingAccount: Code[20]; PaymentDiscCreditAcc: Code[20]; PaymentToleranceDebitAcc: Code[20]; PaymentToleranceCreditAcc: Code[20]; Description: Text[100]; ViewAllAccountsonLookup: Boolean)
     var
         VendorPostingGroup: Record "Vendor Posting Group";
         Exists: Boolean;
     begin
-        if VendorPostingGroup.Get(VendorGroupCode) then begin
+        if VendorPostingGroup.Get(Code) then begin
             Exists := true;
 
             if not OverwriteData then
                 exit;
         end;
 
-        VendorPostingGroup.Validate(Code, VendorGroupCode);
+        VendorPostingGroup.Validate(Code, Code);
+        VendorPostingGroup.Validate("Payables Account", PayablesAccount);
+        VendorPostingGroup.Validate("Service Charge Acc.", ServiceChargeAcc);
+        VendorPostingGroup.Validate("Payment Disc. Debit Acc.", PaymentDiscDebitAcc);
+        VendorPostingGroup.Validate("Invoice Rounding Account", InvoiceRoundingAccount);
+        VendorPostingGroup.Validate("Debit Curr. Appln. Rndg. Acc.", DebitCurrApplnRndgAcc);
+        VendorPostingGroup.Validate("Credit Curr. Appln. Rndg. Acc.", CreditCurrApplnRndgAcc);
+        VendorPostingGroup.Validate("Debit Rounding Account", DebitRoundingAccount);
+        VendorPostingGroup.Validate("Credit Rounding Account", CreditRoundingAccount);
+        VendorPostingGroup.Validate("Payment Disc. Credit Acc.", PaymentDiscCreditAcc);
+        VendorPostingGroup.Validate("Payment Tolerance Debit Acc.", PaymentToleranceDebitAcc);
+        VendorPostingGroup.Validate("Payment Tolerance Credit Acc.", PaymentToleranceCreditAcc);
         VendorPostingGroup.Validate(Description, Description);
-        VendorPostingGroup.Validate("Payables Account", PayablesAccountNo);
+        VendorPostingGroup.Validate("View All Accounts on Lookup", ViewAllAccountsonLookup);
 
         if Exists then
             VendorPostingGroup.Modify(true)
@@ -202,5 +202,60 @@ codeunit 5132 "Contoso Posting Group"
             InventoryPostingGroup.Modify(true)
         else
             InventoryPostingGroup.Insert(true);
+    end;
+
+    procedure InsertCustomerPostingGroup(Code: Code[20]; ReceivablesAccount: Code[20]; ServiceChargeAcc: Code[20]; PaymentDiscDebitAcc: Code[20]; InvoiceRoundingAccount: Code[20]; AdditionalFeeAccount: Code[20]; InterestAccount: Code[20]; DebitCurrApplnRndgAcc: Code[20]; CreditCurrApplnRndgAcc: Code[20]; DebitRoundingAccount: Code[20]; CreditRoundingAccount: Code[20]; PaymentDiscCreditAcc: Code[20]; PaymentToleranceDebitAcc: Code[20]; PaymentToleranceCreditAcc: Code[20]; Description: Text[100])
+    var
+        CustomerPostingGroup: Record "Customer Posting Group";
+        Exists: Boolean;
+    begin
+        if CustomerPostingGroup.Get(Code) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        CustomerPostingGroup.Validate(Code, Code);
+        CustomerPostingGroup.Validate("Receivables Account", ReceivablesAccount);
+        CustomerPostingGroup.Validate("Service Charge Acc.", ServiceChargeAcc);
+        CustomerPostingGroup.Validate("Payment Disc. Debit Acc.", PaymentDiscDebitAcc);
+        CustomerPostingGroup.Validate("Invoice Rounding Account", InvoiceRoundingAccount);
+        CustomerPostingGroup.Validate("Additional Fee Account", AdditionalFeeAccount);
+        CustomerPostingGroup.Validate("Interest Account", InterestAccount);
+        CustomerPostingGroup.Validate("Debit Curr. Appln. Rndg. Acc.", DebitCurrApplnRndgAcc);
+        CustomerPostingGroup.Validate("Credit Curr. Appln. Rndg. Acc.", CreditCurrApplnRndgAcc);
+        CustomerPostingGroup.Validate("Debit Rounding Account", DebitRoundingAccount);
+        CustomerPostingGroup.Validate("Credit Rounding Account", CreditRoundingAccount);
+        CustomerPostingGroup.Validate("Payment Disc. Credit Acc.", PaymentDiscCreditAcc);
+        CustomerPostingGroup.Validate("Payment Tolerance Debit Acc.", PaymentToleranceDebitAcc);
+        CustomerPostingGroup.Validate("Payment Tolerance Credit Acc.", PaymentToleranceCreditAcc);
+        CustomerPostingGroup.Validate(Description, Description);
+
+        if Exists then
+            CustomerPostingGroup.Modify(true)
+        else
+            CustomerPostingGroup.Insert(true);
+    end;
+
+    procedure InsertBankAccountPostingGroup(Code: Code[20]; GLAccountNo: Code[20])
+    var
+        BankAccountPostingGroup: Record "Bank Account Posting Group";
+        Exists: Boolean;
+    begin
+        if BankAccountPostingGroup.Get(Code) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        BankAccountPostingGroup.Validate(Code, Code);
+        BankAccountPostingGroup.Validate("G/L Account No.", GLAccountNo);
+
+        if Exists then
+            BankAccountPostingGroup.Modify(true)
+        else
+            BankAccountPostingGroup.Insert(true);
     end;
 }

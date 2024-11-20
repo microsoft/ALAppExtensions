@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument;
 using System.Automation;
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.eServices.EDocument.Integration.Send;
 
 codeunit 6135 "E-Document WorkFlow Processing"
 {
@@ -190,11 +191,12 @@ codeunit 6135 "E-Document WorkFlow Processing"
         EDocExport: Codeunit "E-Doc. Export";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
-        IsAsync, Sent : Boolean;
+        SendContext: Codeunit SendContext;
+        Sent, IsAsync : Boolean;
     begin
         Sent := false;
         if EDocExport.ExportEDocument(EDocument, EDocumentService) then
-            Sent := EDocIntMgt.Send(EDocument, EDocumentService, IsAsync);
+            Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then
             if IsAsync then

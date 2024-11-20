@@ -388,7 +388,7 @@ codeunit 139685 "Contract Test Library"
     #EndRegion Contracts
 
     #Region Service Commitment Template & Package
-    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type")
+    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; Discount: Boolean)
     var
         ServiceCommitmentTemplateCode: Code[20];
     begin
@@ -405,6 +405,8 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentTemplate."Calculation Base %" := CalcBasePercent;
         ServiceCommitmentTemplate."Invoicing via" := InvoicingVia;
         ServiceCommitmentTemplate."Calculation Base Type" := CalculationBaseType;
+        if Discount then
+            ServiceCommitmentTemplate.Discount := true;
 
         OnCreateServiceCommitmentTemplateOnBeforeInsert(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate.Insert(true)
@@ -413,7 +415,13 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template")
     begin
         ServiceCommitmentTemplate.Init();
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", false);
+    end;
+
+    procedure CreateServiceCommitmentTemplateWithDiscount(var ServiceCommitmentTemplate: Record "Service Commitment Template")
+    begin
+        ServiceCommitmentTemplate.Init();
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", true);
     end;
 
     procedure CreateServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Service Commitment Package")
@@ -570,7 +578,7 @@ codeunit 139685 "Contract Test Library"
     begin
         CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
 
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price", false);
 
         if ServiceCommitmentTemplate."Invoicing via" = ServiceCommitmentTemplate."Invoicing via"::Contract then begin
             CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Invoicing Item");
@@ -893,11 +901,6 @@ codeunit 139685 "Contract Test Library"
     begin
         CustomerContract.UpdateServicesDates();
     end;
-
-    procedure ServiceCommitmentIsClosed(var ServiceCommitment: Record "Service Commitment"): Boolean
-    begin
-        exit(ServiceCommitment.IsClosed());
-    end;
     #EndRegion Make local / internal functions public for external test apps
 
     procedure CreateTranslationForField(var FieldTranslation: Record "Field Translation"; SourceRecord: Variant; FieldID: Integer; LanguageCode: Code[10])
@@ -1007,7 +1010,7 @@ codeunit 139685 "Contract Test Library"
         ImportedServiceCommitment.Insert(false);
     end;
 
-    local procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
+    internal procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
     var
         CurrExchRate: Record "Currency Exchange Rate";
     begin

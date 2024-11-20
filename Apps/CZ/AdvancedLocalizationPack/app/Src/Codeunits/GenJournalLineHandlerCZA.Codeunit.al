@@ -26,7 +26,7 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
                             repeat
                                 GLEntry."Amount to Apply CZA" := 0;
                                 GLEntry."Applies-to ID CZA" := '';
-                                Codeunit.Run(Codeunit::"G/L Entry - Edit CZA", GLEntry);
+                                Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                             until GLEntry.Next() = 0;
                     end else
                         if xGenJournalLine."Applies-to Doc. No." <> '' then begin
@@ -39,7 +39,7 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
                                 repeat
                                     GLEntry."Amount to Apply CZA" := 0;
                                     GLEntry."Applies-to ID CZA" := '';
-                                    Codeunit.Run(Codeunit::"G/L Entry - Edit CZA", GLEntry);
+                                    Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                                 until GLEntry.Next() = 0;
                         end;
                 end;

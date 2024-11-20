@@ -7,8 +7,8 @@ codeunit 5144 "Create Common Item Tracking"
     var
         ContosoItem: Codeunit "Contoso Item";
     begin
-        ContosoItem.InsertItemTrackingCode(LotSpecificTrackingCode(), LOTWMSpecifictrackingLbl, false, true, false, false);
-        ContosoItem.InsertItemTrackingCode(SNSpecificTrackingCode(), SNProdSpecificTrackingLbl, true, false, false, false);
+        ContosoItem.InsertItemTrackingCode(LotSpecificTrackingCode(), LOTWMSpecifictrackingLbl, false, true, false, false, false, false);
+        ContosoItem.InsertItemTrackingCode(SNSpecificTrackingCode(), SNProdSpecificTrackingLbl, true, false, false, false, false, false);
     end;
 
     var

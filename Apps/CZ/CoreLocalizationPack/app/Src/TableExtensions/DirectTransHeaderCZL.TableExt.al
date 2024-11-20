@@ -10,6 +10,7 @@ using Microsoft.Inventory.Ledger;
 
 tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
 {
+#if not CLEANSCHEMA25
     fields
     {
         field(31000; "Intrastat Exclude CZL"; Boolean)
@@ -21,7 +22,7 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
-
+#endif
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;

@@ -16,6 +16,7 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             Caption = 'Correction';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31050; "Tariff No. CZL"; Code[20])
         {
             Caption = 'Tariff No.';
@@ -60,5 +61,6 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
     }
 }

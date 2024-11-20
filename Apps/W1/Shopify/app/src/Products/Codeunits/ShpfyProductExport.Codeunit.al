@@ -59,6 +59,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductEvents: Codeunit "Shpfy Product Events";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         OnlyUpdatePrice: Boolean;
         RecordCount: Integer;
@@ -538,6 +539,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductApi.SetShop(Shop);
         VariantApi.SetShop(Shop);
         ProductPriceCalc.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -719,7 +721,6 @@ codeunit 30178 "Shpfy Product Export"
     local procedure UpdateMetafields(ProductId: BigInteger)
     var
         ShpfyVariant: Record "Shpfy Variant";
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
     begin
         MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Product", ProductId);
 

@@ -154,6 +154,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
         SustainabilityAccount: Record "Sustainability Account";
         SustainabilityAccountCategory: Record "Sustain. Account Category";
         SustainabilityAccountSubcategory: Record "Sustain. Account Subcategory";
@@ -165,6 +166,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityJnlBatch.DeleteAll();
         SustainabilityJnlLine.DeleteAll();
         SustainabilityLedgerEntry.DeleteAll();
+        SustainabilityValueEntry.DeleteAll();
         SustainabilityAccount.DeleteAll();
         SustainabilityAccountCategory.DeleteAll();
         SustainabilityAccountSubcategory.DeleteAll();

@@ -1,5 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
+using System.Environment.Configuration;
 using Microsoft.Utilities;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Archive;
@@ -446,6 +447,43 @@ codeunit 8069 "Sales Service Commitment Mgmt."
             SalesShipmentLine."Quantity Invoiced" := 0;
             SalesShipmentLine."Qty. Invoiced (Base)" := 0;
         end;
+    end;
+
+    internal procedure NotifyIfDiscountIsNotTransferredFromSalesLine(var SalesLine: Record "Sales Line")
+    var
+        SalesServiceCommitment: Record "Sales Service Commitment";
+        CustomerContract: Record "Customer Contract";
+        MyNotification: Record "My Notifications";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+        Notify: Notification;
+        DiscountNotTransferredTxt: Label 'The %1 of %2 %3 has not been transferred to the Sales Service Commitment(s). The %1 is only transferred to Sales Service Commitment, if %4 is set to %5.';
+        DontShowAgainActionLbl: Label 'Don''t show again';
+    begin
+        if not MyNotification.IsEnabled(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine()) then
+            exit;
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.SetRange(Partner, SalesServiceCommitment.Partner::Customer);
+        SalesServiceCommitment.SetFilter("Calculation Base Type", '<>%1', SalesServiceCommitment."Calculation Base Type"::"Document Price And Discount");
+        if not SalesServiceCommitment.IsEmpty() then begin
+            NotificationLifecycleMgt.RecallNotificationsForRecord(SalesLine.RecordId(), false);
+            Notify.Message :=
+                StrSubstNo(
+                    DiscountNotTransferredTxt,
+                    SalesServiceCommitment.FieldCaption("Discount %"),
+                    SalesLine.Type,
+                    SalesLine."No.",
+                    SalesServiceCommitment.FieldCaption("Calculation Base Type"),
+                    SalesServiceCommitment."Calculation Base Type"::"Document Price And Discount");
+            Notify.AddAction(DontShowAgainActionLbl, Codeunit::"Sales Service Commitment Mgmt.", 'SalesServComDiscPercentHideNotificationForCurrentUser');
+            NotificationLifecycleMgt.SendNotification(Notify, SalesLine.RecordId());
+        end;
+    end;
+
+    internal procedure SalesServComDiscPercentHideNotificationForCurrentUser(Notification: Notification)
+    var
+        CustomerContract: Record "Customer Contract";
+    begin
+        CustomerContract.DontNotifyCurrentUserAgain(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine());
     end;
 
     var

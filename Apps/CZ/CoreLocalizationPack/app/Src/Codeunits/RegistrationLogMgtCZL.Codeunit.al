@@ -279,7 +279,12 @@ codeunit 11755 "Registration Log Mgt. CZL"
     local procedure AssistEditRegNo(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20])
     var
         AssistedRegistrationLogCZL: Record "Registration Log CZL";
+        IsHandled: Boolean;
     begin
+        OnBeforeAssistEditRegNo(AccountType, AccountNo, IsHandled);
+        if IsHandled then
+            exit;
+
         CheckAndLogUnloggedRegistrationNumbers(AssistedRegistrationLogCZL, AccountType, AccountNo);
         Commit();
         Page.RunModal(Page::"Registration Log CZL", AssistedRegistrationLogCZL);
@@ -438,5 +443,10 @@ codeunit 11755 "Registration Log Mgt. CZL"
             ServiceConnection.Status := ServiceConnection.Status::Disabled;
         ServiceConnection.InsertServiceConnection(
               ServiceConnection, ServiceConfigRecordRef.RecordId, DescriptionLbl, RegNoServiceConfigCZL."Service Endpoint", Page::"Reg. No. Service Config CZL");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAssistEditRegNo(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

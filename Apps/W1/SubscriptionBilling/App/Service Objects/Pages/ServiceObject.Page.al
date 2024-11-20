@@ -73,6 +73,15 @@ page 8060 "Service Object"
                 {
                     ToolTip = 'Specifies the Serial No. assigned to the service object.';
                 }
+                field("Variant Code"; Rec."Variant Code")
+                {
+                    Visible = false;
+                    ToolTip = 'Specifies the Variant Code of the service object.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
                 field("Provision Start Date"; Rec."Provision Start Date")
                 {
                     ToolTip = 'Specifies the date from which the subject of the service and the associated services were made available to the customer.';
