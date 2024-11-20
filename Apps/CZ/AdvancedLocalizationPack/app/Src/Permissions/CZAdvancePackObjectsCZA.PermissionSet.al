@@ -15,7 +15,12 @@
                   codeunit "Gen. Jnl.-Apply Handler CZA" = X,
                   codeunit "Gen. Jnl.Post Line Handler CZA" = X,
                   codeunit "Gen. Journal Line Handler CZA" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   codeunit "G/L Entry - Edit CZA" = X,
+#pragma warning restore AL0432
+#endif
+                  codeunit "G/L Entry Edit Handler CZA" = X,
                   codeunit "G/L Entry Post Application CZA" = X,
                   codeunit "Install Application CZA" = X,
                   codeunit "ItemJnl-Check Line Handler CZA" = X,
@@ -39,7 +44,12 @@
                   codeunit "Upgrade Application CZA" = X,
                   codeunit "Upgrade Tag Definitions CZA" = X,
                   page "Applied G/L Entries CZA" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   page "Apply G/L Entries CZA" = X,
+#pragma warning restore AL0432
+#endif
+                  page "Apply Gen. Ledger Entries CZA" = X,
                   page "Detailed G/L Entries CZA" = X,
                   page "Unapply G/L Entries CZA" = X,
                   report "G/L Entry Applying CZA" = X,

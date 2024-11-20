@@ -16,6 +16,7 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
             Caption = 'Negative';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31064; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -24,6 +25,7 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#endif
         field(31065; "Tariff No. CZL"; Code[20])
         {
             Caption = 'Tariff No.';
@@ -49,6 +51,7 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
                 end;
             end;
         }
+#if not CLEANSCHEMA25
         field(31066; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
@@ -66,5 +69,6 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
     }
 }

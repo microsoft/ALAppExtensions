@@ -39,11 +39,16 @@ report 8004 "Overview Of Contract Comp"
                 column(DiscountPct; "Discount %") { IncludeCaption = true; }
                 column(ServiceAmount; "Service Amount") { IncludeCaption = true; }
 
-                trigger OnAfterGetRecord()
+                trigger OnPreDataItem()
                 begin
                     if not ShowClosedContractLines then
-                        if ServiceCommitment.IsClosed() then
-                            CurrReport.Skip();
+                        SetRange(Closed, false);
+                end;
+
+                trigger OnAfterGetRecord()
+                begin
+                    if not ServiceObject.Get("Service Object No.") then
+                        Clear(ServiceObject);
                 end;
             }
             trigger OnPreDataItem()

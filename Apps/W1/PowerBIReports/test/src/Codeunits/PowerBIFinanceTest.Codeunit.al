@@ -528,6 +528,7 @@ codeunit 139876 "PowerBI Finance Test"
         LibERM.PostGeneralJnlLine(GenJnlLine);
         RunCloseIncomeStatement(GenJnlLine, GenJnlLine."Document No.");
         GenJnlLine.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
+        GenJnlLine.SetFilter("Account No.", '<>''''');
         GenJnlLine.FindLast();
         LibERM.PostGeneralJnlLine(GenJnlLine);
         SourceCodeSetup.Get();

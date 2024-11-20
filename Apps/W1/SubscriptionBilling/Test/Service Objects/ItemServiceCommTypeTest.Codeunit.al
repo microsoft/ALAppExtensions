@@ -104,6 +104,21 @@ codeunit 139885 "Item Service Comm. Type Test"
     end;
 
     [Test]
+    procedure ExpectErrorPostingServiceCommitmentItemOnPurchaseInvoice()
+    begin
+        ClearAll();
+        // [GIVEN] Create Purchase Return Order
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, '');
+        Commit(); // retain data after asserterror
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, Enum::"Purchase Line Type"::Item, Item."No.", 1);
+
+        // [WHEN] Try to post Purchase Line with Item which is Service Commitment Item
+        // [THEN] expect error is thrown
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+    end;
+
+    [Test]
     procedure ExpectErrorUsingServiceCommitmentItemAndAllowInvoiceDiscountOnSalesLine()
     begin
         ClearAll();

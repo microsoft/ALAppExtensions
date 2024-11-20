@@ -57,6 +57,10 @@ page 8094 "Service Commitment Archive"
                 {
                     ToolTip = 'Specifies the serial no. of the service object before the change.';
                 }
+                field("Variant Code (Service Object)"; Rec."Variant Code (Service Object)")
+                {
+                    ToolTip = 'Specifies the variant code of the service object before the change.';
+                }
                 field("Service Amount"; Rec."Service Amount")
                 {
                     ToolTip = 'Specifies the amount for the service including discount.';

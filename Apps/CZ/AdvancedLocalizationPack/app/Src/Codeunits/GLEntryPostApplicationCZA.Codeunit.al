@@ -372,17 +372,15 @@ codeunit 31370 "G/L Entry Post Application CZA"
     procedure ApplyGLEntry(var ApplGLEntry: Record "G/L Entry")
     var
         SelectedGLEntry: Record "G/L Entry";
-        ApplyGLEntriesCZA: Page "Apply G/L Entries CZA";
+        ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
     begin
         if ApplGLEntry."Closed CZA" then
             Error(ClosedEntryErr);
 
-        SelectedGLEntry.SetCurrentKey("G/L Account No.");
         SelectedGLEntry.SetRange("G/L Account No.", ApplGLEntry."G/L Account No.");
-        SelectedGLEntry.SetRange("Closed CZA", false);
-        ApplyGLEntriesCZA.SetAplEntry(ApplGLEntry."Entry No.");
-        ApplyGLEntriesCZA.SetTableView(SelectedGLEntry);
-        ApplyGLEntriesCZA.RunModal();
+        ApplyGenLedgerEntriesCZA.InsertEntry(SelectedGLEntry);
+        ApplyGenLedgerEntriesCZA.SetApplyingEntry(ApplGLEntry."Entry No.");
+        ApplyGenLedgerEntriesCZA.RunModal();
     end;
 
     procedure AutomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var VarGLEntry: Record "G/L Entry")

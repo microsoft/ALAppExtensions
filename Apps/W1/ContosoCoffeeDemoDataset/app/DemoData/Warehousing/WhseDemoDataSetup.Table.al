@@ -7,6 +7,7 @@ table 4763 "Whse Demo Data Setup"
     InherentPermissions = rimdX;
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
+    ReplicateData = false;
 
     fields
     {

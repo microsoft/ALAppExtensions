@@ -635,6 +635,22 @@ page 31181 "Purch. Advance Letter CZZ"
                         PurchAdvLetterManagement.CloseAdvanceLetter(Rec);
                     end;
                 }
+                action(CopyDocument)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Copy Document';
+                    Ellipsis = true;
+                    Enabled = Rec."No." <> '';
+                    Image = CopyDocument;
+                    ToolTip = 'Copy document lines and header information from another purchase advance letter to this document. You can copy a purchase advance letter into a new purchase advance letter to quickly create a similar document.';
+
+                    trigger OnAction()
+                    begin
+                        Rec.CopyDocument();
+                        if Rec.Get(Rec."No.") then;
+                        CurrPage.Update();
+                    end;
+                }
             }
             group("Request Approval")
             {

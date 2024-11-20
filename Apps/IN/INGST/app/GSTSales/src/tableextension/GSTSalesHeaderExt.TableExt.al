@@ -56,6 +56,7 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
             TableRelation = Customer where("e-Commerce Operator" = const(true));
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA26
         field(18149; "E-Commerce Merchant Id"; code[30])
         {
             Caption = 'E-Commerce Merchant Id';
@@ -67,6 +68,7 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
         }
+#endif
         field(18150; "GST Bill-to State Code"; Code[10])
         {
             Caption = 'GST Bill-to State Code';

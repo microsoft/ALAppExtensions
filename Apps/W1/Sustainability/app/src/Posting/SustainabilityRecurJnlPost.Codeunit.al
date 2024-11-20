@@ -11,6 +11,7 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
     trigger OnRun()
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         ConfirmManagement: Codeunit "Confirm Management";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         NoSeriesBatch: Codeunit "No. Series - Batch";
@@ -34,7 +35,12 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
                     Window.Update(1, SustainabilityPostMgt.GetProgressingLineMessage(Rec."Line No."));
 
                 Rec.Validate("Document No.", NoSeriesBatch.GetNextNo(SustainabilityJnlBatch."No Series", Rec."Posting Date"));
-                SustainabilityPostMgt.InsertLedgerEntry(Rec);
+
+                SustainabilityJnlLine := Rec;
+
+                SustainabilityJnlLine.UpdateSustainabilityJnlLineWithPostingSign(SustainabilityJnlLine, SustainabilityJnlLine.GetPostingSign(SustainabilityJnlLine));
+
+                SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
 
                 ProcessRecurringJournalLine(Rec);
             until Rec.Next() = 0;

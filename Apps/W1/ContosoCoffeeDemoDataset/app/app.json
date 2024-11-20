@@ -28,7 +28,7 @@
     },
     {
       "from": 5100,
-      "to": 5300
+      "to": 5700
     }
   ],
   "resourceExposurePolicy": {
@@ -36,8 +36,12 @@
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
   },
+  "target": "OnPrem",
   "features": [
     "TranslationFile"
+  ],
+  "resourceFolders": [
+    ".resources"
   ],
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
 }

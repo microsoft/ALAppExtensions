@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA25
 namespace Microsoft.Integration.Shopify;
 
 using System.Environment.Configuration;
@@ -16,3 +17,4 @@ tableextension 30200 "Shpfy Feature Data Update" extends "Feature Data Update St
         }
     }
 }
+#endif

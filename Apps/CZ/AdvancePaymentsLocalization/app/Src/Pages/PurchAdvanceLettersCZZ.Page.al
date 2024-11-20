@@ -111,12 +111,17 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies to pay amount.';
                     Visible = false;
                 }
+#if not CLEAN26
                 field("To Pay (LCY)"; Rec."To Pay (LCY)")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies to pay (LCY) amount.';
                     Visible = false;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is obsolete and will be removed in a future release.';
+                    ObsoleteState = Pending;
                 }
+#endif
                 field("To Use"; Rec."To Use")
                 {
                     ApplicationArea = Basic, Suite;

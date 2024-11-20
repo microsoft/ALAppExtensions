@@ -34,7 +34,7 @@ codeunit 5103 "Create Svc Setup"
 
         CreateSkillCodes();
         CreateServiceOrderTypes();
-        CreateFaultReasonCodes(); //TODO: move to fault reason code ?
+        CreateFaultReasonCodes();
 
         ContosoService.InsertServiceItemGroup(DefaultServiceItemGroup(), DefaultServiceItemGroup(), true);
 

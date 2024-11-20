@@ -66,6 +66,26 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies that you want to enable sustainability features in purchase documents. Until this field is selected, sustainability fields will not be displayed in the purchase lines. Select this field only if you intend to post your GHG emissions using purchase documents or to post purchasing carbon credits.';
                 }
+                field("G/L Account Emissions"; Rec."G/L Account Emissions")
+                {
+                    ToolTip = 'Specifies the value of the G/L Account Emissions field.';
+                }
+                field("Item Emissions"; Rec."Item Emissions")
+                {
+                    ToolTip = 'Specifies the value of the Item Emissions field.';
+                }
+                field("Item Charge Emissions"; Rec."Item Charge Emissions")
+                {
+                    ToolTip = 'Specifies the value of the Item Charge Emissions field.';
+                }
+                field("Resource Emissions"; Rec."Resource Emissions")
+                {
+                    ToolTip = 'Specifies the value of the Resource Emissions field.';
+                }
+                field("Work/Machine Center Emissions"; Rec."Work/Machine Center Emissions")
+                {
+                    ToolTip = 'Specifies the value of the Work/Machine Center Emissions field.';
+                }
             }
             group(Calculations)
             {

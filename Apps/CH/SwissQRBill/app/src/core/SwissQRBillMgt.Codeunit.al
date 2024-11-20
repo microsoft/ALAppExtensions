@@ -127,11 +127,17 @@ codeunit 11518 "Swiss QR-Bill Mgt."
             FileManagement.DownloadFromStreamHandler(PDFFileInStream, 'Save QR-Bill', '', 'pdf', SwissQRBillBuffer."File Name");
     end;
 
-    local procedure ReportPrintToStream(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var PDFFileTempBlob: Codeunit "Temp Blob"): Boolean
+    local procedure ReportPrintToStream(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var PDFFileTempBlob: Codeunit "Temp Blob") Result: Boolean
     var
         SwissQRBillPrint: Report "Swiss QR-Bill Print";
         PDFFileOutStream: OutStream;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeReportPrintToStream(SwissQRBillBuffer, PDFFileTempBlob, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         SwissQRBillPrint.SetBuffer(SwissQRBillBuffer);
         PDFFileTempBlob.CreateOutStream(PDFFileOutStream);
         exit(SwissQRBillPrint.SaveAs('', ReportFormat::Pdf, PDFFileOutStream));
@@ -484,5 +490,10 @@ codeunit 11518 "Swiss QR-Bill Mgt."
                     TempDirectDebitCollectionEntry."Applies-to Entry Description" + '; ' +
                     TempDirectDebitCollectionEntry."Payment Reference",
                     1, MaxStrLen(PaymentExportData."Message to Recipient 1"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeReportPrintToStream(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var PDFFileTempBlob: Codeunit "Temp Blob"; var Result: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }
