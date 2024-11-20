@@ -10,7 +10,7 @@ using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.eServices.EDocument;
 using System.Utilities;
-using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 codeunit 6380 "Connection Events"
 {

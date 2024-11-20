@@ -8,7 +8,7 @@ using Microsoft.Service.History;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using System.IO;
-using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
 {

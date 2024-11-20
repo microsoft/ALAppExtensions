@@ -9,7 +9,7 @@ using System.Text;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 codeunit 6386 "EDoc Import Tietoevry"
 {

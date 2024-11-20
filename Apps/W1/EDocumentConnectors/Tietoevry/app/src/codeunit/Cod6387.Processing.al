@@ -10,7 +10,7 @@ using Microsoft.Sales.Peppol;
 using System.Telemetry;
 using System.Text;
 using System.Utilities;
-using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 codeunit 6387 "Processing"
 {

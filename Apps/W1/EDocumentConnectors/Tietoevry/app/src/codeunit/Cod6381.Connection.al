@@ -6,9 +6,9 @@ namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
 using Microsoft.EServices.EDocument;
 using System.Utilities;
-using System.Text;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Document;
+
 codeunit 6381 "Connection"
 {
     Access = Internal;
