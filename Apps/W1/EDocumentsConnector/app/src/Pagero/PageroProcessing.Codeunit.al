@@ -212,7 +212,7 @@ codeunit 6369 "Pagero Processing"
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         DocumentOutStream: OutStream;
         Instream: InStream;
@@ -221,7 +221,7 @@ codeunit 6369 "Pagero Processing"
         ItemObject: JsonObject;
         ContentData, DocumentId, FileId : Text;
     begin
-        DocumentMetadataBlob.CreateInStream(Instream);
+        DocumentMetadata.CreateInStream(Instream);
         Instream.ReadText(ContentData);
         ItemObject.ReadFrom(ContentData);
         DocumentId := ItemObject.GetText('id');

@@ -228,7 +228,7 @@ codeunit 6379 Processing
     /// <summary>
     /// Download document XML from Avalara API
     /// </summary>
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         Request: Codeunit Requests;
         HttpExecutor: Codeunit "Http Executor";
@@ -237,7 +237,7 @@ codeunit 6379 Processing
         DocumentId: Text;
         OutStream: OutStream;
     begin
-        DocumentMetadataBlob.CreateInStream(InStream, TextEncoding::UTF8);
+        DocumentMetadata.CreateInStream(InStream, TextEncoding::UTF8);
         InStream.ReadText(DocumentId);
 
         if DocumentId = '' then begin

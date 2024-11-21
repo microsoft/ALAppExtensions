@@ -22,12 +22,12 @@ interface IDocumentReceiver
     /// <param name="ReceiveContext">The receive context used for managing HTTP requests and responses.</param>
     /// <remarks>
     /// Sends an HTTP request to the API to retrieve the documents. 
-    /// The response is stored in the Documents list, and the count of documents is implicitly determined by the number of temp blobs added to the list.
+    /// The response is stored in the DocumentsMetadata list, and the count of documents is implicitly determined by the number of temp blobs added to the list.
     /// </remarks>
     /// <example>
     /// This example demonstrates how to implement the <c>ReceiveDocuments</c> method:
     /// <code>
-    /// procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    /// procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     /// var
     ///     HttpRequest: HttpRequestMessage;
     ///     JsonResponse: JsonArray;
@@ -46,32 +46,32 @@ interface IDocumentReceiver
     ///     // Parse the JSON response
     ///     JsonResponse.ReadFrom(HttpResponse.ContentAsText());
     ///
-    ///     // Iterate over each object in the JSON array and add a temp blob to the Documents list
+    ///     // Iterate over each object in the JSON array and add a temp blob to the DocumentsMetadata list
     ///     foreach JsonObject in JsonResponse do begin
     ///         DocumentBlob.CreateOutStream(OutStream);
     ///         JsonObject.WriteTo(OutStream);
-    ///         Documents.Add(DocumentBlob);
+    ///         DocumentsMetadata.Add(DocumentBlob);
     ///     end;
     /// end;
     /// </code>
     /// </example>
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
 
     /// <summary>
     /// Downloads the data (e.g., XML, PDF) for the specified document from the API.
     /// </summary>
     /// <param name="EDocument">The record representing the E-Document for which the data is being downloaded.</param>
     /// <param name="EDocumentService">The record representing the E-Document Service used for the API interaction.</param>
-    /// <param name="DocumentMetadataBlob">The temporary blob containing the metadata for the document.</param>
+    /// <param name="DocumentMetadata">The temporary blob containing the metadata for the document.</param>
     /// <param name="ReceiveContext">The receive context used for managing HTTP requests and responses.</param>
     /// <remarks>
-    /// Reads the document ID from the DocumentMetadataBlob and sends an HTTP request to download the document data. 
+    /// Reads the document ID from the DocumentMetadata and sends an HTTP request to download the document data. 
     /// The document data is downloaded using an authenticated request and stored in the ReceiveContext. If the document ID is not found, an error is logged, and no further actions are taken.
     /// </remarks>
     /// <example>
     /// This example demonstrates how to implement the <c>DownloadDocument</c> method:
     /// <code>
-    /// procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    /// procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     /// var
     ///     Request: Codeunit Requests;
     ///     HttpExecutor: Codeunit "Http Executor";
@@ -80,8 +80,8 @@ interface IDocumentReceiver
     ///     DocumentId: Text;
     ///     OutStream: OutStream;
     /// begin
-    ///     // Read the document ID from the DocumentMetadataBlob
-    ///     DocumentMetadataBlob.CreateInStream(InStream, TextEncoding::UTF8);
+    ///     // Read the document ID from the DocumentMetadata
+    ///     DocumentMetadata.CreateInStream(InStream, TextEncoding::UTF8);
     ///     InStream.ReadText(DocumentId);
     ///
     ///     if DocumentId = '' then begin
@@ -107,6 +107,6 @@ interface IDocumentReceiver
     /// end;
     /// </code>
     /// </example>
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
 
 }
