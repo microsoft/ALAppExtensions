@@ -86,7 +86,7 @@ table 4764 "Warehouse Module Setup"
         Rec.InitRecord();
 
         if Rec."Vendor No." = '' then
-            Rec.Validate("Vendor No.", CreateContosoCustomerVendor.DomesticVendor1());
+            Rec.Validate("Vendor No.", CreateContosoCustomerVendor.DomesticVendor2());
 
         if Rec."Customer No." = '' then
             Rec.Validate("Customer No.", CreateContosoCustomerVendor.DomesticCustomer1());

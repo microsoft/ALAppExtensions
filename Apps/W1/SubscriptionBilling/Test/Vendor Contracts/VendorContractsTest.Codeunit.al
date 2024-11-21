@@ -641,8 +641,8 @@ codeunit 148154 "Vendor Contracts Test"
     local procedure GetTotalServiceAmountFromServiceCommitments(): Decimal
     begin
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.", ServiceObject1."No.");
-        ServiceCommitment.CalcSums("Service Amount");
-        exit(ServiceCommitment."Service Amount");
+        ServiceCommitment.FindFirst();
+        exit(Round(ServiceCommitment.Price * ServiceObject1."Quantity Decimal" * 2, Currency."Amount Rounding Precision"));
     end;
 
     local procedure CreateVendorContractSetup()
@@ -682,13 +682,13 @@ codeunit 148154 "Vendor Contracts Test"
 
             if RecalculatePrice then begin //if currency code is changed to '', amounts and amonts in lcy in service commitments should be the same
                 ServiceCommitment.TestField(Price,
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Price (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Price (LCY)", CurrencyFactor), Currency."Unit-Amount Rounding Precision"));
 
                 ServiceCommitment.TestField("Service Amount",
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Service Amount (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Service Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
 
                 ServiceCommitment.TestField("Discount Amount",
-                CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Discount Amount (LCY)", CurrencyFactor));
+                Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, Vendor."Currency Code", ServiceCommitment."Discount Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
             end
             else begin
                 ServiceCommitment.TestField(Price, ServiceCommitment."Price (LCY)");

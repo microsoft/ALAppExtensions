@@ -509,15 +509,13 @@ codeunit 8074 "Document Change Management"
     begin
         if Rec.IsTemporary() then
             exit;
-
-        if not Rec.IsLineAttachedToBillingLine() then
-            exit;
         if not RunTrigger then
             exit;
 
         xSalesLine.Get(Rec."Document Type", Rec."Document No.", Rec."Line No.");
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(xSalesLine."Document Type"), xSalesLine."Document No.", xSalesLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
 
         if ((Rec."Shortcut Dimension 1 Code" <> xSalesLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xSalesLine."Shortcut Dimension 2 Code") or
@@ -1081,14 +1079,13 @@ codeunit 8074 "Document Change Management"
     begin
         if Rec.IsTemporary() then
             exit;
-        if (not Rec.IsLineAttachedToBillingLine()) then
-            exit;
         if not RunTrigger then
             exit;
 
         xPurchaseLine.Get(Rec."Document Type", Rec."Document No.", Rec."Line No.");
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(xPurchaseLine."Document Type"), xPurchaseLine."Document No.", xPurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
 
         if ((Rec."Shortcut Dimension 1 Code" <> xPurchaseLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xPurchaseLine."Shortcut Dimension 2 Code") or
@@ -1132,7 +1129,9 @@ codeunit 8074 "Document Change Management"
 
         xRRef.GetTable(RecVariant);
         xRRef.SetRecFilter();
-        xRRef.FindFirst();
+        if not xRRef.FindFirst() then
+            exit;
+
         FRef := RRef.Field(CurrFieldNo);
         xFRef := xRRef.Field(CurrFieldNo);
 
@@ -1159,7 +1158,8 @@ codeunit 8074 "Document Change Management"
                     FRef2 := RRef.Field(4);
                     LineNo := FRef2.Value;
                     BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType("Sales Document Type".FromInteger(DocumentTypeInteger)), DocumentNo, LineNo);
-                    BillingLine.FindFirst();
+                    if not BillingLine.FindFirst() then
+                        exit;
                     ContractNo := BillingLine."Contract No.";
 
                     if CurrFieldNo in [29, 30, 480] then

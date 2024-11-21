@@ -11,7 +11,7 @@ pageextension 8053 "General Ledger Setup" extends "General Ledger Setup"
             field("Dimension Code Cust. Contr."; Rec."Dimension Code Cust. Contr.")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the value of the Dim. Code for Cust. Contr. field.';
+                ToolTip = 'Specifies the Dimension Code that is used for Customer Contracts.';
             }
         }
     }

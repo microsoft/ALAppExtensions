@@ -360,6 +360,16 @@ table 8061 "Billing Line"
         end;
     end;
 
+    internal procedure GetBillingDocumentTypeFromTextDocumentType(DocumentType: Text) RecurringBillingDocumentType: Enum "Rec. Billing Document Type"
+    begin
+        case DocumentType of
+            Format(RecurringBillingDocumentType::Invoice):
+                RecurringBillingDocumentType := RecurringBillingDocumentType::Invoice;
+            Format(RecurringBillingDocumentType::"Credit Memo"):
+                RecurringBillingDocumentType := RecurringBillingDocumentType::"Credit Memo";
+        end;
+    end;
+
     internal procedure InitNewBillingLine()
     begin
         Init();

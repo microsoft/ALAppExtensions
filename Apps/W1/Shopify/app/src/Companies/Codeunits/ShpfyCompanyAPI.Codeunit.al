@@ -14,6 +14,7 @@ codeunit 30286 "Shpfy Company API"
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     internal procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location"; ShopifyCustomer: Record "Shpfy Customer"): Boolean
     var
@@ -75,6 +76,7 @@ codeunit 30286 "Shpfy Company API"
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant): Boolean
@@ -294,7 +296,6 @@ codeunit 30286 "Shpfy Company API"
     internal procedure UpdateShopifyCompanyFields(var ShopifyCompany: Record "Shpfy Company"; JCompany: JsonObject) Result: Boolean
     var
         CompanyLocation: Record "Shpfy Company Location";
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
         UpdatedAt: DateTime;
         JLocations: JsonArray;
         JMetafields: JsonArray;

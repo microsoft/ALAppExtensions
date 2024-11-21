@@ -36,9 +36,12 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
             Caption = 'Group Representative API URL';
             ExtendedDatatype = URL;
         }
+#if not CLEANSCHEMA25
 #pragma warning disable AL0432
+#pragma warning disable AS0105
         field(4704; "Authentication Type"; Enum "VAT Group Authentication Type OnPrem")
 #pragma warning restore
+#pragma warning restore AS0105
         {
             DataClassification = CustomerContent;
             Caption = 'Authentication Type';
@@ -46,6 +49,7 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
             ObsoleteTag = '25.0';
             ObsoleteState = Removed;
         }
+#endif
         field(4719; "VAT Group Authentication Type"; Enum "VAT Group Auth Type OnPrem")
         {
             DataClassification = CustomerContent;

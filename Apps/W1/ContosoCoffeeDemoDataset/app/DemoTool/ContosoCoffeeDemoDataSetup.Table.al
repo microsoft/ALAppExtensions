@@ -27,6 +27,7 @@ table 4768 "Contoso Coffee Demo Data Setup"
         {
             TableRelation = "Country/Region";
             Caption = 'Country/Region Code';
+            InitValue = 'GB';
         }
         field(5; "Price Factor"; Decimal)
         {

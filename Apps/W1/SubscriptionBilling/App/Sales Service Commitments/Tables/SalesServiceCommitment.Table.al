@@ -368,7 +368,7 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Service Commitment cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Service Commitment.';
     begin
         TestIfSalesOrderIsReleased();
-        if Rec.IsLastContractRenewalLineToBeDeleted() then
+        if Rec.IsOnlyRemainingLineForContractRenewalInDocument() then
             Error(SalesServiceCommitmentCannotBeDeletedErr);
     end;
 
@@ -413,6 +413,7 @@ table 8068 "Sales Service Commitment"
 
         MaxServiceAmount := Round((Price * SalesLine.Quantity), Currency."Amount Rounding Precision");
         if CalledByFieldNo = FieldNo("Service Amount") then begin
+            "Service Amount" := Round("Service Amount", Currency."Amount Rounding Precision");
             if "Service Amount" > MaxServiceAmount then
                 Error(ServiceAmountIncreaseErr, FieldCaption("Service Amount"), Format(MaxServiceAmount));
             "Discount Amount" := Round(MaxServiceAmount - "Service Amount", Currency."Amount Rounding Precision");
@@ -702,10 +703,13 @@ table 8068 "Sales Service Commitment"
         end;
     end;
 
-    internal procedure IsLastContractRenewalLineToBeDeleted(): Boolean
+    internal procedure IsOnlyRemainingLineForContractRenewalInDocument(): Boolean
     var
         SalesServiceCommitment: Record "Sales Service Commitment";
     begin
+        if Process <> Process::"Contract Renewal" then
+            exit(false);
+
         SalesServiceCommitment.SetRange("Document Type", Rec."Document Type");
         SalesServiceCommitment.SetRange("Document No.", Rec."Document No.");
         SalesServiceCommitment.SetRange(Process, Process::"Contract Renewal");

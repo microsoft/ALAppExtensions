@@ -13,6 +13,7 @@ tableextension 11792 "Value Entry CZL" extends "Value Entry"
             Caption = 'G/L Correction';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31052; "Incl. in Intrastat Amount CZL"; Boolean)
         {
             Caption = 'Incl. in Intrastat Amount';
@@ -29,5 +30,6 @@ tableextension 11792 "Value Entry CZL" extends "Value Entry"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#endif
     }
 }

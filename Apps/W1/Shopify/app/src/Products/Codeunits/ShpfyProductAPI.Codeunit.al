@@ -17,6 +17,7 @@ codeunit 30176 "Shpfy Product API"
         JsonHelper: Codeunit "Shpfy Json Helper";
         ProductEvents: Codeunit "Shpfy Product Events";
         VariantApi: Codeunit "Shpfy Variant API";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     /// <summary> 
     /// Create Product.
@@ -65,7 +66,30 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
-        GraphQuery.Append('}) ');
+
+        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
+            GraphQuery.Append(', productOptions: [{name: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Name"));
+            GraphQuery.Append('\", values: [{name: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Value"));
+            GraphQuery.Append('\"}]}');
+            if ShopifyVariant."Option 2 Name" <> '' then begin
+                GraphQuery.Append(', {name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Name"));
+                GraphQuery.Append('\", values: [{name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Value"));
+                GraphQuery.Append('\"}]}');
+            end;
+            if ShopifyVariant."Option 3 Name" <> '' then begin
+                GraphQuery.Append(', {name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 3 Name"));
+                GraphQuery.Append('\", values: [{name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 3 Value"));
+                GraphQuery.Append('\"}]}');
+            end;
+            GraphQuery.Append(']');
+        end;
+        GraphQuery.Append(', published: true}) ');
         GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}, userErrors {field, message}}');
         GraphQuery.Append('}"}');
 
@@ -92,7 +116,7 @@ codeunit 30176 "Shpfy Product API"
             NewShopifyVariant.Insert();
         end;
 
-        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true, ShopifyProduct."Has Variants");
+        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true);
 
         while ShopifyVariant.Next() > 0 do begin
             ShopifyVariant."Product Id" := NewShopifyProduct.Id;
@@ -403,6 +427,7 @@ codeunit 30176 "Shpfy Product API"
         Shop := ShopifyShop;
         VariantApi.SetShop(Shop);
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -501,7 +526,6 @@ codeunit 30176 "Shpfy Product API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyProductFields(var ShopifyProduct: record "Shpfy Product"; JProduct: JsonObject) Result: Boolean
     var
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
         UpdatedAt: DateTime;
         JMetafields: JsonArray;
     begin

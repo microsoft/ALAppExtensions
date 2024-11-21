@@ -89,6 +89,21 @@ page 8041 "Usage Data Imports"
     {
         area(Processing)
         {
+            action(NewImportAndFile)
+            {
+                Caption = 'New Import & file';
+                ToolTip = 'Creates a new import and opens a dialog for importing billing data in the form of a CSV file.';
+                Image = NewRow;
+
+                trigger OnAction()
+                var
+                    UsageDataImport: Record "Usage Data Import";
+                begin
+                    UsageDataImport.NewDataImport();
+                    UsageDataImport.ImportFile();
+                    CurrPage.SetRecord(UsageDataImport);
+                end;
+            }
             action(NewImport)
             {
                 Caption = 'New Import';
@@ -98,26 +113,21 @@ page 8041 "Usage Data Imports"
                 trigger OnAction()
                 var
                     UsageDataImport: Record "Usage Data Import";
-                    SupplierNo: Code[20];
                 begin
-                    SupplierNo := CopyStr(Rec.GetFilter("Supplier No."), 1, MaxStrLen(SupplierNo));
-                    if SupplierNo <> '' then
-                        UsageDataImport.Validate("Supplier No.", SupplierNo);
-                    UsageDataImport.Insert(true);
+                    UsageDataImport.NewDataImport();
                     CurrPage.SetRecord(UsageDataImport);
-                    CurrPage.Update(false);
                 end;
             }
             action(ImportFile)
             {
                 Caption = 'Import file';
-                ToolTip = 'Enables the import of billing data in the form of a CSV file.';
+                ToolTip = 'Enables the import of billing data in the form of a CSV file into the selected import.';
                 Image = Import;
                 Scope = repeater;
 
                 trigger OnAction()
                 begin
-                    Rec.ImportFile(Rec);
+                    Rec.ImportFile();
                 end;
             }
             action(ProcessData)
@@ -346,7 +356,13 @@ page 8041 "Usage Data Imports"
             {
                 Caption = 'New';
 
+                actionref(NewImportAndFile_Promoted; NewImportAndFile)
+                {
+                }
                 actionref(NewImport_Promoted; NewImport)
+                {
+                }
+                actionref(ImportFile_Promoted; ImportFile)
                 {
                 }
             }
@@ -354,9 +370,6 @@ page 8041 "Usage Data Imports"
             {
                 Caption = 'Process';
 
-                actionref(ImportFile_Promoted; ImportFile)
-                {
-                }
                 actionref(ProcessData_Promoted; ProcessData)
                 {
                 }

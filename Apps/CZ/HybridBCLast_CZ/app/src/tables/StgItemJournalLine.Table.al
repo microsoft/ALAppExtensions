@@ -822,18 +822,6 @@ table 11714 "Stg Item Journal Line"
             ObsoleteTag = '23.0';
         }
 #endif
-#if not CLEANSCHEMA18
-        field(11790; "Source No. 2"; Code[20])
-        {
-            Caption = 'Source No. 2';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'This field is replaced by "Invoice-to Source No." field.';
-            TableRelation = IF ("Source Type" = CONST(Customer)) Customer
-            ELSE
-            IF ("Source Type" = CONST(Vendor)) Vendor;
-            ObsoleteTag = '18.0';
-        }
-#endif
 #if not CLEANSCHEMA23
         field(11791; "Source No. 3"; Code[20])
         {
@@ -844,31 +832,6 @@ table 11714 "Stg Item Journal Line"
             ObsoleteState = Removed;
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
             ObsoleteTag = '23.0';
-        }
-#endif
-#if not CLEANSCHEMA18
-        field(31043; "FA No."; Code[20])
-        {
-            Caption = 'FA No.';
-            TableRelation = "Fixed Asset";
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31044; "Maintenance Code"; Code[10])
-        {
-            Caption = 'Maintenance Code';
-            TableRelation = Maintenance;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31060; "Perform. Country/Region Code"; Code[10])
-        {
-            Caption = 'Perform. Country/Region Code';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of VAT Registration in Other Countries has been removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
         }
 #endif
 #if not CLEANSCHEMA23

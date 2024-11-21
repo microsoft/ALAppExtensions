@@ -290,7 +290,7 @@ page 7275 "Sales Line AI Suggestions"
             TotalCopiedLines := TempSalesLineAISuggestion.Count();
             if TotalCopiedLines > 0 then begin
                 SalesLineUtility.CopySalesLineToDoc(GlobalSalesHeader, TempSalesLineAISuggestion);
-                if CheckIfSuggestedLinesContainErrors() then begin
+                if SalesLineUtility.CheckIfSuggestedLinesContainErrors(TempSalesLineAISuggestion) then begin
                     CurrPage.Update(false);
                     exit(false);
                 end;
@@ -397,17 +397,6 @@ page 7275 "Sales Line AI Suggestions"
         foreach Int in ListOfInteger do
             Result += Format(Int) + ', ';
         Result := Result.TrimEnd(', ');
-    end;
-
-    local procedure CheckIfSuggestedLinesContainErrors(): Boolean
-    var
-        TempSalesLineSuggestion: Record "Sales Line AI Suggestions" temporary;
-    begin
-        TempSalesLineSuggestion.Copy(TempSalesLineAISuggestion, true);
-        TempSalesLineSuggestion.Reset();
-        TempSalesLineSuggestion.SetRange("Line Style", 'Unfavorable');
-        if not TempSalesLineSuggestion.IsEmpty() then
-            exit(true);
     end;
 
     var

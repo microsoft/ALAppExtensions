@@ -12,12 +12,16 @@ page 8033 "Create Usage B. Cust. B. Docs"
         {
             group(DateFields)
             {
-                Caption = 'Dates';
+                Caption = 'Billing';
                 field(BillingDate; BillingDate)
                 {
                     Caption = 'Billing Date';
                     ToolTip = 'Specifies the date up to which the billable services will be taken into account.';
                 }
+            }
+            group(Posting)
+            {
+                Caption = 'Posting';
                 field(DocumentDate; DocumentDate)
                 {
                     Caption = 'Document Date';
@@ -90,7 +94,7 @@ page 8033 "Create Usage B. Cust. B. Docs"
             until CustomerContract.Next() = 0;
 
         //NOTE: CreateBillingDocument works with all Billing lines previously created by BillingProposal.CreateBillingProposalForContract
-        //Therefore it will batch create documents for Usage based billing lines 
+        //Therefore it will batch create documents for Usage based billing lines
         if not BillingProposal.CreateBillingDocument(ServicePartner, CustomerContract."No.", DocumentDate, PostingDate, PostDocument, false) then
             Error(NoInvoiceCreatedErr);
         ContractNoFilter := '';

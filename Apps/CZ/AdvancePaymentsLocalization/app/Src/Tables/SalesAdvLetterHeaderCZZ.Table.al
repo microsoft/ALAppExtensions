@@ -1820,6 +1820,20 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SalesAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
     end;
 
+    procedure CopyDocument()
+    var
+        CopyAdvLetterDocumentCZZ: Report "Copy Adv. Letter Document CZZ";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCopyDocument(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        CopyAdvLetterDocumentCZZ.SetSalesAdvLetterHeader(Rec);
+        CopyAdvLetterDocumentCZZ.RunModal();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateBillToPostCode(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var PostCodeRec: Record "Post Code")
     begin
@@ -2062,6 +2076,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyDocument(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

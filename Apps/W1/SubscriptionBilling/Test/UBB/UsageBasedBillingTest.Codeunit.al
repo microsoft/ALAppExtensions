@@ -85,7 +85,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestCreateUsageDataBilling()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.FindLast();
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataBilling.FindLast();
@@ -97,7 +97,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestProcessUsageDataBilling()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         //Test update service object and service commitment
         //TODO: Test prices update after 1. iteration of consultants testing
@@ -109,7 +109,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestDeleteUsageDataBilling()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.DeleteUsageDataBillingLines();
         Commit(); // retain data after asserterror
 
@@ -152,7 +152,7 @@ codeunit 148153 "Usage Based Billing Test"
         Initialize();
         j := LibraryRandom.RandIntInRange(2, 10);
         for i := 1 to j do
-            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
 
         UsageDataImport.Reset();
         UsageDataImport.FindSet();
@@ -179,7 +179,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestCreateContractInvoiceFromUsageDataImport()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -193,7 +193,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         SalesInvoiceHeader.DeleteAll(false);
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -208,7 +208,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         SalesInvoiceHeader.DeleteAll(false);
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -229,7 +229,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterDeleteSalesHeader()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -247,7 +247,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterInsertCreditMemo()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -269,7 +269,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterPostCreditMemo()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -296,7 +296,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure ExpectErrorOnDeleteUsageDataImportIfDocumentIsCreated()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -311,7 +311,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         for i := 1 to 2 do //create usage data for 3 different contracts
-            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
 
         //Process usage data and create customer contract invoices
         UsageDataImport.Reset();
@@ -326,7 +326,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         for i := 1 to 2 do //create usage data for 3 different contracts
-            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+            CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
 
         //Process usage data and create vendor contract invoices
         UsageDataImport.Reset();
@@ -340,7 +340,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestCreateCustomerContractInvoiceFromUsageDataImport()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -353,7 +353,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestCreateVendorContractInvoiceFromUsageDataImport()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -369,7 +369,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         PurchaseInvoiceHeader.DeleteAll(false);
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataImport.CollectVendorContractsAndCreateInvoices(UsageDataImport);
@@ -384,7 +384,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterDeletePurchaseHeader()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataImport.CollectVendorContractsAndCreateInvoices(UsageDataImport);
@@ -404,7 +404,7 @@ codeunit 148153 "Usage Based Billing Test"
         Initialize();
         PurchaseInvoiceHeader.DeleteAll(false);
 
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataImport.CollectVendorContractsAndCreateInvoices(UsageDataImport);
@@ -427,7 +427,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterInsertSalesCreditMemo()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -454,7 +454,7 @@ codeunit 148153 "Usage Based Billing Test"
         Initialize();
         PurchaseInvoiceHeader.DeleteAll(false);
 
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataImport.CollectVendorContractsAndCreateInvoices(UsageDataImport);
@@ -474,7 +474,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestUpdateUsageBasedAfterPostSalesCreditMemo()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -505,7 +505,7 @@ codeunit 148153 "Usage Based Billing Test"
         Initialize();
         PurchaseInvoiceHeader.DeleteAll(false);
 
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
         UsageDataImport.CollectVendorContractsAndCreateInvoices(UsageDataImport);
@@ -531,7 +531,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure ExpectErrorOnDeleteCustomerContractLine()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataBilling.SetRange(Partner, "Service Partner"::Customer);
         UsageDataBilling.FindFirst();
         CustomerContractLine.Get(UsageDataBilling."Contract No.", UsageDataBilling."Contract Line No.");
@@ -578,7 +578,7 @@ codeunit 148153 "Usage Based Billing Test"
         //Set update required
         //Expect no error on create Usage data billing documents
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
 
@@ -604,7 +604,7 @@ codeunit 148153 "Usage Based Billing Test"
         LastUsedNo := NoSeriesLine."Last No. Used";
 
         Currency.InitRoundingPrecision();
-        CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataSupplier."Unit Price from Import" := false;
         UsageDataSupplier.Modify(false);
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
@@ -626,12 +626,12 @@ codeunit 148153 "Usage Based Billing Test"
         BillingDate1 := WorkDate();
         TestBillingDate := CalcDate('<1M>', WorkDate());
         BillingDate2 := CalcDate('<2M>', WorkDate());
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", BillingDate1, CalcDate('<CM>', BillingDate1), BillingDate1, CalcDate('<CM>', BillingDate1), LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", BillingDate1, CalcDate('<CM>', BillingDate1), BillingDate1, CalcDate('<CM>', BillingDate1), LibraryRandom.RandDec(10, 2));
         PostDocument := true;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.CollectCustomerContractsAndCreateInvoices(UsageDataImport);
 
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", BillingDate2, CalcDate('<CM>', BillingDate2), BillingDate2, CalcDate('<CM>', BillingDate2), LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", BillingDate2, CalcDate('<CM>', BillingDate2), BillingDate2, CalcDate('<CM>', BillingDate2), LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.CollectCustomerContractsAndCreateInvoices(UsageDataImport);
@@ -941,7 +941,7 @@ codeunit 148153 "Usage Based Billing Test"
         ContractTestLibrary.InitContractsApp();
 
         // [GIVEN]: Usage data billing for a contract
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10)); // MessageHandler, ExchangeRateSelectionModalPageHandler
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2)); // MessageHandler, ExchangeRateSelectionModalPageHandler
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
 
         // [WHEN]: Creating a billing proposal
@@ -1041,7 +1041,7 @@ codeunit 148153 "Usage Based Billing Test"
 
         // [GIVEN]: Setup Usage based service commitment and assign it to customer; Add Discount of 100% to the service commitment
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandInt(10));
+        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         ServiceCommitment.Validate("Discount Amount", ServiceCommitment."Service Amount");  //Rounding issue; Make sure that the Discount amount is equal to Service Amount
         ServiceCommitment.Modify(true);
 

@@ -96,7 +96,8 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
     [NonDebuggable]
     local procedure GetCompletionResponse(var AOAIChatMessages: Codeunit "AOAI Chat Messages"; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; var GLAccount: Record "G/L Account"; var AzureOpenAI: Codeunit "Azure OpenAi"; var AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params"; var AOAIOperationResponse: Codeunit "AOAI Operation Response")
     begin
-        AOAIChatMessages.AddSystemMessage(BuildBankRecCompletionPrompt(BuildMostAppropriateGLAccountPromptTask(), BuildBankRecStatementLines(BankAccReconciliationLine, TempBankStatementMatchingBuffer), BuildGLAccounts(GLAccount)).Unwrap());
+        AOAIChatMessages.AddSystemMessage(BuildMostAppropriateGLAccountPromptTask().Unwrap());
+        AOAIChatMessages.AddUserMessage(BuildBankRecPromptUserMessage(BuildBankRecStatementLines(BankAccReconciliationLine, TempBankStatementMatchingBuffer), BuildGLAccounts(GLAccount)).Unwrap());
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
     end;
 
@@ -136,9 +137,6 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
     var
         TextToAccMapping: Record "Text-to-Account Mapping";
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
-        RecordMatchMgt: Codeunit "Record Match Mgt.";
-        LastLineNo: Integer;
-        MappingText: Text[140];
     begin
         if TempBankAccRecAIPropBuf."G/L Account No." = '' then
             exit;
@@ -146,7 +144,20 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         if not BankAccReconciliationLine.Get(TempBankAccRecAIPropBuf."Statement Type", TempBankAccRecAIPropBuf."Bank Account No.", TempBankAccRecAIPropBuf."Statement No.", TempBankAccRecAIPropBuf."Statement Line No.") then
             exit;
 
-        MappingText := BankAccReconciliationLine.Description;
+        InsertTextToAccountMapping(BankAccReconciliationLine.Description, TempBankAccRecAIPropBuf."G/L Account No.");
+        Commit();
+
+        PAGE.RunModal(PAGE::"Text-to-Account Mapping", TextToAccMapping);
+    end;
+
+    procedure InsertTextToAccountMapping(TextToInsert: Text[100]; GLAccountNo: Code[20])
+    var
+        TextToAccMapping: Record "Text-to-Account Mapping";
+        RecordMatchMgt: Codeunit "Record Match Mgt.";
+        LastLineNo: Integer;
+        MappingText: Text[100];
+    begin
+        MappingText := TextToInsert;
         if RecordMatchMgt.Trim(MappingText) <> '' then begin
             TextToAccMapping.SetFilter("Mapping Text", '%1', '@' + RecordMatchMgt.Trim(MappingText));
             if not TextToAccMapping.FindFirst() then begin
@@ -159,17 +170,14 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
                 TextToAccMapping.Validate("Mapping Text", MappingText);
 
                 TextToAccMapping."Bal. Source Type" := TextToAccMapping."Bal. Source Type"::"G/L Account";
-                TextToAccMapping."Debit Acc. No." := TempBankAccRecAIPropBuf."G/L Account No.";
-                TextToAccMapping."Credit Acc. No." := TempBankAccRecAIPropBuf."G/L Account No.";
+                TextToAccMapping."Debit Acc. No." := GLAccountNo;
+                TextToAccMapping."Credit Acc. No." := GLAccountNo;
 
                 if TextToAccMapping."Mapping Text" <> '' then
                     TextToAccMapping.Insert();
             end;
             TextToAccMapping.Reset();
-            Commit();
         end;
-
-        PAGE.RunModal(PAGE::"Text-to-Account Mapping", TextToAccMapping);
     end;
 
     procedure BuildMostAppropriateGLAccountPromptTask(): SecretText
@@ -318,6 +326,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
                 TempBankAccRecAIProposal.Difference := BankAccReconciliationLine.Difference;
                 TempBankAccRecAIProposal."G/L Account No." := '';
                 TempBankAccRecAIProposal."AI Proposal" := ChooseGLAccountLbl;
+                TempBankAccRecAIProposal."Dimension Set ID" := 0;
                 TempBankAccRecAIProposal."Bank Account Ledger Entry No." := 0;
                 TempBankAccRecAIProposal.Insert();
             end;
@@ -364,7 +373,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
                         GenJnlLine.Validate(Amount, -TempBankAccRecAIProposal.Difference);
                         GLAccount.Get(TempBankAccRecAIProposal."G/L Account No.");
                         GenJnlLine.Validate("Account Type", GenJnlLine."Account Type"::"G/L Account");
-                        GenJnlLine."Account No." := TempBankAccRecAIProposal."G/L Account No.";
+                        GenJnlLine.Validate("Account No.", TempBankAccRecAIProposal."G/L Account No.");
                         GenJnlLine.Description := TempBankAccRecAIProposal.Description;
                         GenJnlLine."Keep Description" := true;
                         GenJnlLine."Source Code" := SourceCodeSetup."Trans. Bank Rec. to Gen. Jnl.";
@@ -374,6 +383,8 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
                             GenJnlLine.Validate("Shortcut Dimension 1 Code", GLAccount."Global Dimension 1 Code");
                         if Dimension.Get(GLAccount."Global Dimension 2 Code") then
                             GenJnlLine.Validate("Shortcut Dimension 2 Code", GLAccount."Global Dimension 2 Code");
+                        if TempBankAccRecAIProposal."Dimension Set ID" <> 0 then
+                            GenJnlLine.Validate("Dimension Set ID", TempBankAccRecAIProposal."Dimension Set ID");
                         GenJnlLine.Insert(true);
                     end else
                         FoundInvalidPostingDates := true;
@@ -386,9 +397,6 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
             GenJnlLine.SetRange("Source No.", BankAccReconciliationLine."Statement No.");
             GenJnlLine.SetRange("Bal. Account Type", GenJnlLine."Account Type"::"Bank Account");
             GenJnlLine.Validate("Bal. Account No.", BankAccReconciliationLine."Bank Account No.");
-
-            if not GenJnlLine.FindSet() then
-                exit(StatementLines.Count());
 
             Commit();
             BindSubscription(BankAccRecTransToAcc);
@@ -484,6 +492,19 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         CompletionPrompt := SecretStrSubstNo(ConcatSubstrTok, TaskPrompt, StatementLine);
         CompletionPrompt := SecretStrSubstNo(ConcatSubstrTok, CompletionPrompt, GLAccounts);
         exit(CompletionPrompt);
+    end;
+
+    procedure BuildBankRecPromptUserMessage(StatementLine: Text; GLAccounts: Text): SecretText
+    var
+        UserMessagePrompt: SecretText;
+        EmptyText: SecretText;
+        ConcatSubstrTok: Label '%1%2', Locked = true;
+    begin
+        GLAccounts += '"""\n';
+        StatementLine += '"""\n';
+        UserMessagePrompt := SecretStrSubstNo(ConcatSubstrTok, EmptyText, StatementLine);
+        UserMessagePrompt := SecretStrSubstNo(ConcatSubstrTok, UserMessagePrompt, GLAccounts);
+        exit(UserMessagePrompt);
     end;
 
     procedure FoundInputWithReservedWords(): Boolean

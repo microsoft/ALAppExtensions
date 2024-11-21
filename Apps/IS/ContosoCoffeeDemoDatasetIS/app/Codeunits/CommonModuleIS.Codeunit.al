@@ -15,7 +15,7 @@ codeunit 14605 "Common Module IS"
             if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
                 LocalStandardVATPercentage := 24;
                 ContosoPostingSetup.SetOverwriteData(true);
-                ContosoPostingSetup.InsertVATPostingSetup(CommonPostingGroup.Domestic(), CommonPostingGroup.StandardVAT(), CommonGLAccount.SalesVATStandard(), CommonGLAccount.PurchaseVATStandard(), CommonPostingGroup.StandardVAT(), LocalStandardVATPercentage, Enum::"Tax Calculation Type"::"Normal VAT");
+                ContosoPostingSetup.InsertVATPostingSetup(CommonPostingGroup.Domestic(), CommonPostingGroup.StandardVAT(), CommonGLAccount.SalesVATStandard(), CommonGLAccount.PurchaseVATStandard(), CommonPostingGroup.StandardVAT(), LocalStandardVATPercentage, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
                 ContosoPostingSetup.SetOverwriteData(false);
             end;
     end;

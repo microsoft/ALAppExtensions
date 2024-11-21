@@ -2,8 +2,8 @@ namespace Microsoft.SubscriptionBilling;
 
 report 8003 "Create Customer Contracts"
 {
-    UsageCategory = Administration;
     ApplicationArea = All;
+    UsageCategory = None;
     ProcessingOnly = true;
     Caption = 'Create Customer Contracts';
 

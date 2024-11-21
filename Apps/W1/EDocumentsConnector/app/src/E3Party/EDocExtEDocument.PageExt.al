@@ -57,7 +57,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
     begin
         EDocumentHelper.GetEdocumentService(Rec, EdocumentService);
         ApprovalActionVisible :=
-            (EDocumentService."Service Integration" = EDocumentService."Service Integration"::Pagero) and (Rec.Direction = Rec.Direction::Incoming);
+            (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Pagero) and (Rec.Direction = Rec.Direction::Incoming);
     end;
 
     var

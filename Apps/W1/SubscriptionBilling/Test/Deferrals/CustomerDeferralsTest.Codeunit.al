@@ -80,7 +80,7 @@ codeunit 139912 "Customer Deferrals Test"
         ServiceObject.Validate("End-User Customer No.", Customer."No.");
         ServiceObject.Modify(false);
 
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
         ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
         for i := 1 to ServiceCommimentCount do begin
             ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);

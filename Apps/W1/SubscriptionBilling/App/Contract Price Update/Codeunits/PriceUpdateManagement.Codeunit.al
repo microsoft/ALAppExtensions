@@ -6,17 +6,18 @@ codeunit 8009 "Price Update Management"
 
     var
         LastGroupByValue: Code[20];
+        LastGroupEntryNo: Integer;
 
     internal procedure InitTempTable(var TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary; GroupBy: Enum "Contract Billing Grouping")
     var
         ContractPriceUpdateLine: Record "Contract Price Update Line";
         TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
-        NextEntryNo: Integer;
     begin
         TempContractPriceUpdateLine2.CopyFilters(TempContractPriceUpdateLine);
         ContractPriceUpdateLine.CopyFilters(TempContractPriceUpdateLine);
         TempContractPriceUpdateLine.Reset();
         TempContractPriceUpdateLine.DeleteAll(false);
+        LastGroupEntryNo := 0;
 
         SetKeysForGrouping(ContractPriceUpdateLine, TempContractPriceUpdateLine, GroupBy);
 
@@ -24,8 +25,6 @@ codeunit 8009 "Price Update Management"
             repeat
                 CreateGroupingLine(TempContractPriceUpdateLine, ContractPriceUpdateLine, GroupBy);
                 TempContractPriceUpdateLine := ContractPriceUpdateLine;
-                NextEntryNo -= 1;
-                TempContractPriceUpdateLine."Entry No." := NextEntryNo;
                 TempContractPriceUpdateLine.Indent := 1;
                 TempContractPriceUpdateLine.Insert(false);
             until ContractPriceUpdateLine.Next() = 0;
@@ -55,7 +54,8 @@ codeunit 8009 "Price Update Management"
     begin
         if GroupingLineShouldBeInserted(ContractPriceUpdateLine, GroupBy) then begin
             TempContractPriceUpdateLine.Init();
-            TempContractPriceUpdateLine."Entry No." := ContractPriceUpdateLine."Entry No.";
+            TempContractPriceUpdateLine."Entry No." := LastGroupEntryNo - 1;
+            LastGroupEntryNo := TempContractPriceUpdateLine."Entry No.";
             TempContractPriceUpdateLine.Partner := ContractPriceUpdateLine.Partner;
             TempContractPriceUpdateLine."Partner No." := ContractPriceUpdateLine."Partner No.";
             TempContractPriceUpdateLine."Partner Name" := ContractPriceUpdateLine."Partner Name";
@@ -135,7 +135,7 @@ codeunit 8009 "Price Update Management"
         ServiceCommitment.SetRange("Usage Based Billing", false);
         OnAfterFilterServiceCommitmentOnAfterGetAndApplyFiltersOnServiceCommitment(ServiceCommitment);
 
-        ServiceCommitment.MarkOpenServiceCommitments();
+        ServiceCommitment.SetRange(Closed, false);
     end;
 
     local procedure ApplyContractFilterOnMarkedServiceCommitments(var ServiceCommitment: Record "Service Commitment"; ServicePartner: Enum "Service Partner"; ContractFilterText: Text): Boolean

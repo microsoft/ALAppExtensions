@@ -239,23 +239,23 @@ codeunit 148081 "Applying G/L Entries CZA"
     end;
 
     [ModalPageHandler]
-    procedure ModalApplyGLEntriesHandler(var ApplyGLEntriesCZA: TestPage "Apply G/L Entries CZA")
+    procedure ModalApplyGLEntriesHandler(var ApplyGenLedgerEntriesCZA: TestPage "Apply Gen. Ledger Entries CZA")
     var
         FieldVariant: Variant;
     begin
         LibraryVariableStorage.Dequeue(FieldVariant);
-        ApplyGLEntriesCZA.Filter.SetFilter("Document No.", FieldVariant);
-        ApplyGLEntriesCZA.First();
+        ApplyGenLedgerEntriesCZA.Filter.SetFilter("Document No.", FieldVariant);
+        ApplyGenLedgerEntriesCZA.First();
         LibraryVariableStorage.Dequeue(FieldVariant);
         if FieldVariant.IsCode then begin
-            ApplyGLEntriesCZA."Set Applies-to ID".Invoke();
-            ApplyGLEntriesCZA."Applies-to ID".AssertEquals(FieldVariant);
+            ApplyGenLedgerEntriesCZA."Set Applies-to ID".Invoke();
+            ApplyGenLedgerEntriesCZA."Applies-to ID".AssertEquals(FieldVariant);
         end;
         if FieldVariant.IsDecimal then begin
-            ApplyGLEntriesCZA."Amount to Apply".SetValue(FieldVariant);
-            ApplyGLEntriesCZA."Post Application".Invoke();
+            ApplyGenLedgerEntriesCZA."Amount to Apply".SetValue(FieldVariant);
+            ApplyGenLedgerEntriesCZA."Post Application".Invoke();
         end;
-        ApplyGLEntriesCZA.OK().Invoke();
+        ApplyGenLedgerEntriesCZA.OK().Invoke();
     end;
 
     [ModalPageHandler]

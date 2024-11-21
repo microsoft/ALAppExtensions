@@ -51,13 +51,12 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
     local procedure ApplyGLEntryCZA(var GenJournalLine: Record "Gen. Journal Line"; AccNo: Code[20]; AccBalance: Boolean)
     var
         GLEntry: Record "G/L Entry";
-        ApplyGLEntriesCZA: Page "Apply G/L Entries CZA";
+        ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
+        PreviousAppliesToID: Code[50];
         EntrySelected: Boolean;
         MustSpecifyErr: Label 'You must specify %1 or %2.', Comment = '%1 = FieldCaption Document No., %2 = FieldCaption Applies-to ID';
     begin
-        GLEntry.SetCurrentKey("G/L Account No.", "Closed CZA");
         GLEntry.SetRange("G/L Account No.", AccNo);
-        GLEntry.SetRange("Closed CZA", false);
         if GenJournalLine.Amount > 0 then
             if AccBalance then
                 GLEntry.SetFilter(Amount, '>0')
@@ -68,6 +67,7 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
                 GLEntry.SetFilter(Amount, '<0')
             else
                 GLEntry.SetFilter(Amount, '>0');
+        PreviousAppliesToID := GenJournalLine."Applies-to ID";
         if GenJournalLine."Applies-to ID" = '' then
             GenJournalLine."Applies-to ID" := GenJournalLine."Document No.";
         if GenJournalLine."Applies-to ID" = '' then
@@ -75,13 +75,23 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
               MustSpecifyErr,
               GenJournalLine.FieldCaption("Document No."), GenJournalLine.FieldCaption("Applies-to ID"));
 
-        ApplyGLEntriesCZA.SetTableView(GLEntry);
-        ApplyGLEntriesCZA.SetGenJnlLine(GenJournalLine, GenJournalLine.FieldNo("Applies-to ID"));
-        ApplyGLEntriesCZA.LookupMode(true);
-        EntrySelected := ApplyGLEntriesCZA.RunModal() = ACTION::LookupOK;
-        Clear(ApplyGLEntriesCZA);
-        if not EntrySelected then
+        if GLEntry.IsEmpty() then
             exit;
+
+        GLEntry.SetAutoCalcFields("Applied Amount CZA");
+        GLEntry.SetLoadFields("Applies-to ID CZA", "Posting Date", "Document Type", "Document No.", "G/L Account No.", Description, Amount, "Amount to Apply CZA", "Applying Entry CZA", "Applied Amount CZA",
+            "Gen. Bus. Posting Group", "Gen. Prod. Posting Group", "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+
+        ApplyGenLedgerEntriesCZA.InsertEntry(GLEntry);
+        ApplyGenLedgerEntriesCZA.SetGenJournalLine(GenJournalLine);
+        ApplyGenLedgerEntriesCZA.LookupMode(true);
+        EntrySelected := ApplyGenLedgerEntriesCZA.RunModal() = Action::LookupOK;
+        Clear(ApplyGenLedgerEntriesCZA);
+        if not EntrySelected then begin
+            GenJournalLine."Applies-to ID" := PreviousAppliesToID;
+            exit;
+        end;
+
         GLEntry.Reset();
         GLEntry.SetCurrentKey("G/L Account No.", "Applies-to ID CZA");
         GLEntry.SetRange("G/L Account No.", AccNo);
