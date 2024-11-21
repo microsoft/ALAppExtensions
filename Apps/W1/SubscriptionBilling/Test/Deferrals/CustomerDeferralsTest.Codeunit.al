@@ -32,6 +32,7 @@ codeunit 139912 "Customer Deferrals Test"
         SalesHeader: Record "Sales Header";
         SalesCrMemoHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
         CustomerContractDeferral: Record "Customer Contract Deferral";
         SalesInvoiceDeferral: Record "Customer Contract Deferral";
         SalesCrMemoDeferral: Record "Customer Contract Deferral";
@@ -55,6 +56,13 @@ codeunit 139912 "Customer Deferrals Test"
 
     local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean)
     begin
+        CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1);
+    end;
+
+    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommimentCount: Integer)
+    var
+        i: Integer;
+    begin
         ClearAll();
         GLSetup.Get();
         if IsCustomerContractLCY then
@@ -72,10 +80,12 @@ codeunit 139912 "Customer Deferrals Test"
         ServiceObject.Validate("End-User Customer No.", Customer."No.");
         ServiceObject.Modify(false);
 
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price");
-
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Customer, Item."No.");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
+        ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
+        for i := 1 to ServiceCommimentCount do begin
+            ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);
+            ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Customer, Item."No.");
+        end;
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
         ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
@@ -124,7 +134,7 @@ codeunit 139912 "Customer Deferrals Test"
     begin
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
     end;
 
     [Test]
@@ -134,10 +144,43 @@ codeunit 139912 "Customer Deferrals Test"
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostSalesDocumentAndGetSalesInvoice();
-
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
         FetchCustomerContractDeferrals(CorrectedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure DeferralsAreCorrectAfterPostingPartialSalesCreditMemo()
+    begin
+        // [SCENARIO] Making sure that Credit Memo Deferrals are created only for existing Credit Memo Lines
+        // [SCENARIO] Posted Invoice contains two lines connected for a contract.
+        // [SCENARIO] Credit Memo is created for Posted Invoice and one of the lines in a credit memo is deleted.
+        // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
+
+        // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
+        CreateCustomerContractWithDeferrals('<2M-CM>', true, 2);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
+        PostSalesDocumentAndGetSalesInvoice();
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.SetFilter("Contract Line No.", '<>0');
+        SalesInvoiceLine.FindLast();
+        SalesLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        SalesLine.FindLast();
+        SalesLine.Delete();
+        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+
+        // [THEN] Matching Deferral entries have been created for the first invoice line but not for the second invoice line
+        FetchCustomerContractDeferrals(CorrectedDocumentNo);
+        SalesInvoiceLine.FindFirst();
+        CustomerContractDeferral.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+        AssertThat.RecordIsNotEmpty(CustomerContractDeferral);
+        SalesInvoiceLine.FindLast();
+        CustomerContractDeferral.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+        AssertThat.RecordIsEmpty(CustomerContractDeferral);
     end;
 
     [Test]
@@ -162,8 +205,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostSalesDocumentAndGetSalesInvoice();
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
 
         SalesCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
         SalesInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
@@ -178,7 +220,7 @@ codeunit 139912 "Customer Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestSalesCrMemoDeferrals()
+    procedure TestSalesCrMemoDeferralsDocumentsAndDate()
     begin
         SetPostingAllowTo(WorkDate());
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
@@ -221,7 +263,7 @@ codeunit 139912 "Customer Deferrals Test"
         GLEntry: Record "G/L Entry";
         ContractDeferralsRelease: Report "Contract Deferrals Release";
     begin
-        // [SCENARIO] Making sure that Deferrals are properly realease and contain Contract No. on GLEntries
+        // [SCENARIO] Making sure that Deferrals are properly realeased and contain Contract No. on GLEntries
 
         // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
         SetPostingAllowTo(0D);
@@ -229,7 +271,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the contract invoice
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
 
         // [THEN] Releasing each defferal entry should be correct
         repeat
@@ -253,13 +295,12 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         //Release only first Customer Contract Deferral
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
         ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
 
         SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
 
         CustomerContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
         CustomerContractDeferral.SetRange(Released, true);
@@ -274,7 +315,7 @@ codeunit 139912 "Customer Deferrals Test"
     procedure ExpectErrorIfDeferralsExistOnAfterPostSalesDocumentWODeferrals()
     begin
         CreateSalesDocumentsFromCustomerContractWODeferrals();
-        asserterror PostSalesHeaderAndFetchCustContractDeferrals();
+        asserterror PostSalesDocumentAndFetchDeferrals();
     end;
 
     [Test]
@@ -284,7 +325,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateCustomerContractWithDeferrals('<-CY>', true);
         CreateBillingProposalAndCreateBillingDocuments('<-CY>', '<CY>');
 
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         repeat
             TestCustomerContractDeferralsFields();
             CustomerContractDeferral.TestField(Amount, -10);
@@ -363,7 +404,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<-CY>', '<CY>');
 
         DeferralBaseAmount := GetDeferralBaseAmount();
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         repeat
             TestCustomerContractDeferralsFields();
             CustomerContractDeferral.TestField(Amount, Round(CurrExchRate.ExchangeAmtFCYToLCY(
@@ -470,7 +511,7 @@ codeunit 139912 "Customer Deferrals Test"
         GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
 
         //Release only first Customer Contract Deferral
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
         GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Contr. Deferral Account");
 
@@ -480,8 +521,7 @@ codeunit 139912 "Customer Deferrals Test"
         AssertThat.AreEqual(GLAmountAfterInvoicing - CustomerContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
 
         SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
 
         GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
         AssertThat.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
@@ -505,7 +545,7 @@ codeunit 139912 "Customer Deferrals Test"
         SetPostingAllowTo(0D);
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
 
         PostingDate := CustomerContractDeferral."Posting Date"; //Used in request page handler
         ContractDeferralsRelease.Run(); // ContractDeferralsReleaseRequestPageHandler
@@ -546,7 +586,7 @@ codeunit 139912 "Customer Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectThatDeferralsForSalesCreditMemoAreCreateOnce()
+    procedure ExpectThatDeferralsForSalesCreditMemoAreCreatedOnce()
     var
         CopyDocumentMgt: Codeunit "Copy Document Mgt.";
     begin
@@ -554,8 +594,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostSalesDocumentAndGetSalesInvoice();
 
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
         FetchCustomerContractDeferrals(CorrectedDocumentNo);
 
         SalesCrMemoHeader.Init();
@@ -686,16 +725,31 @@ codeunit 139912 "Customer Deferrals Test"
         CustomerContractDeferral.FindFirst();
     end;
 
-    local procedure PostSalesHeaderAndFetchCustContractDeferrals()
-    begin
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        FetchCustomerContractDeferrals(PostedDocumentNo);
-    end;
-
     local procedure PostSalesDocumentAndGetSalesInvoice()
     begin
         PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
         SalesInvoiceHeader.Get(PostedDocumentNo);
+    end;
+
+    local procedure PostSalesCreditMemoAndFetchDeferrals()
+    begin
+        SalesInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
+        SalesInvoiceDeferral.FindFirst();
+        PostSalesCreditMemo();
+        SalesCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
+        SalesCrMemoDeferral.FindFirst();
+    end;
+
+    local procedure PostSalesCreditMemo()
+    begin
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
+        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+    end;
+
+    local procedure PostSalesDocumentAndFetchDeferrals()
+    begin
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        FetchCustomerContractDeferrals(PostedDocumentNo);
     end;
 
     local procedure SetSalesDocumentAndCustomerContractDeferrals(BillingDateFormula: Text; BillingToDateFormula: Text; CalculateInLCY: Boolean; NumberOfPeriods: Integer; var CustomerDeferalCount: Integer)
@@ -704,20 +758,9 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments(BillingDateFormula, BillingToDateFormula);
 
         DeferralBaseAmount := GetDeferralBaseAmount();
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         CustomerDeferalCount := CustomerContractDeferral.Count;
         GetCalculatedMonthAmountsForDeferrals(DeferralBaseAmount, NumberOfPeriods, CalcDate(BillingDateFormula, WorkDate()), CalcDate(BillingToDateFormula, WorkDate()), CalculateInLCY);
-    end;
-
-    local procedure PostSalesCreditMemoAndFetchDeferrals()
-    begin
-        SalesInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
-        SalesInvoiceDeferral.FindFirst();
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
-
-        SalesCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
-        SalesCrMemoDeferral.FindFirst();
     end;
 
     local procedure GetGLEntryAmountFromAccountNo(var GlEntryAmount: Decimal; GLAccountNo: Code[20])
@@ -778,7 +821,7 @@ codeunit 139912 "Customer Deferrals Test"
         GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
 
         //Release only first Customer Contract Deferral
-        PostSalesHeaderAndFetchCustContractDeferrals();
+        PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
         GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Contr. Deferral Account");
         GetGLEntryAmountFromAccountNo(GLLineDiscountAmountAfterInvoicing, GeneralPostingSetup."Sales Line Disc. Account");
@@ -790,8 +833,7 @@ codeunit 139912 "Customer Deferrals Test"
         AssertThat.AreEqual(GLAmountAfterInvoicing - CustomerContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
 
         SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
-        CorrectedDocumentNo := LibrarySales.PostSalesDocument(SalesCrMemoHeader, true, true);
+        PostSalesCreditMemo();
 
         GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
         AssertThat.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');

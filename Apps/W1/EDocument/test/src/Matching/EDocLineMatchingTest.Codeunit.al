@@ -15,14 +15,14 @@ codeunit 139659 "E-Doc. Line Matching Test"
         LibraryPermission: Codeunit "Library - Lower Permissions";
         IsInitialized: Boolean;
 
-    procedure Initialize()
+    procedure Initialize(Integration: Enum "Service Integration")
     begin
         LibraryPermission.SetOutsideO365Scope();
         if IsInitialized then
             exit;
 
         LibraryEdoc.SetupStandardVAT();
-        LibraryEdoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::Mock, Enum::"E-Document Integration"::Mock);
+        LibraryEdoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
 
         IsInitialized := true;
     end;
@@ -43,7 +43,7 @@ codeunit 139659 "E-Doc. Line Matching Test"
         // [SCENARIO] Match single imported line of type Item to single PO line of type Item
 
         // Setup E-Document with link to purchase order
-        Initialize();
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] We create e-document and PO line with Qty 5
         CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
@@ -104,7 +104,7 @@ codeunit 139659 "E-Doc. Line Matching Test"
         // [SCENARIO] Match two imported lines of type Item to single PO line of type Item
 
         // Setup E-Document with link to purchase order
-        Initialize();
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] We create e-document and PO line with Qty 5
         CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
@@ -154,7 +154,7 @@ codeunit 139659 "E-Doc. Line Matching Test"
         // [SCENARIO] Match two imported lines of type Item to single PO line of type Item
 
         // Setup E-Document with link to purchase order
-        Initialize();
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] We create e-document and PO line with Qty 5
         CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
@@ -250,5 +250,74 @@ codeunit 139659 "E-Doc. Line Matching Test"
         EDocImportedLine.Insert();
     end;
 
+#pragma warning disable AS0018
+#if not CLEAN26
+
+    [Test]
+    internal procedure MatchOneImportLineToOnePOLineSuccess26()
+    var
+        EDocument: Record "E-Document";
+        EDocImportedLine: Record "E-Doc. Imported Line";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EDocLineMatching: Codeunit "E-Doc. Line Matching";
+        EDocLog: Codeunit "E-Document Log";
+        EDocProcessing: Codeunit "E-Document Processing";
+        EDocOrderLineMatchingPage: TestPage "E-Doc. Order Line Matching";
+    begin
+        // [FEATURE] [E-Document] [Matching] 
+        // [SCENARIO] Match single imported line of type Item to single PO line of type Item
+
+        // Setup E-Document with link to purchase order
+        Initialize(Enum::"Service Integration"::Mock);
+
+        EDocImportedLine.DeleteAll();
+
+        // [GIVEN] We create e-document and PO line with Qty 5
+        CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
+        CreateEDocumentWithPOReference(EDocument, PurchaseHeader);
+
+        // Receive
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
+        LibraryPurchase.ReopenPurchaseDocument(PurchaseHeader);
+        EDocument.FindLast();
+        EDocLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Order Linked");
+        EDocProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Order Linked");
+
+        // [GIVEN] We imported a item with quantity 5
+        CreateImportedLine(EDocument, 10000, 5, Enum::"Purchase Line Type"::Item);
+        Assert.RecordCount(EDocImportedLine, 1);
+        Assert.RecordCount(PurchaseLine, 1);
+
+        // [WHEN] Open Matching page and select first entry
+        Commit();
+        LibraryPermission.SetTeamMember();
+
+        EDocOrderLineMatchingPage.Trap();
+        EDocLineMatching.RunMatching(EDocument);
+
+        EDocOrderLineMatchingPage.ImportedLines.First();
+        EDocOrderLineMatchingPage.OrderLines.First();
+
+        // [THEN] we have qty 5 and matched 0 
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines.Quantity.Value(), '');
+        Assert.AreEqual('0', EDocOrderLineMatchingPage.ImportedLines."Matched Quantity".Value(), '');
+        // [THEN] we have qty 5 and qty to invoice 0
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.OrderLines."Available Quantity".Value(), '');
+        Assert.AreEqual('0', EDocOrderLineMatchingPage.OrderLines."Qty. to Invoice".Value(), '');
+
+        // [GIVEN] We click "Match Manually" action
+        EDocOrderLineMatchingPage.MatchManual_Promoted.Invoke();
+
+        // [THEN] we have qty 5 and matched 5 
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines.Quantity.Value(), '');
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines."Matched Quantity".Value(), '');
+        // [THEN] we have qty 5 and qty to invoice 5 
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.OrderLines."Available Quantity".Value(), '');
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.OrderLines."Qty. to Invoice".Value(), '');
+    end;
+
+#endif
+#pragma warning restore AS0018
 
 }

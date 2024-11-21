@@ -4,10 +4,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Pricing;
 using Microsoft.Finance.Currency;
-#if not CLEAN25
 using Microsoft.Finance.SalesTax;
-using Microsoft.Finance.VAT.Calculation;
-#endif
 table 8068 "Sales Service Commitment"
 {
     DataClassification = CustomerContent;
@@ -371,7 +368,7 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Service Commitment cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Service Commitment.';
     begin
         TestIfSalesOrderIsReleased();
-        if Rec.IsLastContractRenewalLineToBeDeleted() then
+        if Rec.IsOnlyRemainingLineForContractRenewalInDocument() then
             Error(SalesServiceCommitmentCannotBeDeletedErr);
     end;
 
@@ -416,6 +413,7 @@ table 8068 "Sales Service Commitment"
 
         MaxServiceAmount := Round((Price * SalesLine.Quantity), Currency."Amount Rounding Precision");
         if CalledByFieldNo = FieldNo("Service Amount") then begin
+            "Service Amount" := Round("Service Amount", Currency."Amount Rounding Precision");
             if "Service Amount" > MaxServiceAmount then
                 Error(ServiceAmountIncreaseErr, FieldCaption("Service Amount"), Format(MaxServiceAmount));
             "Discount Amount" := Round(MaxServiceAmount - "Service Amount", Currency."Amount Rounding Precision");
@@ -543,8 +541,7 @@ table 8068 "Sales Service Commitment"
         OutSalesHeader := SalesHeader;
     end;
 
-#if not CLEAN25
-    internal procedure CalcVATAmountLines(var SalesHeader: Record "Sales Header"; var VATAmountLine: Record "VAT Amount Line"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text])
+    internal procedure CalcVATAmountLines(var SalesHeader: Record "Sales Header"; var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary; var UniqueRhythmDictionary: Dictionary of [Code[20], Text])
     var
         SalesServiceCommitment: Record "Sales Service Commitment";
         SalesTaxCalculate: Codeunit "Sales Tax Calculate";
@@ -559,7 +556,7 @@ table 8068 "Sales Service Commitment"
         else
             Currency.Get(SalesHeader."Currency Code");
 
-        VATAmountLine.DeleteAll(false);
+        TempSalesServiceCommitmentBuff.DeleteAll(false);
 
         SalesServiceCommitment.SetRange("Document Type", SalesHeader."Document Type");
         SalesServiceCommitment.SetRange("Document No.", SalesHeader."No.");
@@ -567,70 +564,69 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitment.SetRange("Invoicing via", SalesServiceCommitment."Invoicing via"::Contract);
         if SalesServiceCommitment.Find('-') then
             repeat
-                CreateVATAmountLineForSalesServiceCommitment(SalesServiceCommitment, VATAmountLine, UniqueRhythmDictionary, BasePeriodCount, RhythmPeriodCount);
+                CreateTempSalesServiceCommitmentBuffForSalesServiceCommitment(SalesServiceCommitment, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary, BasePeriodCount, RhythmPeriodCount);
             until SalesServiceCommitment.Next() = 0;
 
-        if VATAmountLine.Find('-') then
+        if TempSalesServiceCommitmentBuff.Find('-') then
             repeat
-                case VATAmountLine."VAT Calculation Type" of
-                    VATAmountLine."VAT Calculation Type"::"Normal VAT",
-                    VATAmountLine."VAT Calculation Type"::"Reverse Charge VAT":
+                case TempSalesServiceCommitmentBuff."VAT Calculation Type" of
+                    TempSalesServiceCommitmentBuff."VAT Calculation Type"::"Normal VAT",
+                    TempSalesServiceCommitmentBuff."VAT Calculation Type"::"Reverse Charge VAT":
                         if SalesHeader."Prices Including VAT" then begin
-                            VATAmountLine."VAT Base" :=
-                                Round(VATAmountLine."Line Amount" / (1 + VATAmountLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                            VATAmountLine."VAT Amount" :=
+                            TempSalesServiceCommitmentBuff."VAT Base" :=
+                                Round(TempSalesServiceCommitmentBuff."Line Amount" / (1 + TempSalesServiceCommitmentBuff."VAT %" / 100), Currency."Amount Rounding Precision");
+                            TempSalesServiceCommitmentBuff."VAT Amount" :=
                                 Round(
-                                    VATAmountLine."Line Amount" - VATAmountLine."VAT Base",
+                                    TempSalesServiceCommitmentBuff."Line Amount" - TempSalesServiceCommitmentBuff."VAT Base",
                                     Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-                            VATAmountLine."Amount Including VAT" := VATAmountLine."VAT Base" + VATAmountLine."VAT Amount";
+                            TempSalesServiceCommitmentBuff."Amount Including VAT" := TempSalesServiceCommitmentBuff."VAT Base" + TempSalesServiceCommitmentBuff."VAT Amount";
                         end else begin
-                            VATAmountLine."VAT Base" := VATAmountLine."Line Amount";
-                            VATAmountLine."VAT Amount" :=
+                            TempSalesServiceCommitmentBuff."VAT Base" := TempSalesServiceCommitmentBuff."Line Amount";
+                            TempSalesServiceCommitmentBuff."VAT Amount" :=
                                 Round(
-                                    VATAmountLine."VAT Base" * VATAmountLine."VAT %" / 100,
+                                    TempSalesServiceCommitmentBuff."VAT Base" * TempSalesServiceCommitmentBuff."VAT %" / 100,
                                     Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-                            VATAmountLine."Amount Including VAT" := VATAmountLine."Line Amount" + VATAmountLine."VAT Amount";
+                            TempSalesServiceCommitmentBuff."Amount Including VAT" := TempSalesServiceCommitmentBuff."Line Amount" + TempSalesServiceCommitmentBuff."VAT Amount";
                         end;
-                    VATAmountLine."VAT Calculation Type"::"Full VAT":
+                    TempSalesServiceCommitmentBuff."VAT Calculation Type"::"Full VAT":
                         begin
-                            VATAmountLine."VAT Base" := 0;
-                            VATAmountLine."VAT Amount" := VATAmountLine."Line Amount";
-                            VATAmountLine."Amount Including VAT" := VATAmountLine."VAT Amount";
+                            TempSalesServiceCommitmentBuff."VAT Base" := 0;
+                            TempSalesServiceCommitmentBuff."VAT Amount" := TempSalesServiceCommitmentBuff."Line Amount";
+                            TempSalesServiceCommitmentBuff."Amount Including VAT" := TempSalesServiceCommitmentBuff."VAT Amount";
                         end;
-                    VATAmountLine."VAT Calculation Type"::"Sales Tax":
+                    TempSalesServiceCommitmentBuff."VAT Calculation Type"::"Sales Tax":
                         begin
                             if SalesHeader."Prices Including VAT" then begin
-                                VATAmountLine."Amount Including VAT" := VATAmountLine."Line Amount";
-                                VATAmountLine."VAT Base" :=
+                                TempSalesServiceCommitmentBuff."Amount Including VAT" := TempSalesServiceCommitmentBuff."Line Amount";
+                                TempSalesServiceCommitmentBuff."VAT Base" :=
                                     Round(
                                         SalesTaxCalculate.ReverseCalculateTax(
-                                            SalesHeader."Tax Area Code", VATAmountLine."Tax Group Code", SalesHeader."Tax Liable",
-                                            SalesHeader."Posting Date", VATAmountLine."Amount Including VAT", VATAmountLine.Quantity, SalesHeader."Currency Factor"),
+                                            SalesHeader."Tax Area Code", TempSalesServiceCommitmentBuff."Tax Group Code", SalesHeader."Tax Liable",
+                                            SalesHeader."Posting Date", TempSalesServiceCommitmentBuff."Amount Including VAT", TempSalesServiceCommitmentBuff.Quantity, SalesHeader."Currency Factor"),
                                     Currency."Amount Rounding Precision");
-                                VATAmountLine."VAT Amount" := VATAmountLine."Amount Including VAT" - VATAmountLine."VAT Base";
+                                TempSalesServiceCommitmentBuff."VAT Amount" := TempSalesServiceCommitmentBuff."Amount Including VAT" - TempSalesServiceCommitmentBuff."VAT Base";
                             end else begin
-                                VATAmountLine."VAT Base" := VATAmountLine."Line Amount";
-                                VATAmountLine."VAT Amount" :=
+                                TempSalesServiceCommitmentBuff."VAT Base" := TempSalesServiceCommitmentBuff."Line Amount";
+                                TempSalesServiceCommitmentBuff."VAT Amount" :=
                                     SalesTaxCalculate.CalculateTax(
-                                        SalesHeader."Tax Area Code", VATAmountLine."Tax Group Code", SalesHeader."Tax Liable",
-                                        SalesHeader."Posting Date", VATAmountLine."VAT Base", VATAmountLine.Quantity, SalesHeader."Currency Factor");
-                                VATAmountLine."VAT Amount" :=
-                                    Round(VATAmountLine."VAT Amount", Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-                                VATAmountLine."Amount Including VAT" := VATAmountLine."VAT Base" + VATAmountLine."VAT Amount";
+                                        SalesHeader."Tax Area Code", TempSalesServiceCommitmentBuff."Tax Group Code", SalesHeader."Tax Liable",
+                                        SalesHeader."Posting Date", TempSalesServiceCommitmentBuff."VAT Base", TempSalesServiceCommitmentBuff.Quantity, SalesHeader."Currency Factor");
+                                TempSalesServiceCommitmentBuff."VAT Amount" :=
+                                    Round(TempSalesServiceCommitmentBuff."VAT Amount", Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
+                                TempSalesServiceCommitmentBuff."Amount Including VAT" := TempSalesServiceCommitmentBuff."VAT Base" + TempSalesServiceCommitmentBuff."VAT Amount";
                             end;
-                            if VATAmountLine."VAT Base" = 0 then
-                                VATAmountLine."VAT %" := 0
+                            if TempSalesServiceCommitmentBuff."VAT Base" = 0 then
+                                TempSalesServiceCommitmentBuff."VAT %" := 0
                             else
-                                VATAmountLine."VAT %" := Round(100 * VATAmountLine."VAT Amount" / VATAmountLine."VAT Base", 0.00001);
+                                TempSalesServiceCommitmentBuff."VAT %" := Round(100 * TempSalesServiceCommitmentBuff."VAT Amount" / TempSalesServiceCommitmentBuff."VAT Base", 0.00001);
                         end;
                 end;
-                VATAmountLine.Modify(false);
-            until VATAmountLine.Next() = 0;
+                TempSalesServiceCommitmentBuff.Modify(false);
+            until TempSalesServiceCommitmentBuff.Next() = 0;
     end;
-#endif
-#if not CLEAN25
-    local procedure CreateVATAmountLineForSalesServiceCommitment(SalesServiceCommitment: Record "Sales Service Commitment";
-                                                                 var VATAmountLine: Record "VAT Amount Line";
+
+    local procedure CreateTempSalesServiceCommitmentBuffForSalesServiceCommitment(SalesServiceCommitment: Record "Sales Service Commitment";
+                                                                 var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
                                                                  var UniqueRhythmDictionary: Dictionary of [Code[20], Text];
                                                                  var BasePeriodCount: Integer;
                                                                  var RhythmPeriodCount: Integer)
@@ -683,35 +679,37 @@ table 8068 "Sales Service Commitment"
                 VatPercent := 0
             else
                 VatPercent := SalesLineVAT."VAT %";
-            if not VATAmountLine.Get(
-                RhythmIdentifier,
-                SalesLineVAT."VAT Calculation Type",
-                Format(VatPercent),
-                false,
-                SalesServiceCommitment."Service Amount" >= 0)
-            then begin
-                VATAmountLine.Init();
-                VATAmountLine."VAT Identifier" := RhythmIdentifier;
-                VATAmountLine."VAT Calculation Type" := SalesLineVAT."VAT Calculation Type";
-                VATAmountLine."Tax Group Code" := Format(VatPercent);
-                VATAmountLine."VAT %" := VatPercent;
-                VATAmountLine.Modified := true;
-                VATAmountLine.Positive := SalesServiceCommitment."Service Amount" >= 0;
-                VATAmountLine.Insert(false);
+            TempSalesServiceCommitmentBuff.Reset();
+            TempSalesServiceCommitmentBuff.SetRange("Rhythm Identifier", RhythmIdentifier);
+            TempSalesServiceCommitmentBuff.SetRange("VAT Calculation Type", SalesLineVAT."VAT Calculation Type");
+            TempSalesServiceCommitmentBuff.SetRange("VAT %", VatPercent);
+            TempSalesServiceCommitmentBuff.SetRange("Tax Group Code", SalesLineVAT."Tax Group Code");
+            if TempSalesServiceCommitmentBuff.IsEmpty() then begin
+                TempSalesServiceCommitmentBuff."Entry No." := TempSalesServiceCommitmentBuff.GetNextEntryNo();
+                TempSalesServiceCommitmentBuff.Init();
+                TempSalesServiceCommitmentBuff."Rhythm Identifier" := RhythmIdentifier;
+                TempSalesServiceCommitmentBuff."VAT Calculation Type" := SalesLineVAT."VAT Calculation Type";
+                TempSalesServiceCommitmentBuff."Tax Group Code" := SalesLineVAT."Tax Group Code";
+                TempSalesServiceCommitmentBuff."VAT %" := VatPercent;
+                TempSalesServiceCommitmentBuff.Insert(false);
             end;
-            VATAmountLine.Quantity += SalesLineVAT."Quantity (Base)";
+            TempSalesServiceCommitmentBuff.Reset();
+            TempSalesServiceCommitmentBuff.Quantity += SalesLineVAT."Quantity (Base)";
             if SalesLineVAT.IsContractRenewal() then
-                VATAmountLine."Line Amount" += SalesServiceCommitment."Service Amount" * ContractRenewalPriceCalculationRatio
+                TempSalesServiceCommitmentBuff."Line Amount" += SalesServiceCommitment."Service Amount" * ContractRenewalPriceCalculationRatio
             else
-                VATAmountLine."Line Amount" += SalesServiceCommitment."Service Amount" / BasePeriodCount * RhythmPeriodCount;
-            VATAmountLine.Modify(false);
+                TempSalesServiceCommitmentBuff."Line Amount" += SalesServiceCommitment."Service Amount" / BasePeriodCount * RhythmPeriodCount;
+            TempSalesServiceCommitmentBuff.Modify(false);
         end;
     end;
-#endif
-    internal procedure IsLastContractRenewalLineToBeDeleted(): Boolean
+
+    internal procedure IsOnlyRemainingLineForContractRenewalInDocument(): Boolean
     var
         SalesServiceCommitment: Record "Sales Service Commitment";
     begin
+        if Process <> Process::"Contract Renewal" then
+            exit(false);
+
         SalesServiceCommitment.SetRange("Document Type", Rec."Document Type");
         SalesServiceCommitment.SetRange("Document No.", Rec."Document No.");
         SalesServiceCommitment.SetRange(Process, Process::"Contract Renewal");

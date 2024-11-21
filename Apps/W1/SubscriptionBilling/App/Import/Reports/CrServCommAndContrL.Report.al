@@ -2,8 +2,8 @@ namespace Microsoft.SubscriptionBilling;
 
 report 8002 "Cr. Serv. Comm. And Contr. L."
 {
-    UsageCategory = Administration;
     ApplicationArea = All;
+    UsageCategory = None;
     ProcessingOnly = true;
     Caption = 'Create Service Commitments and Contract Lines';
 

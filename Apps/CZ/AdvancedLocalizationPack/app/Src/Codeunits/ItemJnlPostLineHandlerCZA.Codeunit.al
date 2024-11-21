@@ -23,16 +23,10 @@ codeunit 31305 "Item Jnl-Post Line Handler CZA"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostItemOnBeforeSetAverageTransfer', '', false, false)]
     local procedure CheckInventoryPostingGroupOnPostItemOnBeforeSetAverageTransfer(var ItemJnlLine: Record "Item Journal Line"; CalledFromAdjustment: Boolean)
-    var
-        Item: Record Item;
     begin
-        if ItemJnlLine."Item No." = '' then
+        if CalledFromAdjustment then
             exit;
-
-        Item.Get(ItemJnlLine."Item No.");
-        if not (ItemJnlLine."Inventory Posting Group" = '') and (Item.Type = Item.Type::Inventory) then
-            if not CalledFromAdjustment and (Item.Type = Item.Type::Inventory) then
-                ItemJnlLine.TestField("Inventory Posting Group", Item."Inventory Posting Group");
+        ItemJnlLine.CheckInventoryPostingGroupCZA();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostFlushedConsumpOnAfterCopyProdOrderFieldsToItemJnlLine', '', false, false)]

@@ -6,6 +6,7 @@ table 4762 "Whse. Demo Account"
     ObsoleteReason = 'This table will be replaced by "Contoso GL Account".';
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
+    ReplicateData = false;
 
     fields
     {

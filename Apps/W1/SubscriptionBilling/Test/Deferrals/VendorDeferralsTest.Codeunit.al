@@ -34,6 +34,7 @@ codeunit 139913 "Vendor Deferrals Test"
         PurchaseHeader: Record "Purchase Header";
         PurchaseCrMemoHeader: Record "Purchase Header";
         PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        PurchInvLine: Record "Purch. Inv. Line";
         VendorContractDeferral: Record "Vendor Contract Deferral";
         PurchaseInvoiceDeferral: Record "Vendor Contract Deferral";
         PurchaseCrMemoDeferral: Record "Vendor Contract Deferral";
@@ -57,8 +58,14 @@ codeunit 139913 "Vendor Deferrals Test"
         TotalNumberOfMonths: Integer;
 
     local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean)
+    begin
+        CreateVendorContractWithDeferrals(BillingDateFormula, IsVendorContractLCY, 1);
+    end;
+
+    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean; ServiceCommimentCount: Integer)
     var
         ContractsTestSubscriber: Codeunit "Contracts Test Subscriber";
+        i: Integer;
     begin
         ClearAll();
         GLSetup.Get();
@@ -74,10 +81,12 @@ codeunit 139913 "Vendor Deferrals Test"
         ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
         UnbindSubscription(ContractsTestSubscriber);
 
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price");
-
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, Item."No.");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
+        ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
+        for i := 1 to ServiceCommimentCount do begin
+            ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);
+            ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, Item."No.");
+        end;
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
         ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
@@ -144,6 +153,43 @@ codeunit 139913 "Vendor Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure DeferralsAreCorrectAfterPostingPartialPurchCreditMemo()
+    begin
+        // [SCENARIO] Making sure that Credit Memo Deferrals are created only for existing Credit Memo Lines
+        // [SCENARIO] Posted Invoice contains two lines connected for a contract.
+        // [SCENARIO] Credit Memo is created for Posted Invoice and one of the lines in a credit memo is deleted.
+        // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
+
+        // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
+        CreateVendorContractWithDeferrals('<2M-CM>', true, 2);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
+        PostPurchDocumentAndGetPurchInvoice();
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
+        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        PurchaseCrMemoHeader.Modify(false);
+        PurchInvLine.SetRange("Document No.", PurchaseInvoiceHeader."No.");
+        PurchInvLine.SetFilter("Contract Line No.", '<>0');
+        PurchInvLine.FindLast();
+        PurchaseLine.SetRange("Document No.", PurchaseCrMemoHeader."No.");
+        PurchaseLine.SetRange(Type, PurchaseLine.Type::Item);
+        PurchaseLine.FindLast();
+        PurchaseLine.Delete();
+        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+
+        // [THEN] Matching Deferral entries have been created for the first invoice line but not for the second invoice line
+        FetchVendorContractDeferrals(CorrectedDocumentNo);
+        PurchInvLine.FindFirst();
+        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
+        AssertThat.RecordIsNotEmpty(VendorContractDeferral);
+        PurchInvLine.FindLast();
+        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
+        AssertThat.RecordIsEmpty(VendorContractDeferral);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
     procedure ExpectEqualBillingMonthsNumberAndVendContractDeferrals()
     begin
         CreateVendorContractWithDeferrals('<2M-CM>', true);
@@ -179,7 +225,7 @@ codeunit 139913 "Vendor Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestPurchaseCrMemoDeferrals()
+    procedure TestPurchaseCrMemoDeferralsDocumentsAndDate()
     begin
         SetPostingAllowTo(WorkDate());
         CreateVendorContractWithDeferrals('<2M-CM>', true);
@@ -544,19 +590,14 @@ codeunit 139913 "Vendor Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectThatDeferralsForPurchaseCreditMemoAreCreateOnce()
+    procedure ExpectThatDeferralsForPurchaseCreditMemoAreCreatedOnce()
     var
         CopyDocumentMgt: Codeunit "Copy Document Mgt.";
     begin
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostPurchDocumentAndGetPurchInvoice();
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
-        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-        PurchaseCrMemoHeader."Applies-to Doc. Type" := PurchaseCrMemoHeader."Applies-to Doc. Type"::" ";
-        PurchaseCrMemoHeader."Applies-to Doc. No." := '';
-        PurchaseCrMemoHeader.Modify(false);
-        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+        PostPurchCreditMemo();
         FetchVendorContractDeferrals(CorrectedDocumentNo);
 
         PurchaseCrMemoHeader.Init();
@@ -742,17 +783,17 @@ codeunit 139913 "Vendor Deferrals Test"
         exit(PurchaseLine.Amount);
     end;
 
-    local procedure PostPurchDocumentAndGetPurchInvoice()
-    begin
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-    end;
-
     local procedure FetchVendorContractDeferrals(DocumentNo: Code[20])
     begin
         VendorContractDeferral.Reset();
         VendorContractDeferral.SetRange("Document No.", DocumentNo);
         VendorContractDeferral.FindFirst();
+    end;
+
+    local procedure PostPurchDocumentAndGetPurchInvoice()
+    begin
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
     end;
 
     local procedure PostPurchCreditMemoAndFetchDeferrals()

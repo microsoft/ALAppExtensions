@@ -417,13 +417,14 @@ codeunit 8026 "Process Usage Data Billing"
     begin
     end;
 
+
     [InternalEvent(false, false)]
-    local procedure OnUpdateServiceCommitment(var ServiceCommitment: Record "Service Commitment"; UsageDataImportEntryNo: Integer; ServiceObjectQuantity: Decimal; ServiceCommitmentDuration: Decimal; ChargePeriodDuration: Decimal; CurrencyCode: Code[10])
+    local procedure OnAfterProcessServiceCommitment(var ServiceCommitment: Record "Service Commitment")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnAfterProcessServiceCommitment(var ServiceCommitment: Record "Service Commitment")
+    local procedure OnUpdateServiceCommitment(var ServiceCommitment: Record "Service Commitment"; UsageDataImportEntryNo: Integer; ServiceObjectQuantity: Decimal; ServiceCommitmentDuration: Decimal; ChargePeriodDuration: Decimal; CurrencyCode: Code[10])
     begin
     end;
 

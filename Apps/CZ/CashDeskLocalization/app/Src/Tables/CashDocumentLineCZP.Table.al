@@ -1022,21 +1022,6 @@ table 11733 "Cash Document Line CZP"
             DataClassification = CustomerContent;
             TableRelation = "Allocation Account";
         }
-#if not CLEANSCHEMA22
-        field(31001; "Advance Letter Link Code"; Code[30])
-        {
-            Caption = 'Advance Letter Link Code';
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-
-            trigger OnValidate()
-            begin
-                UpdateEETTransaction();
-            end;
-        }
-#endif
     }
 
     keys

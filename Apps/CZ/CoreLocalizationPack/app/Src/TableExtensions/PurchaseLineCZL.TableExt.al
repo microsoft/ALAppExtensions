@@ -16,6 +16,7 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
             Caption = 'Negative';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(11773; "Ext. Amount CZL"; Decimal)
         {
             AutoFormatExpression = "Currency Code";
@@ -46,6 +47,8 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
 #endif
             ObsoleteReason = 'The field is not used anymore.';
         }
+#endif
+#if not CLEANSCHEMA25
         field(31064; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -54,6 +57,7 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#endif
         field(31065; "Tariff No. CZL"; Code[20])
         {
             Caption = 'Tariff No.';
@@ -72,6 +76,7 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
                 end;
             end;
         }
+#if not CLEANSCHEMA25
         field(31066; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
@@ -89,5 +94,6 @@ tableextension 11754 "Purchase Line CZL" extends "Purchase Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
     }
 }

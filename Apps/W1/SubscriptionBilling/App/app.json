@@ -20,6 +20,11 @@
       "publisher": "Microsoft"
     },
     {
+      "id": "b6bdb244-0e09-4313-b975-24e6343d00df",
+      "name": "Subscription & Recurring Billing Plus",
+      "publisher": "Singhammer IT Consulting AG"
+    },
+    {
       "id": "d4ccd4d9-ea68-4efe-802a-423348ec8d5a",
       "name": "DYCE Essentials",
       "publisher": "Singhammer IT Consulting AG"
@@ -52,6 +57,11 @@
     {
       "id": "6be55868-7c39-4363-8df2-b709d0805e73",
       "name": "DYCE Happy Texts",
+      "publisher": "Singhammer IT Consulting AG"
+    },
+    {
+      "id": "018ff6a2-4cf8-4945-b60f-2b40878ef5c4",
+      "name": "Subscription & Recurring Billing Plus Test",
       "publisher": "Singhammer IT Consulting AG"
     },
     {

@@ -59,7 +59,7 @@ page 8005 "Contract Renewal"
                 }
                 field("Agreed Serv. Comm. Start Date"; Rec."Agreed Serv. Comm. Start Date")
                 {
-                    ToolTip = 'Indicates the individually agreed start of the service.';
+                    ToolTip = 'Specifies the individually agreed start of the service.';
                 }
                 field(Price; Rec.Price)
                 {

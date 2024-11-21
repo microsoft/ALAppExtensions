@@ -62,8 +62,7 @@ table 8001 "Contract Renewal Line"
         {
             Caption = 'Contract Line No.';
             Editable = false;
-            TableRelation =
-                if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
+            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
             if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(15; "Error Message"; Text[500])

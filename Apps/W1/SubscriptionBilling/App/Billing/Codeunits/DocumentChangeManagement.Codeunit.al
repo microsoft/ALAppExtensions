@@ -105,62 +105,6 @@ codeunit 8074 "Document Change Management"
         PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Code", false, false)]
-    local procedure PreventChangeSalesHdrShiptoCode(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Name", false, false)]
-    local procedure PreventChangeSalesHdrShiptoName(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Name 2", false, false)]
-    local procedure PreventChangeSalesHdrShiptoName2(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Address", false, false)]
-    local procedure PreventChangeSalesHdrShiptoAddress(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Address 2", false, false)]
-    local procedure PreventChangeSalesHdrShiptoAddress2(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to City", false, false)]
-    local procedure PreventChangeSalesHdrShiptoCity(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Contact", false, false)]
-    local procedure PreventChangeSalesHdrShiptoContact(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Shortcut Dimension 1 Code", false, false)]
     local procedure PreventChangeSalesHdrShortcutDimension1Code(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
     begin
@@ -313,30 +257,6 @@ codeunit 8074 "Document Change Management"
         PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Post Code", false, false)]
-    local procedure PreventChangeSalesHdrShiptoPostCode(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to County", false, false)]
-    local procedure PreventChangeSalesHdrShiptoCounty(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "Ship-to Country/Region Code", false, false)]
-    local procedure PreventChangeSalesHdrShiptoCountryRegionCode(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeValidateEvent, "VAT Bus. Posting Group", false, false)]
     local procedure PreventChangeSalesHdrVATBusPostingGroup(var Rec: Record "Sales Header"; CurrFieldNo: Integer)
     begin
@@ -462,13 +382,6 @@ codeunit 8074 "Document Change Management"
             (Rec."Bill-to County" <> xSalesHeader."Bill-to County") or
             (Rec."Bill-to Post Code" <> xSalesHeader."Bill-to Post Code") or
             (Rec."Sell-to Post Code" <> xSalesHeader."Sell-to Post Code") or
-            (Rec."Ship-to Address" <> xSalesHeader."Ship-to Address") or
-            (Rec."Ship-to Address 2" <> xSalesHeader."Ship-to Address 2") or
-            (Rec."Ship-to City" <> xSalesHeader."Ship-to City") or
-            (Rec."Ship-to Contact" <> xSalesHeader."Ship-to Contact") or
-            (Rec."Ship-to Country/Region Code" <> xSalesHeader."Ship-to Country/Region Code") or
-            (Rec."Ship-to County" <> xSalesHeader."Ship-to County") or
-            (Rec."Ship-to Post Code" <> xSalesHeader."Ship-to Post Code") or
             (Rec."Currency Code" <> xSalesHeader."Currency Code") or
             (Rec."Prices Including VAT" <> xSalesHeader."Prices Including VAT") or
             (Rec."VAT Bus. Posting Group" <> xSalesHeader."VAT Bus. Posting Group") or
@@ -596,15 +509,13 @@ codeunit 8074 "Document Change Management"
     begin
         if Rec.IsTemporary() then
             exit;
-
-        if not Rec.IsLineAttachedToBillingLine() then
-            exit;
         if not RunTrigger then
             exit;
 
         xSalesLine.Get(Rec."Document Type", Rec."Document No.", Rec."Line No.");
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(xSalesLine."Document Type"), xSalesLine."Document No.", xSalesLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
 
         if ((Rec."Shortcut Dimension 1 Code" <> xSalesLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xSalesLine."Shortcut Dimension 2 Code") or
@@ -617,7 +528,6 @@ codeunit 8074 "Document Change Management"
             (Rec."Unit of Measure Code" <> xSalesLine."Unit of Measure Code") or
             (Rec."Unit Price" <> xSalesLine."Unit Price") or
             (Rec.Amount <> xSalesLine.Amount) or
-            (Rec."Amount Including VAT" <> xSalesLine."Amount Including VAT") or
             (Rec."Line Discount %" <> xSalesLine."Line Discount %") or
             (Rec."Line Discount Amount" <> xSalesLine."Line Discount Amount") or
             (Rec."Line Amount" <> xSalesLine."Line Amount") or
@@ -645,14 +555,6 @@ codeunit 8074 "Document Change Management"
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnBeforeValidateEvent, Amount, false, false)]
     local procedure PreventChangeSalesLineAmount(var Rec: Record "Sales Line"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnBeforeValidateEvent, "Amount Including VAT", false, false)]
-    local procedure PreventChangeSalesLineAmountIncludingVAT(var Rec: Record "Sales Line"; CurrFieldNo: Integer)
     begin
         if Rec.IsTemporary() then
             exit;
@@ -803,62 +705,6 @@ codeunit 8074 "Document Change Management"
         PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Code", false, false)]
-    local procedure PreventChangePurchHdrShiptoCode(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Name", false, false)]
-    local procedure PreventChangePurchHdrShiptoName(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Name 2", false, false)]
-    local procedure PreventChangePurchHdrShiptoName2(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Address", false, false)]
-    local procedure PreventChangePurchHdrShiptoAddress(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Address 2", false, false)]
-    local procedure PreventChangePurchHdrShiptoAddress2(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to City", false, false)]
-    local procedure PreventChangePurchHdrShiptoCity(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Contact", false, false)]
-    local procedure PreventChangePurchHdrShiptoContact(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Shortcut Dimension 1 Code", false, false)]
     local procedure PreventChangePurchHdrShortcutDimension1Code(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
     begin
@@ -1003,30 +849,6 @@ codeunit 8074 "Document Change Management"
         PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Post Code", false, false)]
-    local procedure PreventChangePurchHdrShiptoPostCode(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to County", false, false)]
-    local procedure PreventChangePurchHdrShiptoCounty(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Ship-to Country/Region Code", false, false)]
-    local procedure PreventChangePurchHdrShiptoCountryRegionCode(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "VAT Bus. Posting Group", false, false)]
     local procedure PreventChangePurchHdrVATBusPostingGroup(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
     begin
@@ -1138,13 +960,6 @@ codeunit 8074 "Document Change Management"
             (Rec."Pay-to County" <> xPurchaseHeader."Pay-to County") or
             (Rec."Pay-to Post Code" <> xPurchaseHeader."Pay-to Post Code") or
             (Rec."Buy-from Post Code" <> xPurchaseHeader."Buy-from Post Code") or
-            (Rec."Ship-to Address" <> xPurchaseHeader."Ship-to Address") or
-            (Rec."Ship-to Address 2" <> xPurchaseHeader."Ship-to Address 2") or
-            (Rec."Ship-to City" <> xPurchaseHeader."Ship-to City") or
-            (Rec."Ship-to Contact" <> xPurchaseHeader."Ship-to Contact") or
-            (Rec."Ship-to Country/Region Code" <> xPurchaseHeader."Ship-to Country/Region Code") or
-            (Rec."Ship-to County" <> xPurchaseHeader."Ship-to County") or
-            (Rec."Ship-to Post Code" <> xPurchaseHeader."Ship-to Post Code") or
             (Rec."Currency Code" <> xPurchaseHeader."Currency Code") or
             (Rec."Prices Including VAT" <> xPurchaseHeader."Prices Including VAT") or
             (Rec."VAT Bus. Posting Group" <> xPurchaseHeader."VAT Bus. Posting Group") or
@@ -1170,14 +985,6 @@ codeunit 8074 "Document Change Management"
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnBeforeValidateEvent, Amount, false, false)]
     local procedure PreventChangePurchaseLineAmount(var Rec: Record "Purchase Line"; CurrFieldNo: Integer)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-        PreventChangeOnDocumentHeaderOrLine(Rec, CurrFieldNo);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnBeforeValidateEvent, "Amount Including VAT", false, false)]
-    local procedure PreventChangePurchaseLineAmountIncludingVAT(var Rec: Record "Purchase Line"; CurrFieldNo: Integer)
     begin
         if Rec.IsTemporary() then
             exit;
@@ -1272,14 +1079,13 @@ codeunit 8074 "Document Change Management"
     begin
         if Rec.IsTemporary() then
             exit;
-        if (not Rec.IsLineAttachedToBillingLine()) then
-            exit;
         if not RunTrigger then
             exit;
 
         xPurchaseLine.Get(Rec."Document Type", Rec."Document No.", Rec."Line No.");
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(xPurchaseLine."Document Type"), xPurchaseLine."Document No.", xPurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
 
         if ((Rec."Shortcut Dimension 1 Code" <> xPurchaseLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xPurchaseLine."Shortcut Dimension 2 Code") or
@@ -1292,7 +1098,6 @@ codeunit 8074 "Document Change Management"
             (Rec."Unit of Measure Code" <> xPurchaseLine."Unit of Measure Code") or
             (Rec."Unit Cost" <> xPurchaseLine."Unit Cost") or
             (Rec.Amount <> xPurchaseLine.Amount) or
-            (Rec."Amount Including VAT" <> xPurchaseLine."Amount Including VAT") or
             (Rec."Line Discount %" <> xPurchaseLine."Line Discount %") or
             (Rec."Line Discount Amount" <> xPurchaseLine."Line Discount Amount") or
             (Rec."Recurring Billing to" <> xPurchaseLine."Recurring Billing to") or
@@ -1302,6 +1107,7 @@ codeunit 8074 "Document Change Management"
 
     procedure PreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer)
     var
+        BillingLine: Record "Billing Line";
         ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
         RRef: RecordRef;
         FRef: FieldRef;
@@ -1309,7 +1115,8 @@ codeunit 8074 "Document Change Management"
         xFRef: FieldRef;
         xRRef: RecordRef;
         ContractNo: Code[20];
-        DocumentType: Text;
+        DocumentTypeText: Text;
+        DocumentTypeInteger: Integer;
         DocumentNo: Code[20];
         LineNo: Integer;
     begin
@@ -1322,7 +1129,9 @@ codeunit 8074 "Document Change Management"
 
         xRRef.GetTable(RecVariant);
         xRRef.SetRecFilter();
-        xRRef.FindFirst();
+        if not xRRef.FindFirst() then
+            exit;
+
         FRef := RRef.Field(CurrFieldNo);
         xFRef := xRRef.Field(CurrFieldNo);
 
@@ -1331,27 +1140,30 @@ codeunit 8074 "Document Change Management"
                 begin
                     if CurrFieldNo in [29, 30, 480] then begin
                         FRef2 := RRef.Field(1);
-                        DocumentType := FRef2.Value;
+                        DocumentTypeText := FRef2.Value;
                         FRef2 := RRef.Field(3);
                         DocumentNo := FRef2.Value;
-                        Error(HeaderDimCannotBeChangedErr, DocumentType, DocumentNo);
+                        Error(HeaderDimCannotBeChangedErr, DocumentTypeText, DocumentNo);
                     end;
                     if FRef.Value <> xFRef.Value then
                         Error(HeaderCannotBeChangedErr);
                 end;
             Database::"Purchase Line", Database::"Sales Line":
                 begin
-                    FRef2 := RRef.Field(8051);
-                    ContractNo := FRef2.Value;
                     FRef2 := RRef.Field(1);
-                    DocumentType := FRef2.Value;
+                    DocumentTypeText := FRef2.Value;
+                    DocumentTypeInteger := FRef2.Value;
                     FRef2 := RRef.Field(3);
                     DocumentNo := FRef2.Value;
                     FRef2 := RRef.Field(4);
                     LineNo := FRef2.Value;
+                    BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType("Sales Document Type".FromInteger(DocumentTypeInteger)), DocumentNo, LineNo);
+                    if not BillingLine.FindFirst() then
+                        exit;
+                    ContractNo := BillingLine."Contract No.";
 
                     if CurrFieldNo in [29, 30, 480] then
-                        Error(LineDimCannotBeChangedErr, ContractNo, DocumentType, DocumentNo, LineNo);
+                        Error(LineDimCannotBeChangedErr, ContractNo, DocumentTypeText, DocumentNo, LineNo);
                     if FRef.Value <> xFRef.Value then
                         Error(LineCannotBeChangedErr, ContractNo);
                 end;
@@ -1369,7 +1181,7 @@ codeunit 8074 "Document Change Management"
         case RRef.Number of
             Database::"Purchase Header", Database::"Sales Header":
                 begin
-                    FRef := RRef.Field(8051);   //Recurring Billing in Header Tables //Contract No. in Line tables
+                    FRef := RRef.Field(8051);   //Recurring Billing in Header Tables
                     RecurringBilling := FRef.Value;
                 end;
             Database::"Purchase Line":

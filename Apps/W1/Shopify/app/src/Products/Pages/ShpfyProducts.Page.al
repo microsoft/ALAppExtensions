@@ -330,6 +330,7 @@ page 30126 "Shpfy Products"
                 var
                     Metafields: Page "Shpfy Metafields";
                 begin
+                    Rec.TestField(Id);
                     Metafields.RunForResource(Database::"Shpfy Product", Rec.Id, Rec."Shop Code");
                 end;
             }

@@ -31,11 +31,13 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShopifyOrderHeader: Record "Shpfy Order Header";
                 ShipmentLine: Record "Sales Shipment Line";
                 Shop: Record "Shpfy Shop";
+                SkippedRecord: Codeunit "Shpfy Skipped Record";
             begin
                 ShipmentLine.SetRange("Document No.", "No.");
                 ShipmentLine.SetRange(Type, ShipmentLine.Type::"Item");
                 ShipmentLine.SetFilter(Quantity, '>0');
                 if ShipmentLine.IsEmpty() then begin
+                    SkippedRecord.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicableLbl, Shop);
                     "Shpfy Fulfillment Id" := -2;
                     Modify();
                 end else
@@ -43,7 +45,8 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                         Shop.Get(ShopifyOrderHeader."Shop Code");
                         FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, "Sales Shipment Header"."Shpfy Order Id");
                         ExportShipments.CreateShopifyFulfillment("Sales Shipment Header");
-                    end;
+                    end else
+                        SkippedRecord.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, StrSubstNo(ShopifyOrderNotExistsLbl, "Sales Shipment Header"."Shpfy Order Id"), Shop);
             end;
         }
     }
@@ -51,4 +54,6 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
     var
         ExportShipments: Codeunit "Shpfy Export Shipments";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+        NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
+        ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
 }

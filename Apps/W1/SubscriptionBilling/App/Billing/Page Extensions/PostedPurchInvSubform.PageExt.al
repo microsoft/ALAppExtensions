@@ -6,7 +6,7 @@ pageextension 8073 "Posted Purch Inv. Subform" extends "Posted Purch. Invoice Su
 {
     actions
     {
-        addlast(Processing)
+        addlast("&Line")
         {
             action(ShowArchivedBillingLines)
             {

@@ -152,8 +152,8 @@ codeunit 5125 "Contoso Service"
 
         ServiceContractAccountGroup.Validate(Code, GroupCode);
         ServiceContractAccountGroup.Validate(Description, Description);
-        ServiceContractAccountGroup.Validate("Non-Prepaid Contract Acc.", NonPrepaidAccount);
-        ServiceContractAccountGroup.Validate("Prepaid Contract Acc.", PrepaidAccount);
+        ServiceContractAccountGroup."Non-Prepaid Contract Acc." := NonPrepaidAccount;
+        ServiceContractAccountGroup."Prepaid Contract Acc." := PrepaidAccount;
 
         if Exists then
             ServiceContractAccountGroup.Modify(true)

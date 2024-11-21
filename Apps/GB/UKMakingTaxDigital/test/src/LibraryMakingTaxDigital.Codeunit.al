@@ -213,7 +213,6 @@ codeunit 148080 "Library - Making Tax Digital"
     begin
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('UKHMRC-MTDVAT-Sandbox-ClientID', ClientToken);
-        LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('UKHMRC-MTDVAT-Sandbox-ClientID');
         LibraryAzureKVMockMgmt.UseAzureKeyvaultSecretProvider();
     end;
 
