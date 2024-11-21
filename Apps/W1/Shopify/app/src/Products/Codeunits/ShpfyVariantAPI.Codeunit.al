@@ -351,10 +351,10 @@ codeunit 30189 "Shpfy Variant API"
     /// <param name="xShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     internal procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
     begin
-        UpdateProductVariant(ShopifyVariant, xShopifyVariant, false, false);
+        UpdateProductVariant(ShopifyVariant, xShopifyVariant, false);
     end;
 
-    internal procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; UpdateDefaultVariant: Boolean; ProductMultipleVariants: Boolean)
+    internal procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; UpdateDefaultVariant: Boolean)
     var
         HasChange: Boolean;
         TitleChanged: Boolean;

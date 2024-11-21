@@ -115,7 +115,7 @@ codeunit 30176 "Shpfy Product API"
             NewShopifyVariant.Insert();
         end;
 
-        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true, ShopifyProduct."Has Variants");
+        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true);
 
         while ShopifyVariant.Next() > 0 do begin
             ShopifyVariant."Product Id" := NewShopifyProduct.Id;

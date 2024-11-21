@@ -7,11 +7,9 @@ pageextension 5240 "Company Creation Wizard Ext" extends "Company Creation Wizar
             part("Contoso Modules Part"; "Contoso Modules Part")
             {
                 ApplicationArea = All;
-                Caption = 'Available Modules';
             }
         }
     }
-
 
     actions
     {

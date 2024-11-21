@@ -25,7 +25,7 @@ codeunit 6186 ReceiveContext
     /// <summary>
     /// Sets the temporary blob with the E-Document content.
     /// </summary>
-    procedure SetTempBlob(var TempBlob: Codeunit "Temp Blob")
+    procedure SetTempBlob(TempBlob: Codeunit "Temp Blob")
     begin
         this.TempBlob := TempBlob;
     end;

@@ -168,24 +168,24 @@ codeunit 6134 "E-Doc. Integration Management"
     var
         EDocument: Record "E-Document";
         DocumentMetadata: Codeunit "Temp Blob";
-        Documents: Codeunit "Temp Blob List";
+        DocumentsMetadata: Codeunit "Temp Blob List";
         IDocumentReceiver: Interface IDocumentReceiver;
         Index: Integer;
     begin
         IDocumentReceiver := EDocumentService."Service Integration V2";
-        RunReceiveDocuments(EDocumentService, Documents, IDocumentReceiver, ReceiveContext);
+        RunReceiveDocuments(EDocumentService, DocumentsMetadata, IDocumentReceiver, ReceiveContext);
 
-        if Documents.IsEmpty() then
+        if DocumentsMetadata.IsEmpty() then
             exit;
 
-        for Index := 1 to Documents.Count() do begin
+        for Index := 1 to DocumentsMetadata.Count() do begin
 
             EDocument."Entry No" := 0;
             EDocument."Index In Batch" := Index;
             EDocument.Direction := EDocument.Direction::Incoming;
             EDocument.Insert();
 
-            Documents.Get(Index, DocumentMetadata);
+            DocumentsMetadata.Get(Index, DocumentMetadata);
             if ReceiveSingleDocument(EDocument, EDocumentService, DocumentMetadata, IDocumentReceiver) then begin
                 // Insert shared data for all imported documents                
                 EDocumentLog.InsertLog(EDocument, EDocumentService, DocumentMetadata, Enum::"E-Document Service Status"::"Batch Imported");
@@ -195,7 +195,7 @@ codeunit 6134 "E-Doc. Integration Management"
         end;
     end;
 
-    local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; IDocumentReceiver: Interface IDocumentReceiver): Boolean
+    local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; IDocumentReceiver: Interface IDocumentReceiver): Boolean
     var
         ReceiveContext, FetchContextImpl : Codeunit ReceiveContext;
         ErrorCount: Integer;
@@ -203,7 +203,7 @@ codeunit 6134 "E-Doc. Integration Management"
     begin
         ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::Imported);
         ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
-        RunDownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, IDocumentReceiver, ReceiveContext);
+        RunDownloadDocument(EDocument, EDocumentService, DocumentMetadata, IDocumentReceiver, ReceiveContext);
         Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
 
         if not Success then
