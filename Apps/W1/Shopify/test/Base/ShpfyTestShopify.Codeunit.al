@@ -46,7 +46,7 @@ codeunit 139563 "Shpfy Test Shopify"
     local procedure SetupKeyVaultExpiryDate(ApiVersion: Text)
     var
         AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";
-    // MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
+        MockAzureKeyvaultSecretProvider: DotNet MockAzureKeyVaultSecretProvider;
     begin
         MockAzureKeyvaultSecretProvider := MockAzureKeyvaultSecretProvider.MockAzureKeyVaultSecretProvider();
         MockAzureKeyvaultSecretProvider.AddSecretMapping('ShopifyApiVersionExpiryDate', '{"' + ApiVersion + '": "' + Format(CurrentDateTime().Date().Year, 0, 9) + '-' + Format(CurrentDateTime().Date().Month, 0, 9) + '-' + Format(CurrentDateTime().Date().Day, 0, 9) + '"}');
