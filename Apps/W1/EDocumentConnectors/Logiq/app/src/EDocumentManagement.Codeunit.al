@@ -4,7 +4,7 @@ using Microsoft.eServices.EDocument;
 using System.Utilities;
 using System.Xml;
 
-codeunit 6382 "Logiq E-Document Management"
+codeunit 6382 "E-Document Management"
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m;
@@ -12,8 +12,8 @@ codeunit 6382 "Logiq E-Document Management"
 #pragma warning disable AA0150
     internal procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        LogiqConnectionUserSetup: Record "Logiq Connection User Setup";
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqConnectionUserSetup: Record "Connection User Setup";
+        LogiqAuth: Codeunit Auth;
         Client: HttpClient;
         Headers: HttpHeaders;
         Content: HttpContent;
@@ -21,40 +21,38 @@ codeunit 6382 "Logiq E-Document Management"
         BodyText: Text;
         FileNameText: Text;
         Boundary: Text;
-        FileNameTok: Label '%1.xml', Locked = true;
-        ContentTypeTok: Label 'multipart/form-data; boundary="%1"', Locked = true;
     begin
         HttpRequest.Method('POST');
 
         LogiqAuth.CheckUserSetup(LogiqConnectionUserSetup);
         LogiqAuth.CheckUpdateTokens();
 
-        HttpRequest.SetRequestUri(BuildRequestUri(LogiqConnectionUserSetup."Document Transfer Endpoint"));
+        HttpRequest.SetRequestUri(this.BuildRequestUri(LogiqConnectionUserSetup."Document Transfer Endpoint"));
 
         HttpRequest.GetHeaders(Headers);
         if Headers.Contains('Authorization') then
             Headers.Remove('Authorization');
         Headers.Add('Authorization', SecretStrSubstNo('Bearer %1', LogiqConnectionUserSetup.GetAccessToken()));
 
-        FileNameText := StrSubstNo(FileNameTok, EDocument."Document No.");
+        FileNameText := StrSubstNo(this.FileNameTok, EDocument."Document No.");
         Boundary := DelChr(Format(CreateGuid()), '<>=', '{}&[]*()!@#$%^+=;:"''<>,.?/|\\~`');
 
-        BodyText := GetFileContentAsMultipart(TempBlob, FileNameText, Boundary);
+        BodyText := this.GetFileContentAsMultipart(TempBlob, FileNameText, Boundary);
         Content.WriteFrom(BodyText);
 
         Content.GetHeaders(ContentHeaders);
         if ContentHeaders.Contains('Content-Type') then
             ContentHeaders.Remove('Content-Type');
-        ContentHeaders.Add('Content-Type', StrSubstNo(ContentTypeTok, Boundary));
+        ContentHeaders.Add('Content-Type', StrSubstNo(this.ContentTypeTok, Boundary));
 
         HttpRequest.Content(Content);
 
         Client.Send(HttpRequest, HttpResponse);
 
         if HttpResponse.IsSuccessStatusCode() then
-            SaveLogiqExternalId(EDocument, GetExternalIdFromReponse(HttpResponse))
+            this.SaveLogiqExternalId(EDocument, this.GetExternalIdFromReponse(HttpResponse))
         else
-            LogSendingError(EDocument, HttpResponse);
+            this.LogSendingError(EDocument, HttpResponse);
     end;
 #pragma warning restore AA0150
 
@@ -72,29 +70,30 @@ codeunit 6382 "Logiq E-Document Management"
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         RequestSuccessful: Boolean;
-        FailedHttpCallMsg: Label 'Failed to get status of document %1 in Logiq system. Http call returned status code %2 with error: %3', Comment = '%1=Document No., %2=HTTP status code, %3=error message';
     begin
         if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Logiq then
             exit;
 
-        RequestSuccessful := GetStatus(EDocument, HttpRequest, HttpResponse);
+        RequestSuccessful := this.GetStatus(EDocument, HttpRequest, HttpResponse);
 
         if RequestSuccessful then begin
-            Status := ParseDocumentStatus(HttpResponse);
-            EDocumentLogHelper.InsertLog(EDocument, EDocumentService, Status);
-            EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+            Status := this.ParseDocumentStatus(HttpResponse);
+            this.EDocumentLogHelper.InsertLog(EDocument, EDocumentService, Status);
+            this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+            this.ModifyServiceStatus(EDocument, EDocumentService, Status);
+            this.ModifyEDocumentStatus(EDocument);
         end else begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(FailedHttpCallMsg, EDocument."Document No.", HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase));
+            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.FailedHttpCallMsg, EDocument."Document No.", HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase));
             if EDocument.Status <> EDocument.Status::Processed then
-                EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
-            Error(FailedHttpCallMsg, EDocument."Document No.", HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase);
+                this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+            Error(this.FailedHttpCallMsg, EDocument."Document No.", HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase);
         end;
     end;
 
     internal procedure GetStatus(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        LogiqConnectionUserSetup: Record "Logiq Connection User Setup";
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqConnectionUserSetup: Record "Connection User Setup";
+        LogiqAuth: Codeunit Auth;
         Client: HttpClient;
         Headers: HttpHeaders;
     begin
@@ -103,7 +102,7 @@ codeunit 6382 "Logiq E-Document Management"
         LogiqAuth.CheckUserSetup(LogiqConnectionUserSetup);
         LogiqAuth.CheckUpdateTokens();
 
-        HttpRequest.SetRequestUri(BuildRequestUri(JoinUrlParts(LogiqConnectionUserSetup."Document Status Endpoint", EDocument."Logiq External Id")));
+        HttpRequest.SetRequestUri(this.BuildRequestUri(this.JoinUrlParts(LogiqConnectionUserSetup."Document Status Endpoint", EDocument."Logiq External Id")));
 
         HttpRequest.GetHeaders(Headers);
         if Headers.Contains('Authorization') then
@@ -117,14 +116,13 @@ codeunit 6382 "Logiq E-Document Management"
 
     internal procedure DownloadDocuments(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        LogiqConnectionUserSetup: Record "Logiq Connection User Setup";
-        LogiqConnectionSetup: Record "Logiq Connection Setup";
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqConnectionUserSetup: Record "Connection User Setup";
+        LogiqConnectionSetup: Record "Connection Setup";
+        LogiqAuth: Codeunit Auth;
         Client: HttpClient;
         Headers: HttpHeaders;
         InStr: InStream;
         OutStr: OutStream;
-        DownloadDocumentsErr: Label 'Failed to download documents from Logiq system. Http response code: %1; error: %2', Comment = '%1=HTTP response code,%2=error message';
     begin
         HttpRequest.Method('GET');
 
@@ -132,7 +130,7 @@ codeunit 6382 "Logiq E-Document Management"
         LogiqAuth.CheckUserSetup(LogiqConnectionUserSetup);
         LogiqAuth.CheckUpdateTokens();
 
-        HttpRequest.SetRequestUri(JoinUrlParts(LogiqConnectionSetup."Base URL", LogiqConnectionSetup."File List Endpoint"));
+        HttpRequest.SetRequestUri(this.JoinUrlParts(LogiqConnectionSetup."Base URL", LogiqConnectionSetup."File List Endpoint"));
 
         HttpRequest.GetHeaders(Headers);
         if Headers.Contains('Authorization') then
@@ -146,7 +144,7 @@ codeunit 6382 "Logiq E-Document Management"
             TempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
             CopyStream(OutStr, InStr);
         end else
-            Error(DownloadDocumentsErr, HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase);
+            Error(this.DownloadDocumentsErr, HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase);
     end;
 
     internal procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
@@ -164,9 +162,9 @@ codeunit 6382 "Logiq E-Document Management"
 
     internal procedure DownloadFile(FileName: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        LogiqConnectionUserSetup: Record "Logiq Connection User Setup";
-        LogiqConnectionSetup: Record "Logiq Connection Setup";
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqConnectionUserSetup: Record "Connection User Setup";
+        LogiqConnectionSetup: Record "Connection Setup";
+        LogiqAuth: Codeunit Auth;
         Client: HttpClient;
         Headers: HttpHeaders;
     begin
@@ -188,12 +186,12 @@ codeunit 6382 "Logiq E-Document Management"
 
     local procedure BuildRequestUri(Endpoint: Text) FullUrl: Text
     var
-        LogiqConnectionSetup: Record "Logiq Connection Setup";
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqConnectionSetup: Record "Connection Setup";
+        LogiqAuth: Codeunit Auth;
     begin
         LogiqAuth.CheckSetup(LogiqConnectionSetup);
 
-        FullUrl := JoinUrlParts(LogiqConnectionSetup."Base URL", Endpoint);
+        FullUrl := this.JoinUrlParts(LogiqConnectionSetup."Base URL", Endpoint);
     end;
 
     local procedure JoinUrlParts(Part1: Text; Part2: Text) JoinedUrl: Text
@@ -212,9 +210,6 @@ codeunit 6382 "Logiq E-Document Management"
     var
         XMLDOMManagement: Codeunit "XML DOM Management";
         MultiPartContentBuilder: TextBuilder;
-        ContentTok: Label 'Content-Disposition: form-data; name="bizDoc"; filename="%1"', Locked = true;
-        ContentTypeTok: Label 'Content-Type: text/xml', Locked = true;
-        FileNameTok: Label 'Content-Disposition: form-data; name="filename"', Locked = true;
         BizDoc: Text;
         InStr: InStream;
     begin
@@ -224,14 +219,14 @@ codeunit 6382 "Logiq E-Document Management"
         FileBlob.CreateInStream(InStr, TextEncoding::UTF8);
         XMLDOMManagement.TryGetXMLAsText(InStr, BizDoc);
 
-        MultiPartContentBuilder.AppendLine(StrSubstNo(ContentTok, FileName));
-        MultiPartContentBuilder.AppendLine(ContentTypeTok);
+        MultiPartContentBuilder.AppendLine(StrSubstNo(this.ContentTok, FileName));
+        MultiPartContentBuilder.AppendLine(this.ContentTypeMultipartTok);
         MultiPartContentBuilder.AppendLine('');
         MultiPartContentBuilder.AppendLine(BizDoc);
 
         // filename
         MultiPartContentBuilder.AppendLine('--' + Format(Boundary));
-        MultiPartContentBuilder.AppendLine(FileNameTok);
+        MultiPartContentBuilder.AppendLine(this.FileNameContentTok);
         MultiPartContentBuilder.AppendLine('');
         MultiPartContentBuilder.AppendLine(FileName);
 
@@ -244,11 +239,10 @@ codeunit 6382 "Logiq E-Document Management"
         ResponseTxt: Text;
         JsonObj: JsonObject;
         JsonTok: JsonToken;
-        InvalidResponseErr: Label 'Invalid response from Logiq E-Document API';
     begin
         ResponseMessage.Content.ReadAs(ResponseTxt);
         if not JsonObj.ReadFrom(ResponseTxt) then
-            Error(InvalidResponseErr);
+            Error(this.InvalidResponseErr);
 
         if JsonObj.Get('externalId', JsonTok) then
             if JsonTok.IsValue() then
@@ -264,13 +258,11 @@ codeunit 6382 "Logiq E-Document Management"
     local procedure LogSendingError(EDocument: Record "E-Document"; ResponseMessage: HttpResponseMessage)
     var
         EDocumentsErrorHelper: Codeunit "E-Document Error Helper";
-        BlockedByEnvErr: Label 'Logiq E-Document API is blocked by environment';
-        SendingFailedErr: Label 'Sending document failed with HTTP Status code %1. Error message: %2', Comment = '%1=HTTP Status code, %2=error message';
     begin
         if ResponseMessage.IsBlockedByEnvironment() then
-            EDocumentsErrorHelper.LogSimpleErrorMessage(EDocument, BlockedByEnvErr)
+            EDocumentsErrorHelper.LogSimpleErrorMessage(EDocument, this.BlockedByEnvErr)
         else
-            EDocumentsErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(SendingFailedErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()));
+            EDocumentsErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.SendingFailedErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()));
     end;
 
     local procedure ParseReceivedFileName(ContentTxt: Text; Index: Integer; var FileName: Text): Boolean
@@ -333,30 +325,28 @@ codeunit 6382 "Logiq E-Document Management"
         LocalHttpResponse: HttpResponseMessage;
         DocumentOutStream: OutStream;
         ContentData, FileName : Text;
-        FileNameNotFoundErr: Label 'File name not found in response';
-        FileNotFoundErr: Label 'File %1 could not be downloaded', Comment = '%1=file name';
     begin
         if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Logiq then
             exit;
 
         HttpResponse.Content.ReadAs(ContentData);
-        if not ParseReceivedFileName(ContentData, EDocument."Index In Batch", FileName) then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, FileNameNotFoundErr);
+        if not this.ParseReceivedFileName(ContentData, EDocument."Index In Batch", FileName) then begin
+            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.FileNameNotFoundErr);
             exit;
         end;
 
-        DownloadFile(FileName, LocalHttpRequest, LocalHttpResponse);
-        EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
+        this.DownloadFile(FileName, LocalHttpRequest, LocalHttpResponse);
+        this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
 
         LocalHttpResponse.Content.ReadAs(ContentData);
         if ContentData = '' then
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(FileNotFoundErr, FileName));
+            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.FileNotFoundErr, FileName));
 
         Clear(TempBlob);
         TempBlob.CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
         DocumentOutStream.WriteText(ContentData);
 
-        EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
+        this.EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Log", OnUpdateEDocumentStatus, '', false, false)]
@@ -374,7 +364,85 @@ codeunit 6382 "Logiq E-Document Management"
         end;
     end;
 
+    // copied from standard codeunit 6108 "E-Document Processing" because it is internal
+    /// <summary>
+    /// Updates existing service status record. Throws runtime error if record does not exists.
+    /// </summary>
+    local procedure ModifyServiceStatus(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentStatus: Enum "E-Document Service Status")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocumentServiceStatus.ReadIsolation(IsolationLevel::ReadCommitted);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
+        EDocumentServiceStatus.Validate(Status, EDocumentStatus);
+        EDocumentServiceStatus.Modify();
+    end;
+
+    // copied from standard codeunit 6108 "E-Document Processing" because it is internal
+    /// <summary>
+    /// Updates EDocument status based on E-Document Service Status value
+    /// </summary>
+    local procedure ModifyEDocumentStatus(var EDocument: Record "E-Document")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocServiceCount: Integer;
+    begin
+        // Check for errors
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
+            EDocumentServiceStatus.Status::"Sending Error",
+            EDocumentServiceStatus.Status::"Export Error",
+            EDocumentServiceStatus.Status::"Cancel Error",
+            EDocumentServiceStatus.Status::"Imported Document Processing Error",
+            EDocumentServiceStatus.Status::Rejected,
+            EDocumentServiceStatus.Status::"Failed Logiq");
+
+        if not EDocumentServiceStatus.IsEmpty() then begin
+            EDocument.Get(EDocument."Entry No");
+            EDocument.Validate(Status, EDocument.Status::Error);
+            EDocument.Modify(true);
+            exit;
+        end;
+
+        Clear(EDocumentServiceStatus);
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocServiceCount := EDocumentServiceStatus.Count();
+
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
+            EDocumentServiceStatus.Status::Sent,
+            EDocumentServiceStatus.Status::Exported,
+            EDocumentServiceStatus.Status::"Imported Document Created",
+            EDocumentServiceStatus.Status::"Journal Line Created",
+            EDocumentServiceStatus.Status::Approved,
+            EDocumentServiceStatus.Status::Canceled);
+
+        // There can be service status for multiple services:
+        // Example Service A and Service B
+        // Service A -> Sent
+        // Service B -> Exported
+        EDocument.Get(EDocument."Entry No");
+        if EDocumentServiceStatus.Count() = EDocServiceCount then
+            EDocument.Validate(Status, EDocument.Status::Processed)
+        else
+            EDocument.Validate(Status, EDocument.Status::"In Progress");
+
+        EDocument.Modify(true);
+    end;
+
     var
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
+        BlockedByEnvErr: Label 'Logiq E-Document API is blocked by environment';
+        ContentTok: Label 'Content-Disposition: form-data; name="bizDoc"; filename="%1"', Locked = true;
+        ContentTypeMultipartTok: Label 'Content-Type: text/xml', Locked = true;
+        ContentTypeTok: Label 'multipart/form-data; boundary="%1"', Locked = true;
+        DownloadDocumentsErr: Label 'Failed to download documents from Logiq system. Http response code: %1; error: %2', Comment = '%1=HTTP response code,%2=error message';
+        FailedHttpCallMsg: Label 'Failed to get status of document %1 in Logiq system. Http call returned status code %2 with error: %3', Comment = '%1=Document No., %2=HTTP status code, %3=error message';
+        FileNameContentTok: Label 'Content-Disposition: form-data; name="filename"', Locked = true;
+        FileNameNotFoundErr: Label 'File name not found in response';
+        FileNameTok: Label '%1.xml', Locked = true;
+        FileNotFoundErr: Label 'File %1 could not be downloaded', Comment = '%1=file name';
+        InvalidResponseErr: Label 'Invalid response from Logiq E-Document API';
+        SendingFailedErr: Label 'Sending document failed with HTTP Status code %1. Error message: %2', Comment = '%1=HTTP Status code, %2=error message';
+
 }

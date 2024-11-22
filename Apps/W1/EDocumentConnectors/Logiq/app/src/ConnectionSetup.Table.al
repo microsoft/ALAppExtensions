@@ -1,12 +1,12 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-table 6380 "Logiq Connection Setup"
+table 6380 "Connection Setup"
 {
     Caption = 'Logiq Connection Setup';
     DataClassification = CustomerContent;
     fields
     {
-        field(1; PK; Code[10])
+        field(1; PK; Code[20])
         {
             DataClassification = CustomerContent;
         }
@@ -50,24 +50,26 @@ table 6380 "Logiq Connection Setup"
     }
 
     var
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqAuth: Codeunit Auth;
 
     trigger OnInsert()
-    var
-        AuthenticationUrlTok: Label 'https://pilot-sso.logiq.no/auth/realms/connect-api/protocol/openid-connect/token', Locked = true;
-        FileListTok: Label '1.0/listfiles', Locked = true;
-        BaseUrlTok: Label 'https://pilot-api.logiq.no/edi/connect/', Locked = true;
     begin
-        Rec."Authentication URL" := AuthenticationUrlTok;
-        Rec."File List Endpoint" := FileListTok;
-        Rec."Base URL" := BaseUrlTok;
+        Rec."Authentication URL" := this.AuthenticationUrlTok;
+        Rec."File List Endpoint" := this.FileListTok;
+        Rec."Base URL" := this.BaseUrlTok;
     end;
 
     internal procedure GetClientSecret(): SecretText
     var
         ClientSecret: SecretText;
     begin
-        LogiqAuth.GetIsolatedStorageValue(Rec."Client Secret", ClientSecret);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Client Secret", ClientSecret);
         exit(ClientSecret);
     end;
+
+    var
+        AuthenticationUrlTok: Label 'https://pilot-sso.logiq.no/auth/realms/connect-api/protocol/openid-connect/token', Locked = true;
+        BaseUrlTok: Label 'https://pilot-api.logiq.no/edi/connect/', Locked = true;
+        FileListTok: Label '1.0/listfiles', Locked = true;
+
 }

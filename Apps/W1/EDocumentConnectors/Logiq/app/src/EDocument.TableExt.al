@@ -1,7 +1,7 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
-tableextension 6380 "Logiq E-Document" extends "E-Document"
+tableextension 6380 "E-Document" extends "E-Document"
 {
     fields
     {

@@ -1,12 +1,12 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-page 6380 "Logiq Connection Setup"
+page 6380 "Connection Setup"
 {
-    Caption = 'E-Document External Connection Setup';
+    Caption = 'Logiq Connection Setup';
     PageType = Card;
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
-    SourceTable = "Logiq Connection Setup";
+    SourceTable = "Connection Setup";
 
     layout
     {
@@ -20,7 +20,7 @@ page 6380 "Logiq Connection Setup"
                 {
                     ShowMandatory = true;
                 }
-                field(ClientSecret; ClientSecret)
+                field(ClientSecret; this.ClientSecret)
                 {
                     Caption = 'Client Secret';
                     ToolTip = 'Specifies the client secret token.';
@@ -29,7 +29,7 @@ page 6380 "Logiq Connection Setup"
 
                     trigger OnValidate()
                     begin
-                        LogiqAuth.SetIsolatedStorageValue(Rec."Client Secret", ClientSecret);
+                        this.LogiqAuth.SetIsolatedStorageValue(Rec."Client Secret", this.ClientSecret);
                     end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
@@ -58,8 +58,8 @@ page 6380 "Logiq Connection Setup"
 
                 trigger OnAction()
                 var
-                    LogiqConnectionUserSetup: Record "Logiq Connection User Setup";
-                    LoqiqConnectionUserSetupPage: Page "Logiq Connection User Setup";
+                    LogiqConnectionUserSetup: Record "Connection User Setup";
+                    LoqiqConnectionUserSetupPage: Page "Connection User Setup";
                 begin
                     LogiqConnectionUserSetup.FindUserSetup(CopyStr(UserId(), 1, 50));
                     LoqiqConnectionUserSetupPage.SetRecord(LogiqConnectionUserSetup);
@@ -76,7 +76,7 @@ page 6380 "Logiq Connection Setup"
     }
 
     var
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqAuth: Codeunit Auth;
         [NonDebuggable]
         ClientSecret: Text;
 
@@ -87,7 +87,7 @@ page 6380 "Logiq Connection Setup"
             Rec.Insert(true);
         end;
 
-        if LogiqAuth.HasToken(Rec."Client Secret", DataScope::Company) then
-            ClientSecret := '*';
+        if this.LogiqAuth.HasToken(Rec."Client Secret", DataScope::Company) then
+            this.ClientSecret := '*';
     end;
 }

@@ -2,7 +2,7 @@ namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using System.Security.AccessControl;
 
-table 6381 "Logiq Connection User Setup"
+table 6381 "Connection User Setup"
 {
     Caption = 'Logiq Connection User Setup';
     DataClassification = CustomerContent;
@@ -43,17 +43,13 @@ table 6381 "Logiq Connection User Setup"
             Caption = 'Refresh Token Expires At';
             ToolTip = 'Specifies the refresh token expiration date.';
         }
-        field(31; "API Engine"; Enum "Logiq API Engine")
+        field(31; "API Engine"; Enum "API Engine")
         {
             Caption = 'API Engine';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the value of the API Engine field.';
             trigger OnValidate()
-            var
-                Engine1TransferTok: Label '2.0/transfer', Locked = true;
-                Engine1StatusTok: Label '2.0/transfer-status/externalId/', Locked = true;
-                Engine3TransferTok: Label '2.0/send', Locked = true;
-                Engine3StatusTok: Label '2.0/status/externalId/', Locked = true;
+
             begin
                 case Rec."API Engine" of
                     Rec."API Engine"::Engine1:
@@ -91,7 +87,7 @@ table 6381 "Logiq Connection User Setup"
     }
 
     var
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqAuth: Codeunit Auth;
 
     internal procedure FindUserSetup(UserID: Text[50])
     begin
@@ -106,7 +102,7 @@ table 6381 "Logiq Connection User Setup"
     var
         ClientSecret: SecretText;
     begin
-        LogiqAuth.GetIsolatedStorageValue(Rec.Password, ClientSecret, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec.Password, ClientSecret, DataScope::User);
         exit(ClientSecret);
     end;
 
@@ -114,7 +110,7 @@ table 6381 "Logiq Connection User Setup"
     var
         AccessToken: SecretText;
     begin
-        LogiqAuth.GetIsolatedStorageValue(Rec."Access Token", AccessToken, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Access Token", AccessToken, DataScope::User);
         exit(AccessToken);
     end;
 
@@ -122,7 +118,7 @@ table 6381 "Logiq Connection User Setup"
     var
         RefreshToken: SecretText;
     begin
-        LogiqAuth.GetIsolatedStorageValue(Rec."Refresh Token", RefreshToken, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Refresh Token", RefreshToken, DataScope::User);
         exit(RefreshToken);
     end;
 
@@ -145,4 +141,10 @@ table 6381 "Logiq Connection User Setup"
             if IsolatedStorage.Contains(Rec.Password, DataScope::User) then
                 IsolatedStorage.Delete(Rec.Password, DataScope::User);
     end;
+
+    var
+        Engine1StatusTok: Label '2.0/transfer-status/externalId/', Locked = true;
+        Engine1TransferTok: Label '2.0/transfer', Locked = true;
+        Engine3StatusTok: Label '2.0/status/externalId/', Locked = true;
+        Engine3TransferTok: Label '2.0/send', Locked = true;
 }

@@ -1,8 +1,9 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-enum 6380 "Logiq API Engine"
+enum 6380 "API Engine"
 {
     Extensible = false;
+    Access = Internal;
 
     value(0; " ")
     {

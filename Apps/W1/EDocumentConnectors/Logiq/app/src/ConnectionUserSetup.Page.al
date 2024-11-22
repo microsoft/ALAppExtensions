@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-page 6381 "Logiq Connection User Setup"
+page 6381 "Connection User Setup"
 {
     Caption = 'Logiq Connection User Setup';
     PageType = Card;
@@ -8,7 +8,7 @@ page 6381 "Logiq Connection User Setup"
     InsertAllowed = false;
     LinksAllowed = false;
     ShowFilter = false;
-    SourceTable = "Logiq Connection User Setup";
+    SourceTable = "Connection User Setup";
     UsageCategory = None;
     ApplicationArea = Basic, Suite;
 
@@ -26,11 +26,11 @@ page 6381 "Logiq Connection User Setup"
 
                     trigger OnValidate()
                     begin
-                        if IsFullCredentials() then
-                            CheckCredentialsAndUpdateTokens();
+                        if this.IsFullCredentials() then
+                            this.CheckCredentialsAndUpdateTokens();
                     end;
                 }
-                field(Password; PasswordTxt)
+                field(Password; this.PasswordTxt)
                 {
                     Caption = 'Password';
                     ToolTip = 'Specifies the user password.';
@@ -39,13 +39,13 @@ page 6381 "Logiq Connection User Setup"
 
                     trigger OnValidate()
                     begin
-                        if PasswordTxt = '' then
+                        if this.PasswordTxt = '' then
                             Rec.DeletePassword()
                         else
-                            LogiqAuth.SetIsolatedStorageValue(Rec.Password, PasswordTxt, DataScope::User);
+                            this.LogiqAuth.SetIsolatedStorageValue(Rec.Password, this.PasswordTxt, DataScope::User);
 
-                        if IsFullCredentials() then
-                            CheckCredentialsAndUpdateTokens();
+                        if this.IsFullCredentials() then
+                            this.CheckCredentialsAndUpdateTokens();
                     end;
                 }
                 field("Access Token Expiration"; Rec."Access Token Expiration")
@@ -82,7 +82,7 @@ page 6381 "Logiq Connection User Setup"
 
                 trigger OnAction()
                 begin
-                    LogiqAuth.GetTokens();
+                    this.LogiqAuth.GetTokens();
                 end;
             }
         }
@@ -98,26 +98,26 @@ page 6381 "Logiq Connection User Setup"
     }
 
     var
-        LogiqAuth: Codeunit "Logiq Auth";
+        LogiqAuth: Codeunit Auth;
         [NonDebuggable]
         PasswordTxt: Text;
 
     trigger OnOpenPage()
     begin
         if not IsNullGuid(Rec.Password) then
-            if LogiqAuth.HasToken(Rec.Password, DataScope::User) then
-                PasswordTxt := '*';
+            if this.LogiqAuth.HasToken(Rec.Password, DataScope::User) then
+                this.PasswordTxt := '*';
     end;
 
     local procedure IsFullCredentials(): Boolean
     begin
-        exit((Rec.Username <> '') and (PasswordTxt <> ''));
+        exit((Rec.Username <> '') and (this.PasswordTxt <> ''));
     end;
 
     local procedure CheckCredentialsAndUpdateTokens(): Boolean
     begin
         Rec.DeleteUserTokens();
         CurrPage.Update();
-        LogiqAuth.GetTokens();
+        this.LogiqAuth.GetTokens();
     end;
 }

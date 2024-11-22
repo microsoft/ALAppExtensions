@@ -2,7 +2,8 @@ namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
 
-pageextension 6380 "Logiq E-Document" extends "E-Document"
+
+pageextension 6380 "E-Document" extends "E-Document"
 {
     actions
     {
@@ -18,10 +19,9 @@ pageextension 6380 "Logiq E-Document" extends "E-Document"
                 trigger OnAction()
                 var
                     EDocService: Record "E-Document Service";
-                    LogiqEDocumentManagement: Codeunit "Logiq E-Document Management";
+                    LogiqEDocumentManagement: Codeunit "E-Document Management";
                     EDocumentErrorHelper: Codeunit "E-Document Error Helper";
                     EDocServices: Page "E-Document Services";
-                    DocNotSentErr: Label 'Status can only be updated for documents that are succesfully sent to Logiq.';
                 begin
                     if (Rec."Logiq External Id" = '') then
                         Error(DocNotSentErr);
@@ -42,4 +42,7 @@ pageextension 6380 "Logiq E-Document" extends "E-Document"
             }
         }
     }
+
+    var
+        DocNotSentErr: Label 'Status can only be updated for documents that are succesfully sent to Logiq.';
 }
