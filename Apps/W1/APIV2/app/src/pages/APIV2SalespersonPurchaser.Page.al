@@ -34,9 +34,37 @@ page 30075 "APIV2 - Salesperson/Purchaser"
                 {
                     Caption = 'Name';
                 }
-                field(eMail; Rec."E-Mail")
+                field(email; Rec."E-Mail")
                 {
                     Caption = 'Email';
+                }
+                field(email2; Rec."E-Mail 2")
+                {
+                    Caption = 'Email 2';
+                }
+                field(phoneNo; Rec."Phone No.")
+                {
+                    Caption = 'Phone No.';
+                }
+                field(jobTitle; Rec."Job Title")
+                {
+                    Caption = 'Job Title';
+                }
+                field(commisionPercent; Rec."Commission %")
+                {
+                    Caption = 'Commission %';
+                }
+                field(privacyBlocked; Rec."Privacy Blocked")
+                {
+                    Caption = 'Privacy Blocked';
+                }
+                field(blocked; Rec.Blocked)
+                {
+                    Caption = 'Blocked';
+                }
+                field(coupledToDataverse; Rec."Coupled to Dataverse")
+                {
+                    Caption = 'Coupled to Dataverse';
                 }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {

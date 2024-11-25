@@ -6,9 +6,10 @@ codeunit 139870 "APIV2 - Salesperson/Purch E2E"
         Assert: Codeunit Assert;
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryRandom: Codeunit "Library - Random";
         IsInitialized: Boolean;
-        EmptyJSONErr: Label 'JSON should not be empty.';
-        ServiceNameTxt: Label 'salespeoplePurchasers';
+        EmptyJSONErr: Label 'JSON should not be empty.', Locked = true;
+        ServiceNameTxt: Label 'salespeoplePurchasers', Locked = true;
 
     local procedure Initialize()
     begin
@@ -66,6 +67,36 @@ codeunit 139870 "APIV2 - Salesperson/Purch E2E"
     end;
 
     [Test]
+    procedure ModifySalespersonPurchaserJobTitle()
+    var
+        SalespersonPurchaser: Record "Salesperson/Purchaser";
+        TempSalespersonPurchaser: Record "Salesperson/Purchaser" temporary;
+        RequestBody: Text;
+        Response: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can modify a salesperson/purchaser through a PATCH request.
+        Initialize();
+
+        // [GIVEN] A salesperson/purchaser exists.
+        CreateSalespersonPurchaser(SalespersonPurchaser);
+        TempSalespersonPurchaser.TransferFields(SalespersonPurchaser);
+        TempSalespersonPurchaser."Job Title" := LibraryUtility.GenerateGUID();
+        RequestBody := GetSalespersonPurchaserJSON(TempSalespersonPurchaser);
+
+        // [WHEN] The user makes a patch request to the service and specifies Job Title field.
+        TargetURL := LibraryGraphMgt.CreateTargetURL(SalespersonPurchaser.SystemId, Page::"APIV2 - Salesperson/Purchaser", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, RequestBody, Response);
+
+        // [THEN] The response contains the new values.
+        VerifyProperties(Response, TempSalespersonPurchaser);
+
+        // [THEN] The salesperson/purchaser in the database contains the updated values.
+        SalespersonPurchaser.Get(SalespersonPurchaser.Code);
+        Assert.AreEqual(SalespersonPurchaser."Job Title", TempSalespersonPurchaser."Job Title", 'Job Title should be equal.');
+    end;
+
+    [Test]
     procedure DeleteSalespersonPurchaser()
     var
         SalespersonPurchaser: Record "Salesperson/Purchaser";
@@ -97,8 +128,15 @@ codeunit 139870 "APIV2 - Salesperson/Purch E2E"
         SalespersonPurchaser.Init();
         SalespersonPurchaser.Validate(
           Code, LibraryUtility.GenerateRandomCode(SalespersonPurchaser.FieldNo(Code), DATABASE::"Salesperson/Purchaser"));
-        SalespersonPurchaser.Validate(Name, SalespersonPurchaser.Code);  // Validating Name as Code because value is not important.
-        SalespersonPurchaser."E-Mail" := 'a@b.com';
+        SalespersonPurchaser.Name := LibraryUtility.GenerateRandomText(50);
+        SalespersonPurchaser."E-Mail" := LibraryUtility.GenerateRandomEmail();
+        SalespersonPurchaser."E-Mail 2" := LibraryUtility.GenerateRandomEmail();
+        SalespersonPurchaser."Phone No." := LibraryUtility.GenerateRandomPhoneNo();
+        SalespersonPurchaser."Job Title" := LibraryUtility.GenerateRandomText(30);
+        SalespersonPurchaser."Commission %" := LibraryRandom.RandInt(100);
+        SalespersonPurchaser."Privacy Blocked" := true;
+        SalespersonPurchaser.Blocked := true;
+        SalespersonPurchaser."Coupled to Dataverse" := true;
         SalespersonPurchaser.Insert(true);
         exit(SalespersonPurchaser.Code);
     end;
@@ -107,7 +145,14 @@ codeunit 139870 "APIV2 - Salesperson/Purch E2E"
     begin
         SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'code', SalespersonPurchaser.Code);
         SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'displayName', SalespersonPurchaser.Name);
-        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'eMail', SalespersonPurchaser."E-Mail");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'email', SalespersonPurchaser."E-Mail");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'email2', SalespersonPurchaser."E-Mail 2");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'phoneNo', SalespersonPurchaser."Phone No.");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'jobTitle', SalespersonPurchaser."Job Title");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'commisionPercent', SalespersonPurchaser."Commission %");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'privacyBlocked', SalespersonPurchaser."Privacy Blocked");
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'blocked', SalespersonPurchaser.Blocked);
+        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'coupledToDataverse', SalespersonPurchaser."Coupled to Dataverse");
         exit(SalespersonPurchaserJSON);
     end;
 
@@ -117,6 +162,13 @@ codeunit 139870 "APIV2 - Salesperson/Purch E2E"
         LibraryGraphMgt.VerifyIDInJSON(JSON);
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'code', SalespersonPurchaser.Code);
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'displayName', SalespersonPurchaser.Name);
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'eMail', 'a@b.com');
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'email', SalespersonPurchaser."E-Mail");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'email2', SalespersonPurchaser."E-Mail 2");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'phoneNo', SalespersonPurchaser."Phone No.");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'jobTitle', SalespersonPurchaser."Job Title");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'commisionPercent', Format(SalespersonPurchaser."Commission %", 0, 9));
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'privacyBlocked', Format(SalespersonPurchaser."Privacy Blocked", 0, 9));
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'blocked', Format(SalespersonPurchaser.Blocked, 0, 9));
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'coupledToDataverse', Format(SalespersonPurchaser."Coupled to Dataverse", 0, 9));
     end;
 }
