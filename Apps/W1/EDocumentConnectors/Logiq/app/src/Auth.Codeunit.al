@@ -1,5 +1,5 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
-codeunit 6380 Auth
+codeunit 6383 Auth
 {
     internal procedure SetIsolatedStorageValue(var ValueKey: Guid; Value: SecretText; TokenDataScope: DataScope)
     begin

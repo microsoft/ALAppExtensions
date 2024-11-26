@@ -6,6 +6,7 @@ table 6381 "Connection User Setup"
 {
     Caption = 'Logiq Connection User Setup';
     DataClassification = CustomerContent;
+    Access = Internal;
 
     fields
     {

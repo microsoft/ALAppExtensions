@@ -1,6 +1,8 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Send;
+using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Utilities;
 using System.Xml;
 
@@ -10,7 +12,7 @@ codeunit 6382 "E-Document Management"
     Permissions = tabledata "E-Document" = m;
 
 #pragma warning disable AA0150
-    internal procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    internal procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
     var
         LogiqConnectionUserSetup: Record "Connection User Setup";
         LogiqAuth: Codeunit Auth;
@@ -18,6 +20,8 @@ codeunit 6382 "E-Document Management"
         Headers: HttpHeaders;
         Content: HttpContent;
         ContentHeaders: HttpHeaders;
+        HttpRequest: HttpRequestMessage;
+        HttpResponse: HttpResponseMessage;
         BodyText: Text;
         FileNameText: Text;
         Boundary: Text;
@@ -37,7 +41,7 @@ codeunit 6382 "E-Document Management"
         FileNameText := StrSubstNo(this.FileNameTok, EDocument."Document No.");
         Boundary := DelChr(Format(CreateGuid()), '<>=', '{}&[]*()!@#$%^+=;:"''<>,.?/|\\~`');
 
-        BodyText := this.GetFileContentAsMultipart(TempBlob, FileNameText, Boundary);
+        BodyText := this.GetFileContentAsMultipart(SendContext.GetTempBlob(), FileNameText, Boundary);
         Content.WriteFrom(BodyText);
 
         Content.GetHeaders(ContentHeaders);
@@ -71,7 +75,7 @@ codeunit 6382 "E-Document Management"
         HttpResponse: HttpResponseMessage;
         RequestSuccessful: Boolean;
     begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Logiq then
+        if EDocumentService."Service Integration v2" <> EDocumentService."Service Integration v2"::Logiq then
             exit;
 
         RequestSuccessful := this.GetStatus(EDocument, HttpRequest, HttpResponse);
@@ -114,15 +118,13 @@ codeunit 6382 "E-Document Management"
         exit(HttpResponse.IsSuccessStatusCode());
     end;
 
-    internal procedure DownloadDocuments(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    internal procedure DownloadDocuments(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
         LogiqConnectionUserSetup: Record "Connection User Setup";
         LogiqConnectionSetup: Record "Connection Setup";
         LogiqAuth: Codeunit Auth;
         Client: HttpClient;
         Headers: HttpHeaders;
-        InStr: InStream;
-        OutStr: OutStream;
     begin
         HttpRequest.Method('GET');
 
@@ -139,25 +141,73 @@ codeunit 6382 "E-Document Management"
 
         Client.Send(HttpRequest, HttpResponse);
 
-        if HttpResponse.IsSuccessStatusCode() then begin
-            HttpResponse.Content.ReadAs(InStr);
-            TempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
-            CopyStream(OutStr, InStr);
-        end else
+        if not HttpResponse.IsSuccessStatusCode() then
             Error(this.DownloadDocumentsErr, HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase);
     end;
 
-    internal procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
+    internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
-        JsonArray: JsonArray;
+        LogiqConnectionUserSetup: Record "Connection User Setup";
+        LogiqConnectionSetup: Record "Connection Setup";
+        LogiqAuth: Codeunit Auth;
+        TempBlob: Codeunit "Temp Blob";
+        HttpRequest: HttpRequestMessage;
+        HttpResponse: HttpResponseMessage;
+        DocumentsArray: JsonArray;
         InStr: InStream;
+        OutStr: OutStream;
+        i: Integer;
     begin
-        TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
+        HttpRequest.Method('GET');
 
-        if not JsonArray.ReadFrom(InStr) then
-            exit(0);
+        LogiqAuth.CheckSetup(LogiqConnectionSetup);
+        LogiqAuth.CheckUserSetup(LogiqConnectionUserSetup);
+        LogiqAuth.CheckUpdateTokens();
 
-        exit(JsonArray.Count());
+        this.DownloadDocuments(HttpRequest, HttpResponse);
+
+        HttpResponse.Content.ReadAs(InStr);
+        DocumentsArray.ReadFrom(InStr);
+        for i := 0 to DocumentsArray.Count() - 1 do begin
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
+            DocumentsArray.GetObject(i).WriteTo(OutStr);
+            Documents.Add(TempBlob);
+        end;
+
+        ReceiveContext.Http().SetHttpRequestMessage(HttpRequest);
+        ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
+    end;
+
+    internal procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; Document: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    var
+        HttpRequest: HttpRequestMessage;
+        HttpResponse: HttpResponseMessage;
+        InStr: InStream;
+        OutStr: OutStream;
+        DocumentData, FileName : Text;
+    begin
+        Document.CreateInStream(InStr, TextEncoding::UTF8);
+        InStr.ReadText(DocumentData);
+        if not this.ParseReceivedFileName(DocumentData, FileName) then begin
+            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.FileNameNotFoundErr);
+            exit;
+        end;
+
+        this.DownloadFile(FileName, HttpRequest, HttpResponse);
+        this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+
+        HttpResponse.Content.ReadAs(DocumentData);
+        if DocumentData = '' then
+            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.FileNotFoundErr, FileName));
+
+        ReceiveContext.GetTempBlob().CreateOutStream(OutStr, TextEncoding::UTF8);
+        OutStr.WriteText(DocumentData);
+
+        this.EDocumentLogHelper.InsertLog(EDocument, EDocumentService, Document, "E-Document Service Status"::Imported);
+
+        ReceiveContext.Http().SetHttpRequestMessage(HttpRequest);
+        ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
     end;
 
     internal procedure DownloadFile(FileName: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
@@ -265,26 +315,14 @@ codeunit 6382 "E-Document Management"
             EDocumentsErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.SendingFailedErr, ResponseMessage.HttpStatusCode(), ResponseMessage.ReasonPhrase()));
     end;
 
-    local procedure ParseReceivedFileName(ContentTxt: Text; Index: Integer; var FileName: Text): Boolean
+    local procedure ParseReceivedFileName(ContentTxt: Text; var FileName: Text): Boolean
     var
-        JsonArray: JsonArray;
         JsonObj: JsonObject;
         JsonTok: JsonToken;
     begin
-        if not JsonArray.ReadFrom(ContentTxt) then
+        if not JsonObj.ReadFrom(ContentTxt) then
             exit(false);
 
-        if Index > JsonArray.Count() then
-            exit(false);
-
-        if Index = 0 then
-            JsonArray.Get(Index, JsonTok)
-        else
-            JsonArray.Get(Index - 1, JsonTok);
-        if not JsonTok.IsObject() then
-            exit(false);
-
-        JsonObj := JsonTok.AsObject();
         if not JsonObj.Get('fileName', JsonTok) then
             exit(false);
 
@@ -316,52 +354,6 @@ codeunit 6382 "E-Document Management"
                     else
                         exit(Status::"In Progress Logiq");
                 end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", OnAfterInsertImportedEdocument, '', false, false)]
-    local procedure OnAfterInsertEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    var
-        LocalHttpRequest: HttpRequestMessage;
-        LocalHttpResponse: HttpResponseMessage;
-        DocumentOutStream: OutStream;
-        ContentData, FileName : Text;
-    begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Logiq then
-            exit;
-
-        HttpResponse.Content.ReadAs(ContentData);
-        if not this.ParseReceivedFileName(ContentData, EDocument."Index In Batch", FileName) then begin
-            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.FileNameNotFoundErr);
-            exit;
-        end;
-
-        this.DownloadFile(FileName, LocalHttpRequest, LocalHttpResponse);
-        this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
-
-        LocalHttpResponse.Content.ReadAs(ContentData);
-        if ContentData = '' then
-            this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.FileNotFoundErr, FileName));
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
-        DocumentOutStream.WriteText(ContentData);
-
-        this.EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Log", OnUpdateEDocumentStatus, '', false, false)]
-    local procedure OnUpdateEDocumentStatus(var EDocument: Record "E-Document"; var IsHandled: Boolean)
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-    begin
-        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocumentServiceStatus.SetRange(Status, EDocumentServiceStatus.Status::"Failed Logiq");
-
-        if not EDocumentServiceStatus.IsEmpty() then begin
-            EDocument.Validate(Status, EDocument.Status::Error);
-            EDocument.Modify(false);
-            IsHandled := true;
-        end;
     end;
 
     // copied from standard codeunit 6108 "E-Document Processing" because it is internal

@@ -4,6 +4,8 @@ table 6380 "Connection Setup"
 {
     Caption = 'Logiq Connection Setup';
     DataClassification = CustomerContent;
+    Access = Internal;
+    
     fields
     {
         field(1; PK; Code[20])
