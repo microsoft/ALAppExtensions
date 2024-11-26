@@ -14,6 +14,8 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.eServices.EDocument.Service.Participant;
 
+// The following line can be removed when/if Microsoft changes the protection level on the EDocumentAttachmentGen.Insert() procedure
+#pragma warning disable AA0137
 codeunit 6393 "Tietoevry E-Document Import"
 {
     procedure ParseBasicInfo(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
@@ -31,7 +33,7 @@ codeunit 6393 "Tietoevry E-Document Import"
 
         EDocument.Direction := EDocument.Direction::Incoming;
 
-        case UpperCase(GetDocumentType(TempXMLBuffer)) of
+        case UpperCase(this.GetDocumentType(TempXMLBuffer)) of
             'INVOICE':
                 this.ParseInvoiceBasicInfo(EDocument, TempXMLBuffer);
             'CREDITNOTE':
@@ -65,7 +67,7 @@ codeunit 6393 "Tietoevry E-Document Import"
         Currency: Text[10];
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Invoice";
-        EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
+        EDocument."Incoming E-Document No." := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
         this.ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'Invoice');
         this.ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'Invoice');
 
@@ -103,10 +105,10 @@ codeunit 6393 "Tietoevry E-Document Import"
         if IssueDate <> '' then
             Evaluate(EDocument."Document Date", IssueDate, 9);
 
-        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
-        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
+        Evaluate(EDocument."Amount Excl. VAT", this.GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
+        Evaluate(EDocument."Amount Incl. VAT", this.GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
 
-        Currency := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
+        Currency := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
         if this.LCYCode <> Currency then
             EDocument."Currency Code" := Currency;
     end;
@@ -173,6 +175,7 @@ codeunit 6393 "Tietoevry E-Document Import"
         // Insert last document attachment
         if DocumentAttachment."No." <> '' then begin
             DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+            // The following line can be uncommented when/if Microsoft changes the protection level on the procedure Insert
             // EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
             Clear(DocumentAttachment);
         end;
@@ -204,6 +207,7 @@ codeunit 6393 "Tietoevry E-Document Import"
         // Insert last document attachment
         if DocumentAttachment."No." <> '' then begin
             DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+            // The following line can be uncommented when/if Microsoft changes the protection level on the procedure Insert
             // EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
             Clear(DocumentAttachment);
         end;
@@ -322,6 +326,7 @@ codeunit 6393 "Tietoevry E-Document Import"
                 begin
                     if DocumentAttachment."No." <> '' then begin
                         DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+                        // The following line can be uncommented when/if Microsoft changes the protection level on the procedure Insert
                         // EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
                         Clear(DocumentAttachment);
                     end;
@@ -433,7 +438,8 @@ codeunit 6393 "Tietoevry E-Document Import"
                 begin
                     if DocumentAttachment."No." <> '' then begin
                         DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
-                        //EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+                        // The following line can be uncommented when/if Microsoft changes the protection level on the procedure Insert
+                        // EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
                         Clear(DocumentAttachment);
                     end;
 
@@ -573,6 +579,8 @@ codeunit 6393 "Tietoevry E-Document Import"
     end;
 
     var
+
+        // The variable "EDocumentAttachmentGen" is when/if Microsoft changes the protection level on the procedure Insert
         EDocumentAttachmentGen: Codeunit "E-Doc. Attachment Processor";
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
         LCYCode: Code[10];
