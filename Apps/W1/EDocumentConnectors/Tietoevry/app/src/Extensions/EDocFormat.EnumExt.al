@@ -4,9 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using System.Security.AccessControl;
+using Microsoft.EServices.EDocument;
 
-permissionsetextension 6380 "D365 Basic - EDocument Connector" extends "D365 BASIC"
+enumextension 6390 "E-Doc. Format Ext." extends "E-Document Format"
 {
-    IncludedPermissionSets = "TE EDocConn. - Edit";
+    value(6390; "Tietoevry PEPPOL BIS 3.0")
+    {
+        Implementation = "E-Document" = "Tietoevry E-Document";
+    }
 }

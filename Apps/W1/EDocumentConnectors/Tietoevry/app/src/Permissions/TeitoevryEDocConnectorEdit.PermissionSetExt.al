@@ -4,11 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-permissionset 6380 "TE EDocConn. - Edit"
-{
-    Access = Public;
-    Assignable = true;
-    IncludedPermissionSets = "TE EDocConn. - Read";
+using Microsoft.EServices.EDocumentConnector;
 
-    Permissions = tabledata "Connection Setup" = IM;
+permissionsetextension 6394 "Tietoevry EDoc. Connector - Edit" extends "EDocConnector - Edit"
+{
+    IncludedPermissionSets = "Tietoevry Edit";
 }

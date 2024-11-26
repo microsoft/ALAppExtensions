@@ -4,16 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-permissionset 6382 "TE EDoc. Conn. Objects"
+permissionset 6392 "Tietoevry Edit"
 {
     Access = Public;
-    Assignable = false;
+    Assignable = true;
+    IncludedPermissionSets = "Tietoevry Read";
+    Caption = 'Tietoevry E-Document Connector - Edit';
 
-    Permissions = table "Connection Setup" = X,
-                  page "Connection Setup Card" = X,
-                  codeunit "API Requests" = X,
-                  codeunit "Authenticator" = X,
-                  codeunit "Connection" = X,
-                  codeunit "Integration Impl." = X,
-                  codeunit "Processing" = X;
+    Permissions = tabledata "Connection Setup" = imd;
 }

@@ -5,15 +5,17 @@
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
 using System.Telemetry;
-using System.Environment;
 
-page 6380 "Connection Setup Card"
+page 6392 "Connection Setup Card"
 {
     PageType = Card;
     SourceTable = "Connection Setup";
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
     Caption = 'Tietoevry Connection Setup';
+    Permissions = tabledata "Connection Setup" = rm;
+    DeleteAllowed = false;
+    InsertAllowed = false;
 
     layout
     {
@@ -21,59 +23,56 @@ page 6380 "Connection Setup Card"
         {
             group(General)
             {
-                field(ClientID; ClientID)
+                field(ClientID; this.ClientID)
                 {
                     Caption = 'Client ID';
-                    ToolTip = 'Specifies the client ID token.';
+                    ToolTip = 'Specifies the client ID.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-#if not DOCKER
-                    Visible = not IsSaaS;
-#endif                    
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        TietoevryAuth.SetClientId(Rec."Client ID", ClientID);
+                        this.TietoevryAuth.SetClientId(Rec."Client ID - Key", this.ClientID);
                     end;
                 }
-                field(ClientSecret; ClientSecret)
+                field(ClientSecret; this.ClientSecret)
                 {
                     Caption = 'Client Secret';
-                    ToolTip = 'Specifies the client secret token.';
+                    ToolTip = 'Specifies the client secret.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-#if not DOCKER
-                    Visible = not IsSaaS;
-#endif
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        TietoevryAuth.SetClientSecret(Rec."Client Secret", ClientSecret);
+                        this.TietoevryAuth.SetClientSecret(Rec."Client Secret - Key", this.ClientSecret);
                     end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect to Tietoevry Online.';
-                    Visible = not IsSaaS;
+                    ToolTip = 'Specifies the URL to connect to Avalara.';
                 }
-                field("Inbound API Url"; Rec."Inbound API URL")
+                field("API URL"; Rec."API URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the inbound API URL.';
+                    ToolTip = 'Specifies the URL to connect to Avalara''s api.';
                 }
-                field("Outbound API Url"; Rec."Outbound API URL")
+                field("Sandbox Authentication URL"; Rec."Sandbox Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the outbound API URL.';
+                    ToolTip = 'Specifies the URL to connect to Avalara sandbox.';
+                }
+                field("Sandbox API URL"; Rec."Sandbox API URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the URL to connect to Avalara sandbox api.';
                 }
                 field("Company Id"; Rec."Company Id")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the company ID.';
-                    ShowMandatory = true;
                 }
                 field("Send Mode"; Rec."Send Mode")
                 {
@@ -84,57 +83,53 @@ page 6380 "Connection Setup Card"
             }
         }
     }
-
     actions
     {
         area(processing)
         {
-            action(TestOAuthSetup)
+            action(Authenticate)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Test OAuth 2.0 setup';
+                Caption = 'Authenticate';
                 Image = Setup;
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                ToolTip = 'Tests the OAuth 2.0 setup.';
+                ToolTip = 'Verify the Authentication Details';
 
                 trigger OnAction()
                 var
                     TietoevryAuth: Codeunit Authenticator;
+                    [NonDebuggable]
+                    Token: SecretText;
                 begin
-                    TietoevryAuth.TestOAuth2Setup();
-                    FeatureTelemetry.LogUptake('0000MSD', ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
+                    Token := TietoevryAuth.GetAccessToken();
+                    if not Token.IsEmpty() then
+                        Message(this.AuthSuccessMsg);
                 end;
             }
         }
     }
-
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
-
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        IsSaaS := EnvironmentInfo.IsSaaS();
-
-        TietoevryAuth.InitConnectionSetup();
-        TietoevryAuth.IsClientCredsSet(ClientID, ClientSecret);
-
-        FeatureTelemetry.LogUptake('0000LST', ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
+        FeatureTelemetry.LogUptake('0000NHL', this.TietoevryProcessing.GetTietoevryTok(), Enum::"Feature Uptake Status"::Discovered);
+        this.TietoevryAuth.CreateConnectionSetupRecord();
+        this.TietoevryAuth.IsClientCredsSet(this.ClientID, this.ClientSecret);
     end;
 
     trigger OnClosePage()
-    var
     begin
         Rec.TestField("Company Id");
         Rec.TestField("Send Mode");
     end;
 
     var
-        TietoevryAuth: Codeunit Authenticator;
-        FeatureTelemetry: Codeunit "Feature Telemetry";
+
+        TietoevryAuth: Codeunit "Authenticator";
+        TietoevryProcessing: Codeunit Processing;
+        AuthSuccessMsg: Label 'Authenticated successfully';
         [NonDebuggable]
         ClientID, ClientSecret : Text;
-        IsSaaS: Boolean;
-        ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
 }

@@ -9,10 +9,8 @@ using Microsoft.Sales.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.eServices.EDocument;
-using System.Utilities;
 using Microsoft.eServices.EDocument.Service.Participant;
-
-codeunit 6380 "Connection Events"
+codeunit 6395 Events
 {
     SingleInstance = true;
     EventSubscriberInstance = StaticAutomatic;
@@ -27,7 +25,7 @@ codeunit 6380 "Connection Events"
 
         IsHandled := true;
         if CompanyInformation."VAT Registration No." = '' then
-            Error(MissingCompInfVATRegNoErr, CompanyInformation.TableCaption());
+            Error(this.MissingCompInfVATRegNoErr, CompanyInformation.TableCaption());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Validation", OnCheckSalesDocumentOnBeforeCheckCustomerVATRegNo, '', false, false)]
@@ -39,7 +37,7 @@ codeunit 6380 "Connection Events"
     begin
         if not EDocExtConnectionSetup.Get() then
             exit;
-        EDocumentService.SetRange("Service Integration", EDocumentService."Service Integration"::Tietoevry);
+        EDocumentService.SetRange("Service Integration V2", EDocumentService."Service Integration V2"::Tietoevry);
         if not EDocumentService.FindFirst() then
             exit;
 
@@ -48,48 +46,13 @@ codeunit 6380 "Connection Events"
                Customer.Get(SalesHeader."Bill-to Customer No.")
             then
             if Customer."VAT Registration No." = '' then
-                Error(MissingCustInfoErr, Customer.FieldCaption("VAT Registration No."), Customer."No.");
+                Error(this.MissingCustInfoErr, Customer.FieldCaption("VAT Registration No."), Customer."No.");
 
         if not ServiceParticipant.Get(EDocumentService.Code, ServiceParticipant."Participant Type"::Customer, SalesHeader."Bill-to Customer No.") then
             ServiceParticipant.Init();
 
         if ServiceParticipant."Participant Identifier" = '' then
-            Error(MissingCustInfoErr, ServiceParticipant.FieldCaption("Participant Identifier"), Customer."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", 'OnAfterInsertImportedEdocument', '', false, false)]
-    local procedure OnAfterInsertEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    var
-        LocalHttpRequest: HttpRequestMessage;
-        LocalHttpResponse: HttpResponseMessage;
-        DocumentOutStream: OutStream;
-        ContentData, MessageId : Text;
-    begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Tietoevry then
-            exit;
-
-        HttpResponse.Content.ReadAs(ContentData);
-        if not TietoevryProcessing.ParseReceivedDocument(ContentData, EDocument."Index In Batch", MessageId) then begin
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
-            exit;
-        end;
-
-        TietoevryConnection.HandleGetTargetDocumentRequest(MessageId, LocalHttpRequest, LocalHttpResponse, false);
-        EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
-
-        LocalHttpResponse.Content.ReadAs(ContentData);
-        if ContentData = '' then
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(CouldNotRetrieveDocumentErr, MessageId));
-
-        Clear(TempBlob);
-        TempBlob.CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
-        DocumentOutStream.WriteText(ContentData);
-
-        TietoevryProcessing.AcknowledgeEDocument(EDocument, EDocumentService, MessageId);
-
-        EDocument."Message Id" := CopyStr(MessageId, 1, MaxStrLen(EDocument."Message Id"));
-
-        EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
+            Error(this.MissingCustInfoErr, ServiceParticipant.FieldCaption("Participant Identifier"), Customer."No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
@@ -97,7 +60,7 @@ codeunit 6380 "Connection Events"
     var
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
     begin
-        if Rec."Document Format" <> Rec."Document Format"::"TE PEPPOL BIS 3.0" then
+        if Rec."Document Format" <> Rec."Document Format"::"Tietoevry PEPPOL BIS 3.0" then
             exit;
 
         EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
@@ -118,6 +81,15 @@ codeunit 6380 "Connection Events"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', "Service Integration V2", false, false)]
+    local procedure OnAfterValidateServiceIntegrationV2(var Rec: Record "E-Document Service"; var xRec: Record "E-Document Service"; CurrFieldNo: Integer)
+    begin
+        if Rec."Service Integration V2" <> Rec."Service Integration V2"::Tietoevry then
+            exit;
+        Rec.Validate("Document Format", Rec."Document Format"::"Tietoevry PEPPOL BIS 3.0");
+        Rec.Modify(true);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Service Participant", 'OnAfterValidateEvent', 'Participant Identifier', false, false)]
     local procedure OnAfterValidateServiceParticipant(var Rec: Record "Service Participant"; var xRec: Record "Service Participant"; CurrFieldNo: Integer)
     var
@@ -125,24 +97,19 @@ codeunit 6380 "Connection Events"
     begin
         if not EDocumentService.Get(Rec.Service) then
             exit;
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Tietoevry then
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Tietoevry then
             exit;
         if Rec."Participant Identifier" <> '' then
-            if not TietoevryProcessing.IsValidSchemeId(Rec."Participant Identifier") then
+            if not this.TietoevryProcessing.IsValidSchemeId(Rec."Participant Identifier") then
                 Rec.FieldError(Rec."Participant Identifier");
     end;
 
     var
-        TietoevryConnection: Codeunit "Connection";
         TietoevryProcessing: Codeunit "Processing";
-        EDocumentLogHelper: Codeunit "E-Document Log Helper";
-        EDocumentErrorHelper: Codeunit "E-Document Error Helper";
 #pragma warning disable AA0470
         MissingCompInfVATRegNoErr: Label 'You must specify VAT Registration No. in %1.', Comment = '%1=Company Information';
 #pragma warning restore AA0470
 #pragma warning disable AA0470
         MissingCustInfoErr: Label 'You must specify %1 for Customer %2.', Comment = '%1=Fieldcaption %2=Customer No.';
 #pragma warning restore AA0470
-        CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
-        DocumentIdNotFoundErr: Label 'Document ID not found in response';
 }

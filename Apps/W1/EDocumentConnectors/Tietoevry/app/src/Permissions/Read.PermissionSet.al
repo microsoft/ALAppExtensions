@@ -4,10 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using System.Security.AccessControl;
-using Microsoft.EServices.EDocumentConnector;
-
-permissionsetextension 6381 "D365 Read - EDocument Connector" extends "D365 READ"
+permissionset 6391 "Tietoevry Read"
 {
-    IncludedPermissionSets = "TE EDocConn. - Edit";
+    Access = Public;
+    Assignable = true;
+    Caption = 'Tietoevry E-Document Connector - Read';
+
+    Permissions = tabledata "Connection Setup" = r;
 }

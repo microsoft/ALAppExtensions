@@ -4,16 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-enum 6380 "E-Document Send Mode"
-{
-    Extensible = true;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.eServices.EDocument.Integration;
 
-    value(0; Production)
+enumextension 6391 IntegrationV2 extends "Service Integration"
+{
+    value(6390; "Tietoevry")
     {
-        Caption = 'Production';
-    }
-    value(1; Certification)
-    {
-        Caption = 'Certification';
+        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.";
     }
 }

@@ -1,18 +1,21 @@
-namespace Microsoft.eServices.EDocument.IO.Peppol;
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
 using Microsoft.eServices.EDocument;
-using System.Utilities;
-using Microsoft.Sales.Peppol;
-using Microsoft.Purchases.Document;
-using Microsoft.Service.History;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Service.History;
+using Microsoft.Sales.Peppol;
 using System.IO;
 using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.Purchases.Document;
 
-codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
+codeunit 6391 "Tietoevry E-Document" implements "E-Document"
 {
-    procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: enum Microsoft.eServices.EDocument."E-Document Processing Phase")
     var
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -51,7 +54,7 @@ codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
         end;
     end;
 
-    procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
+    procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: codeunit System.Utilities."Temp Blob")
     var
         ServiceParticipant: Record "Service Participant";
         TempXMLBuffer: Record "XML Buffer" temporary;
@@ -63,11 +66,11 @@ codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
         TempBlob.CreateOutStream(DocOutStream);
         case EDocument."Document Type" of
             EDocument."Document Type"::"Sales Invoice", EDocument."Document Type"::"Service Invoice":
-                GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream);
+                this.GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream);
             EDocument."Document Type"::"Sales Credit Memo", EDocument."Document Type"::"Service Credit Memo":
-                GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream);
+                this.GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream);
             else
-                EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
+                EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
         end;
 
         EDocument.Find();
@@ -100,22 +103,22 @@ codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
         EDocument.Modify();
     end;
 
-    procedure CreateBatch(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeaders: RecordRef; var SourceDocumentsLines: RecordRef; var TempBlob: codeunit "Temp Blob");
+    procedure CreateBatch(EDocumentService: Record "E-Document Service"; var EDocuments: Record "E-Document"; var SourceDocumentHeaders: RecordRef; var SourceDocumentsLines: RecordRef; var TempBlob: codeunit System.Utilities."Temp Blob")
     begin
 
     end;
 
-    procedure GetBasicInfoFromReceivedDocument(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
+    procedure GetBasicInfoFromReceivedDocument(var EDocument: Record "E-Document"; var TempBlob: codeunit System.Utilities."Temp Blob")
     begin
-        ImportTEPeppol.ParseBasicInfo(EDocument, TempBlob);
+        this.ImportTEPeppol.ParseBasicInfo(EDocument, TempBlob);
     end;
 
-    procedure GetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
+    procedure GetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: codeunit System.Utilities."Temp Blob")
     var
         TempPurchaseHeader: Record "Purchase Header" temporary;
         TempPurchaseLine: Record "Purchase Line" temporary;
     begin
-        ImportTEPeppol.ParseCompleteInfo(EDocument, TempPurchaseHeader, TempPurchaseLine, TempBlob);
+        this.ImportTEPeppol.ParseCompleteInfo(EDocument, TempPurchaseHeader, TempPurchaseLine, TempBlob);
 
         CreatedDocumentHeader.GetTable(TempPurchaseHeader);
         CreatedDocumentLines.GetTable(TempPurchaseLine);
@@ -140,6 +143,6 @@ codeunit 6385 "EDoc TE PEPPOL BIS 3.0" implements "E-Document"
     end;
 
     var
-        ImportTEPeppol: Codeunit "EDoc Import Tietoevry";
+        ImportTEPeppol: Codeunit "Tietoevry E-Document Import";
         DocumentTypeNotSupportedErr: Label '%1 %2 is not supported by PEPPOL BIS30 Format', Comment = '%1 - Document Type caption, %2 - Document Type';
 }

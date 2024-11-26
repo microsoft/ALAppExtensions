@@ -1,7 +1,10 @@
-namespace Microsoft.eServices.EDocument.IO.Peppol;
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Customer;
 using System.Utilities;
 using Microsoft.Purchases.Document;
 using System.IO;
@@ -11,9 +14,8 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.eServices.EDocument.Service.Participant;
 
-codeunit 6386 "EDoc Import Tietoevry"
+codeunit 6393 "Tietoevry E-Document Import"
 {
-
     procedure ParseBasicInfo(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
     var
         TempXMLBuffer: Record "XML Buffer" temporary;
@@ -25,15 +27,15 @@ codeunit 6386 "EDoc Import Tietoevry"
         TempXMLBuffer.LoadFromStream(DocStream);
 
         GLSetup.Get();
-        LCYCode := GLSetup."LCY Code";
+        this.LCYCode := GLSetup."LCY Code";
 
         EDocument.Direction := EDocument.Direction::Incoming;
 
         case UpperCase(GetDocumentType(TempXMLBuffer)) of
             'INVOICE':
-                ParseInvoiceBasicInfo(EDocument, TempXMLBuffer);
+                this.ParseInvoiceBasicInfo(EDocument, TempXMLBuffer);
             'CREDITNOTE':
-                ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer);
+                this.ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer);
         end;
     end;
 
@@ -51,9 +53,9 @@ codeunit 6386 "EDoc Import Tietoevry"
 
         case UpperCase(GetDocumentType(TempXMLBuffer)) of
             'INVOICE':
-                CreateInvoice(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
+                this.CreateInvoice(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
             'CREDITNOTE':
-                CreateCreditMemo(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
+                this.CreateCreditMemo(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
         end;
     end;
 
@@ -64,23 +66,23 @@ codeunit 6386 "EDoc Import Tietoevry"
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Invoice";
         EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
-        ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'Invoice');
-        ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'Invoice');
+        this.ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'Invoice');
+        this.ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'Invoice');
 
-        DueDate := GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DueDate');
+        DueDate := this.GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DueDate');
         if DueDate <> '' then
             Evaluate(EDocument."Due Date", DueDate, 9);
-        IssueDate := GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:IssueDate');
+        IssueDate := this.GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:IssueDate');
         if IssueDate <> '' then
             Evaluate(EDocument."Document Date", IssueDate, 9);
 
-        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
-        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
+        Evaluate(EDocument."Amount Excl. VAT", this.GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
+        Evaluate(EDocument."Amount Incl. VAT", this.GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
 
-        EDocument."Order No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(EDocument."Order No."));
+        EDocument."Order No." := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(EDocument."Order No."));
 
-        Currency := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
-        if LCYCode <> Currency then
+        Currency := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
+        if this.LCYCode <> Currency then
             EDocument."Currency Code" := Currency;
     end;
 
@@ -91,13 +93,13 @@ codeunit 6386 "EDoc Import Tietoevry"
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Credit Memo";
         EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
-        ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'CreditNote');
-        ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'CreditNote');
+        this.ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'CreditNote');
+        this.ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'CreditNote');
 
-        DueDate := GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:PaymentMeans/cbc:PaymentDueDate');
+        DueDate := this.GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:PaymentMeans/cbc:PaymentDueDate');
         if DueDate <> '' then
             Evaluate(EDocument."Due Date", DueDate, 9);
-        IssueDate := GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:IssueDate');
+        IssueDate := this.GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:IssueDate');
         if IssueDate <> '' then
             Evaluate(EDocument."Document Date", IssueDate, 9);
 
@@ -105,7 +107,7 @@ codeunit 6386 "EDoc Import Tietoevry"
         Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
 
         Currency := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
-        if LCYCode <> Currency then
+        if this.LCYCode <> Currency then
             EDocument."Currency Code" := Currency;
     end;
 
@@ -117,21 +119,21 @@ codeunit 6386 "EDoc Import Tietoevry"
         VendorId: Text[50];
         VendorNo: Code[20];
     begin
-        VendorId := CopyStr(GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID'), 1, MaxStrLen(VendorId)) + ':';
-        VendorId += CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VendorId) - StrLen(VendorId));
+        VendorId := CopyStr(this.GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID'), 1, MaxStrLen(VendorId)) + ':';
+        VendorId += CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VendorId) - StrLen(VendorId));
         ServiceParticipant.SetRange("Participant Type", ServiceParticipant."Participant Type"::Vendor);
         ServiceParticipant.SetRange("Participant Identifier", VendorId);
         if ServiceParticipant.FindFirst() then
             VendorNo := ServiceParticipant.Participant;
 
         if VendorNo = '' then begin
-            VendorName := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VendorName));
-            VendorAddress := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VendorAddress));
-            VendorNo := EDocumentImportHelper.FindVendorByNameAndAddress(VendorName, VendorAddress);
+            VendorName := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VendorName));
+            VendorAddress := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VendorAddress));
+            VendorNo := this.EDocumentImportHelper.FindVendorByNameAndAddress(VendorName, VendorAddress);
             EDocument."Bill-to/Pay-to Name" := CopyStr(VendorName, 1, MaxStrLen(EDocument."Bill-to/Pay-to Name"));
         end;
 
-        Vendor := EDocumentImportHelper.GetVendor(EDocument, VendorNo);
+        Vendor := this.EDocumentImportHelper.GetVendor(EDocument, VendorNo);
         if Vendor."No." <> '' then begin
             EDocument."Bill-to/Pay-to No." := Vendor."No.";
             EDocument."Bill-to/Pay-to Name" := Vendor.Name;
@@ -142,12 +144,12 @@ codeunit 6386 "EDoc Import Tietoevry"
     var
         ReceivingId: Text[50];
     begin
-        EDocument."Receiving Company Name" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(EDocument."Receiving Company Name"));
-        EDocument."Receiving Company Address" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
-        ReceivingId := CopyStr(GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID'), 1, MaxStrLen(EDocument."Receiving Company Id")) + ':';
-        ReceivingId += CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company Id") - StrLen(ReceivingId));
+        EDocument."Receiving Company Name" := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(EDocument."Receiving Company Name"));
+        EDocument."Receiving Company Address" := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
+        ReceivingId := CopyStr(this.GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID'), 1, MaxStrLen(EDocument."Receiving Company Id")) + ':';
+        ReceivingId += CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company Id") - StrLen(ReceivingId));
         EDocument."Receiving Company Id" := ReceivingId;
-        EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
+        EDocument."Receiving Company VAT Reg. No." := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
     end;
 
     local procedure CreateInvoice(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -157,15 +159,15 @@ codeunit 6386 "EDoc Import Tietoevry"
         InStream: InStream;
     begin
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Invoice;
-        PurchaseHeader."No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(PurchaseHeader."No."));
-        PurchaseHeader."Vendor Order No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(PurchaseHeader."Vendor Order No."));
+        PurchaseHeader."No." := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(PurchaseHeader."No."));
+        PurchaseHeader."Vendor Order No." := CopyStr(this.GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(PurchaseHeader."Vendor Order No."));
         // Currency
         PurchaseHeader.Insert();
 
         TempXMLBuffer.Reset();
         if TempXMLBuffer.FindSet() then
             repeat
-                ParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
+                this.ParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
             until TempXMLBuffer.Next() = 0;
 
         // Insert last document attachment
@@ -180,7 +182,7 @@ codeunit 6386 "EDoc Import Tietoevry"
         PurchaseHeader.Modify();
 
         // Allowance charge
-        CreateInvoiceAllowanceChargeLines(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
+        this.CreateInvoiceAllowanceChargeLines(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
     end;
 
     local procedure CreateCreditMemo(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -196,7 +198,7 @@ codeunit 6386 "EDoc Import Tietoevry"
         TempXMLBuffer.Reset();
         if TempXMLBuffer.FindSet() then
             repeat
-                ParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
+                this.ParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
             until TempXMLBuffer.Next() = 0;
 
         // Insert last document attachment
@@ -211,7 +213,7 @@ codeunit 6386 "EDoc Import Tietoevry"
         PurchaseHeader.Modify();
 
         // Allowance charge
-        CreateInvoiceAllowanceChargeLines(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
+        this.CreateInvoiceAllowanceChargeLines(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer);
     end;
 
     local procedure CreateInvoiceAllowanceChargeLines(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -237,7 +239,7 @@ codeunit 6386 "EDoc Import Tietoevry"
                 case TempXMLBuffer.Path of
                     DocumentText + '/cac:AllowanceCharge/cbc:ChargeIndicator':
                         if TempXMLBuffer.Value = 'true' then begin
-                            SetGLAccountAndInsertLine(EDocument, PurchaseLine, LineNo);
+                            this.SetGLAccountAndInsertLine(EDocument, PurchaseLine, LineNo);
 
                             PurchaseLine.Init();
                             PurchaseLine."Document Type" := PurchaseHeader."Document Type";
@@ -257,7 +259,7 @@ codeunit 6386 "EDoc Import Tietoevry"
                 end;
             until TempXMLBuffer.Next() = 0;
 
-        SetGLAccountAndInsertLine(EDocument, PurchaseLine, LineNo);
+        this.SetGLAccountAndInsertLine(EDocument, PurchaseLine, LineNo);
     end;
 
     local procedure SetGLAccountAndInsertLine(var EDocument: Record "E-Document"; var PurchaseLine: record "Purchase Line" temporary; var LineNo: Integer)
@@ -266,7 +268,7 @@ codeunit 6386 "EDoc Import Tietoevry"
     begin
         if PurchaseLine."Line No." = LineNo then begin
             RecRef.GetTable(PurchaseLine);
-            EDocumentImportHelper.FindGLAccountForLine(EDocument, RecRef);
+            this.EDocumentImportHelper.FindGLAccountForLine(EDocument, RecRef);
             PurchaseLine."No." := RecRef.Field(PurchaseLine.FieldNo("No.")).Value;
             PurchaseLine.Insert();
             LineNo += 10000;
@@ -382,7 +384,7 @@ codeunit 6386 "EDoc Import Tietoevry"
                 if Value <> '' then
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/CreditNote/cac:CreditNoteLine/cbc:Note':
-                setlineType(PurchaseLine, Value);
+                this.SetlineType(PurchaseLine, Value);
         end
     end;
 
@@ -431,7 +433,7 @@ codeunit 6386 "EDoc Import Tietoevry"
                 begin
                     if DocumentAttachment."No." <> '' then begin
                         DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
-                        // EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+                        //EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
                         Clear(DocumentAttachment);
                     end;
 
@@ -494,7 +496,7 @@ codeunit 6386 "EDoc Import Tietoevry"
                 if Value <> '' then
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/Invoice/cac:InvoiceLine/cbc:Note':
-                setlineType(PurchaseLine, Value);
+                this.SetlineType(PurchaseLine, Value);
         end;
     end;
 
