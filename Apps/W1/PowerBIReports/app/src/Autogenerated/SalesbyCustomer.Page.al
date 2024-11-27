@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37005 "Sales by Customer"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales by Customer';
     AboutTitle = 'About Sales by Customer';
     AboutText = 'The Sales by Customer report breaks down sales performance highlighting key metrics such as Sales Amount, Cost Amount, Gross Profit and Gross Profit Margin by customer. This report provides detailed insights into which customer and items driving revenue and profitability.';

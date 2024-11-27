@@ -74,7 +74,7 @@ codeunit 5374 "Create E-Document Setup"
         EDocServiceRec.Code := EDocService();
         EDocServiceRec.Description := EDocService();
         EDocServiceRec."Document Format" := EDocServiceRec."Document Format"::"PEPPOL BIS 3.0";
-        EDocServiceRec."Service Integration" := EDocServiceRec."Service Integration"::"No Integration";
+        EDocServiceRec."Service Integration V2" := EDocServiceRec."Service Integration V2"::"No Integration";
         if EDocServiceRec.Insert() then;
     end;
 

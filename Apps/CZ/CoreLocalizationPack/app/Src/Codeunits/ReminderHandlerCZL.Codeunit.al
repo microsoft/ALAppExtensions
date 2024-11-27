@@ -67,4 +67,23 @@ codeunit 11749 "Reminder Handler CZL"
     begin
         PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder Communication", 'OnBeforeExitReportIDOnReplaceHTMLText', '', false, false)]
+    local procedure RecordIDOnBeforeExitReportIDOnReplaceHTMLText(ReportID: Integer; var RecordVariant: Variant; var ReportIDExit: Boolean)
+    var
+        IssuedReminderHeader: Record "Issued Reminder Header";
+        RecordReference: RecordRef;
+    begin
+        if ReportID <> Report::"Reminder CZL" then
+            exit;
+
+        if not RecordVariant.IsRecordRef() then
+            exit;
+
+        RecordReference.GetTable(RecordVariant);
+        if RecordReference.Number <> IssuedReminderHeader.RecordId.TableNo then
+            exit;
+
+        ReportIDExit := false;
+    end;
 }

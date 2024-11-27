@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37055 "Production Scrap"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Production Scrap';
     AboutTitle = 'About Production Scrap';
     AboutText = 'View your scrap quantities over a timeline you can define to see trends. Analyze further by Scrap Code, Location, Item Categories and by filtering for specific items.';

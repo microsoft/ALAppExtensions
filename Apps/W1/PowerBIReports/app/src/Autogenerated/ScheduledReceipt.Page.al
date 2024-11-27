@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37028 "Scheduled Receipt"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Scheduled Receipt';
     AboutTitle = 'About Scheduled Receipt';
     AboutText = 'The Scheduled Receipt report visualizes Scheduled Receipt against Projected Available Balance over time, offering a clear view of inventory supply. A table matrix breaks this down by item, showcasing key metrics like Scheduled Receipt Quantity, Projected Available Balance, and quantities from supply documents such as purchase orders, transfer receipts and manufacturing documents.';

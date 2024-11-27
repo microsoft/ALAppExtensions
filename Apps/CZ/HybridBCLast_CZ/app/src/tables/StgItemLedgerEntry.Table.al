@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA24
 table 11715 "Stg Item Ledger Entry"
 {
     Caption = 'Stg Item Ledger Entry';
@@ -430,6 +431,7 @@ table 11715 "Stg Item Ledger Entry"
             Caption = 'Return Reason Code';
             TableRelation = "Return Reason";
         }
+#if not CLEANSCHEMA23
         field(11790; "Source No. 2"; Code[20])
         {
             Caption = 'Invoice-to Source No.';
@@ -476,29 +478,8 @@ table 11715 "Stg Item Ledger Entry"
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
-        field(31043; "FA No."; Code[20])
-        {
-            Caption = 'FA No.';
-            TableRelation = "Fixed Asset";
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31044; "Maintenance Code"; Code[10])
-        {
-            Caption = 'Maintenance Code';
-            TableRelation = Maintenance;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31060; "Perform. Country/Region Code"; Code[10])
-        {
-            Caption = 'Perform. Country/Region Code';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of VAT Registration in Other Countries has been removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
+#endif
+#if not CLEANSCHEMA23
         field(31061; "Tariff No."; Code[20])
         {
             Caption = 'Tariff No.';
@@ -521,11 +502,13 @@ table 11715 "Stg Item Ledger Entry"
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
+#endif
         field(31065; "Shipment Method Code"; Code[10])
         {
             Caption = 'Shipment Method Code';
             TableRelation = "Shipment Method";
         }
+#if not CLEANSCHEMA23
         field(31066; "Net Weight"; Decimal)
         {
             Caption = 'Net Weight';
@@ -567,6 +550,7 @@ table 11715 "Stg Item Ledger Entry"
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
+#endif
     }
 
     keys
@@ -671,3 +655,4 @@ table 11715 "Stg Item Ledger Entry"
         }
     }
 }
+#endif

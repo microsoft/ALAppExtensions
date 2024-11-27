@@ -10,6 +10,7 @@ using Microsoft.Inventory.Item;
 
 tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
 {
+#if not CLEANSCHEMA25
     fields
     {
         field(31069; "Intrastat Exclude CZL"; Boolean)
@@ -21,7 +22,7 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
-
+#endif
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;

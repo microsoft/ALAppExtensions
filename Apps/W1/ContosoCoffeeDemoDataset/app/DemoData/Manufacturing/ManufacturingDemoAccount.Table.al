@@ -1,9 +1,11 @@
+#if not CLEANSCHEMA26
 table 4761 "Manufacturing Demo Account"
 {
     TableType = Temporary;
     ObsoleteReason = 'This table will be replaced by "Contoso GL Account".';
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
+    ReplicateData = false;
 
     fields
     {
@@ -29,3 +31,4 @@ table 4761 "Manufacturing Demo Account"
         }
     }
 }
+#endif

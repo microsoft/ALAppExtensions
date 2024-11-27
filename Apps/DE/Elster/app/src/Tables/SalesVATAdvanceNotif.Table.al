@@ -68,6 +68,7 @@ table 11021 "Sales VAT Advance Notif."
             Editable = false;
             TableRelation = "No. Series";
         }
+#if not CLEANSCHEMA23
         field(9; "XSL-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -82,7 +83,7 @@ table 11021 "Sales VAT Advance Notif."
             ObsoleteState = Removed;
             ObsoleteReason = 'This functionality is not in use and not supported';
         }
-
+#endif
         field(11; "Statement Template Name"; Code[10])
         {
             DataClassification = CustomerContent;
@@ -426,6 +427,7 @@ table 11021 "Sales VAT Advance Notif."
     procedure CheckVATNo(var PosTaxoffice: Integer; var NumberTaxOffice: Integer; var PosArea: Integer; var NumberArea: Integer; var PosDistinction: Integer; var NumberDistinction: Integer) VATNo: Text[30]
     var
         CompanyInfo: Record "Company Information";
+        ShouldSkipWrongPlaceError: Boolean;
     begin
         CompanyInfo.Get();
         CompanyInfo.TestField("Tax Office Area");
@@ -464,7 +466,9 @@ table 11021 "Sales VAT Advance Notif."
                 end;
         end;
 
-        if StrLen(VATNo) <> NumberTaxOffice + NumberArea + NumberDistinction + 1 then
+        ShouldSkipWrongPlaceError := not (StrLen(VATNo) <> NumberTaxOffice + NumberArea + NumberDistinction + 1);
+        OnCheckVATNoOnBeforeShowWrongPlaceError(CompanyInfo, VATNo, NumberTaxOffice, NumberArea, NumberDistinction, ShouldSkipWrongPlaceError);
+        if not ShouldSkipWrongPlaceError then
             Error(
               WrongPlaceErr,
               CompanyInfo.FieldCaption("Registration No."),
@@ -610,6 +614,27 @@ table 11021 "Sales VAT Advance Notif."
                                 VATEntry.CalcSums("Unrealized Base", "Add.-Currency Unrealized Base");
                                 Amount := ConditionalAdd(0, VATEntry."Unrealized Base", VATEntry."Add.-Currency Unrealized Base");
                             end;
+                        VATStmtLine2."Amount Type"::"Full Amount":
+                            begin
+                                VATEntry.CalcSums(Amount, "Additional-Currency Amount", "Non-Deductible VAT Amount", "Non-Deductible VAT Amount ACY");
+                                Amount :=
+                                    ConditionalAdd(0, VATEntry.Amount + VATEntry."Non-Deductible VAT Amount", VATEntry."Additional-Currency Amount" + VATEntry."Non-Deductible VAT Amount ACY");
+                            end;
+                        VATStmtLine2."Amount Type"::"Full Base":
+                            begin
+                                VATEntry.CalcSums(Base, "Additional-Currency Base", "Non-Deductible VAT Base", "Non-Deductible VAT Base ACY");
+                                Amount := ConditionalAdd(0, VATEntry.Base + VATEntry."Non-Deductible VAT Base", VATEntry."Additional-Currency Base" + VATEntry."Non-Deductible VAT Base ACY");
+                            end;
+                        VATStmtLine2."Amount Type"::"Non-Deductible Amount":
+                            begin
+                                VATEntry.CalcSums("Non-Deductible VAT Amount", VATEntry."Non-Deductible VAT Amount ACY");
+                                Amount := ConditionalAdd(0, VATEntry."Non-Deductible VAT Amount", VATEntry."Non-Deductible VAT Amount ACY");
+                            end;
+                        VATStmtLine2."Amount Type"::"Non-Deductible Base":
+                            begin
+                                VATEntry.CalcSums("Non-Deductible VAT Base", "Non-Deductible VAT Base ACY");
+                                Amount := ConditionalAdd(0, VATEntry."Non-Deductible VAT Base", VATEntry."Non-Deductible VAT Base ACY");
+                            end;
                         else
                             VATStmtLine2.TestField("Amount Type");
                     end;
@@ -660,6 +685,14 @@ table 11021 "Sales VAT Advance Notif."
                 TotalUnrealizedAmount := TotalUnrealizedAmount + Amount;
             VATStmtLine."Amount Type"::"Unrealized Base":
                 TotalUnrealizedBase := TotalUnrealizedBase + Amount;
+            VATStmtLine."Amount Type"::"Full Amount":
+                TotalAmount := TotalAmount + Amount;
+            VATStmtLine."Amount Type"::"Full Base":
+                TotalBase := TotalBase + Amount;
+            VATStmtLine."Amount Type"::"Non-Deductible Amount":
+                TotalAmount := TotalAmount + Amount;
+            VATStmtLine."Amount Type"::"Non-Deductible Base":
+                TotalBase := TotalBase + Amount;
         end;
     end;
 
@@ -694,6 +727,11 @@ table 11021 "Sales VAT Advance Notif."
 
     [IntegrationEvent(true, false)]
     local procedure OnCalcLineTotalOnBeforeCalcTotalAmountVATEntryTotaling(VATStmtLine: Record "VAT Statement Line"; var VATEntry: Record "VAT Entry"; var Amount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCheckVATNoOnBeforeShowWrongPlaceError(CompanyInfo: Record "Company Information"; var VATNo: Text[30]; var NumberTaxOffice: Integer; var NumberArea: Integer; var NumberDistinction: Integer; var ShouldSkipWrongPlaceError: Boolean)
     begin
     end;
 }

@@ -1,9 +1,9 @@
 namespace Microsoft.SubscriptionBilling;
 
+using System.Reflection;
 using Microsoft.Sales.Document;
 using Microsoft.Purchases.Document;
 using Microsoft.Projects.Project.Job;
-using Microsoft.RoleCenters;
 
 table 8070 "Subscription Billing Cue"
 {
@@ -101,6 +101,11 @@ table 8070 "Subscription Billing Cue"
             FieldClass = Normal;
             DataClassification = CustomerContent;
         }
+        field(13; "Last Updated On"; DateTime)
+        {
+            Caption = 'Last Updated On';
+            Editable = false;
+        }
         field(20; "Date Filter"; Date)
         {
             Caption = 'Date Filter';
@@ -135,10 +140,10 @@ table 8070 "Subscription Billing Cue"
         }
     }
 
-    local procedure GetAmountFormat(): Text
+    procedure GetAmountFormat(): Text
     var
-        ActivitiesCue: Record "Activities Cue";
+        TypeHelper: Codeunit "Type Helper";
     begin
-        exit(ActivitiesCue.GetAmountFormat());
+        exit(TypeHelper.GetAmountFormatLCYWithUserLocale());
     end;
 }

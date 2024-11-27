@@ -11,7 +11,7 @@ pageextension 8004 "Vendor Item Catalog" extends "Vendor Item Catalog"
             field(SupplierRefEntryNo; Rec."Supplier Ref. Entry No.")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the sequential number of the associated product reference for processing usage-based billing.';
+                ToolTip = 'Specifies the sequential number of the associated product reference for processing usage-based billing. This is only relevant if you are using Subscription Billing functionalities.';
             }
         }
     }

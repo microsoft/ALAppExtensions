@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37031 "Bin Contents"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Bin Contents';
     AboutTitle = 'About Bin Contents';
     AboutText = 'The Bin Contents report provides a detailed view of item quantities by bin code and location. It includes additional information such as warehouse quantity, pick and put-away quantities, and both negative and positive adjustments, offering a comprehensive overview of bin movements and inventory management within the warehouse.';

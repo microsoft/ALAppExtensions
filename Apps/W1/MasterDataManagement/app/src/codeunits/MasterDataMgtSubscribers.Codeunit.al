@@ -3,6 +3,7 @@ namespace Microsoft.Integration.MDM;
 using System.Threading;
 using System.Telemetry;
 using System.Environment;
+using Microsoft.Finance.GeneralLedger.Account;
 using System.Reflection;
 using System.IO;
 using System.Environment.Configuration;
@@ -32,7 +33,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
 
     var
         ValueWillBeOverwrittenErr: label 'Record %2 was modified locally since the last synchronization and a different value for field %1 (%3) is synchronizing from the source record.\\Before retrying, open Synchronization Tables, select %4, choose action Fields and either disable the synchronization of %1 or set it up to overwrite local changes. Alternatively, choose to overwrite local changes on synchronization table %4.', Comment = '%1 - a field caption, %2 - a record identifier, %3 - a field value (any value), %4 - table caption';
-        UnsupportedKeyLengthErr: label 'Table %1 has a primary key that consists of %2 fields. Synchronization engine doesn''t support renaming with primary key length of more than 5 fields.\\Before retrying, open Synchronization Tables, select %1, choose Synchronization Fields and disable the synchronization of its primary key fields.', Comment = '%1 - a table caption, %2 - an integer';
+        UnsupportedKeyLengthErr: label 'Table %1 has a primary key that consists of %2 fields. Off-the page, synchronization engine doesn''t support renaming with primary key length of more than 10 fields.\\Subscribe to event OnRenameDestination in codeunit "Master Data Management" to implement the rename.', Comment = '%1 - a table caption, %2 - an integer';
         MappingDoesNotAllowDirectionErr: label 'The only supported direction for the data synchronization is %1.', Comment = '%1 - a text: From Integration Table';
         RunningFullSynchTelemetryTxt: Label 'Running full synch job for table mapping %1', Locked = true;
         SetContactNoFromSourceCompanyTxt: Label 'For %1 %2, initialized company contact No. to be equal the No. of the company contact from the source company %3.', Locked = true;
@@ -373,6 +374,8 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 UpdateChildContactsParentCompany(SourceRecordRef);
             'Contact-Contact':
                 FixPrimaryContactNo(SourceRecordRef, DestinationRecordRef);
+            'G/L Account-G/L Account':
+                ValidateGlobalDimensionCodes(SourceRecordRef, DestinationRecordRef);
         end;
     end;
 
@@ -386,6 +389,16 @@ codeunit 7237 "Master Data Mgt. Subscribers"
 
         if SourceRecordRef.Number() = Database::Item then
             UpdateItemMediaSet(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterModifyRecord', '', false, false)]
+    local procedure OnAfterModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if SourceRecordRef.Number() = Database::"G/L Account" then
+            ValidateGlobalDimensionCodes(SourceRecordRef, DestinationRecordRef);
     end;
 
     internal procedure RenameIfNeededOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
@@ -489,9 +502,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     var
         IntegrationFieldMapping: Record "Integration Field Mapping";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        MasterDataManagement: Codeunit "Master Data Management";
         BackupDestinatioRecordRef: RecordRef;
         RenamedDestinatioRecordRef: RecordRef;
         SourcePrimaryKeyRef: KeyRef;
+        Handled: Boolean;
     begin
         if SourceRecordRef.Number <> DestinationRecordRef.Number then
             exit;
@@ -512,8 +527,21 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value());
             5:
                 RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value());
-            else
-                Error(UnsupportedKeyLengthErr, SourceRecordRef.Caption(), Format(SourcePrimaryKeyRef.FieldCount()));
+            6:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value());
+            7:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value());
+            8:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value());
+            9:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value(), SourcePrimaryKeyRef.FieldIndex(9).Value());
+            10:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value(), SourcePrimaryKeyRef.FieldIndex(9).Value(), SourcePrimaryKeyRef.FieldIndex(10).Value());
+            else begin
+                MasterDataManagement.OnRenameDestination(RenamedDestinatioRecordRef, SourcePrimaryKeyRef, Handled);
+                if not Handled then
+                    Error(UnsupportedKeyLengthErr, SourceRecordRef.Caption(), Format(SourcePrimaryKeyRef.FieldCount()));
+            end;
         end;
         DestinationRecordRef.GetBySystemId(DestinationRecordRef.Field(DestinationRecordRef.SystemIdNo()).Value());
         IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -892,6 +920,59 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if (SourceRecordRef.Number() <> 0) and (DestinationRecordRef.Number() <> 0) then
             exit(SourceRecordRef.Name() + '-' + DestinationRecordRef.Name());
         exit('');
+    end;
+
+    local procedure ValidateGlobalDimensionCodes(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        SourceGLAccount: Record "G/L Account";
+        DestinationGLAccount: Record "G/L Account";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        GlobalDimCode1SynchEnabled: Boolean;
+        GlobalDimCode2SynchEnabled: Boolean;
+    begin
+        if SourceRecordRef.Number <> Database::"G/L Account" then
+            exit;
+
+        if DestinationRecordRef.Number <> Database::"G/L Account" then
+            exit;
+
+        if not MasterDataManagementSetup.Get() then
+            exit;
+
+        if not MasterDataManagementSetup."Is Enabled" then
+            exit;
+
+        IntegrationTableMapping.SetRange("Table ID", Database::"G/L Account");
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::"G/L Account");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+
+        // determine whether the synch is enabled for Global Dim. fields        
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
+        IntegrationFieldMapping.SetRange("Field No.", SourceGLAccount.FieldNo("Global Dimension 1 Code"));
+        GlobalDimCode1SynchEnabled := (not IntegrationFieldMapping.IsEmpty());
+        IntegrationFieldMapping.SetRange("Field No.", SourceGLAccount.FieldNo("Global Dimension 2 Code"));
+        GlobalDimCode2SynchEnabled := (not IntegrationFieldMapping.IsEmpty());
+
+        if not (GlobalDimCode1SynchEnabled or GlobalDimCode2SynchEnabled) then
+            exit;
+
+        SourceGLAccount.ChangeCompany(MasterDataManagementSetup."Company Name");
+        SourceRecordRef.SetTable(SourceGLAccount);
+        DestinationRecordRef.SetTable(DestinationGLAccount);
+        if GlobalDimCode1SynchEnabled then
+            DestinationGLAccount.Validate("Global Dimension 1 Code", SourceGLAccount."Global Dimension 1 Code");
+        if GlobalDimCode2SynchEnabled then
+            DestinationGLAccount.Validate("Global Dimension 2 Code", SourceGLAccount."Global Dimension 2 Code");
+        DestinationGLAccount.Modify();
+        DestinationRecordRef.GetTable(DestinationGLAccount);
     end;
 
     local procedure FixPrimaryContactNo(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean

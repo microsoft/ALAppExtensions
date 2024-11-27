@@ -108,6 +108,7 @@ table 2751 "Universal Printer Settings"
             DataClassification = CustomerContent;
         }
 
+#if not CLEANSCHEMA24
         /// <summary>
         /// The output bin to use when printing the document.
         /// </summary>
@@ -119,7 +120,7 @@ table 2751 "Universal Printer Settings"
             ObsoleteReason = 'Replaced with Paper Tray';
             DataClassification = CustomerContent;
         }
-
+#endif
         /// <summary>
         /// The output paper tray to use when printing the document.
         /// </summary>

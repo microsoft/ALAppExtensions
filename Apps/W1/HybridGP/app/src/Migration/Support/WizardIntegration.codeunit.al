@@ -93,7 +93,11 @@ codeunit 4035 "Wizard Integration"
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 

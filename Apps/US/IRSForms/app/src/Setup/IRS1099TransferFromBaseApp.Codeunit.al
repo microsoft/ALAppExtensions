@@ -38,6 +38,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         Clear(IRSFormsSetup."Data Transfer Task ID");
         Clear(IRSFormsSetup."Task Start Date/Time");
         IRSFormsSetup."Data Transfer Completed" := true;
+        IRSFormsSetup."Data Transfer Error Message" := '';
         IRSFormsSetup.Modify();
     end;
 

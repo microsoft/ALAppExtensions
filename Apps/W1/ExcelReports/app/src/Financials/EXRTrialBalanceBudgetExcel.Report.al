@@ -8,6 +8,7 @@ namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Company;
+using Microsoft.ExcelReports;
 
 report 4406 "EXR Trial BalanceBudgetExcel"
 {
@@ -99,9 +100,13 @@ report 4406 "EXR Trial BalanceBudgetExcel"
     begin
         TrialBalanceBudgetData.SecurityFiltering(SecurityFilter::Filtered);
         CompanyInformation.Get();
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Trial BalanceBudgetExcel");
         TrialBalance.ConfigureTrialBalance(true, false);
         TrialBalance.InsertTrialBalanceReportData(GLAccounts, Dimension1, Dimension2, TrialBalanceBudgetData);
     end;
+
+    var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
 
     protected var
         CompanyInformation: Record "Company Information";

@@ -12,7 +12,7 @@ pageextension 8066 "Sales Invoice" extends "Sales Invoice"
             {
                 ApplicationArea = Basic, Suite;
                 Enabled = Rec."Recurring Billing";
-                ToolTip = 'Specifies whether the billing details for this document are automatically output.';
+                ToolTip = 'Specifies whether to automatically print the billing details for this document. This is only relevant if you are using Subscription Billing functionalities.';
             }
         }
     }

@@ -4,7 +4,7 @@ table 8019 "Contract Analysis Entry"
     DataClassification = CustomerContent;
     DrillDownPageId = "Contract Analysis Entries";
     LookupPageId = "Contract Analysis Entries";
-
+    Access = Internal;
     fields
     {
         field(1; "Entry No."; Integer)
@@ -138,7 +138,8 @@ table 8019 "Contract Analysis Entry"
         field(27; "Contract Line No."; Integer)
         {
             Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
+            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(31; "Price (LCY)"; Decimal)
         {
@@ -296,6 +297,7 @@ table 8019 "Contract Analysis Entry"
         Rec.Partner := ServiceCommitment.Partner;
         Rec."Partner No." := ServiceCommitment.GetPartnerNoFromContract();
         Rec."Dimension Set ID" := ServiceCommitment."Dimension Set ID";
+        Rec."Usage Based Billing" := ServiceCommitment."Usage Based Billing";
     end;
 
     internal procedure CalculateMonthlyRecurringRevenue(ServiceCommitment: Record "Service Commitment")

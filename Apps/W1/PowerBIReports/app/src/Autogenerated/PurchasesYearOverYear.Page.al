@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37015 "Purchases Year-Over-Year"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Year-Over-Year';
     AboutTitle = 'About Purchases Year-Over-Year';
     AboutText = 'The Purchases Year-Over-Year report compares purchase amounts across multiple years. This report is essential for long-term planning and making informed decisions based on historical purchasing data.';

@@ -60,11 +60,14 @@ codeunit 30351 "Shpfy Mtfld Type Dimension" implements "Shpfy IMetafield Type"
 
     local procedure GetDimensionTypeName(DimensionType: Enum "Shpfy Metafield Dimension Type"): Text
     begin
-        exit(DimensionType.Names().Get(DimensionType.Ordinals().IndexOf(DimensionType.AsInteger())));
+        exit(DimensionType.Names.Get(DimensionType.Ordinals().IndexOf(DimensionType.AsInteger())).Trim().ToUpper().Replace(' ', '_'));
     end;
 
     local procedure ConvertToDimensionType(Value: Text) Type: Enum "Shpfy Metafield Dimension Type"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         exit(Enum::"Shpfy Metafield Dimension Type".FromInteger(Type.Ordinals().Get(Type.Names().IndexOf(Value))));
     end;
 }

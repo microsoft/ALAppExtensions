@@ -30,9 +30,9 @@ codeunit 5149 "Create FA Jnl. Template"
     begin
         SourceCodeSetup.Get();
 
-        ContosoGeneralLedger.InsertGeneralJournalTemplate(Assets(), FixedAssetGLJournalLbl, Enum::"Gen. Journal Template Type"::Assets, false, FANoSeries.FixedAssetGLJournal(), SourceCodeSetup."Fixed Asset G/L Journal");
+        ContosoGeneralLedger.InsertGeneralJournalTemplate(Assets(), FixedAssetGLJournalLbl, Enum::"Gen. Journal Template Type"::Assets, false, FANoSeries.FixedAssetJournal(), SourceCodeSetup."Fixed Asset G/L Journal");
 
-        ContosoGeneralLedger.InsertGeneralJournalBatch(Assets(), Default(), DefaultJournalBatchLbl);
+        ContosoGeneralLedger.InsertGeneralJournalBatch(Assets(), Default(), DefaultJournalBatchLbl, Enum::"Gen. Journal Account Type"::"G/L Account", '', FANoSeries.FixedAssetJournal(), false);
     end;
 
     procedure Assets(): Code[10]

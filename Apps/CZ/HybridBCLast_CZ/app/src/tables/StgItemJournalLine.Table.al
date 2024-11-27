@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA24
 table 11714 "Stg Item Journal Line"
 {
     Caption = 'Stg Item Journal Line';
@@ -812,6 +813,7 @@ table 11714 "Stg Item Journal Line"
             OptionCaption = ' ,Item,SKU';
             OptionMembers = " ",Item,SKU;
         }
+#if not CLEANSCHEMA23
         field(11763; "G/L Correction"; Boolean)
         {
             Caption = 'G/L Correction';
@@ -819,16 +821,8 @@ table 11714 "Stg Item Journal Line"
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
-        field(11790; "Source No. 2"; Code[20])
-        {
-            Caption = 'Source No. 2';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'This field is replaced by "Invoice-to Source No." field.';
-            TableRelation = IF ("Source Type" = CONST(Customer)) Customer
-            ELSE
-            IF ("Source Type" = CONST(Vendor)) Vendor;
-            ObsoleteTag = '18.0';
-        }
+#endif
+#if not CLEANSCHEMA23
         field(11791; "Source No. 3"; Code[20])
         {
             Caption = 'Delivery-to Source No.';
@@ -839,29 +833,8 @@ table 11714 "Stg Item Journal Line"
             ObsoleteReason = 'Moved to Advanced Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
-        field(31043; "FA No."; Code[20])
-        {
-            Caption = 'FA No.';
-            TableRelation = "Fixed Asset";
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31044; "Maintenance Code"; Code[10])
-        {
-            Caption = 'Maintenance Code';
-            TableRelation = Maintenance;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of Item consumption for FA maintenance will be removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
-        field(31060; "Perform. Country/Region Code"; Code[10])
-        {
-            Caption = 'Perform. Country/Region Code';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The functionality of VAT Registration in Other Countries has been removed and this field should not be used. (Obsolete::Removed in release 01.2021)';
-            ObsoleteTag = '18.0';
-        }
+#endif
+#if not CLEANSCHEMA23
         field(31061; "Tariff No."; Code[20])
         {
             Caption = 'Tariff No.';
@@ -877,11 +850,13 @@ table 11714 "Stg Item Journal Line"
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
+#endif
         field(31065; "Shipment Method Code"; Code[10])
         {
             Caption = 'Shipment Method Code';
             TableRelation = "Shipment Method";
         }
+#if not CLEANSCHEMA23
         field(31066; "Net Weight"; Decimal)
         {
             Caption = 'Net Weight';
@@ -940,6 +915,7 @@ table 11714 "Stg Item Journal Line"
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
             ObsoleteTag = '23.0';
         }
+#endif
         field(31077; "Whse. Net Change Template"; Code[10])
         {
             Caption = 'Whse. Net Change Template';
@@ -1030,3 +1006,4 @@ table 11714 "Stg Item Journal Line"
     {
     }
 }
+#endif

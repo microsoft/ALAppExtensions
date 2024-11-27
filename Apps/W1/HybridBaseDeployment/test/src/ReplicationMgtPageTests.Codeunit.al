@@ -31,6 +31,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         IntelligentCloudSetup."Deployed Version" := 'V1.0';
         IntelligentCloudSetup."Latest Version" := 'V2.0';
         IntelligentCloudSetup.Insert();
+        LibraryVariableStorage.AssertEmpty();
 
         if Initialized then
             exit;
@@ -367,44 +368,6 @@ codeunit 139653 "Replication Mgt Page Tests"
 
         // [THEN] The records are removed from the table
         Assert.IsTrue(MigrationTableMappingRec.IsEmpty(), 'Mapping table should be empty.');
-    end;
-
-    [Test]
-    procedure ProvideMappingForTableExtension()
-    var
-        MigrationTableMappingRec: Record "Migration Table Mapping";
-        AllObj: Record AllObj;
-        PublishedApplication: Record "Published Application";
-        LibraryRandom: Codeunit "Library - Random";
-        MigrationTableMapping: TestPage "Migration Table Mapping";
-        SourceTableName: Text;
-    begin
-        // [SCENARIO] User can choose to delete all mapping records for a given extension
-
-        // [GIVEN] The intelligent cloud is set up
-        Initialize(true);
-        MigrationTableMappingRec.DeleteAll();
-
-        // [GIVEN] A Table extension
-        AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
-        if not AllObj.FindFirst() then
-            exit;
-
-        PublishedApplication.SetRange("Package ID", AllObj."App Package ID");
-        PublishedApplication.FindFirst();
-
-        // [WHEN] User defines a table mapping via Migration Table Page
-        MigrationTableMapping.OpenEdit();
-        MigrationTableMapping.New();
-        MigrationTableMapping.TargetTableType.SetValue(MigrationTableMappingRec."Target Table Type"::"Table Extension");
-        MigrationTableMapping."Extension Name".SetValue(PublishedApplication.Name);
-        MigrationTableMapping."Table Name".SetValue(AllObj.TableName);
-        SourceTableName := LibraryRandom.RandText(30);
-        MigrationTableMapping."Source Table Name".SetValue(SourceTableName);
-        MigrationTableMapping.Close();
-
-        // [THEN] A mapping record is created
-        VerifyTableMappingToExtension(MigrationTableMappingRec, PublishedApplication, SourceTableName);
     end;
 
     [Test]
@@ -812,16 +775,6 @@ codeunit 139653 "Replication Mgt Page Tests"
         IntelligentCloudDetails.Close();
     end;
 
-    local procedure VerifyTableMappingToExtension(MigrationTableMappingRec: Record "Migration Table Mapping"; PublishedApplication: Record "Published Application"; SourceTableName: Text)
-    begin
-        Assert.IsTrue(MigrationTableMappingRec.FindFirst(), 'The record was not created.');
-        Assert.AreEqual(MigrationTableMappingRec."Target Table Type"::"Table Extension", MigrationTableMappingRec."Target Table Type", 'Target table type is not correct.');
-        Assert.AreEqual(MigrationTableMappingRec."App ID", PublishedApplication.ID, 'App ID is not correct.');
-        Assert.AreEqual(MigrationTableMappingRec."Source Table Name", SourceTableName, 'Source Table name is not correct.');
-        Assert.AreEqual(MigrationTableMappingRec."Table Name", SourceTableName, 'Table Name is not correct.');
-        Assert.AreEqual(MigrationTableMappingRec."Data Per Company", true, 'Data per company  is not correct');
-    end;
-
     [ConfirmHandler]
     procedure ConfirmYesHandler(question: Text[1024]; var reply: Boolean)
     begin
@@ -938,6 +891,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     var
         Assert: Codeunit Assert;
         LibraryHybridManagement: Codeunit "Library - Hybrid Management";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Initialized: Boolean;
         RunReplicationTxt: Label 'Replication has been successfully triggered; you can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';

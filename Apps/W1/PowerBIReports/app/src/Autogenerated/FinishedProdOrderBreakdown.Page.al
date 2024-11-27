@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37045 "Finished Prod. Order Breakdown"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Finished Prod. Order Breakdown';
     AboutTitle = 'About Finished Prod. Order Breakdown';
     AboutText = 'View Expected Quantities and Cost vs Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';

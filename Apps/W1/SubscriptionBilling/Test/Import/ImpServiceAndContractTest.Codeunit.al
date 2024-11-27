@@ -285,9 +285,6 @@ codeunit 139914 "Imp. Service And Contract Test"
         ImportedServiceCommitment."Service Start Date" := 0D;
         TestAssertErrorOnCreateServiceCommitmentRun(InitialImportedServiceCommitment);
 
-        ImportedServiceCommitment."Calculation Base Amount" := 0;
-        TestAssertErrorOnCreateServiceCommitmentRun(InitialImportedServiceCommitment);
-
         ImportedServiceCommitment."Calculation Base %" := LibraryRandom.RandDecInRange(-100, -1, 0);
         TestAssertErrorOnCreateServiceCommitmentRun(InitialImportedServiceCommitment);
 
@@ -477,6 +474,43 @@ codeunit 139914 "Imp. Service And Contract Test"
         ImportedCustomerContract.Modify(false);
         asserterror CreateCustomerContract.Run(ImportedCustomerContract);
         ImportedCustomerContract := InitialImportedCustomerContract;
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure ImportServiceCommitmentWithEmptyInvoicingItemNo()
+    var
+        ServiceCommitment: Record "Service Commitment";
+    begin
+        // [GIVEN] Service Object with Service Commitment Item
+        // [GIVEN] Imported Service Commitments without a value in "Invoicing Item No."
+        ClearTestData();
+        ContractTestLibrary.CreateImportedServiceObject(ImportedServiceObject, Customer."No.", '');
+        Commit(); // needed before If Codeunit.Run
+        Report.Run(Report::"Create Service Objects", false, false, ImportedServiceObject); //MessageHandler
+
+        ImportedServiceCommitment.Init();
+        ImportedServiceCommitment."Entry No." := 0;
+        ImportedServiceCommitment."Service Object No." := ImportedServiceObject."Service Object No.";
+        ImportedServiceCommitment."Contract Line Type" := Enum::"Contract Line Type"::"Service Commitment";
+        ImportedServiceCommitment.Partner := "Service Partner"::Customer;
+        ImportedServiceCommitment."Invoicing via" := "Invoicing Via"::Contract;
+        ImportedServiceCommitment."Invoicing Item No." := '';
+        ImportedServiceCommitment.Description := CopyStr(LibraryRandom.RandText(MaxStrLen(ImportedServiceCommitment.Description)), 1, MaxStrLen(ImportedServiceCommitment.Description));
+        ContractTestLibrary.SetImportedServiceCommitmentData(ImportedServiceCommitment);
+        ImportedServiceCommitment.Insert(false);
+
+        // [WHEN] Creating Service Commitments
+        Commit(); // needed before If Codeunit.Run
+        Report.Run(Report::"Cr. Serv. Comm. And Contr. L.", false, false, ImportedServiceCommitment); //MessageHandler
+        ImportedServiceCommitment.Get(ImportedServiceCommitment."Entry No.");
+
+        // [THEN] Expect the Service Commitment Item to have the Item of the Service Object if it is a service commitment item
+        ImportedServiceCommitment.TestField("Service Commitment created", true);
+        ImportedServiceCommitment.TestField("Invoicing Item No.", '');
+
+        ServiceCommitment.Get(ImportedServiceCommitment."Service Commitment Entry No.");
+        AssertThat.AreEqual(ImportedServiceObject."Item No.", ServiceCommitment."Invoicing Item No.", 'The Invoicing Item No. should be taken from the Service Object if it is empty in the source and if the item is a service commitment item');
     end;
 
     var

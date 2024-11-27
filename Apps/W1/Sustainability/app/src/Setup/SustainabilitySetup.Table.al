@@ -105,6 +105,42 @@ table 6217 "Sustainability Setup"
         {
             Caption = 'Use Emissions In Purchase Documents';
         }
+        field(17; "Waste Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Waste Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(18; "Water Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Water Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(19; "Disch. Into Water Unit of Meas"; Code[10])
+        {
+            Caption = 'Disch. Into Water Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(20; "G/L Account Emissions"; Boolean)
+        {
+            Caption = 'G/L Account Emissions';
+        }
+        field(21; "Item Emissions"; Boolean)
+        {
+            Caption = 'Item Emissions';
+        }
+        field(22; "Item Charge Emissions"; Boolean)
+        {
+            Caption = 'Item Charge Emissions';
+            Editable = false;
+        }
+        field(23; "Resource Emissions"; Boolean)
+        {
+            Caption = 'Resource Emissions';
+        }
+        field(24; "Work/Machine Center Emissions"; Boolean)
+        {
+            Caption = 'Work/Machine Center Emissions';
+        }
     }
 
     keys

@@ -126,6 +126,14 @@ codeunit 148099 "SAF-T Test Helper"
         SAFTExportHeader.Insert(true);
     end;
 
+    procedure CreateSAFTExportHeader(var SAFTExportHeader: Record "SAF-T Export Header"; MappingRangeCode: Code[20]; Version: Enum "SAF-T Version")
+    begin
+        SAFTExportHeader.Init();
+        SAFTExportHeader.Validate("Mapping Range Code", MappingRangeCode);
+        SAFTExportHeader.Validate(Version, Version);
+        SAFTExportHeader.Insert(true);
+    end;
+
     procedure RunSAFTExport(var SAFTExportHeader: Record "SAF-T Export Header")
     begin
         Codeunit.Run(Codeunit::"SAF-T Export Mgt.", SAFTExportHeader);
@@ -436,6 +444,9 @@ codeunit 148099 "SAF-T Test Helper"
         VATReportingCode: Record "VAT Reporting Code";
     begin
         VATPostingSetup.FindSet();
+        VATPostingSetup.Validate("Sale VAT Reporting Code", '');
+        VATPostingSetup.Validate("Purch. VAT Reporting Code", '');
+        VATPostingSetup.Modify(true);
         VATPostingSetup.Next(); // do not specify any value for Standard Tax Code in order to verify that NA value will be exported in the XML file
         VATReportingCode.FindSet();
         repeat

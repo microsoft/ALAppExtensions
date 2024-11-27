@@ -781,6 +781,7 @@ table 11733 "Cash Document Line CZP"
             Editable = false;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA28
         field(62; "VAT Difference (LCY)"; Decimal)
         {
             Caption = 'VAT Difference (LCY)';
@@ -794,6 +795,7 @@ table 11733 "Cash Document Line CZP"
             ObsoleteTag = '18.0';
 #endif
         }
+#endif
         field(63; "System-Created Entry"; Boolean)
         {
             Caption = 'System-Created Entry';
@@ -1019,19 +1021,6 @@ table 11733 "Cash Document Line CZP"
             Caption = 'Posting Allocation Account No.';
             DataClassification = CustomerContent;
             TableRelation = "Allocation Account";
-        }
-        field(31001; "Advance Letter Link Code"; Code[30])
-        {
-            Caption = 'Advance Letter Link Code';
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-
-            trigger OnValidate()
-            begin
-                UpdateEETTransaction();
-            end;
         }
     }
 

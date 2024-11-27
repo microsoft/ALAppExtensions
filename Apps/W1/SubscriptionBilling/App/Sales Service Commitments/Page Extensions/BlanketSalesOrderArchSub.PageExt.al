@@ -11,21 +11,21 @@ pageextension 8010 "Blanket Sales Order Arch. Sub." extends "Blanket Sales Order
             field("Service Commitments"; Rec."Service Commitments")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments for the sales line.';
+                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the archived sales line.';
             }
         }
     }
 
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitmentArchive)
             {
                 ApplicationArea = All;
                 Caption = 'Service Commitments';
                 Image = AllLines;
-                RunObject = Page "Sales Serv. Comm. Archive List";
+                RunObject = page "Sales Serv. Comm. Archive List";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
                 ToolTip = 'Shows the archived service commitments for the line.';
             }

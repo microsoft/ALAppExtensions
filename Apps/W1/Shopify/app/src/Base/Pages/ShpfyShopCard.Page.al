@@ -1145,9 +1145,6 @@ page 30101 "Shpfy Shop Card"
         IsReturnRefundsVisible: Boolean;
         ApiVersion: Text;
         ApiVersionExpiryDate: Date;
-        ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
-        BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
-        CategoryTok: Label 'Shopify Integration', Locked = true;
 #if not CLEAN24
         ReplaceOrderAttributeValueDisabled: Boolean;
 #endif
@@ -1156,10 +1153,8 @@ page 30101 "Shpfy Shop Card"
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ShopMgt: Codeunit "Shpfy Shop Mgt.";
         AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
-
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ApiVersionExpiryDateTime: DateTime;
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
@@ -1167,14 +1162,7 @@ page 30101 "Shpfy Shop Card"
             ApiVersion := CommunicationMgt.GetApiVersion();
             ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
             ApiVersionExpiryDate := DT2Date(ApiVersionExpiryDateTime);
-            if CurrentDateTime() > ApiVersionExpiryDateTime then begin
-                ShopMgt.SendBlockedNotification();
-                Session.LogMessage('0000KNZ', BlockedNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-            end else
-                if Round((ApiVersionExpiryDateTime - CurrentDateTime()) / 1000 / 3600 / 24, 1) <= 30 then begin
-                    ShopMgt.SendExpirationNotification(ApiVersionExpiryDate);
-                    Session.LogMessage('0000KO0', ExpirationNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                end;
+            Rec.CheckApiVersionExpiryDate(ApiVersion, ApiVersionExpiryDateTime);
 
             if AuthenticationMgt.CheckScopeChange(Rec) then
                 if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin

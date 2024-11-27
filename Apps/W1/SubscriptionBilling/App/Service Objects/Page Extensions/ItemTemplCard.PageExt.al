@@ -11,7 +11,7 @@ pageextension 8095 "Item Templ. Card" extends "Item Templ. Card"
             field("Service Commitment Option"; Rec."Service Commitment Option")
             {
                 ApplicationArea = All;
-                ToolTip = 'Indicates whether a service commitment can be stored for an item or whether an item is used for Recurring Billing.';
+                ToolTip = 'Specifies whether or not service commitments can be linked to this item, or if the item is being used for recurring billing. This is only relevant if you are using Subscription Billing functionalities.';
 
                 trigger OnValidate()
                 begin

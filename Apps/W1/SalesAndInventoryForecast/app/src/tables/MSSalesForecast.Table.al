@@ -11,6 +11,7 @@ using System.AI;
 table 1850 "MS - Sales Forecast"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {

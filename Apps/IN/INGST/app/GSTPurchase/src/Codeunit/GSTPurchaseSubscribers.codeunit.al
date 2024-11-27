@@ -1018,8 +1018,9 @@ codeunit 18080 "GST Purchase Subscribers"
         if GSTGroup.Get(PurchaseLine."GST Group Code") then begin
             PurchaseLine."GST Group Type" := GSTGroup."GST Group Type";
             GetPurcasehHeader(PurchaseHeader, PurchaseLine);
-            if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import then
-                PurchaseLine."GST Reverse Charge" := true;
+            if (GSTGroup."Reverse Charge" = true) or (PurchaseLine."GST Group Type" = PurchaseLine."GST Group Type"::Service) then
+                if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import then
+                    PurchaseLine."GST Reverse Charge" := true;
 
             if PurchaseHeader."GST Vendor Type" in [
                 PurchaseHeader."GST Vendor Type"::Registered,
@@ -1226,8 +1227,10 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine."HSN/SAC Code" := HSNSACCode;
 
         UpdateGSTJurisdictionType(PurchaseLine);
+        if GSTGroup.Get(PurchaseLine."GST Group Code") then
+            if (GSTGroup."Reverse Charge") or (PurchaseLine."GST Group Type" = PurchaseLine."GST Group Type"::Service) then
+                PurchaseLine."GST Reverse Charge" := PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import];
 
-        PurchaseLine."GST Reverse Charge" := PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import];
         if GSTGroup.Get(PurchaseLine."GST Group Code") and
            (PurchaseHeader."GST Vendor Type" in [
                PurchaseHeader."GST Vendor Type"::Registered,

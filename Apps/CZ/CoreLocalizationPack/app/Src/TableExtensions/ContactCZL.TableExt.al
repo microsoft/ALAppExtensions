@@ -39,6 +39,7 @@ tableextension 11700 "Contact CZL" extends Contact
                     RegistrationLogMgtCZL.LogContact(Rec);
             end;
         }
+#if not CLEANSCHEMA26
         field(11770; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
@@ -47,6 +48,7 @@ tableextension 11700 "Contact CZL" extends Contact
             ObsoleteTag = '26.0';
             ObsoleteReason = 'Replaced by standard "Registration Number" field.';
         }
+#endif
         field(11771; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';

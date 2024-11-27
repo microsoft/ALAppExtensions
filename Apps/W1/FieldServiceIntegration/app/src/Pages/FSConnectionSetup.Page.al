@@ -365,6 +365,7 @@ page 6612 "FS Connection Setup"
 
     trigger OnOpenPage()
     var
+        CDSConnectionSetup: Record "CDS Connection Setup";
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
@@ -402,8 +403,8 @@ page 6612 "FS Connection Setup"
         end;
 
         if EnvironmentInfo.IsSaaSInfrastructure() then begin
-            VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
-            Rec.SetupVirtualTables(VirtualTableAppInstalled);
+            CDSConnectionSetup.Get();
+            VirtualTableAppInstalled := CDSConnectionSetup."Business Events Enabled";
         end;
     end;
 

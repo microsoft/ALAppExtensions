@@ -754,31 +754,6 @@ table 31257 "Payment Order Line CZB"
             Editable = false;
             DataClassification = CustomerContent;
         }
-#pragma warning disable AL0432         
-        field(150; "Letter Type"; Option)
-        {
-            Caption = 'Letter Type';
-            OptionCaption = ' ,,Purchase';
-            OptionMembers = " ",,Purchase;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(151; "Letter No."; Code[20])
-        {
-            Caption = 'Letter No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(152; "Letter Line No."; Integer)
-        {
-            Caption = 'Letter Line No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-#pragma warning restore AL0432 
         field(190; "VAT Unreliable Payer"; Boolean)
         {
             Caption = 'VAT Unreliable Payer';
@@ -1377,7 +1352,7 @@ table 31257 "Payment Order Line CZB"
     local procedure OnAfterCollectSuggestedApplication(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     begin
     end;
-    
+
     [IntegrationEvent(true, false)]
     local procedure OnAfterCreateDescription(PlaceholderDescription: Text[100]; PlaceholderValues: List of [Text[100]]; var Description: Text[100])
     begin
@@ -1408,4 +1383,3 @@ table 31257 "Payment Order Line CZB"
     begin
     end;
 }
-

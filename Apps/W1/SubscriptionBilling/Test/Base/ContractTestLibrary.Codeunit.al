@@ -34,6 +34,8 @@ codeunit 139685 "Contract Test Library"
         LibraryUtility: Codeunit "Library - Utility";
         ContractsAppInitialized: Boolean;
         PrefixLbl: Label 'ZZZ', Locked = true;
+        CustContractDimensionCodeLbl: Label 'CUSTOMERCONTRACT', Locked = true;
+        CustContractDimensionDescriptionLbl: Label 'Customer Contract Dimension', Locked = true;
 
     #Region General
     procedure EnableNewPricingExperience()
@@ -386,7 +388,7 @@ codeunit 139685 "Contract Test Library"
     #EndRegion Contracts
 
     #Region Service Commitment Template & Package
-    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type")
+    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; Discount: Boolean)
     var
         ServiceCommitmentTemplateCode: Code[20];
     begin
@@ -403,6 +405,8 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentTemplate."Calculation Base %" := CalcBasePercent;
         ServiceCommitmentTemplate."Invoicing via" := InvoicingVia;
         ServiceCommitmentTemplate."Calculation Base Type" := CalculationBaseType;
+        if Discount then
+            ServiceCommitmentTemplate.Discount := true;
 
         OnCreateServiceCommitmentTemplateOnBeforeInsert(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate.Insert(true)
@@ -411,7 +415,13 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template")
     begin
         ServiceCommitmentTemplate.Init();
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", false);
+    end;
+
+    procedure CreateServiceCommitmentTemplateWithDiscount(var ServiceCommitmentTemplate: Record "Service Commitment Template")
+    begin
+        ServiceCommitmentTemplate.Init();
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", true);
     end;
 
     procedure CreateServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Service Commitment Package")
@@ -568,7 +578,7 @@ codeunit 139685 "Contract Test Library"
     begin
         CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
 
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price", false);
 
         if ServiceCommitmentTemplate."Invoicing via" = ServiceCommitmentTemplate."Invoicing via"::Contract then begin
             CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Invoicing Item");
@@ -799,6 +809,42 @@ codeunit 139685 "Contract Test Library"
         DimensionMgt.AppendDimValue(Dimension.Code, DimensionValue.Code, DimensionSetID);
     end;
 
+    procedure SetAutomaticDimentions(NewValue: Boolean)
+    var
+        ServiceContractSetup: Record "Service Contract Setup";
+    begin
+        ServiceContractSetup.Get();
+        ServiceContractSetup."Aut. Insert C. Contr. DimValue" := NewValue;
+        ServiceContractSetup.Modify();
+    end;
+
+    procedure InsertCustomerContractDimensionCode()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Dimension Code Cust. Contr." = '' then begin
+            CreateDimension(CustContractDimensionCodeLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl, CustContractDimensionDescriptionLbl);
+            GeneralLedgerSetup."Dimension Code Cust. Contr." := CustContractDimensionCodeLbl;
+            GeneralLedgerSetup.Modify(false);
+        end;
+    end;
+
+    local procedure CreateDimension(DimensionCode: Code[20]; DimensionName: Text; DimensionCodeCaption: Text; DimensionFilterCaption: Text)
+    var
+        Dimension: Record Dimension;
+    begin
+        if Dimension.Get(DimensionCode) then
+            exit;
+
+        Dimension.Init();
+        Dimension.Validate(Code, DimensionCode);
+        Dimension.Name := CopyStr(DimensionName, 1, MaxStrLen(Dimension.Name));
+        Dimension."Code Caption" := CopyStr(DimensionCodeCaption, 1, MaxStrLen(Dimension."Code Caption"));
+        Dimension."Filter Caption" := CopyStr(DimensionFilterCaption, 1, MaxStrLen(Dimension."Filter Caption"));
+        Dimension.Insert(true);
+    end;
+
     internal procedure FilterBillingLineArchiveOnContractLine(var FilteredBillingLineArchive: Record "Billing Line Archive"; ContractNo: Code[20]; ContractLineNo: Integer; ServicePartner: Enum "Service Partner")
     begin
         FilteredBillingLineArchive.SetRange(Partner, ServicePartner);
@@ -854,11 +900,6 @@ codeunit 139685 "Contract Test Library"
     procedure CustomerContractUpdateServicesDates(var CustomerContract: Record "Customer Contract")
     begin
         CustomerContract.UpdateServicesDates();
-    end;
-
-    procedure ServiceCommitmentIsClosed(var ServiceCommitment: Record "Service Commitment"): Boolean
-    begin
-        exit(ServiceCommitment.IsClosed());
     end;
     #EndRegion Make local / internal functions public for external test apps
 
@@ -969,7 +1010,7 @@ codeunit 139685 "Contract Test Library"
         ImportedServiceCommitment.Insert(false);
     end;
 
-    local procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
+    internal procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
     var
         CurrExchRate: Record "Currency Exchange Rate";
     begin

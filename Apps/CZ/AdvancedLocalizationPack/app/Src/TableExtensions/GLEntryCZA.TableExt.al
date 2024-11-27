@@ -16,13 +16,6 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         field(11783; "Applies-to ID CZA"; Code[50])
         {
             Caption = 'Applies-to ID';
-
-            trigger OnValidate()
-            var
-                ApplyGLEntriesCZA: Page "Apply G/L Entries CZA";
-            begin
-                ApplyGLEntriesCZA.CheckAppliesToID(Rec);
-            end;
         }
         field(11784; "Date Filter CZA"; Date)
         {
@@ -73,6 +66,9 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         }
     }
 
+    var
+        DefaultAppliesToIDTok: Label '***', Locked = true;
+
     procedure RemainingAmountCZA() Result: Decimal
     var
         IsHandled: Boolean;
@@ -88,6 +84,19 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
             Result := (Rec.Amount - Rec."Applied Amount CZA");
         end;
         exit(Result);
+    end;
+
+    procedure GetDefaultAppliesToID() AppliesToID: Code[50]
+    begin
+        AppliesToID := CopyStr(UserId, 1, MaxStrLen(AppliesToID));
+        if AppliesToID = '' then
+            AppliesToID := DefaultAppliesToIDTok;
+    end;
+
+    procedure CheckAppliesToID()
+    begin
+        if "Applies-to ID CZA" <> '' then
+            TestField("Applies-to ID CZA", GetDefaultAppliesToID());
     end;
 
     [IntegrationEvent(true, false)]

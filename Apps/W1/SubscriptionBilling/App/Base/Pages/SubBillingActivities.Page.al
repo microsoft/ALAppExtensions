@@ -44,7 +44,7 @@ page 8085 "Sub. Billing Activities"
                 field("Jobs Over Budget"; Rec."Jobs Over Budget")
                 {
                     Caption = 'Over Budget';
-                    DrillDownPageID = "Job List";
+                    DrillDownPageId = "Job List";
                     Editable = false;
                     ToolTip = 'Specifies the number of projects where the usage cost exceeds the budgeted cost.';
                 }
@@ -56,14 +56,14 @@ page 8085 "Sub. Billing Activities"
                 field("Customer Contract Invoices"; Rec."Customer Contract Invoices")
                 {
                     Caption = 'Contract Invoices';
-                    DrillDownPageID = "Sales Invoice List";
+                    DrillDownPageId = "Sales Invoice List";
                     Editable = false;
                     ToolTip = 'Shows Open Customer Contract Invoices.';
                 }
                 field("Customer Contract Credit Memos"; Rec."Customer Contract Credit Memos")
                 {
                     Caption = 'Contract Credit Memos';
-                    DrillDownPageID = "Sales Credit Memos";
+                    DrillDownPageId = "Sales Credit Memos";
                     Editable = false;
                     ToolTip = 'Shows Open Customer Contract Credit Memos.';
                 }
@@ -74,14 +74,14 @@ page 8085 "Sub. Billing Activities"
                 field("Vendor Contract Invoices"; Rec."Vendor Contract Invoices")
                 {
                     Caption = 'Contract Invoices';
-                    DrillDownPageID = "Purchase Invoices";
+                    DrillDownPageId = "Purchase Invoices";
                     Editable = false;
                     ToolTip = 'Shows Open Vendor Contract Invoices.';
                 }
                 field("Vendor Contract Credit Memos"; Rec."Vendor Contract Credit Memos")
                 {
                     Caption = 'Contract Credit Memos';
-                    DrillDownPageID = "Purchase Credit Memos";
+                    DrillDownPageId = "Purchase Credit Memos";
                     Editable = false;
                     ToolTip = 'Shows Open Vendor Contract Credit Memos.';
                 }
@@ -92,14 +92,14 @@ page 8085 "Sub. Billing Activities"
                 field("Serv. Comm. wo Cust. Contract"; Rec."Serv. Comm. wo Cust. Contract")
                 {
                     Caption = 'Customer';
-                    DrillDownPageID = "Serv. Comm. WO Cust. Contract";
+                    DrillDownPageId = "Serv. Comm. WO Cust. Contract";
                     Editable = false;
                     ToolTip = 'Shows Service Commitments without Customer Contract.';
                 }
                 field("Serv. Comm. wo Vend. Contract"; Rec."Serv. Comm. wo Vend. Contract")
                 {
                     Caption = 'Vendor';
-                    DrillDownPageID = "Serv. Comm. WO Vend. Contract";
+                    DrillDownPageId = "Serv. Comm. WO Vend. Contract";
                     Editable = false;
                     ToolTip = 'Shows Service Commitments without Vendor Contract.';
                 }
@@ -112,14 +112,13 @@ page 8085 "Sub. Billing Activities"
                     Editable = false;
                     ToolTip = 'Shows overdue Service Commitments.';
                     trigger OnDrillDown()
-                    var
                     begin
-                        Page.Run(Page::"Overdue Service Commitments", TempOverdueServiceCommitments);
+                        SubBillingActivitiesCue.DrillDownOverdueServiceCommitments();
                     end;
                 }
                 field("Not Invoiced"; Rec."Not Invoiced")
                 {
-                    DrillDownPageID = "Billing Lines";
+                    DrillDownPageId = "Billing Lines";
                     Editable = false;
                     ToolTip = 'Shows Billing Lines for Service Commitments that have not been called into Posting Documents, yet.';
                 }
@@ -181,22 +180,29 @@ page 8085 "Sub. Billing Activities"
                 trigger OnAction()
                 begin
                     SetMyJobsFilter();
-                    RefreshRoleCenter();
+                    CurrPage.Update();
                 end;
             }
         }
     }
 
+    trigger OnAfterGetCurrRecord()
+    var
+        TaskParameters: Dictionary of [Text, Text];
+    begin
+        if CalcTaskId <> 0 then
+            if CurrPage.CancelBackgroundTask(CalcTaskId) then;
+        CurrPage.EnqueueBackgroundTask(CalcTaskId, Codeunit::"Sub. Billing Activities Cue", TaskParameters, 120000, PageBackgroundTaskErrorLevel::Warning);
+    end;
+
     trigger OnAfterGetRecord()
     var
         ServiceContractSetup: Record "Service Contract Setup";
     begin
-        if not ServiceContractSetup.get() then begin
+        if not ServiceContractSetup.Get() then begin
             ServiceContractSetup.Init();
             ServiceContractSetup.Insert();
         end;
-
-        CalculateCueFieldValues();
     end;
 
     trigger OnOpenPage()
@@ -213,33 +219,31 @@ page 8085 "Sub. Billing Activities"
         RoleCenterNotificationMgt.ShowNotifications();
     end;
 
+    trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    begin
+        if TaskId <> CalcTaskId then
+            exit;
+
+        CalcTaskId := 0;
+
+        Rec.Get();
+        SubBillingActivitiesCue.EvaluateResults(Results, Rec);
+
+        if Rec.WritePermission then
+            if Rec.Modify() then
+                Commit();
+
+        CurrPage.Update();
+    end;
+
     local procedure SetMyJobsFilter()
     begin
         Rec.SetFilter("Job No. Filter", SubBillingActivitiesCue.GetMyJobsFilter());
     end;
 
-    local procedure RefreshRoleCenter()
-    begin
-        CurrPage.Update();
-    end;
-
-    local procedure CalculateCueFieldValues()
-    begin
-        if Rec.FieldActive("Revenue current Month") then
-            Rec."Revenue current Month" := SubBillingActivitiesCue.RevenueCurrentMonth();
-        if Rec.FieldActive("Cost current Month") then
-            Rec."Cost current Month" := SubBillingActivitiesCue.CostCurrentMonth();
-        if Rec.FieldActive("Revenue previous Month") then
-            Rec."Revenue previous Month" := SubBillingActivitiesCue.RevenuePreviousMonth();
-        if Rec.FieldActive("Cost previous Month") then
-            Rec."Cost previous Month" := SubBillingActivitiesCue.CostPreviousMonth();
-        if Rec.FieldActive(Overdue) then
-            Rec.Overdue := TempOverdueServiceCommitments.FillAndCountOverdueServiceCommitments();
-    end;
-
     var
-        TempOverdueServiceCommitments: Record "Overdue Service Commitments" temporary;
         SubBillingActivitiesCue: Codeunit "Sub. Billing Activities Cue";
         CuesAndKpisCodeunit: Codeunit "Cues And KPIs";
         UserTaskManagement: Codeunit "User Task Management";
+        CalcTaskId: Integer;
 }

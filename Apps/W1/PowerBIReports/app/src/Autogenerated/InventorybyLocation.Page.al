@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37024 "Inventory by Location"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Inventory by Location';
     AboutTitle = 'About Inventory by Location';
     AboutText = 'The Inventory by Location report shows inventory quantities by item and by location. ';

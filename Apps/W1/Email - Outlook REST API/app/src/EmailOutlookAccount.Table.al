@@ -31,13 +31,6 @@ table 4508 "Email - Outlook Account"
         {
             DataClassification = SystemMetadata;
         }
-        field(5; "Created By"; Text[50])
-        {
-            DataClassification = EndUserIdentifiableInformation;
-            ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '20.0';
-        }
     }
 
     keys
