@@ -1,4 +1,4 @@
-codeunit 139576 "Shpfy Shipping Charges Test"
+codeunit 139546 "Shpfy Shipping Charges Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
