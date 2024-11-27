@@ -10,7 +10,7 @@ using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-codeunit 6392 "Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver
+codeunit 6392 "Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver, IReceivedDocumentMarker
 {
     Access = Internal;
 
@@ -32,7 +32,11 @@ codeunit 6392 "Integration Impl." implements IDocumentSender, IDocumentResponseH
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
         this.TietoevryProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, ReceiveContext);
-        this.TietoevryProcessing.AcknowledgeDocument(EDocument, EDocumentService, DocumentMetadataBlob, ReceiveContext);
+    end;
+
+    procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        this.TietoevryProcessing.AcknowledgeDocument(EDocument, EDocumentService, DocumentBlob, ReceiveContext);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
