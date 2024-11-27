@@ -1,6 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-page 6380 "Connection Setup"
+page 6430 "Connection Setup"
 {
     Caption = 'Logiq Connection Setup';
     PageType = Card;

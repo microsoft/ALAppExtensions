@@ -1,5 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
-codeunit 6383 Auth
+codeunit 6430 Auth
 {
     internal procedure SetIsolatedStorageValue(var ValueKey: Guid; Value: SecretText; TokenDataScope: DataScope)
     begin
