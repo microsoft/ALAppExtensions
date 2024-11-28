@@ -25,7 +25,7 @@ codeunit 6189 SendContext
     /// <summary>
     /// Sets the temporary blob with the E-Document content.
     /// </summary>
-    procedure SetTempBlob(var TempBlob: codeunit "Temp Blob")
+    procedure SetTempBlob(TempBlob: codeunit "Temp Blob")
     begin
         this.TempBlob := TempBlob;
     end;

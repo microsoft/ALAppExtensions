@@ -255,9 +255,9 @@ codeunit 139630 "E-Doc. Impl. State"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock V2", OnDownloadDocument, '', false, false)]
-    local procedure OnDownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; var DocumentDownloadBlob: Codeunit "Temp Blob"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    local procedure OnDownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; var DocumentDownloadBlob: Codeunit "Temp Blob"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     begin
-        DocumentDownloadBlob := DocumentMetadataBlob;
+        DocumentDownloadBlob := DocumentMetadata;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock V2", OnGetApproval, '', false, false)]

@@ -38,14 +38,14 @@ codeunit 6362 "Pagero Integration Impl." implements IDocumentSender, IDocumentRe
         exit(Success);
     end;
 
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        PageroProcessing.ReceiveDocument(EDocumentService, Documents, ReceiveContext);
+        PageroProcessing.ReceiveDocument(EDocumentService, DocumentsMetadata, ReceiveContext);
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        PageroProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, ReceiveContext);
+        PageroProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadata, ReceiveContext);
     end;
 
     procedure GetApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext) Success: Boolean

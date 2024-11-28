@@ -17,16 +17,16 @@ codeunit 139668 "E-Doc. Int Mock No Async" implements IDocumentSender, IDocument
 
     end;
 
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        OnReceiveDocuments(Documents, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
+        OnReceiveDocuments(DocumentsMetadata, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         DocumentDownloadBlob: Codeunit "Temp Blob";
     begin
-        OnDownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, DocumentDownloadBlob, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
+        OnDownloadDocument(EDocument, EDocumentService, DocumentMetadata, DocumentDownloadBlob, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
         ReceiveContext.SetTempBlob(DocumentDownloadBlob);
     end;
 
@@ -41,7 +41,7 @@ codeunit 139668 "E-Doc. Int Mock No Async" implements IDocumentSender, IDocument
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnDownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; var DocumentDownloadBlob: Codeunit "Temp Blob"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage);
+    local procedure OnDownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; var DocumentDownloadBlob: Codeunit "Temp Blob"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage);
     begin
     end;
 

@@ -1,5 +1,6 @@
 name: Create an extensibility request
 description: Create an event request, request for external or other extensibility request, Microsoft should process
+type: 'Task'
 body:
   - type: markdown
     attributes:
