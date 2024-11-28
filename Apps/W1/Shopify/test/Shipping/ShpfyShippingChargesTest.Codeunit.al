@@ -239,7 +239,7 @@ codeunit 139546 "Shpfy Shipping Charges Test"
         CreateOrderShippingCharges(OrderShippingCharges, OrderHeader."Shopify Order Id");
 
         // [GIVEN] Created shopify shipment method mapping from the shipping charges
-        GetGLAccount(GLAccount);
+        CreateGLAccount(GLAccount);
         CreateShopifyShipmentMethodMapping(
             ShpfyShipmentMethodMapping,
             ShippingChargesType::"G/L Account",
@@ -399,12 +399,16 @@ codeunit 139546 "Shpfy Shipping Charges Test"
         OrderShippingCharges.Insert(true);
     end;
 
-    local procedure GetGLAccount(var GLAccount: Record "G/L Account")
+    local procedure CreateGLAccount(var GLAccount: Record "G/L Account")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        LibraryERM: Codeunit "Library - ERM";
     begin
-        GLAccount.SetRange("Direct Posting", true);
-        GLAccount.SetRange("Blocked", false);
-        GLAccount.SetRange("Account Type", GLAccount."Account Type"::Posting);
-        GLAccount.FindLast();
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup,
+           VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
+        GLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, Enum::"General Posting Type"::Sale));
+        GLAccount."Direct Posting" := true;
+        GLAccount.Modify(false);
     end;
 
     local procedure AssertSalesLineValues(
