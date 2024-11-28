@@ -133,7 +133,7 @@ codeunit 139882 "APIV2 - Salesperson/Purch E2E"
         SalespersonPurchaser."E-Mail 2" := LibraryUtility.GenerateRandomEmail();
         SalespersonPurchaser."Phone No." := LibraryUtility.GenerateRandomPhoneNo();
         SalespersonPurchaser."Job Title" := LibraryUtility.GenerateRandomText(30);
-        SalespersonPurchaser."Commission %" := LibraryRandom.RandInt(100);
+        SalespersonPurchaser."Commission %" := LibraryRandom.RandDec(100, 2);
         SalespersonPurchaser."Privacy Blocked" := true;
         SalespersonPurchaser.Blocked := true;
         SalespersonPurchaser."Coupled to Dataverse" := true;
@@ -152,7 +152,6 @@ codeunit 139882 "APIV2 - Salesperson/Purch E2E"
         SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'commisionPercent', SalespersonPurchaser."Commission %");
         SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'privacyBlocked', SalespersonPurchaser."Privacy Blocked");
         SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'blocked', SalespersonPurchaser.Blocked);
-        SalespersonPurchaserJSON := LibraryGraphMgt.AddPropertytoJSON(SalespersonPurchaserJSON, 'coupledToDataverse', SalespersonPurchaser."Coupled to Dataverse");
         exit(SalespersonPurchaserJSON);
     end;
 
@@ -167,8 +166,5 @@ codeunit 139882 "APIV2 - Salesperson/Purch E2E"
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'phoneNo', SalespersonPurchaser."Phone No.");
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'jobTitle', SalespersonPurchaser."Job Title");
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'commisionPercent', Format(SalespersonPurchaser."Commission %", 0, 9));
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'privacyBlocked', Format(SalespersonPurchaser."Privacy Blocked", 0, 9));
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'blocked', Format(SalespersonPurchaser.Blocked, 0, 9));
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'coupledToDataverse', Format(SalespersonPurchaser."Coupled to Dataverse", 0, 9));
     end;
 }

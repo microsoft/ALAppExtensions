@@ -62,10 +62,6 @@ page 30075 "APIV2 - Salesperson/Purchaser"
                 {
                     Caption = 'Blocked';
                 }
-                field(coupledToDataverse; Rec."Coupled to Dataverse")
-                {
-                    Caption = 'Coupled to Dataverse';
-                }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
