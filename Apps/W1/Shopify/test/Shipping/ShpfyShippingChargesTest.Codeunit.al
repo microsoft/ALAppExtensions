@@ -408,6 +408,9 @@ codeunit 139546 "Shpfy Shipping Charges Test"
            VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
         GLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, Enum::"General Posting Type"::Sale));
         GLAccount."Direct Posting" := true;
+
+        ShpfyInitializeTest.CreateVATPostingSetup(Shop."VAT Bus. Posting Group", GLAccount."VAT Prod. Posting Group");
+
         GLAccount.Modify(false);
     end;
 

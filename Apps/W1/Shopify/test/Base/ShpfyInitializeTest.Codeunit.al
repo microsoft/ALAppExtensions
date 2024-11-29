@@ -62,7 +62,7 @@ codeunit 139561 "Shpfy Initialize Test"
         CreateVATPostingSetup(PostingGroupCode, PostingGroupCode);
         CreateVATPostingSetup(PostingGroupCode, '');
         CreateVATPostingSetup(PostingGroupCode, RefundGLAccount."VAT Prod. Posting Group");
-        Shop."Shipping Charges Account" := CreateShippingChargesGLAcc(VATPostingSetup, GenPostingType);
+        Shop."Shipping Charges Account" := CreateShippingChargesGLAcc(VATPostingSetup, GenPostingType, PostingGroupCode);
         Shop."Customer Posting Group" := PostingGroupCode;
         Shop."Gen. Bus. Posting Group" := PostingGroupCode;
         Shop."VAT Bus. Posting Group" := PostingGroupCode;
@@ -350,7 +350,7 @@ codeunit 139561 "Shpfy Initialize Test"
         LibraryAssert.IsTrue(Values[1] = ShopifyAccessToken, 'invalid access token');
     end;
 
-    local procedure CreateVATPostingSetup(BusinessPostingGroup: Code[20]; ProductPostingGroup: Code[20])
+    internal procedure CreateVATPostingSetup(BusinessPostingGroup: Code[20]; ProductPostingGroup: Code[20])
     var
         GeneralPostingSetup: Record "General Posting Setup";
         VatPostingSetup: Record "VAT Posting Setup";
@@ -373,13 +373,16 @@ codeunit 139561 "Shpfy Initialize Test"
         end;
     end;
 
-    local procedure CreateShippingChargesGLAcc(var VATPostingSetup: Record "VAT Posting Setup"; GenPostingType: Enum "General Posting Type"): Code[20]
+    local procedure CreateShippingChargesGLAcc(var VATPostingSetup: Record "VAT Posting Setup"; GenPostingType: Enum "General Posting Type"; PostingGroupCode: Code[20]): Code[20]
     var
         ShippingChargesGLAccount: Record "G/L Account";
     begin
         ShippingChargesGLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GenPostingType::Sale));
         ShippingChargesGLAccount."Direct Posting" := true;
         ShippingChargesGLAccount.Modify(false);
+
+        CreateVATPostingSetup(PostingGroupCode, ShippingChargesGLAccount."VAT Prod. Posting Group");
+
         exit(ShippingChargesGLAccount."No.");
     end;
 
