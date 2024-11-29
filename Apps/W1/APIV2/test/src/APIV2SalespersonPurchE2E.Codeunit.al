@@ -138,6 +138,7 @@ codeunit 139882 "APIV2 - Salesperson/Purch E2E"
         SalespersonPurchaser.Blocked := true;
         SalespersonPurchaser."Coupled to Dataverse" := true;
         SalespersonPurchaser.Insert(true);
+        Commit();
         exit(SalespersonPurchaser.Code);
     end;
 
