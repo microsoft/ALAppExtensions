@@ -1,5 +1,8 @@
 codeunit 5667 "Post Bank Payment Entry"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     trigger OnRun()
     var
         GenJournalLine: Record "Gen. Journal Line";

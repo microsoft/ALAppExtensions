@@ -262,6 +262,8 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Mtfld Type Boolean" = X,
         codeunit "Shpfy Mtfld Type Collect. Ref" = X,
         codeunit "Shpfy Mtfld Type Color" = X,
+        codeunit "Shpfy Mtfld Type Company Ref" = X,
+        codeunit "Shpfy Mtfld Type Customer Ref" = X,
         codeunit "Shpfy Mtfld Type Date" = X,
         codeunit "Shpfy Mtfld Type DateTime" = X,
         codeunit "Shpfy Mtfld Type Dimension" = X,

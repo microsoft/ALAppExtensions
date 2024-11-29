@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -97,18 +97,6 @@ table 31092 "Acc. Schedule Extension CZL"
             OptionCaption = ' ,Purchase,Sale';
             OptionMembers = " ",Purchase,Sale;
         }
-#if not CLEANSCHEMA23
-        field(17; Prepayment; Option)
-        {
-            Caption = 'Prepayment';
-            DataClassification = CustomerContent;
-            OptionCaption = ' ,Yes,No';
-            OptionMembers = " ",Yes,No;
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-            ObsoleteReason = 'Replaced by Advance Payments field in Advance Payments Localization for Czech app';
-        }
-#endif
         field(18; "Reverse Sign"; Boolean)
         {
             Caption = 'Reverse Sign';

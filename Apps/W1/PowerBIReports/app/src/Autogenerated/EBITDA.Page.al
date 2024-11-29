@@ -22,7 +22,7 @@ page 36991 "EBITDA"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36991 "EBITDA"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionab3743c6203831d31beb', Locked = true;
+        ReportPageLbl: Label 'ReportSectionab3743c6203831d31beb', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

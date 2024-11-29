@@ -1,7 +1,7 @@
 namespace Microsoft.Sales.Document.Test;
 using System.TestTools.AITestToolkit;
 
-codeunit 149821 "Magic Function Attmt. Prompt"
+codeunit 133523 "Magic Function Attmt. Prompt"
 {
     Subtype = Test;
     TestPermissions = Disabled;

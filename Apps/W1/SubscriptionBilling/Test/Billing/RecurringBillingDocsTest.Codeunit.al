@@ -1588,13 +1588,13 @@ codeunit 139687 "Recurring Billing Docs Test"
             CustomerContract."No.",
             '',
             '',
-            CalcDate('<+CY>', WorkDate()),
-            CalcDate('<+CY>', WorkDate()));
+            CalcDate('<2M-CM>', WorkDate()),
+            CalcDate('<2M-CM>', WorkDate()));
         if not BillingProposal.CreateBillingDocument(
             Enum::"Service Partner"::Customer,
             CustomerContract."No.",
-            CalcDate('<+CY>', WorkDate()),
-            CalcDate('<+CY>', WorkDate()),
+            CalcDate('<2M-CM>', WorkDate()),
+            CalcDate('<2M-CM>', WorkDate()),
             false,
             false)
         then

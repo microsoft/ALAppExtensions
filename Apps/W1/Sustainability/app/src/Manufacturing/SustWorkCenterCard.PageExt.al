@@ -34,6 +34,32 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Default N2O Emission field.';
                 }
+                field("CO2e per Unit"; Rec."CO2e per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the CO2e per Unit field.';
+                }
+            }
+        }
+    }
+
+    actions
+    {
+        addafter("Capacity Ledger E&ntries")
+        {
+            action("Calculate CO2e")
+            {
+                Caption = 'Calculate CO2e';
+                ApplicationArea = Basic, Suite;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
             }
         }
     }
@@ -50,6 +76,16 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions";
+    end;
+
+    local procedure RunCalculateCO2e()
+    var
+        WorkCenter: Record "Work Center";
+        CalculateCO2e: Report "Sust. Calculate CO2e";
+    begin
+        WorkCenter.SetFilter("No.", Rec."No.");
+        CalculateCO2e.SetTableView(WorkCenter);
+        CalculateCO2e.Run();
     end;
 
     var

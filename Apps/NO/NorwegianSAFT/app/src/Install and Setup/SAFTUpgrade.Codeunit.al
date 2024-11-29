@@ -14,36 +14,8 @@ codeunit 10678 "SAF-T Upgrade"
 
     trigger OnUpgradePerCompany()
     begin
-        UpgradeSAFTFileFromHeaderToSAFTExportFileTable();
         UpgradeSAFTMediaResourcesToTenantMedia();
         UpgradeExportCurrenfyInformationInSAFTExportHeader();
-    end;
-
-    local procedure UpgradeSAFTFileFromHeaderToSAFTExportFileTable()
-    var
-        SAFTExportHeader: Record "SAF-T Export Header";
-        SAFTExportFile: Record "SAF-T Export File";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetSAFTFileFromHeaderToSAFTExportFileTableUpgradeTag()) then
-            exit;
-
-        SAFTExportHeader.SetRange(Status, SAFTExportHeader.Status::Completed);
-        If SAFTExportHeader.FindSet() then
-            repeat
-                SAFTExportHeader.CalcFields("SAF-T File");
-                If SAFTExportHeader."SAF-T File".HasValue() then begin
-                    SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
-                    IF SAFTExportFile.FindLast() then;
-                    SAFTExportFile.Init();
-                    SAFTExportFile."Export ID" := SAFTExportHeader.Id;
-                    SAFTExportFile."File No." += 1;
-                    SAFTExportFile."SAF-T File" := SAFTExportHeader."SAF-T File";
-                    SAFTExportFile.Insert();
-                end;
-            until SAFTExportHeader.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(GetSAFTFileFromHeaderToSAFTExportFileTableUpgradeTag());
     end;
 
     local procedure UpgradeSAFTMediaResourcesToTenantMedia()

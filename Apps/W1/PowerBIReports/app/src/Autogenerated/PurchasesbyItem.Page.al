@@ -22,7 +22,7 @@ page 37016 "Purchases by Item"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37016 "Purchases by Item"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection510c03a74548b078dc31', Locked = true;
+        ReportPageLbl: Label 'ReportSection510c03a74548b078dc31', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

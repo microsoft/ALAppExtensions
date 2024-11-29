@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -18,16 +18,6 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             Caption = 'Primary Key';
         }
-#if not CLEANSCHEMA24
-        field(2; "Dimension No. Series Code"; Code[20])
-        {
-            DataClassification = CustomerContent;
-            Caption = 'Dimension No. Series Code';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Replaced with Dimension No.';
-            ObsoleteTag = '24.0';
-        }
-#endif
         field(3; "Last Tax Code"; Integer)
         {
             DataClassification = CustomerContent;

@@ -22,7 +22,7 @@ page 37026 "Item Availability"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37026 "Item Availability"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection61c190709a57015b0e48', Locked = true;
+        ReportPageLbl: Label 'ReportSection61c190709a57015b0e48', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

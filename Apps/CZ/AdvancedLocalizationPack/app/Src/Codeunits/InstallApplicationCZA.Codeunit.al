@@ -50,62 +50,9 @@ codeunit 31250 "Install Application CZA"
                   tabledata "Default Dimension" = m,
                   tabledata "Standard Item Journal Line" = m;
 
-    var
-        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
-        AppInfo: ModuleInfo;
-
     trigger OnInstallAppPerCompany()
     begin
-        if not InitializeDone() then begin
-            BindSubscription(InstallApplicationsMgtCZL);
-            CopyData();
-            UnbindSubscription(InstallApplicationsMgtCZL);
-        end;
         CompanyInitialize();
-    end;
-
-    local procedure InitializeDone(): boolean
-    begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
-    end;
-
-    local procedure CopyData()
-    begin
-        CopyTransferShipmentLine();
-        CopyItemEntryRelation();
-        CopyStandardItemJournalLine();
-    end;
-
-    local procedure CopyTransferShipmentLine();
-    var
-        TransferShipmentLine: Record "Transfer Shipment Line";
-        TransferShipmentLineDataTransfer: DataTransfer;
-    begin
-        TransferShipmentLineDataTransfer.SetTables(Database::"Transfer Shipment Line", Database::"Transfer Shipment Line");
-        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo(Correction), TransferShipmentLine.FieldNo("Correction CZA"));
-        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Transfer Order Line No."), TransferShipmentLine.FieldNo("Transfer Order Line No. CZA"));
-        TransferShipmentLineDataTransfer.CopyFields();
-    end;
-
-    local procedure CopyItemEntryRelation();
-    var
-        ItemEntryRelation: Record "Item Entry Relation";
-        ItemEntryRelationDataTransfer: DataTransfer;
-    begin
-        ItemEntryRelationDataTransfer.SetTables(Database::"Item Entry Relation", Database::"Item Entry Relation");
-        ItemEntryRelationDataTransfer.AddFieldValue(ItemEntryRelation.FieldNo(Undo), ItemEntryRelation.FieldNo("Undo CZA"));
-        ItemEntryRelationDataTransfer.CopyFields();
-    end;
-
-    local procedure CopyStandardItemJournalLine();
-    var
-        StandardItemJournalLine: Record "Standard Item Journal Line";
-        StandardItemJournalLineDataTransfer: DataTransfer;
-    begin
-        StandardItemJournalLineDataTransfer.SetTables(Database::"Standard Item Journal Line", Database::"Standard Item Journal Line");
-        StandardItemJournalLineDataTransfer.AddFieldValue(StandardItemJournalLine.FieldNo("New Location Code"), StandardItemJournalLine.FieldNo("New Location Code CZA"));
-        StandardItemJournalLineDataTransfer.CopyFields();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

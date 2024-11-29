@@ -38,7 +38,7 @@ page 6164 "E-Doc. Order Match"
                     Caption = 'Purchase order Description';
                     ToolTip = 'Specifies the description of matched Purchase Order Line.';
                 }
-                field("Matched Quantity"; Rec.Quantity)
+                field("Matched Quantity"; Rec."Precise Quantity")
                 {
                     Caption = 'Matched Quantity';
                     ToolTip = 'Specifies the quantity that was matched for the imported line to the purchase order line.';

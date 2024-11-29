@@ -22,7 +22,7 @@ page 37037 "Project Performance to Budget"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37037 "Project Performance to Budget"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection4b100a3a42980b76957c', Locked = true;
+        ReportPageLbl: Label 'ReportSection4b100a3a42980b76957c', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

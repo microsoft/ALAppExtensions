@@ -111,6 +111,14 @@ tableextension 6220 "Sust. Item" extends Item
                     Rec.TestField("Default Sust. Account");
             end;
         }
+        field(6218; "CO2e per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'CO2e per Unit';
+            MinValue = 0;
+            DataClassification = CustomerContent;
+        }
     }
 
     var

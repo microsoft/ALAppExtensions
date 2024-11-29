@@ -21,7 +21,7 @@ codeunit 10850 "Create FR GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesVATStandardName(), '445711');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVATStandardName(), '445661');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '904100');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRetailName(), '603710');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '905100');
@@ -33,7 +33,7 @@ codeunit 10850 "Create FR GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.RawMaterialsName(), '350000');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchRawMatDomName(), '601100');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.InventoryAdjRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.InventoryAdjRawMatName(), '961000');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.InventoryAdjRetailName(), '603712');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.ResalesName(), '370000');

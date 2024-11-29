@@ -25,9 +25,9 @@ using Microsoft.Warehouse.Document;
 using Microsoft.Service.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Setup;
-using Microsoft.Inventory.PowerBIReports;
 using Microsoft.Service.Test;
 using System.TestLibraries.Security.AccessControl;
+using Microsoft.PowerBIReports.Test;
 
 codeunit 139877 "PowerBI Inventory Test"
 {
@@ -50,6 +50,8 @@ codeunit 139877 "PowerBI Inventory Test"
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
         PermissionsMock: Codeunit "Permissions Mock";
+        PowerBIAPIRequests: Codeunit "PowerBI API Requests";
+        PowerBIAPIEndpoints: Enum "PowerBI API Endpoints";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -67,7 +69,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for zones is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Zones, '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::Zones);
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'locationCode eq ''' + Format(Location.Code) + '''');
         UriBuilder.GetUri(Uri);
@@ -109,7 +111,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for bins is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Bins, '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::Bins);
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'locationCode eq ''' + Format(Location.Code) + '''');
         UriBuilder.GetUri(Uri);
@@ -157,7 +159,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for sales lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Lines - Outstanding", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Sales Lines - Outstanding"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -221,7 +223,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for sales lines outside the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Lines - Outstanding", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Sales Lines - Outstanding"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(SalesLine."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -253,7 +255,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for purchase lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purchase Lines - Outstanding", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Purchase Lines - Outstanding"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(PurchHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -317,7 +319,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for purchase lines outside the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purchase Lines - Outstanding", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Purchase Lines - Outstanding"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(PurchLine."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -362,7 +364,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for requisition lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Requisition Lines", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Requisition Lines"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + ''' OR itemNo eq ''' + Format(Item3."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -459,7 +461,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for transfer lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Transfer Lines", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Transfer Lines"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(TransferHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -509,7 +511,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for transfer lines outside the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Transfer Lines", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Transfer Lines"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(TransferLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -544,7 +546,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for service lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Service Lines - Order", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Service Lines - Order"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(ServiceHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -599,7 +601,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for service lines outside the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Service Lines - Order", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Service Lines - Order"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(ServiceLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -639,7 +641,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for item ledger entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Inventory.PowerBIReports."Item Ledger Entries", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Item Ledger Entries"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(SalesLine."No.") + ''' OR itemNo eq ''' + Format(PurchLine."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -707,7 +709,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for warehouse receipt lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Warehouse Activity Lines", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Warehouse Activity Lines"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -764,7 +766,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for warehouse entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Warehouse Entries", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Warehouse Entries"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -847,7 +849,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for warehouse journal lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Whse. Journal Lines - From Bin", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Whse. Journal Lines - From Bin"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -896,7 +898,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for warehouse journal lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Whse. Journal Lines - To Bin", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Whse. Journal Lines - To Bin"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -981,7 +983,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for purchase value entry is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Value Entries - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1037,7 +1039,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the value entry outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Value Entries - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ValueEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
@@ -1064,7 +1066,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for assembly headers is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Headers - Order", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Assembly Headers - Order"));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + ''' OR documentNo eq ''' + Format(AssemblyHeader2."No.") + '''');
@@ -1113,7 +1115,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the assembly header outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Headers - Order", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Assembly Headers - Order"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1140,7 +1142,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for assembly lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Lines - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Assembly Lines - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
@@ -1192,7 +1194,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the assembly line outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Assembly Lines - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Assembly Lines - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(AssemblyHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1230,7 +1232,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for job planning lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Job Planning Lines - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
@@ -1290,7 +1292,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the job planning line outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines - Item", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Job Planning Lines - Item"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(JobPlanningLine."Document No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1334,7 +1336,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for production order lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Invt.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Prod. Order Lines - Invt."));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
@@ -1383,7 +1385,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the production order line outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Invt.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Prod. Order Lines - Invt."));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(ProdOrderLine."Prod. Order No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1434,7 +1436,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for production order component lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Invt.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Prod. Order Comp. - Invt."));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(ItemComp."No.") + '''');
@@ -1481,7 +1483,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the production order component line outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Invt.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Prod. Order Comp. - Invt."));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + Format(ProdOrderComp."Prod. Order No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -1521,7 +1523,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for planning component lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Planning Components", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Planning Components"));
         UriBuilder.Init(TargetURL);
         UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item1."No.") + ''' OR itemNo eq ''' + Format(Item2."No.") + '''');
@@ -1570,7 +1572,7 @@ codeunit 139877 "PowerBI Inventory Test"
         Commit();
 
         // [WHEN] Get request for the planning component line outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Planning Components", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl((PowerBIAPIEndpoints::"Planning Components"));
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'itemNo eq ''' + Format(PlanningComponent."Item No.") + '''');
         UriBuilder.GetUri(Uri);

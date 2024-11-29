@@ -36,7 +36,11 @@ permissionset 36951 "PowerBi Report Basic"
         page "General Ledger Setup" = X,
         page Locations = X,
         page "Power BI Selection Lookup" = X,
+#if not CLEAN25
+#pragma warning disable AL0432
         page "Purchasing Scorecard" = X,
+#pragma warning restore AL0432
+#endif
         page "Salesperson/Purchasers" = X,
         page "PowerBI Reports Setup" = X,
         page Vendors = X,

@@ -22,7 +22,7 @@ page 37010 "Purchases Decomposition"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37010 "Purchases Decomposition"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiond7fdf374ab65b2861937', Locked = true;
+        ReportPageLbl: Label 'ReportSectiond7fdf374ab65b2861937', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

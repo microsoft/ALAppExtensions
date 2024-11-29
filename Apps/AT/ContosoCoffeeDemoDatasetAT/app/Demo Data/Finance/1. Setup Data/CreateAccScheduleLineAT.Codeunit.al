@@ -5,8 +5,6 @@ codeunit 11151 "Create Acc. Schedule Line AT"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //ToDo: Need to Check with MS Team why standard Schedule Name are commented in W1
-
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeInsertEvent', '', false, false)]
     local procedure OnBeforeInsertAccScheduleLine(var Rec: Record "Acc. Schedule Line")
     var
@@ -87,10 +85,7 @@ codeunit 11151 "Create Acc. Schedule Line AT"
         if Rec."Schedule Name" = CreateAccountScheduleName.ReducedTrialBalance() then
             case Rec."Line No." of
                 10000:
-                    begin
-                        ValidateRecordFields(Rec, CreateATGLAccount.TOTALOPERATINGINCOME(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts");
-                        Rec.Validate(Description, TotalRevenueLbl);
-                    end;
+                    ValidateRecordFields(Rec, CreateATGLAccount.TOTALOPERATINGINCOME(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts");
                 20000:
                     ValidateRecordFields(Rec, CreateATGLAccount.TOTALCOSTOFMATERIALS(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts");
                 50000:
@@ -126,12 +121,7 @@ codeunit 11151 "Create Acc. Schedule Line AT"
             end;
     end;
 
-    local procedure ValidateRecordFields(var AccScheduleLine:
-                                                 Record "Acc. Schedule Line";
-    Totaling:
-        Text;
-    TotalingType:
-        Enum "Acc. Schedule Line Totaling Type")
+    local procedure ValidateRecordFields(var AccScheduleLine: Record "Acc. Schedule Line"; Totaling: Text; TotalingType: Enum "Acc. Schedule Line Totaling Type")
     begin
         AccScheduleLine.Validate(Totaling, Totaling);
         AccScheduleLine.Validate("Totaling Type", TotalingType);
@@ -143,7 +133,4 @@ codeunit 11151 "Create Acc. Schedule Line AT"
         AccScheduleLine.Validate(Totaling, Totaling);
         AccScheduleLine.Validate("Totaling Type", TotalingType);
     end;
-
-    var
-        TotalRevenueLbl: Label 'Total Revenue', MaxLength = 100;
 }

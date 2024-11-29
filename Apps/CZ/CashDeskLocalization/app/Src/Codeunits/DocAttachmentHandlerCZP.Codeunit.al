@@ -20,17 +20,8 @@ codeunit 31009 "Doc. Attachment Handler CZP"
         InitDocumentAttachmentFields(DocumentAttachment, RecRef);
     end;
 
-#if not CLEAN25
-    [Obsolete('Page Document Attachment Factbox is replaced by the "Doc. Attachment List Factbox" which supports multiple file upload. The corresponding event subscriber is replaced with GetTableOnAfterGetRecRefFail.', '25.0')]
-    [EventSubscriber(ObjectType::Page, Page::"Document Attachment Factbox", 'OnBeforeDrillDown', '', false, false)]
-    local procedure GetTableOnBeforeDrillDown(DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
-    begin
-        GetDocumentAttachmentTable(DocumentAttachment, RecRef);
-    end;
-#endif
-
-    [EventSubscriber(ObjectType::Page, Page::"Doc. Attachment List Factbox", 'OnAfterGetRecRefFail', '', false, false)]
-    local procedure GetTableOnAfterGetRecRefFail(DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", 'OnAfterGetRefTable', '', false, false)]
+    local procedure GetTableOnAfterGetRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
     begin
         GetDocumentAttachmentTable(DocumentAttachment, RecRef);
     end;

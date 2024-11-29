@@ -22,7 +22,7 @@ page 36993 "Aged Receivables (Back Dating)"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36993 "Aged Receivables (Back Dating)"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionfef66fa3cf79c6d85930', Locked = true;
+        ReportPageLbl: Label 'ReportSectionfef66fa3cf79c6d85930', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

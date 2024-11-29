@@ -16,24 +16,18 @@ codeunit 10836 "Create ES Sales Dim Value"
             case Rec."Dimension Code" of
                 CreateDimension.AreaDimension():
                     ValidateRecordFields(Rec, CreateDimensionValue.EuropeSouthArea(), Enum::"Default Dimension Value Posting Type"::"Code Mandatory");
-            // CreateDimension.CustomerGroupDimension():
-            //     ValidateRecordFields(Rec, CreateDimensionValue.MediumBusinessCustomerGroup(), Enum::"Default Dimension Value Posting Type"::"Same Code");
             end;
 
         if (Rec."Table ID" = Database::Customer) and (Rec."No." = CreateCustomer.DomesticTreyResearch()) then
             case Rec."Dimension Code" of
                 CreateDimension.AreaDimension():
                     ValidateRecordFields(Rec, CreateDimensionValue.EuropeSouthArea(), Enum::"Default Dimension Value Posting Type"::"Code Mandatory");
-            // CreateDimension.CustomerGroupDimension():
-            //     ValidateRecordFields(Rec, CreateDimensionValue.LargeBusinessCustomerGroup(), Enum::"Default Dimension Value Posting Type"::"Same Code");
             end;
 
         if (Rec."Table ID" = Database::Customer) and (Rec."No." = CreateCustomer.DomesticRelecloud()) then
             case Rec."Dimension Code" of
                 CreateDimension.AreaDimension():
                     ValidateRecordFields(Rec, CreateDimensionValue.EuropeSouthArea(), Enum::"Default Dimension Value Posting Type"::"Code Mandatory");
-            // CreateDimension.CustomerGroupDimension():
-            //     ValidateRecordFields(Rec, CreateDimensionValue.MediumBusinessCustomerGroup(), Enum::"Default Dimension Value Posting Type"::"Same Code");
             end;
     end;
 
