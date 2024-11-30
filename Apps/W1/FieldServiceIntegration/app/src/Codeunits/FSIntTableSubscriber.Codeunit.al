@@ -608,12 +608,10 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSConnectionSetup: Record "FS Connection Setup";
         JobJournalBatch: Record "Job Journal Batch";
         JobJournalTemplate: Record "Job Journal Template";
-        JobsSetup: Record "Jobs Setup";
         Resource: Record Resource;
         FSBookableResource: Record "FS Bookable Resource";
         LastJobJournalLine: Record "Job Journal Line";
         CRMProductName: Codeunit "CRM Product Name";
-        NoSeries: Codeunit "No. Series";
         RecID: RecordId;
         SourceDestCode: Text;
         BillingAccId: Guid;
@@ -695,7 +693,6 @@ codeunit 6610 "FS Int. Table Subscriber"
                     OnSetUpNewLineOnNewLine(JobJournalLine, JobJournalTemplate, JobJournalBatch, Handled);
                     if not Handled then begin
                         FSConnectionSetup.Get();
-                        JobsSetup.Get();
                         Job.Get(JobJournalLine."Job No.");
                         if not JobJournalTemplate.Get(FSConnectionSetup."Job Journal Template") then
                             Error(JobJournalIncorrectSetupErr, JobJournalTemplate.TableCaption(), FSConnectionSetup.TableCaption());
@@ -705,25 +702,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                         JobJournalLine."Journal Batch Name" := JobJournalBatch.Name;
                         LastJobJournalLine.SetRange("Journal Template Name", JobJournalTemplate.Name);
                         LastJobJournalLine.SetRange("Journal Batch Name", JobJournalBatch.Name);
-                        if LastJobJournalLine.FindLast() then begin
-                            JobJournalLine."Posting Date" := LastJobJournalLine."Posting Date";
-                            JobJournalLine."Document Date" := LastJobJournalLine."Posting Date";
-                            if JobsSetup."Document No. Is Job No." and (LastJobJournalLine."Document No." = '') then
-                                JobJournalLine."Document No." := JobJournalLine."Job No."
-                            else
-                                JobJournalLine."Document No." := LastJobJournalLine."Document No.";
-                        end else begin
-                            JobJournalLine."Posting Date" := WorkDate();
-                            JobJournalLine."Document Date" := WorkDate();
-                            if JobsSetup."Document No. Is Job No." then begin
-                                if JobJournalLine."Document No." = '' then
-                                    JobJournalLine."Document No." := JobJournalLine."Job No.";
-                            end else
-                                if JobJournalBatch."No. Series" <> '' then begin
-                                    Clear(NoSeries);
-                                    JobJournalLine."Document No." := NoSeries.GetNextNo(JobJournalBatch."No. Series", JobJournalLine."Posting Date");
-                                end;
-                        end;
+                        CheckPostingRuleAndSetDocumentNo(JobJournalLine, LastJobJournalLine, JobJournalBatch, SourceRecordRef);
                         JobJournalLine."Line No." := LastJobJournalLine."Line No." + 10000;
                         JobJournalLine."Source Code" := JobJournalTemplate."Source Code";
                         JobJournalLine."Reason Code" := JobJournalBatch."Reason Code";
@@ -733,6 +712,85 @@ codeunit 6610 "FS Int. Table Subscriber"
                         SetJobJournalLineTypesAndNo(FSConnectionSetup, SourceRecordRef, JobJournalLine);
                     end;
                     DestinationRecordRef.GetTable(JobJournalLine);
+                end;
+        end;
+    end;
+
+    local procedure CheckPostingRuleAndSetDocumentNo(var JobJournalLine: Record "Job Journal Line"; var LastJobJournalLine: Record "Job Journal Line"; JobJournalBatch: Record "Job Journal Batch"; var SourceRecordRef: RecordRef)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+    begin
+        if JobJournalBatch."Posting No. Series" <> '' then begin
+            FSConnectionSetup.Get();
+            case FSConnectionSetup."Line Post Rule" of
+                "FS Work Order Line Post Rule"::LineUsed,
+                "FS Work Order Line Post Rule"::WorkOrderCompleted:
+                    case SourceRecordRef.Number of
+                        Database::"FS Work Order Product":
+                            begin
+                                SourceRecordRef.SetTable(FSWorkOrderProduct);
+                                if (FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Used)
+                                    or (FSWorkOrderProduct.WorkOrderStatus in [FSWorkOrderProduct.WorkOrderStatus::Completed]) then
+                                    SetPostingDocumentNo(JobJournalLine, LastJobJournalLine, JobJournalBatch);
+                            end;
+                        Database::"FS Work Order Service":
+                            begin
+                                SourceRecordRef.SetTable(FSWorkOrderService);
+                                if (FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Used)
+                                    or (FSWorkOrderService.WorkOrderStatus in [FSWorkOrderService.WorkOrderStatus::Completed]) then
+                                    SetPostingDocumentNo(JobJournalLine, LastJobJournalLine, JobJournalBatch);
+                            end;
+                    end;
+                else
+                    SetDocumentNo(JobJournalLine, LastJobJournalLine, JobJournalBatch);
+            end;
+        end else
+            SetDocumentNo(JobJournalLine, LastJobJournalLine, JobJournalBatch);
+    end;
+
+    local procedure SetPostingDocumentNo(var JobJournalLine: Record "Job Journal Line"; var LastJobJournalLine: Record "Job Journal Line"; JobJournalBatch: Record "Job Journal Batch")
+    var
+        NoSeries: Codeunit "No. Series";
+    begin
+        if LastJobJournalLine.FindLast() then begin
+            JobJournalLine."Posting Date" := LastJobJournalLine."Posting Date";
+            JobJournalLine."Document Date" := LastJobJournalLine."Posting Date";
+            if LastJobJournalLine."Document No." = NoSeries.GetLastNoUsed(JobJournalBatch."Posting No. Series") then
+                JobJournalLine."Document No." := LastJobJournalLine."Document No."
+            else
+                JobJournalLine."Document No." := NoSeries.GetNextNo(JobJournalBatch."Posting No. Series", JobJournalLine."Posting Date");
+        end else begin
+            JobJournalLine."Posting Date" := WorkDate();
+            JobJournalLine."Document Date" := WorkDate();
+            JobJournalLine."Document No." := NoSeries.GetNextNo(JobJournalBatch."Posting No. Series", JobJournalLine."Posting Date");
+        end;
+    end;
+
+    local procedure SetDocumentNo(var JobJournalLine: Record "Job Journal Line"; var LastJobJournalLine: Record "Job Journal Line"; JobJournalBatch: Record "Job Journal Batch")
+    var
+        JobsSetup: Record "Jobs Setup";
+        NoSeries: Codeunit "No. Series";
+    begin
+        JobsSetup.Get();
+        if LastJobJournalLine.FindLast() then begin
+            JobJournalLine."Posting Date" := LastJobJournalLine."Posting Date";
+            JobJournalLine."Document Date" := LastJobJournalLine."Posting Date";
+            if JobsSetup."Document No. Is Job No." and (LastJobJournalLine."Document No." = '') then
+                JobJournalLine."Document No." := JobJournalLine."Job No."
+            else
+                JobJournalLine."Document No." := LastJobJournalLine."Document No.";
+        end else begin
+            JobJournalLine."Posting Date" := WorkDate();
+            JobJournalLine."Document Date" := WorkDate();
+            if JobsSetup."Document No. Is Job No." then begin
+                if JobJournalLine."Document No." = '' then
+                    JobJournalLine."Document No." := JobJournalLine."Job No.";
+            end else
+                if JobJournalBatch."No. Series" <> '' then begin
+                    Clear(NoSeries);
+                    JobJournalLine."Document No." := NoSeries.GetNextNo(JobJournalBatch."No. Series", JobJournalLine."Posting Date");
                 end;
         end;
     end;

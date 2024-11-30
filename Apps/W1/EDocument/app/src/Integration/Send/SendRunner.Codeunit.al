@@ -71,12 +71,6 @@ codeunit 6146 "Send Runner"
         this.EDocumentService.Copy(EDocumentService);
     end;
 
-    procedure GetDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
-    begin
-        EDocument.Copy(this.EDocument);
-        EDocumentService.Copy(this.EDocumentService);
-    end;
-
     procedure GetIsAsync(): Boolean
     begin
         exit(this.IsAsyncValue);

@@ -40,12 +40,6 @@ codeunit 6180 "Download Document"
         this.DocumentMetadata := DocumentMetadata;
     end;
 
-    procedure GetDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
-    begin
-        EDocument.Copy(this.EDocument);
-        EDocumentService.Copy(this.EDocumentService);
-    end;
-
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";

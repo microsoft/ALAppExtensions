@@ -305,6 +305,10 @@ codeunit 6134 "E-Doc. Integration Management"
                 EDocServiceStatus := Enum::"E-Document Service Status"::Rejected
         end;
 
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
+
         if not IsHandled then begin
             AddLogAndUpdateEDocument(EDocument, EDocumentService, EDocServiceStatus);
             EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
@@ -346,6 +350,10 @@ codeunit 6134 "E-Doc. Integration Management"
                 EDocServiceStatus := Enum::"E-Document Service Status"::"Cancel Error";
         end;
 
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
+
         if not IsHandled then begin
             AddLogAndUpdateEDocument(EDocument, EDocumentService, EDocServiceStatus);
             EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
@@ -355,43 +363,52 @@ codeunit 6134 "E-Doc. Integration Management"
 
     #endregion
 
-    local procedure RunSend(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; SendContext: Codeunit SendContext; var IsAsync: Boolean)
+    local procedure RunSend(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; SendContext: Codeunit SendContext; var IsAsync: Boolean)
     var
         SendRunner: Codeunit "Send Runner";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         // Commit needed for "if codeunit run" pattern when catching errors.
         Commit();
-        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBL', EDocTelemetrySendScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
-        OnBeforeSendDocument(EDocument, EDocService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
+        OnBeforeSendDocument(EDocument, EDocumentService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
 
-        SendRunner.SetDocumentAndService(EDocument, EDocService);
+        SendRunner.SetDocumentAndService(EDocument, EDocumentService);
         SendRunner.SetContext(SendContext);
         if not SendRunner.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        SendRunner.GetDocumentAndService(EDocument, EDocService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
         IsAsync := SendRunner.GetIsAsync();
 
-        OnAfterSendDocument(EDocument, EDocService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
+        OnAfterSendDocument(EDocument, EDocumentService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
         Telemetry.LogMessage('0000LBM', EDocTelemetrySendScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
-    local procedure RunSendBatch(EDocService: Record "E-Document Service"; var EDocuments: Record "E-Document"; SendContext: Codeunit SendContext; var IsAsync: Boolean)
+    local procedure RunSendBatch(EDocumentService: Record "E-Document Service"; var EDocuments: Record "E-Document"; SendContext: Codeunit SendContext; var IsAsync: Boolean)
     var
         SendRunner: Codeunit "Send Runner";
         ErrorText: Text;
         TelemetryDimensions: Dictionary of [Text, Text];
+        Sucecss: Boolean;
     begin
         // Commit needed for "if codeunit run" pattern when catching errors.
         Commit();
-        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocuments, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocumentService, EDocuments, TelemetryDimensions);
         Telemetry.LogMessage('0000LBN', EDocTelemetrySendBatchScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        SendRunner.SetDocumentAndService(EDocuments, EDocService);
+        SendRunner.SetDocumentAndService(EDocuments, EDocumentService);
         SendRunner.SetContext(SendContext);
-        if not SendRunner.Run() then begin
+        Sucecss := SendRunner.Run();
+
+        // Check filter exists
+        if EDocuments.GetFilter("Entry No") = '' then
+            Error(EDocNoFilterOnBatchSendErr);
+
+        if not Sucecss then begin
             ErrorText := GetLastErrorText();
             EDocuments.FindSet();
             repeat
@@ -399,7 +416,9 @@ codeunit 6134 "E-Doc. Integration Management"
             until EDocuments.Next() = 0;
         end;
 
-        SendRunner.GetDocumentAndService(EDocuments, EDocService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocuments.FindSet();
+        EDocumentService.Get(EDocumentService.Code);
         IsAsync := SendRunner.GetIsAsync();
 
         Telemetry.LogMessage('0000LBO', EDocTelemetrySendBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
@@ -421,7 +440,8 @@ codeunit 6134 "E-Doc. Integration Management"
         if not ReceiveDocs.Run() then
             exit;
 
-        ReceiveDocs.GetService(EDocumentService);
+        // After interface call, reread the EDocumentService for the latest values.
+        EDocumentService.Get(EDocumentService.Code);
         Telemetry.LogMessage('0000O0B', EDocTelemetryReceiveDocsScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
@@ -440,7 +460,9 @@ codeunit 6134 "E-Doc. Integration Management"
         if not DownloadDoc.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        DownloadDoc.GetDocumentAndService(EDocument, EDocumentService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
         Telemetry.LogMessage('0000O0D', EDocTelemetryReciveDownloadDocScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
@@ -459,7 +481,9 @@ codeunit 6134 "E-Doc. Integration Management"
         if not MarkFetched.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        MarkFetched.GetParameters(EDocument, EDocumentService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
         Telemetry.LogMessage('0000O2Y', EDocTelemetryMarkFetchedScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
@@ -480,7 +504,9 @@ codeunit 6134 "E-Doc. Integration Management"
         if not Success then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        EDocumentActionRunner.GetEDocumentAndService(EDocument, EDocumentService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
         Telemetry.LogMessage('0000O09', EDocTelemetryActionScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
         exit(EDocumentActionRunner.ShouldActionUpdateStatus())
     end;
@@ -560,6 +586,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocTelemetryReciveDownloadDocScopeEndLbl: Label 'E-Document Receive Download Doc: End Scope', Locked = true;
         EDocTelemetryMarkFetchedScopeStartLbl: Label 'E-Document Mark Fetched: Start Scope', Locked = true;
         EDocTelemetryMarkFetchedScopeEndLbl: Label 'E-Document Mark Fetched: End Scope', Locked = true;
+        EDocNoFilterOnBatchSendErr: Label 'No Entry No. filter is set on the E-Document for batch to sending';
 #if not CLEAN26
         DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
 #endif

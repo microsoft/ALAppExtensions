@@ -6,9 +6,6 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using Microsoft.eServices.EDocument.IO.Peppol;
-#if not CLEAN26
-using Microsoft.eServices.EDocument.Integration.Interfaces;
-#endif
 using Microsoft.eServices.EDocument.Integration.Receive;
 page 6133 "E-Document Service"
 {
@@ -300,8 +297,7 @@ page 6133 "E-Document Service"
         ReceiveContext: Codeunit ReceiveContext;
         EDocIntegration: Interface "E-Document Integration";
     begin
-        EDocIntegration := Rec."Service Integration";
-        if EDocIntegration is IDocumentReceiver then begin
+        if Rec."Service Integration V2" <> Rec."Service Integration V2"::"No Integration" then begin
             EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
             EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
 
@@ -311,6 +307,7 @@ page 6133 "E-Document Service"
             exit;
         end;
 
+        EDocIntegration := Rec."Service Integration";
         EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
     end;
 #else

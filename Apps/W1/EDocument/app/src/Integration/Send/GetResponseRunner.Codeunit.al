@@ -38,12 +38,6 @@ codeunit 6149 "Get Response Runner"
         this.EDocumentService.Copy(EDocumentService);
     end;
 
-    procedure GetDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
-    begin
-        EDocument.Copy(this.EDocument);
-        EDocumentService.Copy(this.EDocumentService);
-    end;
-
     procedure SetContext(SendContext: Codeunit SendContext)
     begin
         this.SendContext := SendContext;
