@@ -80,6 +80,11 @@ codeunit 5193 "Contoso Demo Tool"
             until ContosoDemoDataModule.Next() = 0;
     end;
 
+    /// <summary>
+    /// Refresh all the demo data modules basing on the Enum and build dependencies.
+    /// Modules are then filtered based on the application areas.
+    /// </summary>
+    /// <param name="ContosoDemoDataModule">All available demo data modules basing on the current Application Area</param>
     internal procedure RefreshModules(var ContosoDemoDataModule: Record "Contoso Demo Data Module")
     var
         ContosoModuleDependency: codeunit "Contoso Module Dependency";
@@ -201,21 +206,33 @@ codeunit 5193 "Contoso Demo Tool"
         end;
     end;
 
+    /// <summary>
+    /// Creates all demo data for all modules. This function is used in build scripts to create Cronus Company.
+    /// </summary>
     procedure CreateAllDemoData()
     var
         ContosoDemoDataModule: Record "Contoso Demo Data Module";
     begin
         RefreshModules(ContosoDemoDataModule);
 
+        // clearing any filter on the record, so that all modules are included during build
+        ContosoDemoDataModule.Reset();
+
         if ContosoDemoDataModule.FindSet() then
             CreateDemoData(ContosoDemoDataModule, Enum::"Contoso Demo Data Level"::All);
     end;
 
+    /// <summary>
+    /// Creates setup demo data for all modules. This function is used in build scripts to create MyCompany.
+    /// </summary>
     procedure CreateSetupDemoData()
     var
         ContosoDemoDataModule: Record "Contoso Demo Data Module";
     begin
         RefreshModules(ContosoDemoDataModule);
+
+        // clearing any filter on the record, so that all modules are included during build
+        ContosoDemoDataModule.Reset();
 
         if ContosoDemoDataModule.FindSet() then
             CreateDemoData(ContosoDemoDataModule, Enum::"Contoso Demo Data Level"::"Setup Data");

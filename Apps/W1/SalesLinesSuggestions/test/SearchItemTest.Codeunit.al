@@ -8,7 +8,7 @@ using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Sales.Document;
 using System.TestLibraries.Utilities;
 
-codeunit 139780 "Search Item Test"
+codeunit 133513 "Search Item Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

@@ -12,7 +12,7 @@ codeunit 17144 "Create NZ VAT Statement"
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateNZVATPostingGroup: Codeunit "Create NZ VAT Posting Group";
     begin
-        if (Rec."Statement Template Name" = CreateVATStatement.VATTemplateName()) and (Rec."Statement Name" = StatementNameLbl) then
+        if (Rec."Statement Template Name" = CreateVATStatement.VATTemplateName()) and (Rec."Statement Name" = CreateVATStatement.VATStatementName()) then
             case Rec."Line No." of
                 10000:
                     ValidateRecordFields(Rec, '1010', SalesVat15PercOutgoingLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '5');
@@ -109,12 +109,11 @@ codeunit 17144 "Create NZ VAT Statement"
     end;
 
     var
-        StatementNameLbl: Label 'DEFAULT', MaxLength = 10;
         SalesVat15PercOutgoingLbl: Label 'Sales VAT 15 % (outgoing)', MaxLength = 100;
         SalesVat9PercOutgoingLbl: Label 'Sales VAT 9 % (outgoing)', MaxLength = 100;
         Vat15PercPercOnEuPurchasesEtcLbl: Label 'VAT 15 % % on EU Purchases etc.', MaxLength = 100;
         Vat9PercPercOnEuPurchasesEtcLbl: Label 'VAT 9 % % on EU Purchases etc.', MaxLength = 100;
-        BlankLbl: Label '--------------------------------------------------', MaxLength = 100;
+        BlankLbl: Label '--------------------------------------------------', MaxLength = 100, Locked = true;
         TotalLbl: Label 'Total', MaxLength = 100;
         PurchaseVat15PercDomesticLbl: Label 'Purchase VAT 15 % Domestic', MaxLength = 100;
         PurchaseVat9PercDomesticLbl: Label 'Purchase VAT 9 % Domestic', MaxLength = 100;

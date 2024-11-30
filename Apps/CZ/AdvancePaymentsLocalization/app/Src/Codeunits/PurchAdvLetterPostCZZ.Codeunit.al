@@ -530,7 +530,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     UseAmount := AmountToUse;
 
                 if UseAmount <> 0 then begin
-                    UseAmountLCY := Round(UseAmount / TempPurchAdvLetterEntryCZZ."Currency Factor");
+                    UseAmountLCY := Round(UseAmount / TempPurchAdvLetterEntryCZZ.GetAdjustedCurrencyFactor());
                     ReverseAdvancePayment(TempPurchAdvLetterEntryCZZ, PurchInvHeader, UseAmount, UseAmountLCY, GenJnlPostLine, AdvancePostingParameters);
                     AmountToUse -= UseAmount;
                     TempAdvanceLetterApplicationCZZ.Amount -= UseAmount;
@@ -1440,6 +1440,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
         TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::Usage;
+        TempPurchAdvLetterEntryCZZGlob."Amount (LCY)" :=
+            Round(TempPurchAdvLetterEntryCZZGlob.Amount / PurchAdvLetterEntryCZZ."Currency Factor");
         EntryNo := TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
 
         if PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" then begin

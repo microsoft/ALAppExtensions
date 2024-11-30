@@ -109,6 +109,14 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                     RunObject = page "Sales Actual vs. Budget Amt.";
                     Tooltip = 'Open a Power BI Report that provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
                 }
+                action("Sales by Location")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales by Location';
+                    Image = "PowerBI";
+                    RunObject = page "Sales by Location";
+                    Tooltip = 'Open a Power BI Report that breaks down sales performance by location, highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';
+                }
             }
         }
     }

@@ -69,11 +69,12 @@ codeunit 17168 "Create VAT Setup Post.Grp. AU"
         VATReportConfiguration: Record "VAT Reports Configuration";
         CreateVATReportSetup: Codeunit "Create VAT Report Setup";
         CreateAUVATStatement: Codeunit "Create AU VAT Statement";
+        CreateVATStatement: Codeunit "Create VAT Statement";
     begin
         VATReportConfiguration.Get(VATReportConfiguration."VAT Report Type"::"BAS Report", CreateVATReportSetup.CurrentVersion());
         VATReportConfiguration.Validate("Submission Codeunit ID", Codeunit::"BAS Export");
         VATReportConfiguration.Validate("VAT Statement Template", CreateAUVATStatement.BASTemplateName());
-        VATReportConfiguration.Validate("VAT Statement Name", StatementNameLbl);
+        VATReportConfiguration.Validate("VAT Statement Name", CreateVATStatement.VATStatementName());
         VATReportConfiguration.Modify(true);
     end;
 
@@ -85,5 +86,4 @@ codeunit 17168 "Create VAT Setup Post.Grp. AU"
         Vat15DescriptionLbl: Label 'Miscellaneous 15 VAT', MaxLength = 100;
         MiscPostingGroupDescriptionLbl: Label 'Customers and vendors in MISC', MaxLength = 100;
         ExportPostingGroupDescriptionLbl: Label 'Other customers and vendors (not MISC)', MaxLength = 100;
-        StatementNameLbl: Label 'DEFAULT', MaxLength = 10;
 }

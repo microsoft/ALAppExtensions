@@ -5,12 +5,6 @@ codeunit 11212 "Create Acc. Schedule SE"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    trigger OnRun()
-    begin
-        CreateAccScheduleName();
-        CreateFinancialReport();
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeInsertEvent', '', false, false)]
     local procedure OnBeforeInsertAccScheduleLine(var Rec: Record "Acc. Schedule Line")
     var
@@ -96,10 +90,7 @@ codeunit 11212 "Create Acc. Schedule SE"
         if Rec."Schedule Name" = CreateAccountScheduleName.ReducedTrialBalance() then
             case Rec."Line No." of
                 10000:
-                    begin
-                        ValidateRecordFields(Rec, CreateGLAccount.TotalRevenue(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
-                        Rec.Validate(Description, TotalRevenueLbl);
-                    end;
+                    ValidateRecordFields(Rec, CreateGLAccount.TotalRevenue(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
                 20000:
                     ValidateRecordFields(Rec, CreateGLAccount.TotalCost(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
                 40000:
@@ -136,69 +127,4 @@ codeunit 11212 "Create Acc. Schedule SE"
         if HideCurrencySymbol then
             AccScheduleLine.Validate("Hide Currency Symbol", HideCurrencySymbol);
     end;
-
-    local procedure CreateAccScheduleName()
-    var
-        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
-    begin
-        ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetDetailed(), BalanceSheetDetailedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetSummarized(), BalanceSheetSummarizedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementDetailed(), IncomeStatementDetailedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementSummarized(), IncomeStatementSummarizedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(TrialBalance(), TrialBalanceLbl, '');
-    end;
-
-    local procedure CreateFinancialReport()
-    var
-        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
-    begin
-        ContosoAccountSchedule.SetOverwriteData(true);
-        ContosoAccountSchedule.InsertFinancialReport(BalanceSheetDetailed(), BalanceSheetDetailedLbl, BalanceSheetDetailed(), BalanceSheetTrendLbl);
-        ContosoAccountSchedule.InsertFinancialReport(BalanceSheetSummarized(), BalanceSheetSummarizedLbl, BalanceSheetSummarized(), BalanceSheetTrendLbl);
-        ContosoAccountSchedule.InsertFinancialReport(IncomeStatementDetailed(), IncomeStatementDetailedLbl, IncomeStatementDetailed(), IncomeStatementTrendLbl);
-        ContosoAccountSchedule.InsertFinancialReport(IncomeStatementSummarized(), IncomeStatementSummarizedLbl, IncomeStatementSummarized(), IncomeStatementTrendLbl);
-        ContosoAccountSchedule.InsertFinancialReport(TrialBalance(), TrialBalanceLbl, TrialBalance(), BeginningBalanceDebitsCreditsEndingBalanceLbl);
-        ContosoAccountSchedule.SetOverwriteData(false);
-    end;
-
-    procedure BalanceSheetDetailed(): Code[10]
-    begin
-        exit(BalanceSheetDetailedTok);
-    end;
-
-    procedure BalanceSheetSummarized(): Code[10]
-    begin
-        exit(BalanceSheetSummarizedTok);
-    end;
-
-    procedure IncomeStatementDetailed(): Code[10]
-    begin
-        exit(IncomeStatementDetailedTok);
-    end;
-
-    procedure IncomeStatementSummarized(): Code[10]
-    begin
-        exit(IncomeStatementSummarizedTok);
-    end;
-
-    procedure TrialBalance(): Code[10]
-    begin
-        exit(TrialBalanceTok);
-    end;
-
-    var
-        BalanceSheetDetailedTok: Label 'BS DET', MaxLength = 10, Locked = true;
-        BalanceSheetTrendLbl: Label 'BSTREND', MaxLength = 10, Locked = true;
-        IncomeStatementTrendLbl: Label 'ISTREND', MaxLength = 10, Locked = true;
-        TrialBalanceTok: Label 'TB', MaxLength = 10, Locked = true;
-        BalanceSheetSummarizedTok: Label 'BS SUM', MaxLength = 10, Locked = true;
-        BeginningBalanceDebitsCreditsEndingBalanceLbl: Label 'BBDRCREB', MaxLength = 10, Locked = true;
-        IncomeStatementSummarizedTok: Label 'IS SUM', MaxLength = 10, Locked = true;
-        IncomeStatementDetailedTok: Label 'IS DET', MaxLength = 10, Locked = true;
-        BalanceSheetDetailedLbl: Label 'Balance Sheet Detailed', MaxLength = 80;
-        BalanceSheetSummarizedLbl: Label 'Balance Sheet Summarized', MaxLength = 80;
-        IncomeStatementDetailedLbl: Label 'Income Statement Detailed', MaxLength = 80;
-        IncomeStatementSummarizedLbl: Label 'Income Statement Summarized', MaxLength = 80;
-        TrialBalanceLbl: Label 'Trial Balance', MaxLength = 80;
-        TotalRevenueLbl: Label 'Total Revenue', MaxLength = 100;
 }

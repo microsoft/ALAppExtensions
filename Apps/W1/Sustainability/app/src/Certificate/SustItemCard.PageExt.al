@@ -59,6 +59,12 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
                     ToolTip = 'Specifies the value of the Default N2O Emission field.';
                 }
+                field("CO2e per Unit"; Rec."CO2e per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the value of the CO2e per Unit field.';
+                }
             }
         }
     }

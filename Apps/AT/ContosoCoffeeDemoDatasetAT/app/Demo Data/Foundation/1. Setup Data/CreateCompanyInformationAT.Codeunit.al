@@ -3,8 +3,6 @@ codeunit 11143 "Create Company Information AT"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    // TODO: Picture Name to Be Inserted
-
     trigger OnRun()
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
@@ -32,8 +30,8 @@ codeunit 11143 "Create Company Information AT"
         CompanyInformation.Validate("Sales Authorized No.", SalesAuthorizeNo);
         CompanyInformation.Validate("Purch. Authorized No.", PurchAuthorizedNo);
         CompanyInformation.Validate("Tax Office Address", TaxOfficeAddress);
-        CompanyInformation.Validate("Tax Office City", CityLbl);//City := CreatePostCode.FindCity(CompanyInformation."Post Code");
-        CompanyInformation.Validate("Tax Office Post Code", TaxOfficePostCode);// "Post Code" := CreatePostCode.FindPostCode(CreatePostCode.Convert('GB-W2 8HG'));
+        CompanyInformation.Validate("Tax Office City", CityLbl);
+        CompanyInformation.Validate("Tax Office Post Code", TaxOfficePostCode);
         CompanyInformation.Validate("Tax Office Name", TaxOfficeName);
         CompanyInformation.Validate("Tax Office Number", TaxOfficeNumber);
         CompanyInformation.Validate("Tax Office Country/Region Code", '');
@@ -41,9 +39,6 @@ codeunit 11143 "Create Company Information AT"
         CompanyInformation.Validate("Ship-to Address 2", CompanyAddress2Lbl);
         CompanyInformation.Validate("Ship-to City", CityLbl);
         CompanyInformation.Validate("Ship-to Post Code", PostcodeLbl);
-
-        // todo add picture from attached files
-        // CompanyInformation.Picture.Import();
 
         CompanyInformation.Modify(true);
     end;

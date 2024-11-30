@@ -5,7 +5,7 @@ using System.Environment.Configuration;
 using System.TestTools.TestRunner;
 using System.TestTools.AITestToolkit;
 
-codeunit 149800 "Magic Function Prompt Test"
+codeunit 133515 "Magic Function Prompt Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

@@ -18,10 +18,6 @@ codeunit 11214 "SE Contoso Localization"
             FixedAssetModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Inventory then
             InventoryModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::Bank then
-            BankModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::CRM then
-            CRMModule(ContosoDemoDataLevel);
 
         UnBindSubscriptionDemoData(Module);
     end;
@@ -54,7 +50,6 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate SE");
-                    Codeunit.Run(Codeunit::"Create Acc. Schedule SE");
                     Codeunit.Run(Codeunit::"Create VAT Setup PostingGrp SE");
                     Codeunit.Run(Codeunit::"Create VAT Statement SE");
                 end;
@@ -80,14 +75,6 @@ codeunit 11214 "SE Contoso Localization"
         end;
     end;
 
-    local procedure CRMModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create Marketing Setup SE");
-        end;
-    end;
-
     local procedure HumanResourceModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
@@ -98,14 +85,6 @@ codeunit 11214 "SE Contoso Localization"
                     Codeunit.Run(Codeunit::"Create Employee SE");
                     Codeunit.Run(Codeunit::"Create Employee Template SE");
                 end;
-        end;
-    end;
-
-    local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line SE");
         end;
     end;
 

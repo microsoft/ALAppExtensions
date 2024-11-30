@@ -73,10 +73,15 @@ codeunit 6362 "Pagero Integration Impl." implements IDocumentSender, IDocumentRe
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        EDocExtConnectionSetupCard: Page "EDoc Ext Connection Setup Card";
     begin
-        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Pagero then
-            SetupPage := Page::"EDoc Ext Connection Setup Card";
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Pagero then
+            exit;
+
+        EDocExtConnectionSetupCard.RunModal();
+        IsServiceIntegrationSetupRun := true;
     end;
 
     var

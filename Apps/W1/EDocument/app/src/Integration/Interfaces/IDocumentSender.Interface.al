@@ -19,7 +19,8 @@ interface IDocumentSender
     /// <param name="EDocumentService">The record representing the E-Document Service containing service configuration.</param>
     /// <param name="SendContext">The context for the send operation, providing access to resources and settings.</param>
     /// <remarks>
-    /// If the E-Document is sent asynchronously (<c>IsAsync</c> is <c>true</c>), a background job will automatically be queued to fetch the response using the <see cref="GetResponse"/> procedure.
+    /// To support async sending, the implementation of this interface must also implement the IDocumentResponseHandler interface.
+    /// When batch sending is supported, the EDocument Record contains multiple E-Documents to be sent set by filters.
     /// If the HTTP request is populated within <c>SendContext</c>, the request content and headers will be automatically logged to communication logs.
     /// </remarks>
     /// <example>
@@ -46,8 +47,6 @@ interface IDocumentSender
     ///     // Send the HTTP request
     ///     HttpClient.Send(HttpRequest, SendContext.Http().GetHttpResponseMessage());
     ///
-    ///     // Set IsAsync to true to enable asynchronous processing
-    ///     SendContext.SetIsAsync(true);
     /// end;
     /// </code>
     /// </example>

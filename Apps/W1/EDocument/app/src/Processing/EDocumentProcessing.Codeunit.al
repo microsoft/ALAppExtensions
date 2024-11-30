@@ -81,7 +81,6 @@ codeunit 6108 "E-Document Processing"
             EDocumentServiceStatus.Status::"Approval Error");
 
         if not EDocumentServiceStatus.IsEmpty() then begin
-            EDocument.Get(EDocument."Entry No");
             EDocument.Validate(Status, EDocument.Status::Error);
             EDocument.Modify(true);
             exit;
@@ -104,7 +103,6 @@ codeunit 6108 "E-Document Processing"
         // Example Service A and Service B
         // Service A -> Sent
         // Service B -> Exported
-        EDocument.Get(EDocument."Entry No");
         if EDocumentServiceStatus.Count() = EDocServiceCount then
             EDocument.Validate(Status, EDocument.Status::Processed)
         else

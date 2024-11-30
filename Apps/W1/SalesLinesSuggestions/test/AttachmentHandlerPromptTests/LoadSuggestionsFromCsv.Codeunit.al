@@ -4,7 +4,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.Document.Attachment;
 using System.Utilities;
 
-codeunit 149823 "Load Suggestions from csv"
+codeunit 133522 "Load Suggestions from csv"
 {
     Subtype = Test;
     TestPermissions = Disabled;

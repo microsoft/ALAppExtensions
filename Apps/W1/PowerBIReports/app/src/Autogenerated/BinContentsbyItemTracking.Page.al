@@ -22,7 +22,7 @@ page 37032 "Bin Contents by Item Tracking"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37032 "Bin Contents by Item Tracking"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection7359815290770dd2a490', Locked = true;
+        ReportPageLbl: Label 'ReportSection7359815290770dd2a490', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

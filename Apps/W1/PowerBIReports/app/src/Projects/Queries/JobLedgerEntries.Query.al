@@ -6,7 +6,7 @@ query 36992 "Job Ledger Entries"
 {
     Access = Internal;
     QueryType = API;
-    Caption = 'Power BI Job Ledger Entry';
+    Caption = 'Power BI Project Ledger Entry';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
     APIVersion = 'v0.5';

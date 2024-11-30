@@ -269,28 +269,25 @@ page 6133 "E-Document Service"
     var
         EDocumentIntegration: Interface "E-Document Integration";
         SetupPage, SetupTable : Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then begin
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then begin
             EDocumentIntegration := Rec."Service Integration";
             EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
         end;
 
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #else
     local procedure RunSetupServiceIntegration()
     var
-        SetupPage: Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #endif
 
@@ -336,7 +333,7 @@ page 6133 "E-Document Service"
 
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     begin
     end;
 

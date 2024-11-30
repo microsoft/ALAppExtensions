@@ -14,8 +14,8 @@
   "dependencies": [],
   "internalsVisibleTo": [
     {
-      "id": "7628c8de-f349-4806-a540-21b0044f7722",
-      "name": "PowerBI Reports Test",
+      "id": "b4e48c9c-0deb-49a4-ae70-662b33565b1b",
+      "name": "PowerBI Reports Test Library",
       "publisher": "Microsoft"
     }
   ],

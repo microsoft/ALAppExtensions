@@ -239,6 +239,13 @@ codeunit 6134 "E-Doc. Integration Management"
 
     #region Actions
 
+    /// <summary>
+    /// Invokes an IDocumentAction for the E-Document and E-Document Service.
+    /// </summary>
+    /// <param name="EDocument">The record representing the E-Document to be used in the action.</param>
+    /// <param name="EDocumentService">The record representing the E-Document Service.</param>
+    /// <param name="ActionType">The action to be invoked.</param>
+    /// <param name="ActionContext">The context for the action operation, providing access to resources and settings.</param>
     procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionType: Enum "Integration Action Type"; ActionContext: Codeunit ActionContext)
     var
         ErrorCount: Integer;

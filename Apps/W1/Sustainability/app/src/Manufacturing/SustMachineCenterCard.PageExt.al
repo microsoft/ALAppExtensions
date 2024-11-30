@@ -34,6 +34,32 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Default N2O Emission field.';
                 }
+                field("CO2e per Unit"; Rec."CO2e per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the CO2e per Unit field.';
+                }
+            }
+        }
+    }
+
+    actions
+    {
+        addafter("Capacity Ledger E&ntries")
+        {
+            action("Calculate CO2e")
+            {
+                Caption = 'Calculate CO2e';
+                ApplicationArea = Basic, Suite;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
             }
         }
     }
@@ -50,6 +76,17 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions";
+    end;
+
+    local procedure RunCalculateCO2e()
+    var
+        MachineCenter: Record "Machine Center";
+        CalculateCO2e: Report "Sust. Calculate CO2e";
+    begin
+        MachineCenter.SetFilter("No.", Rec."No.");
+        CalculateCO2e.Initialize(1);
+        CalculateCO2e.SetTableView(MachineCenter);
+        CalculateCO2e.Run();
     end;
 
     var

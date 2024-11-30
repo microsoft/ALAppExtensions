@@ -449,6 +449,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             "VAT Bus. Posting Group", "VAT Prod. Posting Group");
     end;
 
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.Get("Vendor Ledger Entry No.");
+        exit(VendorLedgerEntry."Adjusted Currency Factor");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin

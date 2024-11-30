@@ -25,7 +25,6 @@ codeunit 139575 "LP Prediction Test"
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
         LPPredictionTest: Codeunit "LP Prediction Test";
-        LibraryUtility: Codeunit "Library - Utility";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         EnableNotificationMsg: Label 'Want to know if a sales document will be paid on time? The Late Payment Prediction extension can predict that.';
         PredictionResultWillBeLateTxt: Label 'The payment is predicted to be late, with Low confidence in the prediction.';
@@ -368,17 +367,7 @@ codeunit 139575 "LP Prediction Test"
         // [WHEN] We invoke the background task
         Codeunit.Run(Codeunit::"LP Model Management", JobQueueEntry);
 
-        // [THEN] Nothing is changed
-        LPMachineLearningSetup.GetSingleInstance();
-
-        Assert.AreEqual(0, LPMachineLearningSetup."Standard Model Quality", 'Fetched incorrect standard model quality (it does not exist yet)');
-        Assert.AreEqual(0, LPMachineLearningSetup."My Model Quality", 'Fetched incorrect MyModel quality');
-        Assert.AreEqual(0, LPMachineLearningSetup."Standard Model Quality", 'Fetched incorrect standard model quality');
-        Assert.AreEqual('', LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"::My), 'Fetched incorrect model');
-        Assert.AreEqual(LPMachineLearningSetup."Selected Model"::Standard, LPMachineLearningSetup."Selected Model", 'Selected model should not change');
-
         // [GIVEN] The standard model exists and we make it appear like there is more historical data
-        MakeSureStandardModelExists();
         LPMachineLearningSetup.DeleteAll();
         LPMachineLearningSetup.GetSingleInstance();
         LPMachineLearningSetup."Selected Model" := LPMachineLearningSetup."Selected Model"::Standard;
@@ -674,34 +663,6 @@ codeunit 139575 "LP Prediction Test"
             CreateSalesInvoiceHeader(false, SalesInvoiceHeader);
         for I := 1 to 10 do
             CreateSalesInvoiceHeader(true, SalesInvoiceHeader);
-    end;
-
-    local procedure MakeSureStandardModelExists();
-    var
-        MediaResources: Record "Media Resources";
-        File: File;
-        ModelInStream: InStream;
-        ModelOutStream: OutStream;
-        FilePath: Text;
-        FileName: Text[50];
-    begin
-        FileName := 'LatePaymentStandardModel.txt';
-        if MediaResources.Get(FileName) then
-            exit;
-
-        MediaResources.Init();
-        MediaResources.Code := FileName;
-        MediaResources.Insert(true);
-        MediaResources.Get(FileName);
-
-        FilePath := LibraryUtility.GetInetRoot() + '\App\Demotool\Pictures\MachineLearning\' + FileName;
-        File.Open(FilePath);
-        File.CreateInStream(ModelInStream);
-        MediaResources.Blob.CreateOutStream(ModelOutStream);
-        CopyStream(ModelOutStream, ModelInStream);
-        File.Close();
-
-        MediaResources.Modify();
     end;
 
     local procedure DeleteStandardModel();

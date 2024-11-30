@@ -22,7 +22,7 @@ page 37056 "Inventory Valuation Overview"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37056 "Inventory Valuation Overview"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection41d23fcd2b0c70d16059', Locked = true;
+        ReportPageLbl: Label 'ReportSection41d23fcd2b0c70d16059', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

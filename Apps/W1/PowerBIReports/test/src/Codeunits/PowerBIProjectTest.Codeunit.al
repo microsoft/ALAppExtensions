@@ -9,7 +9,7 @@ using Microsoft.Projects.Project.Ledger;
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Projects.PowerBIReports;
+using Microsoft.PowerBIReports.Test;
 
 codeunit 139879 "PowerBI Project Test"
 {
@@ -25,6 +25,8 @@ codeunit 139879 "PowerBI Project Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PowerBIRequests: Codeunit "PowerBI API Requests";
+        PowerBIEndpoints: Enum "PowerBI API Endpoints";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -49,7 +51,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for jobs is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Jobs, '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::Jobs);
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'no eq ''' + Format(Job."No.") + ''' or no eq ''' + Format(Job2."No.") + '''');
 
@@ -104,7 +106,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job tasks is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Tasks", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Tasks");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -154,7 +156,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job planning lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Planning Lines");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -221,7 +223,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job ledger entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Projects.PowerBIReports."Job Ledger Entries", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Ledger Entries");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -275,7 +277,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for outstanding PO lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Outstanding", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Outstanding");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -350,7 +352,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for the purchase lines outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Outstanding", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Outstanding");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(PurchHeader."No.") + ''' OR documentNo eq ''' + Format(PurchHeader2."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -390,7 +392,7 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for received not invoiced PO lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Received", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Received");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);

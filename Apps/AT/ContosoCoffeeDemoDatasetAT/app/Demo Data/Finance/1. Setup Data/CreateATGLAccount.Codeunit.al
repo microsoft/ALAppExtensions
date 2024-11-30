@@ -5,12 +5,11 @@ codeunit 11148 "Create AT GL Account"
 
     trigger OnRun()
     begin
-        AddGLAccountforAT();
+        UpdateGLAccountCatagory();
     end;
 
-    local procedure AddGLAccountforAT()
+    local procedure AddGLAccountForAT()
     var
-        GLAccountIndent: Codeunit "G/L Account-Indent";
         CreareVATPostingGrpAT: Codeunit "Create VAT Posting Group AT";
         CreatePostingGroup: Codeunit "Create Posting Groups";
         CreatePostingGroupAT: Codeunit "Create Posting Groups AT";
@@ -526,12 +525,10 @@ codeunit 11148 "Create AT GL Account"
         ContosoGLAccount.InsertGLAccount(SBK(), SBKName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Equity, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(ProfitAndLossStatement(), ProfitAndLossStatementName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Equity, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TOTALEQUITYRESERVES(), TOTALEQUITYRESERVESName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Equity, Enum::"G/L Account Type"::"End-Total", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
-        GLAccountIndent.Indent();
-        UpdateGLAccountCatagory();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create G/L Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
-    local procedure ModifyGLAccountforDE()
+    local procedure ModifyGLAccountForAT()
     var
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
@@ -1043,6 +1040,8 @@ codeunit 11148 "Create AT GL Account"
         ContosoGLAccount.AddAccountForLocalization(SBKName(), '9850');
         ContosoGLAccount.AddAccountForLocalization(ProfitAndLossStatementName(), '9890');
         ContosoGLAccount.AddAccountForLocalization(TOTALEQUITYRESERVESName(), '9999');
+
+        AddGLAccountForAT();
     end;
 
     local procedure ModifyGLAccountForW1()

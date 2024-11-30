@@ -22,7 +22,7 @@ page 37008 "Sales Actual vs. Budget Amt."
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37008 "Sales Actual vs. Budget Amt."
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionce3be3bc80c816f2646b', Locked = true;
+        ReportPageLbl: Label 'ReportSectionce3be3bc80c816f2646b', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

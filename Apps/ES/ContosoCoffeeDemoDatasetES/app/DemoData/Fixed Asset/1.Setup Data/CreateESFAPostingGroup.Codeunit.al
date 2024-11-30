@@ -16,10 +16,6 @@ codeunit 10807 "Create ES FA Posting Group"
             CreateFAPostingGrp.Goodwill(),
             CreateFAPostingGrp.Plant(),
             CreateFAPostingGrp.Property(),
-            // CreateFAPostingGrp.IP(),
-            // CreateFAPostingGrp.LeaseHold(),
-            // CreateFAPostingGrp.Patents(),
-            // CreateFAPostingGrp.Furniture():
             CreateFAPostingGrp.Vehicles():
                 ValidateRecordFields(Rec, CreateESGLAccounts.IndustrialMachinery(), CreateESGLAccounts.DepIndustrialMachinery(), CreateESGLAccounts.IndustrialMachinery(), CreateESGLAccounts.DepIndustrialMachinery(), '', CreateESGLAccounts.LossOnTangAssetsTransf(), CreateESGLAccounts.Repairs(), CreateESGLAccounts.DeprOfTangAssets(), CreateESGLAccounts.IndustrialMachinery());
         end;
@@ -37,12 +33,4 @@ codeunit 10807 "Create ES FA Posting Group"
         FAPostingGroup.Validate("Depreciation Expense Acc.", DepreciationExpenseAcc);
         FAPostingGroup.Validate("Acquisition Cost Bal. Acc.", AcquisitionCostBalAcc);
     end;
-
-    procedure Building(): Code[20]
-    begin
-        exit(BuildingTok);
-    end;
-
-    var
-        BuildingTok: Label 'BUILDING', MaxLength = 20;
 }

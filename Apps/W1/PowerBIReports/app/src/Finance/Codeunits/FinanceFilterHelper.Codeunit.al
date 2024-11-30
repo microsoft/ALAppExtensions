@@ -13,7 +13,6 @@ codeunit 36954 "Finance Filter Helper"
         FilterRangeLbl: Label '%1..%2', Locked = true;
         FilterTxt: Text;
     begin
-        Clear(FilterTxt);
         if PBISetup.Get() then begin
             if (PBISetup."Vend. Ledger Entry Start Date" = 0D) and (PBISetup."Vend. Ledger Entry End Date" = 0D) then
                 exit('');
@@ -30,7 +29,6 @@ codeunit 36954 "Finance Filter Helper"
         FilterRangeLbl: Label '%1..%2', Locked = true;
         FilterTxt: Text;
     begin
-        Clear(FilterTxt);
         if PBISetup.Get() then begin
             if (PBISetup."Cust. Ledger Entry Start Date" = 0D) and (PBISetup."Cust. Ledger Entry End Date" = 0D) then
                 exit('');
@@ -47,7 +45,6 @@ codeunit 36954 "Finance Filter Helper"
         FilterRangeLbl: Label '%1..%2', Locked = true;
         FilterTxt: Text;
     begin
-        Clear(FilterTxt);
         if PBISetup.Get() then begin
             if (PBISetup."Finance Start Date" = 0D) and (PBISetup."Finance End Date" = 0D) then
                 exit('');

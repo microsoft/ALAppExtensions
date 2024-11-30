@@ -23,7 +23,14 @@ codeunit 6256 "Sust. Item Post Subscriber"
     var
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        GHGCredit: Boolean;
+        Sign: Integer;
     begin
+        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then begin
+            GHGCredit := ItemJournalLine.IsGHGCreditLine();
+            Sign := ItemJournalLine.GetPostingSign(GHGCredit);
+        end;
+
         SustainabilityJnlLine.Init();
         SustainabilityJnlLine.Validate("Posting Date", ItemJournalLine."Posting Date");
         SustainabilityJnlLine.Validate("Document No.", ValueEntry."Document No.");
@@ -33,6 +40,12 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Dimension Set ID" := ItemJournalLine."Dimension Set ID";
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
+
+        If ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
+            SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
+        else
+            SustainabilityJnlLine.Validate("CO2e Emission", ItemJournalLine."Total CO2e");
+
         SustainabilityJnlLine.Validate("Emission CO2", ItemJournalLine."Emission CO2");
         SustainabilityJnlLine.Validate("Emission CH4", ItemJournalLine."Emission CH4");
         SustainabilityJnlLine.Validate("Emission N2O", ItemJournalLine."Emission N2O");

@@ -17,20 +17,20 @@ codeunit 5373 "E-Document Contoso Module" implements "Contoso Demo Data Module"
 
     procedure CreateSetupData()
     begin
-        // Codeunit.Run(Codeunit::"Create E-Document Setup");
+        Codeunit.Run(Codeunit::"Create E-Document Setup");
     end;
 
     procedure CreateMasterData()
-    // var
-        // EDocumentModuleSetup: Record "E-Document Module Setup";
+    var
+        EDocumentModuleSetup: Record "E-Document Module Setup";
     begin
-        // EDocumentModuleSetup.InitEDocumentModuleSetup();
-        // Codeunit.Run(Codeunit::"Create E-Document Master Data");
+        EDocumentModuleSetup.InitEDocumentModuleSetup();
+        Codeunit.Run(Codeunit::"Create E-Document Master Data");
     end;
 
     procedure CreateTransactionalData()
     begin
-        // Codeunit.Run(Codeunit::"Create E-Document Transactions");
+        Codeunit.Run(Codeunit::"Create E-Document Transactions");
     end;
 
     procedure CreateHistoricalData()
