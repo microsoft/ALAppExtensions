@@ -63,8 +63,10 @@ codeunit 139547 "Shpfy Customer Metafields Subs"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "customers": { "pageInfo": { "hasNextPage": false }, "edges": [] } }, "extensions": { "cost": { "requestedQueryCost": 12, "actualQueryCost": 2, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1998, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Metafields/CustomersResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;

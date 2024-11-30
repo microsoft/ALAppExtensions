@@ -40,12 +40,6 @@ codeunit 6181 "Mark Fetched"
         this.DownloadedBlob := TempBlob;
     end;
 
-    procedure GetParameters(var EDoc: Record "E-Document"; var EDocService: Record "E-Document Service")
-    begin
-        EDoc.Copy(this.EDocument);
-        EDocService.Copy(this.EDocumentService);
-    end;
-
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";

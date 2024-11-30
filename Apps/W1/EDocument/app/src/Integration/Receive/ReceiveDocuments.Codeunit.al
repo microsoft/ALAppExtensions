@@ -43,10 +43,6 @@ codeunit 6179 "Receive Documents"
         this.EDocumentService.Copy(EDocumentService);
     end;
 
-    procedure GetService(var EDocumentService: Record "E-Document Service")
-    begin
-        EDocumentService.Copy(this.EDocumentService);
-    end;
 
     var
         EDocumentService: Record "E-Document Service";
