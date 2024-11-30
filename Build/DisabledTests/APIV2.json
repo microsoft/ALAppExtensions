@@ -330,6 +330,11 @@
         "Method": "*"
     },
     {
+        "codeunitId": 139882,
+        "CodeunitName": "APIV2 - Salesperson/Purch E2E",
+        "Method": "*"
+    },
+    {
         "codeunitId": 139899,
         "CodeunitName": "APIV2 - Document Attach. E2E",
         "Method": "*"
