@@ -40,10 +40,15 @@ codeunit 6392 "Integration Impl." implements IDocumentSender, IDocumentResponseH
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        ConnectionSetupCard: Page "Connection Setup Card";
     begin
-        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Tietoevry then
-            SetupPage := Page::"Connection Setup Card";
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Tietoevry then
+            exit;
+
+        ConnectionSetupCard.RunModal();
+        IsServiceIntegrationSetupRun := true;
     end;
 
     var

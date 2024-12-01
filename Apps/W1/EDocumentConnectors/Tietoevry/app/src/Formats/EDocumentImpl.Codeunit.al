@@ -7,14 +7,19 @@ namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Service.History;
 using Microsoft.Sales.Peppol;
 using System.IO;
 using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.Purchases.Document;
+using System.Utilities;
 
 codeunit 6391 "Tietoevry E-Document" implements "E-Document"
 {
+
+
+
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: enum Microsoft.eServices.EDocument."E-Document Processing Phase")
     var
         SalesHeader: Record "Sales Header";
@@ -74,8 +79,6 @@ codeunit 6391 "Tietoevry E-Document" implements "E-Document"
         end;
 
         EDocument.Find();
-        ServiceParticipant.Get(EDocumentService.Code, ServiceParticipant."Participant Type"::Customer, EDocument."Bill-to/Pay-to No.");
-        EDocument."Bill-to/Pay-to Id" := ServiceParticipant."Participant Identifier";
 
         TempBlob.CreateInStream(DocInStream);
         TempXMLBuffer.LoadFromStream(DocInStream);

@@ -4,9 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using System.Security.AccessControl;
-
-permissionsetextension 6392 "Tietoevry EDoc. Connector - Read" extends "D365 READ"
+enum 6390 "Send Mode"
 {
-    IncludedPermissionSets = "Tietoevry Read";
+    Extensible = false;
+
+    value(0; Production)
+    {
+        Caption = 'Production';
+    }
+    value(1; Test)
+    {
+        Caption = 'Test';
+    }
 }

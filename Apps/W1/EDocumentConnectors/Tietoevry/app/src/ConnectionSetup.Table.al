@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using Microsoft.EServices.EDocumentConnector;
-
 table 6392 "Connection Setup"
 {
     fields
@@ -71,7 +69,7 @@ table 6392 "Connection Setup"
                     Rec.FieldError(Rec."Company Id");
             end;
         }
-        field(13; "Send Mode"; Enum "E-Doc. Ext. Send Mode")
+        field(13; "Send Mode"; Enum "Send Mode")
         {
             Caption = 'Send Mode';
             DataClassification = EndUserIdentifiableInformation;

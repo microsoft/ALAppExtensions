@@ -8,12 +8,51 @@ using Microsoft.Sales.Peppol;
 using Microsoft.Sales.Document;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Service.Participant;
+using System.IO;
+using Microsoft.eServices.EDocument.IO.Peppol;
+using System.Utilities;
 
 codeunit 6398 "Format Events"
 {
 
     SingleInstance = true;
     EventSubscriberInstance = StaticAutomatic;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"EDoc PEPPOL BIS 3.0", OnAfterCreatePEPPOLXMLDocument, '', false, false)]
+    local procedure OnAfterCreatePEPPOLXMLDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob");
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        DocInStream: InStream;
+        MessageDocumentId: Text;
+    begin
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Tietoevry then
+            exit;
+
+        TempBlob.CreateInStream(DocInStream);
+        TempXMLBuffer.LoadFromStream(DocInStream);
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Name, 'ProfileID');
+        if TempXMLBuffer.FindFirst() then
+            EDocument."Message Profile Id" := TempXMLBuffer.Value;
+
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Attribute);
+        TempXMLBuffer.SetRange(Name, 'xmlns');
+        if TempXMLBuffer.FindFirst() then
+            MessageDocumentId := TempXMLBuffer.Value;
+
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Name);
+        if TempXMLBuffer.FindFirst() then
+            MessageDocumentId += '::' + TempXMLBuffer.Name;
+
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Name, 'CustomizationID');
+        if TempXMLBuffer.FindFirst() then
+            MessageDocumentId += '##' + TempXMLBuffer.Value + '::2.1';
+
+        EDocument."Message Document Id" := MessageDocumentId;
+        EDocument.Modify();
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", OnAfterGetAccountingSupplierPartyInfoByFormat, '', false, false)]
     local procedure "PEPPOL Management_OnAfterGetAccountingSupplierPartyInfoByFormat"(var SupplierEndpointID: Text; var SupplierSchemeID: Text; var SupplierName: Text; IsBISBilling: Boolean)
