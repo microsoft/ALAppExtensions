@@ -55,41 +55,6 @@ codeunit 6395 Events
             Error(this.MissingCustInfoErr, ServiceParticipant.FieldCaption("Participant Identifier"), Customer."No.");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
-    local procedure OnAfterValidateDocumentFormat(var Rec: Record "E-Document Service"; var xRec: Record "E-Document Service"; CurrFieldNo: Integer)
-    var
-        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
-    begin
-        if Rec."Document Format" <> Rec."Document Format"::"Tietoevry PEPPOL BIS 3.0" then
-            exit;
-
-        EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
-        if EDocServiceSupportedType.IsEmpty() then begin
-            EDocServiceSupportedType.Init();
-            EDocServiceSupportedType."E-Document Service Code" := Rec.Code;
-            EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Invoice";
-            EDocServiceSupportedType.Insert();
-
-            EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Credit Memo";
-            EDocServiceSupportedType.Insert();
-
-            EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Invoice";
-            EDocServiceSupportedType.Insert();
-
-            EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Credit Memo";
-            EDocServiceSupportedType.Insert();
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', "Service Integration V2", false, false)]
-    local procedure OnAfterValidateServiceIntegrationV2(var Rec: Record "E-Document Service"; var xRec: Record "E-Document Service"; CurrFieldNo: Integer)
-    begin
-        if Rec."Service Integration V2" <> Rec."Service Integration V2"::Tietoevry then
-            exit;
-        Rec.Validate("Document Format", Rec."Document Format"::"Tietoevry PEPPOL BIS 3.0");
-        Rec.Modify(true);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Service Participant", 'OnAfterValidateEvent', 'Participant Identifier', false, false)]
     local procedure OnAfterValidateServiceParticipant(var Rec: Record "Service Participant"; var xRec: Record "Service Participant"; CurrFieldNo: Integer)
     var
@@ -106,10 +71,6 @@ codeunit 6395 Events
 
     var
         TietoevryProcessing: Codeunit "Processing";
-#pragma warning disable AA0470
         MissingCompInfVATRegNoErr: Label 'You must specify VAT Registration No. in %1.', Comment = '%1=Company Information';
-#pragma warning restore AA0470
-#pragma warning disable AA0470
         MissingCustInfoErr: Label 'You must specify %1 for Customer %2.', Comment = '%1=Fieldcaption %2=Customer No.';
-#pragma warning restore AA0470
 }

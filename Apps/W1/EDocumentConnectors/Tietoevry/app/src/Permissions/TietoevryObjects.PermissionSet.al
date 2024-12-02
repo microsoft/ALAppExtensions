@@ -19,6 +19,5 @@ permissionset 6390 "Tietoevry Objects"
                 codeunit Requests = X,
                 codeunit Events = X,
                 codeunit "Http Executor" = X,
-                codeunit "Tietoevry E-Document" = X,
                 codeunit "Tietoevry E-Document Import" = X;
 }
