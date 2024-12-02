@@ -100,6 +100,7 @@ page 47018 "SL Migration Configuration"
                     Caption = 'Open Purchase Orders';
                     Enabled = false;
                     ToolTip = 'Specifies whether to migrate the open Purchase Orders.';
+                    Visible = false;
 
                     trigger OnValidate()
                     begin
@@ -524,6 +525,7 @@ page 47018 "SL Migration Configuration"
                 Enabled = false;
                 Image = Dimensions;
                 ToolTip = 'Attempt to set the Dimensions for all Companies.';
+                Visible = false;
                 trigger OnAction()
                 var
                     SLPopulateDimensionsDialog: Page "SL Set All Dimensions Dialog";
