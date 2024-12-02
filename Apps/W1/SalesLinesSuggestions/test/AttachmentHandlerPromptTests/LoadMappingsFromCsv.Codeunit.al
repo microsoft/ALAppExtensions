@@ -4,7 +4,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.Document.Attachment;
 using System.Utilities;
 
-codeunit 149822 "Load Mappings from csv"
+codeunit 133521 "Load Mappings from csv"
 {
     Subtype = Test;
     TestPermissions = Disabled;

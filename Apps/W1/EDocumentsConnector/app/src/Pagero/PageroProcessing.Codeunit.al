@@ -202,7 +202,7 @@ codeunit 6369 "Pagero Processing"
         for I := 1 to Items.Count() do begin
             Clear(TempBlob);
             TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-            ItemMetaData := Items.GetObject(I);
+            ItemMetaData := Items.GetObject(I - 1); // JSON arrays are 0 based
             ItemMetaData.WriteTo(Item);
             OutStream.Write(Item);
             Documents.Add(TempBlob);

@@ -13,7 +13,6 @@ codeunit 5203 "Foundation Module" implements "Contoso Demo Data Module"
     end;
 
     procedure CreateSetupData()
-    var
     begin
         Codeunit.Run(Codeunit::"Create Shipping Data");
         Codeunit.Run(Codeunit::"Create Language");
@@ -33,7 +32,6 @@ codeunit 5203 "Foundation Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Data Exchange Type");
         Codeunit.Run(Codeunit::"Create Custom Report Layout");
         Codeunit.Run(Codeunit::"Create O365 Template");
-        // Codeunit.Run(Codeunit::"Create Excel Template");
     end;
 
     procedure CreateMasterData()

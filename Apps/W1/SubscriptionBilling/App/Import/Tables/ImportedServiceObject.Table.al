@@ -3,7 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 using Microsoft.Sales.Customer;
 using Microsoft.CRM.Contact;
 using Microsoft.Inventory.Item;
-using System.Security.AccessControl;
+using System.Security.User;
 
 table 8008 "Imported Service Object"
 {
@@ -126,7 +126,7 @@ table 8008 "Imported Service Object"
         {
             Caption = 'Processed by';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
             Editable = false;
             ValidateTableRelation = false;
         }

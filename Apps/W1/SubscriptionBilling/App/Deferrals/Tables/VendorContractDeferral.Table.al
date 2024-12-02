@@ -1,10 +1,10 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Security.AccessControl;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.Dimension;
+using System.Security.User;
 
 table 8072 "Vendor Contract Deferral"
 
@@ -62,7 +62,7 @@ table 8072 "Vendor Contract Deferral"
         {
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
             ValidateTableRelation = false;
         }
         field(13; "Discount Amount"; Decimal)

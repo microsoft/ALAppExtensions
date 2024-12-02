@@ -526,19 +526,19 @@ page 36950 "Assisted Setup"
                         Visible = ProjectTabVisible;
                         group(JobLedgerFilters)
                         {
-                            Caption = 'Job Ledger Entry Filters';
-                            InstructionalText = 'Filters Job Ledger Entries';
+                            Caption = 'Project Ledger Entry Filters';
+                            InstructionalText = 'Filters Project Ledger Entries';
                             field(JobLedgerStartDate; Rec."Job Ledger Entry Start Date")
                             {
                                 Caption = 'Start Date';
                                 ApplicationArea = All;
-                                ToolTip = 'Specifies the start date for Job Ledger Entries filter.';
+                                ToolTip = 'Specifies the start date for Project Ledger Entries filter.';
                             }
                             field(JobLedgerEndDate; Rec."Job Ledger Entry End Date")
                             {
                                 Caption = 'End Date';
                                 ApplicationArea = All;
-                                ToolTip = 'Specifies the end date for Job Ledger Entries Entries filter.';
+                                ToolTip = 'Specifies the end date for Project Ledger Entries Entries filter.';
                             }
                         }
                         field(ProjectsShowLess; ShowLessTxt)
@@ -631,7 +631,7 @@ page 36950 "Assisted Setup"
                 group(Complete)
                 {
                     Caption = 'All Done!';
-                    InstructionalText = 'You have finished the Assisted Setup for Power BI Connector. Copy your Power BI Connection string below for use in connecting your Power BI Reports. Choose Finish to complete the setup.';
+                    InstructionalText = 'You have finished the Assisted Setup for Power BI Connector. Copy your Power BI Connection Details below for use when setting up your Power BI Reports. Choose Finish to complete the setup.';
                 }
                 group(ConnectionDetails)
                 {

@@ -81,6 +81,7 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Projects Report" = X,
         page "Manufacturing Report" = X,
         page "Inventory Report" = X,
-        page "Inventory Valuation Report" = X;
+        page "Inventory Valuation Report" = X,
+        page "Sales by Location" = X;
 }
 

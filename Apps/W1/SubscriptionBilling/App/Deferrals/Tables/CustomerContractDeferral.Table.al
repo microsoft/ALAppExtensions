@@ -1,10 +1,10 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Security.AccessControl;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.Dimension;
+using System.Security.User;
 
 table 8066 "Customer Contract Deferral"
 {
@@ -61,7 +61,7 @@ table 8066 "Customer Contract Deferral"
         {
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
             ValidateTableRelation = false;
         }
         field(13; "Discount Amount"; Decimal)

@@ -361,6 +361,12 @@ table 6214 "Sustainability Jnl. Line"
             Caption = 'Reason Code';
             TableRelation = "Reason Code";
         }
+        field(32; "CO2e Emission"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'CO2e Emission';
+            DecimalPlaces = 2 : 5;
+        }
     }
 
     keys

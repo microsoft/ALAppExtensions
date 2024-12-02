@@ -122,7 +122,7 @@ codeunit 6144 "E-Document Get Response"
     end;
 #endif
 
-    local procedure RunGetResponse(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status"; SendContext: Codeunit SendContext) Result: Boolean
+    local procedure RunGetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status"; SendContext: Codeunit SendContext) Result: Boolean
     var
         GetResponseRunner: Codeunit "Get Response Runner";
         EDocumentHelper: Codeunit "E-Document Processing";
@@ -131,17 +131,19 @@ codeunit 6144 "E-Document Get Response"
     begin
         // Commit needed for "if codeunit run" pattern.
         Commit();
-        EDocumentHelper.GetTelemetryDimensions(EDocService, EDocumentServiceStatus, TelemetryDimensions);
+        EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocumentServiceStatus, TelemetryDimensions);
         Telemetry.LogMessage('0000LBQ', EDocTelemetryGetResponseScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        GetResponseRunner.SetDocumentAndService(EDocument, EDocService);
+        GetResponseRunner.SetDocumentAndService(EDocument, EDocumentService);
         GetResponseRunner.SetContext(SendContext);
         if not GetResponseRunner.Run() then begin
             EDocument.Get(EDocumentServiceStatus."E-Document Entry No");
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
         end;
 
-        GetResponseRunner.GetDocumentAndService(EDocument, EDocService);
+        // After interface call, reread the EDocument and EDocumentService for the latest values.
+        EDocument.Get(EDocument."Entry No");
+        EDocumentService.Get(EDocumentService.Code);
         Result := GetResponseRunner.GetResponseResult();
 
         Telemetry.LogMessage('0000LBR', EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);

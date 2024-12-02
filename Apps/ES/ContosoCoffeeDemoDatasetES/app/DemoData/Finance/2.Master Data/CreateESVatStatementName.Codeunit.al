@@ -8,11 +8,11 @@ codeunit 10833 "Create ES VAT Statement Name"
         CreateVATStatement: Codeunit "Create VAT Statement";
         ContosoVatStatment: Codeunit "Contoso VAT Statement";
     begin
-        ContosoVatStatment.InsertVATStatementName(CreateVATStatement.VATTemplateName(), Statement320Lbl, TelematicStatement320DescLbl);
-        ContosoVatStatment.InsertVATStatementName(CreateVATStatement.VATTemplateName(), Statement392Lbl, TelematicStatement392DescLbl);
-        UpdateTemplateType(CreateVATStatement.VATTemplateName(), StatementNameLbl, 0);
-        UpdateTemplateType(CreateVATStatement.VATTemplateName(), Statement320Lbl, 1);
-        UpdateTemplateType(CreateVATStatement.VATTemplateName(), Statement392Lbl, 1);
+        ContosoVatStatment.InsertVATStatementName(CreateVATStatement.VATTemplateName(), VATStatement320(), TelematicStatement320DescLbl);
+        ContosoVatStatment.InsertVATStatementName(CreateVATStatement.VATTemplateName(), VATStatement392(), TelematicStatement392DescLbl);
+        UpdateTemplateType(CreateVATStatement.VATTemplateName(), CreateVATStatement.VATStatementName(), 0);
+        UpdateTemplateType(CreateVATStatement.VATTemplateName(), VATStatement320(), 1);
+        UpdateTemplateType(CreateVATStatement.VATTemplateName(), VATStatement392(), 1);
     end;
 
     local procedure UpdateTemplateType(StatementTemplateName: Code[10]; StatementName: Code[10]; TemplateType: option)
@@ -26,8 +26,17 @@ codeunit 10833 "Create ES VAT Statement Name"
         VatStatementName.Modify(true);
     end;
 
+    procedure VATStatement320(): Code[10]
+    begin
+        exit(Statement320Lbl);
+    end;
+
+    procedure VATStatement392(): Code[10]
+    begin
+        exit(Statement392Lbl);
+    end;
+
     var
-        StatementNameLbl: Label 'DEFAULT', MaxLength = 10;
         Statement320Lbl: Label 'STMT. 320', MaxLength = 10;
         Statement392Lbl: Label 'STMT. 392', MaxLength = 10;
         TelematicStatement320DescLbl: Label '320 Telematic Statement', MaxLength = 100;

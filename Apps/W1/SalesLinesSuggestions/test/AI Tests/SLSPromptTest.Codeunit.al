@@ -3,7 +3,7 @@ namespace Microsoft.Sales.Document.Test;
 using System.TestTools.AITestToolkit;
 using System.TestTools.TestRunner;
 
-codeunit 139781 "SLS Prompt Test"
+codeunit 133516 "SLS Prompt Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

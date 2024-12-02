@@ -1,0 +1,1 @@
+{"data":{"draftOrderCreate":{"draftOrder":{"id":"gid://shopify/DraftOrder/981388394558","legacyResourceId":"981388394558"},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":10,"actualQueryCost":10,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1990,"restoreRate":100.0}}}}

@@ -1,0 +1,1 @@
+{ "data": { "bulkOperationRunMutation": { "bulkOperation": { "id": "gid://shopify/BulkOperation/%1", "url": null, "status": "CREATED" }, "userErrors": [] } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 10 } } }

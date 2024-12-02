@@ -35,15 +35,6 @@ codeunit 6178 "E-Document Action Runner"
     end;
 
     /// <summary>
-    /// Gets the E-Document and the E-Document Service for the E-Document Action
-    /// </summary>
-    procedure GetEDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
-    begin
-        EDocument.Copy(this.EDocument);
-        EDocumentService.Copy(this.EDocumentService);
-    end;
-
-    /// <summary>
     /// Returns if running action lead to update in service status.
     /// Certain actions dont need to update service status, like asking if document was approved. 
     /// </summary>

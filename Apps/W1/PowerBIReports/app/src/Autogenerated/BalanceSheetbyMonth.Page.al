@@ -22,7 +22,7 @@ page 36986 "Balance Sheet by Month"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36986 "Balance Sheet by Month"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection6a30609896651f006f0f', Locked = true;
+        ReportPageLbl: Label 'ReportSection6a30609896651f006f0f', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

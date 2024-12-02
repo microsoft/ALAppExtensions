@@ -22,7 +22,7 @@ page 37043 "Allocated Hours"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37043 "Allocated Hours"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionf3f7e4f23b609a9d9cb2', Locked = true;
+        ReportPageLbl: Label 'ReportSectionf3f7e4f23b609a9d9cb2', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

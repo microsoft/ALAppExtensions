@@ -57,8 +57,10 @@ codeunit 139558 "Shpfy Invoices API Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{"data":{"draftOrderCreate":{"draftOrder":{"id":"gid://shopify/DraftOrder/981388394558","legacyResourceId":"981388394558"},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":10,"actualQueryCost":10,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1990,"restoreRate":100.0}}}}';
+        NavApp.GetResource('Invoices/DraftOrderCreationResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -67,8 +69,10 @@ codeunit 139558 "Shpfy Invoices API Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{"data":{"draftOrderCreate":{"draftOrder":{"id":"gid://shopify/DraftOrder/981388394558","legacyResourceId":"0"},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":10,"actualQueryCost":10,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1990,"restoreRate":100.0}}}}';
+        NavApp.GetResource('Invoices/DraftOrderEmptyResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -77,9 +81,11 @@ codeunit 139558 "Shpfy Invoices API Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := StrSubstNo('{"data":{"draftOrderComplete":{"draftOrder":{"order":{"legacyResourceId":"%1","name":"%2"}},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":11,"actualQueryCost":11,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1989,"restoreRate":100.0}}}}', ShopifyOrderId, ShopifyOrderNo);
-        HttpResponseMessage.Content.WriteFrom(Body);
+        NavApp.GetResource('Invoices/DraftOrderCompleteResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, ShopifyOrderId, ShopifyOrderNo));
         exit(HttpResponseMessage);
     end;
 
@@ -87,8 +93,10 @@ codeunit 139558 "Shpfy Invoices API Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{"data":{"order":{"fulfillmentOrders":{"nodes":[{"id":"gid://shopify/FulfillmentOrder/7478691168318"}]}}},"extensions":{"cost":{"requestedQueryCost":7,"actualQueryCost":4,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1996,"restoreRate":100.0}}}}';
+        NavApp.GetResource('Invoices/FulfillmentOrderResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -97,8 +105,10 @@ codeunit 139558 "Shpfy Invoices API Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{"data":{"fulfillmentCreateV2":{"fulfillment":{"id":"gid://shopify/Fulfillment/5936298623038","status":"SUCCESS"},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":10,"actualQueryCost":10,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1990,"restoreRate":100.0}}}}';
+        NavApp.GetResource('Invoices/FulfillmentCreateResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;

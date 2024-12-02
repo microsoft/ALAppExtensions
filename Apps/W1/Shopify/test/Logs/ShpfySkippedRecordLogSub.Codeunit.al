@@ -60,8 +60,10 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "customers": { "pageInfo": { "hasNextPage": false }, "edges": [] } }, "extensions": { "cost": { "requestedQueryCost": 12, "actualQueryCost": 2, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1998, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Logs/CustomersResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -70,8 +72,10 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "customers": { "pageInfo": { "hasNextPage": false }, "edges": [] } }, "extensions": { "cost": { "requestedQueryCost": 12, "actualQueryCost": 2, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1998, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Logs/ProductMetafieldsEmptyResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -80,8 +84,10 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "productVariant": { "metafields": { "edges": [] } } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 3, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1997, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Logs/VariantMetafieldsEmptyResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -90,8 +96,10 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "fulfillmentCreateV2": { "fulfillment": null, "userErrors": [ { "field": [ "fulfillment" ], "message": "Fulfillment order does not exist." } ] } }, "extensions": { "cost": { "requestedQueryCost": 24, "actualQueryCost": 10, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1990, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Logs/FulfillmentFailedResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;

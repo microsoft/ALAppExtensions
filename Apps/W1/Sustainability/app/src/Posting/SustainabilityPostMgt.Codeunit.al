@@ -1,14 +1,29 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
+using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
+using Microsoft.Inventory.Journal;
 using Microsoft.Sustainability.Ledger;
 
 codeunit 6212 "Sustainability Post Mgt"
 {
     Access = Internal;
+
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; ItemJnlLine: Record "Item Journal Line")
+    begin
+        SkipUpdateCarbonEmissionValue := ItemJnlLine."Entry Type" <> ItemJnlLine."Entry Type"::Purchase;
+        InsertLedgerEntry(SustainabilityJnlLine);
+    end;
+
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SalesLie: Record "Sales Line")
+    begin
+        SkipUpdateCarbonEmissionValue := true;
+        InsertLedgerEntry(SustainabilityJnlLine);
+    end;
 
     procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
@@ -36,10 +51,16 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityValueEntry: Record "Sustainability Value Entry";
         ShouldCalcExpectedCO2e: Boolean;
     begin
+        SkipUpdateCarbonEmissionValue := ItemLedgerEntry."Entry Type" <> ItemLedgerEntry."Entry Type"::Purchase;
         SustainabilityValueEntry.Init();
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);
+
+        if (ValueEntry."Order Type" = ValueEntry."Order Type"::Production) and
+           (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Output)
+        then
+            SustainabilityValueEntry."Expected Emission" := false;
 
         SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
         UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
@@ -57,6 +78,21 @@ codeunit 6212 "Sustainability Post Mgt"
                 ItemLedgerEntry.Quantity = ItemLedgerEntry."Invoiced Quantity");
 
         SustainabilityValueEntry.Insert(true);
+
+        UpdateCO2ePerUnit(SustainabilityValueEntry);
+    end;
+
+    procedure UpdateCO2ePerUnit(SustValueEntry: Record "Sustainability Value Entry")
+    var
+        Item: Record Item;
+        ItemCostMgt: Codeunit SustCostManagement;
+    begin
+        if (SustValueEntry."Valued Quantity" > 0) and not (SustValueEntry."Expected Emission") then begin
+            if not Item.Get(SustValueEntry."Item No.") then
+                exit;
+
+            ItemCostMgt.UpdateCO2ePerUnit(Item, 0);
+        end;
     end;
 
     procedure ResetFilters(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -73,6 +109,9 @@ codeunit 6212 "Sustainability Post Mgt"
         AccountCategory: Record "Sustain. Account Category";
         ScopeType: Enum "Emission Scope";
     begin
+        if SkipUpdateCarbonEmissionValue then
+            exit;
+
         if AccountCategory.Get(SustainabilityLedgerEntry."Account Category") then
             ScopeType := AccountCategory."Emission Scope";
 
@@ -91,9 +130,12 @@ codeunit 6212 "Sustainability Post Mgt"
         if AccountCategory.Get(SustainabilityJnlLine."Account Category") then
             ScopeType := AccountCategory."Emission Scope";
 
-        UpdateCarbonFeeEmissionValues(
-            ScopeType, SustainabilityJnlLine."Posting Date", SustainabilityJnlLine."Country/Region Code", SustainabilityJnlLine."Emission CO2",
-            SustainabilityJnlLine."Emission N2O", SustainabilityJnlLine."Emission CH4", CO2eEmission, CarbonFee);
+        if not SkipUpdateCarbonEmissionValue then
+            UpdateCarbonFeeEmissionValues(
+                ScopeType, SustainabilityJnlLine."Posting Date", SustainabilityJnlLine."Country/Region Code", SustainabilityJnlLine."Emission CO2",
+                SustainabilityJnlLine."Emission N2O", SustainabilityJnlLine."Emission CH4", CO2eEmission, CarbonFee)
+        else
+            CO2eEmission := SustainabilityJnlLine."CO2e Emission";
 
         if SustainabilityValueEntry."Expected Emission" then
             SustainabilityValueEntry."CO2e Amount (Expected)" := CO2eEmission
@@ -103,15 +145,15 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityValueEntry."CO2e per Unit" := CalcCO2ePerUnit(CO2eEmission, SustainabilityValueEntry."Valued Quantity");
     end;
 
-    local procedure UpdateCarbonFeeEmissionValues(
-        ScopeType: Enum "Emission Scope";
-        PostingDate: Date;
-        CountryRegionCode: Code[10];
-        EmissionCO2: Decimal;
-        EmissionN2O: Decimal;
-        EmissionCH4: Decimal;
-        var CO2eEmission: Decimal;
-        var CarbonFee: Decimal): Decimal
+    procedure UpdateCarbonFeeEmissionValues(
+       ScopeType: Enum "Emission Scope";
+       PostingDate: Date;
+       CountryRegionCode: Code[10];
+       EmissionCO2: Decimal;
+       EmissionN2O: Decimal;
+       EmissionCH4: Decimal;
+       var CO2eEmission: Decimal;
+       var CarbonFee: Decimal): Decimal
     var
         EmissionFee: Record "Emission Fee";
         CO2Factor: Decimal;
@@ -245,6 +287,7 @@ codeunit 6212 "Sustainability Post Mgt"
     end;
 
     var
+        SkipUpdateCarbonEmissionValue: Boolean;
         PostingSustainabilityJournalLbl: Label 'Posting Sustainability Journal Lines: \ #1', Comment = '#1 = sub-process progress message';
         CheckSustainabilityJournalLineLbl: Label 'Checking Sustainability Journal Line: %1', Comment = '%1 = Line No.';
         ProcessingLineLbl: Label 'Processing Line: %1', Comment = '%1 = Line No.';

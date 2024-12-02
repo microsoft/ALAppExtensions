@@ -22,7 +22,7 @@ page 37048 "Average Productions Times"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37048 "Average Productions Times"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection13a328ff231fccdc12f7', Locked = true;
+        ReportPageLbl: Label 'ReportSection13a328ff231fccdc12f7', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -24,7 +24,7 @@ codeunit 5376 "Create E-Document Transactions"
         ContosoPurchase: Codeunit "Contoso Purchase";
         CommonUoM: Codeunit "Create Common Unit Of Measure";
     begin
-        if EDocumentModuleSetup.Get() then;
+        EDocumentModuleSetup.Get();
         PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1000', 50, CommonUoM.Piece(), 100);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1001', 50, CommonUoM.Piece(), 100);
@@ -496,9 +496,12 @@ codeunit 5376 "Create E-Document Transactions"
 
     local procedure CreateOrder(VendorNo: Code[20]): Record "Purchase Header";
     var
+        Vendor: Record Vendor;
         ContosoPurchase: Codeunit "Contoso Purchase";
     begin
-        exit(ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, VendorNo, '', 20240301D, ''));
+        Vendor.Get(VendorNo);
+
+        exit(ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, VendorNo, '', 20240301D, 20240301D, 0D, Vendor."Payment Terms Code", '', '', '', 20240301D, Vendor."Payment Method Code"));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post (Yes/No)", OnBeforeConfirmPost, '', false, false)]

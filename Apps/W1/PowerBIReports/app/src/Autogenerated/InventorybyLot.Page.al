@@ -22,7 +22,7 @@ page 37029 "Inventory by Lot"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37029 "Inventory by Lot"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionec09da5413c3755982a4', Locked = true;
+        ReportPageLbl: Label 'ReportSectionec09da5413c3755982a4', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

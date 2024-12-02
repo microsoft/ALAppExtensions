@@ -70,6 +70,7 @@ codeunit 30178 "Shpfy Product Export"
         ItemIsBlockedLbl: Label 'Item is blocked.';
         ItemIsDraftLbl: Label 'Shopify product is in draft status.';
         ItemIsArchivedLbl: Label 'Shopify product is archived.';
+        ItemVariantIsBlockedLbl: Label 'Item variant is blocked or sales blocked.';
 
     /// <summary> 
     /// Creates html body for a product from extended text, marketing text and attributes.
@@ -234,6 +235,11 @@ codeunit 30178 "Shpfy Product Export"
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
+        if ItemVariant.Blocked or ItemVariant."Sales Blocked" then begin
+            SkippedRecord.LogSkippedRecord(ItemVariant.RecordId, ItemVariantIsBlockedLbl, Shop);
+            exit;
+        end;
+
         if OnlyUpdatePrice then
             exit;
         Clear(TempShopifyVariant);
@@ -253,6 +259,11 @@ codeunit 30178 "Shpfy Product Export"
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
+        if ItemVariant.Blocked or ItemVariant."Sales Blocked" then begin
+            SkippedRecord.LogSkippedRecord(ItemVariant.RecordId, ItemVariantIsBlockedLbl, Shop);
+            exit;
+        end;
+
         Clear(TempShopifyVariant);
         TempShopifyVariant."Product Id" := ProductId;
         FillInProductVariantData(TempShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);

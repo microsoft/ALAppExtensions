@@ -6,9 +6,6 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using Microsoft.eServices.EDocument.IO.Peppol;
-#if not CLEAN26
-using Microsoft.eServices.EDocument.Integration.Interfaces;
-#endif
 using Microsoft.eServices.EDocument.Integration.Receive;
 page 6133 "E-Document Service"
 {
@@ -269,28 +266,25 @@ page 6133 "E-Document Service"
     var
         EDocumentIntegration: Interface "E-Document Integration";
         SetupPage, SetupTable : Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then begin
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then begin
             EDocumentIntegration := Rec."Service Integration";
             EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
         end;
 
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #else
     local procedure RunSetupServiceIntegration()
     var
-        SetupPage: Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #endif
 
@@ -303,8 +297,7 @@ page 6133 "E-Document Service"
         ReceiveContext: Codeunit ReceiveContext;
         EDocIntegration: Interface "E-Document Integration";
     begin
-        EDocIntegration := Rec."Service Integration";
-        if EDocIntegration is IDocumentReceiver then begin
+        if Rec."Service Integration V2" <> Rec."Service Integration V2"::"No Integration" then begin
             EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
             EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
 
@@ -314,6 +307,7 @@ page 6133 "E-Document Service"
             exit;
         end;
 
+        EDocIntegration := Rec."Service Integration";
         EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
     end;
 #else
@@ -336,7 +330,7 @@ page 6133 "E-Document Service"
 
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     begin
     end;
 

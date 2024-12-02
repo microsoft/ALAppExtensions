@@ -13,7 +13,6 @@ codeunit 36958 "Purchases Filter Helper"
         RelativeFilterLbl: Label '%1..', Locked = true;
         FilterTxt: Text;
     begin
-        Clear(FilterTxt);
         if PBISetup.Get() then
             case PBISetup."Item Purch. Load Date Type" of
                 PBISetup."Item Purch. Load Date Type"::"Start/End Date":

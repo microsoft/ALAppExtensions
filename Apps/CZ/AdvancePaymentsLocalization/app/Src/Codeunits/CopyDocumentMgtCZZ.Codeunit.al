@@ -59,10 +59,9 @@ codeunit 31178 "Copy Document Mgt. CZZ"
             OldSalesAdvLetterHeaderCZZ := ToSalesAdvLetterHeaderCZZ;
             ToSalesAdvLetterHeaderCZZ.TransferFields(FromSalesAdvLetterHeaderCZZ, false);
             ToSalesAdvLetterHeaderCZZ.Status := ToSalesAdvLetterHeaderCZZ.Status::New;
-            CopyFieldsFromOldSalesAdvLetterHeader(ToSalesAdvLetterHeaderCZZ, OldSalesAdvLetterHeaderCZZ);
-            if RecalculateLines then
-                ToSalesAdvLetterHeaderCZZ.CreateDimFromDefaultDim(0);
             ToSalesAdvLetterHeaderCZZ."No. Printed" := 0;
+            CopyFieldsFromOldSalesAdvLetterHeader(ToSalesAdvLetterHeaderCZZ, OldSalesAdvLetterHeaderCZZ);
+            OnBeforeModifySalesAdvLetterHeader(ToSalesAdvLetterHeaderCZZ, FromSalesAdvLetterHeaderCZZ, IncludeHeader, RecalculateLines, OldSalesAdvLetterHeaderCZZ);
             ToSalesAdvLetterHeaderCZZ.Modify();
         end;
 
@@ -95,6 +94,8 @@ codeunit 31178 "Copy Document Mgt. CZZ"
         ToSalesAdvLetterHeaderCZZ."No. Series" := OldSalesAdvLetterHeaderCZZ."No. Series";
         ToSalesAdvLetterHeaderCZZ."Job No." := OldSalesAdvLetterHeaderCZZ."Job No.";
         ToSalesAdvLetterHeaderCZZ."Job Task No." := OldSalesAdvLetterHeaderCZZ."Job Task No.";
+        ToSalesAdvLetterHeaderCZZ."Variable Symbol" := OldSalesAdvLetterHeaderCZZ."Variable Symbol";
+        OnAfterCopyFieldsFromOldSalesAdvLetterHeader(ToSalesAdvLetterHeaderCZZ, OldSalesAdvLetterHeaderCZZ);
     end;
 
     local procedure CopyDocumentLine(var ToSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var ToSalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; var FromSalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; var NextLineNo: Integer): Boolean
@@ -115,6 +116,7 @@ codeunit 31178 "Copy Document Mgt. CZZ"
             ToSalesAdvLetterLineCZZ.Description := FromSalesAdvLetterLineCZZ.Description;
         end;
 
+        OnBeforeInsertSalesAdvLetterLine(ToSalesAdvLetterHeaderCZZ, ToSalesAdvLetterLineCZZ, FromSalesAdvLetterLineCZZ, NextLineNo, IncludeHeader, RecalculateLines);
         ToSalesAdvLetterLineCZZ.Insert();
         exit(true);
     end;
@@ -161,10 +163,9 @@ codeunit 31178 "Copy Document Mgt. CZZ"
             OldPurchAdvLetterHeaderCZZ := ToPurchAdvLetterHeaderCZZ;
             ToPurchAdvLetterHeaderCZZ.TransferFields(FromPurchAdvLetterHeaderCZZ, false);
             ToPurchAdvLetterHeaderCZZ.Status := ToPurchAdvLetterHeaderCZZ.Status::New;
-            CopyFieldsFromOldPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, OldPurchAdvLetterHeaderCZZ);
-            if RecalculateLines then
-                ToPurchAdvLetterHeaderCZZ.CreateDimFromDefaultDim(0);
             ToPurchAdvLetterHeaderCZZ."No. Printed" := 0;
+            CopyFieldsFromOldPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, OldPurchAdvLetterHeaderCZZ);
+            OnBeforeModifyPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, FromPurchAdvLetterHeaderCZZ, IncludeHeader, RecalculateLines, OldPurchAdvLetterHeaderCZZ);
             ToPurchAdvLetterHeaderCZZ.Modify();
         end;
 
@@ -195,6 +196,9 @@ codeunit 31178 "Copy Document Mgt. CZZ"
     local procedure CopyFieldsFromOldPurchAdvLetterHeader(var ToPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; OldPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
         ToPurchAdvLetterHeaderCZZ."No. Series" := OldPurchAdvLetterHeaderCZZ."No. Series";
+        ToPurchAdvLetterHeaderCZZ."Variable Symbol" := OldPurchAdvLetterHeaderCZZ."Variable Symbol";
+        ToPurchAdvLetterHeaderCZZ."Vendor Adv. Letter No." := OldPurchAdvLetterHeaderCZZ."Vendor Adv. Letter No.";
+        OnAfterCopyFieldsFromOldPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, OldPurchAdvLetterHeaderCZZ);
     end;
 
     local procedure CopyDocumentLine(var ToPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var ToPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; var FromPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; var NextLineNo: Integer): Boolean
@@ -215,6 +219,7 @@ codeunit 31178 "Copy Document Mgt. CZZ"
             ToPurchAdvLetterLineCZZ.Description := FromPurchAdvLetterLineCZZ.Description;
         end;
 
+        OnBeforeInsertPurchAdvLetterLine(ToPurchAdvLetterHeaderCZZ, ToPurchAdvLetterLineCZZ, FromPurchAdvLetterLineCZZ, NextLineNo, IncludeHeader, RecalculateLines);
         ToPurchAdvLetterLineCZZ.Insert();
         exit(true);
     end;
@@ -231,6 +236,38 @@ codeunit 31178 "Copy Document Mgt. CZZ"
     begin
         if FromDocumentNo = ToDocumentNo then
             Error(CopyDocumentItselfErr, ToDocumentNo);
+    end;
+    #endregion
+
+    #region Events
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifySalesAdvLetterHeader(var ToSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; FromSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; IncludeHeader: Boolean; RecalculateLines: Boolean; OldSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFieldsFromOldSalesAdvLetterHeader(var ToSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; OldSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertSalesAdvLetterLine(var ToSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var ToSalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; FromSalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; var NextLineNo: Integer; IncludeHeader: Boolean; RecalculateLines: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyPurchAdvLetterHeader(var ToPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; FromPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; IncludeHeader: Boolean; RecalculateLines: Boolean; OldPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFieldsFromOldPurchAdvLetterHeader(var ToPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; OldPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertPurchAdvLetterLine(var ToPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var ToPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; FromPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; var NextLineNo: Integer; IncludeHeader: Boolean; RecalculateLines: Boolean)
+    begin
     end;
     #endregion
 }

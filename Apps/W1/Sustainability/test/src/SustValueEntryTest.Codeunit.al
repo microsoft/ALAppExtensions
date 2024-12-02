@@ -11,6 +11,8 @@ codeunit 148190 "Sust. Value Entry Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryERM: Codeunit "Library - ERM";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryManufacturing: Codeunit "Library - Manufacturing";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption';
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
@@ -1003,6 +1005,1549 @@ codeunit 148190 "Sust. Value Entry Test"
         PurchaseRcptHeader.Navigate();
     end;
 
+    [Test]
+    procedure VerifySustainabilityValueEntryShouldBeCreatedWhenSalesDocumentIsPosted()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SalesHeader: Record "Sales Header";
+        CountryRegion: Record "Country/Region";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value entry should be created when the Sales document is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee With Emission Scope and Country/Region.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+        SalesHeader."Bill-to Country/Region Code" := CountryRegion.Code;
+        SalesHeader.Modify();
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Post a Sales Document.
+        PostedInvoiceNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Verify Sustainability Value entry and Sustainability Ledger Entry should be created when the Sales document is posted.
+        SustainabilityValueEntry.SetRange("Document No.", PostedInvoiceNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -TotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustainabilityValueEntryShouldBeCreatedWhenSalesDocumentIsPartiallyPosted()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SalesHeader: Record "Sales Header";
+        CountryRegion: Record "Country/Region";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value entry should be created when the Sales document is partially posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee With Emission Scope and Country/Region.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+        SalesHeader."Sell-to Country/Region Code" := CountryRegion.Code;
+        SalesHeader.Modify();
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Save Quanity.
+        Quantity := SalesLine.Quantity / 2;
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", Quantity);
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Save Expected "Total CO2e".
+        TotalCO2e := SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * Quantity;
+
+        // [WHEN] Post a Sales Document.
+        PostedInvoiceNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Verify Sustainability Value entry and Sustainability Ledger Entry should be created when the Sales document is partially posted.
+        SustainabilityValueEntry.SetRange("Document No.", PostedInvoiceNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -TotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustainabilityValueEntryShouldBeKnockedOffWhenCancelSalesCreditMemoIsPosted()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value entry should be Kocked Off when the Cancel Sales Credit Memo is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Update Reason Code in Sales Header.
+        UpdateReasonCodeinSalesHeader(SalesHeader);
+
+        // [WHEN] Post a Sales Document.
+        PostAndVerifyCancelSalesCreditMemo(SalesHeader);
+
+        // [VERIFY] Verify Sustainability Value Entry and Sustainability ledger Entry should be Kocked Off when the Cancel Sales Credit Memo is posted.
+        SustainabilityValueEntry.SetRange("Item No.", SalesLine."No.");
+        SustainabilityValueEntry.CalcSums("CO2e Amount (Actual)", "CO2e Amount (Expected)");
+        Assert.RecordCount(SustainabilityValueEntry, 2);
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), 0, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O", "CO2e Emission", "Carbon Fee");
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustainabilityRelatedEntriesWhenSalesDocumentIsPartiallyPosted()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SalesHeader: Record "Sales Header";
+        CountryRegion: Record "Country/Region";
+        SalesLine: Record "Sales Line";
+        SalesShipmentLine: Record "Sales Shipment Line";
+        PostedSalesInvoiceSubform: TestPage "Posted Sales Invoice Subform";
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability related entries When Purchase Document is partially posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee With Emission Scope and Country/Region.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+        SalesHeader."Bill-to Country/Region Code" := CountryRegion.Code;
+        SalesHeader.Modify();
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Save Quanity.
+        Quantity := SalesLine.Quantity / 2;
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", Quantity);
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Save Expected "Total CO2e".
+        TotalCO2e := SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * Quantity;
+
+        // [WHEN] Post a Sales Document With Shipping.
+        PostedNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [VERIFY] Verify Sustainability Fields In Sales Shipment Line and Sustainability Value Entry should be created when Sales Document is shipped.
+        SalesShipmentLine.SetRange("Bill-to Customer No.", SalesLine."Bill-to Customer No.");
+        SalesShipmentLine.FindFirst();
+        Assert.AreEqual(
+            AccountCode,
+            SalesShipmentLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, SalesShipmentLine.FieldCaption("Sust. Account No."), AccountCode, SalesShipmentLine.TableCaption()));
+        Assert.AreEqual(
+            TotalCO2e,
+            SalesShipmentLine."Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, SalesShipmentLine.FieldCaption("Total CO2e"), TotalCO2e, SalesShipmentLine.TableCaption()));
+
+        SustainabilityValueEntry.SetRange("Document No.", PostedNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), -TotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), 0, SustainabilityValueEntry.TableCaption()));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
+
+        // [WHEN] Post a Sales Document With Invoicing.
+        PostedNo := LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [VERIFY] Verify Sustainability Fields In Sales Invoice Line, Sustainability Value Entry and Sustainability Ledger Entry should be created when Sales Document is invoiced.
+        PostedSalesInvoiceSubform.OpenEdit();
+        PostedSalesInvoiceSubform.FILTER.SetFilter("Document No.", PostedNo);
+        PostedSalesInvoiceSubform."Sust. Account No.".AssertEquals(AccountCode);
+        PostedSalesInvoiceSubform."Total CO2e".AssertEquals(TotalCO2e);
+
+        SustainabilityValueEntry.SetRange("Document No.", PostedNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -TotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            TotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), TotalCO2e, SustainabilityValueEntry.TableCaption()));
+
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedNo);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.RecordCount(SustainabilityLedgerEntry, 1);
+        Assert.AreEqual(
+            -TotalCO2e,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyPostedEmissionFieldsInSalesLine()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Posted Emission fields in Sales Line.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", LibraryRandom.RandInt(20));
+        SalesLine.Modify();
+
+        // [GIVEN] Save Expected "Total CO2e".
+        TotalCO2e := SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+
+        // [WHEN] Post a Sales Document With Shipping.
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [VERIFY] Verify Posted Emission fields in Sales Line When Sales Document is Shipped.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        Assert.AreEqual(
+            0,
+            SalesLine."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("Posted Total CO2e"), 0, SalesLine.TableCaption()));
+
+        // [WHEN] Post a Sales Document With Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [VERIFY] Verify Posted Emission fields in Sales Line When Sales Document is invoiced.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        Assert.AreEqual(
+            -TotalCO2e,
+            SalesLine."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("Posted Total CO2e"), -TotalCO2e, SalesLine.TableCaption()));
+
+        // [GIVEN] Update "External Document No." in Sales line.
+        SalesHeader.Validate("External Document No.", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify();
+
+        // [GIVEN] Update "Qty. to Ship" in Sales line.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(2, 2));
+        SalesLine.Modify();
+
+        // [GIVEN] Save Expected "Total CO2e.
+        TotalCO2e := SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(7, 7);
+
+        // [WHEN] Post a Sales Document With Shipping and Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Verify Posted Emission fields in Sales Line When Sales Document is shipped and invoiced.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        Assert.AreEqual(
+            -TotalCO2e,
+            SalesLine."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("Posted Total CO2e"), -TotalCO2e, SalesLine.TableCaption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesOrderStatisticsPageHandler')]
+    procedure VerifySustainabilityFieldsInSalesOrderStatistics()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Fields in Sales Order Statistics.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 200));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" before posting of Sales order.
+        OpenSalesOrderStatistics(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Shipping.
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Shipping.
+        OpenSalesOrderStatistics(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Invoicing.
+        OpenSalesOrderStatistics(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Update "External Document No." in Sales line.
+        SalesHeader.Validate("External Document No.", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify();
+
+        // [GIVEN] Update "Qty. to Ship" in Sales line.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(2, 2));
+        SalesLine.Modify();
+
+        // [GIVEN] Post a Sales Document with Shipping and Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(7, 7) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with Shipping and Invoicing.
+        OpenSalesOrderStatistics(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+    end;
+
+    [Test]
+    procedure VerifySustainabilityFieldsInPostedSalesInvoiceStatisticsWhenSalesDocumentIsPartiallyPosted()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Fields in Posted Sales Invoice Statistics When Sales Document is partially posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5) * -1);
+
+        // [WHEN] Post Sales Document with Shipping and Invoicing.
+        PostedInvoiceNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Verify Sustainability fields in Page "Posted Sales Invoice Statistics" When Sales document is partially posted.
+        VerifyPostedSalesInvoiceStatistics(PostedInvoiceNo);
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Update "External Document No." in Sales line.
+        SalesHeader.Validate("External Document No.", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify();
+
+        // [GIVEN] Update "Qty. to Ship" in Sales line.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(2, 2));
+        SalesLine.Modify();
+
+        // [GIVEN] Post a Sales Document with Shipping and Invoicing.
+        PostedInvoiceNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(2, 2) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Posted Sales Invoice Statistics" When Sales document is partially posted.
+        VerifyPostedSalesInvoiceStatistics(PostedInvoiceNo);
+        LibraryVariableStorage.Clear();
+    end;
+
+    [Test]
+    [HandlerFunctions('GLPostingPreviewHandler')]
+    procedure VerifySustainabilityValueEntryShouldBeCreatedDuringPreviewPostingOfSalesOrder()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created during Preview Posting of Sales order.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit Price", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Save a transaction.
+        Commit();
+
+        // [WHEN] Post a Sales Document.
+        asserterror LibrarySales.PreviewPostSalesDocument(SalesHeader);
+
+        // [VERIFY] No errors occured - preview mode error only.
+        Assert.ExpectedError('');
+    end;
+
+    [Test]
+    [HandlerFunctions('GLPostingPreviewHandlerForOnlyReceived')]
+    procedure VerifySustainabilityValueEntryShouldBeCreatedDuringPreviewPostingOfSalesOrderWhenDocumentIsShipped()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value Entry should be created during Preview Posting of Sales order When Document is shipped.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Qty. to Invoice", 0);
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [GIVEN] Save a transaction.
+        Commit();
+
+        // [WHEN] Post a Sales Document.
+        asserterror LibrarySales.PreviewPostSalesDocument(SalesHeader);
+
+        // [VERIFY] No errors occured - preview mode error only.
+        Assert.ExpectedError('');
+    end;
+
+    [Test]
+    [HandlerFunctions('NavigateFindEntriesHandler')]
+    procedure VerifySustainabilityValueEntryShouldBeShownWhenNavigatingPostedSalesInvoice()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchInvNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value Entry and Sustainability Ledger Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit Price", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Post a Sales Document.
+        PostedPurchInvNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [VERIFY] Verify Sustainability Value Entry and Sustainability Ledger Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
+        SalesInvoiceHeader.Get(PostedPurchInvNo);
+        SalesInvoiceHeader.Navigate();
+    end;
+
+    [Test]
+    [HandlerFunctions('NavigateFindEntriesHandlerForOnlyReceived')]
+    procedure VerifySustainabilityValueEntryShouldBeShownWhenNavigatingPostedSalesShipment()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchNo: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Value Entry should be shown when navigating Posted Sales Shipment through NavigateFindEntriesHandler handler.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit Price", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Post a Sales Document.
+        PostedPurchNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [VERIFY] Verify Sustainability Value Entry should be shown when navigating Posted Sales Shipment through NavigateFindEntriesHandler handler.
+        SalesShipmentHeader.Get(PostedPurchNo);
+        SalesShipmentHeader.Navigate();
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedInItemWhenPurchaseDocumentIsPosted()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        CountryRegion: Record "Country/Region";
+        EmissionFee: array[3] of Record "Emission Fee";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedCO2eEmission: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 537481] Verify "CO2e per Unit" must be updated in Item When Purchase Document is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create Item No.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Generate Emission and Quantity.
+        EmissionCO2 := LibraryRandom.RandInt(100);
+        EmissionCH4 := LibraryRandom.RandInt(100);
+        EmissionN2O := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmission :=
+            (EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor") / Quantity;
+
+        // [WHEN] Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", Quantity, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [THEN] Verify "CO2e per Unit" must be updated When Purchase Document is posted.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2eEmission, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedInSalesLine()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        CountryRegion: Record "Country/Region";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        EmissionFee: array[3] of Record "Emission Fee";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedCO2eEmission: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 537481] Verify "CO2e per Unit" must be updated from Item in Sales line.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create Item No.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Generate Emission and Quantity.
+        EmissionCO2 := LibraryRandom.RandInt(100);
+        EmissionCH4 := LibraryRandom.RandInt(100);
+        EmissionN2O := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmission :=
+            (EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor") / Quantity;
+
+        // [GIVEN] Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", Quantity, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandInt(10));
+
+        // [WHEN] Update "Unit Price", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 100));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+
+        // [THEN] Verify "CO2e per Unit" must be updated from Item in Sales Line..
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SalesLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("CO2e per Unit"), ExpectedCO2eEmission, SalesLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedBasedOnAverageMethod()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilitySetup: Record "Sustainability Setup";
+        PurchaseHeader: Record "Purchase Header";
+        CountryRegion: Record "Country/Region";
+        EmissionFee: array[3] of Record "Emission Fee";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedCO2eEmission: Decimal;
+        EmissionCO2: array[2] of Decimal;
+        EmissionCH4: array[2] of Decimal;
+        EmissionN2O: array[2] of Decimal;
+        Quantity: array[2] of Decimal;
+    begin
+        // [SCENARIO 537481] Verify "CO2e per Unit" must be updated based on Average Costing Method in Item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Create Item No.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Generate Emission and Quantity.
+        EmissionCO2[1] := LibraryRandom.RandInt(100);
+        EmissionCH4[1] := LibraryRandom.RandInt(100);
+        EmissionN2O[1] := LibraryRandom.RandInt(100);
+        EmissionCO2[2] := LibraryRandom.RandInt(1000);
+        EmissionCH4[2] := LibraryRandom.RandInt(1000);
+        EmissionN2O[2] := LibraryRandom.RandInt(1000);
+        Quantity[1] := LibraryRandom.RandIntInRange(10, 10);
+        Quantity[2] := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Save Expected CO2e Emission .
+        ExpectedCO2eEmission :=
+            (EmissionCH4[1] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2[1] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O[1] * EmissionFee[3]."Carbon Equivalent Factor");
+        ExpectedCO2eEmission +=
+            (EmissionCH4[2] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2[2] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O[2] * EmissionFee[3]."Carbon Equivalent Factor");
+        ExpectedCO2eEmission := Round((ExpectedCO2eEmission / (Quantity[1] + Quantity[2])), SustainabilitySetup."Emission Rounding Precision");
+
+        // [WHEN] Post Purchase Document With Emission A and B.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", Quantity[1], EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2[1], EmissionCH4[1], EmissionN2O[1]);
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", Quantity[2], EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2[2], EmissionCH4[2], EmissionN2O[2]);
+
+        // [THEN] Verify "CO2e per Unit" must be updated using Average Costing Method in Item.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2eEmission, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedInRoutingLineFromWorkCenter()
+    var
+        RoutingHeader: Record "Routing Header";
+        RoutingLine: Record "Routing Line";
+        WorkCenter: Record "Work Center";
+    begin
+        // [SCENARIO 537479] Verify "CO2e per Unit" should be updated in Routing Line from Work Center.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Create Routing Header.
+        LibraryManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+
+        // [WHEN] Create Routing Line with Work Center.
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine, '', Format(LibraryRandom.RandInt(100)), RoutingLine.Type::"Work Center", WorkCenter."No.");
+        RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
+        RoutingHeader.Modify(true);
+
+        // [THEN] Verify "CO2e per Unit" should be updated in Routing Line.
+        Assert.AreEqual(
+            WorkCenter."CO2e per Unit",
+            RoutingLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, RoutingLine.FieldCaption("CO2e per Unit"), WorkCenter."CO2e per Unit", RoutingLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedInRoutingLineFromMachineCenter()
+    var
+        WorkCenter: Record "Work Center";
+        RoutingHeader: Record "Routing Header";
+        RoutingLine: Record "Routing Line";
+        MachineCenter: Record "Machine Center";
+    begin
+        // [SCENARIO 537479] Verify "CO2e per Unit" should be updated in Routing Line from Machine Center.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenterWithCalendar(MachineCenter, WorkCenter."No.", LibraryRandom.RandInt(10));
+        MachineCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        MachineCenter.Modify();
+
+        // [GIVEN] Create Routing Header.
+        LibraryManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+
+        // [WHEN] Create Routing Line with Machine Center.
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine, '', Format(LibraryRandom.RandInt(100)), RoutingLine.Type::"Machine Center", MachineCenter."No.");
+        RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
+        RoutingHeader.Modify(true);
+
+        // [THEN] Verify "CO2e per Unit" should be updated in Routing Line.
+        Assert.AreEqual(
+            MachineCenter."CO2e per Unit",
+            RoutingLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, RoutingLine.FieldCaption("CO2e per Unit"), MachineCenter."CO2e per Unit", RoutingLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldBeUpdatedInProdBOMLineFromItem()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProductionBOMLine: Record "Production BOM Line";
+    begin
+        // [SCENARIO 537479] Verify "CO2e per Unit" should be updated in Production BOM Line from Item.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create Items.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Update "CO2e per Unit" in Component Item.
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Create Production BOM with Component Item.
+        LibraryManufacturing.CreateProductionBOMHeader(ProductionBOMHeader, CompItem."Base Unit of Measure");
+        LibraryManufacturing.CreateProductionBOMLine(ProductionBOMHeader, ProductionBOMLine, '', ProductionBOMLine.Type::Item, CompItem."No.", 1);
+        LibraryManufacturing.UpdateProductionBOMStatus(ProductionBOMHeader, ProductionBOMHeader.Status::Certified);
+
+        // [THEN] Verify "CO2e per Unit" should be updated in Production BOM Line.
+        Assert.AreEqual(
+            CompItem."CO2e per Unit",
+            ProductionBOMLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, ProductionBOMLine.FieldCaption("CO2e per Unit"), CompItem."CO2e per Unit", ProductionBOMLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsShouldBeUpdatedAfterRefreshProductionOrder()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilityAccount: Record "Sustainability Account";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        Quanity: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+    begin
+        // [SCENARIO 537479] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Default Sust. Account", AccountCode);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, 0));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Generate Quantity and Expected CO2e per unit for Prod Order Line.
+        Quanity := LibraryRandom.RandIntInRange(10, 10);
+        ExpectedCO2ePerUnit := (WorkCenter."CO2e per Unit" * Quanity + CompItem."CO2e per Unit" * Quanity) / Quanity;
+
+        // [WHEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
+
+        // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
+        VerifyProductionOrderLine(ProductionOrder, ProdItem."Default Sust. Account", ExpectedCO2ePerUnit, ExpectedCO2ePerUnit * Quanity, 0);
+        VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", CompItem."CO2e per Unit", CompItem."CO2e per Unit" * Quanity, 0);
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * Quanity, 0);
+    end;
+
+    [Test]
+    procedure VerifySustainabilityFieldsShouldBeUpdatedAfterRefreshProductionOrderFromRoutingLineAndProductionBOM()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilityAccount: Record "Sustainability Account";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        Quanity: Decimal;
+        ExpectedCO2ePerUnitForProdOrderLine: Decimal;
+    begin
+        // [SCENARIO 537479] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order from Routing Line and Production BOM.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Default Sust. Account", AccountCode);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Quantity and Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+        Quanity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Save  Expected "CO2e per Unit" for Prod Order Line.
+        ExpectedCO2ePerUnitForProdOrderLine := (ExpectedCO2ePerUnit[1] * Quanity + ExpectedCO2ePerUnit[2] * Quanity) / Quanity;
+
+        // [WHEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
+
+        // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
+        VerifyProductionOrderLine(ProductionOrder, ProdItem."Default Sust. Account", ExpectedCO2ePerUnitForProdOrderLine, ExpectedCO2ePerUnitForProdOrderLine * Quanity, 0);
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", ExpectedCO2ePerUnit[1], ExpectedCO2ePerUnit[1] * Quanity, 0);
+        VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", ExpectedCO2ePerUnit[2], ExpectedCO2ePerUnit[2] * Quanity, 0);
+    end;
+
+    [Test]
+    procedure VerifySustainabilityFieldsShouldBeUpdatedFromItemAndWorkCenter()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProductionOrderComponent: Record "Prod. Order Component";
+        ProductionOrderRoutingLine: Record "Prod. Order Routing Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilityAccount: Record "Sustainability Account";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537479] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated from Item and Work Center.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Default Sust. Account", AccountCode);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Update "Production BOM No.","Routing No.","Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Validate("Default Sust. Account", AccountCode);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Delete Prod. Order Component.
+        ProductionOrderComponent.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderComponent.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderComponent.DeleteAll();
+
+        // [WHEN] Create Prod. Order Component.
+        LibraryManufacturing.CreateProductionOrderComponent(ProductionOrderComponent, ProductionOrder.Status, ProductionOrder."No.", 10000);
+        ProductionOrderComponent.Validate("Item No.", CompItem."No.");
+        ProductionOrderComponent.Validate("Quantity per", LibraryRandom.RandIntInRange(1, 1));
+        ProductionOrderComponent.Modify();
+
+        // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated from Component Item.
+        VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", CompItem."CO2e per Unit", CompItem."CO2e per Unit" * 10, 0);
+
+        // [GIVEN] Find Prod. Order Routing Line.
+        ProductionOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderRoutingLine.FindFirst();
+
+        // [GIVEN] Update "No." in Prod. Order Routing Line.
+        ProductionOrderRoutingLine.Validate("No.", '');
+        ProductionOrderRoutingLine.Validate("No.", WorkCenter."No.");
+        ProductionOrderRoutingLine.Modify();
+
+        // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated from Work Center.
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * 10, 0);
+    end;
+
+    [Test]
+    [HandlerFunctions('ProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
+    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionjournalIsPosted()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProdOrderComponent: Record "Prod. Order Component";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: array[3] of Code[20];
+    begin
+        // [SCENARIO 537479] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account for Work Center.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(1, 1));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Default Sust. Account", AccountCode[1]);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Create a Sustainability Account for Comp Item.
+        CreateSustainabilityAccount(AccountCode[2], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(2, 2));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode[2]);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Post Inventory for Component Item.
+        PostInventoryForItem(CompItem."No.");
+
+        // [GIVEN] Create a Sustainability Account for Production Item.
+        CreateSustainabilityAccount(AccountCode[3], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(3, 3));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode[3]);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [WHEN] Post Production Journal.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
+
+        // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 2);
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
+    end;
+
+    [Test]
+    [HandlerFunctions('PartiallyPostProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
+    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionjournalIsPartiallyPosted()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProdOrderComponent: Record "Prod. Order Component";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: array[3] of Code[20];
+    begin
+        // [SCENARIO 537479] Verify Sustainability Ledger Entry should be created When Production Journal is partially posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account for Work Center.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(1, 1));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Default Sust. Account", AccountCode[1]);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Create a Sustainability Account for Comp Item.
+        CreateSustainabilityAccount(AccountCode[2], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(2, 2));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode[2]);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Post Inventory for Component Item.
+        PostInventoryForItem(CompItem."No.");
+
+        // [GIVEN] Create a Sustainability Account for Production Item.
+        CreateSustainabilityAccount(AccountCode[3], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(3, 3));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode[3]);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [WHEN] Post Production Journal.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
+
+        // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 2);
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", 5 * ProdOrderLine."CO2e per Unit");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", 5 * ProdOrderLine."CO2e per Unit");
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -5 * ProdOrderComponent."CO2e per Unit");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -5 * ProdOrderComponent."CO2e per Unit");
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
@@ -1117,6 +2662,268 @@ codeunit 148190 "Sust. Value Entry Test"
             LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
     end;
 
+    local procedure UpdateReasonCodeinSalesHeader(var SalesHeader: Record "Sales Header")
+    var
+        ReasonCode: Record "Reason Code";
+    begin
+        LibraryERM.CreateReasonCode(ReasonCode);
+
+        SalesHeader.Validate("Reason Code", ReasonCode.Code);
+        SalesHeader.Modify();
+    end;
+
+    local procedure PostAndVerifyCancelSalesCreditMemo(SalesHeader: Record "Sales Header")
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
+        PostedDocNumber: Code[20];
+    begin
+        PostedDocNumber := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.Get(PostedDocNumber);
+        CorrectPostedSalesInvoice.CancelPostedInvoice(SalesInvoiceHeader);
+    end;
+
+    local procedure OpenSalesOrderStatistics(No: Code[20])
+    var
+        SalesOrder: TestPage "Sales Order";
+    begin
+        SalesOrder.OpenEdit();
+        SalesOrder.FILTER.SetFilter("No.", No);
+        SalesOrder.Statistics.Invoke();
+    end;
+
+    local procedure VerifyPostedSalesInvoiceStatistics(No: Code[20])
+    var
+        PostedSalesInvoiceStatisticsPage: TestPage "Sales Invoice Statistics";
+        PostedTotalCO2e: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(PostedTotalCO2e);
+
+        PostedSalesInvoiceStatisticsPage.OpenEdit();
+        PostedSalesInvoiceStatisticsPage.FILTER.SetFilter("No.", No);
+        PostedSalesInvoiceStatisticsPage."Total CO2e".AssertEquals(PostedTotalCO2e);
+    end;
+
+    local procedure CreateAndPostPurchaseDocument(var PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; CountryRegionCode: Code[10]; AccountCode: Code[20]; EmissionCO2: Decimal; EmissionCH4: Decimal; EmissionN2O: Decimal): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader."Buy-from Country/Region Code" := CountryRegionCode;
+        PurchaseHeader.Modify();
+
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, Quantity);
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure PostInventoryForItem(ItemNo: Code[20])
+    var
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+    begin
+        SelectItemJournalBatch(ItemJournalBatch);
+        LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name, ItemJournalLine."Entry Type"::Purchase, ItemNo, LibraryRandom.RandIntInRange(100, 100));
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+    end;
+
+    local procedure SelectItemJournalBatch(var ItemJournalBatch: Record "Item Journal Batch")
+    var
+        ItemJournalTemplate: Record "Item Journal Template";
+    begin
+        SelectItemJournalBatchByTemplateType(ItemJournalBatch, ItemJournalTemplate.Type::Item);
+    end;
+
+    local procedure SelectItemJournalBatchByTemplateType(var ItemJournalBatch: Record "Item Journal Batch"; TemplateType: Enum "Item Journal Template Type")
+    var
+        ItemJournalTemplate: Record "Item Journal Template";
+    begin
+        LibraryInventory.SelectItemJournalTemplateName(ItemJournalTemplate, TemplateType);
+        LibraryInventory.SelectItemJournalBatchName(ItemJournalBatch, ItemJournalTemplate.Type, ItemJournalTemplate.Name);
+    end;
+
+    local procedure FindProdOrderLine(var ProdOrderLine: Record "Prod. Order Line"; ProductionOrder: Record "Production Order"; ItemNo: Code[20])
+    begin
+        ProdOrderLine.SetRange(Status, ProductionOrder.Status);
+        ProdOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProdOrderLine.SetRange("Item No.", ItemNo);
+        ProdOrderLine.FindFirst();
+    end;
+
+    local procedure FindProdOrderComponent(var ProdOrderComponent: Record "Prod. Order Component"; ProductionOrder: Record "Production Order"; ItemNo: Code[20])
+    begin
+        ProdOrderComponent.SetRange(Status, ProductionOrder.Status);
+        ProdOrderComponent.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProdOrderComponent.SetRange("Item No.", ItemNo);
+        ProdOrderComponent.FindFirst();
+    end;
+
+    local procedure CreateRoutingWithWorkCenter(var WorkCenter: Record "Work Center"; CO2ePerUnit: Decimal): Code[20]
+    var
+        RoutingHeader: Record "Routing Header";
+        RoutingLine: Record "Routing Line";
+    begin
+        LibraryManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine, '', Format(LibraryRandom.RandInt(100)), RoutingLine.Type::"Work Center", WorkCenter."No.");
+        if CO2ePerUnit <> 0 then begin
+            RoutingLine.Validate("CO2e per Unit", CO2ePerUnit);
+            RoutingLine.Modify();
+        end;
+
+        RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
+        RoutingHeader.Modify(true);
+
+        exit(RoutingHeader."No.");
+    end;
+
+    local procedure CreateItems(var ProdItem: Record Item; var CompItem: Record Item)
+    begin
+        LibraryInventory.CreateItem(CompItem);
+        LibraryInventory.CreateItem(ProdItem);
+        ProdItem.Validate("Costing Method", ProdItem."Costing Method"::Standard);
+        ProdItem.Validate("Replenishment System", ProdItem."Replenishment System"::"Prod. Order");
+        ProdItem.Modify(true);
+    end;
+
+    local procedure CreateProductionBOM(var ProductionBOMHeader: Record "Production BOM Header"; CompItem: Record Item; CO2ePerUnit: Decimal)
+    var
+        ProductionBOMLine: Record "Production BOM Line";
+    begin
+        LibraryManufacturing.CreateProductionBOMHeader(ProductionBOMHeader, CompItem."Base Unit of Measure");
+        LibraryManufacturing.CreateProductionBOMLine(ProductionBOMHeader, ProductionBOMLine, '', ProductionBOMLine.Type::Item, CompItem."No.", 1);
+        if CO2ePerUnit <> 0 then begin
+            ProductionBOMLine.Validate("CO2e per Unit", CO2ePerUnit);
+            ProductionBOMLine.Modify();
+        end;
+        LibraryManufacturing.UpdateProductionBOMStatus(ProductionBOMHeader, ProductionBOMHeader.Status::Certified);
+    end;
+
+    local procedure CreateAndRefreshProductionOrder(var ProductionOrder: Record "Production Order"; Status: Enum "Production Order Status"; SourceNo: Code[20]; Quantity: Decimal)
+    begin
+        LibraryManufacturing.CreateProductionOrder(ProductionOrder, Status, ProductionOrder."Source Type"::Item, SourceNo, Quantity);
+
+        LibraryManufacturing.RefreshProdOrder(ProductionOrder, false, true, true, true, false);
+    end;
+
+    local procedure VerifyProductionOrderLine(ProductionOrder: Record "Production Order"; AccountCode: Code[20]; CO2ePerUnit: Decimal; TotalCO2e: Decimal; PostedTotalCO2e: Decimal)
+    var
+        ProductionOrderLine: Record "Prod. Order Line";
+    begin
+        ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderLine.FindFirst();
+
+        Assert.AreEqual(
+            AccountCode,
+            ProductionOrderLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderLine.FieldCaption("Sust. Account No."), AccountCode, ProductionOrderLine.TableCaption()));
+        Assert.AreEqual(
+            CO2ePerUnit,
+            ProductionOrderLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderLine.FieldCaption("CO2e per Unit"), CO2ePerUnit, ProductionOrderLine.TableCaption()));
+        Assert.AreEqual(
+            TotalCO2e,
+            ProductionOrderLine."Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderLine.FieldCaption("Total CO2e"), TotalCO2e, ProductionOrderLine.TableCaption()));
+        Assert.AreEqual(
+            PostedTotalCO2e,
+            ProductionOrderLine."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderLine.FieldCaption("Posted Total CO2e"), PostedTotalCO2e, ProductionOrderLine.TableCaption()));
+    end;
+
+    local procedure VerifyProductionOrderComponent(ProductionOrder: Record "Production Order"; AccountCode: Code[20]; CO2ePerUnit: Decimal; TotalCO2e: Decimal; PostedTotalCO2e: Decimal)
+    var
+        ProductionOrderComponent: Record "Prod. Order Component";
+    begin
+        ProductionOrderComponent.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderComponent.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderComponent.FindFirst();
+
+        Assert.AreEqual(
+            AccountCode,
+            ProductionOrderComponent."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderComponent.FieldCaption("Sust. Account No."), AccountCode, ProductionOrderComponent.TableCaption()));
+        Assert.AreEqual(
+            CO2ePerUnit,
+            ProductionOrderComponent."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderComponent.FieldCaption("CO2e per Unit"), CO2ePerUnit, ProductionOrderComponent.TableCaption()));
+        Assert.AreEqual(
+            TotalCO2e,
+            ProductionOrderComponent."Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderComponent.FieldCaption("Total CO2e"), TotalCO2e, ProductionOrderComponent.TableCaption()));
+        Assert.AreEqual(
+            PostedTotalCO2e,
+            ProductionOrderComponent."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderComponent.FieldCaption("Posted Total CO2e"), PostedTotalCO2e, ProductionOrderComponent.TableCaption()));
+    end;
+
+    local procedure VerifyProductionOrderRoutingLine(ProductionOrder: Record "Production Order"; AccountCode: Code[20]; CO2ePerUnit: Decimal; TotalCO2e: Decimal; PostedTotalCO2e: Decimal)
+    var
+        ProductionOrderRoutingLine: Record "Prod. Order Routing Line";
+    begin
+        ProductionOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderRoutingLine.FindFirst();
+
+        Assert.AreEqual(
+            AccountCode,
+            ProductionOrderRoutingLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderRoutingLine.FieldCaption("Sust. Account No."), AccountCode, ProductionOrderRoutingLine.TableCaption()));
+        Assert.AreEqual(
+            CO2ePerUnit,
+            ProductionOrderRoutingLine."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderRoutingLine.FieldCaption("CO2e per Unit"), CO2ePerUnit, ProductionOrderRoutingLine.TableCaption()));
+        Assert.AreEqual(
+            TotalCO2e,
+            ProductionOrderRoutingLine."Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderRoutingLine.FieldCaption("Total CO2e"), TotalCO2e, ProductionOrderRoutingLine.TableCaption()));
+        Assert.AreEqual(
+            PostedTotalCO2e,
+            ProductionOrderRoutingLine."Posted Total CO2e",
+            StrSubstNo(ValueMustBeEqualErr, ProductionOrderRoutingLine.FieldCaption("Posted Total CO2e"), PostedTotalCO2e, ProductionOrderRoutingLine.TableCaption()));
+    end;
+
+    local procedure VerifySustLedgerEntryForProductionOrder(ProductionOrder: Record "Production Order"; AccountCode: Code[20]; ExpectedCO2eEmission: Decimal)
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+    begin
+        SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.FindFirst();
+
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), ExpectedCO2eEmission, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    local procedure VerifySustValueEntryForProductionOrder(ProductionOrder: Record "Production Order"; ItemNo: Code[20]; ExpectedCO2eEmission: Decimal)
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+    begin
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        SustainabilityValueEntry.SetRange("Item No.", ItemNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedCO2eEmission, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure PurchaseOrderStatisticsPageHandler(var PurchaseOrderStatisticsPage: TestPage "Purchase Order Statistics")
@@ -1189,5 +2996,53 @@ codeunit 148190 "Sust. Value Entry Test"
         Navigate.Filter.SetFilter("Table ID", Format(Database::"Sustainability Ledger Entry"));
         Navigate."Table Name".AssertEquals('');
         Navigate."No. of Records".AssertEquals('');
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure SalesOrderStatisticsPageHandler(var SalesOrderStatisticsPage: TestPage "Sales Order Statistics")
+    var
+        TotalCO2e: Variant;
+        PostedTotalCO2e: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(TotalCO2e);
+        LibraryVariableStorage.Dequeue(PostedTotalCO2e);
+
+        SalesOrderStatisticsPage."Total CO2e".AssertEquals(TotalCO2e);
+        SalesOrderStatisticsPage."Posted Total CO2e".AssertEquals(PostedTotalCO2e);
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ProductionJournalModalPageHandler(var ProductionJournal: TestPage "Production Journal")
+    begin
+        ProductionJournal.Post.Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure PartiallyPostProductionJournalModalPageHandler(var ProductionJournal: TestPage "Production Journal")
+    begin
+        ProductionJournal.First();
+        repeat
+            ProductionJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(5, 5));
+            if ProductionJournal."No.".Value <> '' then
+                ProductionJournal."Output Quantity".SetValue(LibraryRandom.RandIntInRange(5, 5));
+        until not ProductionJournal.Next();
+
+        ProductionJournal.Post.Invoke();
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [MessageHandler]
+    [Scope('OnPrem')]
+    procedure MessageHandler(Message: Text[1024])
+    begin
     end;
 }

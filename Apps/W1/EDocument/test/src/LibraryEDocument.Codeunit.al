@@ -320,7 +320,7 @@ codeunit 139629 "Library - E-Document"
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, StandardItem."No.", 1);
     end;
 
-    procedure CreatePurchaseOrderWithLine(var Vendor: Record Vendor; var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; Quantity: Integer)
+    procedure CreatePurchaseOrderWithLine(var Vendor: Record Vendor; var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; Quantity: Decimal)
     begin
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, Enum::"Purchase Document Type"::Order, Vendor."No.");
         if StandardItem."No." = '' then

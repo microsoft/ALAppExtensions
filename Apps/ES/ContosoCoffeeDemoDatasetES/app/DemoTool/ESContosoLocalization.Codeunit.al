@@ -31,8 +31,6 @@ codeunit 10824 "ES Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create ES Payment Method");
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create ES Bank Acc. Reco.");
         end;
     end;
 
@@ -113,7 +111,6 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create ES Posting Groups");
                     CreateESVATPostingGroups.InsertVATPostingSetupWithGLAccounts();
-                    Codeunit.Run(Codeunit::"Create ES Acc Schedule Name");
                     Codeunit.Run(Codeunit::"Create ES Column Layout Name");
                     Codeunit.Run(Codeunit::"Create ES General Ledger Setup");
                     Codeunit.Run(Codeunit::"Create ES Currency");
@@ -122,7 +119,6 @@ codeunit 10824 "ES Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create ES Column Layout");
-                    Codeunit.Run(Codeunit::"Create ES Financial Report");
                     Codeunit.Run(Codeunit::"Create ES VAT Statement Name");
                     Codeunit.Run(Codeunit::"Create ES VAT Statement Line");
                     Codeunit.Run(Codeunit::"Create ES Currency Exch");
@@ -152,7 +148,6 @@ codeunit 10824 "ES Contoso Localization"
         CreateESPostingGroups: Codeunit "Create ES Posting Groups";
         CreateESEmployee: Codeunit "Create ES Employee";
         CreateESEmployeeTemplate: Codeunit "Create ES Employee Template";
-        CreateESBankAccReco: Codeunit "Create ES Bank Acc. Reco.";
         CreateESAccScheduleLine: Codeunit "Create ES Acc. Schedule Line";
         CreateESFinancialReport: Codeunit "Create ES Financial Report";
         CreateESReminderLevel: Codeunit "Create ES Reminder Level";
@@ -187,7 +182,6 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     BindSubscription(CreateESBankAccPostingGrp);
                     BindSubscription(CreateESBankAccount);
-                    BindSubscription(CreateESBankAccReco);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
@@ -234,7 +228,6 @@ codeunit 10824 "ES Contoso Localization"
         CreateESPostingGroups: Codeunit "Create ES Posting Groups";
         CreateESEmployee: Codeunit "Create ES Employee";
         CreateESEmployeeTemplate: Codeunit "Create ES Employee Template";
-        CreateESBankAccReco: Codeunit "Create ES Bank Acc. Reco.";
         CreateESAccScheduleLine: Codeunit "Create ES Acc. Schedule Line";
         CreateESFinancialReport: Codeunit "Create ES Financial Report";
         CreateESReminderLevel: Codeunit "Create ES Reminder Level";
@@ -253,7 +246,6 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     UnbindSubscription(CreateESBankAccPostingGrp);
                     UnbindSubscription(CreateESBankAccount);
-                    UnbindSubscription(CreateESBankAccReco);
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin

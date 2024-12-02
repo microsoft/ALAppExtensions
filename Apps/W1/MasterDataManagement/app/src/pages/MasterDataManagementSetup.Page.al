@@ -117,7 +117,7 @@ page 7230 "Master Data Management Setup"
                 Caption = 'Start Initial Synchronization';
                 Enabled = Rec."Is Enabled";
                 Image = RefreshLines;
-                ToolTip = 'Start all the default synchronization jobs for synchronizing data from the source company. \\Data is synchronized according to the mappings defined on the Synchronization Tables page.';
+                ToolTip = 'Start all the default synchronization jobs for synchronizing data from the source company. Data is synchronized according to the mappings defined on the Synchronization Tables page.';
                 RunObject = page "Master Data Full Synch. Review";
             }
             action(SynchronizeNow)

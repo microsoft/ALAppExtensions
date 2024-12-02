@@ -4,7 +4,7 @@ using Microsoft.Sales.Document;
 using System.TestTools.AITestToolkit;
 using System.TestTools.TestRunner;
 
-codeunit 139782 "Item Entity Search"
+codeunit 133514 "Item Entity Search"
 {
     Subtype = Test;
     TestPermissions = Disabled;
