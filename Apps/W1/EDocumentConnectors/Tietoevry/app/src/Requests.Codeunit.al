@@ -45,7 +45,6 @@ codeunit 6396 Requests
         this.HttpRequestMessage.GetHeaders(HttpHeaders);
         HttpHeaders.Add('Authorization', this.AddBearer(this.AccessToken));
 
-        EDocument.Get(EDocument."Entry No"); //Refresh
         ContentJson.Add('payload', Base64Convert.ToBase64(Data));
         ContentJson.Add('sender', CompanyId);
         ContentJson.Add('receiver', EDocument."Bill-to/Pay-to Id");
