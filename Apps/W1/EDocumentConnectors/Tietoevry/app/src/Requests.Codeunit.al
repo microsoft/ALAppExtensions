@@ -8,6 +8,7 @@ using Microsoft.EServices.EDocumentConnector;
 using Microsoft.eServices.EDocument;
 using System.Text;
 using System.Reflection;
+using Microsoft.eServices.EDocument.Service.Participant;
 
 
 /// <summary>
@@ -24,6 +25,7 @@ codeunit 6396 Requests
         HttpRequestMessage: HttpRequestMessage;
         BaseUrl, AuthUrl, CompanyId : Text;
         AccessToken: SecretText;
+        ServiceParticipantNotFoundErr: Label 'No Service Participant defined for Customer %1 and E-Document Service %2.', Comment = '%1 - The customer no., %2 - The e-document service code';
 
     /// <summary>
     /// Create request for /outbound API
@@ -31,8 +33,9 @@ codeunit 6396 Requests
     /// </summary>
     /// <param name="Data">The data object is the details of the invoice.</param>
     /// <returns>A request object that can be used for the endpoint.</returns>
-    procedure CreateSubmitDocumentRequest(EDocument: Record "E-Document"; Data: Text): Codeunit Requests
+    procedure CreateSubmitDocumentRequest(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; Data: Text): Codeunit Requests
     var
+        ServiceParticipant: Record "Service Participant";
         Base64Convert: Codeunit "Base64 Convert";
         HttpHeaders, HttpContentHeaders : HttpHeaders;
         Content: Text;
@@ -45,9 +48,13 @@ codeunit 6396 Requests
         this.HttpRequestMessage.GetHeaders(HttpHeaders);
         HttpHeaders.Add('Authorization', this.AddBearer(this.AccessToken));
 
+        EDocument.TestField("Bill-to/Pay-to No.");
+        if not ServiceParticipant.Get(EDocumentService.Code, ServiceParticipant."Participant Type"::Customer, EDocument."Bill-to/Pay-to No.") then
+            Error(ServiceParticipantNotFoundErr, EDocument."Bill-to/Pay-to No.", EDocumentService.Code);
+
         ContentJson.Add('payload', Base64Convert.ToBase64(Data));
         ContentJson.Add('sender', CompanyId);
-        ContentJson.Add('receiver', EDocument."Bill-to/Pay-to Id");
+        ContentJson.Add('receiver', ServiceParticipant."Participant Identifier");
         ContentJson.Add('profileId', EDocument."Message Profile Id");
         ContentJson.Add('documentId', EDocument."Message Document Id");
         ContentJson.Add('channel', 'PEPPOL');
@@ -206,9 +213,9 @@ codeunit 6396 Requests
         ConnectionSetup.Get();
 
         case ConnectionSetup."Send Mode" of
-            "E-Doc. Ext. Send Mode"::Production:
+            "Send Mode"::Production:
                 exit(ConnectionSetup."API URL");
-            "E-Doc. Ext. Send Mode"::Test:
+            "Send Mode"::Test:
                 exit(ConnectionSetup."Sandbox API URL");
             else
                 Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Send Mode"), ConnectionSetup.TableCaption);
@@ -222,9 +229,9 @@ codeunit 6396 Requests
         ConnectionSetup.Get();
 
         case ConnectionSetup."Send Mode" of
-            "E-Doc. Ext. Send Mode"::Production:
+            "Send Mode"::Production:
                 exit(ConnectionSetup."Authentication URL");
-            "E-Doc. Ext. Send Mode"::Test:
+            "Send Mode"::Test:
                 exit(ConnectionSetup."Sandbox Authentication URL");
             else
                 Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Send Mode"), ConnectionSetup.TableCaption);

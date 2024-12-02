@@ -118,6 +118,12 @@ codeunit 6398 "Format Events"
         this.SplitId(ServiceParticipant."Participant Identifier", CustPartyLegalEntityIDSchemeID, CustPartyLegalEntityCompanyID);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Log", 'OnBeforeExportDataStorage', '', false, false)]
+    local procedure SetFileExt(EDocumentLog: Record "E-Document Log"; var FileName: Text)
+    begin
+        FileName += '.xml';
+    end;
+
 
     local procedure SplitId(Input: Text; var SchemeId: Text; var EndpointId: Text)
     var

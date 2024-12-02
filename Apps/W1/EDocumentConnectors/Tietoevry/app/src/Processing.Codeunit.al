@@ -35,7 +35,7 @@ codeunit 6399 Processing
         InStream.Read(RequestContent);
 
         Request.Init();
-        Request.Authenticate().CreateSubmitDocumentRequest(EDocument, RequestContent);
+        Request.Authenticate().CreateSubmitDocumentRequest(EDocument, EDocumentService, RequestContent);
         ResponseContent := HttpExecutor.ExecuteHttpRequest(Request);
         SendContext.Http().SetHttpRequestMessage(Request.GetRequest());
         SendContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
@@ -255,9 +255,16 @@ codeunit 6399 Processing
         ValidSchemeIdList: List of [Text];
         SplitSeparator: Text;
         SchemeId: Text;
+        ResInStream: InStream;
+        JsonObject: JsonObject;
+        JsonToken: JsonToken;
     begin
         SplitSeparator := ' ';
-        ValidSchemeId := ValidSchemeIdTxt;
+        NavApp.GetResource(ResourceSchemeIdPath, ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(ValidSchemeId);
+        JsonObject.ReadFrom(ValidSchemeId);
+        JsonObject.Get('schemeids', JsonToken);
+        ValidSchemeId := JsonToken.AsValue().AsText();
         ValidSchemeIdList := ValidSchemeId.Split(SplitSeparator);
 
         foreach SchemeId in ValidSchemeIdList do
@@ -273,8 +280,5 @@ codeunit 6399 Processing
         TietoevryProcessingDocFailedErr: Label 'An error has been identified in the submitted document.';
         TietoevryIdLongerErr: Label 'Tietoevry returned id longer than supported by framework.';
         TietoevryTok: Label 'E-Document - Tietoevry', Locked = true;
-#pragma warning disable AA0240
-        ValidSchemeIdTxt: Label '0002 0007 0009 0037 0060 0088 0096 0097 0106 0130 0135 0142 0147 0151 0170 0183 0184 0188 0190 0191 0192 0193 0194 0195 0196 0198 0199 0200 0201 0202 0203 0204 0205 0208 0209 0210 0211 0212 0213 0215 0216 0217 0218 0219 0220 0221 0225 0230 9901 9910 9913 9914 9915 9918 9919 9920 9922 9923 9924 9925 9926 9927 9928 9929 9930 9931 9932 9933 9934 9935 9936 9937 9938 9939 9940 9941 9942 9943 9944 9945 9946 9947 9948 9949 9950 9951 9952 9953 9957 9959 AN AQ AS AU EM', Locked = true;
-#pragma warning restore AA0240        
-
+        ResourceSchemeIdPath: Label 'SchemeIds.txt', Locked = true;
 }

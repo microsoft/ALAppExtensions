@@ -10,19 +10,15 @@ tableextension 6390 "E-Document" extends "E-Document"
 {
     fields
     {
-        field(6390; "Bill-to/Pay-to Id"; Text[100])
-        {
-            DataClassification = EndUserIdentifiableInformation;
-        }
-        field(6391; "Tietoevry Document Id"; Text[50])
+        field(6390; "Tietoevry Document Id"; Text[50])
         {
             DataClassification = SystemMetadata;
         }
-        field(6392; "Message Profile Id"; Text[50])
+        field(6391; "Message Profile Id"; Text[50])
         {
             DataClassification = SystemMetadata;
         }
-        field(6393; "Message Document Id"; Text[200])
+        field(6392; "Message Document Id"; Text[200])
         {
             DataClassification = SystemMetadata;
         }
