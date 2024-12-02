@@ -3,27 +3,24 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace Microsoft.DataMigration.SL;
+namespace MSFT.DataMigration.SL;
 
-table 47002 SLPeriodListWrkTbl
+table 57002 "SL Period List Work Table"
 {
     Access = Internal;
-    Caption = 'SLPeriodListWrkTbl';
+    Caption = 'SL Period List Work Table';
     DataClassification = CustomerContent;
 
     fields
     {
-        field(1; period; Integer)
+        field(1; Period; Integer)
         {
-            Caption = 'period';
         }
-        field(2; md; Text[4])
+        field(2; MonthDay; Text[4])
         {
-            Caption = 'md';
         }
-        field(3; year; Text[4])
+        field(3; Year; Text[4])
         {
-            Caption = 'year';
         }
     }
     keys
