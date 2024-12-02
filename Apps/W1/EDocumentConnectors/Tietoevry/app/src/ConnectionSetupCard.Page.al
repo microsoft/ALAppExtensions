@@ -52,32 +52,26 @@ page 6392 "Connection Setup Card"
                 field("Authentication URL"; Rec."Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect to Avalara.';
                 }
                 field("API URL"; Rec."API URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect to Avalara''s api.';
                 }
                 field("Sandbox Authentication URL"; Rec."Sandbox Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect to Avalara sandbox.';
                 }
                 field("Sandbox API URL"; Rec."Sandbox API URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect to Avalara sandbox api.';
                 }
                 field("Company Id"; Rec."Company Id")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the company ID.';
                 }
                 field("Send Mode"; Rec."Send Mode")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the send mode.';
                     ShowMandatory = true;
                 }
             }

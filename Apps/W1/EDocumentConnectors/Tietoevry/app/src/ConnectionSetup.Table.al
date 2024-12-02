@@ -28,24 +28,28 @@ table 6392 "Connection Setup"
         {
             Caption = 'Authentication URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the URL to connect to Tietoevry.';
             Editable = false;
         }
         field(5; "API URL"; Text[250])
         {
             Caption = 'API URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the URL to connect to Tietoevry''s api.';
             Editable = false;
         }
         field(6; "Sandbox Authentication URL"; Text[250])
         {
             Caption = 'Sandbox Authentication URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the URL to connect to Tietoevry''s sandbox.';
             Editable = false;
         }
         field(7; "Sandbox API URL"; Text[250])
         {
             Caption = 'Sandbox Authentication URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the URL to connect to Tietoevry sandbox api.';
             Editable = false;
         }
         field(8; "Token - Key"; Guid)
@@ -62,6 +66,7 @@ table 6392 "Connection Setup"
         {
             Caption = 'Company ID';
             DataClassification = EndUserIdentifiableInformation;
+            ToolTip = 'Specifies the company ID.';
 
             trigger OnValidate()
             var
@@ -75,6 +80,7 @@ table 6392 "Connection Setup"
         {
             Caption = 'Send Mode';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the send mode.';
         }
     }
 
