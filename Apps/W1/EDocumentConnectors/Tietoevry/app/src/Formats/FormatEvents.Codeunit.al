@@ -57,27 +57,27 @@ codeunit 6398 "Format Events"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", OnAfterGetAccountingSupplierPartyInfoByFormat, '', false, false)]
     local procedure "PEPPOL Management_OnAfterGetAccountingSupplierPartyInfoByFormat"(var SupplierEndpointID: Text; var SupplierSchemeID: Text; var SupplierName: Text; IsBISBilling: Boolean)
     var
-        EDocExtConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
         if not IsBISBilling then
             exit;
-        if not EDocExtConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
 
-        this.SplitId(EDocExtConnectionSetup."Company Id", SupplierSchemeID, SupplierEndpointID);
+        this.SplitId(ConnectionSetup."Company Id", SupplierSchemeID, SupplierEndpointID);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", OnAfterGetAccountingSupplierPartyLegalEntityByFormat, '', false, false)]
     local procedure "PEPPOL Management_OnAfterGetAccountingSupplierPartyLegalEntityByFormat"(var PartyLegalEntityRegName: Text; var PartyLegalEntityCompanyID: Text; var PartyLegalEntitySchemeID: Text; var SupplierRegAddrCityName: Text; var SupplierRegAddrCountryIdCode: Text; var SupplRegAddrCountryIdListId: Text; IsBISBilling: Boolean)
     var
-        EDocExtConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
         if not IsBISBilling then
             exit;
-        if not EDocExtConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
 
-        this.SplitId(EDocExtConnectionSetup."Company Id", PartyLegalEntitySchemeID, PartyLegalEntityCompanyID);
+        this.SplitId(ConnectionSetup."Company Id", PartyLegalEntitySchemeID, PartyLegalEntityCompanyID);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", OnAfterGetAccountingCustomerPartyInfoByFormat, '', false, false)]
@@ -85,11 +85,11 @@ codeunit 6398 "Format Events"
     var
         ServiceParticipant: Record "Service Participant";
         EDocumentService: Record "E-Document Service";
-        EDocExtConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
         if not IsBISBilling then
             exit;
-        if not EDocExtConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
         EDocumentService.SetRange("Service Integration V2", EDocumentService."Service Integration V2"::Tietoevry);
         if not EDocumentService.FindFirst() then
@@ -104,11 +104,11 @@ codeunit 6398 "Format Events"
     var
         ServiceParticipant: Record "Service Participant";
         EDocumentService: Record "E-Document Service";
-        EDocExtConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
         if not IsBISBilling then
             exit;
-        if not EDocExtConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
         EDocumentService.SetRange("Service Integration V2", EDocumentService."Service Integration V2"::Tietoevry);
         if not EDocumentService.FindFirst() then
