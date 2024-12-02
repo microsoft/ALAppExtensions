@@ -105,9 +105,9 @@ page 6392 "Connection Setup Card"
                 begin
                     Token := TietoevryAuth.GetAccessToken();
                     if not Token.IsEmpty() then
-                        Message(this.AuthSuccessMsg)
+                        Message(this.TietoevryAuthSuccessMsg)
                     else
-                        Error(this.AuthFailedErr);
+                        Error(this.TietoevryAuthFailedErr);
                 end;
             }
         }
@@ -131,8 +131,8 @@ page 6392 "Connection Setup Card"
 
         TietoevryAuth: Codeunit "Authenticator";
         TietoevryProcessing: Codeunit Processing;
-        AuthSuccessMsg: Label 'Authenticated successfully';
-        AuthFailedErr: Label 'Authentication failed';
+        TietoevryAuthSuccessMsg: Label 'Authenticated successfully';
+        TietoevryAuthFailedErr: Label 'Authentication failed';
         [NonDebuggable]
         ClientID, ClientSecret : Text;
 }

@@ -68,7 +68,7 @@ table 6392 "Connection Setup"
                 TietoevryProcessing: Codeunit Processing;
             begin
                 if not TietoevryProcessing.IsValidSchemeId(Rec."Company Id") then
-                    Rec.FieldError(Rec."Company Id");
+                    Error(this.NotAValidCompanyIdErr, Rec."Company Id", Rec.FieldCaption("Company Id"));
             end;
         }
         field(13; "Send Mode"; Enum "E-Doc. Ext. Send Mode")
@@ -85,5 +85,8 @@ table 6392 "Connection Setup"
             Clustered = true;
         }
     }
+
+    var
+        NotAValidCompanyIdErr: Label '%1 is not a valid %2', Comment = '%1 = Company Id, %2 = fieldname';
 
 }

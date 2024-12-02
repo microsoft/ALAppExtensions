@@ -18,9 +18,9 @@ codeunit 6395 Events
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Validation", OnCheckSalesDocumentOnBeforeCheckCompanyVATRegNo, '', false, false)]
     local procedure "PEPPOL Validation_OnCheckSalesDocumentOnBeforeCheckCompanyVATRegNo"(SalesHeader: Record "Sales Header"; CompanyInformation: Record "Company Information"; var IsHandled: Boolean)
     var
-        ExternalConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
-        if not ExternalConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
 
         IsHandled := true;
@@ -33,9 +33,9 @@ codeunit 6395 Events
     var
         ServiceParticipant: Record "Service Participant";
         EDocumentService: Record "E-Document Service";
-        EDocExtConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Connection Setup";
     begin
-        if not EDocExtConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             exit;
         EDocumentService.SetRange("Service Integration V2", EDocumentService."Service Integration V2"::Tietoevry);
         if not EDocumentService.FindFirst() then
