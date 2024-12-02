@@ -10,6 +10,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using System.Threading;
+using Microsoft.eServices.EDocument.Integration;
 codeunit 148193 "Integration Tests"
 {
 
@@ -43,8 +44,8 @@ codeunit 148193 "Integration Tests"
         // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
-        // [Then] Document Id has been correctly set on E-Document, parsed from Integration response.
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
+        // [Then] Tietoevry Document Id has been correctly set on E-Document, parsed from Integration response.
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Tietoevry Document Id", 'Tietoevry integration failed to set Tietoevry Document Id on E-Document');
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -129,8 +130,8 @@ codeunit 148193 "Integration Tests"
         // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
-        // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
+        // [Then] Tietoevry Document Id has been correctly set on E-Document, parsed from Integration response
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Tietoevry Document Id", 'Tietoevry integration failed to set Tietoevry Document Id on E-Document');
 
         // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -251,8 +252,8 @@ codeunit 148193 "Integration Tests"
         // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
-        // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
+        // [Then] Tietoevry Document Id has been correctly set on E-Document, parsed from Integration response
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Tietoevry Document Id", 'Tietoevry integration failed to set Tietoevry Document Id on E-Document');
 
         // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -423,7 +424,7 @@ codeunit 148193 "Integration Tests"
         EDocument.FindLast();
 
         Assert.AreEqual(Enum::"E-Document Status"::Error, EDocument.Status, 'E-Document should be set to error state when service is down.');
-        Assert.AreEqual('', EDocument."Document Id", 'Document Id on E-Document should not be set.');
+        Assert.AreEqual('', EDocument."Tietoevry Document Id", 'Tietoevry Document Id on E-Document should not be set.');
 
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
@@ -481,35 +482,6 @@ codeunit 148193 "Integration Tests"
         Assert.AreEqual(Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
     end;
 
-    [Test]
-    [HandlerFunctions('SelectCompany')]
-    procedure OpenCompanyList()
-    var
-        ConnectionSetup: Record "Connection Setup";
-        ConnectionSetupCard: TestPage "Connection Setup Card";
-    begin
-        Initialize();
-
-        // [GIVEN] O365Full member 
-        LibraryPermission.SetO365Full();
-
-        // [THEN] No company has been selected
-        ConnectionSetup.Get();
-        Assert.AreEqual('', ConnectionSetup."Company Id", 'Has to be empty before selecting company');
-        Assert.AreEqual('', ConnectionSetup."Company Name", 'Has to be empty before selecting company');
-
-        // [WHEN] User click SelectCompanyId action on page
-        ConnectionSetupCard.OpenView();
-        ConnectionSetupCard.SelectCompanyId.Invoke();
-
-        // Selection of company handled by SelectCompany modal handler...
-
-        // [THEN] Company is populated in connection setup 
-        ConnectionSetup.Get();
-        Assert.AreEqual('610f55f3-76b6-42eb-a697-2b0b2e02a5bf', ConnectionSetup."Company Id", 'Has to be empty before selecting company');
-        Assert.AreEqual('MS Business Central Ltd - ELR SBX', ConnectionSetup."Company Name", 'Has to be empty before selecting company');
-    end;
-
     local procedure Initialize()
     var
         ConnectionSetup: Record "Connection Setup";
@@ -537,10 +509,9 @@ codeunit 148193 "Integration Tests"
             exit;
 
         LibraryEDocument.SetupStandardVAT();
-        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"TE PEPPOL BIS 3.0", Enum::"E-Document Integration"::Tietoevry);
-        EDocumentService."Tietoevry Mandate" := 'GB-Test-Mandate';
+        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Tietoevry);
 
-        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"TE PEPPOL BIS 3.0", Enum::"E-Document Integration"::Tietoevry);
+        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Tietoevry);
         EDocumentService."Auto Import" := true;
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
@@ -573,7 +544,6 @@ codeunit 148193 "Integration Tests"
     begin
         ConnectionSetup.Get();
         ConnectionSetup."Company Id" := Id;
-        ConnectionSetup."Company Name" := Name;
         ConnectionSetup.Modify(true);
     end;
 
@@ -626,13 +596,6 @@ codeunit 148193 "Integration Tests"
     local procedure MockCompanyId(): Text[100]
     begin
         exit('610f55f3-76b6-42eb-a697-2b0b2e02a5bf');
-    end;
-
-    [ModalPageHandler]
-    procedure SelectCompany(var CompanyList: TestPage "Company List")
-    begin
-        CompanyList.First();
-        CompanyList.OK().Invoke();
     end;
 
     [ModalPageHandler]
