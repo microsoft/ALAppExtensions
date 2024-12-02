@@ -41,7 +41,7 @@ codeunit 6399 Processing
         SendContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
 
         EDocument.Get(EDocument."Entry No");
-        EDocument."Document Id" := this.ParseDocumentId(ResponseContent);
+        EDocument."Tietoevry Document Id" := this.ParseDocumentId(ResponseContent);
         EDocument.Modify(true);
     end;
 
@@ -56,10 +56,10 @@ codeunit 6399 Processing
         HttpExecutor: Codeunit "Http Executor";
         ResponseContent: Text;
     begin
-        EDocument.TestField("Document Id");
+        EDocument.TestField("Tietoevry Document Id");
 
         Request.Init();
-        Request.Authenticate().CreateGetDocumentStatusRequest(EDocument."Document Id");
+        Request.Authenticate().CreateGetDocumentStatusRequest(EDocument."Tietoevry Document Id");
         ResponseContent := HttpExecutor.ExecuteHttpRequest(Request);
         SendContext.Http().SetHttpRequestMessage(Request.GetRequest());
         SendContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
@@ -119,7 +119,7 @@ codeunit 6399 Processing
             exit;
         end;
 
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
+        EDocument."Tietoevry Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Tietoevry Document Id"));
         EDocument.Modify();
 
         Request.Init();
@@ -142,7 +142,7 @@ codeunit 6399 Processing
         ResponseContent: Text;
     begin
         Request.Init();
-        Request.Authenticate().CreateAcknowledgeRequest(EDocument."Document Id");
+        Request.Authenticate().CreateAcknowledgeRequest(EDocument."Tietoevry Document Id");
         ResponseContent := HttpExecutor.ExecuteHttpRequest(Request);
         ReceiveContext.Http().SetHttpRequestMessage(Request.GetRequest());
         ReceiveContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
@@ -173,7 +173,7 @@ codeunit 6399 Processing
     var
         EDocument: Record "E-Document";
     begin
-        EDocument.SetRange("Document Id", DocumentId);
+        EDocument.SetRange("Tietoevry Document Id", DocumentId);
         exit(not EDocument.IsEmpty());
     end;
 
@@ -191,10 +191,10 @@ codeunit 6399 Processing
         ResponseJson.Get('id', ValueJson);
 
         DocumentId := ValueJson.AsValue().AsText();
-        if StrLen(DocumentId) > MaxStrLen(EDocument."Document Id") then
+        if StrLen(DocumentId) > MaxStrLen(EDocument."Tietoevry Document Id") then
             Error(this.TietoevryIdLongerErr);
 
-        exit(CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id")));
+        exit(CopyStr(DocumentId, 1, MaxStrLen(EDocument."Tietoevry Document Id")));
     end;
 
     /// <summary>
@@ -207,7 +207,7 @@ codeunit 6399 Processing
     begin
         ResponseJson.ReadFrom(ResponseMsg);
         ResponseJson.Get('id', ValueJson);
-        if EDocument."Document Id" <> ValueJson.AsValue().AsText() then
+        if EDocument."Tietoevry Document Id" <> ValueJson.AsValue().AsText() then
             Error(this.IncorrectDocumentIdInResponseErr);
 
         ResponseJson.Get('status', ValueJson);

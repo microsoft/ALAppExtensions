@@ -14,6 +14,10 @@ tableextension 6390 "E-Document" extends "E-Document"
         {
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(6391; "Tietoevry Document Id"; Text[50])
+        {
+            DataClassification = SystemMetadata;
+        }
         field(6392; "Message Profile Id"; Text[50])
         {
             DataClassification = SystemMetadata;
