@@ -3,10 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
+using Microsoft.EServices.EDocumentConnector;
 
-using System.Security.AccessControl;
-
-permissionsetextension 6392 "Tietoevry EDoc. Connector - Read" extends "D365 READ"
+permissionsetextension 6392 "Tietoevry EDoc. Connector - Read" extends "EDocConnector - Read"
 {
     IncludedPermissionSets = "Tietoevry Read";
 }

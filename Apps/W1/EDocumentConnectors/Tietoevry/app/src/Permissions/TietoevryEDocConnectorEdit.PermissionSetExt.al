@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using System.Security.AccessControl;
+using Microsoft.EServices.EDocumentConnector;
 
-permissionsetextension 6394 "Tietoevry EDoc. Connector - Edit" extends "D365 BASIC"
+permissionsetextension 6394 "Tietoevry EDoc. Connector - Edit" extends "EDocConnector - Edit"
 {
     IncludedPermissionSets = "Tietoevry Edit";
 }

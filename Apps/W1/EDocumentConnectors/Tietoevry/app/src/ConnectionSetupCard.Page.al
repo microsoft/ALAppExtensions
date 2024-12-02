@@ -116,7 +116,7 @@ page 6392 "Connection Setup Card"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000NHL', this.TietoevryProcessing.GetTietoevryTok(), Enum::"Feature Uptake Status"::Discovered);
+        FeatureTelemetry.LogUptake('', this.TietoevryProcessing.GetTietoevryTok(), Enum::"Feature Uptake Status"::Discovered);
         this.TietoevryAuth.CreateConnectionSetupRecord();
         this.TietoevryAuth.IsClientCredsSet(this.ClientID, this.ClientSecret);
     end;

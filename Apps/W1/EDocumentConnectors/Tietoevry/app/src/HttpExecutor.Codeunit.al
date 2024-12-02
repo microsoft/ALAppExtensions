@@ -21,7 +21,7 @@ codeunit 6397 "Http Executor"
     var
         HttpResponse: HttpResponseMessage;
     begin
-        exit(ExecuteHttpRequest(Request, HttpResponse));
+        exit(this.ExecuteHttpRequest(Request, HttpResponse));
     end;
 
     /// <summary>
@@ -32,12 +32,12 @@ codeunit 6397 "Http Executor"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         HttpClient: HttpClient;
     begin
-        FeatureTelemetry.LogUptake('0000NH9', this.AvalaraProcessing.GetTietoevryTok(), Enum::"Feature Uptake Status"::Used);
-        FeatureTelemetry.LogUsage('0000NHA', this.AvalaraProcessing.GetTietoevryTok(), 'Tietoevry request.');
+        FeatureTelemetry.LogUptake('', this.TietoevryProcessing.GetTietoevryTok(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('', this.TietoevryProcessing.GetTietoevryTok(), 'Tietoevry request.');
 
         HttpClient.Send(Request.GetRequest(), this.HttpResponseMessage);
         HttpResponse := this.HttpResponseMessage;
-        HandleHttpResponse(this.HttpResponseMessage, Response);
+        this.HandleHttpResponse(this.HttpResponseMessage, Response);
     end;
 
     /// <summary>
@@ -59,31 +59,31 @@ codeunit 6397 "Http Executor"
         case LocalHttpResponseMessage.HttpStatusCode() of
             200:
                 begin
-                    Session.LogMessage('0000NHB', HTTPSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.AvalaraProcessing.GetTietoevryTok());
+                    Session.LogMessage('', this.HTTPSuccessMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.TietoevryProcessing.GetTietoevryTok());
                     exit;
                 end;
             201:
                 begin
-                    Session.LogMessage('0000NHC', HTTPSuccessAndCreatedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.AvalaraProcessing.GetTietoevryTok());
+                    Session.LogMessage('', this.HTTPSuccessAndCreatedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.TietoevryProcessing.GetTietoevryTok());
                     exit;
                 end;
             400:
-                FriendlyErrorMsg := HTTPBadRequestMsg;
+                FriendlyErrorMsg := this.HTTPBadRequestMsg;
             401:
-                FriendlyErrorMsg := HTTPUnauthorizedMsg;
+                FriendlyErrorMsg := this.HTTPUnauthorizedMsg;
             402 .. 499:
-                if not Parse400Messages(Response, FriendlyErrorMsg) then
-                    FriendlyErrorMsg := HTTPBadRequestMsg;
+                if not this.Parse400Messages(Response, FriendlyErrorMsg) then
+                    FriendlyErrorMsg := this.HTTPBadRequestMsg;
             500:
-                FriendlyErrorMsg := HTTPInternalServerErrorMsg;
+                FriendlyErrorMsg := this.HTTPInternalServerErrorMsg;
             503:
-                FriendlyErrorMsg := HTTPServiceUnavailableMsg;
+                FriendlyErrorMsg := this.HTTPServiceUnavailableMsg;
             else
-                FriendlyErrorMsg := HTTPGeneralErrMsg;
+                FriendlyErrorMsg := this.HTTPGeneralErrMsg;
         end;
 
-        FriendlyErrorMsg := StrSubstNo(HttpErrorMsg, LocalHttpResponseMessage.HttpStatusCode(), FriendlyErrorMsg);
-        Session.LogMessage('0000NHD', StrSubstNo(HttpErrorMsg, LocalHttpResponseMessage.HttpStatusCode(), Response), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.AvalaraProcessing.GetTietoevryTok());
+        FriendlyErrorMsg := StrSubstNo(this.HttpErrorMsg, LocalHttpResponseMessage.HttpStatusCode(), FriendlyErrorMsg);
+        Session.LogMessage('', StrSubstNo(this.HttpErrorMsg, LocalHttpResponseMessage.HttpStatusCode(), Response), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.TietoevryProcessing.GetTietoevryTok());
         Error(FriendlyErrorMsg);
     end;
 
@@ -105,7 +105,7 @@ codeunit 6397 "Http Executor"
     end;
 
     var
-        AvalaraProcessing: Codeunit Processing;
+        TietoevryProcessing: Codeunit Processing;
         HttpResponseMessage: HttpResponseMessage;
         HTTPSuccessMsg: Label 'The HTTP request was successful and the body contains the resource fetched.'; // 200
         HTTPSuccessAndCreatedMsg: Label 'The HTTP request was successful and a new resource was created.'; //201
@@ -115,5 +115,4 @@ codeunit 6397 "Http Executor"
         HTTPServiceUnavailableMsg: Label 'The HTTP request is not successful. The service is unavailable.'; // 503
         HTTPGeneralErrMsg: Label 'Something went wrong, try again later.';
         HttpErrorMsg: Label 'Error Code: %1, Error Message: %2', Comment = '%1 = Error Code, %2 = Error Message';
-
 }

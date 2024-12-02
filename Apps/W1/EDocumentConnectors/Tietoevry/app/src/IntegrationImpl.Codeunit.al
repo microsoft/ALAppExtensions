@@ -46,7 +46,6 @@ codeunit 6392 "Integration Impl." implements IDocumentSender, IDocumentResponseH
     begin
         if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Tietoevry then
             exit;
-
         ConnectionSetupCard.RunModal();
         IsServiceIntegrationSetupRun := true;
     end;
