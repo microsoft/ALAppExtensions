@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace MSFT.DataMigration.SL;
+namespace Microsoft.DataMigration.SL;
 
 table 47002 "SL Period List Work Table"
 {

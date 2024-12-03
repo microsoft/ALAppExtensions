@@ -64,6 +64,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Site" = X,
                   query "SL AcctHist Active Accounts" = X,
                   table SLGLAcctBalByPeriod = X,
+                  table "SL Period List Work Table" = X,
                   codeunit "SL Populate Account History" = X,
                   codeunit "SL Populate Accounts" = X,
                   codeunit "SL Populate Fiscal Periods" = X,

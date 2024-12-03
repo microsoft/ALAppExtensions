@@ -71,5 +71,6 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Terms" = IMD,
                   tabledata "SL Upgrade Settings" = IMD,
                   tabledata "SL Vendor" = IMD,
-                  tabledata SLGLAcctBalByPeriod = IMD;
+                  tabledata SLGLAcctBalByPeriod = IMD,
+                  tabledata "SL Period List Work Table" = IMD;
 }

@@ -50,6 +50,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Migration Errors" = R,
                   tabledata "SL Migration Warnings" = R,
                   tabledata "SL Payment Terms" = R,
+                  tabledata "SL Period List Work Table" = R,
                   tabledata "SL POAddress" = R,
                   tabledata "SL POReceipt" = R,
                   tabledata "SL POSetup" = R,

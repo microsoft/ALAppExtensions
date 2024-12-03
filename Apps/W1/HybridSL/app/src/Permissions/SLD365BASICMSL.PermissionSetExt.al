@@ -69,5 +69,6 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL Terms" = RIMD,
                   tabledata "SL Upgrade Settings" = RIMD,
                   tabledata "SL Vendor" = RIMD,
-                  tabledata SLGLAcctBalByPeriod = RIMD;
+                  tabledata SLGLAcctBalByPeriod = RIMD,
+                  tabledata "SL Period List Work Table" = RIMD;
 }

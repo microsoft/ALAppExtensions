@@ -69,5 +69,6 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Terms" = RIMD,
                   tabledata "SL Upgrade Settings" = RIMD,
                   tabledata "SL Vendor" = RIMD,
-                  tabledata SLGLAcctBalByPeriod = RIMD;
+                  tabledata SLGLAcctBalByPeriod = RIMD,
+                  tabledata "SL Period List Work Table" = RIMD;
 }
