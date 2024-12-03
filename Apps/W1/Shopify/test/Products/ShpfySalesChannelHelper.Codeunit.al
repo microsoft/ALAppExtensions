@@ -1,7 +1,7 @@
 /// <summary>
 /// Codeunit Shpfy Sales Channel Helper (ID 139583).
 /// </summary>
-codeunit 139618 "Shpfy Sales Channel Helper"
+codeunit 139699 "Shpfy Sales Channel Helper"
 {
     internal procedure GetDefaultShopifySalesChannelResponse(OnlineStoreId: BigInteger; POSId: BigInteger): JsonArray
     var
