@@ -19,7 +19,7 @@ codeunit 47002 "SL Populate Account History"
         SLGLAcctBalbyPeriodWrkTbl: Record SLGLAcctBalByPeriod;
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         SLGLSetup: Record "SL GLSetup";
-        AccountQuery: Query "SL AcctHist Acitve Accounts";
+        AccountQuery: Query "SL AcctHist Active Accounts";
         InitialYear: Integer;
         SLLedgerID: Text[10];
         SLYtdNetIncAcct: Text[10];

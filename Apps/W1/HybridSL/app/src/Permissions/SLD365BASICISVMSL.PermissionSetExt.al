@@ -54,6 +54,7 @@ permissionsetextension 47002 "SLD365 BASIC ISV - MSL" extends "D365 BASIC ISV"
                   tabledata "SL POTran" = RIMD,
                   tabledata "SL PurchOrd" = RIMD,
                   tabledata "SL PurOrdDet" = RIMD,
+                  tabledata "SL SalesTax" = RIMD,
                   tabledata "SL SegDef" = RIMD,
                   tabledata "SL Segments" = RIMD,
                   tabledata "SL Segment Name" = RIMD,

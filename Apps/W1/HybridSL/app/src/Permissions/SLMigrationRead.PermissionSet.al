@@ -57,6 +57,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL POTran" = R,
                   tabledata "SL PurchOrd" = R,
                   tabledata "SL PurOrdDet" = R,
+                  tabledata "SL SalesTax" = R,
                   tabledata "SL SegDef" = R,
                   tabledata "SL Segments" = R,
                   tabledata "SL Segment Name" = R,

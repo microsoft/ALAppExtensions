@@ -56,6 +56,7 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL POTran" = IMD,
                   tabledata "SL PurchOrd" = IMD,
                   tabledata "SL PurOrdDet" = IMD,
+                  tabledata "SL SalesTax" = IMD,
                   tabledata "SL SegDef" = IMD,
                   tabledata "SL Segments" = IMD,
                   tabledata "SL Segment Name" = IMD,

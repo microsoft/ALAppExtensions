@@ -271,6 +271,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL Site", 'Site');
         // Misc
         UpdateOrInsertRecord(Database::"SL FlexDef", 'FlexDef');
+        UpdateOrInsertRecord(Database::"SL SalesTax", 'SalesTax');
         UpdateOrInsertRecord(Database::"SL SegDef", 'SegDef');
         UpdateOrInsertRecord(Database::"SL Terms", 'Terms');
     end;

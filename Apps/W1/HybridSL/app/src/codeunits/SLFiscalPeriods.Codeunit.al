@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.SL;
+
+using Microsoft.DataMigration;
+using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Setup;
+using System.Integration;
+
 codeunit 47004 "SL Fiscal Periods"
 {
     Access = Internal;
