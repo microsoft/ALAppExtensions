@@ -5,7 +5,7 @@
 
 namespace MSFT.DataMigration.SL;
 
-table 57002 "SL Period List Work Table"
+table 47002 "SL Period List Work Table"
 {
     Access = Internal;
     Caption = 'SL Period List Work Table';

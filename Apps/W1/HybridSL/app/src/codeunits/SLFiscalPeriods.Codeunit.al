@@ -1,4 +1,4 @@
-codeunit 57004 "SL Fiscal Periods"
+codeunit 47004 "SL Fiscal Periods"
 {
     Access = Internal;
 
