@@ -14,11 +14,18 @@ table 6431 "Connection User Setup"
 
     fields
     {
-        field(1; "User ID"; Text[50])
+        field(1; "User Security ID"; Guid)
+        {
+            Caption = 'User Security ID';
+            DataClassification = EndUserIdentifiableInformation;
+            TableRelation = User;
+        }
+        field(2; "User ID"; Text[50])
         {
             Caption = 'User ID';
-            DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            ToolTip = 'Specifies the user ID.';
+            FieldClass = FlowField;
+            CalcFormula = lookup(User."User Name" where("User Security ID" = field("User Security ID")));
         }
         field(21; Username; Text[100])
         {
@@ -26,35 +33,42 @@ table 6431 "Connection User Setup"
             DataClassification = EndUserIdentifiableInformation;
             ToolTip = 'Specifies the user name.';
         }
-        field(22; Password; Guid)
+        field(22; "Password - Key"; Guid)
         {
             Caption = 'Password';
+            ToolTip = 'Specifies the password key.';
+            DataClassification = SystemMetadata;
         }
-        field(23; "Access Token"; Guid)
+        field(23; "Access Token - Key"; Guid)
         {
-            Caption = 'Access Token';
+            Caption = 'Access Token Key';
+            ToolTip = 'Specifies the access token key.';
+            DataClassification = SystemMetadata;
         }
         field(24; "Access Token Expiration"; DateTime)
         {
             Caption = 'Access Token Expires At';
             ToolTip = 'Specifies the access token expiration date.';
+            DataClassification = SystemMetadata;
         }
-        field(25; "Refresh Token"; Guid)
+        field(25; "Refresh Token - Key"; Guid)
         {
-            Caption = 'Refresh Token';
+            Caption = 'Refresh Token Key';
+            ToolTip = 'Specifies the refresh token key.';
+            DataClassification = SystemMetadata;
         }
         field(26; "Refresh Token Expiration"; DateTime)
         {
             Caption = 'Refresh Token Expires At';
             ToolTip = 'Specifies the refresh token expiration date.';
+            DataClassification = SystemMetadata;
         }
         field(31; "API Engine"; Enum "API Engine")
         {
             Caption = 'API Engine';
-            DataClassification = CustomerContent;
             ToolTip = 'Specifies the value of the API Engine field.';
+            DataClassification = SystemMetadata;
             trigger OnValidate()
-
             begin
                 case Rec."API Engine" of
                     Rec."API Engine"::Engine1:
@@ -85,7 +99,7 @@ table 6431 "Connection User Setup"
     }
     keys
     {
-        key(PK; "User ID")
+        key(PK; "User Security ID")
         {
             Clustered = true;
         }
@@ -94,12 +108,12 @@ table 6431 "Connection User Setup"
     var
         LogiqAuth: Codeunit Auth;
 
-    internal procedure FindUserSetup(UserID: Text[50])
+    internal procedure FindUserSetup(UserSecurityID: Guid)
     begin
-        if not Rec.Get(UserID) then begin
+        if not Rec.Get(UserSecurityID) then begin
             Rec.Init();
-            Rec."User ID" := UserID;
-            Rec.Insert(false);
+            Rec."User Security ID" := UserSecurityID;
+            Rec.Insert();
         end;
     end;
 
@@ -107,7 +121,7 @@ table 6431 "Connection User Setup"
     var
         ClientSecret: SecretText;
     begin
-        this.LogiqAuth.GetIsolatedStorageValue(Rec.Password, ClientSecret, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Password - Key", ClientSecret, DataScope::User);
         exit(ClientSecret);
     end;
 
@@ -115,7 +129,7 @@ table 6431 "Connection User Setup"
     var
         AccessToken: SecretText;
     begin
-        this.LogiqAuth.GetIsolatedStorageValue(Rec."Access Token", AccessToken, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Access Token - Key", AccessToken, DataScope::User);
         exit(AccessToken);
     end;
 
@@ -123,28 +137,28 @@ table 6431 "Connection User Setup"
     var
         RefreshToken: SecretText;
     begin
-        this.LogiqAuth.GetIsolatedStorageValue(Rec."Refresh Token", RefreshToken, DataScope::User);
+        this.LogiqAuth.GetIsolatedStorageValue(Rec."Refresh Token - Key", RefreshToken, DataScope::User);
         exit(RefreshToken);
     end;
 
     internal procedure DeleteUserTokens()
     begin
-        if (not IsNullGuid(Rec."Access Token")) then
-            if IsolatedStorage.Contains(Rec."Access Token", DataScope::User) then
-                IsolatedStorage.Delete(Rec."Access Token", DataScope::User);
-        if (not IsNullGuid(Rec."Refresh Token")) then
-            if IsolatedStorage.Contains(Rec."Refresh Token", DataScope::User) then
-                IsolatedStorage.Delete(Rec."Refresh Token", DataScope::User);
+        if (not IsNullGuid(Rec."Access Token - Key")) then
+            if IsolatedStorage.Contains(Rec."Access Token - Key", DataScope::User) then
+                IsolatedStorage.Delete(Rec."Access Token - Key", DataScope::User);
+        if (not IsNullGuid(Rec."Refresh Token - Key")) then
+            if IsolatedStorage.Contains(Rec."Refresh Token - Key", DataScope::User) then
+                IsolatedStorage.Delete(Rec."Refresh Token - Key", DataScope::User);
         Rec."Access Token Expiration" := 0DT;
         Rec."Refresh Token Expiration" := 0DT;
-        Rec.Modify(false);
+        Rec.Modify();
     end;
 
     internal procedure DeletePassword()
     begin
-        if (not IsNullGuid(Rec.Password)) then
-            if IsolatedStorage.Contains(Rec.Password, DataScope::User) then
-                IsolatedStorage.Delete(Rec.Password, DataScope::User);
+        if (not IsNullGuid(Rec."Password - Key")) then
+            if IsolatedStorage.Contains(Rec."Password - Key", DataScope::User) then
+                IsolatedStorage.Delete(Rec."Password - Key", DataScope::User);
     end;
 
     var

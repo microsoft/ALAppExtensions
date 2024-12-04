@@ -14,24 +14,21 @@ table 6430 "Connection Setup"
     {
         field(1; PK; Code[20])
         {
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
         }
         field(21; "Authentication URL"; Text[100])
         {
             Caption = 'Authorization URL';
-            DataClassification = CustomerContent;
             ToolTip = 'Specifies the Authorization URL.';
         }
         field(22; "Base URL"; Text[100])
         {
             Caption = 'Base URL';
-            DataClassification = CustomerContent;
             ToolTip = 'Specifies the Base URL.';
         }
         field(25; "File List Endpoint"; Text[100])
         {
             Caption = 'File List Endpoint';
-            DataClassification = CustomerContent;
             ToolTip = 'Specifies the Endpoint to list available files.';
         }
         field(31; "Client ID"; Text[100])

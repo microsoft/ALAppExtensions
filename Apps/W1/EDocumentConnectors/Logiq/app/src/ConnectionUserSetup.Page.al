@@ -46,7 +46,7 @@ page 6431 "Connection User Setup"
                         if this.PasswordTxt = '' then
                             Rec.DeletePassword()
                         else
-                            this.LogiqAuth.SetIsolatedStorageValue(Rec.Password, this.PasswordTxt, DataScope::User);
+                            this.LogiqAuth.SetIsolatedStorageValue(Rec."Password - Key", this.PasswordTxt, DataScope::User);
 
                         if this.IsFullCredentials() then
                             this.CheckCredentialsAndUpdateTokens();
@@ -108,8 +108,8 @@ page 6431 "Connection User Setup"
 
     trigger OnOpenPage()
     begin
-        if not IsNullGuid(Rec.Password) then
-            if this.LogiqAuth.HasToken(Rec.Password, DataScope::User) then
+        if not IsNullGuid(Rec."Password - Key") then
+            if this.LogiqAuth.HasToken(Rec."Password - Key", DataScope::User) then
                 this.PasswordTxt := '*';
     end;
 

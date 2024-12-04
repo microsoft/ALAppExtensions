@@ -16,7 +16,7 @@
       "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name":  "E-Document Core",
       "publisher":  "Microsoft",
-      "version":  "24.0.0.0"
+      "version":  "26.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -43,5 +43,5 @@
   "features": [
     "TranslationFile"
   ],
-  "target": "OnPrem"
+  "target": "Cloud"
 }

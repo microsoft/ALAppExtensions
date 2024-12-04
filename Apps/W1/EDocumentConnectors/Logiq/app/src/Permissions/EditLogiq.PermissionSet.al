@@ -4,12 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-permissionset 6432 "Edit - Logiq"
+permissionset 6433 "Edit - Logiq"
 {
     Access = Public;
     Assignable = true;
+    Caption = 'Logiq Connector - Edit';
     IncludedPermissionSets = "Read - Logiq";
 
-    Permissions = tabledata "Connection Setup" = IM,
-                tabledata "Connection User Setup" = IM;
+    Permissions = tabledata "Connection Setup" = im,
+                tabledata "Connection User Setup" = im;
 }

@@ -9,7 +9,7 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 
 enumextension 6431 "E-Document Integration" extends "Service Integration"
 {
-    value(6381; "Logiq")
+    value(6430; "Logiq")
     {
         Caption = 'Logiq';
         Implementation = IDocumentSender = "E-Document Integration", IDocumentReceiver = "E-Document Integration";

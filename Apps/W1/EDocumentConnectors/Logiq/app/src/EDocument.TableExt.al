@@ -9,10 +9,10 @@ tableextension 6430 "E-Document" extends "E-Document"
 {
     fields
     {
-        field(6380; "Logiq External Id"; Text[50])
+        field(6430; "Logiq External Id"; Text[50])
         {
             Caption = 'Logiq External Id';
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
             Editable = false;
             ToolTip = 'Specifies document id in Logiq system';
         }

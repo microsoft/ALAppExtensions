@@ -5,18 +5,23 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
-using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
+using System.Utilities;
 
-codeunit 6431 "E-Document Integration" implements IDocumentSender, IDocumentReceiver
+codeunit 6431 "E-Document Integration" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler
 {
     Access = Internal;
 
     procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext);
     begin
         this.LogiqEDocumentManagement.Send(EDocument, EDocumentService, SendContext);
+    end;
+
+    procedure GetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext): Boolean
+    begin
+        exit(this.LogiqEDocumentManagement.GetResponse(EDocument, EDocumentService, SendContext));
     end;
 
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
@@ -31,12 +36,19 @@ codeunit 6431 "E-Document Integration" implements IDocumentSender, IDocumentRece
 
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        ConnectionSetup: Page "Connection Setup";
     begin
-        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Logiq then
-            SetupPage := Page::"Connection Setup";
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Logiq then
+            exit;
+
+        IsServiceIntegrationSetupRun := true;
+        ConnectionSetup.RunModal();
     end;
 
     var
         LogiqEDocumentManagement: Codeunit "E-Document Management";
+
+
 }

@@ -5,6 +5,11 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 codeunit 6430 Auth
 {
+
+    Permissions =
+        tabledata "Connection Setup" = r,
+        tabledata "Connection User Setup" = rm;
+
     internal procedure SetIsolatedStorageValue(var ValueKey: Guid; Value: SecretText; TokenDataScope: DataScope)
     begin
         if IsNullGuid(ValueKey) then
@@ -77,9 +82,9 @@ codeunit 6430 Auth
         BodyText: SecretText;
     begin
         LogiqConnectionSetup.Get();
-        LogiqConnectionUserSetup.Get(UserId());
+        LogiqConnectionUserSetup.Get(UserSecurityId());
 
-        if (not IsNullGuid(LogiqConnectionUserSetup."Refresh Token")) and (LogiqConnectionUserSetup."Refresh Token Expiration" > (CurrentDateTime + 60 * 1000)) then
+        if (not IsNullGuid(LogiqConnectionUserSetup."Refresh Token - Key")) and (LogiqConnectionUserSetup."Refresh Token Expiration" > (CurrentDateTime + 60 * 1000)) then
             BodyText := SecretText.SecretStrSubstNo(this.RefreshTokenBodyTok, LogiqConnectionSetup."Client ID", LogiqConnectionSetup.GetClientSecret(), LogiqConnectionUserSetup.GetRefreshToken())
         else
             BodyText := SecretText.SecretStrSubstNo(this.CredentialsBodyTok, LogiqConnectionSetup."Client ID", LogiqConnectionSetup.GetClientSecret(), LogiqConnectionUserSetup.Username, LogiqConnectionUserSetup.GetPassword());
@@ -89,10 +94,10 @@ codeunit 6430 Auth
 
     internal procedure CheckUserCredentials(var LogiqConnectionUserSetup: Record "Connection User Setup")
     begin
-        if not LogiqConnectionUserSetup.Get(UserId()) then
+        if not LogiqConnectionUserSetup.Get(UserSecurityId()) then
             Error(this.NoUserSetupErr);
 
-        if (LogiqConnectionUserSetup.Username = '') or (IsNullGuid(LogiqConnectionUserSetup."Password")) then
+        if (LogiqConnectionUserSetup.Username = '') or (IsNullGuid(LogiqConnectionUserSetup."Password - Key")) then
             Error(this.MissingCredentialsErr);
     end;
 
@@ -146,9 +151,9 @@ codeunit 6430 Auth
     var
         LogiqConnectionUserSetup: Record "Connection User Setup";
     begin
-        LogiqConnectionUserSetup.Get(UserId());
-        this.SetIsolatedStorageValue(LogiqConnectionUserSetup."Access Token", AccessToken, DataScope::User);
-        this.SetIsolatedStorageValue(LogiqConnectionUserSetup."Refresh Token", RefreshToken, DataScope::User);
+        LogiqConnectionUserSetup.Get(UserSecurityId());
+        this.SetIsolatedStorageValue(LogiqConnectionUserSetup."Access Token - Key", AccessToken, DataScope::User);
+        this.SetIsolatedStorageValue(LogiqConnectionUserSetup."Refresh Token - Key", RefreshToken, DataScope::User);
         LogiqConnectionUserSetup."Access Token Expiration" := AccessTokExpires;
         LogiqConnectionUserSetup."Refresh Token Expiration" := RefreshTokExpires;
         LogiqConnectionUserSetup.Modify(false);
@@ -163,9 +168,9 @@ codeunit 6430 Auth
     var
         LogiqConnectionUserSetup: Record "Connection User Setup";
     begin
-        if not LogiqConnectionUserSetup.Get(UserId()) then
+        if not LogiqConnectionUserSetup.Get(UserSecurityId()) then
             Error(this.NoUserSetupErr);
-        if IsNullGuid(LogiqConnectionUserSetup."Access Token") or (LogiqConnectionUserSetup."Access Token Expiration" < (CurrentDateTime + 5 * 60 * 1000)) then
+        if IsNullGuid(LogiqConnectionUserSetup."Access Token - Key") or (LogiqConnectionUserSetup."Access Token Expiration" < (CurrentDateTime + 5 * 60 * 1000)) then
             this.GetTokens();
     end;
 

@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.Logiq;
 permissionset 6430 "Objects - Logiq"
 {
     Assignable = false;
-    Caption = 'Logiq Connector Objects';
+    Caption = 'Logiq Connector - Objects';
     Permissions =
         table "Connection Setup" = X,
         table "Connection User Setup" = X,

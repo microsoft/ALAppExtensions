@@ -10,12 +10,14 @@ using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
+using System.Threading;
 
 codeunit 148201 "Integration Tests"
 {
 
     Subtype = Test;
     Permissions = tabledata "Connection Setup" = rimd,
+                  tabledata "Connection User Setup" = rimd,
                     tabledata "E-Document" = rd;
 
 
@@ -33,9 +35,9 @@ codeunit 148201 "Integration Tests"
         this.EnterUserCredentials();
 
         //[Then] Check if access token is updated correctly
-        ConnectionUserSetup.Get(UserId());
-        this.Assert.AreNotEqual('', ConnectionUserSetup."Access Token", 'Access token is not updated');
-        this.Assert.AreNotEqual('', ConnectionUserSetup."Refresh Token", 'Refresh token is not updated');
+        ConnectionUserSetup.Get(UserSecurityId());
+        this.Assert.AreNotEqual('', ConnectionUserSetup."Access Token - Key", 'Access token is not updated');
+        this.Assert.AreNotEqual('', ConnectionUserSetup."Refresh Token - Key", 'Refresh token is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
     end;
@@ -51,9 +53,8 @@ codeunit 148201 "Integration Tests"
         OldRefreshTokenExpires: DateTime;
     begin
         this.Initialize(true);
-
         //[Given] Get old tokens expiration date time
-        ConnectionUserSetup.Get(UserId());
+        ConnectionUserSetup.Get(UserSecurityId());
         OldAccessTokenExpires := ConnectionUserSetup."Access Token Expiration";
         OldRefreshTokenExpires := ConnectionUserSetup."Refresh Token Expiration";
 
@@ -61,7 +62,7 @@ codeunit 148201 "Integration Tests"
         this.EnterUserCredentials();
 
         //[Then] Check if access token is updated correctly
-        ConnectionUserSetup.Get(UserId());
+        ConnectionUserSetup.Get(UserSecurityId());
         this.Assert.AreNotEqual(OldAccessTokenExpires, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(OldRefreshTokenExpires, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
     end;
@@ -79,9 +80,9 @@ codeunit 148201 "Integration Tests"
         this.Initialize(true);
 
         //[Given] Delete
-        ConnectionUserSetup.Get(UserId());
-        OldAccessTokenGuid := ConnectionUserSetup."Access Token";
-        OldRefreshTokenGuid := ConnectionUserSetup."Refresh Token";
+        ConnectionUserSetup.Get(UserSecurityId());
+        OldAccessTokenGuid := ConnectionUserSetup."Access Token - Key";
+        OldRefreshTokenGuid := ConnectionUserSetup."Refresh Token - Key";
 
         //[When] Delete Connection User Setup page
         ConnectionUserSetup.Delete(true);
@@ -95,47 +96,52 @@ codeunit 148201 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocumentServiceSelectionHandler')]
     procedure SendDocumentToLogiq()
     var
         EDocument: Record "E-Document";
+        JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
 
-        //[Given] Set mock endpoint to return 200 OK
+        // [Given] Set mock endpoint to return 200 OK
         this.SetTransferResponseCode('200');
 
-        //[When] Post an invoice and E-Document is created
+        // [Given] Team member 
+        LibraryPermission.SetTeamMember();
+
+        // [When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
+        LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        //[Then] E-Document is sent to Logiq
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        EDocumentPage.Recreate.Invoke();
-        EDocumentPage.Send.Invoke();
-
-        //[Then] Re-query the record to get updated information
+        // [Then] Re-query the record to get updated information
         EDocument.FindLast();
-        EDocumentPage.GoToRecord(EDocument);
-
-        //[Then] Check if external document ID is updated correctly
+        // [Then] Check if external document ID is updated correctly
         this.Assert.AreEqual(this.GetMockDocumentId(), EDocument."Logiq External Id", 'Document ID is not correct');
 
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
+
         //[Then] Check if e-document status is processed and e-document service status is sent
-        this.Assert.AreEqual(Format(EDocument.Status::Processed), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        this.Assert.AreEqual(Format(EDocument.Status::"In Progress"), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
 
+        EDocumentPage.Close();
         //[When] Get the document status
         this.SetReturnedStatus('distributed');
-        EDocumentPage.UpdateStatus.Invoke();
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        EDocument.FindLast();
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if status is updated correctly
         this.Assert.AreEqual(Format(EDocument.Status::Processed), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::Approved), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
 
@@ -149,10 +155,10 @@ codeunit 148201 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocumentServiceSelectionHandler')]
     procedure SendDocumentToLogiqInProgress()
     var
         EDocument: Record "E-Document";
+        JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
@@ -163,33 +169,35 @@ codeunit 148201 "Integration Tests"
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
-
-        //[Then] E-Document is sent to Logiq
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        EDocumentPage.Recreate.Invoke();
-        EDocumentPage.Send.Invoke();
+        LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         //[Then] Re-query the record to get updated information
         EDocument.FindLast();
+        EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if external document ID is updated correctly
         this.Assert.AreEqual(this.GetMockDocumentId(), EDocument."Logiq External Id", 'Document ID is not correct');
 
-        //[Then] Check if e-document status is in progress and e-document service status is sent
-        this.Assert.AreEqual(Format(EDocument.Status::Processed), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        //[Then] Check if e-document status is in progress and e-document service status is pending response
+        this.Assert.AreEqual(Format(EDocument.Status::"In Progress"), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
+        EDocumentPage.Close();
 
         //[When] Get the failed document status
         this.SetReturnedStatus('received');
-        EDocumentPage.UpdateStatus.Invoke();
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        EDocument.FindLast();
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if status is updated correctly
         this.Assert.AreEqual(Format(EDocument.Status::"In Progress"), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"In Progress Logiq"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
 
@@ -203,10 +211,10 @@ codeunit 148201 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocumentServiceSelectionHandler')]
     procedure SendDocumentToLogiqFailed()
     var
         EDocument: Record "E-Document";
+        JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
@@ -217,39 +225,42 @@ codeunit 148201 "Integration Tests"
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
-
-        //[Then] E-Document is sent to Logiq
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        EDocumentPage.Recreate.Invoke();
-        EDocumentPage.Send.Invoke();
+        LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         //[Then] re-query the record to get updated information
         EDocument.FindLast();
+        EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if external document ID is updated correctly
         this.Assert.AreEqual(this.GetMockDocumentId(), EDocument."Logiq External Id", 'Document ID is not correct');
 
-        //[Then] Check if e-document status is processed and e-document service status is sent
-        this.Assert.AreEqual(Format(EDocument.Status::Processed), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        //[Then] Check if e-document status is in progress and e-document service status is pending response
+        this.Assert.AreEqual(Format(EDocument.Status::"In Progress"), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
+        EDocumentPage.Close();
 
         //[When] Get the failed document status
         this.SetReturnedStatus('failed');
-        EDocumentPage.UpdateStatus.Invoke();
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        //[Then] re-query the record to get updated information
+        EDocument.FindLast();
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if status is updated correctly
         this.Assert.AreEqual(Format(EDocument.Status::Error), EDocumentPage."Electronic Document Status".Value(), 'E-Document status is not correct');
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Failed Logiq"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
+        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'E-Document service status is not correct');
         this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.HttpLogs.Value(), this.IncorrectValueErr);
 
         // [Then] Check if E-Document Errors and Warnings has correct status
-        this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
+        this.Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
+        this.Assert.AreEqual('Logiq rejected the sent file', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
     end;
 
@@ -257,7 +268,6 @@ codeunit 148201 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocumentServiceSelectionHandler')]
     procedure SendDocumentToLogiqServerDown()
     var
         EDocument: Record "E-Document";
@@ -271,15 +281,11 @@ codeunit 148201 "Integration Tests"
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
+        LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        //[Then] E-Document is sent to Logiq
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        EDocumentPage.Recreate.Invoke();
-        EDocumentPage.Send.Invoke();
-
-        //[Then] Re-query the record to get updated information
+        //[Then] re-query the record to get updated information
         EDocument.FindLast();
+        EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
 
         //[Then] Check if external document ID is empty
@@ -427,11 +433,11 @@ codeunit 148201 "Integration Tests"
         ConnectionSetup.Modify(true);
 
         //recreate setup for every test
-        if ConnectionUserSetup.Get(UserId()) then
+        if ConnectionUserSetup.Get(UserSecurityId()) then
             ConnectionUserSetup.Delete(true);
 
         ConnectionUserSetup.Init();
-        ConnectionUserSetup."User ID" := CopyStr(UserId(), 1, MaxStrLen(ConnectionUserSetup."User ID"));
+        ConnectionUserSetup.Validate("User Security ID", UserSecurityId());
         ConnectionUserSetup.Insert(true);
 
         ConnectionUserSetup.Validate("API Engine", ConnectionUserSetup."API Engine"::Engine1);
@@ -439,10 +445,10 @@ codeunit 148201 "Integration Tests"
 
         if CreateUserCredentials then begin
             ConnectionUserSetup.Username := 'user';
-            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Password", this.GetRandomSecret(20), DataScope::User);
-            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Access Token", this.GetRandomSecret(50), DataScope::User);
+            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Password - Key", this.GetRandomSecret(20), DataScope::User);
+            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Access Token - Key", this.GetRandomSecret(50), DataScope::User);
             ConnectionUserSetup."Access Token Expiration" := CurrentDateTime + 3000 * 1000;
-            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Refresh Token", this.GetRandomSecret(50), DataScope::User);
+            Auth.SetIsolatedStorageValue(ConnectionUserSetup."Refresh Token - Key", this.GetRandomSecret(50), DataScope::User);
             ConnectionUserSetup."Refresh Token Expiration" := CurrentDateTime + 3000 * 1000;
             ConnectionUserSetup.Modify(true);
         end;
@@ -461,7 +467,7 @@ codeunit 148201 "Integration Tests"
         ConnectionUserSetup: Record "Connection User Setup";
         ConnectionUserSetupPage: TestPage "Connection User Setup";
     begin
-        ConnectionUserSetup.Get(UserId());
+        ConnectionUserSetup.Get(UserSecurityId());
 
         ConnectionUserSetupPage.OpenView();
 
@@ -475,7 +481,7 @@ codeunit 148201 "Integration Tests"
     var
         ConnectionUserSetup: Record "Connection User Setup";
     begin
-        if ConnectionUserSetup.Get(UserId()) then begin
+        if ConnectionUserSetup.Get(UserSecurityId()) then begin
             ConnectionUserSetup."Document Status Endpoint" += Status;
             ConnectionUserSetup.Modify(true);
         end;
@@ -485,7 +491,7 @@ codeunit 148201 "Integration Tests"
     var
         ConnectionUserSetup: Record "Connection User Setup";
     begin
-        if ConnectionUserSetup.Get(UserId()) then begin
+        if ConnectionUserSetup.Get(UserSecurityId()) then begin
             ConnectionUserSetup."Document Transfer Endpoint" += '/' + Code;
             ConnectionUserSetup.Modify(true);
         end;
@@ -515,6 +521,7 @@ codeunit 148201 "Integration Tests"
         Assert: Codeunit Assert;
         LibraryEDocument: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
+        LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
 }

@@ -65,7 +65,7 @@ page 6430 "Connection Setup"
                     LogiqConnectionUserSetup: Record "Connection User Setup";
                     LoqiqConnectionUserSetupPage: Page "Connection User Setup";
                 begin
-                    LogiqConnectionUserSetup.FindUserSetup(CopyStr(UserId(), 1, 50));
+                    LogiqConnectionUserSetup.FindUserSetup(UserSecurityId());
                     LoqiqConnectionUserSetupPage.SetRecord(LogiqConnectionUserSetup);
                     LoqiqConnectionUserSetupPage.Run();
                 end;
