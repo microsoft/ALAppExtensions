@@ -5,7 +5,6 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using Microsoft.DataMigration;
 using Microsoft.Foundation.Period;
 using Microsoft.Inventory.Setup;
 using System.Integration;
