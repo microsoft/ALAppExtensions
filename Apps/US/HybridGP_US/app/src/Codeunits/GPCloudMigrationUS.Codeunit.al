@@ -1,17 +1,13 @@
 namespace Microsoft.DataMigration.GP;
 
 using System.Integration;
-#if not CLEAN25
 using System.Environment.Configuration;
-#endif
 using Microsoft.Purchases.Vendor;
 
 codeunit 42004 "GP Cloud Migration US"
 {
     var
-#if not CLEAN25
         IRSFormFeatureKeyIdTok: Label 'IRSForm', Locked = true;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
@@ -73,16 +69,10 @@ codeunit 42004 "GP Cloud Migration US"
 
     internal procedure IsIRSFormsFeatureEnabled(): Boolean
     var
-#if not CLEAN25
         FeatureManagementFacade: Codeunit "Feature Management Facade";
-#endif
         IsEnabled: Boolean;
     begin
-        IsEnabled := true;
-
-#if not CLEAN25
         IsEnabled := FeatureManagementFacade.IsEnabled(IRSFormFeatureKeyIdTok);
-#endif
 
         exit(IsEnabled);
     end;
