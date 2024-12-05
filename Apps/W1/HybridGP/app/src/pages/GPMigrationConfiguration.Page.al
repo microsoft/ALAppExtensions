@@ -863,6 +863,10 @@ page 4050 "GP Migration Configuration"
             if (not Confirm(AllModulesDisabledExitQst)) then
                 exit(false);
 
+        if SettingsHasCompanyGLYearZero() then
+            if (not Confirm(CompanyGLYearZeroExitQst)) then
+                exit(false);
+
         if ShowManagementPromptOnClose then
             if Confirm(OpenCloudMigrationPageQst) then
                 Page.Run(page::"Intelligent Cloud Management");
@@ -887,6 +891,16 @@ page 4050 "GP Migration Configuration"
             until GPCompanyAdditionalSettingsCompanies.Next() = 0;
 
         exit(false);
+    end;
+
+    local procedure SettingsHasCompanyGLYearZero(): Boolean
+    var
+        GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
+    begin
+        GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettingsCompanies.SetRange("Migration Completed", false);
+        GPCompanyAdditionalSettingsCompanies.SetRange("Oldest GL Year to Migrate", 0);
+        exit(not GPCompanyAdditionalSettingsCompanies.IsEmpty());
     end;
 
     local procedure AssignDimension(DimensionNumber: Integer; DimensionLabel: Text[30])
@@ -953,6 +967,7 @@ page 4050 "GP Migration Configuration"
         OpenCloudMigrationPageQst: Label 'Would you like to open the Cloud Migration Management page to manage your data migrations?';
         ResetAllQst: Label 'Are you sure? This will reset all company migration settings to their default values.';
         AllModulesDisabledExitQst: Label 'All modules are disabled and nothing will migrate (with the exception of the Snapshot if configured). Are you sure you want to exit?';
+        CompanyGLYearZeroExitQst: Label 'One or more companies selected for migration have an Oldest G/L Year value set to zero. This will prevent beginning balances from being migrated. Are you sure you want to exit?';
         MasterDataOnlyWarningMsg: Label 'Enabling the master data only settings will make the migration not migrate transactions for the configured areas.';
         EnableDisableAllHistTrx: Boolean;
 }
