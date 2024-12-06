@@ -5,25 +5,22 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47002 SLPeriodListWrkTbl
+table 47002 "SL Period List Work Table"
 {
     Access = Internal;
-    Caption = 'SLPeriodListWrkTbl';
+    Caption = 'SL Period List Work Table';
     DataClassification = CustomerContent;
 
     fields
     {
-        field(1; period; Integer)
+        field(1; Period; Integer)
         {
-            Caption = 'period';
         }
-        field(2; md; Text[4])
+        field(2; MonthDay; Text[4])
         {
-            Caption = 'md';
         }
-        field(3; year; Text[4])
+        field(3; Year; Text[4])
         {
-            Caption = 'year';
         }
     }
     keys
