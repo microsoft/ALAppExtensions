@@ -414,10 +414,10 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure OnlyAdjustment()
     var
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
+        IRSReportingPeriod: Record "IRS Reporting Period";
         PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -446,6 +446,10 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         LibraryIRS1099FormBox.VerifyCurrTempVendFormBoxBuffer(
             TempVendFormBoxBuffer, PeriodNo, FormNo, FormBoxNo, VendNo, 0, AdjustmentAmount, true);
         TempVendFormBoxBuffer.TestField("Adjustment Amount", AdjustmentAmount);
+
+        // Tear Down
+        IRSReportingPeriod.SetRange("No.", PeriodNo);
+        IRSReportingPeriod.DeleteAll(true);
     end;
 
     [Test]

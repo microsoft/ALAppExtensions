@@ -12,6 +12,18 @@ codeunit 5463 "Create Dimension"
         ContosoDimension.InsertDimension(CustomerGroupDimension(), CustomerGroupLbl);
         ContosoDimension.InsertDimension(DepartmentDimension(), DepartmentLbl);
         ContosoDimension.InsertDimension(SalesCampaignDimension(), SalesCampaignLbl);
+        UpdateDimensionOnGeneralLedgerSetup()
+    end;
+
+    local procedure UpdateDimensionOnGeneralLedgerSetup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+
+        GeneralLedgerSetup.Validate("Global Dimension 1 Code", DepartmentDimension());
+        GeneralLedgerSetup.Validate("Global Dimension 2 Code", CustomerGroupDimension());
+        GeneralLedgerSetup.Modify(true);
     end;
 
     procedure AreaDimension(): Code[20]

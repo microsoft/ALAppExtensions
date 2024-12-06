@@ -13,7 +13,6 @@ codeunit 5401 "Create Column Layout Name"
         ContosoAccountSchedule.InsertColumnLayoutName(CashFlowComparison(), CashFlowComparisonLbl);
         ContosoAccountSchedule.InsertColumnLayoutName(DefaultLayout(), DefaultLayoutLbl);
         ContosoAccountSchedule.InsertColumnLayoutName(KeyCashFlowRatio(), KeyCashFlowRatioLbl);
-        ContosoAccountSchedule.InsertColumnLayoutName(PeriodsDefinition(), PeriodsDefinitionLbl);
 
         ContosoAccountSchedule.InsertColumnLayoutName(BalanceSheetTrend(), BalanceSheetLbl);
         ContosoAccountSchedule.InsertColumnLayoutName(IncomeStatementTrend(), IncomeStatementLbl);
@@ -30,6 +29,12 @@ codeunit 5401 "Create Column Layout Name"
         ContosoAccountSchedule.InsertColumnLayoutName(CurrentMonthVBudgetYearToDate(), CurrentMonthVBudgetYearToDateLbl);
     end;
 
+    internal procedure CreateSetupColumnLayoutName()
+    var
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+    begin
+        ContosoAccountSchedule.InsertColumnLayoutName(PeriodsDefinition(), PeriodsDefinitionLbl);
+    end;
 
     procedure ActualBudgetComparison(): Code[10]
     begin

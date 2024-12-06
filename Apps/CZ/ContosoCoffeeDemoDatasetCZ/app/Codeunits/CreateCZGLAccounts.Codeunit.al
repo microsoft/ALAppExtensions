@@ -293,4 +293,10 @@ codeunit 31212 "Create CZ GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.JobCostsAppliedName(), '581100');
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.RecognizedCostsName(), '581100');
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso GL Account", 'OnBeforeValidateGLAccountCategory', '', false, false)]
+    local procedure SkipAccountCategoryValidation(var GLAccount: Record "G/L Account"; var Category: Enum "G/L Account Category"; var SubCategory: Text[80])
+    begin
+        Category := Enum::"G/L Account Category"::" ";
+    end;
 }

@@ -397,9 +397,9 @@ codeunit 139624 "E-Doc E2E Test"
         EDocImplState.SetThrowLoggedError();
         BindSubscription(EDocImplState);
 
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 1;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         if EDocument.FindLast() then
@@ -447,9 +447,9 @@ codeunit 139624 "E-Doc E2E Test"
         EDocImplState.SetThrowRuntimeError();
         BindSubscription(EDocImplState);
 
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 1;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         if EDocument.FindLast() then
@@ -498,9 +498,9 @@ codeunit 139624 "E-Doc E2E Test"
         Initialize(Enum::"Service Integration"::"Mock Sync");
         BindSubscription(EDocImplState);
 
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 2;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         // [WHEN] Team member post invoice
@@ -586,8 +586,8 @@ codeunit 139624 "E-Doc E2E Test"
         Initialize(Enum::"Service Integration"::"Mock Sync");
         BindSubscription(EDocImplState);
 
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         EDocumentServicePage.OpenView();
@@ -638,8 +638,8 @@ codeunit 139624 "E-Doc E2E Test"
 
         EDocumentService.SetRecFilter();
         EDocumentService.FindFirst();
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         EDocumentServicePage.OpenView();
@@ -673,7 +673,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryLowerPermission.SetOutsideO365Scope();
         EDocumentService.FindFirst();
-        EDocumentService."Use Batch Processing" := false;
+        EDocumentService.Validate("Use Batch Processing", false);
         EDocumentService.Modify();
         Clear(EDocumentService);
 

@@ -60,6 +60,10 @@ table 6103 "E-Document Service"
         {
             Caption = 'Use Batch Processing';
             DataClassification = SystemMetadata;
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
+            end;
         }
         field(6; "Update Order"; Boolean)
         {
@@ -173,6 +177,11 @@ table 6103 "E-Document Service"
             Caption = 'Auto Import';
             DataClassification = SystemMetadata;
             InitValue = false;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(19; "Import Start Time"; Time)
         {
@@ -255,7 +264,11 @@ table 6103 "E-Document Service"
     var
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
         EDocBackgroundJobs: Codeunit "E-Document Background Jobs";
+        EDocumentWorkflowProcesssing: Codeunit "E-Document WorkFlow Processing";
     begin
+        if EDocumentWorkflowProcesssing.IsServiceUsedInActiveWorkflow(Rec) then
+            Error(ServiceInActiveFlowErr);
+
         EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
         EDocServiceSupportedType.DeleteAll();
 
@@ -273,7 +286,9 @@ table 6103 "E-Document Service"
     end;
 
     var
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
         ChooseIntegrationConsentTxt: Label 'By choosing this option, you consent to use third party systems. These systems may have their own terms of use, license, pricing and privacy, and they may not meet the same compliance and security standards as Microsoft Dynamics 365 Business Central. Your privacy is important to us.';
+        ServiceInActiveFlowErr: Label 'The service is used in an active workflow. You cannot delete it.';
 }

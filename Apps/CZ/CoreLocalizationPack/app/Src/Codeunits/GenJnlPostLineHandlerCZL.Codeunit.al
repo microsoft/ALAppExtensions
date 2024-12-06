@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Posting;
 
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.Deferral;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
@@ -79,6 +79,8 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnCalcPmtDiscOnAfterAssignPmtDisc', '', false, false)]
     local procedure SavePmtDiscOnCalcPmtDiscOnAfterAssignPmtDisc(var OldCVLedgEntryBuf2: Record "CV Ledger Entry Buffer"; var PmtDisc: Decimal; var PmtDiscLCY: Decimal)
     begin
+        if OldCVLedgEntryBuf2."Currency Code" = '' then
+            exit;
         OldCVLedgEntryBuf2."Orig. Pmt. Disc. CZL" := PmtDisc;
         OldCVLedgEntryBuf2."Orig. Pmt. Disc. (LCY) CZL" := PmtDiscLCY;
     end;
@@ -131,29 +133,9 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostApply', '', false, false)]
     local procedure CalcRemAmtLCYAdjustmentOnAfterPostApply(GenJnlLine: Record "Gen. Journal Line"; var DtldCVLedgEntryBuf: Record "Detailed CV Ledg. Entry Buffer"; var NewCVLedgEntryBuf: Record "CV Ledger Entry Buffer")
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        AdjustedAmountLCY: Decimal;
+        ExchRateAdjmtMgtCZL: Codeunit "Exch. Rate Adjmt. Mgt. CZL";
     begin
-        if NewCVLedgEntryBuf."Currency Code" = '' then
-            exit;
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Pmt. Disc. Excl. VAT" or not GeneralLedgerSetup."Adjust for Payment Disc." then
-            exit;
-
-        AdjustedAmountLCY :=
-          Round(NewCVLedgEntryBuf."Remaining Amount" / NewCVLedgEntryBuf."Adjusted Currency Factor");
-
-        if AdjustedAmountLCY = NewCVLedgEntryBuf."Remaining Amt. (LCY)" then
-            exit;
-
-        if (AdjustedAmountLCY - NewCVLedgEntryBuf."Remaining Amt. (LCY)") < 0 then
-            DtldCVLedgEntryBuf.InitDetailedCVLedgEntryBuf(
-              GenJnlLine, NewCVLedgEntryBuf, DtldCVLedgEntryBuf,
-              DtldCVLedgEntryBuf."Entry Type"::"Realized Loss", 0, AdjustedAmountLCY - NewCVLedgEntryBuf."Remaining Amt. (LCY)", 0, 0, 0, 0)
-        else
-            DtldCVLedgEntryBuf.InitDetailedCVLedgEntryBuf(
-              GenJnlLine, NewCVLedgEntryBuf, DtldCVLedgEntryBuf,
-              DtldCVLedgEntryBuf."Entry Type"::"Realized Gain", 0, AdjustedAmountLCY - NewCVLedgEntryBuf."Remaining Amt. (LCY)", 0, 0, 0, 0);
+        ExchRateAdjmtMgtCZL.AdjustRemainingAmountLCY(NewCVLedgEntryBuf, DtldCVLedgEntryBuf, GenJnlLine);
     end;
 
     local procedure IsAdjustPmtDiscFactorEnabled(CVLedgEntryBuf: Record "CV Ledger Entry Buffer"): Boolean

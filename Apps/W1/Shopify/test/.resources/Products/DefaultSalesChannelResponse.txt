@@ -1,0 +1,1 @@
+[ { "node": { "id": "gid://shopify/Publication/%1", "catalog": {"apps": { "edges": [ { "node": { "handle": "online_store", "title": "Online Store" } } ] } } } }, { "node": { "id": "gid://shopify/Publication/%2", "catalog": { "apps": { "edges": [ { "node": {"handle": "pos", "title": "Point of Sale" } } ] } } } } ]

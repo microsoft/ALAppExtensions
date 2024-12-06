@@ -66,7 +66,6 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
-
         if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
             GraphQuery.Append(', productOptions: [{name: \"');
             GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Name"));

@@ -11,6 +11,7 @@ page 5194 "Contoso Demo Tool"
     DeleteAllowed = false;
     Editable = false;
     RefreshOnActivate = true;
+    AnalysisModeEnabled = false;
 
     layout
     {

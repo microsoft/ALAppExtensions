@@ -137,6 +137,7 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         GenJournalLine."VAT Registration No." := VATLCYCorrectionBufferCZL."VAT Registration No.";
         GenJournalLine."Registration No. CZL" := VATLCYCorrectionBufferCZL."Registration No.";
         GenJournalLine."Tax Registration No. CZL" := VATLCYCorrectionBufferCZL."Tax Registration No.";
+        GenJournalLine."Dimension Set ID" := VATLCYCorrectionBufferCZL."Dimension Set ID";
 
         if VATPosting then begin
             GenJournalLine."VAT Base Amount" := 0;

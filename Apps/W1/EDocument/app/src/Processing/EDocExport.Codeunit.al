@@ -320,21 +320,22 @@ codeunit 6102 "E-Doc. Export"
         EDocument.Insert();
     end;
 
-    local procedure CreateEDocument(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
+    local procedure CreateEDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     var
         EDocumentCreate: Codeunit "E-Document Create";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         // Commit before create document with error handling
         Commit();
-        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBF', EDocTelemetryCreateScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        EDocumentCreate.SetSource(EDocService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
+        EDocumentCreate.SetSource(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         if not EDocumentCreate.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        EDocumentCreate.GetSource(EDocument);
+        // After interface call, reread the EDocument for the latest values.
+        EDocument.Get(EDocument."Entry No");
         Telemetry.LogMessage('0000LBG', EDocTelemetryCreateScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 

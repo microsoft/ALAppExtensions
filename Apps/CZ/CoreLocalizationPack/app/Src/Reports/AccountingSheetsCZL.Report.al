@@ -647,7 +647,6 @@ report 11703 "Accounting Sheets CZL"
     var
         CompanyInformation: Record "Company Information";
         UserSetup: Record "User Setup";
-        TempGLEntry: Record "G/L Entry" temporary;
         GLEntry: Record "G/L Entry";
         LastDocNo: Code[20];
         FCYRate: Decimal;
@@ -658,6 +657,7 @@ report 11703 "Accounting Sheets CZL"
         DescriptionTxt: Label 'Description';
 
     protected var
+        TempGLEntry: Record "G/L Entry" temporary;
         LastDataItem: Integer;
         GeneralDocExists: Boolean;
         GroupGLAccounts: Boolean;

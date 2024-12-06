@@ -10,11 +10,12 @@ codeunit 5382 "Company Creation Contoso"
         GLSetup: Record "General Ledger Setup";
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        AssistedCompanySetupStatus.Get(CompanyName);
-        AssistedCompanySetupStatus."Server Instance ID" := ServiceInstanceId();
-        AssistedCompanySetupStatus."Company Setup Session ID" := SessionId();
-        AssistedCompanySetupStatus.Modify();
-        Commit();
+        if AssistedCompanySetupStatus.Get(CompanyName) then begin
+            AssistedCompanySetupStatus."Server Instance ID" := ServiceInstanceId();
+            AssistedCompanySetupStatus."Company Setup Session ID" := SessionId();
+            AssistedCompanySetupStatus.Modify();
+            Commit();
+        end;
 
         // Init Company
         if not GLSetup.Get() then
@@ -56,10 +57,10 @@ codeunit 5382 "Company Creation Contoso"
                 ContosoDemoDataModuleTemp."Is Setup Company" := IsSetup;
             until ContosoDemoDataModuleTemp.Next() = 0;
 
-        ScheduleRunningContosoDemoData(ContosoDemoDataModuleTemp, NewCompanyName);
+        ScheduleRunningContosoDemoData(ContosoDemoDataModuleTemp, NewCompanyName, IsSetup);
     end;
 
-    local procedure ScheduleRunningContosoDemoData(var ContosoDemoDataModuleTemp: Record "Contoso Demo Data Module" temporary; NewCompanyName: Text[30])
+    local procedure ScheduleRunningContosoDemoData(var ContosoDemoDataModuleTemp: Record "Contoso Demo Data Module" temporary; NewCompanyName: Text[30]; IsSetup: Boolean)
     var
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         ImportSessionID: Integer;
@@ -76,7 +77,12 @@ codeunit 5382 "Company Creation Contoso"
         AssistedCompanySetupStatus."Company Setup Session ID" := ImportSessionID;
         if AssistedCompanySetupStatus."Company Setup Session ID" = 0 then
             Clear(AssistedCompanySetupStatus."Task ID");
+        if IsSetup then
+            AssistedCompanySetupStatus."Company Demo Data" := Format(Enum::"Company Demo Data Type"::"Production - Setup Data Only")
+        else
+            AssistedCompanySetupStatus."Company Demo Data" := Format(Enum::"Company Demo Data Type"::"Evaluation - Contoso Sample Data");
         AssistedCompanySetupStatus.Modify();
+
         Commit();
     end;
 

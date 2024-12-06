@@ -7,7 +7,7 @@ codeunit 11616 "Create CH VAT Posting Groups"
 
     trigger OnRun()
     begin
-        CreateVATProductPostingGroup();
+        UpdateVATProductPostingGroup();
         CreateVATPostingSetup();
     end;
 
@@ -43,11 +43,6 @@ codeunit 11616 "Create CH VAT Posting Groups"
     procedure CreateVATProductPostingGroup()
     var
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateCHPostingGroups: Codeunit "Create CH Posting Groups";
-        CreateCHGLAccounts: Codeunit "Create CH GL Accounts";
-        CreateGLAccount: Codeunit "Create G/L Account";
-        CreatePostingGroup: Codeunit "Create Posting Groups";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
         ContosoPostingGroup.InsertVATProductPostingGroup(HalfNormal(), HalfStandardRateLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Hotel(), HotelsLbl);
@@ -56,7 +51,16 @@ codeunit 11616 "Create CH VAT Posting Groups"
         ContosoPostingGroup.InsertVATProductPostingGroup(Normal(), NormalVATRateLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(OperatingExpense(), VATOperatingExpensesLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Reduced(), ReducedRateLbl);
+    end;
 
+    procedure UpdateVATProductPostingGroup()
+    var
+        CreateCHPostingGroups: Codeunit "Create CH Posting Groups";
+        CreateCHGLAccounts: Codeunit "Create CH GL Accounts";
+        CreateGLAccount: Codeunit "Create G/L Account";
+        CreatePostingGroup: Codeunit "Create Posting Groups";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+    begin
         CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.RawMatPostingGroup(), Normal());
         CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.RetailPostingGroup(), Normal());
         CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.MiscPostingGroup(), Normal());

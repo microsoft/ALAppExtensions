@@ -550,7 +550,7 @@ codeunit 148191 "Integration Tests"
         EDocumentService."Avalara Mandate" := 'GB-Test-Mandate';
 
         LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Avalara);
-        EDocumentService."Auto Import" := true;
+        EDocumentService.Validate("Auto Import", true);
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
         EDocumentService.Modify();

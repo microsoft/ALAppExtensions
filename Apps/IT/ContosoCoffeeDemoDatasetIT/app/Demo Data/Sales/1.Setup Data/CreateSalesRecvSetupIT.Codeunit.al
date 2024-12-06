@@ -15,7 +15,7 @@ codeunit 12211 "Create Sales Recv. Setup IT"
     begin
         SalesReceivablesSetup.Get();
 
-        Evaluate(SalesReceivablesSetup."Bank Receipts Risk Period", BankReceiptsRiskPeriodLbl);
+        Evaluate(SalesReceivablesSetup."Bank Receipts Risk Period", '<20D>');
         SalesReceivablesSetup.Validate("Bank Receipts Risk Period");
         SalesReceivablesSetup.Validate("Temporary Bill List No.", CreateNoSeriesIT.TemporaryCustBillListNo());
         SalesReceivablesSetup.Validate("Recall Bill Description", RecallBillLbl);
@@ -27,7 +27,6 @@ codeunit 12211 "Create Sales Recv. Setup IT"
     end;
 
     var
-        BankReceiptsRiskPeriodLbl: Label '<20D>', MaxLength = 20;
         RecallBillLbl: Label 'Recall Bill', MaxLength = 50, Locked = true;
         FatturapaLbl: Label 'FATTURAPA', MaxLength = 20, Locked = true;
 }

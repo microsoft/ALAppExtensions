@@ -25,7 +25,8 @@ codeunit 139697 "Shpfy Sales Channel Subs."
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
         ProductCreateTok: Label '{"query":"mutation {productCreate(', locked = true;
-
+        VariantUpdateTok: Label '{"query":"mutation { productVariantUpdate(', locked = true;
+        InventoryActivationTok: Label '{"query":"mutation inventoryBulkToggleActivation(', locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -44,6 +45,10 @@ codeunit 139697 "Shpfy Sales Channel Subs."
                                     HttpResponseMessage := GetCreateProductResponse();
                                 GraphQlQuery = GQLGetSalesChannels.GetGraphQL():
                                     HttpResponseMessage := GetSalesChannelsResponse();
+                                GraphQlQuery.Contains(VariantUpdateTok):
+                                    HttpResponseMessage := GetUpdateVariantResponse();
+                                GraphQlQuery.Contains(InventoryActivationTok):
+                                    HttpResponseMessage := GetInventoryActivateResponse();
                             end;
                 end;
         end;
@@ -53,8 +58,10 @@ codeunit 139697 "Shpfy Sales Channel Subs."
     var
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
-        BodyTxt := '{ "data": { "publishablePublish": { "userErrors": [] } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 10, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1990, "restoreRate": 100 } } } }';
+        NavApp.GetResource('Products/EmptyPublishResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
         exit(HttpResponseMessage);
     end;
@@ -63,9 +70,31 @@ codeunit 139697 "Shpfy Sales Channel Subs."
     var
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
-        BodyTxt := '{ "data": { "productCreate": { "product": { "legacyResourceId": "1234567890"} }}}';
+        NavApp.GetResource('Products/CreatedProductResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetUpdateVariantResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        BodyTxt: Text;
+        ResInStream: InStream;
+    begin
+        NavApp.GetResource('Products/UpdatedVariantResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
+        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetInventoryActivateResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+    begin
+        HttpResponseMessage.Content.WriteFrom('{}');
         exit(HttpResponseMessage);
     end;
 

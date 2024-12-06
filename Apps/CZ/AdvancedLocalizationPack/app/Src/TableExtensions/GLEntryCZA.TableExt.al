@@ -50,7 +50,7 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         field(11788; "Applied Amount CZA"; Decimal)
         {
 
-            CalcFormula = - Sum("Detailed G/L Entry CZA".Amount where("G/L Entry No." = field("Entry No."),
+            CalcFormula = - sum("Detailed G/L Entry CZA".Amount where("G/L Entry No." = field("Entry No."),
                                                                   "Posting Date" = field("Date Filter CZA")));
             Caption = 'Applied Amount';
             Editable = false;
@@ -62,7 +62,6 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
     {
         key(AppliestoIDKeyCZA; "Applies-to ID CZA", "Applying Entry CZA")
         {
-            SumIndexFields = "Amount to Apply CZA";
         }
     }
 
