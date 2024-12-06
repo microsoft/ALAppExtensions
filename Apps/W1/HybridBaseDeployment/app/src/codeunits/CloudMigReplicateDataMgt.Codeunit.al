@@ -71,6 +71,46 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         exit(CanBeIncluded);
     end;
 
+    procedure CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList: List of [Integer]; NewReplicateData: Boolean)
+    var
+        Company: Record Company;
+    begin
+        if Company.FindSet() then
+            repeat
+                CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList, Company.Name, NewReplicateData);
+            until Company.Next() = 0;
+        CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList, '', NewReplicateData);
+    end;
+
+    procedure CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList: List of [Integer]; SelectedCompany: Text[30]; NewReplicateData: Boolean)
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        TableIDFilter: Text;
+        TableID: Integer;
+        i: Integer;
+        SeparatorChar: Char;
+    begin
+        if TableIDList.Count = 0 then
+            exit;
+
+        SeparatorChar := '|';
+        for i := 1 to TableIDList.Count do begin
+            TableIDList.Get(i, TableID);
+            TableIDFilter += Format(TableID) + SeparatorChar;
+        end;
+        TableIDFilter := TableIDFilter.TrimEnd(SeparatorChar);
+        IntelligentCloudStatus.SetRange("Company Name", SelectedCompany);
+        IntelligentCloudStatus.SetFilter("Table Id", TableIDFilter);
+        if IntelligentCloudStatus.FindSet() then
+            repeat
+                IntelligentCloudStatus.Mark(true);
+            until IntelligentCloudStatus.Next() = 0;
+        IntelligentCloudStatus.MarkedOnly();
+
+        CheckCanChangeTheTable(IntelligentCloudStatus);
+        IncludeExcludeTablesFromCloudMigration(IntelligentCloudStatus, NewReplicateData);
+    end;
+
     internal procedure IncludeExcludeTablesFromCloudMigration(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; NewReplicateData: Boolean)
     var
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
