@@ -71,50 +71,39 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         exit(CanBeIncluded);
     end;
 
-    procedure CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList: List of [Integer]; NewReplicateData: Boolean)
-    var
-        Company: Record Company;
+    procedure IncludeTableToReplication(TableID: Integer; CompanyName: Text[30])
     begin
-        if Company.FindSet() then
-            repeat
-                CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList, Company.Name, NewReplicateData);
-            until Company.Next() = 0;
-        CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList, '', NewReplicateData);
+        IncludeExcludeTableFromReplication(TableID, CompanyName, true);
     end;
 
-    procedure CheckAndIncludeExcludeTableListFromCloudMigration(TableIDList: List of [Integer]; SelectedCompany: Text[30]; NewReplicateData: Boolean)
+    procedure ExcludeTableFromReplication(TableID: Integer; CompanyName: Text[30])
+    begin
+        IncludeExcludeTableFromReplication(TableID, CompanyName, false);
+    end;
+
+    local procedure IncludeExcludeTableFromReplication(TableID: Integer; CompanyName: Text[30]; NewReplicateData: Boolean)
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
-        TableIDFilter: Text;
-        TableID: Integer;
-        i: Integer;
+        TablesModified: Text;
         SeparatorChar: Char;
     begin
-        if TableIDList.Count = 0 then
+        IntelligentCloudStatus.SetRange("Table Id", TableID);
+        IntelligentCloudStatus.SetRange("Company Name", CompanyName);
+        if not IntelligentCloudStatus.FindSet() then
             exit;
 
-        SeparatorChar := '|';
-        for i := 1 to TableIDList.Count do begin
-            TableIDList.Get(i, TableID);
-            TableIDFilter += Format(TableID) + SeparatorChar;
-        end;
-        TableIDFilter := TableIDFilter.TrimEnd(SeparatorChar);
-        IntelligentCloudStatus.SetRange("Company Name", SelectedCompany);
-        IntelligentCloudStatus.SetFilter("Table Id", TableIDFilter);
-        if IntelligentCloudStatus.FindSet() then
-            repeat
-                IntelligentCloudStatus.Mark(true);
-            until IntelligentCloudStatus.Next() = 0;
-        IntelligentCloudStatus.MarkedOnly();
-
         CheckCanChangeTheTable(IntelligentCloudStatus);
-        IncludeExcludeTablesFromCloudMigration(IntelligentCloudStatus, NewReplicateData);
+        SeparatorChar := ',';
+        IntelligentCloudStatus.FindSet();
+        repeat
+            UpdateReplicateDataForTable(IntelligentCloudStatus, TablesModified, SeparatorChar, NewReplicateData);
+        until IntelligentCloudStatus.Next() = 0;
+
+        LogMessageForChangedReplicateData(Format(TableID), NewReplicateData);
     end;
 
     internal procedure IncludeExcludeTablesFromCloudMigration(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; NewReplicateData: Boolean)
     var
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        TelemetryDictionary: Dictionary of [Text, Text];
         TablesModified: Text;
         SeparatorChar: Char;
     begin
@@ -123,26 +112,68 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
         SeparatorChar := ',';
         repeat
-            if IntelligentCloudStatus."Replicate Data" <> NewReplicateData then begin
-                InsertInitialLog(IntelligentCloudStatus);
-                IntelligentCloudStatus."Replicate Data" := NewReplicateData;
-                IntelligentCloudStatus.Modify();
-                InsertModifyLog(IntelligentCloudStatus);
-                TablesModified += IntelligentCloudStatus."Table Name" + SeparatorChar;
-            end;
+            UpdateReplicateDataForTable(IntelligentCloudStatus, TablesModified, SeparatorChar, NewReplicateData);
         until IntelligentCloudStatus.Next() = 0;
 
         TablesModified := TablesModified.TrimEnd(SeparatorChar);
+        LogMessageForChangedReplicateData(TablesModified, NewReplicateData);
+    end;
+
+    local procedure UpdateReplicateDataForTable(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; var TablesModified: Text; SeparatorChar: Char; NewReplicateData: Boolean)
+    begin
+        if IntelligentCloudStatus."Replicate Data" <> NewReplicateData then begin
+            InsertInitialLog(IntelligentCloudStatus);
+            IntelligentCloudStatus."Replicate Data" := NewReplicateData;
+            IntelligentCloudStatus.Modify();
+            InsertModifyLog(IntelligentCloudStatus);
+            TablesModified += IntelligentCloudStatus."Table Name" + SeparatorChar;
+        end;
+    end;
+
+    local procedure LogMessageForChangedReplicateData(TablesModified: Text; NewReplicateData: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        TelemetryDictionary: Dictionary of [Text, Text];
+    begin
         TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
         TelemetryDictionary.Add('TablesModified', TablesModified);
         TelemetryDictionary.Add('ReplicateData', Format(NewReplicateData, 0, 9));
         Session.LogMessage('0000MRJ', ChangedReplicationPropertyLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
     end;
 
+    procedure SetPreserveDataForTable(TableID: Integer; CompanyName: Text[30])
+    begin
+        SetResetPreserveDataForTable(TableID, CompanyName, true);
+    end;
+
+    procedure ResetPreserveDataForTable(TableID: Integer; CompanyName: Text[30])
+    begin
+        SetResetPreserveDataForTable(TableID, CompanyName, false);
+    end;
+
+    local procedure SetResetPreserveDataForTable(TableID: Integer; CompanyName: Text[30]; NewPreserveCloudData: Boolean)
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        TablesModified: Text;
+        SeparatorChar: Char;
+    begin
+        IntelligentCloudStatus.SetRange("Table Id", TableID);
+        IntelligentCloudStatus.SetRange("Company Name", CompanyName);
+        if not IntelligentCloudStatus.FindSet() then
+            exit;
+
+        CheckCanChangeTheTable(IntelligentCloudStatus);
+        SeparatorChar := ',';
+        IntelligentCloudStatus.FindSet();
+        repeat
+            UpdatePreserveDataForTable(IntelligentCloudStatus, TablesModified, SeparatorChar, NewPreserveCloudData);
+        until IntelligentCloudStatus.Next() = 0;
+
+        LogMessageForChangedPreserveData(Format(TableID), NewPreserveCloudData);
+    end;
+
     internal procedure ChangePreserveCloudData(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; NewPreserveCloudData: Boolean)
     var
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        TelemetryDictionary: Dictionary of [Text, Text];
         TablesModified: Text;
         SeparatorChar: Char;
     begin
@@ -151,21 +182,35 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
         SeparatorChar := ',';
         repeat
-            if IntelligentCloudStatus."Preserve Cloud Data" <> NewPreserveCloudData then begin
-                if (not NewPreserveCloudData) and (IntelligentCloudStatus."Table Id" = Database::"Tenant Media") then
-                    Error(NotPossibleToReplaceTenantMediaTableErr);
-
-                if (NewPreserveCloudData) and (IntelligentCloudStatus."Company Name" = '') then
-                    Error(NotPossibleToDeltaSyncDataPerCompanyErr);
-
-                InsertInitialLog(IntelligentCloudStatus);
-                IntelligentCloudStatus."Preserve Cloud Data" := NewPreserveCloudData;
-                IntelligentCloudStatus.Modify();
-                InsertModifyLog(IntelligentCloudStatus);
-            end;
+            UpdatePreserveDataForTable(IntelligentCloudStatus, TablesModified, SeparatorChar, NewPreserveCloudData);
         until IntelligentCloudStatus.Next() = 0;
 
         TablesModified := TablesModified.TrimEnd(SeparatorChar);
+        LogMessageForChangedPreserveData(TablesModified, NewPreserveCloudData);
+    end;
+
+    local procedure UpdatePreserveDataForTable(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; var TablesModified: Text; SeparatorChar: Char; NewPreserveCloudData: Boolean)
+    begin
+        if IntelligentCloudStatus."Preserve Cloud Data" <> NewPreserveCloudData then begin
+            if (not NewPreserveCloudData) and (IntelligentCloudStatus."Table Id" = Database::"Tenant Media") then
+                Error(NotPossibleToReplaceTenantMediaTableErr);
+
+            if (NewPreserveCloudData) and (IntelligentCloudStatus."Company Name" = '') then
+                Error(NotPossibleToDeltaSyncDataPerCompanyErr);
+
+            InsertInitialLog(IntelligentCloudStatus);
+            IntelligentCloudStatus."Preserve Cloud Data" := NewPreserveCloudData;
+            IntelligentCloudStatus.Modify();
+            InsertModifyLog(IntelligentCloudStatus);
+            TablesModified += IntelligentCloudStatus."Table Name" + SeparatorChar;
+        end;
+    end;
+
+    local procedure LogMessageForChangedPreserveData(TablesModified: Text; NewPreserveCloudData: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        TelemetryDictionary: Dictionary of [Text, Text];
+    begin
         TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
         TelemetryDictionary.Add('TablesModified', TablesModified);
         TelemetryDictionary.Add('PreserveCloudData', Format(NewPreserveCloudData, 0, 9));
