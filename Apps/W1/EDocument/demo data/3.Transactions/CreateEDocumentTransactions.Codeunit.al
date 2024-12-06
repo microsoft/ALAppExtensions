@@ -22,12 +22,13 @@ codeunit 5376 "Create E-Document Transactions"
         PurchaseHeader: Record "Purchase Header";
         EDocumentModuleSetup: Record "E-Document Module Setup";
         ContosoPurchase: Codeunit "Contoso Purchase";
+        CreateWhseItem: Codeunit "Create Whse Item";
         CommonUoM: Codeunit "Create Common Unit Of Measure";
     begin
         EDocumentModuleSetup.Get();
         PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1000', 50, CommonUoM.Piece(), 100);
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1001', 50, CommonUoM.Piece(), 100);
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item1(), 50, CommonUoM.Piece(), 100);
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item2(), 50, CommonUoM.Piece(), 100);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1003', 50, CommonUoM.Piece(), 120);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
@@ -48,7 +49,7 @@ codeunit 5376 "Create E-Document Transactions"
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
         PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 2");
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1001', 150, CommonUoM.Piece(), 125, 20);
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item2(), 150, CommonUoM.Piece(), 125, 20);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1003', 25, CommonUoM.Piece(), 170, 10);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1004', 50, CommonUoM.Piece(), 120);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1005', 50, CommonUoM.Piece(), 140);

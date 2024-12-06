@@ -17,7 +17,7 @@ codeunit 10043 "IRS Forms External Events"
         APIId: Guid;
         Url: Text[250];
         WebClientUrl: Text[250];
-        IRS1099FormDocApiUrlTok: Label 'v1.0/companies(%1)/irs1099documents(%2)', Locked = true;
+        IRS1099FormDocApiUrlTok: Label 'microsoft/irsforms/v1.0/companies(%1)/irs1099documents(%2)', Locked = true;
     begin
         if Rec.IsTemporary then
             exit;

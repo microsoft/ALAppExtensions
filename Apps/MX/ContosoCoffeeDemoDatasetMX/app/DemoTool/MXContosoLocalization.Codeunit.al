@@ -39,8 +39,6 @@ codeunit 14108 "MX Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create Bank Ex/Import SetupMX");
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line MX");
         end;
     end;
 
@@ -108,7 +106,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
-        CreateGenJournalLineMX: Codeunit "Create Gen. Journal Line MX";
         CreateSalesDimValueMX: Codeunit "Create Sales Dim Value MX";
         CreatePurchDimValueMX: Codeunit "Create Purch. Dim. Value MX";
         CreateInvPostingSetupMX: Codeunit "Create Inv. Posting Setup MX";
@@ -117,10 +114,7 @@ codeunit 14108 "MX Contoso Localization"
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    BindSubscription(CreateBankAccountMX);
-                    BindSubscription(CreateGenJournalLineMX);
-                end;
+                BindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateItemChargeMX);
@@ -167,7 +161,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
-        CreateGenJournalLineMX: Codeunit "Create Gen. Journal Line MX";
         CreateSalesDimValueMX: Codeunit "Create Sales Dim Value MX";
         CreatePurchDimValueMX: Codeunit "Create Purch. Dim. Value MX";
         CreateInvPostingSetupMX: Codeunit "Create Inv. Posting Setup MX";
@@ -177,10 +170,7 @@ codeunit 14108 "MX Contoso Localization"
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    UnbindSubscription(CreateBankAccountMX);
-                    UnbindSubscription(CreateGenJournalLineMX);
-                end;
+                UnbindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateItemChargeMX);

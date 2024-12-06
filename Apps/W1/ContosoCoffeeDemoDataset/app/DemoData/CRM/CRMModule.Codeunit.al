@@ -20,6 +20,10 @@ codeunit 5481 "CRM Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Interaction Template");
         Codeunit.Run(Codeunit::"Create Business Relation");
         Codeunit.Run(Codeunit::"Create Sales Cycle");
+        Codeunit.Run(Codeunit::"Create Activity");
+        Codeunit.Run(Codeunit::"Create Activity Step");
+        Codeunit.Run(Codeunit::"Create Sales Cycle Stage");
+        Codeunit.Run(Codeunit::"Create Profile Questionnaire");
         Codeunit.Run(Codeunit::"Create Salutations");
         Codeunit.Run(Codeunit::"Create Marketing Setup");
         Codeunit.Run(Codeunit::"Create Word Template");
@@ -31,8 +35,6 @@ codeunit 5481 "CRM Module" implements "Contoso Demo Data Module"
 
     procedure CreateMasterData()
     begin
-        Codeunit.Run(Codeunit::"Create Activity");
-        Codeunit.Run(Codeunit::"Create Activity Step");
         Codeunit.Run(Codeunit::"Create Salesperson/Purchaser");
         Codeunit.Run(Codeunit::"Create Campaign");
         Codeunit.Run(Codeunit::"Create Close Opportunity Code");
@@ -40,7 +42,6 @@ codeunit 5481 "CRM Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Job Responsibility");
         Codeunit.Run(Codeunit::"Create Mailing Group");
         Codeunit.Run(Codeunit::"Create CRM Dimension Value");
-        Codeunit.Run(Codeunit::"Create Sales Cycle Stage");
         Codeunit.Run(Codeunit::"Create Salutation Formula");
         Codeunit.Run(Codeunit::"Create Web Source");
     end;
@@ -49,7 +50,6 @@ codeunit 5481 "CRM Module" implements "Contoso Demo Data Module"
     begin
         Codeunit.Run(Codeunit::"Create Segment");
         Codeunit.Run(Codeunit::"Create Opportunity");
-        Codeunit.Run(Codeunit::"Create Profile Questionnaire");
     end;
 
     procedure CreateHistoricalData()

@@ -5,7 +5,6 @@ codeunit 11463 "Create Tax Group US"
     trigger OnRun()
     var
         ContosoTaxUS: Codeunit "Contoso Tax US";
-        CreateResource: Codeunit "Create Resource";
         CreateUSGLAccount: Codeunit "Create US GL Accounts";
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
@@ -14,11 +13,6 @@ codeunit 11463 "Create Tax Group US"
         ContosoTaxUS.InsertTaxGroup(Materials(), MaterialsLbl);
         ContosoTaxUS.InsertTaxGroup(NonTaxable(), NonTaxableLbl);
         ContosoTaxUS.InsertTaxGroup(Supplies(), SuppliesLbl);
-
-        UpdateTaxGroupOnResource(CreateResource.Katherine(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Lina(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Marty(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Terry(), Labor());
 
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.DevelopmentExpenditure(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.TenancySiteLeaseHoldandSimilarRights(), NonTaxable());
@@ -240,16 +234,6 @@ codeunit 11463 "Create Tax Group US"
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.DepreciationLandandProperty(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.DepreciationFixedAssets(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.CurrencyLosses(), NonTaxable());
-    end;
-
-    local procedure UpdateTaxGroupOnResource(ResourceNo: Code[20]; TaxGroupCode: Code[20])
-    var
-        Resource: Record Resource;
-    begin
-        Resource.Get(ResourceNo);
-
-        Resource.Validate("Tax Group Code", TaxGroupCode);
-        Resource.Modify(true);
     end;
 
     local procedure UpdateTaxGroupOnGLAccount(GLAccountNo: Code[20]; TaxGroupCode: Code[20])

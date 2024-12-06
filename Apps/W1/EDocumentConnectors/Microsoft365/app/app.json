@@ -1,0 +1,53 @@
+{
+  "id": "ec6b3b0e-f983-408b-8476-bafb4368ecbc",
+  "name": "E-Document Connector - Microsoft 365",
+  "publisher": "Microsoft",
+  "brief": "This app extends Microsoft standard E-documents framework, offering connectors to Microsoft 365.",
+  "description": "This app extends Microsoft standard E-documents framework, offering connectors to Microsoft 365.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": " https://learn.microsoft.com/en-us/dynamics365/business-central/finance-edocuments-overview",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "dependencies": [
+    {
+      "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+      "name": "E-Document Core",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "d852a468-263e-49e5-bfda-f09e33342b89",
+      "name": "E-Documents Connector with External Endpoints",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "44efdf6d-efe4-4af7-9aaa-30df07c0d5a1",
+      "name": "E-Document Connector - Microsoft 365 Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 6381,
+      "to": 6385
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "OnPrem",
+  "features": [
+    "TranslationFile"
+  ]
+}

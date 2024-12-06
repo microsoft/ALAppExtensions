@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
+
 /// <summary>
-/// Codeunit Shpfy GQL Get Next S. Channels (ID 30375) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL Get Next S. Channels (ID 30384) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30384 "Shpfy GQL Get Next S. Channels" implements "Shpfy IGraphQL"
 {

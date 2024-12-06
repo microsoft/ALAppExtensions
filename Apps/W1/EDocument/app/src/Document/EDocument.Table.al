@@ -153,11 +153,6 @@ table 6121 "E-Document"
         {
             Caption = 'Receiving Company Address';
         }
-        field(31; "Receiving Company Id"; Text[250])
-        {
-            Caption = 'Receiving Company Id';
-            ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
-        }
         field(26; "Currency Code"; Code[10])
         {
             Caption = 'Currency Code';
@@ -181,6 +176,11 @@ table 6121 "E-Document"
         field(30; "Journal Line System ID"; Guid)
         {
             DataClassification = SystemMetadata;
+        }
+        field(31; "Receiving Company Id"; Text[250])
+        {
+            Caption = 'Receiving Company Id';
+            ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
         }
 
     }

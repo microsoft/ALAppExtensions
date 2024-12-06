@@ -12,10 +12,6 @@ codeunit 14628 "IS Contoso Localization"
             HumanResourceModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::"Fixed Asset Module" then
-            FixedAssetModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::Bank then
-            BankModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             InventoryModule(ContosoDemoDataLevel);
 
@@ -48,22 +44,6 @@ codeunit 14628 "IS Contoso Localization"
 
             Enum::"Contoso Demo Data Level"::"Master Data":
                 Codeunit.Run(Codeunit::"Create Currency Ex. Rate IS");
-        end;
-    end;
-
-    local procedure FixedAssetModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create FA Ins Jnl. Template IS");
-        end;
-    end;
-
-    local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line IS");
         end;
     end;
 
@@ -104,14 +84,10 @@ codeunit 14628 "IS Contoso Localization"
         CreateVATSetupPostingGrpIS: Codeunit "Create VAT Setup PostingGrpIS";
         CreateVATStatementIS: Codeunit "Create VAT Statement IS";
         CreateAccScheduleLineIS: Codeunit "Create Acc. Schedule Line IS";
-        CreateGenJournalLineIS: Codeunit "Create Gen. Journal Line IS";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    BindSubscription(CreateBankAccountIS);
-                    BindSubscription(CreateGenJournalLineIS)
-                end;
+                BindSubscription(CreateBankAccountIS);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateItemIS);
@@ -161,14 +137,10 @@ codeunit 14628 "IS Contoso Localization"
         CreateVATSetupPostingGrpIS: Codeunit "Create VAT Setup PostingGrpIS";
         CreateVATStatementIS: Codeunit "Create VAT Statement IS";
         CreateAccScheduleLineIS: Codeunit "Create Acc. Schedule Line IS";
-        CreateGenJournalLineIS: Codeunit "Create Gen. Journal Line IS";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    UnbindSubscription(CreateGenJournalLineIS);
-                    UnBindSubscription(CreateBankAccountIS);
-                end;
+                UnBindSubscription(CreateBankAccountIS);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnBindSubscription(CreateItemIS);

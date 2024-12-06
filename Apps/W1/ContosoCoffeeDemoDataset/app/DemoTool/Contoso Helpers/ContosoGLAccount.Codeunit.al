@@ -81,15 +81,7 @@ codeunit 5133 "Contoso GL Account"
                 GLAccount.Validate("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
         end;
 
-        if AccountCategory <> Enum::"G/L Account Category"::" " then begin
-            GLAccount.Validate("Account Category", AccountCategory);
-
-            if AccountSubCategory = '' then
-                GLAccount.Validate("Account Subcategory Entry No.", 0)
-            else
-                GLAccount.ValidateAccountSubCategory(AccountSubCategory);
-        end else
-            GLAccount.Validate("Account Category", Enum::"G/L Account Category"::" ");
+        ValidateAccountCategory(GLAccount, AccountCategory, AccountSubCategory);
 
         GLAccount.Validate("Account Type", AccountType);
         if GLAccount."Account Type" = GLAccount."Account Type"::Posting then
@@ -119,5 +111,25 @@ codeunit 5133 "Contoso GL Account"
             GLAccount.Modify(true)
         else
             GLAccount.Insert(true);
+    end;
+
+    local procedure ValidateAccountCategory(var GLAccount: Record "G/L Account"; Category: Enum "G/L Account Category"; SubCategory: Text[80])
+    begin
+        OnBeforeValidateGLAccountCategory(GLAccount, Category, SubCategory);
+
+        if Category <> Enum::"G/L Account Category"::" " then begin
+            GLAccount.Validate("Account Category", Category);
+
+            if SubCategory = '' then
+                GLAccount.Validate("Account Subcategory Entry No.", 0)
+            else
+                GLAccount.ValidateAccountSubCategory(SubCategory);
+        end else
+            GLAccount.Validate("Account Category", Enum::"G/L Account Category"::" ");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateGLAccountCategory(var GLAccount: Record "G/L Account"; var Category: Enum "G/L Account Category"; var SubCategory: Text[80])
+    begin
     end;
 }

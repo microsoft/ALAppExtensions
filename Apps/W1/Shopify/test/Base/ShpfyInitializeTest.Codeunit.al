@@ -380,10 +380,7 @@ codeunit 139561 "Shpfy Initialize Test"
         ShippingChargesGLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GenPostingType::Sale));
         ShippingChargesGLAccount."Direct Posting" := true;
         ShippingChargesGLAccount.Modify(false);
-
         CreateVATPostingSetup(PostingGroupCode, ShippingChargesGLAccount."VAT Prod. Posting Group");
-
         exit(ShippingChargesGLAccount."No.");
     end;
-
 }

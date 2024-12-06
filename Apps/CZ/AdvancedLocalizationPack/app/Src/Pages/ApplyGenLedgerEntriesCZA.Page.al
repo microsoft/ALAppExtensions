@@ -512,6 +512,12 @@ page 31287 "Apply Gen. Ledger Entries CZA"
         until NewGLEntry.Next() = 0;
     end;
 
+    internal procedure CopyEntry(var TempGLEntry: Record "G/L Entry" temporary)
+    begin
+        Rec.Reset();
+        TempGLEntry.Copy(Rec, true);
+    end;
+
     local procedure FindApplyingGLEntry()
     begin
         AppliesToID := Rec.GetDefaultAppliesToID();

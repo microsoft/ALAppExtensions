@@ -13,16 +13,6 @@ codeunit 5224 "Create Acc. Schedule Line"
         CreateGLAccount: Codeunit "Create G/L Account";
         AccountScheduleName: Code[10];
     begin
-        ContosoAccountSchedule.InsertAccScheduleLine('', 10000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 20000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 30000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 40000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 50000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 60000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 70000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 80000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine('', 90000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-
         AccountScheduleName := CreateAccountScheduleName.AccountCategoriesOverview();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '1000', BalanceSheetLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, '1010', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
@@ -91,6 +81,38 @@ codeunit 5224 "Create Acc. Schedule Line"
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 290000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Cash Flow Entry Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 300000, 'R70', TotalCashFlowLbl, 'R50|R60', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
 
+        AccountScheduleName := CreateAccountScheduleName.Revenues();
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '', REVENUELbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, '', SalesofRetailLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, '11', SalesRetailDomLbl, CreateGLAccount.SalesRetailDom(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, '12', SalesRetailEULbl, CreateGLAccount.SalesRetailEU(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, '13', SalesRetailExportLbl, CreateGLAccount.SalesRetailExport(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, '14', JobSalesAdjmtRetailLbl, CreateGLAccount.JobSalesAppliedRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '15', SalesofRetailTotalLbl, CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', RevenueArea10to30TotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '10..30', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, '', RevenueArea40to85TotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '40..85', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, '', RevenueNoAreacodeTotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 130000, '', RevenueTotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+    end;
+
+    internal procedure CreateSetupAccScheduleLine()
+    var
+        CreateAccountScheduleName: Codeunit "Create Acc. Schedule Name";
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+        AccountScheduleName: Code[10];
+    begin
+        ContosoAccountSchedule.InsertAccScheduleLine('', 10000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 20000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 30000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 40000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 50000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 60000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 70000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 80000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine('', 90000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+
         AccountScheduleName := CreateAccountScheduleName.CashCycle();
         // ToDo: MS 10990 G/L Account could not be found
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '10', TotalRevenueLbl, '10990', Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
@@ -133,21 +155,6 @@ codeunit 5224 "Create Acc. Schedule Line"
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, '70', OperatingMarginPerLbl, '-''60''/''10''*100', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '80', OtherExpensesLbl, '30300|30600|31200|31500|31900', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '90', IncomeBeforeInterestAndTaxLbl, '31995', Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, true, 0);
-
-        AccountScheduleName := CreateAccountScheduleName.Revenues();
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '', REVENUELbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, '', SalesofRetailLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, '11', SalesRetailDomLbl, CreateGLAccount.SalesRetailDom(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, '12', SalesRetailEULbl, CreateGLAccount.SalesRetailEU(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, '13', SalesRetailExportLbl, CreateGLAccount.SalesRetailExport(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, '14', JobSalesAdjmtRetailLbl, CreateGLAccount.JobSalesAppliedRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '15', SalesofRetailTotalLbl, CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', RevenueArea10to30TotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '10..30', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, '', RevenueArea40to85TotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '40..85', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, '', RevenueNoAreacodeTotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
-        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 130000, '', RevenueTotalLbl, CreateGLAccount.SalesRetailDom() + '..' + CreateGLAccount.TotalSalesofRetail(), Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
     end;
 
     var

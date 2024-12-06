@@ -5,8 +5,6 @@ codeunit 10519 "Create Resource US"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //TODO- Post Code Hard coded.
-
     [EventSubscriber(ObjectType::Table, Database::Resource, 'OnBeforeOnInsert', '', false, false)]
     local procedure OnInsertRecord(var Resource: Record Resource; var IsHandled: Boolean)
     var
@@ -33,6 +31,27 @@ codeunit 10519 "Create Resource US"
         Resource.Validate("Unit Price", UnitPrice);
         Resource.Validate("Post Code", PostCode);
         Resource.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
+    end;
+
+    internal procedure UpdateResourcesTaxGroup()
+    var
+        CreateResource: Codeunit "Create Resource";
+        CreateTaxGroupUS: Codeunit "Create Tax Group US";
+    begin
+        UpdateTaxGroupOnResource(CreateResource.Katherine(), CreateTaxGroupUS.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Lina(), CreateTaxGroupUS.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Marty(), CreateTaxGroupUS.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Terry(), CreateTaxGroupUS.Labor());
+    end;
+
+    local procedure UpdateTaxGroupOnResource(ResourceNo: Code[20]; TaxGroupCode: Code[20])
+    var
+        Resource: Record Resource;
+    begin
+        Resource.Get(ResourceNo);
+
+        Resource.Validate("Tax Group Code", TaxGroupCode);
+        Resource.Modify(true);
     end;
 
     var

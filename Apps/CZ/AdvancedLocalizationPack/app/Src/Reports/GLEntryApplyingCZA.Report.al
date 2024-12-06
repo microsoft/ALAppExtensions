@@ -101,7 +101,7 @@ report 31132 "G/L Entry Applying CZA"
 
                         if Apply then begin
                             OriginalEntry."Applies-to ID CZA" := OriginalEntry."Document No.";
-                            OriginalEntry."Amount to Apply CZA" := OriginalEntry.Amount - OriginalEntry."Applied Amount CZA";
+                            OriginalEntry."Amount to Apply CZA" := -TotalAmount;
                             OriginalEntry.Modify();
                             Clear(GLEntryPostApplicationCZA);
 

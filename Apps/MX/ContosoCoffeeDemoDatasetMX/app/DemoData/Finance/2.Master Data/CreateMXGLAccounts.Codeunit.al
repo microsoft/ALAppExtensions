@@ -113,6 +113,8 @@ codeunit 14099 "Create MX GL Accounts"
     var
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
+        ModifyGLAccountForW1();
+
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.IncomeStatementName(), '1000');
         ContosoGLAccount.AddAccountForLocalization(BankLcyPostingName(), '10100');
         ContosoGLAccount.AddAccountForLocalization(CashPostingName(), '10300');
@@ -369,50 +371,6 @@ codeunit 14099 "Create MX GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(PurchaseVat16PercUnrealizedName(), '9635');
         ContosoGLAccount.AddAccountForLocalization(AccountsReceivablePostingName(), '10400');
 
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.LandandBuildingsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.VendorPrepaymentsVat10Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.VendorPrepaymentsVat25Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CustomerPrepaymentsVat10Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CustomerPrepaymentsVat25Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesVat25Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesVat10Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat25EuName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat10EuName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat25Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat10Name(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedRetailName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtRetailName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOfRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsDomName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsEuName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsExportName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalSalesOfRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedResourcesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtResourcesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOfJobsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOtherJobExpensesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalSalesOfJobsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedRetailName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtRetailName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsDomName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsEuName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsExportName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.DiscReceivedRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.DeliveryExpensesRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.InventoryAdjmtRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfRawMaterialsSoldName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalCostOfRawMaterialsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfResourcesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedResourcesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtResourcesName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfResourcesUsedName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalCostOfResourcesName(), '');
-
         CreateGLAccountForLocalization();
     end;
 
@@ -609,6 +567,56 @@ codeunit 14099 "Create MX GL Accounts"
 
         GLAccount.Validate("Debit/Credit", DebitCredit);
         GLAccount.Modify(true);
+    end;
+
+    local procedure ModifyGLAccountForW1()
+    var
+        CreateGLAccount: Codeunit "Create G/L Account";
+    begin
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.LandandBuildingsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.VendorPrepaymentsVat10Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.VendorPrepaymentsVat25Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CustomerPrepaymentsVat10Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CustomerPrepaymentsVat25Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesVat25Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesVat10Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat25EuName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat10EuName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat25Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchaseVat10Name(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOfRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsDomName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsEuName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesRawMaterialsExportName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalSalesOfRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAppliedResourcesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesAdjmtResourcesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOfJobsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesOtherJobExpensesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalSalesOfJobsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsDomName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsEuName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.PurchRawMaterialsExportName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.DiscReceivedRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.DeliveryExpensesRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.InventoryAdjmtRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfRawMaterialsSoldName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalCostOfRawMaterialsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfResourcesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAppliedResourcesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobCostAdjmtResourcesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CostOfResourcesUsedName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalCostOfResourcesName(), '');
+
     end;
 
     procedure Equipment(): Code[20]
