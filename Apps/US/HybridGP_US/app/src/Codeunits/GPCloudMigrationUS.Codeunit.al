@@ -3,8 +3,10 @@ namespace Microsoft.DataMigration.GP;
 using System.Integration;
 #if not CLEAN25
 using System.Environment.Configuration;
+using Microsoft.Finance.VAT.Reporting;
 #endif
 using Microsoft.Purchases.Vendor;
+
 
 codeunit 42004 "GP Cloud Migration US"
 {
@@ -31,6 +33,9 @@ codeunit 42004 "GP Cloud Migration US"
     begin
         if GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then begin
             EnsureSupportedReportingYear();
+#if not CLEAN25
+            EnsureOriginalIRS1099FeatureInitializedIfNeeded();
+#endif
             SetupIRSFormsFeatureIfNeeded();
             BindSubscription(GPPopulateVendor1099Data);
             GPPopulateVendor1099Data.Run();
@@ -73,17 +78,10 @@ codeunit 42004 "GP Cloud Migration US"
 
     internal procedure IsIRSFormsFeatureEnabled(): Boolean
     var
-#if not CLEAN25
         FeatureManagementFacade: Codeunit "Feature Management Facade";
-#endif
         IsEnabled: Boolean;
     begin
-        IsEnabled := true;
-
-#if not CLEAN25
         IsEnabled := FeatureManagementFacade.IsEnabled(IRSFormFeatureKeyIdTok);
-#endif
-
         exit(IsEnabled);
     end;
 
@@ -101,4 +99,18 @@ codeunit 42004 "GP Cloud Migration US"
 
         GPIRSFormData.CreateIRSFormsReportingPeriodIfNeeded(ReportingYear);
     end;
+
+#if not CLEAN25
+    local procedure EnsureOriginalIRS1099FeatureInitializedIfNeeded()
+    var
+#pragma warning disable AL0432
+        IRS1099FormBox: Record "IRS 1099 Form-Box";
+#pragma warning restore AL0432
+    begin
+        if IsIRSFormsFeatureEnabled() then
+            exit;
+
+        IRS1099FormBox.InitIRS1099FormBoxes();
+    end;
+#endif
 }
