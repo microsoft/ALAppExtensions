@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration.GP;
 
 using System.Integration;
-#if not CLEAN25
 using System.Environment.Configuration;
+#if not CLEAN25
 using Microsoft.Finance.VAT.Reporting;
 #endif
 using Microsoft.Purchases.Vendor;
