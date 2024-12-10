@@ -886,6 +886,13 @@ table 6617 "FS Work Order"
             TableRelation = "CDS Company".CompanyId;
             DataClassification = SystemMetadata;
         }
+        field(165; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
