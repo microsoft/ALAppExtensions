@@ -6,57 +6,49 @@ namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
 using System.Utilities;
 using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Send;
+using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-codeunit 6372 "Integration Impl." implements "E-Document Integration"
+codeunit 6372 "Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver
 {
     Access = Internal;
 
-    procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
+    begin
+        this.AvalaraProcessing.SendEDocument(EDocument, EDocumentService, SendContext);
+    end;
+
+    procedure GetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext): Boolean
+    begin
+        exit(this.AvalaraProcessing.GetDocumentStatus(EDocument, SendContext));
+    end;
+
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        this.AvalaraProcessing.ReceiveDocuments(EDocumentService, DocumentsMetadata, ReceiveContext);
+    end;
+
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        this.AvalaraProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadata, ReceiveContext);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     var
+        ConnectionSetupCard: Page "Connection Setup Card";
     begin
-        this.AvalaraProcessing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Avalara then
+            exit;
+
+        ConnectionSetupCard.RunModal();
+        IsServiceIntegrationSetupRun := true;
     end;
 
-    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
-    begin
-        IsAsync := false;
-        Error(BatchSendingErr);
-    end;
-
-    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        exit(this.AvalaraProcessing.GetDocumentStatus(EDocument, HttpRequest, HttpResponse));
-    end;
-
-    procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        Error(ApprovalErr);
-    end;
-
-    procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        Error(CancelErr);
-    end;
-
-    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
-    begin
-        this.AvalaraProcessing.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
-    end;
-
-    procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
-    begin
-        exit(this.AvalaraProcessing.GetDocumentCountInBatch(TempBlob));
-    end;
-
-    procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
-    begin
-        SetupPage := page::"Connection Setup Card";
-        SetupTable := Database::"Connection Setup";
-    end;
 
     var
         AvalaraProcessing: Codeunit Processing;
-        BatchSendingErr: Label 'Batch sending is not supported in this version.';
-        ApprovalErr: Label 'Approvals are not supported in this version.';
-        CancelErr: Label 'Cancel is not supported in this version';
+
+
 }

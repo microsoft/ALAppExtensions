@@ -164,8 +164,10 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
 
     trigger OnOpenPage()
     var
+        BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
         CopilotCapability: Codeunit "Copilot Capability";
     begin
+        BankRecAIMatchingImpl.RegisterCapability();
         CopilotActionsVisible := CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation");
     end;
 

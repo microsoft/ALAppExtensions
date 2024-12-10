@@ -157,7 +157,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
     procedure ShowDocumentation(Notification: Notification)
     begin
-        HyperLink(DocumentationURLLbl);
+        HyperLink(OverrideReplicationSetupDocumentationURLLbl);
     end;
 
     procedure DontShowDocumentationNotificationAgain(Notification: Notification)
@@ -166,7 +166,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
     begin
         if not MyNotifications.SetStatus(GetDocumentationNotificationID(), false) then
             MyNotifications.InsertDefault(
-              GetDocumentationNotificationID(), DocumentationNotificationTxt, DocumentationNotificationDescriptionTxt, false);
+              GetDocumentationNotificationID(), OverrideReplicationSeteupDocumentationNotificationTxt, OverrideReplicationSetupDocumentationNotificationDescriptionTxt, false);
     end;
 
     local procedure InsertInitialLog(var IntelligentCloudStatus: Record "Intelligent Cloud Status")
@@ -180,6 +180,43 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
             CloudMigrationOverrideLogInitialEntry."Change Type" := CloudMigrationOverrideLogInitialEntry."Change Type"::"Initial Entry";
             CloudMigrationOverrideLogInitialEntry.Insert(true);
         end;
+    end;
+
+    local procedure GetAddTableMappingsNotificationID(): Guid
+    begin
+        exit('16fd70ce-a173-4068-a3b7-305429a0054f')
+    end;
+
+    internal procedure ShowAddTableMappingsNotification()
+    var
+        MyNotifications: Record "My Notifications";
+        AddTableMappingsNotification: Notification;
+    begin
+        if MyNotifications.Get(UserId(), GetAddTableMappingsNotificationID()) then
+            if MyNotifications.Enabled = false then
+                exit;
+
+        AddTableMappingsNotification.Id := GetAddTableMappingsNotificationID();
+        if AddTableMappingsNotification.Recall() then;
+        AddTableMappingsNotification.Message(AddTableMappingsNotificationMessageTxt);
+        AddTableMappingsNotification.Scope(NotificationScope::LocalScope);
+        AddTableMappingsNotification.AddAction(LearnMoreTxt, Codeunit::"Cloud Mig. Replicate Data Mgt.", 'ShowDocumentation');
+        AddTableMappingsNotification.AddAction(DontShowAgainTxt, Codeunit::"Cloud Mig. Replicate Data Mgt.", 'DontShowAddTableMappingsNotificationAgain');
+        AddTableMappingsNotification.Send();
+    end;
+
+    procedure ShowAddTableMappingsNotificationDocumentation(Notification: Notification)
+    begin
+        HyperLink(AddMigrationTableMappingsDocumentationURLLbl);
+    end;
+
+    procedure DontShowAddTableMappingsNotificationAgain(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.SetStatus(GetAddTableMappingsNotificationID(), false) then
+            MyNotifications.InsertDefault(
+              GetAddTableMappingsNotificationID(), AddTableMappingsNotificationTitleTxt, AddTableMappingsDescriptionTxt, false);
     end;
 
     local procedure InsertResetToDefaultLog(var IntelligentCloudStatus: Record "Intelligent Cloud Status")
@@ -327,9 +364,10 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
     var
         TableReplicationPropertiesCannotBeChangedErr: Label 'The replication properties of the table %1 cannot be changed because it is internal. Changing the replication of the sensitive tables is not allowed.', Comment = '%1 - Table name, e.g. CRONUS International Ltd_$Activity Step$437dbf0e-84ff-417a-965d-ed2bb9650972';
-        DocumentationURLLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2248572', Locked = true;
-        DocumentationNotificationTxt: Label 'Cloud Mig. Replication Rules';
-        DocumentationNotificationDescriptionTxt: Label 'Notification to learn more about how to configure which data is replicated and how.';
+        OverrideReplicationSetupDocumentationURLLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2248572', Locked = true;
+        AddMigrationTableMappingsDocumentationURLLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2296587', Locked = true;
+        OverrideReplicationSeteupDocumentationNotificationTxt: Label 'Cloud Mig. Replication Rules';
+        OverrideReplicationSetupDocumentationNotificationDescriptionTxt: Label 'Notification to learn more about how to configure which data is replicated and how.';
         LearnMoreTxt: Label 'Learn more';
         DontShowAgainTxt: Label 'Don''t show again';
         NotPossibleToReplaceTenantMediaTableErr: Label 'It is not possible to overwrite the data in the Tenant Media table as it contains the data needed for the system to run correctly.';
@@ -337,4 +375,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         NotPossibleToDeltaSyncDataPerCompanyErr: Label 'Delta syncing per-company data is not supported. This process is not supported by the service, because it could result in slower replication and incorrect data replication.';
         ChangedReplicationPropertyLbl: Label 'The replication property has been changed.', Locked = true;
         ChangedPreserveCloudDataPropertyLbl: Label 'The Preserve Cloud Data property has been changed.', Locked = true;
+        AddTableMappingsNotificationMessageTxt: Label 'We strongly recommend using "Add Table Mappings" action to add table mapping definitions. It will help you to enter the table mappings correctly and avoid any issues during replication.';
+        AddTableMappingsNotificationTitleTxt: Label 'Add Migration Table Mappings';
+        AddTableMappingsDescriptionTxt: Label 'Notification to learn more about how to configure table mappings instead of entering the data manually.';
 }

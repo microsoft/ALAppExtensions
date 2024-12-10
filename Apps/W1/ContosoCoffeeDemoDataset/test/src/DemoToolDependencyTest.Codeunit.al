@@ -9,12 +9,13 @@ codeunit 148048 "DemoTool Dependency Test"
     [Test]
     procedure TestDependenciesAreCorrectlyGenerated()
     var
+        ContosoDemoDataModule: Record "Contoso Demo Data Module";
         ContosoModuleDependency: Codeunit "Contoso Module Dependency";
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
         DemoDataModulesList, SortedModulesList : List of [Enum "Contoso Demo Data Module"];
     begin
         // [SCENARIO] There are 3 modules in the list, testing the dependency order.
-        ContosoDemoTool.RefreshModules();
+        ContosoDemoTool.RefreshModules(ContosoDemoDataModule);
 
         // [GIVEN] The "Contoso Test 1" module is taken dependencies on by the other 2 modules.
         DemoDataModulesList.Add(Enum::"Contoso Demo Data Module"::"Contoso Test 3");
@@ -34,11 +35,12 @@ codeunit 148048 "DemoTool Dependency Test"
     [Test]
     procedure TestCircularDependency()
     var
+        ContosoDemoDataModule: Record "Contoso Demo Data Module";
         ContosoModuleDependency: Codeunit "Contoso Module Dependency";
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
         // [SCENARIO] There are 3 modules in the list (dependency is defined in the implementations), testing the circular dependency.
-        ContosoDemoTool.RefreshModules();
+        ContosoDemoTool.RefreshModules(ContosoDemoDataModule);
 
         // [GIVEN] Faking a circular dependency
         asserterror ContosoModuleDependency.AddDependency(Enum::"Contoso Demo Data Module"::"Contoso Test 1", Enum::"Contoso Demo Data Module"::"Contoso Test 2");

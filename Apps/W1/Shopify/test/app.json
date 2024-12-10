@@ -57,7 +57,7 @@
       "to": 139549
     },
     {
-      "from": 139559,
+      "from": 139558,
       "to": 139574
     },
     {
@@ -87,5 +87,8 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0"
+  "application": "26.0.0.0",
+  "resourceFolders": [
+    ".resources"
+  ]
 }

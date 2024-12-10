@@ -13,10 +13,12 @@ using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Manufacturing.Document;
+using Microsoft.Warehouse.Request;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Warehouse.Journal;
 
 codeunit 18466 "Subcontracting Post"
 {
@@ -205,12 +207,16 @@ codeunit 18466 "Subcontracting Post"
         TempTrackingSpecification: Record "Tracking Specification" temporary;
         ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         ItemJnlPostBatch: Codeunit "Item Jnl.-Post Batch";
+        OriginalQty: Decimal;
+        OriginalQtyBase: Decimal;
     begin
         if ItemJnlLine."Value Entry Type" <> ItemJnlLine."Value Entry Type"::Revaluation then begin
+            OriginalQty := ItemJnlLine.Quantity;
+            OriginalQtyBase := ItemJnlLine."Quantity (Base)";
             if not ItemJnlPostLine.RunWithCheck(ItemJnlLine) then
                 ItemJnlPostLine.CheckItemTracking();
             ItemJnlPostLine.CollectTrackingSpecification(TempTrackingSpecification);
-            ItemJnlPostBatch.PostWhseJnlLine(ItemJnlLine, ItemJnlLine.Quantity, ItemJnlLine."Quantity (Base)", TempTrackingSpecification);
+            ItemJnlPostBatch.PostWhseJnlLine(ItemJnlLine, OriginalQty, OriginalQtyBase, TempTrackingSpecification);
             Clear(ItemJnlPostLine);
             Clear(ItemJnlPostBatch);
         end;
@@ -2548,6 +2554,25 @@ codeunit 18466 "Subcontracting Post"
             exit;
 
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"WMS Management", 'OnAfterCreateWhseJnlLine', '', false, false)]
+    local procedure UpdateSourceDocument(var WhseJournalLine: Record "Warehouse Journal Line"; ItemJournalLine: Record "Item Journal Line")
+    var
+        PurchaseLine: Record "Purchase Line";
+        WhseManagement: Codeunit "Whse. Management";
+    begin
+        if not (ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production) then
+            exit;
+
+        PurchaseLine.SetRange("Prod. Order No.", ItemJournalLine."Order No.");
+        PurchaseLine.SetRange("Prod. Order Line No.", ItemJournalLine."Order Line No.");
+        PurchaseLine.SetRange(Subcontracting, true);
+        if PurchaseLine.IsEmpty then
+            exit;
+
+        WhseJournalLine.SetSource(Database::"Item Journal Line", 1, ItemJnlLine."Document No.", ItemJnlLine."Line No.", 0);
+        WhseJournalLine."Source Document" := WhseManagement.GetWhseJnlSourceDocument(WhseJournalLine."Source Type", WhseJournalLine."Source Subtype");
     end;
 
     [IntegrationEvent(false, false)]

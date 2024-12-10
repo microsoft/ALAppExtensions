@@ -22,10 +22,14 @@
   "screenshots": [],
   "platform": "26.0.0.0",
   "application": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceFolders": [
+    ".resources"
+  ],
   "idRanges": [
     {
       "from": 11580,
-      "to": 11585
+      "to": 11679
     }
   ],
   "resourceExposurePolicy": {

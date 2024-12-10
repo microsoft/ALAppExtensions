@@ -223,6 +223,7 @@ report 30118 "Shpfy Suggest Payments"
                 begin
                     SalesInvoiceHeader.SetLoadFields("No.", "Shpfy Order Id");
                     SalesInvoiceHeader.SetRange("Shpfy Order Id", OrderTransaction."Shopify Order Id");
+                    SalesInvoiceHeader.SetRange(Closed, false);
                     if SalesInvoiceHeader.FindSet() then begin
                         repeat
                             CustLedgerEntry.SetAutoCalcFields("Remaining Amount");
@@ -250,6 +251,7 @@ report 30118 "Shpfy Suggest Payments"
                         repeat
                             SalesCreditMemoHeader.SetLoadFields("Shpfy Refund Id", "No.");
                             SalesCreditMemoHeader.SetRange("Shpfy Refund Id", RefundHeader."Refund Id");
+                            SalesCreditMemoHeader.SetRange(Paid, false);
                             if SalesCreditMemoHeader.FindSet() then
                                 repeat
                                     CustLedgerEntry.SetAutoCalcFields("Remaining Amount");

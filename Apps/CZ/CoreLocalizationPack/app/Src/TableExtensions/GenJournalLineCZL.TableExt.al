@@ -184,6 +184,7 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
             DataClassification = CustomerContent;
             TableRelation = Currency;
         }
+#if not CLEANSCHEMA25
         field(11780; "VAT Date CZL"; Date)
         {
             Caption = 'VAT Date';
@@ -192,6 +193,7 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
+#endif
         field(11781; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';

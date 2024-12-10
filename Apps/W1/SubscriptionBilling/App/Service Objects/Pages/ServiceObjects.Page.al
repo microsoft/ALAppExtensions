@@ -41,6 +41,11 @@ page 8059 "Service Objects"
                     ToolTip = 'Specifies the Serial No. assigned to the service object.';
                     Visible = false;
                 }
+                field("Variant Code"; Rec."Variant Code")
+                {
+                    ToolTip = 'Specifies the Variant Code of the service object.';
+                    Visible = false;
+                }
                 field("End-User Customer Name"; Rec."End-User Customer Name")
                 {
                     ToolTip = 'Specifies the name of the customer to whom the service was sold.';

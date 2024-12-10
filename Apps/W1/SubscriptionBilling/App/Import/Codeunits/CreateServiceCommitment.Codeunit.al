@@ -33,7 +33,6 @@ codeunit 8006 "Create Service Commitment"
         if not ServiceObject.Get(ImportedServiceCommitment."Service Object No.") then
             Error(ServiceObjectDoesNotExistErr);
         DateFormulaManagement.ErrorIfDateEmpty(ImportedServiceCommitment."Service Start Date", ImportedServiceCommitment.FieldCaption("Service Start Date"));
-        ImportedServiceCommitment.TestField("Calculation Base Amount");
         if (ImportedServiceCommitment."Calculation Base %" < 0) or (ImportedServiceCommitment."Calculation Base %" > 100) then
             Error(ValueShouldBeBetweenErr, ImportedServiceCommitment.FieldCaption("Calculation Base %"), 0, 100);
         if (ImportedServiceCommitment."Discount %" < 0) or (ImportedServiceCommitment."Discount %" > 100) then
@@ -60,6 +59,7 @@ codeunit 8006 "Create Service Commitment"
     var
         ServiceCommitment: Record "Service Commitment";
         ServiceObject: Record "Service Object";
+        ContractsItemManagement: Codeunit "Contracts Item Management";
     begin
         ServiceCommitment.Init();
         ServiceCommitment.Validate("Service Object No.", ImportedServiceCommitment."Service Object No.");
@@ -72,7 +72,12 @@ codeunit 8006 "Create Service Commitment"
         OnAfterServiceCommitmentInsert(ServiceCommitment, ImportedServiceCommitment);
 
         ServiceCommitment."Invoicing via" := ImportedServiceCommitment."Invoicing via";
-        ServiceCommitment."Invoicing Item No." := ImportedServiceCommitment."Invoicing Item No.";
+        if ImportedServiceCommitment."Invoicing Item No." <> '' then
+            ServiceCommitment."Invoicing Item No." := ImportedServiceCommitment."Invoicing Item No."
+        else
+            if ServiceObject.Get(ServiceCommitment."Service Object No.") then
+                if ContractsItemManagement.IsServiceCommitmentItem(ServiceObject."Item No.") then
+                    ServiceCommitment."Invoicing Item No." := ServiceObject."Item No.";
         ServiceCommitment.Template := ImportedServiceCommitment."Template Code";
         ServiceCommitment.Validate("Package Code", ImportedServiceCommitment."Package Code");
         ServiceCommitment.Partner := ImportedServiceCommitment.Partner;

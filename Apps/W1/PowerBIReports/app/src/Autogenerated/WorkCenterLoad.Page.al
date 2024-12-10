@@ -22,7 +22,7 @@ page 37042 "Work Center Load"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37042 "Work Center Load"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection83a7395d207d5b47b1a4', Locked = true;
+        ReportPageLbl: Label 'ReportSection83a7395d207d5b47b1a4', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

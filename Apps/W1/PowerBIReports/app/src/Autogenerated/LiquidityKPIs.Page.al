@@ -22,7 +22,7 @@ page 36988 "Liquidity KPIs"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36988 "Liquidity KPIs"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection6838cf9cda361d088e0a', Locked = true;
+        ReportPageLbl: Label 'ReportSection6838cf9cda361d088e0a', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -25,6 +25,17 @@ codeunit 6148 "E-Document Helper"
     end;
 
     /// <summary>
+    /// Returns the EDocuments services used in a workflow.
+    /// E-Document service record has code filter set.
+    /// </summary>
+    procedure GetServicesInWorkflow(Workflow: Record Workflow; var EDocumentService: Record "E-Document Service"): Boolean
+    var
+        EDocumentWorkFlowProcessing: Codeunit "E-Document Workflow Processing";
+    begin
+        exit(EDocumentWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, Workflow.Code));
+    end;
+
+    /// <summary>
     /// Use it to set allow EDocument CoreHttpCalls.
     /// </summary>
     procedure AllowEDocumentCoreHttpCalls()

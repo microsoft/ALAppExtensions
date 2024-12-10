@@ -41,6 +41,12 @@
       "name": "PowerBI Reports",
       "publisher": "Microsoft",
       "version": "26.0.0.0"
+    },
+    {
+      "id": "b4e48c9c-0deb-49a4-ae70-662b33565b1b",
+      "name": "PowerBI Reports Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
     }
   ],
   "screenshots": [],

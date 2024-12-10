@@ -22,7 +22,7 @@ page 37031 "Bin Contents"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37031 "Bin Contents"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection12b3ff23621e20c1398d', Locked = true;
+        ReportPageLbl: Label 'ReportSection12b3ff23621e20c1398d', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

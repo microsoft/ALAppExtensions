@@ -26,17 +26,6 @@ table 1853 "MS - Sales Forecast Setup"
             OptionMembers = Day,Week,Month,Quarter,Year;
             DataClassification = CustomerContent;
         }
-#if not CLEANSCHEMA18
-        field(3; "Show Setup Notification"; Boolean)
-        {
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Notification is now using the My notifications table';
-            ObsoleteTag = '18.0';
-            Editable = false;
-            InitValue = true;
-            DataClassification = CustomerContent;
-        }
-#endif
         field(4; "Stockout Warning Horizon"; Integer)
         {
             DataClassification = CustomerContent;
@@ -106,41 +95,6 @@ table 1853 "MS - Sales Forecast Setup"
             Editable = false;
             DataClassification = CustomerContent;
         }
-#if not CLEANSCHEMA18
-        field(15; "API Cache Minutes"; Integer)
-        {
-            Description = 'Default period in minutes for caching the API URI and API Key.';
-            InitValue = 5;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(16; "API Cache Expiry"; DateTime)
-        {
-            Description = 'Expiration datetime for the API URI and API Key.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(17; "Service Pass API Uri ID"; Guid)
-        {
-            Description = 'The Key for retrieving the API URI from the Service Password table.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(18; "Service Pass API Key ID"; Guid)
-        {
-            Description = 'The Key for retrieving the API Key from the Service Password table.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-#endif
         field(19; "Timeseries Model"; Option)
         {
             OptionMembers = ARIMA,ETS,STL,"ETS+ARIMA","ETS+STL",ALL,TBATS;
@@ -326,4 +280,3 @@ table 1853 "MS - Sales Forecast Setup"
         end;
     end;
 }
-

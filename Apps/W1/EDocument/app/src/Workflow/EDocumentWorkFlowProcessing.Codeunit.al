@@ -7,12 +7,33 @@ namespace Microsoft.eServices.EDocument;
 using System.Automation;
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.eServices.EDocument.Integration.Send;
 
 codeunit 6135 "E-Document WorkFlow Processing"
 {
     Permissions =
         tabledata "E-Document" = m,
         tabledata "E-Doc. Mapping Log" = i;
+
+
+    internal procedure IsServiceUsedInActiveWorkflow(EDocumentService: Record "E-Document Service"): Boolean
+    var
+        Workflow: Record Workflow;
+        WorkflowStep: Record "Workflow Step";
+        WorkflowStepArgument: Record "Workflow Step Argument";
+    begin
+        Workflow.SetRange(Enabled, true);
+        if Workflow.FindSet() then
+            repeat
+                WorkflowStep.SetRange("Workflow Code", Workflow.Code);
+                if WorkflowStep.FindSet() then
+                    repeat
+                        if WorkflowStepArgument.Get(WorkflowStep.Argument) then
+                            if WorkflowStepArgument."E-Document Service" = EDocumentService.Code then
+                                exit(true);
+                    until WorkflowStep.Next() = 0;
+            until Workflow.Next() = 0;
+    end;
 
     internal procedure DoesFlowHasEDocService(var EDocServices: Record "E-Document Service"; WorkfLowCode: Code[20]): Boolean
     var
@@ -190,11 +211,12 @@ codeunit 6135 "E-Document WorkFlow Processing"
         EDocExport: Codeunit "E-Doc. Export";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
-        IsAsync, Sent : Boolean;
+        SendContext: Codeunit SendContext;
+        Sent, IsAsync : Boolean;
     begin
         Sent := false;
         if EDocExport.ExportEDocument(EDocument, EDocumentService) then
-            Sent := EDocIntMgt.Send(EDocument, EDocumentService, IsAsync);
+            Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then
             if IsAsync then

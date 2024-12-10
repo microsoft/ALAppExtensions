@@ -450,6 +450,8 @@ table 31256 "Payment Order Header CZB"
                                     else
                                         PaymentOrderLineCZB.Validate("Amount (LCY)");
                                 end;
+                            else
+                                OnUpdatePaymentOrderLineOnElseChangedFieldName(Rec, xRec, PaymentOrderLineCZB, ChangedFieldName)
                         end;
                         PaymentOrderLineCZB.Modify(true);
                     until PaymentOrderLineCZB.Next() = 0;
@@ -639,6 +641,11 @@ table 31256 "Payment Order Header CZB"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDeleteRecordInApprovalRequest(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdatePaymentOrderLineOnElseChangedFieldName(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; xPaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var PaymentOrderLineCZB: Record "Payment Order Line CZB"; ChangedFieldName: Text)
     begin
     end;
 }

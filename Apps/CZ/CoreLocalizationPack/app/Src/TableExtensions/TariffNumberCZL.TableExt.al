@@ -39,6 +39,7 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
             Caption = 'Description EN';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31065; "Suppl. Unit of Meas. Code CZL"; Code[10])
         {
             Caption = 'Supplementary Unit of Measure Code';
@@ -48,5 +49,6 @@ tableextension 11753 "Tariff Number CZL" extends "Tariff Number"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#endif
     }
 }

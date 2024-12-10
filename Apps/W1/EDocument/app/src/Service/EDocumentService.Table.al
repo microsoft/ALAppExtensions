@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using System.Privacy;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Integration.Action;
 
 table 6103 "E-Document Service"
 {
@@ -30,10 +32,18 @@ table 6103 "E-Document Service"
             Caption = 'Document Format';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA29
         field(4; "Service Integration"; Enum "E-Document Integration")
         {
             Caption = 'Service Integration';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Use Service Integration V2 integration enum instead';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
 
             trigger OnValidate()
             var
@@ -43,11 +53,17 @@ table 6103 "E-Document Service"
                     if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
                         Rec."Service Integration" := xRec."Service Integration";
             end;
+#endif
         }
+#endif
         field(5; "Use Batch Processing"; Boolean)
         {
             Caption = 'Use Batch Processing';
             DataClassification = SystemMetadata;
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
+            end;
         }
         field(6; "Update Order"; Boolean)
         {
@@ -161,6 +177,11 @@ table 6103 "E-Document Service"
             Caption = 'Auto Import';
             DataClassification = SystemMetadata;
             InitValue = false;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(19; "Import Start Time"; Time)
         {
@@ -209,6 +230,27 @@ table 6103 "E-Document Service"
             Caption = 'Batch Recurrent Job Id';
             DataClassification = SystemMetadata;
         }
+        field(27; "Service Integration V2"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration V2';
+            ToolTip = 'Specifies the integration for sending documents to the service.';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                CustConcentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if (xRec."Service Integration V2" = xRec."Service Integration V2"::"No Integration") and (Rec."Service Integration V2" <> xRec."Service Integration V2") then
+                    if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
+                        Rec."Service Integration V2" := xRec."Service Integration V2";
+            end;
+        }
+        field(28; "Sent Actions Integration"; Enum "Sent Document Actions")
+        {
+            Caption = 'Sent Actions For Service';
+            ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
@@ -222,7 +264,11 @@ table 6103 "E-Document Service"
     var
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
         EDocBackgroundJobs: Codeunit "E-Document Background Jobs";
+        EDocumentWorkflowProcesssing: Codeunit "E-Document WorkFlow Processing";
     begin
+        if EDocumentWorkflowProcesssing.IsServiceUsedInActiveWorkflow(Rec) then
+            Error(ServiceInActiveFlowErr);
+
         EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
         EDocServiceSupportedType.DeleteAll();
 
@@ -232,11 +278,17 @@ table 6103 "E-Document Service"
 
     internal procedure ToString(): Text
     begin
+#if not CLEAN26
         exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration", "Use Batch Processing", "Batch Mode"));
+#else
+        exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration V2", "Use Batch Processing", "Batch Mode"));
+#endif
     end;
 
     var
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
         ChooseIntegrationConsentTxt: Label 'By choosing this option, you consent to use third party systems. These systems may have their own terms of use, license, pricing and privacy, and they may not meet the same compliance and security standards as Microsoft Dynamics 365 Business Central. Your privacy is important to us.';
+        ServiceInActiveFlowErr: Label 'The service is used in an active workflow. You cannot delete it.';
 }

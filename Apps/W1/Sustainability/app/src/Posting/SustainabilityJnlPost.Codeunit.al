@@ -79,6 +79,8 @@ codeunit 6213 "Sustainability Jnl.-Post"
 
                 PreviousDocumentNo := SustainabilityJnlLine."Document No.";
 
+                SustainabilityJnlLine.UpdateSustainabilityJnlLineWithPostingSign(SustainabilityJnlLine, SustainabilityJnlLine.GetPostingSign(SustainabilityJnlLine));
+
                 SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
             until SustainabilityJnlLine.Next() = 0;
 

@@ -453,6 +453,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
     end;
 
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.Get("Cust. Ledger Entry No.");
+        exit(CustLedgerEntry."Adjusted Currency Factor");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin

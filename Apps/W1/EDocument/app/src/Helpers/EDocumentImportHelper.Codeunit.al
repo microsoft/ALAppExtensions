@@ -248,8 +248,7 @@ codeunit 6109 "E-Document Import Helper"
         LineAmount := LineAmountFieldRef.Value();
 
         LineDiscountAmount := (LineQuantity * LineDirectUnitCost) - LineAmount;
-
-        LineDiscountAmountFieldRef.Value(Format(LineDiscountAmount, 0, 9));
+        LineDiscountAmountFieldRef.Value(LineDiscountAmount);
     end;
 
     /// <summary>

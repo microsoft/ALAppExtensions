@@ -63,6 +63,93 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     end;
 
     [Test]
+
+    [HandlerFunctions('AddItemToShopifyHandler')]
+    procedure UnitTestLogItemBlocked()
+    var
+
+        Item: Record Item;
+        SkippedRecord: Record "Shpfy Skipped Record";
+        AddItemToShopify: Report "Shpfy Add Item to Shopify";
+    begin
+        // [SCENARIO] Log skipped record when item is blocked
+        Initialize();
+
+        // [GIVEN] An item record that is blocked
+        CreateBlockedItem(Item);
+        Commit();
+
+        // [WHEN] Run report Add Items to Shopify
+        Item.SetRange("No.", Item."No.");
+        AddItemToShopify.SetShop(Shop.Code);
+        AddItemToShopify.SetTableView(Item);
+        AddItemToShopify.Run();
+
+        // [THEN] Related record is created in shopify skipped record table
+        SkippedRecord.SetRange("Record ID", Item.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Item is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
+
+    [HandlerFunctions('AddItemToShopifyHandler')]
+    procedure UnitTestLogItemEmptyDescription()
+    var
+
+        Item: Record Item;
+        SkippedRecord: Record "Shpfy Skipped Record";
+        AddItemToShopify: Report "Shpfy Add Item to Shopify";
+    begin
+        // [SCENARIO] Log skipped record when item description is empty
+        Initialize();
+
+        // [GIVEN] An item record that has empty description
+        CreateItem(Item);
+        Commit();
+
+        // [WHEN] Run report Add Items to Shopify
+        Item.SetRange("No.", Item."No.");
+        AddItemToShopify.SetShop(Shop.Code);
+        AddItemToShopify.SetTableView(Item);
+        AddItemToShopify.Run();
+
+        // [THEN] Related record is created in shopify skipped record table
+        SkippedRecord.SetRange("Record ID", Item.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Item description is empty.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
+    procedure UnitTestLogItemVariantBlocked()
+    var
+        Item: Record Item;
+        ItemVariant: Record "Item Variant";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        TempShopifyProduct: Record "Shpfy Product" temporary;
+        TempShopifyVariant: Record "Shpfy Variant" temporary;
+        TempShopifyTag: Record "Shpfy Tag" temporary;
+        CreateProduct: Codeunit "Shpfy Create Product";
+    begin
+        // [SCENARIO] Log skipped record when item variant is blocked
+        Initialize();
+
+        // [GIVEN] An item record and variant that is blocked
+        CreateBlockedItem(Item);
+        Item.Blocked := false;
+        Item.Modify();
+        CreateBlockedItemVariant(Item, ItemVariant);
+
+        // [WHEN] Invoke Create Product
+        CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
+
+        // [THEN] Related record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", ItemVariant.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Item variant is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
     procedure UnitTestLogProductItemBlocked()
     var
 
@@ -334,7 +421,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Bill-to customer no. is the default customer no. for Shopify shop.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo('Bill-to customer no. %1 is the default customer no. in Shopify customer template for shop %2.', Customer."No.", ShopWithDefaultCustomerNo.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -524,7 +611,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     end;
 
     [Test]
-    procedure LogSalesShipmentNoCorrespondingFulfillmentWithFailedResponse()
+    procedure UnitTestLogSalesShipmentNoCorrespondingFulfillmentWithFailedResponse()
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -550,7 +637,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     end;
 
     [Test]
-    procedure LogSalesShipmentNoFulfilmentCreatedInShopify()
+    procedure UnitTestLogSalesShipmentNoFulfilmentCreatedInShopify()
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -608,6 +695,35 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord.SetRange("Shopify Id", ShopifyId);
         SkippedRecord.SetRange("Record ID", RecordID);
         LibraryAssert.IsTrue(SkippedRecord.IsEmpty(), 'Skipped record is created');
+    end;
+
+
+    [Test]
+    procedure UnitTestLogCatalogDoesNotExistInShopify()
+    var
+        Catalog: Record "Shpfy Catalog";
+        ShopifyCompany: Record "Shpfy Company";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        CatalogInitialize: Codeunit "Shpfy Catalog Initialize";
+        CompanyInitialize: Codeunit "Shpfy Company Initialize";
+        CatalogAPI: Codeunit "Shpfy Catalog API";
+        Cursor: Text;
+        ProductList: List of [BigInteger];
+    begin
+        // [SCENARIO] Log skipped record when catalog does not exist in shopify.
+        Initialize();
+
+        // [GIVEN] Shopify company and catalog
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+
+        // [WHEN] Invoke Extract Shopify Catalog Products
+        CatalogAPI.ExtractShopifyCatalogProducts(ProductList, GetEmptyCatalogProductsResponse(), Catalog, Cursor);
+
+        // [THEN] Related record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", Catalog.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Catalog is not found.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     local procedure Initialize()
@@ -754,13 +870,28 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesShipmentLine.Insert(false);
     end;
 
-    local procedure CreateBlockedItem(var Item: Record Item)
+    local procedure CreateItem(var Item: Record Item)
     begin
         Item.Init();
         Item."No." := Any.AlphanumericText(20);
+        Item.Insert(false);
+    end;
+
+    local procedure CreateBlockedItem(var Item: Record Item)
+    begin
+        CreateItem(Item);
         Item.Blocked := true;
         Item."Sales Blocked" := true;
-        Item.Insert(false);
+        Item.Modify(false);
+    end;
+
+    local procedure CreateBlockedItemVariant(Item: Record Item; var ItemVariant: Record "Item Variant")
+    begin
+        ItemVariant.Code := Any.AlphanumericText(10);
+        ItemVariant."Item No." := Item."No.";
+        ItemVariant.Blocked := true;
+        ItemVariant."Sales Blocked" := true;
+        ItemVariant.Insert(false);
     end;
 
     local procedure CreateShopifyCustomerWithRandomGuid(var ShopifyCustomer: Record "Shpfy Customer")
@@ -821,10 +952,27 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateShopifyCustomerTemplate(ShopifyCustomerTemplate, ShopWithCustTemplates, CustomerNo);
     end;
 
+    local procedure GetEmptyCatalogProductsResponse(): JsonObject
+    var
+        EmptyCatalogProductsResponse: JsonObject;
+        ResInStream: InStream;
+        Response: Text;
+    begin
+        NavApp.GetResource('Logs/EmptyCatalogProductsResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Response);
+        EmptyCatalogProductsResponse.ReadFrom(Response);
+    end;
+
     [RequestPageHandler]
     procedure SyncPostedShipmentsToShopify(var SyncShipmToShopify: TestRequestPage "Shpfy Sync Shipm. to Shopify")
     begin
         SyncShipmToShopify."Sales Shipment Header".SetFilter("No.", SalesShipmentNo);
         SyncShipmToShopify.OK().Invoke();
+    end;
+
+    [RequestPageHandler]
+    procedure AddItemToShopifyHandler(var AddItemToShopify: TestRequestPage "Shpfy Add Item to Shopify")
+    begin
+        AddItemToShopify.OK().Invoke();
     end;
 }

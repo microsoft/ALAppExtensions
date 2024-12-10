@@ -210,9 +210,9 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
                     if TempPurchaseLine.Get(Enum::"Purchase Document Type"::Order, TempAIProposalBuffer."Document Order No.", TempAIProposalBuffer."Document Line No.") then begin
                         Clear(TempEDocMatchesThatWasMatched);
                         EDocLineMatching.MatchOneToOne(TempEDocumentImportedLine, TempPurchaseLine, TempEDocMatchesThatWasMatched);
-                        if (TempEDocMatchesThatWasMatched.Quantity > 0) then begin
+                        if (TempEDocMatchesThatWasMatched."Precise Quantity" > 0) then begin
 
-                            TempAIProposalBuffer."Matched Quantity" := TempEDocMatchesThatWasMatched.Quantity;
+                            TempAIProposalBuffer."Matched Quantity" := TempEDocMatchesThatWasMatched."Precise Quantity";
                             TempAIProposalBuffer.Modify();
                         end else
                             TempAIProposalBuffer.Delete();

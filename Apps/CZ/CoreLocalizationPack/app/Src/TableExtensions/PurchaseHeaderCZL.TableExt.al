@@ -251,6 +251,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             Editable = false;
             FieldClass = FlowField;
         }
+#if not CLEANSCHEMA25
         field(11780; "VAT Date CZL"; Date)
         {
             Caption = 'VAT Date';
@@ -259,6 +260,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
+#endif
         field(11781; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
@@ -269,6 +271,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31068; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -285,6 +288,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
             Caption = 'EU 3-Party Intermediate Role';
@@ -303,6 +307,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                         "EU 3 Party Trade" := true;
             end;
         }
+#if not CLEANSCHEMA27
         field(31073; "EU 3-Party Trade CZL"; Boolean)
         {
             Caption = 'EU 3-Party Trade';
@@ -324,6 +329,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             end;
 #endif
         }
+#endif
         field(31112; "Original Doc. VAT Date CZL"; Date)
         {
             Caption = 'Original Document VAT Date';
@@ -385,7 +391,13 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     end;
 
     procedure UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeUpdateVATCurrencyFactorCZLByCurrencyFactorCZL(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
         if "Currency Code" = '' then begin
             "VAT Currency Factor CZL" := 0;
             exit;
@@ -676,6 +688,11 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeConfirmUpdateAddCurrencyFactorCZL(var PurchaseHeader: Record "Purchase Header"; xPurchaseHeader: Record "Purchase Header"; var HideValidationDialog: Boolean; var IsHandled: Boolean; var ForceConfirm: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateVATCurrencyFactorCZLByCurrencyFactorCZL(var PurchaseHeader: Record "Purchase Header"; xPurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
     begin
     end;
 }

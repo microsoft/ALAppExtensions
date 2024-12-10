@@ -12,7 +12,7 @@ pageextension 8069 "Posted Sales Credit Memo" extends "Posted Sales Credit Memo"
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
-                ToolTip = 'Specifies whether the billing details for this document are automatically output.';
+                ToolTip = 'Specifies whether to automatically print the billing details for this document. This is only relevant if you are using Subscription Billing functionalities.';
             }
         }
     }

@@ -22,7 +22,7 @@ page 37030 "Inventory by Serial No."
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37030 "Inventory by Serial No."
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiond99a75349d3388ca085c', Locked = true;
+        ReportPageLbl: Label 'ReportSectiond99a75349d3388ca085c', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

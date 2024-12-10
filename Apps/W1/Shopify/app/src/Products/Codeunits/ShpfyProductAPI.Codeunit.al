@@ -17,6 +17,7 @@ codeunit 30176 "Shpfy Product API"
         JsonHelper: Codeunit "Shpfy Json Helper";
         ProductEvents: Codeunit "Shpfy Product Events";
         VariantApi: Codeunit "Shpfy Variant API";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     /// <summary> 
     /// Create Product.
@@ -65,6 +66,28 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
+        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
+            GraphQuery.Append(', productOptions: [{name: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Name"));
+            GraphQuery.Append('\", values: [{name: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Value"));
+            GraphQuery.Append('\"}]}');
+            if ShopifyVariant."Option 2 Name" <> '' then begin
+                GraphQuery.Append(', {name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Name"));
+                GraphQuery.Append('\", values: [{name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Value"));
+                GraphQuery.Append('\"}]}');
+            end;
+            if ShopifyVariant."Option 3 Name" <> '' then begin
+                GraphQuery.Append(', {name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 3 Name"));
+                GraphQuery.Append('\", values: [{name: \"');
+                GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 3 Value"));
+                GraphQuery.Append('\"}]}');
+            end;
+            GraphQuery.Append(']');
+        end;
         GraphQuery.Append(', published: true}) ');
         GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}, userErrors {field, message}}');
         GraphQuery.Append('}"}');
@@ -92,12 +115,14 @@ codeunit 30176 "Shpfy Product API"
             NewShopifyVariant.Insert();
         end;
 
-        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true, ShopifyProduct."Has Variants");
+        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true);
 
         while ShopifyVariant.Next() > 0 do begin
             ShopifyVariant."Product Id" := NewShopifyProduct.Id;
             VariantApi.AddProductVariant(ShopifyVariant);
         end;
+
+        PublishProduct(NewShopifyProduct);
 
         exit(NewShopifyProduct.Id);
     end;
@@ -401,6 +426,7 @@ codeunit 30176 "Shpfy Product API"
         Shop := ShopifyShop;
         VariantApi.SetShop(Shop);
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -499,7 +525,6 @@ codeunit 30176 "Shpfy Product API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyProductFields(var ShopifyProduct: record "Shpfy Product"; JProduct: JsonObject) Result: Boolean
     var
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
         UpdatedAt: DateTime;
         JMetafields: JsonArray;
     begin
@@ -566,5 +591,66 @@ codeunit 30176 "Shpfy Product API"
         JsonHelper.GetJsonArray(JResponse, JOptions, 'data.product.options');
         foreach JOption in JOptions do
             Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
+    end;
+
+    /// <summary>
+    /// Publish product to selected Shopify Sales Channels
+    /// </summary>
+    /// <param name="ShopifyProduct">Shopify product to be published</param>
+    internal procedure PublishProduct(ShopifyProduct: Record "Shpfy Product")
+    var
+        SalesChannel: Record "Shpfy Sales Channel";
+        GraphQuery: Text;
+        JResponse: JsonToken;
+    begin
+        if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
+            exit;
+
+        if not FilterSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
+            exit;
+
+        GraphQuery := CreateProductPublishGraphQuery(ShopifyProduct, SalesChannel);
+
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+    end;
+
+    local procedure FilterSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
+    var
+        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
+    begin
+        SalesChannel.SetRange("Shop Code", ShopCode);
+        if SalesChannel.IsEmpty() then
+            SalesChannelAPI.RetrieveSalesChannelsFromShopify(ShopCode);
+
+        SalesChannel.SetRange(SalesChannel."Use for publication", true);
+        if SalesChannel.IsEmpty() then begin
+            SalesChannel.SetRange("Use for publication");
+            SalesChannel.SetRange(SalesChannel.Default, true);
+            if SalesChannel.IsEmpty() then
+                exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure CreateProductPublishGraphQuery(ShopifyProduct: Record "Shpfy Product"; var SalesChannel: Record "Shpfy Sales Channel"): Text
+    var
+        PublicationIds: TextBuilder;
+        PublicationIdTok: Label '{ publicationId: \"gid://shopify/Publication/%1\"},', Locked = true;
+        GraphQueryBuilder: TextBuilder;
+    begin
+        GraphQueryBuilder.Append('{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/');
+        GraphQueryBuilder.Append(Format(ShopifyProduct.Id));
+        GraphQueryBuilder.Append('\" ');
+        GraphQueryBuilder.Append('input: [');
+        SalesChannel.FindSet();
+        repeat
+            PublicationIds.Append(StrSubstNo(PublicationIdTok, Format(SalesChannel.Id)));
+        until SalesChannel.Next() = 0;
+        GraphQueryBuilder.Append(PublicationIds.ToText().TrimEnd(','));
+        GraphQueryBuilder.Append('])');
+        GraphQueryBuilder.Append('{userErrors {field, message}}');
+        GraphQueryBuilder.Append('}"}');
+        exit(GraphQueryBuilder.ToText());
     end;
 }

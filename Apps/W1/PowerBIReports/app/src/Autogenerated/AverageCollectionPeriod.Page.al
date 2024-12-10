@@ -22,7 +22,7 @@ page 36992 "Average Collection Period"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36992 "Average Collection Period"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionb1d1e3d33a031ad3b0ed', Locked = true;
+        ReportPageLbl: Label 'ReportSectionb1d1e3d33a031ad3b0ed', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

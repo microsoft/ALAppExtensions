@@ -108,7 +108,6 @@ codeunit 133501 EDocCopilotPORedTeaming
         LibraryAzureKVMockMgmt: Codeunit "Library - Azure KV Mock Mgmt.";
     begin
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
-        LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('EDocumentMappingToolStruct,EDocumentMappingPrompt');
 
         // Always enter prompts when running tests locally.
         // TODO: Fix when there exits solution to load prompts at runtime

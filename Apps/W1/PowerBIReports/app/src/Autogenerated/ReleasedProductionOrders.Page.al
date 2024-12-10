@@ -22,7 +22,7 @@ page 37049 "Released Production Orders"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37049 "Released Production Orders"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionc2dea8def8e17bcc1d69', Locked = true;
+        ReportPageLbl: Label 'ReportSectionc2dea8def8e17bcc1d69', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()
