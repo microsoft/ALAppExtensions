@@ -399,7 +399,8 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/CreditNote/cac:CreditNoteLine/cbc:Note':
                 setlineType(PurchaseLine, Value);
-        end
+        end;
+        OnAfterParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer, Path, Value);
     end;
 
     /// <summary>
@@ -512,6 +513,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
             '/Invoice/cac:InvoiceLine/cbc:Note':
                 setlineType(PurchaseLine, Value);
         end;
+        OnAfterParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer, Path, Value);
     end;
 
     procedure DetermineFileType(MimeType: Text) FileExension: Text
@@ -590,4 +592,14 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         EDocumentAttachmentGen: Codeunit "E-Doc. Attachment Processor";
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
         LCYCode: Code[10];
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterParseInvoice(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary; Path: Text; Value: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterParseCreditMemo(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary; Path: Text; Value: Text)
+    begin
+    end;
 }

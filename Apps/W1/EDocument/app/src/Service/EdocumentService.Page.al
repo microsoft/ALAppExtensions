@@ -253,14 +253,6 @@ page 6133 "E-Document Service"
         CurrPage.EDocumentImportFormatMapping.Page.SaveAsImport(true);
     end;
 
-    trigger OnClosePage()
-    var
-        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
-    begin
-        EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
-        EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
-    end;
-
 #if not CLEAN26
     local procedure RunSetupServiceIntegration()
     var

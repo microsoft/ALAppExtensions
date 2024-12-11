@@ -37,6 +37,7 @@
                   codeunit "EET Xml Sign. Provider CZL" = X,
                   codeunit "Employee Handler CZL" = X,
                   codeunit "EPO API Submission CZL" = X,
+                  codeunit "Exch. Rate Adjmt. Mgt. CZL" = X,
                   codeunit "FA Jnl. Check Line Handler CZL" = X,
                   codeunit "FA Recl. Jnl. Line Handler CZL" = X,
                   codeunit "Fin. Charge Memo Handler CZL" = X,

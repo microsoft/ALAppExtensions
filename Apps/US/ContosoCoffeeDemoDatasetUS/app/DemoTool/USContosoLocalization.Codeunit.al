@@ -31,34 +31,39 @@ codeunit 11465 "US Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create No. Series US");
                     Codeunit.Run(Codeunit::"Create Post Code US");
-                    Codeunit.Run(Codeunit::"Create Company Information US");
                     Codeunit.Run(Codeunit::"Create Job Queue Category US");
                     Codeunit.Run(Codeunit::"Create Data Exchange Def US");
+                    Codeunit.Run(Codeunit::"Create Source Code US");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information US");
         end;
     end;
 
     local procedure FinanceModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateResourceUS: Codeunit "Create Resource US";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create General Ledger Setup US");
                     Codeunit.Run(Codeunit::"Create Posting Groups US");
-                    Codeunit.Run(Codeunit::"Create Acc. Schedule Line US");
                     Codeunit.Run(Codeunit::"Create Column Layout Name US");
                     Codeunit.Run(Codeunit::"Create Currency US");
+                    Codeunit.Run(Codeunit::"Create Tax Group US");
+                    Codeunit.Run(Codeunit::"Create Tax Setup US");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create Acc. Schedule Line US");
                     Codeunit.Run(Codeunit::"Create Column Layout US");
                     Codeunit.Run(Codeunit::"Create Curr Exchange Rate US");
-                    Codeunit.Run(Codeunit::"Create Tax Group US");
                     Codeunit.Run(Codeunit::"Create Tax Jurisdiction US");
-                    Codeunit.Run(Codeunit::"Create Tax Setup US");
                     Codeunit.Run(Codeunit::"Create Tax Area US");
                     Codeunit.Run(Codeunit::"Create Tax Area Line US");
                     Codeunit.Run(Codeunit::"Create Tax Detail US");
+                    CreateResourceUS.UpdateResourcesTaxGroup();
                 end;
         end;
     end;
@@ -72,7 +77,6 @@ codeunit 11465 "US Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create Customer US");
                     Codeunit.Run(Codeunit::"Create Sales Dimension ValueUS");
-                    Codeunit.Run(Codeunit::"Create Ship-to Address US");
                 end;
             Enum::"Contoso Demo Data Level"::"Transactional Data":
                 Codeunit.Run(Codeunit::"Create Sales Document US");
@@ -100,11 +104,10 @@ codeunit 11465 "US Contoso Localization"
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Setup Data":
+                Codeunit.Run(Codeunit::"Create InventoryPostingSetupUS");
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Location US");
-                    Codeunit.Run(Codeunit::"Create InventoryPostingSetupUS");
-                end;
+                Codeunit.Run(Codeunit::"Create Location US");
         end;
     end;
 

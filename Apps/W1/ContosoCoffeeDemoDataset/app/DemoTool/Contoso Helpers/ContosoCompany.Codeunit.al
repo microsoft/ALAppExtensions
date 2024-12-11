@@ -52,7 +52,7 @@ codeunit 5408 "Contoso Company"
         CompanyInformation.Validate("Bank Account No.", BankAccountNo);
         CompanyInformation.Validate(IBAN, IBAN);
         CompanyInformation.Validate("Payment Routing No.", PaymentRoutingNo);
-        CompanyInformation.Validate("VAT Registration No.", VATRegistrationNo);
+        CompanyInformation."VAT Registration No." := VATRegistrationNo;
         CompanyInformation.Validate("Ship-to Name", ShipToName);
         CompanyInformation.Validate("Ship-to Address", ShipToAddress);
         CompanyInformation.Validate("Ship-to Address 2", ShipToAddress2);

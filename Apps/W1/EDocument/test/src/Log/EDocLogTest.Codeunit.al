@@ -303,9 +303,9 @@ codeunit 139616 "E-Doc Log Test"
         // [GIVEN] Exporting E-Documents for service with mapping
         Initialize(Enum::"Service Integration"::"Mock Sync");
         LibraryEDoc.CreateServiceMapping(EDocumentService);
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 2;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
         BindSubscription(EDocLogTest);
         EDocLog.SetAutoCalcFields("E-Doc. Data Storage Size");
@@ -409,9 +409,9 @@ codeunit 139616 "E-Doc Log Test"
         // [GIVEN] A flow to send to service with threshold batch 
         Initialize(Enum::"Service Integration"::"Mock Sync");
         LibraryEDoc.CreateServiceMapping(EDocumentService);
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 2;
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
         BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
         EDocLogTest.SetLastEntryInBatchToError(); // Make sure last entry in create batch fails
@@ -513,10 +513,10 @@ codeunit 139616 "E-Doc Log Test"
         // [GIVEN] A flow to send to service with recurrent batch 
         Initialize(Enum::"Service Integration"::"Mock Sync");
         LibraryEDoc.CreateServiceMapping(EDocumentService);
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
         EDocumentService."Batch Minutes between runs" := 1;
         EDocumentService."Batch Start Time" := Time();
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
         BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
 
@@ -640,10 +640,10 @@ codeunit 139616 "E-Doc Log Test"
         Initialize(Enum::"Service Integration"::"Mock Sync");
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         EDocumentService.Get(EDocumentService.Code);
-        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
         EDocumentService."Batch Minutes between runs" := 1;
         EDocumentService."Batch Start Time" := Time();
+        EDocumentService.Validate("Use Batch Processing", true);
         EDocumentService.Modify();
 
         BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs

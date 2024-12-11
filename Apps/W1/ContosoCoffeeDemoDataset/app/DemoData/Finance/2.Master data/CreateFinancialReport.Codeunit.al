@@ -12,10 +12,6 @@ codeunit 5425 "Create Financial Report"
         ContosoAccountSchedule.InsertFinancialReport(AccountCategoriesOverview(), AccountCategoriesOverviewLbl, AccountScheduleName.AccountCategoriesOverview(), ColumnLayoutName.PeriodsDefinition());
         ContosoAccountSchedule.InsertFinancialReport(CapitalStructure(), CapitalStructureLbl, AccountScheduleName.CapitalStructure(), ColumnLayoutName.BalanceOnly());
         ContosoAccountSchedule.InsertFinancialReport(CalculationOfCashFlow(), CalculationOfCashFlowLbl, AccountScheduleName.CashFlowCalculation(), ColumnLayoutName.CashFlowComparison());
-        ContosoAccountSchedule.InsertFinancialReport(DataForCashCycleChart(), DataForCashCycleChartLbl, AccountScheduleName.CashCycle(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForCashFlowChart(), DataForCashFlowChartLbl, AccountScheduleName.CashFlow(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForIncomeExpenseChart(), DataForIncomeExpenseChartLbl, AccountScheduleName.IncomeExpense(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForReducedTrialBalanceInfoPart(), DataForReducedTrialBalanceInfoPartLbl, AccountScheduleName.ReducedTrialBalance(), ColumnLayoutName.PeriodsDefinition());
         ContosoAccountSchedule.InsertFinancialReport(Revenues(), RevenuesLbl, AccountScheduleName.Revenues(), ColumnLayoutName.BudgetAnalysis());
 
         ContosoAccountSchedule.InsertFinancialReport(BalanceSheetDetailed(), BalanceSheetDetailedLbl, AccountScheduleName.BalanceSheetDetailed(), ColumnLayoutName.BalanceSheetTrend());
@@ -23,6 +19,18 @@ codeunit 5425 "Create Financial Report"
         ContosoAccountSchedule.InsertFinancialReport(IncomeStatementDetailed(), IncomeStatementDetailedLbl, AccountScheduleName.IncomeStatementDetailed(), ColumnLayoutName.IncomeStatementTrend());
         ContosoAccountSchedule.InsertFinancialReport(IncomeStatementSummarized(), IncomeStatementSummarizedLbl, AccountScheduleName.IncomeStatementSummarized(), ColumnLayoutName.IncomeStatementTrend());
         ContosoAccountSchedule.InsertFinancialReport(TrialBalance(), TrialBalanceLbl, AccountScheduleName.TrialBalance(), ColumnLayoutName.BeginningBalanceDebitsCreditsEndingBalance());
+    end;
+
+    internal procedure CreateSetupFinancialReport()
+    var
+        ColumnLayoutName: Codeunit "Create Column Layout Name";
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+        AccountScheduleName: Codeunit "Create Acc. Schedule Name";
+    begin
+        ContosoAccountSchedule.InsertFinancialReport(DataForCashCycleChart(), DataForCashCycleChartLbl, AccountScheduleName.CashCycle(), ColumnLayoutName.PeriodsDefinition());
+        ContosoAccountSchedule.InsertFinancialReport(DataForCashFlowChart(), DataForCashFlowChartLbl, AccountScheduleName.CashFlow(), ColumnLayoutName.PeriodsDefinition());
+        ContosoAccountSchedule.InsertFinancialReport(DataForIncomeExpenseChart(), DataForIncomeExpenseChartLbl, AccountScheduleName.IncomeExpense(), ColumnLayoutName.PeriodsDefinition());
+        ContosoAccountSchedule.InsertFinancialReport(DataForReducedTrialBalanceInfoPart(), DataForReducedTrialBalanceInfoPartLbl, AccountScheduleName.ReducedTrialBalance(), ColumnLayoutName.PeriodsDefinition());
     end;
 
     procedure AccountCategoriesOverview(): Code[10]

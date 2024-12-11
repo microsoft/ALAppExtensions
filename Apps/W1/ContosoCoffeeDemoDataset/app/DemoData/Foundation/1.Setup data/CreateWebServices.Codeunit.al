@@ -1,5 +1,8 @@
 codeunit 5690 "Create Web Services"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     trigger OnRun()
     var
         WebService: Record "Web Service";

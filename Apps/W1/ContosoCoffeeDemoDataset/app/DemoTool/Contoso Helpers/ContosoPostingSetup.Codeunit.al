@@ -88,7 +88,8 @@ codeunit 5136 "Contoso Posting Setup"
 
         VATPostingSetup.Validate("VAT Bus. Posting Group", VATBusinessGroupCode);
         VATPostingSetup.Validate("VAT Prod. Posting Group", VATProductGroupCode);
-        VATPostingSetup.Validate(Description, StrSubstNo(VATSetupDescTok, VATBusinessGroupCode, VATProductGroupCode));
+        if (VATBusinessGroupCode <> '') or (VATProductGroupCode <> '') then
+            VATPostingSetup.Validate(Description, StrSubstNo(VATSetupDescTok, VATBusinessGroupCode, VATProductGroupCode));
 
         // Need to check if we are changing the VAT Calculation Type before we validate it
         // The validation tries to find VAT Entry no matter we are changing the VAT Calculation Type or not

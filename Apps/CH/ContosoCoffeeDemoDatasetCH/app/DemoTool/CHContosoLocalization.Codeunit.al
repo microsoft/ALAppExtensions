@@ -166,6 +166,7 @@ codeunit 11620 "CH Contoso Localization"
 
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    CreateCHVATPostingGroups.CreateVATProductPostingGroup();
                     BindSubscription(CreateCHAccScheduleLine);
                     BindSubscription(CreateCHColumnLayout);
                     BindSubscription(CreateCHCurrency);

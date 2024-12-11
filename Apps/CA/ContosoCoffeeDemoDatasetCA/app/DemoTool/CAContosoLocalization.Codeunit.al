@@ -54,12 +54,12 @@ codeunit 27054 "CA Contoso Localization"
                     Codeunit.Run(Codeunit::"Create CA General Ledger Setup");
                     Codeunit.Run(Codeunit::"Create CA Posting Group");
                     CreateCAVatPostingGroup.UpdateVATPostingSetup();
-                    Codeunit.Run(Codeunit::"Create CA Acc. Schedule Line");
                     Codeunit.Run(Codeunit::"Create CA Column Layout Name");
                     CreateCAGLAccounts.AddCategoriesToGLAccountsForMini();
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create CA Acc. Schedule Line");
                     Codeunit.Run(Codeunit::"Create CA Column Layout");
                     Codeunit.Run(Codeunit::"Create CA Tax Group");
                     Codeunit.Run(Codeunit::"Create CA Tax Jurisdiction");

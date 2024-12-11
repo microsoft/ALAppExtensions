@@ -5,10 +5,6 @@ codeunit 11489 "Create Acc. Schedule Line US"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    // ToDo: Need to Check with MS Team why standard Schedule Name are commented in W1
-
-    // ToDO: MS Could not find out several GLAccount Eg. '10910..10950','20500','40250'
-
     trigger OnRun()
     var
         CreateAccountScheduleName: Codeunit "Create Acc. Schedule Name";
@@ -17,6 +13,8 @@ codeunit 11489 "Create Acc. Schedule Line US"
     begin
         AccountScheduleName := CreateAccountScheduleName.CapitalStructure();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 190000, '', CAMinusShortTermLiabLbl, '06|16', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', true, false, false, false, 0);
+
+        CreateUSAccountScheduleLines();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeInsertEvent', '', false, false)]
@@ -121,121 +119,6 @@ codeunit 11489 "Create Acc. Schedule Line US"
                     ValidateRecordFields(Rec, '90', IncomeBeforeInterestAndTaxLbl, '60 - 80', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false);
             end;
 
-        //ToDo: Need to Check with MS why standard Schedule Name are commented in W1
-        // if Rec."Schedule Name" = CreateAccScheduleName.BalanceSheet() then
-        //     case Rec."Line No." of
-        //         10000:
-        //             ValidateRecordFields(Rec, 'P0001', AssetsLbl, '10000..12200|12999..13999|15000..16000|16999..18000|18999..19999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false);
-        //         30000:
-        //             ValidateRecordFields(Rec, 'P0003', CashLbl, '18100..18500', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         40000:
-        //             ValidateRecordFields(Rec, 'P0004', AccountsReceivableLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         50000:
-        //             ValidateRecordFields(Rec, 'P0005', PrepaidExpensesLbl, '16100..16600', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         60000:
-        //             ValidateRecordFields(Rec, 'P0006', InventoryLbl, '14000..14299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         90000:
-        //             ValidateRecordFields(Rec, 'P0009', EquipmentLbl, '12210..12299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         100000:
-        //             ValidateRecordFields(Rec, 'P0010', AccumulatedDepreciationLbl, '12900', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         140000:
-        //             ValidateRecordFields(Rec, 'P0014', LiabilitiesLbl, '20000..22000|25999..29999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, true);
-        //         150000:
-        //             ValidateRecordFields(Rec, 'P0015', CurrentLiabilitiesLbl, '22100..24000|24999..25500', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         160000:
-        //             ValidateRecordFields(Rec, 'P0016', PayrollLiabilitiesLbl, '24100..24600', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         170000:
-        //             ValidateRecordFields(Rec, 'P0017', LongTermLiabilitiesLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         200000:
-        //             ValidateRecordFields(Rec, 'P0020', EquityLbl, '30000..30310|39999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, true);
-        //         210000:
-        //             ValidateRecordFields(Rec, 'P0021', CommonStockLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         220000:
-        //             ValidateRecordFields(Rec, 'P0022', RetainedEarningsLbl, '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         230000:
-        //             ValidateRecordFields(Rec, 'P0023', DistributionsToShareholdersLbl, '30320', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //     end;
-
-        // if Rec."Schedule Name" = CreateAccScheduleName.CashFlowStatement() then
-        //     case Rec."Line No." of
-        //         20000:
-        //             ValidateRecordFields(Rec, 'P0002', NetIncomeLbl, '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, true);
-        //         40000:
-        //             ValidateRecordFields(Rec, 'P0004', AccountsReceivableLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         50000:
-        //             ValidateRecordFields(Rec, 'P0005', PrepaidExpensesLbl, '16100..16600', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         60000:
-        //             ValidateRecordFields(Rec, 'P0006', InventoryLbl, '14000..14299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         70000:
-        //             ValidateRecordFields(Rec, 'P0007', CurrentLiabilitiesLbl, '22100..24000|24999..25500', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         80000:
-        //             ValidateRecordFields(Rec, 'P0008', PayrollLiabilitiesLbl, '24100..24600', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         120000:
-        //             ValidateRecordFields(Rec, 'P0012', EquipmentLbl, '12210..12299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         130000:
-        //             ValidateRecordFields(Rec, 'P0013', AccumulatedDepreciationLbl, '12900', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         170000:
-        //             ValidateRecordFields(Rec, 'P0017', LongTermLiabilitiesLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         180000:
-        //             ValidateRecordFields(Rec, 'P0018', DistributionsToShareholdersLbl, '30320', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //         220000:
-        //             ValidateRecordFields(Rec, 'P0022', CashBeginningofThePeriodLbl, '18100..18500', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //     end;
-
-        // if Rec."Schedule Name" = CreateAccScheduleName.IncomeStatement() then
-        //     case Rec."Line No." of
-        //         10000:
-        //             ValidateRecordFields(Rec, 'P0001', IncomeLbl, '40000..40001|40300..40320|40380..49990|99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, true);
-        //         20000:
-        //             ValidateRecordFields(Rec, 'P0002', IncomeServicesLbl, '40200..40299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         30000:
-        //             ValidateRecordFields(Rec, 'P0003', IncomeProductSalesLbl, '40100..40199', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         50000:
-        //             ValidateRecordFields(Rec, 'P0005', SalesDiscountsLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, true);
-        //         110000:
-        //             ValidateRecordFields(Rec, 'P0011', CostOfGoodsSoldLbl, '50001|50400..59990', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false);
-        //         120000:
-        //             ValidateRecordFields(Rec, 'P0012', LaborLbl, '50200..50299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         130000:
-        //             ValidateRecordFields(Rec, 'P0013', MaterialsLbl, '50100..50199', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         200000:
-        //             ValidateRecordFields(Rec, 'P0020', ExpenseLbl, '60001..60100|60170..63000|63400..65200|65400..67000|67300..71999|80000..98990', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', true, false);
-        //         210000:
-        //             ValidateRecordFields(Rec, 'P0021', RentExpenseLbl, '60110', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         220000:
-        //             ValidateRecordFields(Rec, 'P0022', AdvertisingExpenseLbl, '63100..63399', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         230000:
-        //             ValidateRecordFields(Rec, 'P0023', InterestExpenseLbl, '40330', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         240000:
-        //             ValidateRecordFields(Rec, 'P0024', FeesExpenseLbl, '67100..67200', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         250000:
-        //             ValidateRecordFields(Rec, 'P0025', InsuranceExpenseLbl, '73000..73999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         260000:
-        //             ValidateRecordFields(Rec, 'P0026', PayrollExpenseLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         270000:
-        //             ValidateRecordFields(Rec, 'P0027', BenefitsExpenseLbl, '72000..72999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         290000:
-        //             ValidateRecordFields(Rec, 'P0029', RepairsMaintenanceExpenseLbl, '60160', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         300000:
-        //             ValidateRecordFields(Rec, 'P0030', UtilitiesExpenseLbl, '60120..60150', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         310000:
-        //             ValidateRecordFields(Rec, 'P0031', OtherIncomeExpensesLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         320000:
-        //             ValidateRecordFields(Rec, 'P0032', TaxExpenseLbl, '74000..79999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //         350000:
-        //             ValidateRecordFields(Rec, 'P0035', BadDebtExpenseLbl, '65300', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::"If Any Column Not Zero", '', false, false);
-        //     end;
-
-        // if Rec."Schedule Name" = CreateAccScheduleName.RetainedEarnings() then
-        //     case Rec."Line No." of
-        //         10000:
-        //             ValidateRecordFields(Rec, 'P0001', RetainedEarningsPeriodStartLbl, '', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, true);
-        //         20000:
-        //             ValidateRecordFields(Rec, 'P0002', NetIncomeLbl, '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, true);
-        //         50000:
-        //             ValidateRecordFields(Rec, 'P0005', DistributionsToShareholdersLbl, '30320', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false);
-        //     end;
-
         if Rec."Schedule Name" = CreateAccScheduleName.Revenues() then
             case Rec."Line No." of
                 40000:
@@ -270,6 +153,139 @@ codeunit 11489 "Create Acc. Schedule Line US"
         AccScheduleLine.Validate(Bold, Bold);
         AccScheduleLine.Validate("Show Opposite Sign", ShowOppositeSign);
         AccScheduleLine.Validate("New Page", NewPage);
+    end;
+
+    internal procedure CreateUSAccountScheduleLines()
+    var
+        GLAccount: Record "G/L Account";
+        AccScheduleLine: Record "Acc. Schedule Line";
+        CreateAccountScheduleName: Codeunit "Create Acc. Schedule Name";
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+        AccountScheduleName: Code[10];
+        LineNo: Integer;
+    begin
+        AccountScheduleName := CreateAccountScheduleName.BalanceSheetDetailed();
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '', 'Current Assets', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, 'CA', 'Cash', '18000..18999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, 'CA', 'Accounts Receivable', '15000..15999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, 'CA', 'Other Receivables', '13000..13999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, 'CA', 'Inventory', '14000..14999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, 'CA', 'Prepaid Expenses', '16000..16999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, 'CA', 'Other Current Assets', '10000..11999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, 'F1', 'Total Current Assets', 'CA', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', 'Long Term Assets', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, 'LTA', 'Fixed Assets', '12000..12899', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, 'LTA', 'Accumulated Depreciation', '12900..12999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 130000, 'LTA', 'Other Long Term Assets', '17000..17999|19000..19999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 140000, 'F2', 'Total Long Term Assets', 'LTA', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 150000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 160000, 'F3', 'Total Assets', 'F1+F2', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        DoubleUnderscoreCurrentLine(AccountScheduleName, 160000);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 170000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 180000, '', 'Current Liabilities', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 190000, 'CL', 'Accounts Payable', '22100..22399', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 200000, 'CL', 'Accrued Payroll', '23500..25399|26100..26399', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 210000, 'CL', 'Accrued Tax', '23100..23499', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 220000, 'CL', 'Accrued Other', '26400..29999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 230000, 'CL', 'Other Current Liabilities', '22400..23099|25400..26099', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 240000, 'F4', 'Total Current Liabilities', 'CL', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 250000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 260000, '', 'Long Term Liabilities', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 270000, 'LTL', 'Notes Payable', '20000..21299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 280000, 'LTL', 'Other Long Term Liabilities', '21300..22099', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 290000, 'F5', 'Total Long Term Liabilities', 'LTL', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 300000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 310000, 'F6', 'Total Liabilities', 'F4+F5', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 320000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 330000, '', 'Equity', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 340000, 'E', 'Common Stock', '30000..30299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 350000, 'E', 'Retained Earnings', '30300..39999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 360000, 'E', 'Current Year Earnings', '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 370000, 'F7', 'Total Equity', 'E', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 380000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 390000, 'F8', 'Total Liabilities and Equity', 'F6+F7', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        DoubleUnderscoreCurrentLine(AccountScheduleName, 390000);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 400000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 410000, 'F9', 'Check Figure', 'F3+F8', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+
+        AccountScheduleName := CreateAccountScheduleName.BalanceSheetSummarized();
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '1', 'Assets', '10000..19999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, '2', 'Total Assets', '1', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, '3', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, '4', 'Liabilities', '20000..29999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, '5', 'Equity', '30000..39999|40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, '6', 'Total Liabilities and Equity', '4+5', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
+        DoubleUnderscoreCurrentLine(AccountScheduleName, 60000);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, '7', 'Check Figure', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '8', 'Check Figure', '2+6', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
+
+        AccountScheduleName := CreateAccountScheduleName.IncomeStatementDetailed();
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '', 'Revenue', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, 'R', 'Product Revenue', '40000..40209', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, 'R', 'Job Revenue', '40410..40429', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, 'R', 'Services Revenue', '40210..40309|40430..40909', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, 'R', 'Other Revenue', '40310..40409|40920..40939', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, 'R', 'Discounts and Returns', '40910..40919|40940..49999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, 'F1', 'Total Revenue', 'R', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', 'Cost of Goods', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, 'C', 'Materials', '50000..50209', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, 'C', 'Labor', '50210..59999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, 'C', 'Manufacturing Overhead', '60000..69999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 130000, 'F2', 'Total Cost of Goods', 'C', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 140000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 150000, 'F3', 'Gross Margin $', 'F1+F2', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 160000, 'F4', 'Gross Margin %', 'F3/F1*100', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 170000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 180000, '', 'Operating Expense', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 190000, 'OE', 'Salaries and Wages', '70000..72109', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 200000, 'OE', 'Employee Benefits', '72110..73299', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 210000, 'OE', 'Employee Insurance', '73300..74109', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 220000, 'OE', 'Employee Tax', '74110..79999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 230000, 'OE', 'Depreciation', '80000..89999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 240000, 'OE', 'Other Expense', '90000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 250000, 'F5', 'Total Operating Expense', 'OE', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 260000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 270000, 'F6', 'Net (Income) / Loss', 'F1+F2+F5', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        DoubleUnderscoreCurrentLine(AccountScheduleName, 270000);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 280000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 290000, 'F7', 'Total of Income Statement', '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 300000, 'F8', 'Check Figure', 'F6-F7', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+
+        AccountScheduleName := CreateAccountScheduleName.IncomeStatementSummarized();
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 10000, '1', 'Revenue', '40000..49999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 20000, '2', 'Cost of Goods', '50000..59999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 30000, '3', 'Gross Margin', '1+2', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 40000, '4', 'Gross Margin %', '3/1*100', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 50000, '5', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 60000, '6', 'Operating Expense', '60000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, true, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 70000, '7', 'Net (Income) / Loss', '1+2+6', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
+        DoubleUnderscoreCurrentLine(AccountScheduleName, 70000);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 80000, '8', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '9', 'Total of Income Statement', '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '10', 'Check Figure', '7-9', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+
+
+        AccountScheduleName := CreateAccountScheduleName.TrialBalance();
+        LineNo := 10000;
+        GLAccount.SetRange("Account Type", Enum::"G/L Account Type"::Posting);
+        GLAccount.SetLoadFields("No.", "Name");
+        if GLAccount.FindSet() then
+            repeat
+                ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, LineNo, CopyStr(GLAccount."No.", 1, MaxStrLen(AccScheduleLine."Row No.")), CopyStr(GLAccount."No." + ' ' + GLAccount.Name, 1, MaxStrLen(AccScheduleLine.Description)), GLAccount."No.", Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+                LineNo := LineNo + 10000;
+            until GLAccount.Next() = 0;
+        ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, LineNo, '', 'Check Figure', '10000..99999', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
+    end;
+
+    local procedure DoubleUnderscoreCurrentLine(AccScheduleNameCode: Code[10]; LineNo: Integer)
+    var
+        CurrentAccScheduleLine: Record "Acc. Schedule Line";
+    begin
+        CurrentAccScheduleLine.Get(AccScheduleNameCode, LineNo);
+        CurrentAccScheduleLine."Double Underline" := true;
+        CurrentAccScheduleLine.Modify();
     end;
 
     var

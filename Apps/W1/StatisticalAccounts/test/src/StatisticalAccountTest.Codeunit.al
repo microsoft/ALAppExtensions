@@ -499,6 +499,50 @@ codeunit 139683 "Statistical Account Test"
         StatAccJnlPage.Close();
     end;
 
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure JnlLinesBindToNewBatchAfterPostingInOldBatch()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        TempStatisticalAccountLedgerEntries: Record "Statistical Ledger Entry" temporary;
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        // [SCENARIO 559516] Stan can create journal lines in the new batch after posting in the old one
+
+        Initialize();
+        // [GIVEN] A statistical journal line is registered in the default batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        CreateJournal(StatisticalAccountsJournal, TempStatisticalAccountLedgerEntries);
+        RegisterJournal(StatisticalAccountsJournal);
+
+        // [GIVEN] New batch is created
+        StatisticalAccJournalBatch.Name := LibraryUtility.GenerateGUID();
+        StatisticalAccJournalBatch.Insert();
+
+        // [GIVEN] New batch is chosen in the journal
+        StatisticalAccountsJournal.CurrentJnlBatchName.SetValue(StatisticalAccJournalBatch.Name);
+
+        // [GIVEN] A new line is added to the journal for the new batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(TempStatisticalAccountLedgerEntries."Posting Date");
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(TempStatisticalAccountLedgerEntries."Statistical Account No.");
+        StatisticalAccountsJournal.Amount.SetValue(TempStatisticalAccountLedgerEntries.Amount);
+
+        // [WHEN] Click register journal and choose "No"
+        CancelRegisterJournal(StatisticalAccountsJournal);
+
+        // [THEN] The line is still under the new batch
+        StatisticalAccountsJournal.StatisticalAccountNo.AssertEquals(StatisticalAccount."No.");
+
+        // Tear down
+        StatisticalAccountsJournal.Close();
+
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -561,6 +605,13 @@ codeunit 139683 "Statistical Account Test"
         LibraryVariableStorage.Enqueue('register');
         LibraryVariableStorage.Enqueue(true);
         LibraryVariableStorage.Enqueue('successfully');
+        StatisticalAccountsJournal.Register.Invoke();
+    end;
+
+    local procedure CancelRegisterJournal(var StatisticalAccountsJournal: TestPage "Statistical Accounts Journal")
+    begin
+        LibraryVariableStorage.Enqueue('register');
+        LibraryVariableStorage.Enqueue(false);
         StatisticalAccountsJournal.Register.Invoke();
     end;
 
