@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using Microsoft.EServices.EDocumentConnector;
 using Microsoft.eServices.EDocument;
 using System.Text;
 using System.Reflection;

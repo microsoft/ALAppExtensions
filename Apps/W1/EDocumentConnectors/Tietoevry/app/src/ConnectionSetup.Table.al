@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Tietoevry;
 
-using Microsoft.EServices.EDocumentConnector;
-
 table 6392 "Connection Setup"
 {
     Access = Internal;
