@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.Foundation.Attachment;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.Bank.Reconciliation;
@@ -184,6 +185,15 @@ page 6121 "E-Document"
                 ObsoleteState = Pending;
             }
 #endif
+        }
+        area(FactBoxes)
+        {
+            part(DocumentAttachment; "Doc. Attachment List Factbox")
+            {
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "E-Document Entry No." = field("Entry No"), "E-Document Attachment" = const(true);
+            }
         }
     }
     actions

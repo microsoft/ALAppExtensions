@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
+using Microsoft.Foundation.Attachment;
 
 page 6122 "E-Documents"
 {
@@ -53,6 +54,15 @@ page 6122 "E-Documents"
                 {
                     ToolTip = 'Specifies the status of the electronic document.';
                 }
+            }
+        }
+        area(FactBoxes)
+        {
+            part(DocumentListFactBox; "Doc. Attachment List Factbox")
+            {
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "E-Document Entry No." = field("Entry No"), "E-Document Attachment" = const(true);
             }
         }
     }
