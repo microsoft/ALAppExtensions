@@ -1,4 +1,12 @@
 {
+	"settings": {
+		"al.enableCodeAnalysis": true,
+		"al.codeAnalyzers": [
+			"${CodeCop}",
+			"${UICop}",
+			"${AppSourceCop}"
+		]
+	},
 	"folders": [
 		{
 			"name": "app",
