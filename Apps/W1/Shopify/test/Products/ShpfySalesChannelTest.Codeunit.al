@@ -1,6 +1,3 @@
-/// <summary>
-/// Codeunit Shpfy Sales Channel Test (ID 139581).        
-/// </summary>
 codeunit 139698 "Shpfy Sales Channel Test"
 {
     Subtype = Test;

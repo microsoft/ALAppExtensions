@@ -118,6 +118,8 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         if not IRSFormsFeature.IsEnabled() then
             exit;
 #endif
+        VendLedgEntry."IRS 1099 Reporting Period" := FromVendLedgEntry."IRS 1099 Reporting Period";
+        VendLedgEntry."IRS 1099 Form No." := FromVendLedgEntry."IRS 1099 Form No.";
         VendLedgEntry."IRS 1099 Form Box No." := FromVendLedgEntry."IRS 1099 Form Box No.";
         VendLedgEntry."IRS 1099 Reporting Amount" := FromVendLedgEntry."IRS 1099 Reporting Amount";
         VendLedgEntry."IRS 1099 Subject For Reporting" := FromVendLedgEntry."IRS 1099 Subject For Reporting";

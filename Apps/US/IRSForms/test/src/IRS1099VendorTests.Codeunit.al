@@ -152,8 +152,9 @@ codeunit 148011 "IRS 1099 Vendor Tests"
 #pragma warning restore AL0432
 #endif
         VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
-        PeriodNo, FormNo, FormBoxNo, NewFormBoxNo : Code[20];
+        NewPeriodNo, FormNo, NewFormNo, FormBoxNo, NewFormBoxNo : Code[20];
         IRSAmount: Decimal;
+        NewDate: Date;
     begin
         // [SCENARIO 495389] Stan can change the IRS data in the posted vendor ledger entry
 
@@ -161,28 +162,33 @@ codeunit 148011 "IRS 1099 Vendor Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
         IRSAmount := LibraryRandom.RandDec(100, 2);
         // [GIVEN] Vendor Ledger Entry with IRS 1099 Code = MISC-01 and IRS Amount = 100
         LibraryIRS1099Document.MockVendLedgEntryWithIRSData(
             VendorLedgerEntry, WorkDate(), WorkDate(), FormNo, FormBoxNo, IRSAmount);
-        NewFormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+
+        NewDate := CalcDate('<1Y>', WorkDate());
+        NewPeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(NewDate);
+        NewFormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(NewDate);
+        NewFormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(NewDate, NewFormNo);
         IRSAmount := IRSAmount / 3;
         // [GIVEN] Vendor Ledger Entries page opened and filtered by Entry No.
         VendorLedgerEntriesPage.OpenEdit();
         VendorLedgerEntriesPage.Filter.SetFilter("Entry No.", Format(VendorLedgerEntry."Entry No."));
         // [WHEN] IRS 1099 Code is changed to MISC-2 and IRS Amount is changed to 90
-        VendorLedgerEntriesPage."IRS 1099 Form No.".SetValue(FormNo);
+        VendorLedgerEntriesPage."IRS 1099 Reporting Period".SetValue(NewPeriodNo);
+        VendorLedgerEntriesPage."IRS 1099 Form No.".SetValue(NewFormNo);
         VendorLedgerEntriesPage."IRS 1099 Form Box No.".SetValue(NewFormBoxNo);
         VendorLedgerEntriesPage."IRS 1099 Reporting Amount".SetValue(IRSAmount);
         VendorLedgerEntriesPage.Close();
         // [THEN] IRS 1099 Code in the Vendor Ledger Entry is MISC-2 and IRS Amount is 90
         VendorLedgerEntry.Find();
         VendorLedgerEntry.TestField("IRS 1099 Subject For Reporting", true);
-        VendorLedgerEntry.TestField("IRS 1099 Reporting Period", PeriodNo);
-        VendorLedgerEntry.TestField("IRS 1099 Form No.", FormNo);
+        VendorLedgerEntry.TestField("IRS 1099 Reporting Period", NewPeriodNo);
+        VendorLedgerEntry.TestField("IRS 1099 Form No.", NewFormNo);
         VendorLedgerEntry.TestField("IRS 1099 Form Box No.", NewFormBoxNo);
         VendorLedgerEntry.TestField("IRS 1099 Reporting Amount", IRSAmount);
 

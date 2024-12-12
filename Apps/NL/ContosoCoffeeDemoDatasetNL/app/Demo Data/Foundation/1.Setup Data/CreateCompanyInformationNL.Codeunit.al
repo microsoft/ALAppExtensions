@@ -29,5 +29,5 @@ codeunit 11516 "Create Company Information NL"
     var
         CityLbl: Label 'Apeldoorn', Maxlength = 30, Locked = true;
         PostCodeLbl: Label '1111 DA', MaxLength = 20;
-        VatRegNoLbl: Label 'NL777777770B77', MaxLength = 20;
+        VatRegNoLbl: Label 'NL777777770B77', Locked = true;
 }

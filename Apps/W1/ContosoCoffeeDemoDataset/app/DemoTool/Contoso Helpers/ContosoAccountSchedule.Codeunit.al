@@ -64,13 +64,13 @@ codeunit 5239 "Contoso Account Schedule"
         AccScheduleLine.Validate("Line No.", LineNo);
         AccScheduleLine.Validate("Row No.", RowNo);
         AccScheduleLine.Validate(Description, Description);
-        AccScheduleLine.Validate("Totaling Type", TotalingType);
+        AccScheduleLine."Totaling Type" := TotalingType;
 
         // For Localization, condition added as GL Account filters are blank
         if (Totaling = '..') then
-            AccScheduleLine.Validate(Totaling)
+            AccScheduleLine.Totaling := ''
         else
-            AccScheduleLine.Validate(Totaling, Totaling);
+            AccScheduleLine.Totaling := Totaling;
 
         AccScheduleLine.Validate(Show, Show);
         AccScheduleLine.Validate("Dimension 1 Totaling", Dimension1Totaling);

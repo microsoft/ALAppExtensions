@@ -17,20 +17,25 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
     var
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+        CreateAccScheduleName: Codeunit "Create Acc. Schedule Name";
+        CreateAccScheduleLine: Codeunit "Create Acc. Schedule Line";
+        CreateColumnLayoutName: Codeunit "Create Column Layout Name";
+        CreateColumnLayout: Codeunit "Create Column Layout";
+        CreateFinancialReport: Codeunit "Create Financial Report";
     begin
         Codeunit.Run(Codeunit::"Create VAT Posting Groups");
         Codeunit.Run(Codeunit::"Create Posting Groups");
         Codeunit.Run(Codeunit::"Create G/L Account");
         CreatePostingGroups.UpdateGenPostingSetup();
         CreateVATPostingGroups.UpdateVATPostingSetup();
-        Codeunit.Run(Codeunit::"Create Dimension");
         Codeunit.Run(Codeunit::"Create KPI Web Srv Setup");
-        Codeunit.Run(Codeunit::"Create Analysis View");
-        Codeunit.Run(Codeunit::"Create Acc. Schedule Name");
+        CreateAccScheduleName.CreateSetupAccScheduleName();
+        CreateAccScheduleLine.CreateSetupAccScheduleLine();
+        CreateColumnLayoutName.CreateSetupColumnLayoutName();
+        CreateColumnLayout.CreateSetupColumnLayout();
         Codeunit.Run(Codeunit::"Create KPI Web Srv Line");
-        Codeunit.Run(Codeunit::"Create Acc. Schedule Line");
-        Codeunit.Run(Codeunit::"Create Column Layout Name");
         Codeunit.Run(Codeunit::"Create Acc. Schedule Chart");
+        Codeunit.Run(Codeunit::"Create Acc. Sched. Chart Line");
         Codeunit.Run(Codeunit::"Create Chart Definition");
         Codeunit.Run(Codeunit::"Create Currency");
         Codeunit.Run(Codeunit::"Create General Ledger Setup");
@@ -40,18 +45,23 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create VAT Reg. No. Format");
         Codeunit.Run(Codeunit::"Create VAT Setup Posting Grp.");
         Codeunit.Run(Codeunit::"Create VAT Report Setup");
+        Codeunit.Run(Codeunit::"Create VAT Statement");
+        CreateFinancialReport.CreateSetupFinancialReport();
     end;
 
     procedure CreateMasterData()
     begin
+        Codeunit.Run(Codeunit::"Create Dimension");
         Codeunit.Run(Codeunit::"Create Dimension Value");
+        Codeunit.Run(Codeunit::"Create Analysis View");
+        Codeunit.Run(Codeunit::"Create Acc. Schedule Name");
+        Codeunit.Run(Codeunit::"Create Acc. Schedule Line");
+        Codeunit.Run(Codeunit::"Create Column Layout Name");
         Codeunit.Run(Codeunit::"Create Column Layout");
         Codeunit.Run(Codeunit::"Create Financial Report");
-        Codeunit.Run(Codeunit::"Create Acc. Sched. Chart Line");
         Codeunit.Run(Codeunit::"Categ. Generate Acc. Schedules");
         Codeunit.Run(Codeunit::"Create Currency Exchange Rate");
         Codeunit.Run(Codeunit::"Create Resource");
-        Codeunit.Run(Codeunit::"Create VAT Statement");
     end;
 
     procedure CreateTransactionalData()

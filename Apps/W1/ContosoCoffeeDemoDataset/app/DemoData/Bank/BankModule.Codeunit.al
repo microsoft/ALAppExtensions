@@ -20,12 +20,12 @@ codeunit 5635 "Bank Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Bank Acc. Posting Grp");
         Codeunit.Run(Codeunit::"Create Bank Ex/Import Setup");
         Codeunit.Run(Codeunit::"Create Payment Method");
+        Codeunit.Run(Codeunit::"Create Bank Jnl. Batches");
     end;
 
     procedure CreateMasterData()
     begin
         Codeunit.Run(Codeunit::"Create Bank Account");
-        Codeunit.Run(Codeunit::"Create Bank Jnl. Batches");
         Codeunit.Run(Codeunit::"Create Payment Reg. Setup");
     end;
 

@@ -1,3 +1,4 @@
+#if not CLEAN26
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -10,6 +11,10 @@ namespace System.Email;
 /// </summary>
 interface "Email - Outlook API Client v3" extends "Email - Outlook API Client v2"
 {
+    ObsoleteReason = 'This interface is deprecated. Please use the Email - Outlook API Client v4 interface instead.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '26.0';
+
     /// <summary>
     /// Retrieves the emails from the Outlook API.
     /// </summary>
@@ -53,3 +58,4 @@ interface "Email - Outlook API Client v3" extends "Email - Outlook API Client v2
     /// <param name="ExternalMessageId">The external message id to be marked as read.</param>
     procedure MarkEmailAsRead(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text);
 }
+#endif

@@ -37,7 +37,7 @@ codeunit 5697 "Contoso Bank"
         BankAccount.Validate(Contact, Contact);
         BankAccount."Bank Account No." := BankAccountNo;
         BankAccount.Validate("Min. Balance", MinBalance);
-        BankAccount.Validate("Bank Acc. Posting Group", BankAccPostingGroup);
+        BankAccount."Bank Acc. Posting Group" := BankAccPostingGroup;
         BankAccount.Validate("Our Contact Code", OurContactCode);
         BankAccount."Country/Region Code" := CountryRegionCode;
         BankAccount.Validate("Last Statement No.", LastStatementNo);
