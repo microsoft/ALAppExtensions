@@ -11,9 +11,7 @@ using Microsoft.Purchases.Vendor;
 codeunit 42004 "GP Cloud Migration US"
 {
     var
-#if not CLEAN25
         IRSFormFeatureKeyIdTok: Label 'IRSForm', Locked = true;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
