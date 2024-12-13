@@ -724,7 +724,8 @@ codeunit 30178 "Shpfy Product Export"
                         until ItemUnitofMeasure.Next() = 0;
             end;
 
-            UpdateMetafields(ShopifyProduct.Id);
+            if Shop."Product Metafields To Shopify" then
+                UpdateMetafields(ShopifyProduct.Id);
             UpdateProductTranslations(ShopifyProduct.Id, Item)
         end;
     end;
@@ -733,6 +734,9 @@ codeunit 30178 "Shpfy Product Export"
     var
         ShpfyVariant: Record "Shpfy Variant";
     begin
+        if OnlyUpdatePrice then
+            exit;
+
         MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Product", ProductId);
 
         ShpfyVariant.SetRange("Product Id", ProductId);
@@ -823,10 +827,13 @@ codeunit 30178 "Shpfy Product Export"
         TranslationAPI: Codeunit "Shpfy Translation API";
         Digests: Dictionary of [Text, Text];
     begin
-        Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
-
         ShopifyLanguage.SetRange("Shop Code", Shop.Code);
         ShopifyLanguage.SetRange("Sync Translations", true);
+        if ShopifyLanguage.IsEmpty() then
+            exit;
+
+        Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
+
         if ShopifyLanguage.FindSet() then
             repeat
                 ICreateTranslation.CreateTranslation(RecVariant, ShopifyLanguage, TempTranslation, Digests);

@@ -59,6 +59,8 @@
                   codeunit "Invt. Document Handler CZL" = X,
                   codeunit "Invt. Document-Printed CZL" = X,
                   codeunit "Item Handler CZL" = X,
+                  codeunit "Item Charge Assgnt Handler CZL" = X,
+                  codeunit "Item Charge Assgnt. Purch. CZL" = X,
                   codeunit "Item Jnl.CheckLine Handler CZL" = X,
                   codeunit "Item Jnl. Template Handler CZL" = X,
                   codeunit "Item Journal Line Handler CZL" = X,

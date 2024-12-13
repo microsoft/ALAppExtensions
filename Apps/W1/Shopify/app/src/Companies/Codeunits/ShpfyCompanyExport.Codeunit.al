@@ -203,7 +203,8 @@ codeunit 30284 "Shpfy Company Export"
             CompanyLocation.Modify();
         end;
 
-        UpdateMetafields(ShopifyCompany.Id);
+        if Shop."Company Metafields To Shopify" then
+            UpdateMetafields(ShopifyCompany.Id);
     end;
 
     local procedure UpdateMetafields(ComppanyId: BigInteger)

@@ -84,7 +84,7 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
         CalculateCO2e: Report "Sust. Calculate CO2e";
     begin
         MachineCenter.SetFilter("No.", Rec."No.");
-        CalculateCO2e.Initialize(1);
+        CalculateCO2e.Initialize(1, true);
         CalculateCO2e.SetTableView(MachineCenter);
         CalculateCO2e.Run();
     end;

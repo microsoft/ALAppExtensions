@@ -38,7 +38,6 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 field("Default Sust. Account"; Rec."Default Sust. Account")
                 {
                     ApplicationArea = Basic, Suite;
-                    Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
                     ToolTip = 'Specifies the value of the Default Sust. Account field.';
                 }
                 field("Default CO2 Emission"; Rec."Default CO2 Emission")

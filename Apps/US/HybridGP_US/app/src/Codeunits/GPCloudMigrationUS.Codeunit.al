@@ -7,7 +7,6 @@ using Microsoft.Finance.VAT.Reporting;
 #endif
 using Microsoft.Purchases.Vendor;
 
-
 codeunit 42004 "GP Cloud Migration US"
 {
     var

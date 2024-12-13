@@ -838,6 +838,36 @@ codeunit 148010 "IRS 1099 Document Tests"
 #endif
     end;
 
+    [Test]
+    procedure ValidatePostingDateWhenPurchHeaderNotInitiazed()
+    var
+        PurchaseHeader: Record "Purchase Header";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 560148] It is possible to validate the posting date in the not initialized purchase header
+
+        Initialize();
+
+        // [GIVEN] IRS Forms app is enabled
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [WHEN] Validate Posting Date field of the purchase header with current date
+        PurchaseHeader.Validate("Posting Date", WorkDate());
+        // [THEN] Posting date is equal current date in the purchase header
+        PurchaseHeader.TestField("Posting Date", WorkDate());
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
