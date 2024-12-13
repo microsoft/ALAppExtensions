@@ -27,7 +27,29 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                         EDocument.OpenEdocument(Rec.RecordId);
                     end;
                 }
+                action(CreateEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create E-Document';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an electronic document from the posted sales invoice.';
+
+                    trigger OnAction()
+                    var
+                        EDocExport: Codeunit "E-Doc. Export";
+                        DocRecRef: RecordRef;
+                    begin
+                        DocRecRef.GetTable(Rec);
+                        EDocExport.CheckEDocument(DocRecRef, "E-Document Processing Phase"::Create);
+                        EDocExport.CreateEDocument(DocRecRef);
+                        Message(EDocumentCreatedMsg);
+                    end;
+                }
+
             }
         }
     }
+
+    var
+        EDocumentCreatedMsg: Label 'The electronic document has been created.';
 }
