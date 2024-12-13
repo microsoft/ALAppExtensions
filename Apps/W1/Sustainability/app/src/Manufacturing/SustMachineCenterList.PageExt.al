@@ -21,7 +21,7 @@ pageextension 6257 "Sust. Machine Center List" extends "Machine Center List"
                 var
                     CalculateCO2e: Report "Sust. Calculate CO2e";
                 begin
-                    CalculateCO2e.Initialize(1);
+                    CalculateCO2e.Initialize(1, true);
                     CalculateCO2e.Run();
                 end;
             }

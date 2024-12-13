@@ -98,6 +98,11 @@ codeunit 6382 "Integration Impl." implements IDocumentReceiver, IDocumentSender,
         end;
     end;
 
+    internal procedure SecurityAuditLogSetupStatusDescription(Action: Text; SetupTableName: Text): Text
+    begin
+        exit(Action + ' ' + SetupTableName + ConnectorTelemetrySnippetTxt);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"E-Document Log", OnBeforeExportDataStorage, '', false, false)]
     local procedure HandleOnBeforeExportDataStorage(EDocumentLog: Record "E-Document Log"; var FileName: Text)
     var
@@ -115,6 +120,7 @@ codeunit 6382 "Integration Impl." implements IDocumentReceiver, IDocumentSender,
     var
         DriveProcessing: Codeunit "Drive Processing";
         SendNotSupportedErr: label 'Sending document is not supported in this context.';
+        ConnectorTelemetrySnippetTxt: label ' for Microsoft 365 E-Document connector.', Locked = true;
         NoFileErr: label 'No previewable attachment exists for this %2.', Comment = '%1 - a table caption';
         NoFileContentErr: label 'Previewing file %1 failed. The file was found in table %2, but it has no content.', Comment = '%1 - a file name; %2 - a table caption';
 }

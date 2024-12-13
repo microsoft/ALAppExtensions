@@ -141,7 +141,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchHeader.Validate("IRS 1099 Reporting Period", PeriodNo);
         PurchHeader.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
         PurchHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
-        if ModifyRecord then
+        if ModifyRecord and (PurchHeader."No." <> '') then
             PurchHeader.Modify(true);
     end;
 

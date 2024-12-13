@@ -28,14 +28,20 @@ table 30101 "Shpfy Metafield"
         }
 #pragma warning restore AS0086
 
+#if not CLEANSCHEMA28
         field(3; "Owner Resource"; Text[50])
         {
             Caption = 'Owner Resource';
             DataClassification = SystemMetadata;
-            ObsoleteState = Pending;
             ObsoleteReason = 'Owner Resource is obsolete. Use Owner Type instead.';
+#if CLEAN25
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '25.0';
-
+#endif
+#if not CLEAN25
             trigger OnValidate()
             begin
                 case "Owner Resource" of
@@ -47,7 +53,9 @@ table 30101 "Shpfy Metafield"
                         Validate("Owner Type", "Owner Type"::ProductVariant);
                 end;
             end;
+#endif
         }
+#endif
 
         field(4; "Owner Id"; BigInteger)
         {
@@ -63,14 +71,23 @@ table 30101 "Shpfy Metafield"
         }
 #pragma warning restore AS0086
 
+#if not CLEANSCHEMA28
+#pragma warning disable AS0105
         field(6; "Value Type"; Enum "Shpfy Metafield Value Type")
         {
             Caption = 'Value Type';
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'Value Type is obsolete in Shopify API. Use Type instead.';
+#if CLEAN25
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '25.0';
+#endif
         }
+#endif
+#pragma warning restore AS0105
 
 #pragma warning disable AS0086 // false positive on extending the field length on internal table
         field(7; Value; Text[2048])

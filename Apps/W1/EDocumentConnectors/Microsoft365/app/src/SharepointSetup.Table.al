@@ -30,6 +30,7 @@ table 6382 "Sharepoint Setup"
             var
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 DriveProcessing: Codeunit "Drive Processing";
+                IntegrationImpl: Codeunit "Integration Impl.";
             begin
                 if Rec.Enabled then begin
                     if (Rec."Imp. Documents Folder" = '') or (Rec."Documents Folder" = '') then
@@ -37,7 +38,9 @@ table 6382 "Sharepoint Setup"
 
                     FeatureTelemetry.LogUptake('0000OBB', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Used);
                     FeatureTelemetry.LogUsage('0000OBC', DriveProcessing.FeatureName(), 'Sharepoint');
-                end;
+                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, IntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
+                end else
+                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, IntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
             end;
         }
         field(3; "Documents Folder"; Text[2048])

@@ -393,7 +393,6 @@ codeunit 4509 "Email - Outlook API Helper"
 
     local procedure CreateEmailInboxFromJsonObject(var EmailInbox: Record "Email Inbox"; OutlookAccount: Record "Email - Outlook Account"; var Filters: Record "Email Retrieval Filters"; EmailJsonObject: JsonObject)
     var
-        EmailInboxDelete: Record "Email Inbox";
         EmailMessage: Codeunit "Email Message";
         BodyObject: JsonObject;
         SenderObject: JsonObject;
@@ -427,11 +426,6 @@ codeunit 4509 "Email - Outlook API Helper"
         SenderName := GetTextFromJsonObject(SenderObject, 'name');
         SenderEmail := GetTextFromJsonObject(SenderObject, 'address');
 
-        if DoesExternalMessageIdExist(ExternalMessageId) then begin
-            EmailInboxDelete.SetRange("External Message Id", ExternalMessageId);
-            EmailInboxDelete.DeleteAll();
-        end;
-
         HTMLBody := Filters."Body Type" = Filters."Body Type"::HTML;
         EmailMessage.Create('', Subject, Body, HTMLBody, true);
 
@@ -453,14 +447,6 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailInbox."Is Draft" := IsDraft;
         EmailInbox.Insert();
         EmailInbox.Mark(true);
-    end;
-
-    local procedure DoesExternalMessageIdExist(ExternalMessageId: Text): Boolean
-    var
-        EmailInbox: Record "Email Inbox";
-    begin
-        EmailInbox.SetRange("External Message Id", ExternalMessageId);
-        exit(not EmailInbox.IsEmpty());
     end;
 
     local procedure AddAttachmentsToMessage(EmailJsonObject: JsonObject; var EmailMessage: Codeunit "Email Message")

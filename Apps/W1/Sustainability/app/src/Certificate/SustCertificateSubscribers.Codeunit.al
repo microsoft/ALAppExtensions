@@ -25,7 +25,7 @@ codeunit 6250 "Sust. Certificate Subscribers"
     [EventSubscriber(ObjectType::Table, Database::Item, 'OnBeforeValidateEvent', "Replenishment System", false, false)]
     local procedure OnAfterValidateItemReplenishmentSystemEvent(var Rec: Record Item; var xRec: Record Item)
     begin
-        ClearDefaultSustAccountForNonPurchaseItem(Rec);
+        ClearDefaultSustEmissionForNonPurchaseItem(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeValidateEvent', 'No.', false, false)]
@@ -54,7 +54,7 @@ codeunit 6250 "Sust. Certificate Subscribers"
         Item.Validate("Default Sust. Account", ItemCategory."Default Sust. Account");
     end;
 
-    local procedure ClearDefaultSustAccountForNonPurchaseItem(var Item: Record Item)
+    local procedure ClearDefaultSustEmissionForNonPurchaseItem(var Item: Record Item)
     begin
         if (Item."Replenishment System" = Item."Replenishment System"::Purchase) then
             exit;
@@ -62,9 +62,11 @@ codeunit 6250 "Sust. Certificate Subscribers"
         if (Item."Default Sust. Account" = '') then
             exit;
 
-        if Confirm(StrSubstNo(ConfirmationForClearEmissionInfoQst, Item."Replenishment System"), false) then
-            Item.Validate("Default Sust. Account", '')
-        else
+        if Confirm(StrSubstNo(ConfirmationForClearEmissionInfoQst, Item."Replenishment System"), false) then begin
+            Item.Validate("Default CH4 Emission", 0);
+            Item.Validate("Default CO2 Emission", 0);
+            Item.Validate("Default N2O Emission", 0);
+        end else
             Error('');
     end;
 }

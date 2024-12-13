@@ -25,8 +25,10 @@ codeunit 1958 "Late Payment Upgrade"
             exit;
         LPFeatureTableHelper.SetFiltersOnSalesInvoiceHeaderToAddToInput(LppSalesInvoiceHeaderInput, '');
         LppSalesInvoiceHeaderInput.Open();
-        while LppSalesInvoiceHeaderInput.Read() do;
-        LPMachineLearningSetup."Posting Date OnLastML" := LppSalesInvoiceHeaderInput.PostingDate;
+        while LppSalesInvoiceHeaderInput.Read() do
+            if LPMachineLearningSetup."Posting Date OnLastML" < LppSalesInvoiceHeaderInput.PostingDate then
+                LPMachineLearningSetup."Posting Date OnLastML" := LppSalesInvoiceHeaderInput.PostingDate;
+
         LppSalesInvoiceHeaderInput.Close();
         LPMachineLearningSetup.Modify(true);
     end;

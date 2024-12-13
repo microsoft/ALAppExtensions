@@ -179,11 +179,18 @@ tableextension 6248 "Sust. Prod. Order Line" extends "Prod. Order Line"
     local procedure UpdateCO2eInformation()
     var
         Item: Record Item;
+        CalcCO2ePerUnit: Decimal;
     begin
         if not Item.Get(Rec."Item No.") then
             exit;
 
-        Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+        if (ExistSustProdOrderRoutingLine(Rec)) or (ExistSustProdOrderComponent(Rec)) then begin
+            Rec.CalcFields("Expected Operation Total CO2e", "Expected Component Total CO2e");
+            CalcCO2ePerUnit := (Rec."Expected Operation Total CO2e" + Rec."Expected Component Total CO2e") / Rec.Quantity;
+
+            Rec.Validate("CO2e per Unit", CalcCO2ePerUnit);
+        end else
+            Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
     end;
 
     local procedure CopyFromSustainabilityAccount(var ProdOrderLine: Record "Prod. Order Line")
@@ -197,6 +204,33 @@ tableextension 6248 "Sust. Prod. Order Line" extends "Prod. Order Line"
         ProdOrderLine.Validate("Sust. Account Name", SustainabilityAccount.Name);
         ProdOrderLine.Validate("Sust. Account Category", SustainabilityAccount.Category);
         ProdOrderLine.Validate("Sust. Account Subcategory", SustainabilityAccount.Subcategory);
+    end;
+
+    local procedure ExistSustProdOrderRoutingLine(ProdOrderLine: Record "Prod. Order Line"): Boolean
+    var
+        ProdOrderRoutingLine: Record "Prod. Order Routing Line";
+    begin
+        ProdOrderRoutingLine.SetLoadFields(Status, "Prod. Order No.", "Routing No.", "Routing Reference No.", "Sust. Account No.");
+        ProdOrderRoutingLine.SetRange(Status, ProdOrderLine.Status);
+        ProdOrderRoutingLine.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+        ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
+        ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Line No.");
+        ProdOrderRoutingLine.SetFilter("Sust. Account No.", '<>%1', '');
+
+        exit(not ProdOrderRoutingLine.IsEmpty());
+    end;
+
+    local procedure ExistSustProdOrderComponent(ProdOrderLine: Record "Prod. Order Line"): Boolean
+    var
+        ProdOrderComponent: Record "Prod. Order Component";
+    begin
+        ProdOrderComponent.SetLoadFields(Status, "Prod. Order No.", "Prod. Order Line No.", "Sust. Account No.");
+        ProdOrderComponent.SetRange(Status, ProdOrderLine.Status);
+        ProdOrderComponent.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+        ProdOrderComponent.SetRange("Prod. Order Line No.", ProdOrderLine."Line No.");
+        ProdOrderComponent.SetFilter("Sust. Account No.", '<>%1', '');
+
+        exit(not ProdOrderComponent.IsEmpty());
     end;
 
     var
