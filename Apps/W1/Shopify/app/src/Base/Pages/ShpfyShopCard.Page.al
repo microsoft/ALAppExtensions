@@ -229,7 +229,7 @@ page 30101 "Shpfy Shop Card"
                 field(RemoveProductAction; Rec."Action for Removed Products")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is removed in Shopify or an item is blocked in Business Central.';
+                    ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is removed from the Shopify Product in D365BC or an item is blocked in Business Central';
                 }
 #if not CLEAN26
                 field("Items Mapped to Products"; Rec."Items Mapped to Products")
