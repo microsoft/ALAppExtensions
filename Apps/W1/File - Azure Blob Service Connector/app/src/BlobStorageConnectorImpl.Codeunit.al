@@ -475,11 +475,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         FilePaginationData.SetEndOfListing(ABSOperationResponse.GetNextMarker() = '');
     end;
 
-
     [NonDebuggable]
     local procedure SetReadySAS(var StorageServiceAuthorization: Codeunit "Storage Service Authorization"; Secret: SecretText): Interface System.Azure.Storage."Storage Service Authorization"
     begin
-        exit(StorageServiceAuthorization.UseReadySAS(Secret.Unwrap()));
+        exit(StorageServiceAuthorization.UseReadySAS(Secret));
     end;
 
     local procedure PathSeparator(): Text
