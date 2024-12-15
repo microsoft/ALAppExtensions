@@ -10,18 +10,17 @@
     "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
-    "application":  "24.0.0.0",
+    "application":  "25.0.0.0",
     "internalsVisibleTo":  [],
     "dependencies":  [],
     "screenshots":  [],
-                    "platform":  "24.0.0.0",
+                    "platform":  "25.0.0.0",
     "idRanges":  [
                      {
                          "from":  80300,
                          "to":  80399
                      }
                  ],
-    "target":  "OnPrem",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
