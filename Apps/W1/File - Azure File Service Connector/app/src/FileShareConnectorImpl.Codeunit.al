@@ -415,9 +415,8 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
         exit(Path + ChildPath);
     end;
 
-    local procedure InitOptionalParameters(var Path: Text; var FilePaginationData: Codeunit "File Pagination Data"; var AFSOptionalParameters: Codeunit "AFS Optional Parameters")
+    local procedure InitOptionalParameters(var FilePaginationData: Codeunit "File Pagination Data"; var AFSOptionalParameters: Codeunit "AFS Optional Parameters")
     begin
-        AFSOptionalParameters.Prefix(Path);
         AFSOptionalParameters.MaxResults(500);
         AFSOptionalParameters.Marker(FilePaginationData.GetMarker());
     end;
@@ -438,7 +437,7 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
     begin
         InitFileClient(AccountId, AFSFileClient);
         CheckPath(Path);
-        InitOptionalParameters(Path, FilePaginationData, AFSOptionalParameters);
+        InitOptionalParameters(FilePaginationData, AFSOptionalParameters);
         AFSOperationResponse := AFSFileClient.ListDirectory(Path, AFSDirectoryContent, AFSOptionalParameters);
         ValidateListingResponse(FilePaginationData, AFSOperationResponse);
     end;
