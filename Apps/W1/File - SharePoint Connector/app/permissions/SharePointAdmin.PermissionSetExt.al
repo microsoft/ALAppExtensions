@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
-permissionsetextension 80300 "SharePoint - Admin" extends "File System - Admin"
+permissionsetextension 80300 "SharePoint - Admin" extends "File Storage - Admin"
 {
     IncludedPermissionSets = "SharePoint - Edit";
 }

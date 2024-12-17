@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
 /// <summary>
 /// Enum extension to register the File Share connector.
 /// </summary>
-enumextension 80200 "File Share Connector" extends "File System Connector"
+enumextension 80200 "File Share Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The File Share connector.
@@ -16,6 +16,6 @@ enumextension 80200 "File Share Connector" extends "File System Connector"
     value(80200; "File Share")
     {
         Caption = 'File Share';
-        Implementation = "File System Connector" = "File Share Connector Impl.";
+        Implementation = "External File Storage Connector" = "File Share Connector Impl.";
     }
 }

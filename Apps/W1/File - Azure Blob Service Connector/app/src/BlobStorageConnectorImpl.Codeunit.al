@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
 using System.Utilities;
 using System.Azure.Storage;
 
-codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
+codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
     Permissions = tabledata "Blob Storage Account" = rimd;
@@ -221,7 +221,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     procedure CreateDirectory(AccountId: Guid; Path: Text)
     var
         TempBlob: Codeunit "Temp Blob";
-        FileSystem: Codeunit "File System";
+        ExternalFileStorage: Codeunit "External File Storage";
         IStream: InStream;
         OStream: OutStream;
         DirectoryAlreadyExistsErr: Label 'Directory already exists.';
@@ -298,7 +298,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         repeat
             Accounts."Account Id" := Account.Id;
             Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"File System Connector"::"Blob Storage";
+            Accounts.Connector := Enum::"Ext. File Storage Connector"::"Blob Storage";
             Accounts.Insert();
         until Account.Next() = 0;
     end;
@@ -393,7 +393,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
 
         FileAccount."Account Id" := NewBlobStorageAccount.Id;
         FileAccount.Name := NewBlobStorageAccount.Name;
-        FileAccount.Connector := Enum::"File System Connector"::"Blob Storage";
+        FileAccount.Connector := Enum::"Ext. File Storage Connector"::"Blob Storage";
     end;
 
     internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; AuthType: Enum "Blob Storage Auth. Type"; Secret: SecretText; var NewContainerName: Text[2048])

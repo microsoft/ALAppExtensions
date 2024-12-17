@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
 using System.Integration.Sharepoint;
 using System.Utilities;
 
-codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
+codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
     Permissions = tabledata "SharePoint Account" = rimd;
@@ -268,7 +268,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
         repeat
             Accounts."Account Id" := Account.Id;
             Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"File System Connector"::"SharePoint";
+            Accounts.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
             Accounts.Insert();
         until Account.Next() = 0;
     end;
@@ -369,7 +369,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
 
         FileAccount."Account Id" := NewFileShareAccount.Id;
         FileAccount.Name := NewFileShareAccount.Name;
-        FileAccount.Connector := Enum::"File System Connector"::"SharePoint";
+        FileAccount.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
     end;
 
     local procedure InitSharePointClient(var AccountId: Guid; var SharePointClient: Codeunit "SharePoint Client")

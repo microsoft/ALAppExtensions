@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
 /// <summary>
 /// Enum extension to register the Blob Storage connector.
 /// </summary>
-enumextension 80100 "Blob Storage Connector" extends "File System Connector"
+enumextension 80100 "Blob Storage Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The Blob Storage connector.
@@ -16,6 +16,6 @@ enumextension 80100 "Blob Storage Connector" extends "File System Connector"
     value(80100; "Blob Storage")
     {
         Caption = 'Blob Storage';
-        Implementation = "File System Connector" = "Blob Storage Connector Impl.";
+        Implementation = "External File Storage Connector" = "Blob Storage Connector Impl.";
     }
 }

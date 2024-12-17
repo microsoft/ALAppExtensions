@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
 /// <summary>
 /// Enum extension to register the SharePoint connector.
 /// </summary>
-enumextension 80300 "SharePoint Connector" extends "File System Connector"
+enumextension 80300 "SharePoint Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The SharePoint connector.
@@ -16,6 +16,6 @@ enumextension 80300 "SharePoint Connector" extends "File System Connector"
     value(80300; "SharePoint")
     {
         Caption = 'SharePoint';
-        Implementation = "File System Connector" = "SharePoint Connector Impl.";
+        Implementation = "External File Storage Connector" = "SharePoint Connector Impl.";
     }
 }

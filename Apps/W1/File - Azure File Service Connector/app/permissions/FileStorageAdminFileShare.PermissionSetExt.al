@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
-permissionsetextension 80200 "File System - Admin - File Share" extends "File System - Admin"
+permissionsetextension 80200 "File Storage - Admin - File Share" extends "File Storage - Admin"
 {
     IncludedPermissionSets = "File Share - Edit";
 }

@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.FileSystem;
+namespace System.ExternalFileStorage;
 
-permissionsetextension 80100 "File System - Admin - Blob Stor." extends "File System - Admin"
+permissionsetextension 80100 "File Storage - Admin - Blob Stor." extends "File Storage - Admin"
 {
     IncludedPermissionSets = "Blob Stor. - Edit";
 }
