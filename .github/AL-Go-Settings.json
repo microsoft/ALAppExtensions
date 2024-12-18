@@ -41,9 +41,8 @@
   "buildModes": [
     "Translated"
   ],
-  "CICDPushBranches": [
-    "main"
-  ],
+  "CICDPushBranches": [],
+  "CICDSchedule": "0 2 * * *",
   "CICDPullRequestBranches": [
     "main"
   ],
