@@ -27,7 +27,7 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         AFSDirectoryContent: Record "AFS Directory Content";
     begin
@@ -39,11 +39,11 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := AFSDirectoryContent.Name;
-            FileAccountContent.Type := FileAccountContent.Type::"File";
-            FileAccountContent."Parent Directory" := AFSDirectoryContent."Parent Directory";
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := AFSDirectoryContent.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::"File";
+            TempFileAccountContent."Parent Directory" := AFSDirectoryContent."Parent Directory";
+            TempFileAccountContent.Insert();
         until AFSDirectoryContent.Next() = 0;
     end;
 
@@ -181,7 +181,7 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         AFSDirectoryContent: Record "AFS Directory Content";
     begin
@@ -193,11 +193,11 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := AFSDirectoryContent.Name;
-            FileAccountContent.Type := FileAccountContent.Type::Directory;
-            FileAccountContent."Parent Directory" := AFSDirectoryContent."Parent Directory";
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := AFSDirectoryContent.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::Directory;
+            TempFileAccountContent."Parent Directory" := AFSDirectoryContent."Parent Directory";
+            TempFileAccountContent.Insert();
         until AFSDirectoryContent.Next() = 0;
     end;
 
@@ -271,8 +271,8 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
     /// <summary>
     /// Gets the registered accounts for the File Share connector.
     /// </summary>
-    /// <param name="Accounts">Out parameter holding all the registered accounts for the File Share connector.</param>
-    procedure GetAccounts(var Accounts: Record "File Account")
+    /// <param name="TempAccounts">Out parameter holding all the registered accounts for the File Share connector.</param>
+    procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
         Account: Record "File Share Account";
     begin
@@ -280,10 +280,10 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            Accounts."Account Id" := Account.Id;
-            Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"Ext. File Storage Connector"::"File Share";
-            Accounts.Insert();
+            TempAccounts."Account Id" := Account.Id;
+            TempAccounts.Name := Account.Name;
+            TempAccounts.Connector := Enum::"Ext. File Storage Connector"::"File Share";
+            TempAccounts.Insert();
         until Account.Next() = 0;
     end;
 
@@ -305,15 +305,15 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
     /// <summary>
     /// Register an file account for the File Share connector.
     /// </summary>
-    /// <param name="Account">Out parameter holding details of the registered account.</param>
+    /// <param name="TempAccount">Out parameter holding details of the registered account.</param>
     /// <returns>True if the registration was successful; false - otherwise.</returns>
-    procedure RegisterAccount(var Account: Record "File Account"): Boolean
+    procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
         FileShareAccountWizard: Page "File Share Account Wizard";
     begin
         FileShareAccountWizard.RunModal();
 
-        exit(FileShareAccountWizard.GetAccount(Account));
+        exit(FileShareAccountWizard.GetAccount(TempAccount));
     end;
 
     /// <summary>
@@ -364,7 +364,7 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
     end;
 
     [NonDebuggable]
-    internal procedure CreateAccount(var AccountToCopy: Record "File Share Account"; Password: Text; var FileAccount: Record "File Account")
+    internal procedure CreateAccount(var AccountToCopy: Record "File Share Account"; Password: Text; var TempFileAccount: Record "File Account" temporary)
     var
         NewFileShareAccount: Record "File Share Account";
     begin
@@ -375,9 +375,9 @@ codeunit 80200 "File Share Connector Impl." implements "External File Storage Co
 
         NewFileShareAccount.Insert();
 
-        FileAccount."Account Id" := NewFileShareAccount.Id;
-        FileAccount.Name := NewFileShareAccount.Name;
-        FileAccount.Connector := Enum::"Ext. File Storage Connector"::"File Share";
+        TempFileAccount."Account Id" := NewFileShareAccount.Id;
+        TempFileAccount.Name := NewFileShareAccount.Name;
+        TempFileAccount.Connector := Enum::"Ext. File Storage Connector"::"File Share";
     end;
 
     local procedure InitFileClient(var AccountId: Guid; var AFSFileClient: Codeunit "AFS File Client")

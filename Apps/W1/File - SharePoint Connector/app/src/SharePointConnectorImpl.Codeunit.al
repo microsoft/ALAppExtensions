@@ -27,7 +27,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
@@ -45,11 +45,11 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := SharePointFile.Name;
-            FileAccountContent.Type := FileAccountContent.Type::"File";
-            FileAccountContent."Parent Directory" := OrginalPath;
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := SharePointFile.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::"File";
+            TempFileAccountContent."Parent Directory" := OrginalPath;
+            TempFileAccountContent.Insert();
         until SharePointFile.Next() = 0;
     end;
 
@@ -174,7 +174,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
@@ -192,11 +192,11 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := SharePointFolder.Name;
-            FileAccountContent.Type := FileAccountContent.Type::Directory;
-            FileAccountContent."Parent Directory" := OrginalPath;
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := SharePointFolder.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::Directory;
+            TempFileAccountContent."Parent Directory" := OrginalPath;
+            TempFileAccountContent.Insert();
         until SharePointFolder.Next() = 0;
     end;
 
@@ -257,8 +257,8 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <summary>
     /// Gets the registered accounts for the SharePoint connector.
     /// </summary>
-    /// <param name="Accounts">Out parameter holding all the registered accounts for the SharePoint connector.</param>
-    procedure GetAccounts(var Accounts: Record "File Account")
+    /// <param name="TempAccounts">Out parameter holding all the registered accounts for the SharePoint connector.</param>
+    procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
         Account: Record "SharePoint Account";
     begin
@@ -266,10 +266,10 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
             exit;
 
         repeat
-            Accounts."Account Id" := Account.Id;
-            Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
-            Accounts.Insert();
+            TempAccounts."Account Id" := Account.Id;
+            TempAccounts.Name := Account.Name;
+            TempAccounts.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
+            TempAccounts.Insert();
         until Account.Next() = 0;
     end;
 
@@ -291,15 +291,15 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <summary>
     /// Register an file account for the SharePoint connector.
     /// </summary>
-    /// <param name="Account">Out parameter holding details of the registered account.</param>
+    /// <param name="TempAccount">Out parameter holding details of the registered account.</param>
     /// <returns>True if the registration was successful; false - otherwise.</returns>
-    procedure RegisterAccount(var Account: Record "File Account"): Boolean
+    procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
         FileShareAccountWizard: Page "SharePoint Account Wizard";
     begin
         FileShareAccountWizard.RunModal();
 
-        exit(FileShareAccountWizard.GetAccount(Account));
+        exit(FileShareAccountWizard.GetAccount(TempAccount));
     end;
 
     /// <summary>
@@ -335,28 +335,28 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
         exit(ConnectorBase64LogoTxt);
     end;
 
-    internal procedure IsAccountValid(var Account: Record "SharePoint Account" temporary): Boolean
+    internal procedure IsAccountValid(var TempAccount: Record "SharePoint Account" temporary): Boolean
     begin
-        if Account.Name = '' then
+        if TempAccount.Name = '' then
             exit(false);
 
-        if Account."Client Id" = '' then
+        if TempAccount."Client Id" = '' then
             exit(false);
 
-        if Account."Tenant Id" = '' then
+        if TempAccount."Tenant Id" = '' then
             exit(false);
 
-        if Account."SharePoint Url" = '' then
+        if TempAccount."SharePoint Url" = '' then
             exit(false);
 
-        if Account."Base Relative Folder Path" = '' then
+        if TempAccount."Base Relative Folder Path" = '' then
             exit(false);
 
         exit(true);
     end;
 
     [NonDebuggable]
-    internal procedure CreateAccount(var AccountToCopy: Record "SharePoint Account"; Password: Text; var FileAccount: Record "File Account")
+    internal procedure CreateAccount(var AccountToCopy: Record "SharePoint Account"; Password: Text; var TempFileAccount: Record "File Account" temporary)
     var
         NewFileShareAccount: Record "SharePoint Account";
     begin
@@ -367,9 +367,9 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
 
         NewFileShareAccount.Insert();
 
-        FileAccount."Account Id" := NewFileShareAccount.Id;
-        FileAccount.Name := NewFileShareAccount.Name;
-        FileAccount.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
+        TempFileAccount."Account Id" := NewFileShareAccount.Id;
+        TempFileAccount.Name := NewFileShareAccount.Name;
+        TempFileAccount.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
     end;
 
     local procedure InitSharePointClient(var AccountId: Guid; var SharePointClient: Codeunit "SharePoint Client")

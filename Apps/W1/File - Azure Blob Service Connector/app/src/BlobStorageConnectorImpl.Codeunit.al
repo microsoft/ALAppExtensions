@@ -26,7 +26,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all files stored in the path.</param>
-    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -46,11 +46,11 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := ABSContainerContent.Name;
-            FileAccountContent.Type := FileAccountContent.Type::"File";
-            FileAccountContent."Parent Directory" := ABSContainerContent."Parent Directory";
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := ABSContainerContent.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::"File";
+            TempFileAccountContent."Parent Directory" := ABSContainerContent."Parent Directory";
+            TempFileAccountContent.Insert();
         until ABSContainerContent.Next() = 0;
     end;
 
@@ -186,7 +186,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
     /// <param name="Files">A list with all directories stored in the path.</param>
-    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
+    procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         ABSContainerContent: Record "ABS Container Content";
         ABSBlobClient: Codeunit "ABS Blob Client";
@@ -205,11 +205,11 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
             exit;
 
         repeat
-            FileAccountContent.Init();
-            FileAccountContent.Name := ABSContainerContent.Name;
-            FileAccountContent.Type := FileAccountContent.Type::Directory;
-            FileAccountContent."Parent Directory" := ABSContainerContent."Parent Directory";
-            FileAccountContent.Insert();
+            TempFileAccountContent.Init();
+            TempFileAccountContent.Name := ABSContainerContent.Name;
+            TempFileAccountContent.Type := TempFileAccountContent.Type::Directory;
+            TempFileAccountContent."Parent Directory" := ABSContainerContent."Parent Directory";
+            TempFileAccountContent.Insert();
         until ABSContainerContent.Next() = 0;
     end;
 
@@ -271,14 +271,14 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
     /// <param name="Path">The directory path inside the file account.</param>
     procedure DeleteDirectory(AccountId: Guid; Path: Text)
     var
-        FileAccountContent: Record "File Account Content" temporary;
+        TempFileAccountContent: Record "File Account Content" temporary;
         FilePaginationData: Codeunit "File Pagination Data";
         DirectoryMustBeEmptyErr: Label 'Directory is not empty.';
     begin
-        ListFiles(AccountId, Path, FilePaginationData, FileAccountContent);
-        ListDirectories(AccountId, Path, FilePaginationData, FileAccountContent);
-        FileAccountContent.SetFilter(Name, '<>%1', MarkerFileNameTok);
-        if not FileAccountContent.IsEmpty() then
+        ListFiles(AccountId, Path, FilePaginationData, TempFileAccountContent);
+        ListDirectories(AccountId, Path, FilePaginationData, TempFileAccountContent);
+        TempFileAccountContent.SetFilter(Name, '<>%1', MarkerFileNameTok);
+        if not TempFileAccountContent.IsEmpty() then
             Error(DirectoryMustBeEmptyErr);
 
         DeleteFile(AccountId, CombinePath(Path, MarkerFileNameTok));
@@ -287,8 +287,8 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
     /// <summary>
     /// Gets the registered accounts for the Blob Storage connector.
     /// </summary>
-    /// <param name="Accounts">Out parameter holding all the registered accounts for the Blob Storage connector.</param>
-    procedure GetAccounts(var Accounts: Record "File Account")
+    /// <param name="TempAccounts">Out parameter holding all the registered accounts for the Blob Storage connector.</param>
+    procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
         Account: Record "Blob Storage Account";
     begin
@@ -296,10 +296,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
             exit;
 
         repeat
-            Accounts."Account Id" := Account.Id;
-            Accounts.Name := Account.Name;
-            Accounts.Connector := Enum::"Ext. File Storage Connector"::"Blob Storage";
-            Accounts.Insert();
+            TempAccounts."Account Id" := Account.Id;
+            TempAccounts.Name := Account.Name;
+            TempAccounts.Connector := Enum::"Ext. File Storage Connector"::"Blob Storage";
+            TempAccounts.Insert();
         until Account.Next() = 0;
     end;
 
@@ -321,15 +321,15 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
     /// <summary>
     /// Register an file account for the Blob Storage connector.
     /// </summary>
-    /// <param name="Account">Out parameter holding details of the registered account.</param>
+    /// <param name="TempAccount">Out parameter holding details of the registered account.</param>
     /// <returns>True if the registration was successful; false - otherwise.</returns>
-    procedure RegisterAccount(var Account: Record "File Account"): Boolean
+    procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
         BlobStorageAccountWizard: Page "Blob Storage Account Wizard";
     begin
         BlobStorageAccountWizard.RunModal();
 
-        exit(BlobStorageAccountWizard.GetAccount(Account));
+        exit(BlobStorageAccountWizard.GetAccount(TempAccount));
     end;
 
     /// <summary>
@@ -365,15 +365,15 @@ codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage 
         exit(ConnectorBase64LogoTxt);
     end;
 
-    internal procedure IsAccountValid(var Account: Record "Blob Storage Account" temporary): Boolean
+    internal procedure IsAccountValid(var TempAccount: Record "Blob Storage Account" temporary): Boolean
     begin
-        if Account.Name = '' then
+        if TempAccount.Name = '' then
             exit(false);
 
-        if Account."Storage Account Name" = '' then
+        if TempAccount."Storage Account Name" = '' then
             exit(false);
 
-        if Account."Container Name" = '' then
+        if TempAccount."Container Name" = '' then
             exit(false);
 
         exit(true);
