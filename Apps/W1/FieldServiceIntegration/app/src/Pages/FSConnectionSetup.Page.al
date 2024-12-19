@@ -115,18 +115,36 @@ page 6612 "FS Connection Setup"
                     ApplicationArea = Suite;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the project journal template in which project journal lines will be created and coupled to work order products and work order services.';
+                    Editable = EditableProjectSettings;
                 }
                 field("Job Journal Batch"; Rec."Job Journal Batch")
                 {
                     ApplicationArea = Suite;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the project journal batch in which project journal lines will be created and coupled to work order products and work order services.';
+                    Editable = EditableProjectSettings;
                 }
                 field("Hour Unit of Measure"; Rec."Hour Unit of Measure")
                 {
                     ApplicationArea = Suite;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the unit of measure that corresponds to the ''hour'' unit that is used on Dynamics 365 Field Service bookable resources.';
+                }
+                group(IntegrationTypeService)
+                {
+                    ShowCaption = false;
+
+                    field("Integration Type"; Rec."Integration Type")
+                    {
+                        ApplicationArea = Service;
+                        Editable = not Rec."Is Enabled";
+                        ToolTip = 'Specifies the type of integration between Business Central and Dynamics 365 Field Service.';
+
+                        trigger OnValidate()
+                        begin
+                            UpdateIntegrationTypeEditable();
+                        end;
+                    }
                 }
                 field("Enable Invt. Availability"; Rec."Enable Invt. Availability")
                 {
@@ -143,6 +161,7 @@ page 6612 "FS Connection Setup"
                 {
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies when to synchronize work order products and work order services.';
+                    Editable = EditableProjectSettings;
 
                     trigger OnValidate()
                     var
@@ -173,6 +192,7 @@ page 6612 "FS Connection Setup"
                 {
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies when to post project journal lines that are coupled to work order products and work order services.';
+                    Editable = EditableProjectSettings;
                 }
             }
         }
@@ -451,6 +471,7 @@ page 6612 "FS Connection Setup"
         IsEditable: Boolean;
         IsCdsIntegrationEnabled: Boolean;
         CRMVersionStatus: Boolean;
+        EditableProjectSettings: Boolean;
         VirtualTableAppInstalled: Boolean;
 
     local procedure RefreshData()
@@ -459,6 +480,7 @@ page 6612 "FS Connection Setup"
         RefreshSynchJobsData();
         UpdateEnableFlags();
         SetStyleExpr();
+        UpdateIntegrationTypeEditable();
     end;
 
     local procedure RefreshSynchJobsData()
@@ -515,6 +537,11 @@ page 6612 "FS Connection Setup"
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
     begin
         Rec.Validate("Proxy Version", CRMIntegrationManagement.GetLastProxyVersionItem());
+    end;
+
+    local procedure UpdateIntegrationTypeEditable()
+    begin
+        EditableProjectSettings := Rec."Integration Type" in [Rec."Integration Type"::Project, Rec."Integration Type"::Both];
     end;
 }
 

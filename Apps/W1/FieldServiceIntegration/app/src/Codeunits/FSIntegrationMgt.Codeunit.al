@@ -6,8 +6,10 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
+using Microsoft.Service.Setup;
 using System;
 using Microsoft.Utilities;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 6615 "FS Integration Mgt."
 {
@@ -185,6 +187,122 @@ codeunit 6615 "FS Integration Mgt."
     begin
         if not Evaluate(GuidVar, TextVar) then;
         exit(GuidVar);
+    end;
+
+    internal procedure EnableServiceOrderArchive()
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        ServiceMgtSetup.Get();
+        if ServiceMgtSetup."Archive Orders" then
+            exit;
+
+        ServiceMgtSetup.Validate("Archive Orders", true);
+        ServiceMgtSetup.Modify(true);
+    end;
+
+    internal procedure TestManualServiceOrderNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Codeunit "No. Series";
+        CannotInvoiceErrorInfo: ErrorInfo;
+        NoManualNoSeriesTitleErr: Label 'Service Order No. Series must be set to manual.';
+        NoManualNoSeriesErr: Label 'Please make sure that the No. Series setup is correct.';
+        SetToManualLbl: Label 'Set to Manual';
+        OpenNoSeriesListLbl: Label 'Open No. Series. list';
+    begin
+        if not (IntegrationType in [IntegrationType::Service, IntegrationType::Both]) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        if not NoSeries.IsManual(ServiceMgtSetup."Service Order Nos.") then begin
+            CannotInvoiceErrorInfo.Title := NoManualNoSeriesTitleErr;
+            CannotInvoiceErrorInfo.Message := NoManualNoSeriesErr;
+
+            if ServiceMgtSetup."Service Order Nos." <> '' then
+                CannotInvoiceErrorInfo.AddAction(
+                    SetToManualLbl,
+                    Codeunit::"FS Integration Mgt.",
+                    'SetServiceOrderNoSeriesToManual'
+                );
+
+            CannotInvoiceErrorInfo.PageNo := Page::"No. Series";
+            CannotInvoiceErrorInfo.AddNavigationAction(OpenNoSeriesListLbl);
+            Error(CannotInvoiceErrorInfo);
+        end;
+    end;
+
+    procedure SetServiceOrderNoSeriesToManual(ErrorInfo: ErrorInfo)
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Record "No. Series";
+    begin
+        ServiceMgtSetup.Get();
+        NoSeries.Get(ServiceMgtSetup."Service Order Nos.");
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Modify(true);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrder(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        if not (IntegrationType in [IntegrationType::Service, IntegrationType::Both]) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup.TestField("One Service Item Line/Order", false);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrderModificationIsAllowed(ServiceMgtSetup: Record "Service Mgt. Setup")
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        if not ServiceMgtSetup."One Service Item Line/Order" then
+            exit;
+
+        if not ConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        ConnectionSetup.TestField("Is Enabled", false);
+    end;
+
+    internal procedure GetDefaultWorkOrderIncident(): Guid
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        ConnectionSetup.Get();
+
+        if IsNullGuid(ConnectionSetup."Default Work Order Incident ID") then begin
+            ConnectionSetup."Default Work Order Incident ID" := GenerateDefaultWorkOrderIncident();
+            ConnectionSetup.Modify();
+        end;
+
+        exit(ConnectionSetup."Default Work Order Incident ID");
+    end;
+
+    internal procedure GenerateDefaultWorkOrderIncident(): Guid
+    var
+        IncidentType: Record "FS Incident Type";
+        IncidentTypeNameLbl: Label 'Business Central - Default Incident Type';
+    begin
+        IncidentType.IncidentTypeId := CreateGuid();
+        IncidentType.Name := IncidentTypeNameLbl;
+        IncidentType.Insert();
+
+        exit(IncidentType.IncidentTypeId);
+    end;
+
+    internal procedure GetBookingStatusCompleted(): Guid
+    var
+        FSBookingStatus: Record "FS Booking Status";
+        EmptyGuid: Guid;
+    begin
+        FSBookingStatus.SetRange(FieldServiceStatus, FSBookingStatus.FieldServiceStatus::Completed);
+        if not FSBookingStatus.FindFirst() then
+            exit(EmptyGuid);
+
+        exit(FSBookingStatus.BookingStatusId);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]

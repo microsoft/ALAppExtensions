@@ -95,8 +95,10 @@ table 6623 "FS Connection Setup"
                 CRMConnectionSetupPage: Page "CRM Connection Setup";
             begin
                 if "Is Enabled" then begin
-                    TestField("Job Journal Template");
-                    TestField("Job Journal Batch");
+                    if "Integration Type" <> "Integration Type"::Service then begin
+                        TestField("Job Journal Template");
+                        TestField("Job Journal Batch");
+                    end;
                     if not CRMConnectionSetup.IsEnabled() then
                         Error(CRMConnSetupMustBeEnabledErr, CRMConnectionSetupPage.Caption());
                     if "Hour Unit of Measure" = '' then
@@ -243,6 +245,24 @@ table 6623 "FS Connection Setup"
         {
             DataClassification = SystemMetadata;
             Caption = 'Automatically post project journal lines';
+        }
+        field(300; "Integration Type"; Enum "FS Integration Type")
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Integration Type';
+
+            trigger OnValidate()
+            var
+                IntegrationMgt: Codeunit "FS Integration Mgt.";
+            begin
+                IntegrationMgt.TestManualServiceOrderNoSeriesFlag(Rec."Integration Type");
+                IntegrationMgt.TestOneServiceItemLinePerOrder(Rec."Integration Type");
+            end;
+        }
+        field(301; "Default Work Order Incident ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Default Work Order Incident ID';
         }
     }
 
@@ -985,6 +1005,14 @@ table 6623 "FS Connection Setup"
                         JobQueueEntry.SetStatus(NewStatus);
                     until JobQueueEntry.Next() = 0;
             until IntegrationTableMapping.Next() = 0;
+
+        JobQueueEntry.Reset();
+        JobQueueEntry.SetRange("Object Type to Run");
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"FS Archived Service Orders Job");
+        if JobQueueEntry.FindSet() then
+            repeat
+                JobQueueEntry.SetStatus(NewStatus);
+            until JobQueueEntry.Next() = 0;
     end;
 
     internal procedure GetConnectionStringAsStoredInSetup() ConnectionString: Text
@@ -1025,6 +1053,16 @@ table 6623 "FS Connection Setup"
         if not Get() then
             exit(false);
         exit("Is Enabled");
+    end;
+
+    internal procedure IsIntegrationTypeServiceEnabled(): Boolean
+    begin
+        exit(IsEnabled() and ("Integration Type" in ["Integration Type"::Service, "Integration Type"::Both]));
+    end;
+
+    internal procedure IsIntegrationTypeProjectEnabled(): Boolean
+    begin
+        exit(IsEnabled() and ("Integration Type" in ["Integration Type"::Project, "Integration Type"::Both]));
     end;
 
     internal procedure GetProxyVersion(): Integer
