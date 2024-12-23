@@ -248,6 +248,11 @@ page 30101 "Shpfy Shop Card"
                     Importance = Additional;
                     ToolTip = 'Specifies the weight unit of the Shopify Shop.';
                 }
+                field("Product Metafields To Shopify"; Rec."Product Metafields To Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether product/variant metafields are synchronized to Shopify.';
+                }
             }
             group(PriceSynchronization)
             {
@@ -395,6 +400,11 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how to synchronize the county of the customer/company.';
                 }
+                field("Customer Metafields To Shopify"; Rec."Customer Metafields To Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether customer metafields are synchronized to Shopify.';
+                }
             }
             group("B2B Company Synchronization")
             {
@@ -439,6 +449,11 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
+                }
+                field("Company Metafields To Shopify"; Rec."Company Metafields To Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether company metafields are synchronized to Shopify.';
                 }
             }
             group(OrderProcessing)

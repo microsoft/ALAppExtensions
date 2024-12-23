@@ -1733,7 +1733,6 @@ codeunit 148187 "Sust. Certificate Test"
         ItemCard."Replenishment System".SetValue(Item."Replenishment System"::"Prod. Order");
 
         // [VERIFY] Verify Default Emissions field should be clear when Replenishment System is set to non-purchase on item.
-        ItemCard."Default Sust. Account".AssertEquals('');
         ItemCard."Default CH4 Emission".AssertEquals(0);
         ItemCard."Default CO2 Emission".AssertEquals(0);
         ItemCard."Default N2O Emission".AssertEquals(0);

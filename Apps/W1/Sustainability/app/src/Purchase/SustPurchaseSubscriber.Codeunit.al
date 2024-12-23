@@ -61,14 +61,13 @@ codeunit 6225 "Sust. Purchase Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterBindSubscription', '', false, false)]
     local procedure OnAfterBindSubscription()
     begin
-        SustPreviewPostInstance.Initialize();
-        BindSubscription(SustPreviewPostingHandler);
+        TryBindPostingPreviewHandler();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterUnbindSubscription', '', false, false)]
     local procedure OnAfterUnbindSubscription()
     begin
-        UnbindSubscription(SustPreviewPostingHandler);
+        TryUnbindPostingPreviewHandler();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
@@ -284,9 +283,23 @@ codeunit 6225 "Sust. Purchase Subscriber"
             exit(true);
     end;
 
+    local procedure TryBindPostingPreviewHandler(): Boolean
     var
         SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
         SustPreviewPostInstance: Codeunit "Sust. Preview Post Instance";
+    begin
+        SustPreviewPostInstance.Initialize();
+        exit(BindSubscription(SustPreviewPostingHandler));
+    end;
+
+    local procedure TryUnbindPostingPreviewHandler(): Boolean
+    var
+        SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
+    begin
+        exit(UnbindSubscription(SustPreviewPostingHandler));
+    end;
+
+    var
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in purchase document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

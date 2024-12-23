@@ -21,6 +21,7 @@ pageextension 6256 "Sust. Work Center List" extends "Work Center List"
                 var
                     CalculateCO2e: Report "Sust. Calculate CO2e";
                 begin
+                    CalculateCO2e.Initialize(0, true);
                     CalculateCO2e.Run();
                 end;
             }

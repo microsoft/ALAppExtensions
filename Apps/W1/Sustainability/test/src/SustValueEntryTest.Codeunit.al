@@ -2142,6 +2142,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionOrder: Record "Production Order";
         ProductionBOMHeader: Record "Production BOM Header";
         SustainabilityAccount: Record "Sustainability Account";
+        ProductionOrderLine: Record "Prod. Order Line";
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
@@ -2173,7 +2174,6 @@ codeunit 148190 "Sust. Value Entry Test"
         CompItem.Modify();
 
         // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
-        ProdItem.Validate("Default Sust. Account", AccountCode);
         ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
         ProdItem.Modify();
 
@@ -2189,11 +2189,20 @@ codeunit 148190 "Sust. Value Entry Test"
         Quanity := LibraryRandom.RandIntInRange(10, 10);
         ExpectedCO2ePerUnit := (WorkCenter."CO2e per Unit" * Quanity + CompItem."CO2e per Unit" * Quanity) / Quanity;
 
-        // [WHEN] Create and Refresh Production Order.
+        // [GIVEN] Create and Refresh Production Order.
         CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
 
+        // [GIVEN] Find Prod Order Line.
+        ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderLine.FindFirst();
+
+        // [WHEN] Update "Sust. Account No." in Prod Order Line.
+        ProductionOrderLine.Validate("Sust. Account No.", AccountCode);
+        ProductionOrderLine.Modify();
+
         // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
-        VerifyProductionOrderLine(ProductionOrder, ProdItem."Default Sust. Account", ExpectedCO2ePerUnit, ExpectedCO2ePerUnit * Quanity, 0);
+        VerifyProductionOrderLine(ProductionOrder, AccountCode, ExpectedCO2ePerUnit, ExpectedCO2ePerUnit * Quanity, 0);
         VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", CompItem."CO2e per Unit", CompItem."CO2e per Unit" * Quanity, 0);
         VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * Quanity, 0);
     end;
@@ -2208,6 +2217,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionOrder: Record "Production Order";
         ProductionBOMHeader: Record "Production BOM Header";
         SustainabilityAccount: Record "Sustainability Account";
+        ProductionOrderLine: Record "Prod. Order Line";
         ExpectedCO2ePerUnit: array[2] of Decimal;
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
@@ -2244,7 +2254,6 @@ codeunit 148190 "Sust. Value Entry Test"
         CompItem.Modify();
 
         // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
-        ProdItem.Validate("Default Sust. Account", AccountCode);
         ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
         ProdItem.Modify();
 
@@ -2265,8 +2274,17 @@ codeunit 148190 "Sust. Value Entry Test"
         // [WHEN] Create and Refresh Production Order.
         CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
 
+        // [GIVEN] Find Prod Order Line.
+        ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderLine.FindFirst();
+
+        // [WHEN] Update "Sust. Account No." in Prod Order Line.
+        ProductionOrderLine.Validate("Sust. Account No.", AccountCode);
+        ProductionOrderLine.Modify();
+
         // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
-        VerifyProductionOrderLine(ProductionOrder, ProdItem."Default Sust. Account", ExpectedCO2ePerUnitForProdOrderLine, ExpectedCO2ePerUnitForProdOrderLine * Quanity, 0);
+        VerifyProductionOrderLine(ProductionOrder, AccountCode, ExpectedCO2ePerUnitForProdOrderLine, ExpectedCO2ePerUnitForProdOrderLine * Quanity, 0);
         VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", ExpectedCO2ePerUnit[1], ExpectedCO2ePerUnit[1] * Quanity, 0);
         VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", ExpectedCO2ePerUnit[2], ExpectedCO2ePerUnit[2] * Quanity, 0);
     end;

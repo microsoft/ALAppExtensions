@@ -84,6 +84,7 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
         CalculateCO2e: Report "Sust. Calculate CO2e";
     begin
         WorkCenter.SetFilter("No.", Rec."No.");
+        CalculateCO2e.Initialize(0, true);
         CalculateCO2e.SetTableView(WorkCenter);
         CalculateCO2e.Run();
     end;

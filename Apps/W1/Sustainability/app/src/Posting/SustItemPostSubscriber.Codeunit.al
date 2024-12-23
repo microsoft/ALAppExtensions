@@ -16,6 +16,13 @@ codeunit 6256 "Sust. Item Post Subscriber"
 
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
+        if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then
+            if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Shipment") and (ValueEntry."Valued Quantity" > 0) then
+                exit(false)
+            else
+                if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Receipt") and (ValueEntry."Valued Quantity" < 0) then
+                    exit(false);
+
         exit((ItemJournalLine."Sust. Account No." <> '') and (ValueEntry."Entry Type" = ValueEntry."Entry Type"::"Direct Cost"));
     end;
 

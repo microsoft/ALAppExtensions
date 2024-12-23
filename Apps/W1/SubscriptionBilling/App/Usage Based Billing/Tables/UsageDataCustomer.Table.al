@@ -1,6 +1,5 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Reflection;
 using System.Globalization;
 using Microsoft.Sales.Customer;
 
@@ -58,7 +57,7 @@ table 8012 "Usage Data Customer"
             trigger OnLookup()
             var
                 Language: Record Language;
-                TypeHelper: Codeunit "Type Helper";
+                LanguageCU: Codeunit Language;
                 DotNet_CultureInfo: Codeunit DotNet_CultureInfo;
             begin
                 if Culture <> '' then begin
@@ -67,7 +66,7 @@ table 8012 "Usage Data Customer"
                 end;
 
                 if Page.RunModal(0, Language) = Action::LookupOK then
-                    Rec.Validate(Culture, TypeHelper.LanguageIDToCultureName(Language."Windows Language ID"));
+                    Rec.Validate(Culture, LanguageCU.GetCultureName(Language."Windows Language ID"));
             end;
         }
         field(9; "Supplier Reference Entry No."; Integer)
