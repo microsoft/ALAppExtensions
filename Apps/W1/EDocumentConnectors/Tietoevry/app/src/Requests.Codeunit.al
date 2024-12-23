@@ -115,7 +115,7 @@ codeunit 6396 Requests
 
     /// <summary>
     /// Create request for /inbound/$id
-    /// https://accesspoint.qa.dataplatfor.ms/swagger-ui/#/Inbound%20Resource/get_inbound__id_
+    /// https://accesspoint.qa.dataplatfor.ms/swagger-ui/#/Inbound%20Resource/get_inbound__id___payload_type__document
     /// </summary>
     /// <param name="Id">Document Id</param>
     /// <returns>A request object that can be used for the endpoint.</returns>
@@ -124,12 +124,12 @@ codeunit 6396 Requests
         HttpHeaders: HttpHeaders;
     begin
         Clear(this.HttpRequestMessage);
-        this.HttpRequestMessage.SetRequestUri(this.BaseUrl + '/inbound/' + Id);
+        this.HttpRequestMessage.SetRequestUri(this.BaseUrl + '/inbound/' + Id + '/PAYLOAD/document');
         this.HttpRequestMessage.Method := 'GET';
 
         this.HttpRequestMessage.GetHeaders(HttpHeaders);
         HttpHeaders.Add('Authorization', this.AddBearer(this.AccessToken));
-        HttpHeaders.Add('Accept', 'application/json');
+        HttpHeaders.Add('Accept', 'application/octet-stream');
 
         exit(this);
     end;
