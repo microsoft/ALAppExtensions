@@ -169,10 +169,24 @@ codeunit 6103 "E-Document Subscription"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
-    local procedure BeforeSendEDocument(Sender: Record "Document Sending Profile"; RecordVariant: Variant; var IsHandled: Boolean)
+    local procedure BeforeSendEDocument(
+        Sender: Record "Document Sending Profile";
+        RecordVariant: Variant; var IsHandled: Boolean;
+        ReportUsage: Integer; DocumentNoFieldNo: Integer;
+        DocName: Text[150];
+        CustomerFieldNo: Integer)
     begin
         if Sender."Electronic Document" <> Sender."Electronic Document"::"Extended E-Document Service Flow" then
             exit;
+
+        if Sender."E-Mail" <> Sender."E-Mail"::No then
+            Sender.TrySendToEMailGroupedMultipleSelection(
+                Enum::"Report Selection Usage".FromInteger(ReportUsage),
+                RecordVariant,
+                DocumentNoFieldNo,
+                DocName,
+                CustomerFieldNo,
+                true);
 
         IsHandled := true;
     end;
