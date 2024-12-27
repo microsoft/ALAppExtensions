@@ -186,13 +186,25 @@ page 6121 "E-Document"
             }
 #endif
         }
-        area(FactBoxes)
+        area(factboxes)
         {
-            part(DocumentAttachment; "Doc. Attachment List Factbox")
+#if not CLEAN25
+            part("Attached Documents"; "Document Attachment Factbox")
+            {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
+                ApplicationArea = All;
+                Caption = 'Attachments';
+                SubPageLink = "E-Document Entry No." = field("Entry No"), "E-Document Attachment" = const(true);
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 Caption = 'Documents';
                 UpdatePropagation = Both;
-                SubPageLink = "E-Document Entry No." = field("Entry No"), "E-Document Attachment" = const(true);
+                SubPageLink = "E-Document Entry No." = field("Entry No"),
+                              "E-Document Attachment" = const(true);
             }
         }
     }
