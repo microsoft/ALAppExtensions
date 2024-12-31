@@ -64,7 +64,6 @@ page 6122 "E-Documents"
                 ObsoleteTag = '25.0';
                 ObsoleteState = Pending;
                 ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                ApplicationArea = All;
                 Caption = 'Attachments';
                 SubPageLink = "E-Document Entry No." = field("Entry No"),
                               "E-Document Attachment" = const(true);
