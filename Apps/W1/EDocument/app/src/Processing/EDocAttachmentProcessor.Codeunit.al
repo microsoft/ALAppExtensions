@@ -126,6 +126,21 @@ codeunit 6169 "E-Doc. Attachment Processor"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterGetRefTable, '', false, false)]
+    local procedure OnAfterGetRefTableForEDocs(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
+    var
+        EDocument: Record "E-Document";
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::"E-Document":
+                begin
+                    RecRef.Open(Database::"E-Document");
+                    if EDocument.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(EDocument);
+                end;
+        end;
+    end;
+
     var
         MissingEDocumentTypeErr: Label 'E-Document type %1 is not supported for attachments', Comment = '%1 - E-Document document type';
 
