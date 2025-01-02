@@ -185,8 +185,10 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
+        Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), 'Wrong message in error.');
 
         // Get the purchase invoice from page
