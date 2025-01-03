@@ -1342,46 +1342,6 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
-    [Test]
-    [HandlerFunctions('SelectPOHandlerCancel,ConfirmHandler')]
-    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_WithoutLinkedOrder()
-    var
-        EDocService: Record "E-Document Service";
-        EDocument: Record "E-Document";
-        Item: Record Item;
-        DocumentAttachment: Record "Document Attachment";
-        VATPostingSetup: Record "VAT Posting Setup";
-        DocumentVendor: Record Vendor;
-        EDocumentPage: TestPage "E-Document";
-    begin
-        // [FEATURE] [E-Document] [Receive]
-        // [SCENARIO] Receive single e-document with two attachments without linking to purchase order 
-        Initialize();
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] e-Document service to receive one single purchase order
-        CreateEDocServiceToReceivePurchaseOrder(EDocService);
-        // [GIVEN] Vendor with VAT Posting Setup
-        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
-        // [GIVEN] Item with item reference
-        CreateItemWithReference(Item, VATPostingSetup);
-        // [GIVEN] Incoming PEPPOL file
-        CreateIncomingPEPPOL(DocumentVendor);
-        // [GIVEN] Purchase order created for vendor
-        CreatePurchaseOrder(Item, DocumentVendor);
-
-        // [WHEN] Running Receive
-        InvokeReceive(EDocService);
-
-        // [THEN] Purchase invoice is created with corresponfing values
-        EDocument.FindLast();
-
-        // [THEN] Attachments are moved to Purchase Header
-        DocumentAttachment.SetRange("E-Document Entry No.", EDocument."Entry No");
-        DocumentAttachment.SetRange("E-Document Attachment", true);
-        Assert.RecordCount(DocumentAttachment, 2);
-    end;
-
     [ModalPageHandler]
     procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
     var
@@ -1543,12 +1503,6 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocServicePage.OpenView();
         EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
         EDocServicePage.Receive.Invoke();
-    end;
-
-    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
-    begin
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
-        SetDefaultEDocServiceValues(EDocService);
     end;
 
     local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
@@ -2933,7 +2887,7 @@ codeunit 139628 "E-Doc. Receive Test"
 
     local procedure CreateEDocServiceToReceivePurchaseOrder26(var EDocService: Record "E-Document Service")
     begin
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::Mock);
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
         SetDefaultEDocServiceValues(EDocService);
     end;
 
