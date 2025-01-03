@@ -2888,6 +2888,7 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+
 #endif
 #pragma warning restore AS0018
 
