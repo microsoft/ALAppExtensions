@@ -58,17 +58,6 @@ page 6122 "E-Documents"
         }
         area(factboxes)
         {
-#if not CLEAN25
-            part("Attached Documents"; "Document Attachment Factbox")
-            {
-                ObsoleteTag = '25.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                Caption = 'Attachments';
-                SubPageLink = "E-Document Entry No." = field("Entry No"),
-                              "E-Document Attachment" = const(true);
-            }
-#endif
             part(DocumentListFactBox; "Doc. Attachment List Factbox")
             {
                 Caption = 'Documents';
