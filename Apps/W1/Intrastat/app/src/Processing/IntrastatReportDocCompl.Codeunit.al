@@ -8,7 +8,6 @@ using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
 using Microsoft.Inventory.Item;
 using System.Utilities;
-using Microsoft.Utilities;
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Posting;
@@ -85,7 +84,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterCheckSalesDoc, '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsInSales(var SalesHeader: Record "Sales Header")
+    local procedure CheckIntrastatMandatoryFieldsOnSalesDoc(var SalesHeader: Record "Sales Header")
     var
         TempErrorMessage: Record "Error Message" temporary;
         SalesLine: Record "Sales Line";
@@ -166,7 +165,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnAfterCheckPurchDoc, '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsInPurchase(var PurchHeader: Record "Purchase Header")
+    local procedure CheckIntrastatMandatoryFieldsOnPurchaseDoc(var PurchHeader: Record "Purchase Header")
     var
         TempErrorMessage: Record "Error Message" temporary;
         PurchLine: Record "Purchase Line";
@@ -174,6 +173,9 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         Item: Record Item;
     begin
         if PurchHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
+            exit;
+
+        if not (PurchHeader."Document Type" in [PurchHeader."Document Type"::Order, PurchHeader."Document Type"::"Return Order"]) then
             exit;
 
         if not IntrastatReportSetup.Get() then
@@ -245,7 +247,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post (Yes/No)", OnCodeOnBeforePostTransferOrder, '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsInTransfer(var TransHeader: Record "Transfer Header"; var Selection: Option)
+    local procedure CheckIntrastatMandatoryFieldsOnTransferDoc(var TransHeader: Record "Transfer Header"; var Selection: Option)
     var
         TempErrorMessage: Record "Error Message" temporary;
         TransferLine: Record "Transfer Line";
