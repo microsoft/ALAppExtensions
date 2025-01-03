@@ -1342,6 +1342,45 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('SelectPOHandlerCancel,ConfirmHandler')]
+    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_WithoutLinkedOrder()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        DocumentAttachment: Record "Document Attachment";
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive single e-document with two attachments without linking to purchase order 
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive one single purchase order
+        CreateEDocServiceToReceivePurchaseOrder(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Incoming PEPPOL file
+        CreateIncomingPEPPOL(DocumentVendor);
+        // [GIVEN] Purchase order created for vendor
+        CreatePurchaseOrder(Item, DocumentVendor);
+
+        // [WHEN] Running Receive
+        InvokeReceive(EDocService);
+
+        // [THEN] Attachments are imported and linked with e-Document
+        EDocument.FindLast();
+        DocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
+        DocumentAttachment.SetRange("Table ID", Database::"E-Document");
+        DocumentAttachment.SetRange("E-Document Entry No.", EDocument."Entry No");
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        Assert.RecordCount(DocumentAttachment, 2);
+    end;
+
     [ModalPageHandler]
     procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
     var
@@ -1437,12 +1476,17 @@ codeunit 139628 "E-Doc. Receive Test"
         Assert.AreEqual(PurchHeader."Amount Including VAT", Abs(GenJnlLine.Amount), '');
     end;
 
+    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
+    begin
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
+        SetDefaultEDocServiceValues(EDocService);
+    end;
+
     local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
     begin
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
-        DocumentVendor."VAT Registration No." := 'GB123456789';
         DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
         DocumentVendor.Modify(false);
     end;
@@ -1518,7 +1562,6 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocService."Validate Receiving Company" := false;
         EDocService.Modify(false);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Create Purch. Doc.", 'OnBeforeProcessHeaderFieldsAssignment', '', false, false)]
     local procedure OnBeforeProcessHeaderFieldsAssignment(var DocumentHeader: RecordRef; var PurchaseField: Record Field);
@@ -2843,52 +2886,6 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.SetHideValidationDialog(true);
         PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('SelectPOHandlerCancel,ConfirmHandler')]
-    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_WithoutLinkedOrder26()
-    var
-        EDocService: Record "E-Document Service";
-        EDocument: Record "E-Document";
-        Item: Record Item;
-        DocumentAttachment: Record "Document Attachment";
-        VATPostingSetup: Record "VAT Posting Setup";
-        DocumentVendor: Record Vendor;
-        EDocumentPage: TestPage "E-Document";
-    begin
-        // [FEATURE] [E-Document] [Receive]
-        // [SCENARIO] Receive single e-document with two attachments without linking to purchase order 
-        Initialize();
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] e-Document service to receive one single purchase order
-        CreateEDocServiceToReceivePurchaseOrder26(EDocService);
-        // [GIVEN] Vendor with VAT Posting Setup
-        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
-        // [GIVEN] Item with item reference
-        CreateItemWithReference(Item, VATPostingSetup);
-        // [GIVEN] Incoming PEPPOL file
-        CreateIncomingPEPPOL(DocumentVendor);
-        // [GIVEN] Purchase order created for vendor
-        CreatePurchaseOrder(Item, DocumentVendor);
-
-        // [WHEN] Running Receive
-        InvokeReceive(EDocService);
-
-        // [THEN] Purchase invoice is created with corresponfing values
-        EDocument.FindLast();
-
-        // [THEN] Attachments are moved to Purchase Header
-        DocumentAttachment.SetRange("E-Document Entry No.", EDocument."Entry No");
-        DocumentAttachment.SetRange("E-Document Attachment", true);
-        Assert.RecordCount(DocumentAttachment, 2);
-    end;
-
-    local procedure CreateEDocServiceToReceivePurchaseOrder26(var EDocService: Record "E-Document Service")
-    begin
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
-        SetDefaultEDocServiceValues(EDocService);
     end;
 
 #endif
