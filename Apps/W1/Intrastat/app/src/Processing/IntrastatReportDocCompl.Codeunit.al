@@ -110,7 +110,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
                 if not CountryRegion.Get(SalesHeader."Ship-to Country/Region Code") then
                     exit;
-
         end;
         if CountryRegion."Intrastat Code" = '' then
             exit;
@@ -171,13 +170,33 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     var
         TempErrorMessage: Record "Error Message" temporary;
         PurchLine: Record "Purchase Line";
+        CountryRegion: Record "Country/Region";
         Item: Record Item;
     begin
         if PurchHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
             exit;
 
-
         if not IntrastatReportSetup.Get() then
+            exit;
+
+        case IntrastatReportSetup."Shipments Based On" of
+            IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
+                if not CountryRegion.Get(PurchHeader."Pay-to Country/Region Code") then
+                    exit;
+            IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
+                if not CountryRegion.Get(PurchHeader."Buy-from Country/Region Code") then
+                    exit;
+            IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
+                if not CountryRegion.Get(PurchHeader."Buy-from Country/Region Code") then
+                    exit;
+        end;
+        if CountryRegion."Intrastat Code" = '' then
+            exit;
+
+        if not CompanyInformation.Get() then
+            exit;
+
+        if CountryRegion.Code = CompanyInformation."Country/Region Code" then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
@@ -226,16 +245,24 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post (Yes/No)", OnCodeOnBeforePostTransferOrder, '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsInTransfer(var TransHeader: Record "Transfer Header")
+    local procedure CheckIntrastatMandatoryFieldsInTransfer(var TransHeader: Record "Transfer Header"; var Selection: Option)
     var
         TempErrorMessage: Record "Error Message" temporary;
         TransferLine: Record "Transfer Line";
+        CountryRegion: Record "Country/Region";
+        CountryRegion1: Record "Country/Region";
         Item: Record Item;
     begin
         if TransHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
             exit;
 
         if not IntrastatReportSetup.Get() then
+            exit;
+
+        if TransHeader."Trsf.-from Country/Region Code" = TransHeader."Trsf.-to Country/Region Code" then
+            exit;
+
+        if (not CountryRegion.Get(TransHeader."Trsf.-from Country/Region Code") or (CountryRegion."Intrastat Code" = '')) and (not CountryRegion1.Get(TransHeader."Trsf.-to Country/Region Code") or (CountryRegion1."Intrastat Code" = '')) then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
