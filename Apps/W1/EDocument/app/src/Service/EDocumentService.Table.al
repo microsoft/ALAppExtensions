@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using System.Privacy;
+using Microsoft.eServices.EDocument.Integration.Payments;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Integration.Action;
 
@@ -249,6 +250,50 @@ table 6103 "E-Document Service"
         {
             Caption = 'Sent Actions For Service';
             ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            DataClassification = SystemMetadata;
+        }
+        field(29; "Payment Integration"; Enum "Payment Integration")
+        {
+            Caption = 'Payment Integration';
+            ToolTip = 'Specifies the integration for receiving payments from the service.';
+            DataClassification = SystemMetadata;
+        }
+        field(30; "Calculate Payment VAT"; Boolean)
+        {
+            Caption = 'Calculate Payment VAT';
+            ToolTip = 'Specifies whether the VAT amount should be calculated for the payment.';
+            DataClassification = SystemMetadata;
+        }
+        field(31; "Auto Sync Payments"; Boolean)
+        {
+            Caption = 'Auto Sync Payments';
+            ToolTip = 'Specifies whether the payments should be automatically synchronized with the service.';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                this.EDocumentBackgroundJobs.HandleRecurrentPaymentSyncJob(Rec);
+            end;
+        }
+        field(32; "Payment Sync Start Time"; Time)
+        {
+            Caption = 'Sync Start Time';
+            ToolTip = 'Specifies the time when the synchronization should start.';
+            DataClassification = SystemMetadata;
+            NotBlank = true;
+            InitValue = 0T;
+        }
+        field(33; "Payment Sync Min between runs"; Integer)
+        {
+            Caption = 'Minutes between runs';
+            ToolTip = 'Specifies the time between synchronization runs.';
+            DataClassification = SystemMetadata;
+            InitValue = 1440;
+        }
+        field(34; "Payment Sync Recurrent Job Id"; Guid)
+        {
+            Caption = 'Sync Recurrent Job Id';
+            ToolTip = 'Specifies the ID of the job that is used for the synchronization.';
             DataClassification = SystemMetadata;
         }
     }

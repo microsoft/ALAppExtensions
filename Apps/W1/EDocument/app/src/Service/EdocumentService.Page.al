@@ -56,6 +56,16 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies integration code for sent e-document actions.';
                 }
+                field("Payment Integration"; Rec."Payment Integration")
+                {
+                    ToolTip = 'Specifies integration code for the payment tracking functionality.';
+                    Visible = false;
+                }
+                field("Calculate Payment VAT"; Rec."Calculate Payment VAT")
+                {
+                    ToolTip = 'Specifies if VAT should be calculated for payments.';
+                    Visible = false;
+                }
                 field("Use Batch Processing"; Rec."Use Batch Processing")
                 {
                     ToolTip = 'Specifies if service uses batch processing for export.';
@@ -174,6 +184,29 @@ page 6133 "E-Document Service"
                         {
                             ToolTip = 'Specifies the number of minutes between running import job.';
                         }
+                    }
+                }
+            }
+            group(Payment)
+            {
+                Caption = 'Payment Settings';
+                Visible = false;
+
+                field("Auto Sync Payments"; Rec."Auto Sync Payments")
+                {
+                    ToolTip = 'Specifies if payments should be automatically synchronized.';
+                }
+                group(PaymentSyncSettings)
+                {
+                    ShowCaption = false;
+                    Visible = Rec."Auto Sync Payments";
+                    field("Payment Sync Start Time"; Rec."Payment Sync Start Time")
+                    {
+                        ToolTip = 'Specifies the start time of payment synchronization job.';
+                    }
+                    field("Payment Sync Min between runs"; Rec."Payment Sync Min between runs")
+                    {
+                        ToolTip = 'Specifies the number of minutes between payment synchronization jobs.';
                     }
                 }
             }

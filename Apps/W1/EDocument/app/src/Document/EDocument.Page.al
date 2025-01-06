@@ -11,6 +11,8 @@ using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using Microsoft.eServices.EDocument.Integration.Payments;
+using Microsoft.eServices.EDocument.Payments;
 
 page 6121 "E-Document"
 {
@@ -118,6 +120,18 @@ page 6121 "E-Document"
                 {
                     Importance = Additional;
                     ToolTip = 'Specifies the electronic document posting date.';
+                }
+                field("Payment Status"; this.PaymentStatus)
+                {
+                    Caption = 'Payment Status';
+                    Visible = false;
+                    Editable = false;
+                    ToolTip = 'Specifies the payment status of the electronic document.';
+                }
+                field("Paid Amount"; Rec."Paid Amount")
+                {
+                    Visible = false;
+                    ToolTip = 'Specifies the paid amount of the electronic document.';
                 }
             }
             group(ReceivingCompanyInfo)
@@ -346,6 +360,34 @@ page 6121 "E-Document"
                     end;
                 }
             }
+            group(Payments)
+            {
+                Caption = 'Payments';
+                action(ReceivePayments)
+                {
+                    Caption = 'Receive Payments';
+                    ToolTip = 'Receive payments for the electronic document.';
+                    Image = Payment;
+                    Visible = false;
+
+                    trigger OnAction()
+                    begin
+                        this.ReceivePaymentsForEDoc();
+                    end;
+                }
+                action(SendPayments)
+                {
+                    Caption = 'Send Payment';
+                    ToolTip = 'Send payment for the electronic document.';
+                    Image = Payment;
+                    Visible = false;
+
+                    trigger OnAction()
+                    begin
+                        this.SendPaymentsForEDoc();
+                    end;
+                }
+            }
             group(Troubleshoot)
             {
                 Caption = 'Troubleshoot';
@@ -507,6 +549,13 @@ page 6121 "E-Document"
         SetIncomingDocActions();
 
         EDocImport.ProcessEDocPendingOrderMatch(Rec);
+
+        if (Rec.Direction = Rec.Direction::Incoming) then
+            Rec.SetRange("Payment Direction Filter", "E-Document Direction"::Outgoing)
+        else
+            Rec.SetRange("Payment Direction Filter", "E-Document Direction"::Incoming);
+
+        this.SetPaymentStatus();
     end;
 
     local procedure SetStyle()
@@ -589,6 +638,49 @@ page 6121 "E-Document"
         ShowRelink := false;
     end;
 
+    local procedure SetPaymentStatus()
+    begin
+        if Rec."Paid Amount" = 0 then
+            this.PaymentStatus := this.PaymentStatus::"Not Paid"
+        else
+            if Rec."Paid Amount" < Rec."Amount Incl. VAT" then
+                this.PaymentStatus := this.PaymentStatus::"Partially Paid"
+            else
+                this.PaymentStatus := this.PaymentStatus::"Paid In Full"
+    end;
+
+    local procedure ReceivePaymentsForEDoc()
+    var
+        EDocService: Record "E-Document Service";
+        PaymentContext: Codeunit PaymentContext;
+        PaymentIntegrationManagement: Codeunit "Payment Integration Management";
+        EDocServices: Page "E-Document Services";
+    begin
+        EDocServices.LookupMode(true);
+        if EDocServices.RunModal() <> Action::LookupOK then
+            exit;
+
+        EDocServices.GetRecord(EDocService);
+        this.EDocumentErrorHelper.ClearPaymentErrorMessages(Rec);
+        PaymentIntegrationManagement.ReceivePayments(Rec, EDocService, PaymentContext);
+    end;
+
+    local procedure SendPaymentsForEDoc()
+    var
+        EDocService: Record "E-Document Service";
+        PaymentContext: Codeunit PaymentContext;
+        PaymentIntegrationManagement: Codeunit "Payment Integration Management";
+        EDocServices: Page "E-Document Services";
+    begin
+        EDocServices.LookupMode(true);
+        if EDocServices.RunModal() <> Action::LookupOK then
+            exit;
+
+        EDocServices.GetRecord(EDocService);
+        this.EDocumentErrorHelper.ClearPaymentErrorMessages(Rec);
+        PaymentIntegrationManagement.SendPayments(Rec, EDocService, PaymentContext);
+    end;
+
     var
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         EDocIntegrationManagement: Codeunit "E-Doc. Integration Management";
@@ -596,6 +688,7 @@ page 6121 "E-Document"
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
+        PaymentStatus: Enum "E-Document Payment Progress";
         RecordLinkTxt, StyleStatusTxt : Text;
         ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
