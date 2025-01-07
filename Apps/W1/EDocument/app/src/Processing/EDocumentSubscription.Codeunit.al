@@ -171,8 +171,10 @@ codeunit 6103 "E-Document Subscription"
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
     local procedure BeforeSendEDocument(
         Sender: Record "Document Sending Profile";
-        RecordVariant: Variant; var IsHandled: Boolean;
-        ReportUsage: Integer; DocumentNoFieldNo: Integer;
+        RecordVariant: Variant;
+        var IsHandled: Boolean;
+        ReportUsage: Integer;
+        DocumentNoFieldNo: Integer;
         DocName: Text[150];
         CustomerFieldNo: Integer)
     begin
