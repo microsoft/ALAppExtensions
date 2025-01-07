@@ -19,6 +19,7 @@ page 80201 "File Share Account Wizard"
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
+    ApplicationArea = All;
 
     layout
     {
@@ -31,7 +32,6 @@ page 80201 "File Share Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
-                    ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
@@ -41,7 +41,6 @@ page 80201 "File Share Account Wizard"
 
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
                 ToolTip = 'Specifies the name of the Azure File Share account.';
                 ShowMandatory = true;
@@ -55,9 +54,7 @@ page 80201 "File Share Account Wizard"
 
             field(StorageAccountNameField; Rec."Storage Account Name")
             {
-                ApplicationArea = All;
                 Caption = 'Storage Account Name';
-                ToolTip = 'Specifies the Azure Storage name.';
                 ShowMandatory = true;
 
                 trigger OnValidate()
@@ -68,13 +65,10 @@ page 80201 "File Share Account Wizard"
 
             field("Authorization Type"; Rec."Authorization Type")
             {
-                ApplicationArea = All;
-                ToolTip = 'The way of authorizing used to access the Blob Storage.';
             }
 
             field(SecretField; Secret)
             {
-                ApplicationArea = All;
                 Caption = 'Secret';
                 ExtendedDatatype = Masked;
                 ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
@@ -83,7 +77,6 @@ page 80201 "File Share Account Wizard"
 
             field(FileShareNameField; Rec."File Share Name")
             {
-                ApplicationArea = All;
                 Caption = 'File Share Name';
                 ToolTip = 'Specifies the file share to use of the storage account.';
                 ShowMandatory = true;
@@ -102,7 +95,6 @@ page 80201 "File Share Account Wizard"
         {
             action(Back)
             {
-                ApplicationArea = All;
                 Caption = 'Back';
                 ToolTip = 'Back';
                 Image = Cancel;
@@ -116,7 +108,6 @@ page 80201 "File Share Account Wizard"
 
             action(Next)
             {
-                ApplicationArea = All;
                 Caption = 'Next';
                 Image = NextRecord;
                 Enabled = IsNextEnabled;

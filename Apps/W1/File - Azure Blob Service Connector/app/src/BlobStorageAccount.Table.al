@@ -26,18 +26,22 @@ table 80100 "Blob Storage Account"
         {
             DataClassification = CustomerContent;
             Caption = 'Name of account';
+            ToolTip = 'Specifies the name of the Storage account connection.';
         }
         field(3; "Storage Account Name"; Text[2048])
         {
             Caption = 'Storage Account Name';
+            ToolTip = 'Specifies the Azure Storage name.';
         }
         field(4; "Container Name"; Text[2048])
         {
             Caption = 'Container Name';
+            ToolTip = 'Specifies the Azure Storage Container name.';
         }
         field(7; "Authorization Type"; Enum "Blob Storage Auth. Type")
         {
             Caption = 'Authorization Type';
+            ToolTip = 'The way of authorizing used to access the Blob Storage.';
         }
         field(8; "Secret Key"; Guid)
         {
@@ -63,7 +67,7 @@ table 80100 "Blob Storage Account"
             if IsolatedStorage.Delete(Rec."Secret Key") then;
     end;
 
-    procedure SetSecret(Secret: Text)
+    procedure SetSecret(Secret: SecretText)
     begin
         if IsNullGuid(Rec."Secret Key") then
             Rec."Secret Key" := CreateGuid();

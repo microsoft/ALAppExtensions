@@ -17,6 +17,8 @@ page 80300 "SharePoint Account"
     Extensible = false;
     InsertAllowed = false;
     DataCaptionExpression = Rec.Name;
+    ApplicationArea = All;
+    UsageCategory = None;
 
     layout
     {
@@ -24,28 +26,21 @@ page 80300 "SharePoint Account"
         {
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the storage account connection.';
                 ShowMandatory = true;
                 NotBlank = true;
             }
 
             field("Tenant Id"; Rec."Tenant Id")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the Tenant Id of the App Registration.';
             }
 
             field("Client Id"; Rec."Client Id")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the the Client Id of the App Registration.';
             }
 
             field(SecretField; ClientSecret)
             {
-                ApplicationArea = All;
                 Caption = 'Password';
                 Editable = ClientSecretEditable;
                 ExtendedDatatype = Masked;
@@ -59,15 +54,11 @@ page 80300 "SharePoint Account"
 
             field("SharePoint Url"; Rec."SharePoint Url")
             {
-                ApplicationArea = All;
                 Caption = 'SharePoint Url';
-                ToolTip = 'Specifies the the url to your SharePoint site.';
             }
 
             field("Base Relative Folder Path"; Rec."Base Relative Folder Path")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the Base Relative Folder Path to use for this account.';
             }
         }
     }

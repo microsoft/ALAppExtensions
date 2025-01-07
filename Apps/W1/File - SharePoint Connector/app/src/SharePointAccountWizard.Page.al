@@ -19,6 +19,7 @@ page 80301 "SharePoint Account Wizard"
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
+    ApplicationArea = All;
 
     layout
     {
@@ -31,7 +32,6 @@ page 80301 "SharePoint Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
-                    ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
@@ -41,7 +41,6 @@ page 80301 "SharePoint Account Wizard"
 
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
                 ToolTip = 'Specifies the name of the Azure SharePoint account.';
                 ShowMandatory = true;
@@ -55,8 +54,6 @@ page 80301 "SharePoint Account Wizard"
 
             field("Tenant Id"; Rec."Tenant Id")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the Tenant Id of the App Registration.';
                 ShowMandatory = true;
 
                 trigger OnValidate()
@@ -67,8 +64,6 @@ page 80301 "SharePoint Account Wizard"
 
             field("Client Id"; Rec."Client Id")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the the Client Id of the App Registration.';
                 ShowMandatory = true;
 
                 trigger OnValidate()
@@ -79,7 +74,6 @@ page 80301 "SharePoint Account Wizard"
 
             field(ClientSecretField; ClientSecret)
             {
-                ApplicationArea = All;
                 Caption = 'Client Secret';
                 ExtendedDatatype = Masked;
                 ToolTip = 'Specifies the Client Secret of the App Registration.';
@@ -88,7 +82,6 @@ page 80301 "SharePoint Account Wizard"
 
             field("SharePoint Url"; Rec."SharePoint Url")
             {
-                ApplicationArea = All;
                 Caption = 'SharePoint Name';
                 ToolTip = 'Specifies the SharePoint to use of the storage account.';
                 ShowMandatory = true;
@@ -101,8 +94,6 @@ page 80301 "SharePoint Account Wizard"
 
             field("Base Relative Folder Path"; Rec."Base Relative Folder Path")
             {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the Base Relative Folder Path to use for this account.';
                 ShowMandatory = true;
 
                 trigger OnValidate()
@@ -119,7 +110,6 @@ page 80301 "SharePoint Account Wizard"
         {
             action(Back)
             {
-                ApplicationArea = All;
                 Caption = 'Back';
                 ToolTip = 'Back';
                 Image = Cancel;
@@ -133,7 +123,6 @@ page 80301 "SharePoint Account Wizard"
 
             action(Next)
             {
-                ApplicationArea = All;
                 Caption = 'Next';
                 Image = NextRecord;
                 Enabled = IsNextEnabled;

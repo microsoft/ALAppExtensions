@@ -17,6 +17,8 @@ page 80100 "Blob Storage Account"
     Extensible = false;
     InsertAllowed = false;
     DataCaptionExpression = Rec.Name;
+    UsageCategory = None;
+    ApplicationArea = All;
 
     layout
     {
@@ -24,29 +26,22 @@ page 80100 "Blob Storage Account"
         {
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Storage account connection.';
                 ShowMandatory = true;
                 NotBlank = true;
             }
 
             field(StorageAccountNameField; Rec."Storage Account Name")
             {
-                ApplicationArea = All;
                 Caption = 'Storage Account Name';
-                ToolTip = 'Specifies the Azure Storage name.';
             }
 
             field("Authorization Type"; Rec."Authorization Type")
             {
-                ApplicationArea = All;
-                ToolTip = 'The way of authorizing used to access the Blob Storage.';
             }
 
             field(SecretField; Secret)
             {
-                ApplicationArea = All;
                 Caption = 'Password';
                 Editable = SecretEditable;
                 ExtendedDatatype = Masked;
@@ -60,16 +55,16 @@ page 80100 "Blob Storage Account"
 
             field(ContainerNameField; Rec."Container Name")
             {
-                ApplicationArea = All;
                 Caption = 'Container Name';
-                ToolTip = 'Specifies the Azure Storage Container name.';
-
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
+                    NewContainerName: Text[2048];
                 begin
                     CurrPage.Update();
-                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Rec.GetSecret(Rec."Secret Key"), Text);
+                    NewContainerName := CopyStr(Text, 1, MaxStrLen(NewContainerName));
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Rec.GetSecret(Rec."Secret Key"), NewContainerName);
+                    Text := NewContainerName;
                     exit(true);
                 end;
             }

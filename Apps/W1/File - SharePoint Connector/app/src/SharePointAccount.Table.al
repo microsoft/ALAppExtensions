@@ -11,6 +11,7 @@ namespace System.ExternalFileStorage;
 table 80300 "SharePoint Account"
 {
     Access = Internal;
+    DataClassification = CustomerContent;
 
     Caption = 'SharePoint Account';
 
@@ -24,24 +25,28 @@ table 80300 "SharePoint Account"
 
         field(2; Name; Text[250])
         {
-            DataClassification = CustomerContent;
             Caption = 'Name of account';
+            ToolTip = 'Specifies the name of the storage account connection.';
         }
         field(4; "SharePoint Url"; Text[2048])
         {
             Caption = 'SharePoint Url';
+            ToolTip = 'Specifies the the url to your SharePoint site.';
         }
         field(5; "Base Relative Folder Path"; Text[2048])
         {
             Caption = 'Base Relative Folder Path';
+            ToolTip = 'Specifies the folder path relative to the site collection. Start with the document library or folder name (e.g., Shared Documents/Reports). This path can be copied from the URL of the folder in SharePoint after the site collection (e.g., /Shared Documents/Reports from https://mysharepoint.sharepoint.com/sites/ProjectX/Shared%20Documents/Reports).';
         }
         field(6; "Tenant Id"; Guid)
         {
             Caption = 'Tenant Id';
+            ToolTip = 'Specifies the Tenant Id of the App Registration.';
         }
         field(7; "Client Id"; Guid)
         {
             Caption = 'Client Id';
+            ToolTip = 'Specifies the the Client Id of the App Registration.';
         }
         field(8; "Client Secret Key"; Guid)
         {

@@ -19,6 +19,7 @@ page 80101 "Blob Storage Account Wizard"
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
+    ApplicationArea = All;
 
     layout
     {
@@ -31,7 +32,6 @@ page 80101 "Blob Storage Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
-                    ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
@@ -41,7 +41,6 @@ page 80101 "Blob Storage Account Wizard"
 
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
                 ToolTip = 'Specifies the name of the Azure Blob Storage account.';
                 ShowMandatory = true;
@@ -55,9 +54,7 @@ page 80101 "Blob Storage Account Wizard"
 
             field(StorageAccountNameField; Rec."Storage Account Name")
             {
-                ApplicationArea = All;
                 Caption = 'Storage Account Name';
-                ToolTip = 'Specifies the Azure Storage name.';
                 ShowMandatory = true;
 
                 trigger OnValidate()
@@ -68,13 +65,10 @@ page 80101 "Blob Storage Account Wizard"
 
             field("Authorization Type"; Rec."Authorization Type")
             {
-                ApplicationArea = All;
-                ToolTip = 'The way of authorizing used to access the Blob Storage.';
             }
 
             field(SecretField; Secret)
             {
-                ApplicationArea = All;
                 Caption = 'Secret';
                 ExtendedDatatype = Masked;
                 ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
@@ -83,7 +77,6 @@ page 80101 "Blob Storage Account Wizard"
 
             field(ContainerNameField; Rec."Container Name")
             {
-                ApplicationArea = All;
                 Caption = 'Container Name';
                 ToolTip = 'Specifies the container to use of the Storage Blob.';
                 ShowMandatory = true;
@@ -91,9 +84,12 @@ page 80101 "Blob Storage Account Wizard"
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
+                    NewContainerName: Text[2048];
                 begin
                     CurrPage.Update();
-                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Secret, Text);
+                    NewContainerName := CopyStr(Text, 1, MaxStrLen(NewContainerName));
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Secret, NewContainerName);
+                    Text := NewContainerName;
                     exit(true);
                 end;
 
@@ -111,7 +107,6 @@ page 80101 "Blob Storage Account Wizard"
         {
             action(Back)
             {
-                ApplicationArea = All;
                 Caption = 'Back';
                 ToolTip = 'Back';
                 Image = Cancel;
@@ -125,7 +120,6 @@ page 80101 "Blob Storage Account Wizard"
 
             action(Next)
             {
-                ApplicationArea = All;
                 Caption = 'Next';
                 Image = NextRecord;
                 Enabled = IsNextEnabled;

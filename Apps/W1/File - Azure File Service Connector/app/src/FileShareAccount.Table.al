@@ -11,7 +11,7 @@ namespace System.ExternalFileStorage;
 table 80200 "File Share Account"
 {
     Access = Internal;
-
+    DataClassification = CustomerContent;
     Caption = 'Azure File Share Account';
 
     fields
@@ -24,20 +24,23 @@ table 80200 "File Share Account"
 
         field(2; Name; Text[250])
         {
-            DataClassification = CustomerContent;
             Caption = 'Name of account';
+            ToolTip = 'Specifies the name of the storage account connection.';
         }
         field(3; "Storage Account Name"; Text[2048])
         {
             Caption = 'Storage Account Name';
+            ToolTip = 'Specifies the Azure Storage name.';
         }
         field(4; "File Share Name"; Text[2048])
         {
             Caption = 'File Share Name';
+            ToolTip = 'Specifies the Azure File Share name.';
         }
         field(7; "Authorization Type"; Enum "File Share Auth. Type")
         {
             Caption = 'Authorization Type';
+            ToolTip = 'The way of authorizing used to access the Blob Storage.';
         }
         field(8; "Secret Key"; Guid)
         {

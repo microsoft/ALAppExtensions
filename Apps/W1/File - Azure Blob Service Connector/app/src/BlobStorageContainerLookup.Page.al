@@ -14,6 +14,8 @@ page 80102 "Blob Storage Container Lookup"
     SourceTable = "ABS Container";
     Editable = false;
     Extensible = false;
+    ApplicationArea = All;
+    UsageCategory = None;
 
     layout
     {
@@ -23,7 +25,6 @@ page 80102 "Blob Storage Container Lookup"
             {
                 field(Name; Rec.Name)
                 {
-                    ApplicationArea = All;
                     ToolTip = 'Specifies the Name of the container.';
                 }
             }

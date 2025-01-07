@@ -17,6 +17,8 @@ page 80200 "File Share Account"
     Extensible = false;
     InsertAllowed = false;
     DataCaptionExpression = Rec.Name;
+    ApplicationArea = All;
+    UsageCategory = None;
 
     layout
     {
@@ -24,29 +26,22 @@ page 80200 "File Share Account"
         {
             field(NameField; Rec.Name)
             {
-                ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the storage account connection.';
                 ShowMandatory = true;
                 NotBlank = true;
             }
 
             field(StorageAccountNameField; Rec."Storage Account Name")
             {
-                ApplicationArea = All;
                 Caption = 'Storage Account Name';
-                ToolTip = 'Specifies the Azure Storage name.';
             }
 
             field("Authorization Type"; Rec."Authorization Type")
             {
-                ApplicationArea = All;
-                ToolTip = 'The way of authorizing used to access the Blob Storage.';
             }
 
             field(SecretField; Secret)
             {
-                ApplicationArea = All;
                 Caption = 'Password';
                 Editable = SecretEditable;
                 ExtendedDatatype = Masked;
@@ -60,9 +55,7 @@ page 80200 "File Share Account"
 
             field(FileShareNameField; Rec."File Share Name")
             {
-                ApplicationArea = All;
                 Caption = 'File Share Name';
-                ToolTip = 'Specifies the Azure File Share name.';
             }
         }
     }
