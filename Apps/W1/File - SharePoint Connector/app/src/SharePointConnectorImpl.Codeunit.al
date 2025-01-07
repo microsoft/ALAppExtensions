@@ -276,13 +276,13 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        FileShareAccountLocal: Record "SharePoint Account";
+        SharePointAccountLocal: Record "SharePoint Account";
     begin
-        if not FileShareAccountLocal.Get(AccountId) then
+        if not SharePointAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
-        FileShareAccountLocal.SetRecFilter();
-        Page.Run(Page::"SharePoint Account", FileShareAccountLocal);
+        SharePointAccountLocal.SetRecFilter();
+        Page.Run(Page::"SharePoint Account", SharePointAccountLocal);
     end;
 
     /// <summary>
@@ -292,11 +292,11 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        FileShareAccountWizard: Page "SharePoint Account Wizard";
+        SharePointAccountWizard: Page "SharePoint Account Wizard";
     begin
-        FileShareAccountWizard.RunModal();
+        SharePointAccountWizard.RunModal();
 
-        exit(FileShareAccountWizard.GetAccount(TempAccount));
+        exit(SharePointAccountWizard.GetAccount(TempAccount));
     end;
 
     /// <summary>
@@ -306,10 +306,10 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        FileShareAccountLocal: Record "SharePoint Account";
+        SharePointAccountLocal: Record "SharePoint Account";
     begin
-        if FileShareAccountLocal.Get(AccountId) then
-            exit(FileShareAccountLocal.Delete());
+        if SharePointAccountLocal.Get(AccountId) then
+            exit(SharePointAccountLocal.Delete());
 
         exit(false);
     end;
@@ -358,31 +358,31 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
 
     internal procedure CreateAccount(var AccountToCopy: Record "SharePoint Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
-        NewFileShareAccount: Record "SharePoint Account";
+        NewileShPointareAccount: Record "SharePoint Account";
     begin
-        NewFileShareAccount.TransferFields(AccountToCopy);
+        NewileShPointareAccount.TransferFields(AccountToCopy);
 
-        NewFileShareAccount.Id := CreateGuid();
-        NewFileShareAccount.SetClientSecret(Password);
+        NewileShPointareAccount.Id := CreateGuid();
+        NewileShPointareAccount.SetClientSecret(Password);
 
-        NewFileShareAccount.Insert();
+        NewileShPointareAccount.Insert();
 
-        TempFileAccount."Account Id" := NewFileShareAccount.Id;
-        TempFileAccount.Name := NewFileShareAccount.Name;
+        TempFileAccount."Account Id" := NewileShPointareAccount.Id;
+        TempFileAccount.Name := NewileShPointareAccount.Name;
         TempFileAccount.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
     end;
 
     local procedure InitSharePointClient(var AccountId: Guid; var SharePointClient: Codeunit "SharePoint Client")
     var
-        FileShareAccount: Record "SharePoint Account";
+        SharePointAccount: Record "SharePoint Account";
         SharePointAuth: Codeunit "SharePoint Auth.";
         SharePointAuthorization: Interface "SharePoint Authorization";
         Scopes: List of [Text];
     begin
-        FileShareAccount.Get(AccountId);
+        SharePointAccount.Get(AccountId);
         Scopes.Add('00000003-0000-0ff1-ce00-000000000000/.default');
-        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode(Format(FileShareAccount."Tenant Id", 0, 4), Format(FileShareAccount."Client Id", 0, 4), FileShareAccount.GetClientSecret(FileShareAccount."Client Secret Key"), Scopes);
-        SharePointClient.Initialize(FileShareAccount."SharePoint Url", SharePointAuthorization);
+        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode(Format(SharePointAccount."Tenant Id", 0, 4), Format(SharePointAccount."Client Id", 0, 4), SharePointAccount.GetClientSecret(SharePointAccount."Client Secret Key"), Scopes);
+        SharePointClient.Initialize(SharePointAccount."SharePoint Url", SharePointAuthorization);
     end;
 
     local procedure PathSeparator(): Text
@@ -411,10 +411,10 @@ codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Co
 
     local procedure InitPath(AccountId: Guid; var Path: Text)
     var
-        FileShareAccount: Record "SharePoint Account";
+        SharePointAccount: Record "SharePoint Account";
     begin
-        FileShareAccount.Get(AccountId);
-        Path := CombinePath(FileShareAccount."Base Relative Folder Path", Path);
+        SharePointAccount.Get(AccountId);
+        Path := CombinePath(SharePointAccount."Base Relative Folder Path", Path);
     end;
 
     local procedure CombinePath(Parent: Text; Child: Text): Text

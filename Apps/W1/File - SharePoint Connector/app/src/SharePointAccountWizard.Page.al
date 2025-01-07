@@ -48,7 +48,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -58,7 +58,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -68,7 +68,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -88,7 +88,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -98,7 +98,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
         }
@@ -131,7 +131,7 @@ page 80301 "SharePoint Account Wizard"
 
                 trigger OnAction()
                 begin
-                    FileShareConnectorImpl.CreateAccount(Rec, ClientSecret, FileShareAccount);
+                    SharePointConnectorImpl.CreateAccount(Rec, ClientSecret, SharePointAccount);
                     CurrPage.Close();
                 end;
             }
@@ -139,9 +139,9 @@ page 80301 "SharePoint Account Wizard"
     }
 
     var
-        FileShareAccount: Record "File Account";
+        SharePointAccount: Record "File Account";
         MediaResources: Record "Media Resources";
-        FileShareConnectorImpl: Codeunit "SharePoint Connector Impl.";
+        SharePointConnectorImpl: Codeunit "SharePoint Connector Impl.";
         [NonDebuggable]
         ClientSecret: Text;
         IsNextEnabled: Boolean;
@@ -160,10 +160,10 @@ page 80301 "SharePoint Account Wizard"
 
     internal procedure GetAccount(var FileAccount: Record "File Account"): Boolean
     begin
-        if IsNullGuid(FileShareAccount."Account Id") then
+        if IsNullGuid(SharePointAccount."Account Id") then
             exit(false);
 
-        FileAccount := FileShareAccount;
+        FileAccount := SharePointAccount;
 
         exit(true);
     end;
