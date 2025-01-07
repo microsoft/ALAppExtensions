@@ -769,6 +769,12 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
         }
+        field(133; "Order Attributes To Shopify"; Boolean)
+        {
+            Caption = 'Add Business Central Doc. No. as Attribute';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;

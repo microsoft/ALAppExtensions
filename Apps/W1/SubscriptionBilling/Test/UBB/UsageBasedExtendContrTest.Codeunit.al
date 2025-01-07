@@ -29,6 +29,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         repeat
             TestIsServiceCommitmentUpdated();
             TestIsUsageDataSubscriptionUpdated();
+            FindUsageDataGenericImportUpdated();
         until UsageDataSupplierReference.Next() = 0;
     end;
 
@@ -54,6 +55,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     end;
 
     procedure SetupUsageDataForProcessingToGenericImport()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
     begin
         UsageBasedBTestLibrary.ResetUsageBasedRecords();
         UsageBasedBTestLibrary.CreateUsageDataSupplier(UsageDataSupplier, Enum::"Usage Data Supplier Type"::Generic, true, Enum::"Vendor Invoice Per"::Import);
@@ -116,6 +119,16 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         UsageDataSubscription.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
         UsageDataSubscription.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
         UsageDataSubscription.FindFirst();
+    end;
+
+    local procedure FindUsageDataGenericImportUpdated()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+    begin
+        UsageDataGenericImport.SetRange("Subscription ID", UsageDataSupplierReference."Supplier Reference");
+        UsageDataGenericImport.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
+        UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
+        UsageDataGenericImport.FindFirst();
     end;
 
     local procedure CreateMultipleUsageDataBlobFiles()
@@ -335,7 +348,6 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         GenericImportSettings: Record "Generic Import Settings";
         UsageDataImport: Record "Usage Data Import";
         UsageDataBlob: Record "Usage Data Blob";
-        UsageDataGenericImport: Record "Usage Data Generic Import";
         ServiceObject: Record "Service Object";
         ServiceCommitment: Record "Service Commitment";
         Item: Record Item;

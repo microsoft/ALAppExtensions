@@ -26,5 +26,24 @@ pageextension 8057 "Vendor List" extends "Vendor List"
             {
             }
         }
+        addlast("Ven&dor")
+        {
+            action(Contracts)
+            {
+                AccessByPermission = tabledata "Vendor Contract" = R;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Contracts';
+                Image = FileContract;
+                RunObject = page "Vendor Contracts";
+                RunPageLink = "Buy-from Vendor No." = field("No.");
+                ToolTip = 'View a list of ongoing vendor contracts.';
+            }
+        }
+        addlast(Category_Category5)
+        {
+            actionref(Contracts_Promoted; Contracts)
+            {
+            }
+        }
     }
 }

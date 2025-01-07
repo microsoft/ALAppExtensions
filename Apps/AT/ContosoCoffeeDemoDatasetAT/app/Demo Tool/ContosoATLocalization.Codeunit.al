@@ -69,7 +69,7 @@ codeunit 11157 "Contoso AT Localization"
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate AT");
                     Codeunit.Run(Codeunit::"Create Resource AT");
                     Codeunit.Run(Codeunit::"Create VAT Template AT");
-                    Codeunit.Run(Codeunit::"Create VAT Statement NameAT");
+                    Codeunit.Run(Codeunit::"Create VAT Statement Name AT");
                     Codeunit.Run(Codeunit::"Create VAT Statement Line AT");
                 end;
         end;

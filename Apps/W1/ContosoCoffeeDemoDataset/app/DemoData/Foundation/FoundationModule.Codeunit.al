@@ -14,8 +14,10 @@ codeunit 5203 "Foundation Module" implements "Contoso Demo Data Module"
 
     procedure CreateSetupData()
     var
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         CreateCompanyInformation: Codeunit "Create Company Information";
     begin
+        ContosoCoffeeDemoDataSetup.InitRecord();
         CreateCompanyInformation.CreateSetupCompany();
         Codeunit.Run(Codeunit::"Create Shipping Data");
         Codeunit.Run(Codeunit::"Create Language");

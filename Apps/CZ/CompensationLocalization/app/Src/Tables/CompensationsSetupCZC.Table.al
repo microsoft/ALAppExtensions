@@ -75,6 +75,11 @@ table 31270 "Compensations Setup CZC"
             Caption = 'Show Empty when not Found';
             DataClassification = CustomerContent;
         }
+        field(45; "Including Entries with On Hold"; Boolean)
+        {
+            Caption = 'Including Entries with On Hold';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

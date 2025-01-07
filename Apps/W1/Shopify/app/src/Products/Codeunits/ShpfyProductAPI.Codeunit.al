@@ -88,7 +88,7 @@ codeunit 30176 "Shpfy Product API"
             end;
             GraphQuery.Append(']');
         end;
-        GraphQuery.Append(', published: true}) ');
+        GraphQuery.Append('}) ');
         GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}, userErrors {field, message}}');
         GraphQuery.Append('}"}');
 
@@ -603,9 +603,6 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery: Text;
         JResponse: JsonToken;
     begin
-        if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
-            exit;
-
         if not FilterSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 

@@ -11,6 +11,7 @@ using Microsoft.Inventory.Transfer;
 using Microsoft.QRGeneration;
 using System.Security.Encryption;
 using System.Text;
+using Microsoft.Finance.TaxBase;
 using System.Utilities;
 
 codeunit 18023 "E-InvJsonHandlerForTransShpt"
@@ -66,10 +67,10 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
         WriteJsonFileHeader();
         ReadTransactionDetails();
         ReadTransferDocumentDetails();
-        ReadDocumentTransferToDetails();
         ReadDocumentTransferFromDetails();
-        ReadDocumentValueDetails();
+        ReadDocumentTransferToDetails();
         ReadItemListDetail();
+        ReadDocumentValueDetails();
     end;
 
     local procedure Initialize()
@@ -181,16 +182,17 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
             PostingDate := Format(TransferShipmentHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
 
         OriginalDocNo := CopyStr(GetReferenceInvoiceNo(DocumentNo), 1, 16);
-        WriteDocumentHeaderDetails(CopyStr(DocumentNo, 1, 16), PostingDate, OriginalDocNo);
+        WriteDocumentHeaderDetails('INV', CopyStr(DocumentNo, 1, 16), PostingDate);
     end;
 
-    local procedure WriteDocumentHeaderDetails(DocNo: Text[16]; PostingDate: Text[10]; OriginalDocNo: Text[16])
+    local procedure WriteDocumentHeaderDetails(DocTyp: Text[20]; DocNo: Text[16]; PostingDate: Text[10])
     var
         JDocumentHeaderDetails: JsonObject;
     begin
+        JDocumentHeaderDetails.Add('Typ', DocTyp);
         JDocumentHeaderDetails.Add('No', DocNo);
         JDocumentHeaderDetails.Add('Dt', PostingDate);
-        JDocumentHeaderDetails.Add('OrgInvNo', OriginalDocNo);
+        //JDocumentHeaderDetails.Add('OrgInvNo', OriginalDocNo);
         JObject.Add('DocDtls', JDocumentHeaderDetails);
     end;
 
@@ -204,6 +206,74 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
             RefInvNo := ReferenceInvoiceNo."Reference Invoice Nos."
         else
             RefInvNo := '';
+    end;
+
+    local procedure ReadDocumentTransferToDetails()
+    var
+        Location: Record Location;
+        State: Record State;
+        TransferToName: Text[100];
+        TransferToName2: Text[50];
+        TransferToAddress: Text[100];
+        TransferToAddress2: Text[100];
+        TransferToCity: Text[60];
+        TransferToPostCode: Code[20];
+        TransferToPhoneNo: Text[30];
+        TransferToEmail: Text[80];
+        StateCode: Code[10];
+        PlaceOfSupply: Code[10];
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then
+            Location.Get(TransferShipmentHeader."Transfer-to Code");
+
+        if State.Get(Location."State Code") then
+            PlaceOfSupply := State."State Code (GST Reg. No.)";
+
+        TransferToName := Location.Name;
+        TransferToName2 := Location."Name 2";
+        TransferToAddress := Location.Address;
+        TransferToAddress2 := Location."Address 2";
+        TransferToCity := Location.City;
+        TransferToPostCode := Location."Post Code";
+        TransferToPhoneNo := Location."Phone No.";
+        TransferToEmail := Location."E-Mail";
+        StateCode := Location."State Code";
+        TransferToGSTReg := Location."GST Registration No.";
+        WriteDocumentTransferToDetails(TransferToName, TransferToName2, TransferToAddress, TransferToAddress2, TransferToCity, TransferToPostCode, StateCode, TransferToPhoneNo, TransferToEmail, TransferToGSTReg, PlaceOfSupply);
+    end;
+
+    local procedure WriteDocumentTransferToDetails(TransferToName: Text[100];
+        TransferToName2: Text[50];
+        TransferToAddress: Text[100];
+        TransferToAddress2: Text[100];
+        TransferToCity: Text[60];
+        TransferToPostCode: Code[20];
+        StateCode: Code[10];
+        TransferToPhoneNo: Text[30];
+        TransferToEmail: Text[80];
+        TransToGSTReg: code[20];
+        PlaceofSupply: Code[10])
+    var
+        BuyerDetails: JsonObject;
+    begin
+        BuyerDetails.Add('Gstin', TransToGSTReg);
+        BuyerDetails.Add('LglNm', TransferToName);
+        BuyerDetails.Add('Pos', PlaceofSupply);
+        if TransferToName2 <> '' then
+            BuyerDetails.Add('TradeName', TransferToName2);
+
+        BuyerDetails.Add('Addr1', TransferToAddress);
+
+        if TransferToAddress2 <> '' then
+            BuyerDetails.Add('Addr2', TransferToAddress2);
+
+        BuyerDetails.Add('Loc', TransferToCity);
+        BuyerDetails.Add('Pin', TransferToPostCode);
+        BuyerDetails.Add('Stcd', StateCode);
+        BuyerDetails.Add('PhoneNo', TransferToPhoneNo);
+        BuyerDetails.Add('E-mail', TransferToEmail);
+        JObject.Add('BuyerDtls', BuyerDetails);
     end;
 
     local procedure ReadDocumentTransferFromDetails()
@@ -252,85 +322,28 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
     var
         SellerDetails: JsonObject;
     begin
-        SellerDetails.Add('GSTINNO', GSTINNo);
-        SellerDetails.Add('LegalName', TransferFromName);
+        SellerDetails.Add('Gstin', GSTINNo);
+        SellerDetails.Add('LglNm', TransferFromName);
 
         if TransferFromName2 <> '' then
             SellerDetails.Add('TradeName', TransferFromName2);
 
-        SellerDetails.Add('Address1', TransferFromAddress);
+        SellerDetails.Add('Addr1', TransferFromAddress);
 
         if TransferFromAddress2 <> '' then
-            SellerDetails.Add('Address2', TransferFromAddress2);
+            SellerDetails.Add('Addr2', TransferFromAddress2);
 
-        SellerDetails.Add('Location', TransferFromCity);
-        SellerDetails.Add('PinCode', TransferFromPostCode);
-        SellerDetails.Add('StateCode', StateCode);
-        SellerDetails.Add('PhoneNo', TransferFromPhoneNo);
-        SellerDetails.Add('E-mail', TransferFromEmail);
-        JObject.Add('SellerDetails', SellerDetails);
-    end;
+        SellerDetails.Add('Loc', TransferFromCity);
+        SellerDetails.Add('Pin', TransferFromPostCode);
+        SellerDetails.Add('Stcd', StateCode);
 
-    local procedure ReadDocumentTransferToDetails()
-    var
-        Location: Record Location;
-        TransferToName: Text[100];
-        TransferToName2: Text[50];
-        TransferToAddress: Text[100];
-        TransferToAddress2: Text[100];
-        TransferToCity: Text[60];
-        TransferToPostCode: Code[20];
-        TransferToPhoneNo: Text[30];
-        TransferToEmail: Text[80];
-        StateCode: Code[10];
-    begin
-        Clear(JsonArrayData);
-        if IsInvoice then
-            Location.Get(TransferShipmentHeader."Transfer-to Code");
+        if TransferFromPhoneNo <> '' then
+            SellerDetails.Add('PhoneNo', TransferFromPhoneNo);
 
-        TransferToName := Location.Name;
-        TransferToName2 := Location."Name 2";
-        TransferToAddress := Location.Address;
-        TransferToAddress2 := Location."Address 2";
-        TransferToCity := Location.City;
-        TransferToPostCode := Location."Post Code";
-        TransferToPhoneNo := Location."Phone No.";
-        TransferToEmail := Location."E-Mail";
-        StateCode := Location."State Code";
-        TransferToGSTReg := Location."GST Registration No.";
-        WriteDocumentTransferToDetails(TransferToName, TransferToName2, TransferToAddress, TransferToAddress2, TransferToCity, TransferToPostCode, StateCode, TransferToPhoneNo, TransferToEmail, TransferToGSTReg);
-    end;
+        if TransferFromEmail <> '' then
+            SellerDetails.Add('E-mail', TransferFromEmail);
 
-    local procedure WriteDocumentTransferToDetails(TransferToName: Text[100];
-        TransferToName2: Text[50];
-        TransferToAddress: Text[100];
-        TransferToAddress2: Text[100];
-        TransferToCity: Text[60];
-        TransferToPostCode: Code[20];
-        StateCode: Code[10];
-        TransferToPhoneNo: Text[30];
-        TransferToEmail: Text[80];
-        TransferToGSTReg: code[20])
-    var
-        BuyerDetails: JsonObject;
-    begin
-        BuyerDetails.Add('GSTINNO', TransferToGSTReg);
-        BuyerDetails.Add('LegalName', TransferToName);
-
-        if TransferToName2 <> '' then
-            BuyerDetails.Add('TradeName', TransferToName2);
-
-        BuyerDetails.Add('Address1', TransferToAddress);
-
-        if TransferToAddress2 <> '' then
-            BuyerDetails.Add('Address2', TransferToAddress2);
-
-        BuyerDetails.Add('Location', TransferToCity);
-        BuyerDetails.Add('PinCode', TransferToPostCode);
-        BuyerDetails.Add('StateCode', StateCode);
-        BuyerDetails.Add('PhoneNo', TransferToPhoneNo);
-        BuyerDetails.Add('E-mail', TransferToEmail);
-        JObject.Add('BuyerDetails', BuyerDetails);
+        JObject.Add('SellerDtls', SellerDetails);
     end;
 
     local procedure ReadItemListDetail()
@@ -450,7 +463,7 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
     begin
         JItem.Add('SlNo', SlNo);
         JItem.Add('PrdDesc', ProductName);
-        JItem.Add('IsService', IsService);
+        JItem.Add('IsServc', IsService);
         JItem.Add('HsnCd', HSNCode);
         JItem.Add('Qty', Quantity);
         JItem.Add('Unit', Unit);
@@ -463,7 +476,7 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
         JItem.Add('IgstAmt', IGSTRate);
         JItem.Add('CesRt', CESSRate);
         JItem.Add('CesAmt', CESSValue);
-        JItem.Add('CesNonAdval', CessNonAdvanceAmount);
+        JItem.Add('CesNonAdvlAmt', CessNonAdvanceAmount);
         JItem.Add('TotItemVal', TotalItemValue);
 
         JsonArrayData.Add(JItem);
@@ -498,16 +511,16 @@ codeunit 18023 "E-InvJsonHandlerForTransShpt"
     var
         JDocTotalDetails: JsonObject;
     begin
-        JDocTotalDetails.Add('Assval', AssessableAmount);
+        JDocTotalDetails.Add('AssVal', AssessableAmount);
         JDocTotalDetails.Add('CgstVal', CGSTAmount);
-        JDocTotalDetails.Add('SgstVAl', SGSTAmount);
+        JDocTotalDetails.Add('SgstVal', SGSTAmount);
         JDocTotalDetails.Add('IgstVal', IGSTAmount);
         JDocTotalDetails.Add('CesVal', CessAmount);
-        JDocTotalDetails.Add('CesNonAdVal', CessNonAdvanceVal);
+        JDocTotalDetails.Add('CesNonAdvlAmt', CessNonAdvanceVal);
         JDocTotalDetails.Add('OthChrg', OtherCharges);
         JDocTotalDetails.Add('TotInvVal', TotalInvoiceAmount);
 
-        JObject.Add('ValueDetails', JDocTotalDetails);
+        JObject.Add('ValDtls', JDocTotalDetails);
     end;
 
 

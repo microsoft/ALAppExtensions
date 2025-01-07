@@ -628,6 +628,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderAttribute.SetRange("Order Id", ShopifyOrderId);
         if not OrderAttribute.IsEmpty() then
             OrderAttribute.DeleteAll();
+
         foreach JToken in JCustomAttributtes do begin
             Clear(OrderAttribute);
             OrderAttribute."Order Id" := ShopifyOrderId;
@@ -638,7 +639,9 @@ codeunit 30161 "Shpfy Import Order"
             else
 #endif
             OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
-            OrderAttribute.Insert();
+
+            if not OrderAttribute.Insert() then
+                OrderAttribute.Modify();
         end;
     end;
 

@@ -518,6 +518,11 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the customer is notified when the shipment is synchronized to Shopify.';
                 }
+                field("Order Attributes To Shopify"; Rec."Order Attributes To Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if Business Central document no. is synchronized to Shopify as order attribute.';
+                }
 #if not CLEAN24
                 field(ReplaceOrderAttributeValue; Rec."Replace Order Attribute Value")
                 {

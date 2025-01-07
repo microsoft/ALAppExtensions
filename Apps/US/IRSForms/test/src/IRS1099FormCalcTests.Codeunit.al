@@ -135,13 +135,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         for i := 1 to ArrayLen(FormBoxNo) do begin
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
             PurchaseHeader.Validate("Posting Date", PostingDate);
-            LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
             PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
             PurchaseHeader.Validate("IRS 1099 Form No.", FormNo);
             PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i]);
             PurchaseHeader.Modify(true);
+            LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
             LibraryERM.FindVendorLedgerEntry(
                 VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -213,13 +213,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                 // [GIVEN] Purchase invoice is posted for the vendor and NEC-02
                 LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
                 PurchaseHeader.Validate("Posting Date", PostingDate);
-                LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                    PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                    LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
                 PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
                 PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[i]);
                 PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j]);
                 PurchaseHeader.Modify(true);
+                LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                    PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                    LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
                 LibraryERM.FindVendorLedgerEntry(
                     VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -297,13 +297,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-02
                     LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo[i]);
                     PurchaseHeader.Validate("Posting Date", PostingDate);
-                    LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                        PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                        LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
                     PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
                     PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[j]);
                     PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j, k]);
                     PurchaseHeader.Modify(true);
+                    LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                        PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                        LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
                     LibraryERM.FindVendorLedgerEntry(
                         VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
