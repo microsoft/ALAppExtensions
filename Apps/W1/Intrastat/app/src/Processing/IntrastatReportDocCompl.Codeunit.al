@@ -135,31 +135,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             if SalesHeader."Transport Method" = '' then
                 TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, SalesHeader.FieldCaption("Transport Method")));
 
-        if not (IntrastatReportSetup."Tariff No. Mandatory") and not (IntrastatReportSetup."Net Weight Mandatory") and not (IntrastatReportSetup."Country/Region of Origin Mand.") then begin
-            if TempErrorMessage.HasErrors(true) then
-                TempErrorMessage.ShowErrorMessages(true);
-            exit;
-        end;
-
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange(Type, SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                if IntrastatReportSetup."Net Weight Mandatory" then
-                    if SalesLine."Net Weight" = 0 then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, SalesLine.FieldCaption("Net Weight"), SalesLine."Line No."));
-
-                if IntrastatReportSetup."Tariff No. Mandatory" then
-                    if Item.Get(SalesLine."No.") and (Item."Tariff No." = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Tariff No."), SalesLine."Line No."));
-
-                if IntrastatReportSetup."Country/Region of Origin Mand." then
-                    if Item.Get(SalesLine."No.") and (Item."Country/Region of Origin Code" = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Country/Region of Origin Code"), SalesLine."Line No."));
-
-            until SalesLine.Next() = 0;
-
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
     end;
@@ -217,31 +192,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             if PurchHeader."Transport Method" = '' then
                 TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, PurchHeader.FieldCaption("Transport Method")));
 
-        if not (IntrastatReportSetup."Tariff No. Mandatory") and not (IntrastatReportSetup."Net Weight Mandatory") and not (IntrastatReportSetup."Country/Region of Origin Mand.") then begin
-            if TempErrorMessage.HasErrors(true) then
-                TempErrorMessage.ShowErrorMessages(true);
-            exit;
-        end;
-
-        PurchLine.SetRange("Document Type", PurchHeader."Document Type");
-        PurchLine.SetRange("Document No.", PurchHeader."No.");
-        PurchLine.SetRange(Type, PurchLine.Type::Item);
-        if PurchLine.FindSet() then
-            repeat
-                if IntrastatReportSetup."Net Weight Mandatory" then
-                    if PurchLine."Net Weight" = 0 then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, PurchLine.FieldCaption("Net Weight"), PurchLine."Line No."));
-
-                if IntrastatReportSetup."Tariff No. Mandatory" then
-                    if Item.Get(PurchLine."No.") and (Item."Tariff No." = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Tariff No."), PurchLine."Line No."));
-
-                if IntrastatReportSetup."Country/Region of Origin Mand." then
-                    if Item.Get(PurchLine."No.") and (Item."Country/Region of Origin Code" = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Country/Region of Origin Code"), PurchLine."Line No."));
-
-            until PurchLine.Next() = 0;
-
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
     end;
@@ -282,29 +232,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         if IntrastatReportSetup."Transport Method Mandatory" then
             if TransHeader."Transport Method" = '' then
                 TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransHeader.FieldCaption("Transport Method")));
-
-        if not (IntrastatReportSetup."Tariff No. Mandatory") and not (IntrastatReportSetup."Net Weight Mandatory") and not (IntrastatReportSetup."Country/Region of Origin Mand.") then begin
-            if TempErrorMessage.HasErrors(true) then
-                TempErrorMessage.ShowErrorMessages(true);
-            exit;
-        end;
-
-        TransferLine.SetRange("Document No.", TransHeader."No.");
-        if TransferLine.FindSet() then
-            repeat
-                if IntrastatReportSetup."Net Weight Mandatory" then
-                    if TransferLine."Net Weight" = 0 then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, TransferLine.FieldCaption("Net Weight"), TransferLine."Line No."));
-
-                if IntrastatReportSetup."Tariff No. Mandatory" then
-                    if Item.Get(TransferLine."Item No.") and (Item."Tariff No." = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Tariff No."), TransferLine."Line No."));
-
-                if IntrastatReportSetup."Country/Region of Origin Mand." then
-                    if Item.Get(TransferLine."Item No.") and (Item."Country/Region of Origin Code" = '') then
-                        TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldsLineErr, Item.FieldCaption("Country/Region of Origin Code"), TransferLine."Line No."));
-
-            until TransferLine.Next() = 0;
 
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
