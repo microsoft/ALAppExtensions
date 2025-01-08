@@ -11,7 +11,6 @@ namespace System.ExternalFileStorage;
 table 4580 "SharePoint Account"
 {
     DataClassification = CustomerContent;
-
     Caption = 'SharePoint Account';
 
     fields

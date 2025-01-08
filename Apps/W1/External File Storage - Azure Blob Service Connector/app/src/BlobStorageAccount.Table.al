@@ -11,7 +11,7 @@ namespace System.ExternalFileStorage;
 table 4560 "Blob Storage Account"
 {
     Access = Internal;
-
+    DataClassification = CustomerContent;
     Caption = 'Azure Blob Storage Account';
 
     fields
@@ -24,7 +24,6 @@ table 4560 "Blob Storage Account"
 
         field(2; Name; Text[250])
         {
-            DataClassification = CustomerContent;
             Caption = 'Name of account';
             ToolTip = 'Specifies the name of the Storage account connection.';
         }
