@@ -251,6 +251,18 @@ table 6103 "E-Document Service"
             ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
             DataClassification = SystemMetadata;
         }
+        field(29; "Buyer Reference"; Enum "E-Document Buyer Reference")
+        {
+            Caption = 'Buyer Reference';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the buyer reference for the document export.';
+        }
+        field(30; "Buyer Reference Mandatory"; Boolean)
+        {
+            Caption = 'Buyer Reference Mandatory';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies whether the buyer reference is mandatory for the document.';
+        }
     }
     keys
     {

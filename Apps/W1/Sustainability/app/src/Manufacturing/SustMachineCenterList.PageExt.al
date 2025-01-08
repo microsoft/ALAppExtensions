@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Manufacturing;
 
 using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6257 "Sust. Machine Center List" extends "Machine Center List"
 {
@@ -12,6 +13,7 @@ pageextension 6257 "Sust. Machine Center List" extends "Machine Center List"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -27,4 +29,21 @@ pageextension 6257 "Sust. Machine Center List" extends "Machine Center List"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        VisibleSustainabilityControls();
+    end;
+
+    local procedure VisibleSustainabilityControls()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+
+        SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions";
+    end;
+
+    var
+        SustainabilityVisible: Boolean;
 }

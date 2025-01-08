@@ -43,9 +43,15 @@ codeunit 13915 "Import XRechnung Document"
 
         case UpperCase(DocumentType) of
             'INVOICE':
-                ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType));
+                if DocumentNamespace <> '' then
+                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType))
+                else
+                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, DocumentType);
             'CREDITNOTE':
-                ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType));
+                if DocumentNamespace <> '' then
+                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType))
+                else
+                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, DocumentType);
         end;
     end;
 
@@ -68,9 +74,15 @@ codeunit 13915 "Import XRechnung Document"
 
         case UpperCase(DocumentType) of
             'INVOICE':
-                CreateInvoice(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType));
+                if DocumentNamespace <> '' then
+                    CreateInvoice(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType))
+                else
+                    CreateInvoice(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, DocumentType);
             'CREDITNOTE':
-                CreateCreditMemo(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType));
+                if DocumentNamespace <> '' then
+                    CreateCreditMemo(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, StrSubstNo(DocumentTypeLbl, DocumentNamespace, DocumentType))
+                else
+                    CreateCreditMemo(EDocument, PurchaseHeader, PurchaseLine, TempXMLBuffer, DocumentType);
         end;
         FeatureTelemetry.LogUsage('0000EXJ', FeatureNameTok, StrSubstNo(EndEventNameTok, EDocument."Document Type", EDocument."Incoming E-Document No."));
     end;
@@ -116,8 +128,7 @@ codeunit 13915 "Import XRechnung Document"
         VATRegistrationNo: Text[20];
         VendorNo: Code[20];
     begin
-        if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID') in ['EM', '0198'] then
-            VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VATRegistrationNo));
+        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(VATRegistrationNo));
 
         if VATRegistrationNo = '' then
             if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID') in ['EM', '0198'] then
@@ -143,13 +154,12 @@ codeunit 13915 "Import XRechnung Document"
         EDocument."Receiving Company Name" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName'), 1, MaxStrLen(EDocument."Receiving Company Name"));
         EDocument."Receiving Company Address" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
 
-        if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID') = '0094' then
-            EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
+        EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
         if EDocument."Receiving Company GLN" = '' then
             if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID') = '0094' then
                 EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
-        if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID') in ['EM', '0198'] then
-            EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
+
+        EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
         if EDocument."Receiving Company VAT Reg. No." = '' then
             if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID') in ['EM', '0198'] then
                 EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));

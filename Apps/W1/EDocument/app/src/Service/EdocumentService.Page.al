@@ -177,6 +177,15 @@ page 6133 "E-Document Service"
                     }
                 }
             }
+            group(Export)
+            {
+                field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
+                {
+                }
+                field("Buyer Reference"; Rec."Buyer Reference")
+                {
+                }
+            }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {
                 ApplicationArea = All;

@@ -868,6 +868,43 @@ codeunit 148010 "IRS 1099 Document Tests"
 #endif
     end;
 
+    [Test]
+    procedure AddSecondLineInFormDocWithDiffBoxNo()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine, NewIRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
+    begin
+        // [SCENARIO 560523] Stan can add a second line to the form document with a different box number
+
+        Initialize();
+        // [GIVEN] IRS Form Document with MISC code
+        IRS1099FormDocHeader.Validate("Period No.", LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate()));
+        IRS1099FormDocHeader.Validate("Vendor No.", LibraryPurchase.CreateVendorNo());
+        IRS1099FormDocHeader.Validate("Form No.", LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate()));
+        IRS1099FormDocHeader.Insert(true);
+        // [GIVEN] First line of the document has MISC-01
+        IRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
+        IRS1099FormDocLine.Validate("Line No.", 10000);
+        IRS1099FormDocLine.Validate("Period No.", IRS1099FormDocHeader."Period No.");
+        IRS1099FormDocLine.Validate("Vendor No.", IRS1099FormDocHeader."Vendor No.");
+        IRS1099FormDocLine.Validate("Form No.", IRS1099FormDocHeader."Form No.");
+        IRS1099FormDocLine.Validate(
+            "Form Box No.",
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), IRS1099FormDocHeader."Form No."));
+        IRS1099FormDocLine.Insert(true);
+        // [GIVEN] Second line is added
+        NewIRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
+        NewIRS1099FormDocLine.Validate("Period No.", IRS1099FormDocHeader."Period No.");
+        NewIRS1099FormDocLine.Validate("Vendor No.", IRS1099FormDocHeader."Vendor No.");
+        NewIRS1099FormDocLine.Validate("Form No.", IRS1099FormDocHeader."Form No.");
+        // [WHEN] Validate Form Box No. with MISC-02
+        NewIRS1099FormDocLine.Validate(
+            "Form Box No.",
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), IRS1099FormDocHeader."Form No."));
+        // [THEN] Form Box No. is validated
+        NewIRS1099FormDocLine.TestField("Form Box No.");
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";

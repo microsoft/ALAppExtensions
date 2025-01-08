@@ -118,10 +118,17 @@ codeunit 12214 "Serv. Decl. Exp. Ext. IT"
 
     local procedure GetTotals(ServiceDeclarationHeader: Record "Service Declaration Header"): Text
     var
+        ServiceDeclarationLine: Record "Service Declaration Line";
         OutText: Text;
         Amount, LineCount : Integer;
     begin
         LocalServiceDeclarationMgt.GetTotals(Amount, LineCount);
+
+        ServiceDeclarationLine.SetRange("Service Declaration No.", ServiceDeclarationHeader."No.");
+        if not ServiceDeclarationLine.IsEmpty() then begin
+            ServiceDeclarationLine.CalcSums(Amount);
+            Amount := Abs(Round(ServiceDeclarationLine.Amount, 1));
+        end;
 
         if ServiceDeclarationHeader."Corrective Entry" then begin
             OutText += Format('').PadLeft(54, '0');

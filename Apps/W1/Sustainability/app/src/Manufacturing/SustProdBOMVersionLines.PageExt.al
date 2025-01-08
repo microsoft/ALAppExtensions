@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Manufacturing;
 
 using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6244 "Sust. Prod. BOM Version Lines" extends "Production BOM Version Lines"
 {
@@ -11,8 +12,26 @@ pageextension 6244 "Sust. Prod. BOM Version Lines" extends "Production BOM Versi
             field("CO2e per Unit"; Rec."CO2e per Unit")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
                 ToolTip = 'Specifies the value of the CO2e per Unit field.';
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        VisibleSustainabilityControls();
+    end;
+
+    local procedure VisibleSustainabilityControls()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+
+        SustainabilityVisible := SustainabilitySetup."Item Emissions";
+    end;
+
+    var
+        SustainabilityVisible: Boolean;
 }

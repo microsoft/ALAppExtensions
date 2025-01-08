@@ -51,6 +51,7 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;

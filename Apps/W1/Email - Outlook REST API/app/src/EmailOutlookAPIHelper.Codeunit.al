@@ -427,6 +427,8 @@ codeunit 4509 "Email - Outlook API Helper"
         SenderEmail := GetTextFromJsonObject(SenderObject, 'address');
 
         HTMLBody := Filters."Body Type" = Filters."Body Type"::HTML;
+        if Filters."Last Message Only" then
+            Body := KeepLastMessageOnly(Body);
         EmailMessage.Create('', Subject, Body, HTMLBody, true);
 
         if HasAttachments then
@@ -447,6 +449,51 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailInbox."Is Draft" := IsDraft;
         EmailInbox.Insert();
         EmailInbox.Mark(true);
+    end;
+
+    /// <summary>
+    /// Keep only the last message in the email body.
+    /// </summary>
+    /// <param name="Value">Email body.</param>
+    /// <returns>Cleaned email body.</returns>
+    /// <remarks>The last message is the message that is the reply to the email. The history of the email is removed.</remarks>
+    local procedure KeepLastMessageOnly(Value: Text): Text
+    begin
+        Value := RemoveOutlookHistory(Value);
+        Value := RemoveGmailHistory(Value);
+        Value := RemoveYahooHistory(Value);
+        exit(Value);
+    end;
+
+    local procedure RemoveOutlookHistory(Value: Text): Text
+    var
+        RemoveFromLbl: Label '<div id="appendonsend">', Locked = true;
+    begin
+        exit(RemoveHistory(Value, RemoveFromLbl));
+    end;
+
+    local procedure RemoveGmailHistory(Value: Text): Text
+    var
+        RemoveFromLbl: Label '<div class="gmail_quote gmail_quote_container">', Locked = true;
+    begin
+        exit(RemoveHistory(Value, RemoveFromLbl));
+    end;
+
+    local procedure RemoveYahooHistory(Value: Text): Text
+    var
+        RemoveFromLbl: Label '<div id="yahoo_quoted', Locked = true;
+    begin
+        exit(RemoveHistory(Value, RemoveFromLbl));
+    end;
+
+    local procedure RemoveHistory(Value: Text; Match: Text): Text
+    var
+        Pos: Integer;
+    begin
+        Pos := StrPos(Value, Match);
+        if Pos > 0 then
+            exit(CopyStr(Value, 1, Pos - 1) + '</body></html>');
+        exit(Value);
     end;
 
     local procedure AddAttachmentsToMessage(EmailJsonObject: JsonObject; var EmailMessage: Codeunit "Email Message")
