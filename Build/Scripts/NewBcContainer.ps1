@@ -10,9 +10,10 @@ if ("$env:GITHUB_RUN_ID" -eq "") {
     $parameters.shortcuts = "none"
 }
 
+Write-Host "Creating container"
 New-BcContainer @parameters
 
-$installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
+$installedApps = Get-BcContainerAppInfo -containerName $parameters.ContainerName -tenantSpecificProperties -sort DependenciesLast
 $installedApps | ForEach-Object {
     Write-Host "Removing $($_.Name)"
     if ($_.Name -notin @("System Application", "Business Foundation", "Base Application", "Application", "Test Runner", "AI Test Toolkit")) {
