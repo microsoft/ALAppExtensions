@@ -8,9 +8,8 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Holds the information for all file accounts that are registered via the SharePoint connector
 /// </summary>
-table 80300 "SharePoint Account"
+table 4580 "SharePoint Account"
 {
-    Access = Internal;
     DataClassification = CustomerContent;
 
     Caption = 'SharePoint Account';
@@ -40,11 +39,13 @@ table 80300 "SharePoint Account"
         }
         field(6; "Tenant Id"; Guid)
         {
+            Access = Internal;
             Caption = 'Tenant Id';
             ToolTip = 'Specifies the Tenant Id of the App Registration.';
         }
         field(7; "Client Id"; Guid)
         {
+            Access = Internal;
             Caption = 'Client Id';
             ToolTip = 'Specifies the the Client Id of the App Registration.';
         }

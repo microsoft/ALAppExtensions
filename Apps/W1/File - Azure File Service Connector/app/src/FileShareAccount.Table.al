@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Holds the information for all file accounts that are registered via the File Share connector
 /// </summary>
-table 80200 "File Share Account"
+table 4570 "File Share Account"
 {
     Access = Internal;
     DataClassification = CustomerContent;

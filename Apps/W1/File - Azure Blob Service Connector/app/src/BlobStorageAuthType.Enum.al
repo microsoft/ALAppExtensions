@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-enum 80100 "Blob Storage Auth. Type"
+enum 4560 "Blob Storage Auth. Type"
 {
     Access = Internal;
 

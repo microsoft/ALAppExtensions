@@ -10,7 +10,7 @@ Using System.Environment;
 /// <summary>
 /// Displays an account that is being registered via the Blob Storage connector.
 /// </summary>
-page 80101 "Blob Storage Account Wizard"
+page 4561 "Blob Storage Account Wizard"
 {
     Caption = 'Setup Azure Blob Storage Account';
     SourceTable = "Blob Storage Account";

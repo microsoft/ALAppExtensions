@@ -10,7 +10,7 @@ using System.Utilities;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
 
-codeunit 80200 "File Share Connector Impl." implements "External File Storage Connector"
+codeunit 4570 "File Share Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
     Permissions = tabledata "File Share Account" = rimd;

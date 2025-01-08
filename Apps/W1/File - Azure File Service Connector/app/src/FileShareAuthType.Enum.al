@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-enum 80200 "File Share Auth. Type"
+enum 4570 "File Share Auth. Type"
 {
     Access = Internal;
 

@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 80102 "Blob Stor. - Edit"
+permissionset 4562 "Blob Stor. - Edit"
 {
     Assignable = false;
     Access = Public;

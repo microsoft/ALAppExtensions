@@ -10,7 +10,7 @@ Using System.Environment;
 /// <summary>
 /// Displays an account that is being registered via the File Share connector.
 /// </summary>
-page 80201 "File Share Account Wizard"
+page 4571 "File Share Account Wizard"
 {
     Caption = 'Setup Azure File Share Account';
     SourceTable = "File Share Account";

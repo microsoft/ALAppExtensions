@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 80301 "SharePoint - Read"
+permissionset 4581 "SharePoint - Read"
 {
     Assignable = false;
     Access = Public;

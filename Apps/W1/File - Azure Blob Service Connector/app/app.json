@@ -1,28 +1,28 @@
 {
     "id":  "c9ce86fe-cb70-4b79-be03-d21856b1a4ca",
-    "name":  "File - Azure Blob Service Connector",
+    "name":  "External File Storage - Azure Blob Service Connector",
     "publisher":  "Microsoft",
-    "brief":  "Enable all users to use a Azure Blob Storage to save files from Business Central.",
-    "description":  "This app enables all users to store files in the smae azure blob storage in Business Central.",
-    "version":  "25.0.0.0",
+    "brief":  "Enables file and folder operations for Azure Blob Service Containers via the External File Storage Module with Business Central.",
+    "description":  "This app enables file and folder operations for Azure Blob Service Containers via the External File Storage Module with Business Central.",
+    "version":  "26.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
+    "application":  "26.0.0.0",
     "internalsVisibleTo":  [],
     "dependencies":  [],
     "screenshots":  [],
-                    "platform":  "25.0.0.0",
+                    "platform":  "26.0.0.0",
     "idRanges":  [
                      {
-                         "from":  80100,
-                         "to":  80199
+                         "from":  4560,
+                         "to":  4569
                      }
                  ],
     "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
+                                   "allowDebugging":  true,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },

@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the File Share connector.
 /// </summary>
-page 80200 "File Share Account"
+page 4570 "File Share Account"
 {
     SourceTable = "File Share Account";
     Caption = 'Azure File Share Account';

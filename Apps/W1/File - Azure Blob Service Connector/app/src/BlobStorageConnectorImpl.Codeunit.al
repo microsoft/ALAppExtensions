@@ -9,7 +9,7 @@ using System.Text;
 using System.Utilities;
 using System.Azure.Storage;
 
-codeunit 80100 "Blob Storage Connector Impl." implements "External File Storage Connector"
+codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
     Permissions = tabledata "Blob Storage Account" = rimd;

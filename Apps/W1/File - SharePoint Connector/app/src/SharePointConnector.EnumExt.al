@@ -8,12 +8,12 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Enum extension to register the SharePoint connector.
 /// </summary>
-enumextension 80300 "SharePoint Connector" extends "Ext. File Storage Connector"
+enumextension 4580 "SharePoint Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The SharePoint connector.
     /// </summary>
-    value(80300; "SharePoint")
+    value(4580; "SharePoint")
     {
         Caption = 'SharePoint';
         Implementation = "External File Storage Connector" = "SharePoint Connector Impl.";

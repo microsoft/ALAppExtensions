@@ -9,7 +9,7 @@ using System.Text;
 using System.Integration.Sharepoint;
 using System.Utilities;
 
-codeunit 80300 "SharePoint Connector Impl." implements "External File Storage Connector"
+codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
     Permissions = tabledata "SharePoint Account" = rimd;

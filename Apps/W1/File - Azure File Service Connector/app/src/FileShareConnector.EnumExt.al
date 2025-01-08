@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Enum extension to register the File Share connector.
 /// </summary>
-enumextension 80200 "File Share Connector" extends "Ext. File Storage Connector"
+enumextension 4570 "File Share Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The File Share connector.

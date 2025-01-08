@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the SharePoint connector.
 /// </summary>
-page 80300 "SharePoint Account"
+page 4580 "SharePoint Account"
 {
     SourceTable = "SharePoint Account";
     Caption = 'SharePoint Account';

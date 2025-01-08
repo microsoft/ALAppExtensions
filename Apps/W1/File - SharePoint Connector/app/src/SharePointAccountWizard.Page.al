@@ -10,7 +10,7 @@ Using System.Environment;
 /// <summary>
 /// Displays an account that is being registered via the SharePoint connector.
 /// </summary>
-page 80301 "SharePoint Account Wizard"
+page 4581 "SharePoint Account Wizard"
 {
     Caption = 'Setup SharePoint Account';
     SourceTable = "SharePoint Account";

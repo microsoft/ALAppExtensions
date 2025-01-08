@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Enum extension to register the Blob Storage connector.
 /// </summary>
-enumextension 80100 "Blob Storage Connector" extends "Ext. File Storage Connector"
+enumextension 4560 "Blob Storage Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The Blob Storage connector.

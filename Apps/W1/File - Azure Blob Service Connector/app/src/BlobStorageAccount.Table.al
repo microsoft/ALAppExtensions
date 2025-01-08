@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Holds the information for all file accounts that are registered via the Blob Storage connector
 /// </summary>
-table 80100 "Blob Storage Account"
+table 4560 "Blob Storage Account"
 {
     Access = Internal;
 

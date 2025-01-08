@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 80202 "File Share - Edit"
+permissionset 4572 "File Share - Edit"
 {
     Assignable = false;
     Access = Public;

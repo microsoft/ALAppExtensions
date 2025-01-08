@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionsetextension 80200 "File Storage - Admin - File Share" extends "File Storage - Admin"
+permissionsetextension 4570 "File Storage - Admin - File Share" extends "File Storage - Admin"
 {
     IncludedPermissionSets = "File Share - Edit";
 }

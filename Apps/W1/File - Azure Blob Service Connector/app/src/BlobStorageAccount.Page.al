@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the Blob Storage connector.
 /// </summary>
-page 80100 "Blob Storage Account"
+page 4560 "Blob Storage Account"
 {
     SourceTable = "Blob Storage Account";
     Caption = 'Azure Blob Storage Account';

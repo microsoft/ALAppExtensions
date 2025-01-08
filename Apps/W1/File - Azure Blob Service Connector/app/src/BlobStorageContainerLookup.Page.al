@@ -7,7 +7,7 @@ namespace System.ExternalFileStorage;
 
 using System.Azure.Storage;
 
-page 80102 "Blob Storage Container Lookup"
+page 4562 "Blob Storage Container Lookup"
 {
     Caption = 'Container Lookup';
     PageType = List;
