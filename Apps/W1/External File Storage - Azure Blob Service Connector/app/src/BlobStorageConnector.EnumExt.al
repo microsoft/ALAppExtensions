@@ -13,7 +13,7 @@ enumextension 4560 "Blob Storage Connector" extends "Ext. File Storage Connector
     /// <summary>
     /// The Blob Storage connector.
     /// </summary>
-    value(80100; "Blob Storage")
+    value(4560; "Blob Storage")
     {
         Caption = 'Blob Storage';
         Implementation = "External File Storage Connector" = "Blob Storage Connector Impl.";

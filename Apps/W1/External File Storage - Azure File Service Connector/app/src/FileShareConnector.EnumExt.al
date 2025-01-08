@@ -13,7 +13,7 @@ enumextension 4570 "File Share Connector" extends "Ext. File Storage Connector"
     /// <summary>
     /// The File Share connector.
     /// </summary>
-    value(80200; "File Share")
+    value(4570; "File Share")
     {
         Caption = 'File Share';
         Implementation = "External File Storage Connector" = "File Share Connector Impl.";
