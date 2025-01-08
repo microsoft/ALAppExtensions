@@ -10,6 +10,6 @@
         "..\\..\\..\\Apps\\W1\\SyncBase"
     ],
     "doNotRunTests": true,
-    "useCompilerFolder": true,
+    "useCompilerFolder": false,
     "doNotPublishApps": true
 }
