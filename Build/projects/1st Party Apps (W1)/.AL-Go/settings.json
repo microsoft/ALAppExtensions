@@ -11,5 +11,5 @@
     ],
     "doNotRunTests": true,
     "useCompilerFolder": false,
-    "doNotPublishApps": true
+    "doNotPublishApps": false
 }
