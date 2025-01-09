@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Enum extension to register the File Share connector.
 /// </summary>
-enumextension 4820 "Local File Connector" extends "Ext. File Storage Connector"
+enumextension 4820 "Ext. Local File Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
     /// The File Share connector.
@@ -16,6 +16,6 @@ enumextension 4820 "Local File Connector" extends "Ext. File Storage Connector"
     value(4820; "Local File")
     {
         Caption = 'Local File';
-        Implementation = "External File Storage Connector" = "Local File Connector Impl.";
+        Implementation = "External File Storage Connector" = "Ext. Local File Connector Impl";
     }
 }

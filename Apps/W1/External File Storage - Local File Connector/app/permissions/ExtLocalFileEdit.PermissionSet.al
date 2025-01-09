@@ -5,15 +5,14 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4820 "Local File - Objects"
+permissionset 4822 "Ext. Local File - Edit"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'Local File - Objects';
+    Caption = 'Local File - Edit';
+
+    IncludedPermissionSets = "Ext. Local File - Read";
 
     Permissions =
-        table "Local File Account" = X,
-        codeunit "Local File Connector Impl." = X,
-        page "Local File Account Wizard" = X,
-        page "Local File Account" = X;
+        tabledata "Ext. Local File Account" = imd;
 }

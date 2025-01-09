@@ -8,12 +8,12 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the File Share connector.
 /// </summary>
-page 4820 "Local File Account"
+page 4820 "Ext. Local File Account"
 {
     ApplicationArea = All;
-    SourceTable = "Local File Account";
+    SourceTable = "Ext. Local File Account";
     Caption = 'Local File Account';
-    Permissions = tabledata "Local File Account" = rimd;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
     PageType = Card;
     Extensible = false;
     InsertAllowed = false;

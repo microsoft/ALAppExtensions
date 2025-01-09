@@ -7,15 +7,15 @@ namespace System.ExternalFileStorage;
 
 using System.Text;
 using System.Utilities;
-using System.Azure.Storage;
-using System.Azure.Storage.Files;
 using System.IO;
 using System;
 
-codeunit 4820 "Local File Connector Impl." implements "External File Storage Connector"
+codeunit 4820 "Ext. Local File Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Local File Account" = rimd;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     var
         ConnectorDescriptionTxt: Label 'Use Local File to store and retrieve files from the server file system.';
@@ -30,7 +30,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <param name="Files">A list with all files stored in the path.</param>
     procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     var
-        LocalFileAccount: Record "Local File Account";
+        LocalFileAccount: Record "Ext. Local File Account";
         LocalFile: Record File;
     begin
         LocalFileAccount.Get(AccountId);
@@ -160,7 +160,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <param name="Files">A list with all directories stored in the path.</param>
     procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var FileAccountContent: Record "File Account Content" temporary)
     var
-        LocalFileAccount: Record "Local File Account";
+        LocalFileAccount: Record "Ext. Local File Account";
         LocalFile: Record File;
     begin
         FilePaginationData.SetEndOfListing(true);
@@ -231,7 +231,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <param name="Accounts">Out parameter holding all the registered accounts for the File Share connector.</param>
     procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
-        Account: Record "Local File Account";
+        Account: Record "Ext. Local File Account";
     begin
         if not Account.FindSet() then
             exit;
@@ -250,13 +250,13 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        FileShareAccountLocal: Record "Local File Account";
+        FileShareAccountLocal: Record "Ext. Local File Account";
     begin
         if not FileShareAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
         FileShareAccountLocal.SetRecFilter();
-        Page.Run(Page::"Local File Account", FileShareAccountLocal);
+        Page.Run(Page::"Ext. Local File Account", FileShareAccountLocal);
     end;
 
     /// <summary>
@@ -266,7 +266,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        FileShareAccountWizard: Page "Local File Account Wizard";
+        FileShareAccountWizard: Page "Ext. Local File Account Wizard";
     begin
         FileShareAccountWizard.RunModal();
 
@@ -280,7 +280,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        FileShareAccountLocal: Record "Local File Account";
+        FileShareAccountLocal: Record "Ext. Local File Account";
     begin
         if FileShareAccountLocal.Get(AccountId) then
             exit(FileShareAccountLocal.Delete());
@@ -310,7 +310,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
         exit(Base64Convert.ToBase64(Stream));
     end;
 
-    internal procedure IsAccountValid(var Account: Record "Local File Account" temporary): Boolean
+    internal procedure IsAccountValid(var Account: Record "Ext. Local File Account" temporary): Boolean
     begin
         if Account.Name = '' then
             exit(false);
@@ -322,9 +322,9 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
     end;
 
     [NonDebuggable]
-    internal procedure CreateAccount(var AccountToCopy: Record "Local File Account"; var FileAccount: Record "File Account")
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. Local File Account"; var FileAccount: Record "File Account")
     var
-        NewFileShareAccount: Record "Local File Account";
+        NewFileShareAccount: Record "Ext. Local File Account";
     begin
         NewFileShareAccount.TransferFields(AccountToCopy);
         NewFileShareAccount.Id := CreateGuid();
@@ -359,7 +359,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
 
     local procedure GetLocalPath(AccountId: Guid; Path: Text) LocalPath: Text
     var
-        LocalFileAccount: Record "Local File Account";
+        LocalFileAccount: Record "Ext. Local File Account";
     begin
         LocalFileAccount.Get(AccountId);
         LocalFileAccount.TestField("Base Path");
@@ -378,7 +378,7 @@ codeunit 4820 "Local File Connector Impl." implements "External File Storage Con
         exit(Path.Replace(PathSeparator(), '\'));
     end;
 
-    local procedure GetParentPath(LocalFileAccount: Record "Local File Account"; Path: Text): Text
+    local procedure GetParentPath(LocalFileAccount: Record "Ext. Local File Account"; Path: Text): Text
     var
         LocalPath: Text;
     begin

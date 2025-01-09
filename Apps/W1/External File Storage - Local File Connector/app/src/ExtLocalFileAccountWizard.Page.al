@@ -10,12 +10,12 @@ Using System.Environment;
 /// <summary>
 /// Displays an account that is being registered via the File Share connector.
 /// </summary>
-page 4821 "Local File Account Wizard"
+page 4821 "Ext. Local File Account Wizard"
 {
     Caption = 'Setup Local File Account';
-    SourceTable = "Local File Account";
+    SourceTable = "Ext. Local File Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "Local File Account" = rimd;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
@@ -107,7 +107,7 @@ page 4821 "Local File Account Wizard"
     var
         LocalFileAccount: Record "File Account";
         MediaResources: Record "Media Resources";
-        FileShareConnectorImpl: Codeunit "Local File Connector Impl.";
+        FileShareConnectorImpl: Codeunit "Ext. Local File Connector Impl";
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
 
