@@ -13,6 +13,8 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
 {
     Access = Internal;
     Permissions = tabledata "Ext. SharePoint Account" = rimd;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     var
         ConnectorDescriptionTxt: Label 'Use SharePoint to store and retrieve files.', MaxLength = 250;

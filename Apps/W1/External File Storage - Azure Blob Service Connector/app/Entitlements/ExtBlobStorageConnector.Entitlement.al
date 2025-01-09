@@ -5,14 +5,9 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4580 "Ext. SharePoint - Objects"
+entitlement "Ext. Blob Storage Connector"
 {
-    Assignable = false;
-    Access = Public;
-    Caption = 'SharePoint - Objects';
+    Type = Implicit;
 
-    Permissions =
-        table "Ext. SharePoint Account" = X,
-        page "Ext. SharePoint Account Wizard" = X,
-        page "Ext. SharePoint Account" = X;
+    ObjectEntitlements = "Ext. Blob Stor. - Objects";
 }

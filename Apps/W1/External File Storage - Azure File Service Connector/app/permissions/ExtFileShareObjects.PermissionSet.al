@@ -13,7 +13,6 @@ permissionset 4570 "Ext. File Share - Objects"
 
     Permissions =
         table "Ext. File Share Account" = X,
-        codeunit "Ext. File Share Connector Impl" = X,
         page "Ext. File Share Account Wizard" = X,
         page "Ext. File Share Account" = X;
 }

@@ -6,7 +6,6 @@
 namespace System.ExternalFileStorage;
 
 using System.Text;
-using System.Utilities;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
 
@@ -14,6 +13,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
 {
     Access = Internal;
     Permissions = tabledata "Ext. File Share Account" = rimd;
+    InherentPermissions = X;
+    InherentEntitlements = X;
 
     var
         ConnectorDescriptionTxt: Label 'Use Azure File Share to store and retrieve files.';
