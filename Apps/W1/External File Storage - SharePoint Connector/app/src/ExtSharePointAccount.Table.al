@@ -20,7 +20,6 @@ table 4580 "Ext. SharePoint Account"
             DataClassification = SystemMetadata;
             Caption = 'Primary Key';
         }
-
         field(2; Name; Text[250])
         {
             Caption = 'Name of account';

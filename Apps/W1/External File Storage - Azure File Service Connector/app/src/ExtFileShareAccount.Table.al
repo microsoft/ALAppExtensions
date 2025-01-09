@@ -21,7 +21,6 @@ table 4570 "Ext. File Share Account"
             DataClassification = SystemMetadata;
             Caption = 'Primary Key';
         }
-
         field(2; Name; Text[250])
         {
             Caption = 'Name of account';

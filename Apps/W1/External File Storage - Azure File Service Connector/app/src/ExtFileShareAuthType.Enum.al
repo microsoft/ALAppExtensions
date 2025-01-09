@@ -9,8 +9,7 @@ enum 4570 "Ext. File Share Auth. Type"
 {
     Access = Internal;
 
-    value(0;
-    SasToken)
+    value(0; SasToken)
     {
         Caption = 'Shared Access Signature';
     }
