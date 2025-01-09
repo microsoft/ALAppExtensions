@@ -5,14 +5,15 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4572 "File Share - Edit"
+permissionset 4570 "Ext. File Share - Objects"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'File Share - Edit';
-
-    IncludedPermissionSets = "File Share - Read";
+    Caption = 'File Share - Objects';
 
     Permissions =
-        tabledata "File Share Account" = imd;
+        table "Ext. File Share Account" = X,
+        codeunit "Ext. File Share Connector Impl" = X,
+        page "Ext. File Share Account Wizard" = X,
+        page "Ext. File Share Account" = X;
 }

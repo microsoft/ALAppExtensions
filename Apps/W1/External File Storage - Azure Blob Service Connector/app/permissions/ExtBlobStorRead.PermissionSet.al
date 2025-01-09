@@ -5,14 +5,14 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4581 "SharePoint - Read"
+permissionset 4561 "Ext. Blob Stor. - Read"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'SharePoint - Read';
+    Caption = 'Blob Storage - Read';
 
-    IncludedPermissionSets = "SharePoint - Objects";
+    IncludedPermissionSets = "Ext. Blob Stor. - Objects";
 
     Permissions =
-        tabledata "SharePoint Account" = r;
+        tabledata "Ext. Blob Storage Account" = r;
 }

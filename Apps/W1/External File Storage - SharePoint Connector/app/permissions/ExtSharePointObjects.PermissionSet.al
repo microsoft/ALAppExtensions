@@ -5,7 +5,15 @@
 
 namespace System.ExternalFileStorage;
 
-permissionsetextension 4580 "SharePoint - Admin" extends "File Storage - Admin"
+permissionset 4580 "Ext. SharePoint - Objects"
 {
-    IncludedPermissionSets = "SharePoint - Edit";
+    Assignable = false;
+    Access = Public;
+    Caption = 'SharePoint - Objects';
+
+    Permissions =
+        table "Ext. SharePoint Account" = X,
+        codeunit "Ext. SharePoint Connector Impl" = X,
+        page "Ext. SharePoint Account Wizard" = X,
+        page "Ext. SharePoint Account" = X;
 }

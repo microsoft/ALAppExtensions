@@ -6,13 +6,13 @@
 namespace System.ExternalFileStorage;
 
 /// <summary>
-/// Holds the information for all file accounts that are registered via the File Share connector
+/// Holds the information for all file accounts that are registered via the Blob Storage connector
 /// </summary>
-table 4570 "File Share Account"
+table 4560 "Ext. Blob Storage Account"
 {
     Access = Internal;
     DataClassification = CustomerContent;
-    Caption = 'Azure File Share Account';
+    Caption = 'Azure Blob Storage Account';
 
     fields
     {
@@ -25,19 +25,19 @@ table 4570 "File Share Account"
         field(2; Name; Text[250])
         {
             Caption = 'Name of account';
-            ToolTip = 'Specifies the name of the storage account connection.';
+            ToolTip = 'Specifies the name of the Storage account connection.';
         }
         field(3; "Storage Account Name"; Text[2048])
         {
             Caption = 'Storage Account Name';
             ToolTip = 'Specifies the Azure Storage name.';
         }
-        field(4; "File Share Name"; Text[2048])
+        field(4; "Container Name"; Text[2048])
         {
-            Caption = 'File Share Name';
-            ToolTip = 'Specifies the Azure File Share name.';
+            Caption = 'Container Name';
+            ToolTip = 'Specifies the Azure Storage Container name.';
         }
-        field(7; "Authorization Type"; Enum "File Share Auth. Type")
+        field(7; "Authorization Type"; Enum "Ext. Blob Storage Auth. Type")
         {
             Caption = 'Authorization Type';
             ToolTip = 'The way of authorizing used to access the Blob Storage.';
@@ -57,8 +57,8 @@ table 4570 "File Share Account"
     }
 
     var
-        UnableToGetSecretMsg: Label 'Unable to get File Share Account secret.';
-        UnableToSetSecretMsg: Label 'Unable to set File Share Account secret.';
+        UnableToGetSecretMsg: Label 'Unable to get Blob Storage secret.';
+        UnableToSetSecretMsg: Label 'Unable to set Blob Storage secret.';
 
     trigger OnDelete()
     begin

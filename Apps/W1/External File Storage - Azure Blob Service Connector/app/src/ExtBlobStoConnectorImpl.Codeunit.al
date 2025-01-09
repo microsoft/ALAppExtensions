@@ -9,10 +9,10 @@ using System.Text;
 using System.Utilities;
 using System.Azure.Storage;
 
-codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage Connector"
+codeunit 4560 "Ext. Blob Sto. Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Blob Storage Account" = rimd;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use Azure Blob Storage to store and retrieve files.';
@@ -289,7 +289,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
     /// <param name="TempAccounts">Out parameter holding all the registered accounts for the Blob Storage connector.</param>
     procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
-        Account: Record "Blob Storage Account";
+        Account: Record "Ext. Blob Storage Account";
     begin
         if not Account.FindSet() then
             exit;
@@ -308,13 +308,13 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        BlobStorageAccountLocal: Record "Blob Storage Account";
+        BlobStorageAccountLocal: Record "Ext. Blob Storage Account";
     begin
         if not BlobStorageAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
         BlobStorageAccountLocal.SetRecFilter();
-        Page.Run(Page::"Blob Storage Account", BlobStorageAccountLocal);
+        Page.Run(Page::"Ext. Blob Storage Account", BlobStorageAccountLocal);
     end;
 
     /// <summary>
@@ -324,7 +324,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        BlobStorageAccountWizard: Page "Blob Storage Account Wizard";
+        BlobStorageAccountWizard: Page "Ext. Blob Stor. Account Wizard";
     begin
         BlobStorageAccountWizard.RunModal();
 
@@ -338,7 +338,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        BlobStorageAccountLocal: Record "Blob Storage Account";
+        BlobStorageAccountLocal: Record "Ext. Blob Storage Account";
     begin
         if BlobStorageAccountLocal.Get(AccountId) then
             exit(BlobStorageAccountLocal.Delete());
@@ -368,7 +368,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
         exit(Base64Convert.ToBase64(Stream));
     end;
 
-    internal procedure IsAccountValid(var TempAccount: Record "Blob Storage Account" temporary): Boolean
+    internal procedure IsAccountValid(var TempAccount: Record "Ext. Blob Storage Account" temporary): Boolean
     begin
         if TempAccount.Name = '' then
             exit(false);
@@ -382,9 +382,9 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
         exit(true);
     end;
 
-    internal procedure CreateAccount(var AccountToCopy: Record "Blob Storage Account"; Password: SecretText; var FileAccount: Record "File Account")
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. Blob Storage Account"; Password: SecretText; var FileAccount: Record "File Account")
     var
-        NewBlobStorageAccount: Record "Blob Storage Account";
+        NewBlobStorageAccount: Record "Ext. Blob Storage Account";
     begin
         NewBlobStorageAccount.TransferFields(AccountToCopy);
 
@@ -398,7 +398,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
         FileAccount.Connector := Enum::"Ext. File Storage Connector"::"Blob Storage";
     end;
 
-    internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; AuthType: Enum "Blob Storage Auth. Type"; Secret: SecretText; var NewContainerName: Text[2048])
+    internal procedure LookUpContainer(var Account: Record "Ext. Blob Storage Account"; AuthType: Enum "Ext. Blob Storage Auth. Type"; Secret: SecretText; var NewContainerName: Text[2048])
     var
         ABSContainers: Record "ABS Container";
         ABSContainerClient: Codeunit "ABS Container Client";
@@ -422,7 +422,7 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
         if not ABSContainers.Get(NewContainerName) then
             if ABSContainers.FindFirst() then;
 
-        if (Page.RunModal(Page::"Blob Storage Container Lookup", ABSContainers) <> Action::LookupOK) then
+        if (Page.RunModal(Page::"Ext. Blob Sto Container Lookup", ABSContainers) <> Action::LookupOK) then
             exit;
 
         NewContainerName := ABSContainers.Name;
@@ -430,15 +430,15 @@ codeunit 4560 "Blob Storage Connector Impl." implements "External File Storage C
 
     local procedure InitBlobClient(var AccountId: Guid; var ABSBlobClient: Codeunit "ABS Blob Client")
     var
-        BlobStorageAccount: Record "Blob Storage Account";
+        BlobStorageAccount: Record "Ext. Blob Storage Account";
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         Authorization: Interface "Storage Service Authorization";
     begin
         BlobStorageAccount.Get(AccountId);
         case BlobStorageAccount."Authorization Type" of
-            "Blob Storage Auth. Type"::SasToken:
+            "Ext. Blob Storage Auth. Type"::SasToken:
                 Authorization := SetReadySAS(StorageServiceAuthorization, BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
-            "Blob Storage Auth. Type"::SharedKey:
+            "Ext. Blob Storage Auth. Type"::SharedKey:
                 Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
         end;
         ABSBlobClient.Initialize(BlobStorageAccount."Storage Account Name", BlobStorageAccount."Container Name", Authorization);

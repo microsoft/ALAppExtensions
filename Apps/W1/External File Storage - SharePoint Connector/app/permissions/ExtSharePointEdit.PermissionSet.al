@@ -5,17 +5,14 @@
 
 namespace System.ExternalFileStorage;
 
-enum 4570 "File Share Auth. Type"
+permissionset 4582 "Ext. SharePoint - Edit"
 {
-    Access = Internal;
+    Assignable = false;
+    Access = Public;
+    Caption = 'SharePoint - Edit';
 
-    value(0;
-    SasToken)
-    {
-        Caption = 'Shared Access Signature';
-    }
-    value(1; SharedKey)
-    {
-        Caption = 'Shared Key';
-    }
+    IncludedPermissionSets = "Ext. SharePoint - Read";
+
+    Permissions =
+        tabledata "Ext. SharePoint Account" = imd;
 }

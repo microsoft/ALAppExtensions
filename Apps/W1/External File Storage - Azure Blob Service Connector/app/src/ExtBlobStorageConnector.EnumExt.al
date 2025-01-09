@@ -6,16 +6,16 @@
 namespace System.ExternalFileStorage;
 
 /// <summary>
-/// Enum extension to register the SharePoint connector.
+/// Enum extension to register the Blob Storage connector.
 /// </summary>
-enumextension 4580 "SharePoint Connector" extends "Ext. File Storage Connector"
+enumextension 4560 "Ext. Blob Storage Connector" extends "Ext. File Storage Connector"
 {
     /// <summary>
-    /// The SharePoint connector.
+    /// The Blob Storage connector.
     /// </summary>
-    value(4580; "SharePoint")
+    value(4560; "Blob Storage")
     {
-        Caption = 'SharePoint';
-        Implementation = "External File Storage Connector" = "SharePoint Connector Impl.";
+        Caption = 'Blob Storage';
+        Implementation = "External File Storage Connector" = "Ext. Blob Sto. Connector Impl.";
     }
 }

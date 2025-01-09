@@ -8,7 +8,7 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Holds the information for all file accounts that are registered via the SharePoint connector
 /// </summary>
-table 4580 "SharePoint Account"
+table 4580 "Ext. SharePoint Account"
 {
     DataClassification = CustomerContent;
     Caption = 'SharePoint Account';

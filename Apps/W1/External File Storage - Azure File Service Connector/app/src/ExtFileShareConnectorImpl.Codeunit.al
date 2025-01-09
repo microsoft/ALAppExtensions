@@ -10,10 +10,10 @@ using System.Utilities;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
 
-codeunit 4570 "File Share Connector Impl." implements "External File Storage Connector"
+codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "File Share Account" = rimd;
+    Permissions = tabledata "Ext. File Share Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use Azure File Share to store and retrieve files.';
@@ -273,7 +273,7 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
     /// <param name="TempAccounts">Out parameter holding all the registered accounts for the File Share connector.</param>
     procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
-        Account: Record "File Share Account";
+        Account: Record "Ext. File Share Account";
     begin
         if not Account.FindSet() then
             exit;
@@ -292,13 +292,13 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        FileShareAccountLocal: Record "File Share Account";
+        FileShareAccountLocal: Record "Ext. File Share Account";
     begin
         if not FileShareAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
         FileShareAccountLocal.SetRecFilter();
-        Page.Run(Page::"File Share Account", FileShareAccountLocal);
+        Page.Run(Page::"Ext. File Share Account", FileShareAccountLocal);
     end;
 
     /// <summary>
@@ -308,7 +308,7 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        FileShareAccountWizard: Page "File Share Account Wizard";
+        FileShareAccountWizard: Page "Ext. File Share Account Wizard";
     begin
         FileShareAccountWizard.RunModal();
 
@@ -322,7 +322,7 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        FileShareAccountLocal: Record "File Share Account";
+        FileShareAccountLocal: Record "Ext. File Share Account";
     begin
         if FileShareAccountLocal.Get(AccountId) then
             exit(FileShareAccountLocal.Delete());
@@ -352,7 +352,7 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
         exit(Base64Convert.ToBase64(Stream));
     end;
 
-    internal procedure IsAccountValid(var Account: Record "File Share Account" temporary): Boolean
+    internal procedure IsAccountValid(var Account: Record "Ext. File Share Account" temporary): Boolean
     begin
         if Account.Name = '' then
             exit(false);
@@ -366,9 +366,9 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
         exit(true);
     end;
 
-    internal procedure CreateAccount(var AccountToCopy: Record "File Share Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. File Share Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
-        NewFileShareAccount: Record "File Share Account";
+        NewFileShareAccount: Record "Ext. File Share Account";
     begin
         NewFileShareAccount.TransferFields(AccountToCopy);
 
@@ -384,7 +384,7 @@ codeunit 4570 "File Share Connector Impl." implements "External File Storage Con
 
     local procedure InitFileClient(var AccountId: Guid; var AFSFileClient: Codeunit "AFS File Client")
     var
-        FileShareAccount: Record "File Share Account";
+        FileShareAccount: Record "Ext. File Share Account";
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         Authorization: Interface "Storage Service Authorization";
     begin

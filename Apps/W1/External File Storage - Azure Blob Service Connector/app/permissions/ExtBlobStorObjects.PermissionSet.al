@@ -5,15 +5,16 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4580 "SharePoint - Objects"
+permissionset 4560 "Ext. Blob Stor. - Objects"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'SharePoint - Objects';
+    Caption = 'Blob Storage - Objects';
 
     Permissions =
-        table "SharePoint Account" = X,
-        codeunit "SharePoint Connector Impl." = X,
-        page "SharePoint Account Wizard" = X,
-        page "SharePoint Account" = X;
+        table "Ext. Blob Storage Account" = X,
+        codeunit "Ext. Blob Sto. Connector Impl." = X,
+        page "Ext. Blob Stor. Account Wizard" = X,
+        page "Ext. Blob Sto Container Lookup" = X,
+        page "Ext. Blob Storage Account" = X;
 }

@@ -5,15 +5,14 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4570 "File Share - Objects"
+permissionset 4562 "Ext. Blob Stor. - Edit"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'File Share - Objects';
+    Caption = 'Blob Storage - Edit';
+
+    IncludedPermissionSets = "Ext. Blob Stor. - Read";
 
     Permissions =
-        table "File Share Account" = X,
-        codeunit "File Share Connector Impl." = X,
-        page "File Share Account Wizard" = X,
-        page "File Share Account" = X;
+        tabledata "Ext. Blob Storage Account" = imd;
 }

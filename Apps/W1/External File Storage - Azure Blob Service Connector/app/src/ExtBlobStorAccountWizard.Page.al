@@ -8,14 +8,14 @@ namespace System.ExternalFileStorage;
 Using System.Environment;
 
 /// <summary>
-/// Displays an account that is being registered via the File Share connector.
+/// Displays an account that is being registered via the Blob Storage connector.
 /// </summary>
-page 4571 "File Share Account Wizard"
+page 4561 "Ext. Blob Stor. Account Wizard"
 {
-    Caption = 'Setup Azure File Share Account';
-    SourceTable = "File Share Account";
+    Caption = 'Setup Azure Blob Storage Account';
+    SourceTable = "Ext. Blob Storage Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "File Share Account" = rimd;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
@@ -42,13 +42,13 @@ page 4571 "File Share Account Wizard"
             field(NameField; Rec.Name)
             {
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Azure File Share account.';
+                ToolTip = 'Specifies the name of the Azure Blob Storage account.';
                 ShowMandatory = true;
                 NotBlank = true;
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := BlobStorageConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -59,7 +59,7 @@ page 4571 "File Share Account Wizard"
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := BlobStorageConnectorImpl.IsAccountValid(Rec);
                 end;
             }
 
@@ -75,15 +75,27 @@ page 4571 "File Share Account Wizard"
                 ShowMandatory = true;
             }
 
-            field(FileShareNameField; Rec."File Share Name")
+            field(ContainerNameField; Rec."Container Name")
             {
-                Caption = 'File Share Name';
-                ToolTip = 'Specifies the file share to use of the storage account.';
+                Caption = 'Container Name';
+                ToolTip = 'Specifies the container to use of the Storage Blob.';
                 ShowMandatory = true;
+
+                trigger OnLookup(var Text: Text): Boolean
+                var
+                    BlobStorageConnectorImpl: Codeunit "Ext. Blob Sto. Connector Impl.";
+                    NewContainerName: Text[2048];
+                begin
+                    CurrPage.Update();
+                    NewContainerName := CopyStr(Text, 1, MaxStrLen(NewContainerName));
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Secret, NewContainerName);
+                    Text := NewContainerName;
+                    exit(true);
+                end;
 
                 trigger OnValidate()
                 begin
-                    IsNextEnabled := FileShareConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := BlobStorageConnectorImpl.IsAccountValid(Rec);
                 end;
             }
         }
@@ -116,7 +128,7 @@ page 4571 "File Share Account Wizard"
 
                 trigger OnAction()
                 begin
-                    FileShareConnectorImpl.CreateAccount(Rec, Secret, FileShareAccount);
+                    BlobStorageConnectorImpl.CreateAccount(Rec, Secret, BlobStorageAccount);
                     CurrPage.Close();
                 end;
             }
@@ -124,9 +136,9 @@ page 4571 "File Share Account Wizard"
     }
 
     var
-        FileShareAccount: Record "File Account";
+        BlobStorageAccount: Record "File Account";
         MediaResources: Record "Media Resources";
-        FileShareConnectorImpl: Codeunit "File Share Connector Impl.";
+        BlobStorageConnectorImpl: Codeunit "Ext. Blob Sto. Connector Impl.";
         [NonDebuggable]
         Secret: Text;
         IsNextEnabled: Boolean;
@@ -145,10 +157,10 @@ page 4571 "File Share Account Wizard"
 
     internal procedure GetAccount(var FileAccount: Record "File Account"): Boolean
     begin
-        if IsNullGuid(FileShareAccount."Account Id") then
+        if IsNullGuid(BlobStorageAccount."Account Id") then
             exit(false);
 
-        FileAccount := FileShareAccount;
+        FileAccount := BlobStorageAccount;
 
         exit(true);
     end;

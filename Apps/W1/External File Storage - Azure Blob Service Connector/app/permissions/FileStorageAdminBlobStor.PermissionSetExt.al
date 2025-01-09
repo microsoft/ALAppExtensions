@@ -7,5 +7,5 @@ namespace System.ExternalFileStorage;
 
 permissionsetextension 4560 "File Storage - Admin - Blob Stor." extends "File Storage - Admin"
 {
-    IncludedPermissionSets = "Blob Stor. - Edit";
+    IncludedPermissionSets = "Ext. Blob Stor. - Edit";
 }

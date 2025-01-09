@@ -5,14 +5,14 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4582 "SharePoint - Edit"
+permissionset 4581 "Ext. SharePoint - Read"
 {
     Assignable = false;
     Access = Public;
-    Caption = 'SharePoint - Edit';
+    Caption = 'SharePoint - Read';
 
-    IncludedPermissionSets = "SharePoint - Read";
+    IncludedPermissionSets = "Ext. SharePoint - Objects";
 
     Permissions =
-        tabledata "SharePoint Account" = imd;
+        tabledata "Ext. SharePoint Account" = r;
 }

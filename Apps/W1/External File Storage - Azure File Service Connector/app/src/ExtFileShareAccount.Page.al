@@ -8,11 +8,11 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the File Share connector.
 /// </summary>
-page 4570 "File Share Account"
+page 4570 "Ext. File Share Account"
 {
-    SourceTable = "File Share Account";
+    SourceTable = "Ext. File Share Account";
     Caption = 'Azure File Share Account';
-    Permissions = tabledata "File Share Account" = rimd;
+    Permissions = tabledata "Ext. File Share Account" = rimd;
     PageType = Card;
     Extensible = false;
     InsertAllowed = false;

@@ -5,17 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-enum 4560 "Blob Storage Auth. Type"
+permissionsetextension 4580 "Ext. SharePoint - Admin" extends "File Storage - Admin"
 {
-    Access = Internal;
-
-    value(0;
-    SasToken)
-    {
-        Caption = 'Shared Access Signature';
-    }
-    value(1; SharedKey)
-    {
-        Caption = 'Shared Key';
-    }
+    IncludedPermissionSets = "Ext. SharePoint - Edit";
 }

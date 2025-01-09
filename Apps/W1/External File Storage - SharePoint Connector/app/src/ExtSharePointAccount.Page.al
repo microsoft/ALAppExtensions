@@ -8,11 +8,11 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the SharePoint connector.
 /// </summary>
-page 4580 "SharePoint Account"
+page 4580 "Ext. SharePoint Account"
 {
-    SourceTable = "SharePoint Account";
+    SourceTable = "Ext. SharePoint Account";
     Caption = 'SharePoint Account';
-    Permissions = tabledata "SharePoint Account" = rimd;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
     PageType = Card;
     Extensible = false;
     InsertAllowed = false;

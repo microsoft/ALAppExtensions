@@ -6,13 +6,13 @@
 namespace System.ExternalFileStorage;
 
 /// <summary>
-/// Holds the information for all file accounts that are registered via the Blob Storage connector
+/// Holds the information for all file accounts that are registered via the File Share connector
 /// </summary>
-table 4560 "Blob Storage Account"
+table 4570 "Ext. File Share Account"
 {
     Access = Internal;
     DataClassification = CustomerContent;
-    Caption = 'Azure Blob Storage Account';
+    Caption = 'Azure File Share Account';
 
     fields
     {
@@ -25,19 +25,19 @@ table 4560 "Blob Storage Account"
         field(2; Name; Text[250])
         {
             Caption = 'Name of account';
-            ToolTip = 'Specifies the name of the Storage account connection.';
+            ToolTip = 'Specifies the name of the storage account connection.';
         }
         field(3; "Storage Account Name"; Text[2048])
         {
             Caption = 'Storage Account Name';
             ToolTip = 'Specifies the Azure Storage name.';
         }
-        field(4; "Container Name"; Text[2048])
+        field(4; "File Share Name"; Text[2048])
         {
-            Caption = 'Container Name';
-            ToolTip = 'Specifies the Azure Storage Container name.';
+            Caption = 'File Share Name';
+            ToolTip = 'Specifies the Azure File Share name.';
         }
-        field(7; "Authorization Type"; Enum "Blob Storage Auth. Type")
+        field(7; "Authorization Type"; Enum "Ext. File Share Auth. Type")
         {
             Caption = 'Authorization Type';
             ToolTip = 'The way of authorizing used to access the Blob Storage.';
@@ -57,8 +57,8 @@ table 4560 "Blob Storage Account"
     }
 
     var
-        UnableToGetSecretMsg: Label 'Unable to get Blob Storage secret.';
-        UnableToSetSecretMsg: Label 'Unable to set Blob Storage secret.';
+        UnableToGetSecretMsg: Label 'Unable to get File Share Account secret.';
+        UnableToSetSecretMsg: Label 'Unable to set File Share Account secret.';
 
     trigger OnDelete()
     begin

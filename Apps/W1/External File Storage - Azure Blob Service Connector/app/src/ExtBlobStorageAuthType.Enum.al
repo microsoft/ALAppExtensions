@@ -5,14 +5,17 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4561 "Blob Stor. - Read"
+enum 4560 "Ext. Blob Storage Auth. Type"
 {
-    Assignable = false;
-    Access = Public;
-    Caption = 'Blob Storage - Read';
+    Access = Internal;
 
-    IncludedPermissionSets = "Blob Stor. - Objects";
-
-    Permissions =
-        tabledata "Blob Storage Account" = r;
+    value(0;
+    SasToken)
+    {
+        Caption = 'Shared Access Signature';
+    }
+    value(1; SharedKey)
+    {
+        Caption = 'Shared Key';
+    }
 }

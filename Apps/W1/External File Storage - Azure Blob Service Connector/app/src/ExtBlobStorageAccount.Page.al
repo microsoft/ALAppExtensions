@@ -8,11 +8,11 @@ namespace System.ExternalFileStorage;
 /// <summary>
 /// Displays an account that was registered via the Blob Storage connector.
 /// </summary>
-page 4560 "Blob Storage Account"
+page 4560 "Ext. Blob Storage Account"
 {
-    SourceTable = "Blob Storage Account";
+    SourceTable = "Ext. Blob Storage Account";
     Caption = 'Azure Blob Storage Account';
-    Permissions = tabledata "Blob Storage Account" = rimd;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
     PageType = Card;
     Extensible = false;
     InsertAllowed = false;
@@ -58,7 +58,7 @@ page 4560 "Blob Storage Account"
                 Caption = 'Container Name';
                 trigger OnLookup(var Text: Text): Boolean
                 var
-                    BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
+                    BlobStorageConnectorImpl: Codeunit "Ext. Blob Sto. Connector Impl.";
                     NewContainerName: Text[2048];
                 begin
                     CurrPage.Update();

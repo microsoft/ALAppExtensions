@@ -10,12 +10,12 @@ Using System.Environment;
 /// <summary>
 /// Displays an account that is being registered via the SharePoint connector.
 /// </summary>
-page 4581 "SharePoint Account Wizard"
+page 4581 "Ext. SharePoint Account Wizard"
 {
     Caption = 'Setup SharePoint Account';
-    SourceTable = "SharePoint Account";
+    SourceTable = "Ext. SharePoint Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "SharePoint Account" = rimd;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
     PageType = NavigatePage;
     Extensible = false;
     Editable = true;
@@ -141,7 +141,7 @@ page 4581 "SharePoint Account Wizard"
     var
         SharePointAccount: Record "File Account";
         MediaResources: Record "Media Resources";
-        SharePointConnectorImpl: Codeunit "SharePoint Connector Impl.";
+        SharePointConnectorImpl: Codeunit "Ext. SharePoint Connector Impl";
         [NonDebuggable]
         ClientSecret: Text;
         IsNextEnabled: Boolean;

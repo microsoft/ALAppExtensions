@@ -9,10 +9,10 @@ using System.Text;
 using System.Integration.Sharepoint;
 using System.Utilities;
 
-codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Connector"
+codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "SharePoint Account" = rimd;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use SharePoint to store and retrieve files.', MaxLength = 250;
@@ -257,7 +257,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
     /// <param name="TempAccounts">Out parameter holding all the registered accounts for the SharePoint connector.</param>
     procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
-        Account: Record "SharePoint Account";
+        Account: Record "Ext. SharePoint Account";
     begin
         if not Account.FindSet() then
             exit;
@@ -276,13 +276,13 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        SharePointAccountLocal: Record "SharePoint Account";
+        SharePointAccountLocal: Record "Ext. SharePoint Account";
     begin
         if not SharePointAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
         SharePointAccountLocal.SetRecFilter();
-        Page.Run(Page::"SharePoint Account", SharePointAccountLocal);
+        Page.Run(Page::"Ext. SharePoint Account", SharePointAccountLocal);
     end;
 
     /// <summary>
@@ -292,7 +292,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        SharePointAccountWizard: Page "SharePoint Account Wizard";
+        SharePointAccountWizard: Page "Ext. SharePoint Account Wizard";
     begin
         SharePointAccountWizard.RunModal();
 
@@ -306,7 +306,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        SharePointAccountLocal: Record "SharePoint Account";
+        SharePointAccountLocal: Record "Ext. SharePoint Account";
     begin
         if SharePointAccountLocal.Get(AccountId) then
             exit(SharePointAccountLocal.Delete());
@@ -336,7 +336,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
         exit(Base64Convert.ToBase64(Stream));
     end;
 
-    internal procedure IsAccountValid(var TempAccount: Record "SharePoint Account" temporary): Boolean
+    internal procedure IsAccountValid(var TempAccount: Record "Ext. SharePoint Account" temporary): Boolean
     begin
         if TempAccount.Name = '' then
             exit(false);
@@ -356,9 +356,9 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
         exit(true);
     end;
 
-    internal procedure CreateAccount(var AccountToCopy: Record "SharePoint Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. SharePoint Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
-        NewileShPointareAccount: Record "SharePoint Account";
+        NewileShPointareAccount: Record "Ext. SharePoint Account";
     begin
         NewileShPointareAccount.TransferFields(AccountToCopy);
 
@@ -374,7 +374,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
 
     local procedure InitSharePointClient(var AccountId: Guid; var SharePointClient: Codeunit "SharePoint Client")
     var
-        SharePointAccount: Record "SharePoint Account";
+        SharePointAccount: Record "Ext. SharePoint Account";
         SharePointAuth: Codeunit "SharePoint Auth.";
         SharePointAuthorization: Interface "SharePoint Authorization";
         Scopes: List of [Text];
@@ -411,7 +411,7 @@ codeunit 4580 "SharePoint Connector Impl." implements "External File Storage Con
 
     local procedure InitPath(AccountId: Guid; var Path: Text)
     var
-        SharePointAccount: Record "SharePoint Account";
+        SharePointAccount: Record "Ext. SharePoint Account";
     begin
         SharePointAccount.Get(AccountId);
         Path := CombinePath(SharePointAccount."Base Relative Folder Path", Path);
