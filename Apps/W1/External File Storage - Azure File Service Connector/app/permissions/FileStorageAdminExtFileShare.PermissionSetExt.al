@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionsetextension 4580 "Ext. SharePoint - Admin" extends "File Storage - Admin"
+permissionsetextension 4570 "File Storage - Admin - Ext. File Share" extends "File Storage - Admin"
 {
-    IncludedPermissionSets = "Ext. SharePoint - Edit";
+    IncludedPermissionSets = "Ext. File Share - Edit";
 }
