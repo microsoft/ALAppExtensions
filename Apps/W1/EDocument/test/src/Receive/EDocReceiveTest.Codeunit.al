@@ -1342,6 +1342,47 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('SelectPOHandlerCancel,ConfirmHandler')]
+    procedure ReceiveTheSameEDocumentTwice()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        DocumentAttachment: Record "Document Attachment";
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive e-document twice so the duplicate will be skipped in creation
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive one single purchase order
+        CreateEDocServiceToReceivePurchaseOrder(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Incoming PEPPOL duplicated document
+        CreateIncomingDuplicatedPEPPOL(DocumentVendor);
+        // [GIVEN] Purchase order created for vendor
+        CreatePurchaseOrder(Item, DocumentVendor);
+
+        // [WHEN] Running Receive
+        InvokeReceive(EDocService);
+
+        // [THEN] Attachments are imported and linked with e-Document
+        EDocument.FindLast();
+        DocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
+        DocumentAttachment.SetRange("Table ID", Database::"E-Document");
+        DocumentAttachment.SetRange("E-Document Entry No.", EDocument."Entry No");
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        Assert.RecordCount(DocumentAttachment, 2);
+    end;
+
+
+
     [ModalPageHandler]
     procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
     var
@@ -1441,6 +1482,94 @@ codeunit 139628 "E-Doc. Receive Test"
     local procedure OnBeforeProcessHeaderFieldsAssignment(var DocumentHeader: RecordRef; var PurchaseField: Record Field);
     begin
         PurchaseField.SetRange("No.", 10705);
+    end;
+
+
+    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
+    begin
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
+        SetDefaultEDocServiceValues(EDocService);
+    end;
+
+    local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
+        DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
+        DocumentVendor.Modify(false);
+    end;
+
+    local procedure CreateItemWithReference(var Item: Record Item; var VATPostingSetup: Record "VAT Posting Setup")
+    var
+        ItemReference: Record "Item Reference";
+    begin
+        Item.FindFirst();
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item.Modify(false);
+        ItemReference.DeleteAll(false);
+        ItemReference."Item No." := Item."No.";
+        ItemReference."Reference No." := '1000';
+        ItemReference.Insert(false);
+    end;
+
+    local procedure CreateIncomingDuplicatedPEPPOL(var DocumentVendor: Record Vendor)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        Document, Document2 : Text;
+        XMLInstream: InStream;
+    begin
+        TempXMLBuffer.LoadFromText(EDocReceiveFiles.GetDocument1());
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Value := DocumentVendor."VAT Registration No.";
+        TempXMLBuffer.Modify();
+
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Save(TempBlob);
+
+        TempBlob.CreateInStream(XMLInstream, TextEncoding::UTF8);
+        XMLInstream.Read(Document);
+
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue(Document);
+        LibraryVariableStorage.Enqueue(2);
+        EDocImplState.SetVariableStorage(LibraryVariableStorage);
+    end;
+
+    local procedure CreatePurchaseOrder(var Item: Record Item; var DocumentVendor: Record Vendor)
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, DocumentVendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, Item."No.", 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure InvokeReceive(var EDocService: Record "E-Document Service")
+    var
+        EDocServicePage: TestPage "E-Document Service";
+    begin
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+    end;
+
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
+    begin
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify(false);
     end;
 
 #pragma warning disable AS0018

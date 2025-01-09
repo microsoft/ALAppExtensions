@@ -199,6 +199,7 @@ codeunit 6134 "E-Doc. Integration Management"
     var
         ReceiveContext, FetchContextImpl : Codeunit ReceiveContext;
         ErrorCount: Integer;
+        EDocumentContent: Codeunit "Temp Blob";
         Success, IsFetchableType : Boolean;
     begin
         ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::Imported);
@@ -209,7 +210,9 @@ codeunit 6134 "E-Doc. Integration Management"
         if not Success then
             exit(false);
 
-        if not ReceiveContext.GetTempBlob().HasValue() then
+        EDocumentContent := ReceiveContext.GetTempBlob();
+
+        if not EDocumentContent.HasValue() then
             exit(false);
 
         IsFetchableType := IDocumentReceiver is IReceivedDocumentMarker;
@@ -217,10 +220,12 @@ codeunit 6134 "E-Doc. Integration Management"
             ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
             RunMarkFetched(EDocument, EDocumentService, ReceiveContext.GetTempBlob(), IDocumentReceiver, FetchContextImpl);
             Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-
             if not Success then
                 exit(false);
         end;
+
+        if not CheckNoDuplicateExists(EDocumentService, EDocument, EDocumentContent) then
+            exit(false);
 
         // Only after sucecssfully downloading and (optionally) marking as fetched, the document is considered imported
         // Insert logs for downloading document
@@ -562,6 +567,24 @@ codeunit 6134 "E-Doc. Integration Management"
             end;
 
         exit(true);
+    end;
+
+    local procedure CheckNoDuplicateExists(var EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var DocumentMetadata: Codeunit "Temp Blob"): Boolean
+    var
+        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
+        IEDocument: Interface "E-Document";
+        EDocument2: Record "E-Document";
+    begin
+        IEDocument := EDocumentService."Document Format";
+        EDocGetBasicInfo.SetValues(IEDocument, EDocument, DocumentMetadata);
+        EDocGetBasicInfo.Run();
+        EDocGetBasicInfo.GetValues(IEDocument, EDocument, DocumentMetadata);
+
+        EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
+        EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
+        EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
+        EDocument2.SetRange("Document Date", EDocument."Document Date");
+        exit(EDocument2.IsEmpty());
     end;
 
 
