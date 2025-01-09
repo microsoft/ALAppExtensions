@@ -188,13 +188,7 @@ table 6121 "E-Document"
             Caption = 'Paid Amount';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = sum("E-Document Payment".Amount where("E-Document Entry No." = field("Entry No"), Direction = field("Payment Direction Filter")));
-        }
-        field(33; "Payment Direction Filter"; Enum "E-Document Direction")
-        {
-            Caption = 'Payment Direction Filter';
-            Editable = false;
-            FieldClass = FlowFilter;
+            CalcFormula = sum("E-Document Payment".Amount where("E-Document Entry No." = field("Entry No")));
         }
     }
     keys

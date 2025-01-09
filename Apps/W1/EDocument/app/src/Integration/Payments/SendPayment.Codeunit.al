@@ -10,6 +10,10 @@ using Microsoft.eServices.EDocument.Payments;
 
 codeunit 6116 "Send Payment"
 {
+    Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     trigger OnRun()
     begin
         this.EDocumentService.TestField(Code);

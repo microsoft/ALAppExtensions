@@ -74,8 +74,7 @@ codeunit 6117 "Payment Integration Management"
             exit;
 
         Payment.Init();
-        Payment."E-Document Entry No." := EDocument."Entry No";
-        Payment.Direction := Payment.Direction::Incoming;
+        Payment.Validate("E-Document Entry No.", EDocument."Entry No");
         Payment.Date := PaymentContext.GetDate();
         Payment.Validate(Amount, PaymentContext.GetAmount());
         Payment.Status := PaymentContext.GetPaymentStatus();

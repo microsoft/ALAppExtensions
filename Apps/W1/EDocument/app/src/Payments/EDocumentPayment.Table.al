@@ -19,20 +19,29 @@ table 6101 "E-Document Payment"
         {
             Caption = 'E-Document Entry No.';
             TableRelation = "E-Document"."Entry No";
+            AllowInCustomizations = Always;
+
+            trigger OnValidate()
+            begin
+                this.SetPaymentDirection();
+            end;
         }
         field(2; "Payment No."; Integer)
         {
             Caption = 'Payment No.';
             AutoIncrement = true;
+            AllowInCustomizations = Always;
         }
         field(20; "Date"; Date)
         {
             Caption = 'Date';
+            ToolTip = 'Specifies the value of the Date field.';
         }
         field(21; Amount; Decimal)
         {
             Caption = 'Amount';
             DecimalPlaces = 2;
+            ToolTip = 'Specifies the value of the Amount field.';
 
             trigger OnValidate()
             begin
@@ -43,21 +52,31 @@ table 6101 "E-Document Payment"
         {
             Caption = 'VAT Base';
             DecimalPlaces = 2;
+            Editable = false;
+            ToolTip = 'Specifies the value of the VAT Base field.';
         }
         field(23; "VAT Amount"; Decimal)
         {
             Caption = 'VAT Amount';
             DecimalPlaces = 2;
+            Editable = false;
+            ToolTip = 'Specifies the value of the VAT Amount field.';
         }
         field(24; Status; Enum "Payment Status")
         {
             Caption = 'Status';
+            Editable = false;
+            InitValue = Created;
+            ToolTip = 'Specifies the value of the Status field.';
         }
         field(25; Direction; Enum "E-Document Direction")
         {
             Caption = 'Direction';
+            Editable = false;
+            ToolTip = 'Specifies the value of the Direction field.';
         }
     }
+
     keys
     {
         key(PK; "E-Document Entry No.", "Payment No.")
@@ -65,12 +84,6 @@ table 6101 "E-Document Payment"
             Clustered = true;
         }
     }
-
-    trigger OnInsert()
-    begin
-        if Rec.Status = Rec.Status::" " then
-            Rec.Status := Rec.Status::Created;
-    end;
 
     local procedure CalculateVAT()
     var
@@ -85,5 +98,16 @@ table 6101 "E-Document Payment"
 
         Rec."VAT Base" := Rec.Amount / (EDocument."Amount Incl. VAT" / EDocument."Amount Excl. VAT");
         Rec."VAT Amount" := Rec.Amount - Rec."VAT Base";
+    end;
+
+    local procedure SetPaymentDirection()
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.Get(Rec."E-Document Entry No.");
+        if EDocument.Direction = EDocument.Direction::Outgoing then
+            Rec.Direction := Rec.Direction::Incoming
+        else
+            Rec.Direction := Rec.Direction::Outgoing;
     end;
 }

@@ -9,7 +9,7 @@ using Microsoft.eServices.EDocument.Integration.Payments;
 using System.Utilities;
 
 /// <summary>
-/// Interface for sending and receiving paymnet information for E-Documents using E-Document service
+/// Interface for sending and receiving payment information for E-Documents using E-Document service
 /// </summary>
 interface IDocumentPaymentHandler
 {

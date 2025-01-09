@@ -550,11 +550,6 @@ page 6121 "E-Document"
 
         EDocImport.ProcessEDocPendingOrderMatch(Rec);
 
-        if (Rec.Direction = Rec.Direction::Incoming) then
-            Rec.SetRange("Payment Direction Filter", "E-Document Direction"::Outgoing)
-        else
-            Rec.SetRange("Payment Direction Filter", "E-Document Direction"::Incoming);
-
         this.SetPaymentStatus();
     end;
 
@@ -646,7 +641,7 @@ page 6121 "E-Document"
             if Rec."Paid Amount" < Rec."Amount Incl. VAT" then
                 this.PaymentStatus := this.PaymentStatus::"Partially Paid"
             else
-                this.PaymentStatus := this.PaymentStatus::"Paid In Full"
+                this.PaymentStatus := this.PaymentStatus::Paid
     end;
 
     local procedure ReceivePaymentsForEDoc()

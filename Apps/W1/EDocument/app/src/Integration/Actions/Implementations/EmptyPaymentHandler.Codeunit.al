@@ -10,7 +10,7 @@ using Microsoft.eServices.EDocument.Payments;
 using System.Utilities;
 
 /// <summary>
-/// This codeunit is used to implement the "Document Payment Handler" interface. It is used to provide a default implementation for the "Action Invoker" interface.
+/// This codeunit is used to provide a default implementation for the "Document Payment Handler" interface.
 /// </summary>
 codeunit 6105 "Empty Payment Handler" implements IDocumentPaymentHandler
 {
@@ -20,14 +20,17 @@ codeunit 6105 "Empty Payment Handler" implements IDocumentPaymentHandler
 
     procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; PaymentContext: Codeunit PaymentContext)
     begin
+        // This method serves as a placeholder implementation for the IDocumentPaymentHandler interface.
     end;
 
     procedure Receive(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var PaymentsMetadata: Codeunit "Temp Blob List"; PaymentContext: Codeunit PaymentContext)
     begin
+        // This method serves as a placeholder implementation for the IDocumentPaymentHandler interface.
     end;
 
     procedure GetDetails(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; PaymentMetadata: Codeunit "Temp Blob"; PaymentContext: Codeunit PaymentContext)
     begin
+        // This method serves as a placeholder implementation for the IDocumentPaymentHandler interface.
     end;
 
 }

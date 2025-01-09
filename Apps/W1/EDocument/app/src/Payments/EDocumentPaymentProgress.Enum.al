@@ -20,7 +20,7 @@ enum 6104 "E-Document Payment Progress"
     {
         Caption = 'Partially Paid';
     }
-    value(3; "Paid In Full")
+    value(3; Paid)
     {
         Caption = 'Paid In Full';
     }

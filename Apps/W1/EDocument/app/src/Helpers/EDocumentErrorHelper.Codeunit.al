@@ -116,7 +116,7 @@ codeunit 6115 "E-Document Error Helper"
     begin
         ErrorMessage.SetRange("Context Record ID", EDocument.RecordId());
         ErrorMessage.SetRange("Table Number", Database::"E-Document Payment");
-        ErrorMessage.DeleteAll();
+        ErrorMessage.DeleteAll(false);
     end;
 
     internal procedure GetTelemetryImplErrLbl(): Text

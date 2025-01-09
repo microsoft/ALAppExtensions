@@ -21,41 +21,40 @@ page 6101 "E-Document Payments"
                 field("Date"; Rec."Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Date field.';
+                    Editable = this.PaymentEditable;
                 }
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Amount field.';
+                    Editable = this.PaymentEditable;
                 }
                 field("VAT Base"; Rec."VAT Base")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the VAT Base field.';
                     Visible = false;
                 }
                 field("VAT Amount"; Rec."VAT Amount")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the VAT Amount field.';
                     Visible = false;
                 }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Status field.';
                 }
                 field(Direction; Rec.Direction)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Direction field.';
                 }
             }
         }
     }
 
-    trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        PaymentEditable: Boolean;
+
+    trigger OnAfterGetRecord()
     begin
-        Evaluate(Rec.Direction, Rec.GetFilter("Direction"));
+        this.PaymentEditable := Rec.Status <> Rec.Status::Sent;
     end;
 }
