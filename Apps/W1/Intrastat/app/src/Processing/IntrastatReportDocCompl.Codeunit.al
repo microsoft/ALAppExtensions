@@ -19,7 +19,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
 {
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
-        CompanyInformation: Record "Company Information";
         MandatoryFieldErr: Label '%1 field cannot be empty.', Comment = '%1 - field name';
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeInsertEvent', '', false, false)]
@@ -170,7 +169,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         if TransferHeader."Trsf.-from Country/Region Code" = TransferHeader."Trsf.-to Country/Region Code" then
             exit;
 
-        if not IsIntrastatTransaction(TransferHeader."Trsf.-to Country/Region Code") and (not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code")) then
+        if not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code") then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
@@ -233,6 +232,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     local procedure IsIntrastatTransaction(CountryCode: Code[10]): Boolean
     var
         CountryRegion: Record "Country/Region";
+        CompanyInformation: Record "Company Information";
     begin
         if not CountryRegion.Get(CountryCode) then
             exit(false);
