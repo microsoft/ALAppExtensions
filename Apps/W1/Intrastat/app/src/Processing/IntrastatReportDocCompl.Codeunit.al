@@ -21,7 +21,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         IntrastatReportSetup: Record "Intrastat Report Setup";
         CompanyInformation: Record "Company Information";
         MandatoryFieldErr: Label '%1 field cannot be empty.', Comment = '%1 - field name';
-        MandatoryFieldsLineErr: Label '%1 field cannot be empty for the line %2.', Comment = '%1 - field name, %2 - Line No.';
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeInsertEvent', '', false, false)]
     local procedure DefaultSalesDocuments(var Rec: Record "Sales Header"; RunTrigger: Boolean)
@@ -87,36 +86,14 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     local procedure CheckIntrastatMandatoryFieldsOnSalesDoc(var SalesHeader: Record "Sales Header")
     var
         TempErrorMessage: Record "Error Message" temporary;
-        SalesLine: Record "Sales Line";
-        CountryRegion: Record "Country/Region";
-        Item: Record Item;
     begin
         if SalesHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
-            exit;
-        if not (SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::"Return Order"]) then
             exit;
 
         if not IntrastatReportSetup.Get() then
             exit;
 
-        case IntrastatReportSetup."Shipments Based On" of
-            IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
-                if not CountryRegion.Get(SalesHeader."Bill-to Country/Region Code") then
-                    exit;
-            IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
-                if not CountryRegion.Get(SalesHeader."Sell-to Country/Region Code") then
-                    exit;
-            IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
-                if not CountryRegion.Get(SalesHeader."Ship-to Country/Region Code") then
-                    exit;
-        end;
-        if CountryRegion."Intrastat Code" = '' then
-            exit;
-
-        if not CompanyInformation.Get() then
-            exit;
-
-        if CountryRegion.Code = CompanyInformation."Country/Region Code" then
+        if not CheckIntrastatTransaction(SalesHeader."VAT Country/Region Code") then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
@@ -143,37 +120,14 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     local procedure CheckIntrastatMandatoryFieldsOnPurchaseDoc(var PurchHeader: Record "Purchase Header")
     var
         TempErrorMessage: Record "Error Message" temporary;
-        PurchLine: Record "Purchase Line";
-        CountryRegion: Record "Country/Region";
-        Item: Record Item;
     begin
         if PurchHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
-            exit;
-
-        if not (PurchHeader."Document Type" in [PurchHeader."Document Type"::Order, PurchHeader."Document Type"::"Return Order"]) then
             exit;
 
         if not IntrastatReportSetup.Get() then
             exit;
 
-        case IntrastatReportSetup."Shipments Based On" of
-            IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
-                if not CountryRegion.Get(PurchHeader."Pay-to Country/Region Code") then
-                    exit;
-            IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
-                if not CountryRegion.Get(PurchHeader."Buy-from Country/Region Code") then
-                    exit;
-            IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
-                if not CountryRegion.Get(PurchHeader."Buy-from Country/Region Code") then
-                    exit;
-        end;
-        if CountryRegion."Intrastat Code" = '' then
-            exit;
-
-        if not CompanyInformation.Get() then
-            exit;
-
-        if CountryRegion.Code = CompanyInformation."Country/Region Code" then
+        if not CheckIntrastatTransaction(PurchHeader."VAT Country/Region Code") then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
@@ -200,10 +154,6 @@ codeunit 4812 "Intrastat Report Doc. Compl."
     local procedure CheckIntrastatMandatoryFieldsOnTransferDoc(var TransHeader: Record "Transfer Header"; var Selection: Option)
     var
         TempErrorMessage: Record "Error Message" temporary;
-        TransferLine: Record "Transfer Line";
-        CountryRegion: Record "Country/Region";
-        CountryRegion1: Record "Country/Region";
-        Item: Record Item;
     begin
         if TransHeader.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
             exit;
@@ -214,7 +164,7 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         if TransHeader."Trsf.-from Country/Region Code" = TransHeader."Trsf.-to Country/Region Code" then
             exit;
 
-        if (not CountryRegion.Get(TransHeader."Trsf.-from Country/Region Code") or (CountryRegion."Intrastat Code" = '')) and (not CountryRegion1.Get(TransHeader."Trsf.-to Country/Region Code") or (CountryRegion1."Intrastat Code" = '')) then
+        if (not CheckIntrastatTransaction(TransHeader."Trsf.-from Country/Region Code")) and (not CheckIntrastatTransaction(TransHeader."Trsf.-to Country/Region Code")) then
             exit;
 
         if IntrastatReportSetup."Transaction Type Mandatory" then
@@ -235,6 +185,18 @@ codeunit 4812 "Intrastat Report Doc. Compl."
 
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
+    end;
+
+    local procedure CheckIntrastatTransaction(CountryCode: Code[10]): Boolean
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        if not CountryRegion.Get(CountryCode) then
+            exit(false);
+        if CountryRegion."Intrastat Code" = '' then
+            exit(false);
+        CompanyInformation.Get();
+        exit(CompanyInformation."Country/Region Code" <> CountryCode);
     end;
 
     [IntegrationEvent(false, false)]

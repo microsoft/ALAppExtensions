@@ -250,21 +250,6 @@ table 4810 "Intrastat Report Setup"
             Caption = 'Shipment Method Mandatory';
             ToolTip = 'Specifies if the shipment method should be filled on documents before posting';
         }
-        field(42; "Tariff No. Mandatory"; Boolean)
-        {
-            Caption = 'Tariff No. Mandatory';
-            ToolTip = 'Specfies if the tariff no. should be filled on documents before posting';
-        }
-        field(43; "Net Weight Mandatory"; Boolean)
-        {
-            Caption = 'Net Weight Mandatory';
-            ToolTip = 'Specifies if the net weight should be filled on documents before posting';
-        }
-        field(44; "Country/Region of Origin Mand."; Boolean)
-        {
-            Caption = 'Country/Region of Origin Mandatory';
-            ToolTip = 'Specifies if the country/region of origin should be filled on documents before posting';
-        }
     }
 
     keys

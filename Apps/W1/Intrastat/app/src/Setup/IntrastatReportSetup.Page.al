@@ -59,9 +59,6 @@ page 4810 "Intrastat Report Setup"
                 field("Transaction Spec. Mandatory"; Rec."Transaction Spec. Mandatory") { }
                 field("Transport Method Mandatory"; Rec."Transport Method Mandatory") { }
                 field("Shipment Method Mandatory"; Rec."Shipment Method Mandatory") { }
-                field("Tariff No. Mandatory"; Rec."Tariff No. Mandatory") { }
-                field("Net Weight Mandatory"; Rec."Net Weight Mandatory") { }
-                field("Country/Region of Origin Mand."; Rec."Country/Region of Origin Mand.") { }
             }
             group(Reporting)
             {
