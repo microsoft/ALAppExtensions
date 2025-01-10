@@ -96,21 +96,10 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             exit;
 
         if SalesHeader.Ship or SalesHeader.Receive then begin
-            if IntrastatReportSetup."Transaction Type Mandatory" then
-                if SalesHeader."Transaction Type" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, SalesHeader.FieldCaption("Transaction Type")));
-
-            if IntrastatReportSetup."Transaction Spec. Mandatory" then
-                if SalesHeader."Transaction Specification" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, SalesHeader.FieldCaption("Transaction Specification")));
-
-            if IntrastatReportSetup."Shipment Method Mandatory" then
-                if SalesHeader."Shipment Method Code" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, SalesHeader.FieldCaption("Shipment Method Code")));
-
-            if IntrastatReportSetup."Transport Method Mandatory" then
-                if SalesHeader."Transport Method" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, SalesHeader.FieldCaption("Transport Method")));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Type Mandatory", SalesHeader."Transaction Type", SalesHeader.FieldCaption("Transaction Type"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Spec. Mandatory", SalesHeader."Transaction Specification", SalesHeader.FieldCaption("Transaction Specification"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Shipment Method Mandatory", SalesHeader."Shipment Method Code", SalesHeader.FieldCaption("Shipment Method Code"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transport Method Mandatory", SalesHeader."Transport Method", SalesHeader.FieldCaption("Transport Method"));
 
             if TempErrorMessage.HasErrors(true) then
                 TempErrorMessage.ShowErrorMessages(true);
@@ -134,21 +123,10 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             exit;
 
         if PurchHeader.Ship or PurchHeader.Receive then begin
-            if IntrastatReportSetup."Transaction Type Mandatory" then
-                if PurchHeader."Transaction Type" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, PurchHeader.FieldCaption("Transaction Type")));
-
-            if IntrastatReportSetup."Transaction Spec. Mandatory" then
-                if PurchHeader."Transaction Specification" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, PurchHeader.FieldCaption("Transaction Specification")));
-
-            if IntrastatReportSetup."Shipment Method Mandatory" then
-                if PurchHeader."Shipment Method Code" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, PurchHeader.FieldCaption("Shipment Method Code")));
-
-            if IntrastatReportSetup."Transport Method Mandatory" then
-                if PurchHeader."Transport Method" = '' then
-                    TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, PurchHeader.FieldCaption("Transport Method")));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Type Mandatory", PurchHeader."Transaction Type", PurchHeader.FieldCaption("Transaction Type"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Spec. Mandatory", PurchHeader."Transaction Specification", PurchHeader.FieldCaption("Transaction Specification"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Shipment Method Mandatory", PurchHeader."Shipment Method Code", PurchHeader.FieldCaption("Shipment Method Code"));
+            CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transport Method Mandatory", PurchHeader."Transport Method", PurchHeader.FieldCaption("Transport Method"));
 
             if TempErrorMessage.HasErrors(true) then
                 TempErrorMessage.ShowErrorMessages(true);
@@ -169,24 +147,13 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         if TransferHeader."Trsf.-from Country/Region Code" = TransferHeader."Trsf.-to Country/Region Code" then
             exit;
 
-        if not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code") then
+        if (not IsIntrastatTransaction(TransferHeader."Trsf.-to Country/Region Code")) and (not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code")) then
             exit;
 
-        if IntrastatReportSetup."Transaction Type Mandatory" then
-            if TransferHeader."Transaction Type" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transaction Type")));
-
-        if IntrastatReportSetup."Transaction Spec. Mandatory" then
-            if TransferHeader."Transaction Specification" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transaction Specification")));
-
-        if IntrastatReportSetup."Shipment Method Mandatory" then
-            if TransferHeader."Shipment Method Code" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Shipment Method Code")));
-
-        if IntrastatReportSetup."Transport Method Mandatory" then
-            if TransferHeader."Transport Method" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transport Method")));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Type Mandatory", TransferHeader."Transaction Type", TransferHeader.FieldCaption("Transaction Type"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Spec. Mandatory", TransferHeader."Transaction Specification", TransferHeader.FieldCaption("Transaction Specification"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Shipment Method Mandatory", TransferHeader."Shipment Method Code", TransferHeader.FieldCaption("Shipment Method Code"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transport Method Mandatory", TransferHeader."Transport Method", TransferHeader.FieldCaption("Transport Method"));
 
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
@@ -206,24 +173,13 @@ codeunit 4812 "Intrastat Report Doc. Compl."
         if TransferHeader."Trsf.-from Country/Region Code" = TransferHeader."Trsf.-to Country/Region Code" then
             exit;
 
-        if not IsIntrastatTransaction(TransferHeader."Trsf.-to Country/Region Code") and (not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code")) then
+        if (not IsIntrastatTransaction(TransferHeader."Trsf.-to Country/Region Code")) and (not IsIntrastatTransaction(TransferHeader."Trsf.-from Country/Region Code")) then
             exit;
 
-        if IntrastatReportSetup."Transaction Type Mandatory" then
-            if TransferHeader."Transaction Type" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transaction Type")));
-
-        if IntrastatReportSetup."Transaction Spec. Mandatory" then
-            if TransferHeader."Transaction Specification" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transaction Specification")));
-
-        if IntrastatReportSetup."Shipment Method Mandatory" then
-            if TransferHeader."Shipment Method Code" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Shipment Method Code")));
-
-        if IntrastatReportSetup."Transport Method Mandatory" then
-            if TransferHeader."Transport Method" = '' then
-                TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, TransferHeader.FieldCaption("Transport Method")));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Type Mandatory", TransferHeader."Transaction Type", TransferHeader.FieldCaption("Transaction Type"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transaction Spec. Mandatory", TransferHeader."Transaction Specification", TransferHeader.FieldCaption("Transaction Specification"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Shipment Method Mandatory", TransferHeader."Shipment Method Code", TransferHeader.FieldCaption("Shipment Method Code"));
+        CheckIntrastatMandatoryFields(TempErrorMessage, IntrastatReportSetup."Transport Method Mandatory", TransferHeader."Transport Method", TransferHeader.FieldCaption("Transport Method"));
 
         if TempErrorMessage.HasErrors(true) then
             TempErrorMessage.ShowErrorMessages(true);
@@ -240,6 +196,12 @@ codeunit 4812 "Intrastat Report Doc. Compl."
             exit(false);
         CompanyInformation.Get();
         exit(CompanyInformation."Country/Region Code" <> CountryCode);
+    end;
+
+    local procedure CheckIntrastatMandatoryFields(var TempErrorMessage: Record "Error Message" temporary; ValueMandatory: Boolean; FieldValue: Code[20]; FieldCaption: Text)
+    begin
+        if ValueMandatory and (FieldValue = '') then
+            TempErrorMessage.LogSimpleMessage(TempErrorMessage."Message Type"::Error, StrSubstNo(MandatoryFieldErr, FieldCaption));
     end;
 
     [IntegrationEvent(false, false)]
