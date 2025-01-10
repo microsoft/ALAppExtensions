@@ -211,7 +211,6 @@ codeunit 6134 "E-Doc. Integration Management"
             exit(false);
 
         EDocumentContent := ReceiveContext.GetTempBlob();
-
         if not EDocumentContent.HasValue() then
             exit(false);
 
@@ -587,7 +586,6 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocument2.SetRange("Document Date", EDocument."Document Date");
         exit(EDocument2.IsEmpty());
     end;
-
 
     #endregion
 
