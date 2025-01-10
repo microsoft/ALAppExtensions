@@ -569,16 +569,17 @@ codeunit 6134 "E-Doc. Integration Management"
         exit(true);
     end;
 
-    local procedure CheckNoDuplicateExists(var EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var DocumentMetadata: Codeunit "Temp Blob"): Boolean
+    local procedure CheckNoDuplicateExists(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"): Boolean
     var
+        EDocument2: Record "E-Document";
         EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
         IEDocument: Interface "E-Document";
-        EDocument2: Record "E-Document";
     begin
         IEDocument := EDocumentService."Document Format";
-        EDocGetBasicInfo.SetValues(IEDocument, EDocument, DocumentMetadata);
-        EDocGetBasicInfo.Run();
-        EDocGetBasicInfo.GetValues(IEDocument, EDocument, DocumentMetadata);
+        EDocGetBasicInfo.SetValues(IEDocument, EDocument, EDocumentContent);
+        if not EDocGetBasicInfo.Run() then
+            exit(true);
+        EDocGetBasicInfo.GetValues(IEDocument, EDocument, EDocumentContent);
 
         EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
         EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
