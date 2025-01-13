@@ -223,7 +223,7 @@ codeunit 6134 "E-Doc. Integration Management"
                 exit(false);
         end;
 
-        if not HasNoDuplicate(EDocument, EDocumentContent, EDocumentService."Document Format") then
+        if HasDuplicate(EDocument, EDocumentContent, EDocumentService."Document Format") then
             exit(false);
 
         // Only after sucecssfully downloading and (optionally) marking as fetched, the document is considered imported
@@ -239,14 +239,14 @@ codeunit 6134 "E-Doc. Integration Management"
     end;
 
 
-    local procedure HasNoDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
+    local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
     var
         EDocument: Record "E-Document";
         EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
     begin
         EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
         if not EDocGetBasicInfo.Run() then
-            exit(true);
+            exit(false);
         EDocGetBasicInfo.GetValues(IEDocument, IncomingEDocument, EDocumentContent);
 
         EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
