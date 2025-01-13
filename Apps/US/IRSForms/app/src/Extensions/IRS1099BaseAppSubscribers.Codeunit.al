@@ -19,9 +19,37 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         IRSFormsFeature: Codeunit "IRS Forms Feature";
 #endif
         IRSReportingPeriod: Codeunit "IRS Reporting Period";
+#if not CLEAN25
+        OldIRS1099LiableFieldUsedErr: Label 'You need to use the "1099 Liable" field instead of the "IRS 1099 Liable" field.';
+        NewExcludeFrom1099FieldUsedErr: Label 'You need to use the "IRS 1099 Liable" field instead of the "1099 Liable" field.';
+#endif
+
+
+#if not CLEAN25
+#pragma warning disable AL0432
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'IRS 1099 Liable', false, false)]
+    local procedure ThrowErrorWhenOldIRS1099LiableFieldUsed(var Rec: Record "Purchase Line")
+    begin
+        if not IRSFormsFeature.IsEnabled() then
+            exit;
+        error(OldIRS1099LiableFieldUsedErr);
+    end;
+#pragma warning restore AL0432
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', '1099 Liable', false, false)]
+    local procedure ThrowErrorWhenNewExcludeFrom1099FieldUsed(var Rec: Record "Purchase Line")
+    begin
+        if IRSFormsFeature.IsEnabled() then
+            exit;
+        error(NewExcludeFrom1099FieldUsedErr);
+    end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
     local procedure UpdateIRSDataOnAfterCopyGenJnlLineFromPurchHeader(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
+    var
+        PurchLine: Record "Purchase Line";
+        IRS1099ReportingAmount: Decimal;
     begin
 #if not CLEAN25
         if not IRSFormsFeature.IsEnabled() then
@@ -32,13 +60,22 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         GenJournalLine.Validate("IRS 1099 Reporting Period", PurchaseHeader."IRS 1099 Reporting Period");
         if PurchaseHeader."IRS 1099 Form No." = '' then
             exit;
+
+        PurchLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchLine.SetRange("1099 Liable", true);
+        if not PurchLine.FindSet() then
+            exit;
+
         GenJournalLine.Validate("IRS 1099 Form No.", PurchaseHeader."IRS 1099 Form No.");
         GenJournalLine.Validate("IRS 1099 Form Box No.", PurchaseHeader."IRS 1099 Form Box No.");
-        PurchaseHeader.CalcFields("Amount Including VAT");
-        if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Return Order", PurchaseHeader."Document Type"::"Credit Memo"] then
-            GenJournalLine.Validate("IRS 1099 Reporting Amount", Round(PurchaseHeader."Amount Including VAT"))
-        else
-            GenJournalLine.Validate("IRS 1099 Reporting Amount", -Round(PurchaseHeader."Amount Including VAT"));
+        repeat
+            if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Return Order", PurchaseHeader."Document Type"::"Credit Memo"] then
+                IRS1099ReportingAmount += PurchLine."Amount Including VAT"
+            else
+                IRS1099ReportingAmount += -PurchLine."Amount Including VAT";
+        until PurchLine.Next() = 0;
+        GenJournalLine.Validate("IRS 1099 Reporting Amount", Round(IRS1099ReportingAmount));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
@@ -125,6 +162,12 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         VendLedgEntry."IRS 1099 Subject For Reporting" := FromVendLedgEntry."IRS 1099 Subject For Reporting";
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterInitHeaderDefaults', '', false, false)]
+    local procedure Update1099LiableOnAfterInitHeaderDefaults(var PurchLine: Record "Purchase Line"; PurchHeader: Record "Purchase Header"; var TempPurchLine: record "Purchase Line" temporary)
+    begin
+        PurchLine."1099 Liable" := (PurchHeader."IRS 1099 Form Box No." <> '')
+    end;
+
     procedure UpdateIRSDataInPurchHeader(var PurchHeader: Record "Purchase Header"; ModifyRecord: Boolean)
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
@@ -142,7 +185,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchHeader.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
         PurchHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
         if ModifyRecord and (PurchHeader."No." <> '') then
-            PurchHeader.Modify(true);
+            if PurchHeader.Modify(true) then;
     end;
 
     procedure UpdateIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")

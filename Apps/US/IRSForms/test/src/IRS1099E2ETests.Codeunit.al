@@ -21,6 +21,8 @@ codeunit 148015 "IRS 1099 E2E Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
+        LibraryRandom: Codeunit "Library - Random";
+        LibraryInventory: Codeunit "Library - Inventory";
         IsInitialized: Boolean;
 
     trigger OnRun()
@@ -33,6 +35,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
     procedure MultipleFormsMultipleVendors()
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
@@ -75,11 +78,16 @@ codeunit 148015 "IRS 1099 E2E Tests"
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and MISC-02
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-01
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-02
-                    LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, VendNo[i]);
+
+                    LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo[i]);
                     PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(WorkDate()));
                     PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[j]);
                     PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j, k]);
                     PurchaseHeader.Modify(true);
+                    LibraryPurchase.CreatePurchaseLine(
+                        PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
+                    PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
+                    PurchaseLine.Modify(true);
 
                     LibraryERM.FindVendorLedgerEntry(
                         VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,

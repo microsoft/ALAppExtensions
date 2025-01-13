@@ -2024,7 +2024,7 @@ codeunit 148190 "Sust. Value Entry Test"
             (EmissionCH4[1] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2[1] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O[1] * EmissionFee[3]."Carbon Equivalent Factor");
         ExpectedCO2eEmission +=
             (EmissionCH4[2] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2[2] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O[2] * EmissionFee[3]."Carbon Equivalent Factor");
-        ExpectedCO2eEmission := Round((ExpectedCO2eEmission / (Quantity[1] + Quantity[2])), SustainabilitySetup."Emission Rounding Precision");
+        ExpectedCO2eEmission := ExpectedCO2eEmission / (Quantity[1] + Quantity[2]);
 
         // [WHEN] Post Purchase Document With Emission A and B.
         CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", Quantity[1], EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2[1], EmissionCH4[1], EmissionN2O[1]);
@@ -2143,6 +2143,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionBOMHeader: Record "Production BOM Header";
         SustainabilityAccount: Record "Sustainability Account";
         ProductionOrderLine: Record "Prod. Order Line";
+        ProductionOrderRoutingLine: Record "Prod. Order Routing Line";
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
@@ -2185,12 +2186,19 @@ codeunit 148190 "Sust. Value Entry Test"
         ProdItem.Validate("Routing No.", RoutingHeader."No.");
         ProdItem.Modify();
 
-        // [GIVEN] Generate Quantity and Expected CO2e per unit for Prod Order Line.
+        // [GIVEN] Generate Quantity for Prod Order Line.
         Quanity := LibraryRandom.RandIntInRange(10, 10);
-        ExpectedCO2ePerUnit := (WorkCenter."CO2e per Unit" * Quanity + CompItem."CO2e per Unit" * Quanity) / Quanity;
 
         // [GIVEN] Create and Refresh Production Order.
         CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
+
+        // [GIVEN] Find Prod Order Routing Line.
+        ProductionOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderRoutingLine.FindFirst();
+
+        // [GIVEN] Generate Expected CO2e per unit for Prod Order Line.
+        ExpectedCO2ePerUnit := (ProductionOrderRoutingLine."CO2e per Unit" * GetTotalTimePerOperation(ProductionOrderRoutingLine) + CompItem."CO2e per Unit" * Quanity) / Quanity;
 
         // [GIVEN] Find Prod Order Line.
         ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
@@ -2202,6 +2210,90 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionOrderLine.Modify();
 
         // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
+        VerifyProductionOrderLine(ProductionOrder, AccountCode, ExpectedCO2ePerUnit, ExpectedCO2ePerUnit * Quanity, 0);
+        VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", CompItem."CO2e per Unit", CompItem."CO2e per Unit" * Quanity, 0);
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * GetTotalTimePerOperation(ProductionOrderRoutingLine), 0);
+    end;
+
+    [Test]
+    procedure VerifySustFieldsShouldBeUpdatedAfterRefreshProductionOrderUsingUnitCostCalculation()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilityAccount: Record "Sustainability Account";
+        ProductionOrderLine: Record "Prod. Order Line";
+        ProductionOrderRoutingLine: Record "Prod. Order Routing Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        Quanity: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+    begin
+        // [SCENARIO 560223] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order using "Unit Cost Calculation" as Units.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Unit Cost Calculation", WorkCenter."Unit Cost Calculation"::Units);
+        WorkCenter.Validate("Default Sust. Account", AccountCode);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, 0));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Generate Quantity for Prod Order Line.
+        Quanity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
+
+        // [GIVEN] Find Prod Order Routing Line.
+        ProductionOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderRoutingLine.FindFirst();
+
+        // [GIVEN] Generate Expected CO2e per unit for Prod Order Line.
+        ExpectedCO2ePerUnit := (ProductionOrderRoutingLine."CO2e per Unit" * Quanity + CompItem."CO2e per Unit" * Quanity) / Quanity;
+
+        // [GIVEN] Find Prod Order Line.
+        ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderLine.FindFirst();
+
+        // [WHEN] Update "Sust. Account No." in Prod Order Line.
+        ProductionOrderLine.Validate("Sust. Account No.", AccountCode);
+        ProductionOrderLine.Modify();
+
+        // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order using "Unit Cost Calculation" as Units.
         VerifyProductionOrderLine(ProductionOrder, AccountCode, ExpectedCO2ePerUnit, ExpectedCO2ePerUnit * Quanity, 0);
         VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", CompItem."CO2e per Unit", CompItem."CO2e per Unit" * Quanity, 0);
         VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * Quanity, 0);
@@ -2218,6 +2310,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionBOMHeader: Record "Production BOM Header";
         SustainabilityAccount: Record "Sustainability Account";
         ProductionOrderLine: Record "Prod. Order Line";
+        ProductionOrderRoutingLine: Record "Prod. Order Routing Line";
         ExpectedCO2ePerUnit: array[2] of Decimal;
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
@@ -2268,11 +2361,19 @@ codeunit 148190 "Sust. Value Entry Test"
         ProdItem.Validate("Routing No.", RoutingHeader."No.");
         ProdItem.Modify();
 
-        // [GIVEN] Save  Expected "CO2e per Unit" for Prod Order Line.
+        // [GIVEN] Save Expected "CO2e per Unit" for Prod Order Line.
         ExpectedCO2ePerUnitForProdOrderLine := (ExpectedCO2ePerUnit[1] * Quanity + ExpectedCO2ePerUnit[2] * Quanity) / Quanity;
 
         // [WHEN] Create and Refresh Production Order.
         CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", Quanity);
+
+        // [GIVEN] Find Prod Order Routing Line.
+        ProductionOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProductionOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProductionOrderRoutingLine.FindFirst();
+
+        // [GIVEN] Generate Expected CO2e per unit for Prod Order Line.
+        ExpectedCO2ePerUnitForProdOrderLine := (ExpectedCO2ePerUnit[1] * GetTotalTimePerOperation(ProductionOrderRoutingLine) + ExpectedCO2ePerUnit[2] * Quanity) / Quanity;
 
         // [GIVEN] Find Prod Order Line.
         ProductionOrderLine.SetRange(Status, ProductionOrder.Status);
@@ -2285,7 +2386,7 @@ codeunit 148190 "Sust. Value Entry Test"
 
         // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated after refresh Production Order.
         VerifyProductionOrderLine(ProductionOrder, AccountCode, ExpectedCO2ePerUnitForProdOrderLine, ExpectedCO2ePerUnitForProdOrderLine * Quanity, 0);
-        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", ExpectedCO2ePerUnit[1], ExpectedCO2ePerUnit[1] * Quanity, 0);
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", ExpectedCO2ePerUnit[1], ExpectedCO2ePerUnit[1] * GetTotalTimePerOperation(ProductionOrderRoutingLine), 0);
         VerifyProductionOrderComponent(ProductionOrder, CompItem."Default Sust. Account", ExpectedCO2ePerUnit[2], ExpectedCO2ePerUnit[2] * Quanity, 0);
     end;
 
@@ -2374,7 +2475,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ProductionOrderRoutingLine.Modify();
 
         // [THEN] Verify "Default Sust. Account","CO2e per Unit","Total CO2e" should be updated from Work Center.
-        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * 10, 0);
+        VerifyProductionOrderRoutingLine(ProductionOrder, WorkCenter."Default Sust. Account", WorkCenter."CO2e per Unit", WorkCenter."CO2e per Unit" * GetTotalTimePerOperation(ProductionOrderRoutingLine), 0);
     end;
 
     [Test]
@@ -2469,6 +2570,206 @@ codeunit 148190 "Sust. Value Entry Test"
         FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
         VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
+    end;
+
+    [Test]
+    [HandlerFunctions('ProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
+    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculation()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProdOrderComponent: Record "Prod. Order Component";
+        ProdOrderRoutingLine: Record "Prod. Order Routing Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: array[3] of Code[20];
+    begin
+        // [SCENARIO 560223] Verify Sustainability Ledger Entry should be created When Production Journal is posted using Unit Cost Calculation as Units.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account for Work Center.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(1, 1));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Unit Cost Calculation", WorkCenter."Unit Cost Calculation"::Units);
+        WorkCenter.Validate("Default Sust. Account", AccountCode[1]);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Create a Sustainability Account for Comp Item.
+        CreateSustainabilityAccount(AccountCode[2], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(2, 2));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode[2]);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Post Inventory for Component Item.
+        PostInventoryForItem(CompItem."No.");
+
+        // [GIVEN] Create a Sustainability Account for Production Item.
+        CreateSustainabilityAccount(AccountCode[3], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(3, 3));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode[3]);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [WHEN] Post Production Journal.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
+
+        // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 3);
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
+
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Routing Line.
+        FindProdOrderRoutingLine(ProdOrderRoutingLine, ProductionOrder);
+        VerifySustValueEntryForProductionOrder(ProductionOrder, '', ExpectedCO2ePerUnit[1] * ProdOrderLine.Quantity);
+    end;
+
+    [Test]
+    [HandlerFunctions('ProductionJournalModalPageHandlerForRunAndSetupTime,ConfirmHandler,MessageHandler')]
+    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculationAsTime()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        ProductionOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProdOrderComponent: Record "Prod. Order Component";
+        ProdOrderRoutingLine: Record "Prod. Order Routing Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: array[3] of Code[20];
+    begin
+        // [SCENARIO 560223] Verify Sustainability Ledger Entry should be created When Production Journal is posted using Unit Cost Calculation as Time.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account for Work Center.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(1, 1));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Unit Cost Calculation", WorkCenter."Unit Cost Calculation"::Time);
+        WorkCenter.Validate("Default Sust. Account", AccountCode[1]);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Create a Sustainability Account for Comp Item.
+        CreateSustainabilityAccount(AccountCode[2], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(2, 2));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode[2]);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Post Inventory for Component Item.
+        PostInventoryForItem(CompItem."No.");
+
+        // [GIVEN] Create a Sustainability Account for Production Item.
+        CreateSustainabilityAccount(AccountCode[3], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(3, 3));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode[3]);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [WHEN] Post Production Journal.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
+
+        // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 3);
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
+
+        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
+
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Routing Line.
+        FindProdOrderRoutingLine(ProdOrderRoutingLine, ProductionOrder);
+        VerifySustValueEntryForProductionOrder(ProductionOrder, '', ExpectedCO2ePerUnit[1] * 10);
     end;
 
     [Test]
@@ -2782,6 +3083,13 @@ codeunit 148190 "Sust. Value Entry Test"
         ProdOrderComponent.FindFirst();
     end;
 
+    local procedure FindProdOrderRoutingLine(var ProdOrderRoutingLine: Record "Prod. Order Routing Line"; ProductionOrder: Record "Production Order")
+    begin
+        ProdOrderRoutingLine.SetRange(Status, ProductionOrder.Status);
+        ProdOrderRoutingLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProdOrderRoutingLine.FindFirst();
+    end;
+
     local procedure CreateRoutingWithWorkCenter(var WorkCenter: Record "Work Center"; CO2ePerUnit: Decimal): Code[20]
     var
         RoutingHeader: Record "Routing Header";
@@ -2942,6 +3250,17 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
     end;
 
+    local procedure GetTotalTimePerOperation(var ProdOrderRoutingLine: Record "Prod. Order Routing Line"): Decimal
+    var
+        CalendarMgt: Codeunit "Shop Calendar Management";
+    begin
+        exit(
+            (ProdOrderRoutingLine."Run Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Run Time Unit of Meas. Code")) +
+            (ProdOrderRoutingLine."Setup Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Setup Time Unit of Meas. Code")) +
+            (ProdOrderRoutingLine."Move Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Move Time Unit of Meas. Code")) +
+            (ProdOrderRoutingLine."Wait Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Wait Time Unit of Meas. Code")));
+    end;
+
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure PurchaseOrderStatisticsPageHandler(var PurchaseOrderStatisticsPage: TestPage "Purchase Order Statistics")
@@ -3034,6 +3353,21 @@ codeunit 148190 "Sust. Value Entry Test"
     [Scope('OnPrem')]
     procedure ProductionJournalModalPageHandler(var ProductionJournal: TestPage "Production Journal")
     begin
+        ProductionJournal.Post.Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ProductionJournalModalPageHandlerForRunAndSetupTime(var ProductionJournal: TestPage "Production Journal")
+    begin
+        ProductionJournal.First();
+        repeat
+            if ProductionJournal."No.".Value <> '' then begin
+                ProductionJournal."Run Time".SetValue(LibraryRandom.RandIntInRange(5, 5));
+                ProductionJournal."Setup Time".SetValue(LibraryRandom.RandIntInRange(5, 5));
+            end;
+        until not ProductionJournal.Next();
+
         ProductionJournal.Post.Invoke();
     end;
 

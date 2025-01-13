@@ -23,6 +23,8 @@ codeunit 148187 "Sust. Certificate Test"
         FieldShouldBeVisibleErr: Label '%1 should be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
         FieldShouldNotBeVisibleErr: Label '%1 should not be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
         ConfirmationForClearEmissionInfoQst: Label 'Changing the Replenishment System to %1 will clear sustainability emission value. Do you want to continue?', Comment = '%1 = Replenishment System';
+        ActionShouldNotBeVisibleErr: Label 'Calculate CO2e action should not be visible in Page %1', Comment = '%1 = Page Caption';
+        ActionShouldBeVisibleErr: Label 'Calculate CO2e action should be visible in Page %1', Comment = '%1 = Page Caption';
 
     [Test]
     procedure VerifyHasValueFieldShouldThrowErrorWhenValueIsUpdated()
@@ -849,6 +851,318 @@ codeunit 148187 "Sust. Certificate Test"
     end;
 
     [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnItemCardIfItemEmissionsIsEnabled()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+    begin
+        // [SCENARIO 560219] Verify "Calculate CO2e" action should be visible on "Item Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Item Card" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ItemCard.Caption()));
+
+        // [GIVEN] Close "Item Card".
+        ItemCard.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Item Card" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ItemCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, ItemCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnItemListIfItemEmissionsIsEnabled()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemList: TestPage "Item List";
+    begin
+        // [SCENARIO 560219] Verify "Calculate CO2e" action should be visible on "Item List" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [WHEN] Open "Item List".
+        ItemList.OpenView();
+        ItemList.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Item List" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ItemList.Caption()));
+
+        // [GIVEN] Close "Item List".
+        ItemList.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item List".
+        ItemList.OpenView();
+        ItemList.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Item List" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ItemList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, ItemList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnProductionBOMCardIfItemEmissionsIsEnabled()
+    var
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ProductionBOM: TestPage "Production BOM";
+    begin
+        // [SCENARIO 560219] Verify "Calculate CO2e" action should be visible on "Production BOM" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(CompItem);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [WHEN] Open "Production BOM".
+        ProductionBOM.OpenView();
+        ProductionBOM.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Production BOM" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOM."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOM.Caption()));
+
+        // [GIVEN] Close "Production BOM".
+        ProductionBOM.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Production BOM".
+        ProductionBOM.OpenView();
+        ProductionBOM.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Production BOM" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ProductionBOM."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, ProductionBOM.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnProductionBOMListIfItemEmissionsIsEnabled()
+    var
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ProductionBOMList: TestPage "Production BOM List";
+    begin
+        // [SCENARIO 560219] Verify "Calculate CO2e" action should be visible on "Production BOM List" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(CompItem);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [WHEN] Open "Production BOM List".
+        ProductionBOMList.OpenView();
+        ProductionBOMList.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Production BOM List" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOMList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOMList.Caption()));
+
+        // [GIVEN] Close "Production BOM List".
+        ProductionBOMList.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Production BOM List".
+        ProductionBOMList.OpenView();
+        ProductionBOMList.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Production BOM List" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ProductionBOMList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, ProductionBOMList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldbeVisibleOnProductionBOMLinesIfItemEmissionsIsEnabled()
+    var
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        ProductionBOMLine: Record "Production BOM Line";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ProductionBOMLines: TestPage "Production BOM Lines";
+    begin
+        // [SCENARIO 560219] Verify "CO2e per Unit" field should be visible on "Production BOM Lines" page If "Item Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(CompItem);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [GIVEN] Find Production BOM Line.
+        ProductionBOMLine.SetRange("Production BOM No.", ProductionBOMHeader."No.");
+        ProductionBOMLine.FindFirst();
+
+        // [WHEN] Open "Production BOM Lines".
+        ProductionBOMLines.OpenView();
+        ProductionBOMLines.GoToRecord(ProductionBOMLine);
+
+        // [VERIFY] Verify "CO2e per Unit" field should not be visible on "Production BOM Lines" page If "Item Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOMLines."CO2e per Unit".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ProductionBOMLines."CO2e per Unit".Caption(), ProductionBOMLines.Caption()));
+
+        // [GIVEN] Close "Production BOM Lines".
+        ProductionBOMLines.Close();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Production BOM Lines".
+        ProductionBOMLines.OpenView();
+        ProductionBOMLines.GoToRecord(ProductionBOMLine);
+
+        // [VERIFY] Verify "CO2e per Unit" field should be visible on "Production BOM Lines" page If "Item Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            ProductionBOMLines."CO2e per Unit".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ProductionBOMLines."CO2e per Unit".Caption(), ProductionBOMLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitShouldbeVisibleOnRoutingLinesIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        RoutingHeader: Record "Routing Header";
+        RoutingLine: Record "Routing Line";
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        RoutingLines: TestPage "Routing Lines";
+    begin
+        // [SCENARIO 560219] Verify "CO2e per Unit" field should be visible on "Routing Lines" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkCenter(WorkCenter, 0));
+
+        // [GIVEN] Find Routing Line.
+        RoutingLine.SetRange("Routing No.", RoutingHeader."No.");
+        RoutingLine.FindFirst();
+
+        // [WHEN] Open "Routing Lines".
+        RoutingLines.OpenView();
+        RoutingLines.GoToRecord(RoutingLine);
+
+        // [VERIFY] Verify "CO2e per Unit" field should not be visible on "Routing Lines" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            RoutingLines."CO2e per Unit".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, RoutingLines."CO2e per Unit".Caption(), RoutingLines.Caption()));
+
+        // [GIVEN] Close "Routing Lines".
+        RoutingLines.Close();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Routing Lines".
+        RoutingLines.OpenView();
+        RoutingLines.GoToRecord(RoutingLine);
+
+        // [VERIFY] Verify "CO2e per Unit" field should be visible on "Routing Lines" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            RoutingLines."CO2e per Unit".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, RoutingLines."CO2e per Unit".Caption(), RoutingLines.Caption()));
+    end;
+
+    [Test]
     procedure VerifyDefaultSustFieldShouldbeVisibleOnItemCategoryCardIfItemEmissionsIsEnabled()
     var
         ItemCategory: Record "Item Category";
@@ -1042,6 +1356,13 @@ codeunit 148187 "Sust. Certificate Test"
         // [SCENARIO 537413] Verify Default Sust. fields should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
         // [GIVEN] Create a Machine Center.
         LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
 
@@ -1070,9 +1391,6 @@ codeunit 148187 "Sust. Certificate Test"
         // [GIVEN] Close "Machine Center Card".
         MachineCenterCard.Close();
 
-        // [GIVEN] Get Sustainability Setup.
-        SustainabilitySetup.Get();
-
         // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
         SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
         SustainabilitySetup.Modify(true);
@@ -1098,6 +1416,102 @@ codeunit 148187 "Sust. Certificate Test"
             true,
             MachineCenterCard."Default N2O Emission".Visible(),
             StrSubstNo(FieldShouldBeVisibleErr, MachineCenterCard."Default N2O Emission".Caption(), MachineCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnMachineCenterCardIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterCard: TestPage "Machine Center Card";
+    begin
+        // [SCENARIO 537413] Verify "Calculate CO2e" action should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterCard.Caption()));
+
+        // [GIVEN] Close "Machine Center Card".
+        MachineCenterCard.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            MachineCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, MachineCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnMachineCenterListIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterList: TestPage "Machine Center List";
+    begin
+        // [SCENARIO 537413] Verify "Calculate CO2e" action should be visible on "Machine Center List" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [WHEN] Open "Machine Center List".
+        MachineCenterList.OpenView();
+        MachineCenterList.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Machine Center List" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterList.Caption()));
+
+        // [GIVEN] Close "Machine Center List".
+        MachineCenterList.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Machine Center List".
+        MachineCenterList.OpenView();
+        MachineCenterList.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Machine Center List" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            MachineCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, MachineCenterList.Caption()));
     end;
 
     [Test]
@@ -1170,6 +1584,102 @@ codeunit 148187 "Sust. Certificate Test"
             true,
             WorkCenterCard."Default N2O Emission".Visible(),
             StrSubstNo(FieldShouldBeVisibleErr, WorkCenterCard."Default N2O Emission".Caption(), WorkCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnWorkCenterCardIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterCard: TestPage "Work Center Card";
+    begin
+        // [SCENARIO 537413] Verify "Calculate CO2e" action should be visible on "Work Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Work Center Card" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterCard.Caption()));
+
+        // [GIVEN] Close "Work Center Card".
+        WorkCenterCard.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Work Center Card" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            WorkCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, WorkCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateCO2eShouldbeVisibleOnWorkCenterListIfWorkMachineCenterEmissionsIsEnabled()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterList: TestPage "Work Center List";
+    begin
+        // [SCENARIO 537413] Verify "Calculate CO2e" action should be visible on "Work Center List" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center List".
+        WorkCenterList.OpenView();
+        WorkCenterList.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should not be visible on "Work Center List" page If "Work/Machine Center Emissions" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterList.Caption()));
+
+        // [GIVEN] Close "Work Center List".
+        WorkCenterList.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center List".
+        WorkCenterList.OpenView();
+        WorkCenterList.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate CO2e" action should be visible on "Work Center List" page If "Work/Machine Center Emissions" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            WorkCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldBeVisibleErr, WorkCenterList.Caption()));
     end;
 
     [Test]
@@ -1933,6 +2443,37 @@ codeunit 148187 "Sust. Certificate Test"
         PostedDocNumber := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
         PurchInvHeader.Get(PostedDocNumber);
         CorrectPostedPurchInvoice.CancelPostedInvoice(PurchInvHeader);
+    end;
+
+    local procedure CreateProductionBOM(var ProductionBOMHeader: Record "Production BOM Header"; CompItem: Record Item; CO2ePerUnit: Decimal)
+    var
+        ProductionBOMLine: Record "Production BOM Line";
+    begin
+        LibraryManufacturing.CreateProductionBOMHeader(ProductionBOMHeader, CompItem."Base Unit of Measure");
+        LibraryManufacturing.CreateProductionBOMLine(ProductionBOMHeader, ProductionBOMLine, '', ProductionBOMLine.Type::Item, CompItem."No.", 1);
+        if CO2ePerUnit <> 0 then begin
+            ProductionBOMLine.Validate("CO2e per Unit", CO2ePerUnit);
+            ProductionBOMLine.Modify();
+        end;
+        LibraryManufacturing.UpdateProductionBOMStatus(ProductionBOMHeader, ProductionBOMHeader.Status::Certified);
+    end;
+
+    local procedure CreateRoutingWithWorkCenter(var WorkCenter: Record "Work Center"; CO2ePerUnit: Decimal): Code[20]
+    var
+        RoutingHeader: Record "Routing Header";
+        RoutingLine: Record "Routing Line";
+    begin
+        LibraryManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine, '', Format(LibraryRandom.RandInt(100)), RoutingLine.Type::"Work Center", WorkCenter."No.");
+        if CO2ePerUnit <> 0 then begin
+            RoutingLine.Validate("CO2e per Unit", CO2ePerUnit);
+            RoutingLine.Modify();
+        end;
+
+        RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
+        RoutingHeader.Modify(true);
+
+        exit(RoutingHeader."No.");
     end;
 
     [ConfirmHandler]

@@ -464,10 +464,19 @@ Codeunit 148003 "Library - Tax CZL"
         GeneralLedgerSetup.Modify();
     end;
 
+#if not CLEAN26
+    [Obsolete('Replaced by SetXMLFormat function with "VAT Statement Name" parameter.', '26.0')]
     procedure SetXMLFormat(var VATStatementTemplate: Record "VAT Statement Template"; XMLFormat: Enum "VAT Statement XML Format CZL")
     begin
         VATStatementTemplate."XML Format CZL" := XMLFormat;
         VATStatementTemplate.Modify();
+    end;
+
+#endif
+    procedure SetXMLFormat(var VATStatementName: Record "VAT Statement Name"; XMLFormat: Enum "VAT Statement XML Format CZL")
+    begin
+        VATStatementName."XML Format CZL" := XMLFormat;
+        VATStatementName.Modify();
     end;
 
     procedure SuggestVATControlReportLines(var VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL")

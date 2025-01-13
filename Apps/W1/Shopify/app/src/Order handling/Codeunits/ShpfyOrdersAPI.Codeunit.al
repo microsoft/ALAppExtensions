@@ -98,7 +98,9 @@ codeunit 30165 "Shpfy Orders API"
             else
 #endif
                 OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JItem, 'value').Replace('\\', '\').Replace('\"', '"'), 1, MaxStrLen(OrderAttribute."Attribute Value"));
-            OrderAttribute.Insert();
+
+            if not OrderAttribute.Insert() then
+                OrderAttribute.Modify();
         end;
     end;
 
@@ -260,6 +262,7 @@ codeunit 30165 "Shpfy Orders API"
                         end;
                         OrdersToImport.Tags := CopyStr(Tags.ToText(), 2, MaxStrLen(OrdersToImport.Tags));
                     end;
+                    OrdersToImport."High Risk" := IsHighRiskOrder(JNode);
                     OrderHeader.SetRange("Shopify Order Id", Id);
                     if OrderHeader.IsEmpty then
                         OrdersToImport."Import Action" := OrdersToImport."Import Action"::New
@@ -307,5 +310,20 @@ codeunit 30165 "Shpfy Orders API"
         Parameters.Add('Restock', CommunicationMgt.ConvertBooleanToText(Restock));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         exit(JsonHelper.GetJsonArray(JResponse, 'data.orderCancel.orderCancelUserErrors').Count() = 0);
+    end;
+
+    local procedure IsHighRiskOrder(JOrder: JsonObject): Boolean
+    var
+        OrderRisks: Codeunit "Shpfy Order Risks";
+        RiskLevel: Enum "Shpfy Risk Level";
+        JRiskAssessments: JsonArray;
+        JRiskAssessment: JsonToken;
+    begin
+        if JsonHelper.GetJsonArray(JOrder, JRiskAssessments, 'risk.assessments') then
+            foreach JRiskAssessment in JRiskAssessments do begin
+                RiskLevel := OrderRisks.ConvertToRiskLevel(JsonHelper.GetValueAsText(JRiskAssessment, 'riskLevel'));
+                if RiskLevel = RiskLevel::High then
+                    exit(true);
+            end;
     end;
 }

@@ -33,11 +33,6 @@ page 6133 "E-Document Service"
                 field("Export Format"; Rec."Document Format")
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
-
-                    trigger OnValidate()
-                    begin
-                        CurrPage.Update(false);
-                    end;
                 }
 #if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
@@ -177,6 +172,15 @@ page 6133 "E-Document Service"
                     }
                 }
             }
+            group(Export)
+            {
+                field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
+                {
+                }
+                field("Buyer Reference"; Rec."Buyer Reference")
+                {
+                }
+            }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {
                 ApplicationArea = All;
@@ -202,8 +206,8 @@ page 6133 "E-Document Service"
         {
             action("SetupServiceIntegration")
             {
-                Caption = 'Setup Service Integration';
-                ToolTip = 'Setup Service Integration';
+                Caption = 'Set up service integration';
+                ToolTip = 'Set up service integration';
                 Image = Setup;
 
                 trigger OnAction()
@@ -213,8 +217,8 @@ page 6133 "E-Document Service"
             }
             action(SupportedDocTypes)
             {
-                Caption = 'Supported Document Types';
-                ToolTip = 'Setup Supported Document Types';
+                Caption = 'Supported document types';
+                ToolTip = 'Set up supported document types';
                 Image = Documents;
                 RunObject = Page "E-Doc Service Supported Types";
                 RunPageLink = "E-Document Service Code" = field(Code);

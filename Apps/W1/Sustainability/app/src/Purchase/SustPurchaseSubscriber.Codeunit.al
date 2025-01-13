@@ -289,14 +289,14 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustPreviewPostInstance: Codeunit "Sust. Preview Post Instance";
     begin
         SustPreviewPostInstance.Initialize();
-        exit(BindSubscription(SustPreviewPostingHandler));
+        exit(SustPreviewPostingHandler.TryBindPostingPreviewHandler());
     end;
 
     local procedure TryUnbindPostingPreviewHandler(): Boolean
     var
         SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
     begin
-        exit(UnbindSubscription(SustPreviewPostingHandler));
+        exit(SustPreviewPostingHandler.TryUnbindPostingPreviewHandler());
     end;
 
     var

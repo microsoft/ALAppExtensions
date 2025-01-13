@@ -509,6 +509,156 @@ codeunit 139608 "Shpfy Orders API Test"
         LibraryAssert.AreNotEqual(SalesLine."Reserved Quantity", 0, 'Order line is reserved');
     end;
 
+    [Test]
+    procedure UnitTestImportShopifyOrderHighRisk()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: Codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        RiskLevel: Enum "Shpfy Risk Level";
+        JShopifyOrder: JsonObject;
+        JShopifyLineItems: JsonArray;
+    begin
+        // [SCENARIO] Import a high risk Shopify order from the "Shpfy Orders to Import" record
+        Initialize();
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop.Code);
+
+        // [GIVEN] the order to import as a json structure.
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
+
+        // [WHEN] ShpfyImportOrder.ImportOrder
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        CreateOrderRisk(OrderHeader."Shopify Order Id", RiskLevel::High);
+
+        // [THEN] Order is high risk
+        OrderHeader.CalcFields("High Risk");
+        LibraryAssert.IsTrue(OrderHeader."High Risk", 'Order is high risk');
+    end;
+
+    [Test]
+    procedure UnitTestImportShopifyOrderLowRisk()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: Codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        RiskLevel: Enum "Shpfy Risk Level";
+        JShopifyOrder: JsonObject;
+        JShopifyLineItems: JsonArray;
+    begin
+        // [SCENARIO] Import a low risk Shopify order from the "Shpfy Orders to Import" record
+        Initialize();
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop.Code);
+
+        // [GIVEN] the order to import as a json structure.
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
+
+        // [WHEN] ShpfyImportOrder.ImportOrder
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        CreateOrderRisk(OrderHeader."Shopify Order Id", RiskLevel::Low);
+
+        // [THEN] Order is high risk
+        OrderHeader.CalcFields("High Risk");
+        LibraryAssert.IsFalse(OrderHeader."High Risk", 'Order is not high risk');
+    end;
+
+    [Test]
+    procedure UnitTestExtractShopifyOrdersToImportHighRisk()
+    var
+        Shop: Record "Shpfy Shop";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        OrdersAPI: Codeunit "Shpfy Orders API";
+        Cursor: Text;
+        JOrdersToImport: JsonObject;
+        JOrder: JsonToken;
+        JOrders: JsonArray;
+        JAssessments: JsonArray;
+        JAssessment: JsonToken;
+    begin
+        // [SCENARIO] Create a random expected Json structure for the OrdersToImport with high risk
+        Initialize();
+        Clear(OrdersToImport);
+        if not OrdersToImport.IsEmpty then
+            OrdersToImport.DeleteAll();
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        // [GIVEN] the orders to import as a json structure.
+        JOrdersToImport := OrderHandlingHelper.GetOrdersToImport(false);
+        JOrdersToImport.GetObject('data').GetObject('orders').GetArray('edges').Get(0, JOrder);
+        JAssessments := JOrder.AsObject().GetObject('node').GetObject('risk').GetArray('assessments');
+        foreach JAssessment in JAssessments do
+            JAssessment.AsObject().Replace('riskLevel', 'HIGH');
+        JOrders.Add(JOrder);
+        JOrdersToImport.GetObject('data').GetObject('orders').Replace('edges', JOrders);
+
+        // [WHEN] Execute ShpfyOrdersAPI.ExtractShopifyOrdersToImport
+        OrdersAPI.ExtractShopifyOrdersToImport(Shop, JOrdersToImport, Cursor);
+
+        // [THEN] Order is high risk
+        OrdersToImport.FindLast();
+        LibraryAssert.IsTrue(OrdersToImport."High Risk", 'Order is high risk');
+    end;
+
+    [Test]
+    procedure UnitTestExtractShopifyOrdersToImportLowRisk()
+    var
+        Shop: Record "Shpfy Shop";
+        OrdersToImport: Record "Shpfy Orders to Import";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        OrdersAPI: Codeunit "Shpfy Orders API";
+        Cursor: Text;
+        JOrdersToImport: JsonObject;
+        JOrder: JsonToken;
+        JOrders: JsonArray;
+        JAssessments: JsonArray;
+        JAssessment: JsonToken;
+    begin
+        // [SCENARIO] Create a random expected Json structure for the OrdersToImport with low risk
+        Initialize();
+        Clear(OrdersToImport);
+        if not OrdersToImport.IsEmpty then
+            OrdersToImport.DeleteAll();
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        // [GIVEN] the orders to import as a json structure.
+        JOrdersToImport := OrderHandlingHelper.GetOrdersToImport(false);
+        JOrdersToImport.GetObject('data').GetObject('orders').GetArray('edges').Get(0, JOrder);
+        JAssessments := JOrder.AsObject().GetObject('node').GetObject('risk').GetArray('assessments');
+        foreach JAssessment in JAssessments do
+            JAssessment.AsObject().Replace('riskLevel', 'LOW');
+        JOrders.Add(JOrder);
+        JOrdersToImport.GetObject('data').GetObject('orders').Replace('edges', JOrders);
+
+        // [WHEN] Execute ShpfyOrdersAPI.ExtractShopifyOrdersToImport
+        OrdersAPI.ExtractShopifyOrdersToImport(Shop, JOrdersToImport, Cursor);
+
+        // [THEN] Order is high risk
+        OrdersToImport.FindLast();
+        LibraryAssert.IsFalse(OrdersToImport."High Risk", 'Order is not high risk');
+    end;
+
     local procedure CreateTaxArea(var TaxArea: Record "Tax Area"; var ShopifyTaxArea: Record "Shpfy Tax Area"; Shop: Record "Shpfy Shop")
     var
         ShopifyCustomerTemplate: Record "Shpfy Customer Template";
@@ -551,6 +701,23 @@ codeunit 139608 "Shpfy Orders API Test"
     begin
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, B2B);
         ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+    end;
+
+    local procedure CreateOrderRisk(ShopifyOrderId: BigInteger; RiskLevel: Enum "Shpfy Risk Level")
+    var
+        OrderRisk: Record "Shpfy Order Risk";
+        LineNo: Integer;
+    begin
+        if OrderRisk.FindLast() then
+            LineNo := OrderRisk."Line No." + 1
+        else
+            LineNo := 1;
+
+        Clear(OrderRisk);
+        OrderRisk."Order Id" := ShopifyOrderId;
+        OrderRisk."Line No." := LineNo;
+        OrderRisk.Level := RiskLevel;
+        OrderRisk.Insert();
     end;
 
     local procedure Initialize()

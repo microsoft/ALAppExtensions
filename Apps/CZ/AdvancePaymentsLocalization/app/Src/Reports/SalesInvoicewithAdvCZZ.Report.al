@@ -307,7 +307,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(PrepaymentAmt_SalesInvoiceHeader; PrepaymentAmt)
             {
             }
-            column(TotalAfterPrepayed_SalesInvoiceHeader; TotalAfterPrepayed)
+            column(TotalAfterPrepayed_SalesInvoiceHeader; Format(TotalAfterPrepayed, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Invoice Header"."Currency Code")))
             {
             }
             column(CalculatedExchRate; CalculatedExchRate)
@@ -651,14 +651,17 @@ report 31018 "Sales - Invoice with Adv. CZZ"
 
                 if UseFunctionalCurrency then
                     if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
-                        CurrencyExchangeRate.FindCurrency("Posting Date", "General Ledger Setup"."Additional Reporting Currency", 1);
-                        CalculatedExchRate := Round(1 / "Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        if CalculatedExchRate <> 1 then begin
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                            CalculatedExchRate := Round(((1 / "VAT Currency Factor CZL") / (1 / "Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                        end else begin
+                            CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                            CalculatedExchRate := Round("Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        end;
                         ExchRateText :=
                           StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                           CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
-                    end else
-                        CalculatedExchRate := 1;
-
+                          CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                    end;
                 SalesInvLine.SetRange("Document No.", "No.");
                 SalesInvLine.CalcSums(Amount, "Amount Including VAT");
                 Amount := SalesInvLine.Amount;
@@ -816,6 +819,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         ReasonCode: Record "Reason Code";
         ShipmentMethod: Record "Shipment Method";
         TempVATAmountLine: Record "VAT Amount Line" temporary;
+        AutoFormat: Codeunit "Auto Format";
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];

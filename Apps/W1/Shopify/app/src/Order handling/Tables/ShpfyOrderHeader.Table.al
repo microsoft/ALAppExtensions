@@ -137,7 +137,7 @@ table 30118 "Shpfy Order Header"
             Caption = 'Risk Level';
             DataClassification = SystemMetadata;
             Editable = false;
-            ObsoleteReason = 'This field is not imported.';
+            ObsoleteReason = 'This field is not imported. Use field "High Risk" field.';
 #if not CLEAN25
             ObsoleteState = Pending;
             ObsoleteTag = '25.0';
@@ -604,6 +604,12 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Company Location Id';
             DataClassification = SystemMetadata;
+        }
+        field(128; "High Risk"; Boolean)
+        {
+            Caption = 'High Risk';
+            FieldClass = FlowField;
+            CalcFormula = exist("Shpfy Order Risk" where("Order Id" = field("Shopify Order Id"), Level = const(High)));
         }
         field(500; "Shop Code"; Code[20])
         {

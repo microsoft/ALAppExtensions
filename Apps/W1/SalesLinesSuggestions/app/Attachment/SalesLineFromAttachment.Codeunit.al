@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.Document.Attachment;
 
 using Microsoft.Sales.Document;
+using System;
 using System.AI;
 using System.IO;
 using System.Utilities;
@@ -30,11 +31,15 @@ codeunit 7292 "Sales Line From Attachment"
         TempBlob: Codeunit "Temp Blob";
         SalesLineFromAttachment: Page "Sales Line From Attachment";
         FileHandler: interface "File Handler";
+        ALSearch: DotNet ALSearch;
         FileName: Text;
     begin
         SalesHeader.TestStatusOpen(true);
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Lines Suggestions") then
             exit;
+
+        if not ALSearch.IsItemSearchReady() then
+            ALSearch.EnableItemSearch();
 
         if Upload(TempBlob, FileName) then begin
             if FileName = '' then
@@ -53,10 +58,14 @@ codeunit 7292 "Sales Line From Attachment"
         FileHandlerFactory: Codeunit "File Handler Factory";
         SalesLineFromAttachment: Page "Sales Line From Attachment";
         FileHandler: interface "File Handler";
+        ALSearch: DotNet ALSearch;
     begin
         SalesHeader.TestStatusOpen();
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Lines Suggestions") then
             exit;
+
+        if not ALSearch.IsItemSearchReady() then
+            ALSearch.EnableItemSearch();
 
         if FileName = '' then
             exit;

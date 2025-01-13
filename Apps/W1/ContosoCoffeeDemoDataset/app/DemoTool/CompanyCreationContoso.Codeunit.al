@@ -38,7 +38,6 @@ codeunit 5382 "Company Creation Contoso"
     procedure CreateContosoDemodataInCompany(var ContosoDemoDataModuleTemp: Record "Contoso Demo Data Module" temporary; NewCompanyName: Text[30]; NewCompanyData: Enum "Company Demo Data Type")
     var
         Company: Record Company;
-        DataClassificationEvalData: Codeunit "Data Classification Eval. Data";
         IsSetup: Boolean;
     begin
         IsSetup := NewCompanyData = NewCompanyData::"Production - Setup Data Only";
@@ -48,14 +47,10 @@ codeunit 5382 "Company Creation Contoso"
             Company."Evaluation Company" := true;
             Company.Modify();
             Commit();
-            DataClassificationEvalData.CreateEvaluationData();
             Session.LogMessage('0000HUJ', StrSubstNo(CompanyEvaluationTxt, Company."Evaluation Company"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CompanyEvaluationCategoryTok);
         end;
 
-        if ContosoDemoDataModuleTemp.FindSet() then
-            repeat
-                ContosoDemoDataModuleTemp."Is Setup Company" := IsSetup;
-            until ContosoDemoDataModuleTemp.Next() = 0;
+        ContosoDemoDataModuleTemp.ModifyAll("Is Setup Company", IsSetup);
 
         ScheduleRunningContosoDemoData(ContosoDemoDataModuleTemp, NewCompanyName, IsSetup);
     end;
@@ -77,6 +72,7 @@ codeunit 5382 "Company Creation Contoso"
         AssistedCompanySetupStatus."Company Setup Session ID" := ImportSessionID;
         if AssistedCompanySetupStatus."Company Setup Session ID" = 0 then
             Clear(AssistedCompanySetupStatus."Task ID");
+
         if IsSetup then
             AssistedCompanySetupStatus."Company Demo Data" := Format(Enum::"Company Demo Data Type"::"Production - Setup Data Only")
         else

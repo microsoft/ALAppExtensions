@@ -151,6 +151,27 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
             ItemJournalLine.UpdateSustainabilityEmission(ItemJournalLine);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', "Run Time", false, false)]
+    local procedure OnAfterValidateRunTimeEvent(var Rec: Record "Item Journal Line")
+    begin
+        if Rec."Entry Type" in [Rec."Entry Type"::Output] then
+            Rec.UpdateSustainabilityEmission(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', "Setup Time", false, false)]
+    local procedure OnAfterValidateSetupTimeEvent(var Rec: Record "Item Journal Line")
+    begin
+        if Rec."Entry Type" in [Rec."Entry Type"::Output] then
+            Rec.UpdateSustainabilityEmission(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', "Stop Time", false, false)]
+    local procedure OnAfterValidateStopTimeEvent(var Rec: Record "Item Journal Line")
+    begin
+        if Rec."Entry Type" in [Rec."Entry Type"::Output] then
+            Rec.UpdateSustainabilityEmission(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostOutputOnBeforePostItem', '', false, false)]
     local procedure OnPostOutputOnBeforePostItem(var ItemJournalLine: Record "Item Journal Line"; var ProdOrderLine: Record "Prod. Order Line"; var IsHandled: Boolean)
     begin
@@ -240,6 +261,7 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
             ItemJournalLine.Validate("Sust. Account Category", ProdOrderLine."Sust. Account Category");
             ItemJournalLine.Validate("Sust. Account Subcategory", ProdOrderLine."Sust. Account Subcategory");
             ItemJournalLine.Validate("CO2e per Unit", ProdOrderLine."CO2e per Unit");
+            ItemJournalLine."Total CO2e" := ProdOrderLine."CO2e per Unit" * ItemJournalLine."Qty. per Unit of Measure" * ItemJournalLine.Quantity;
         end;
     end;
 

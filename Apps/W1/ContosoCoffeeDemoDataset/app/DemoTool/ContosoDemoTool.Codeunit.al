@@ -10,6 +10,7 @@ codeunit 5193 "Contoso Demo Tool"
 
     internal procedure CreateNewCompanyDemoData(var ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary; IsSetup: Boolean)
     var
+        DataClassificationEvalData: Codeunit "Data Classification Eval. Data";
         ContosoDemoDataLevel: Enum "Contoso Demo Data Level";
         DemoDataModulesList: List of [Enum "Contoso Demo Data Module"];
     begin
@@ -23,8 +24,10 @@ codeunit 5193 "Contoso Demo Tool"
 
         if IsSetup then
             ContosoDemoDataLevel := Enum::"Contoso Demo Data Level"::"Setup Data"
-        else
+        else begin
             ContosoDemoDataLevel := Enum::"Contoso Demo Data Level"::All;
+            DataClassificationEvalData.CreateEvaluationData();
+        end;
 
         BuildDependencyAndGenerateDemoData(DemoDataModulesList, ContosoDemoDataLevel);
     end;

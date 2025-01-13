@@ -1593,6 +1593,7 @@ codeunit 18466 "Subcontracting Post"
             ItemLedgerEntry.SetRange("Order Line No.", AppDelChallan."Production Order Line No.");
             ItemLedgerEntry.SetRange("External Document No.", AppDelChallan."Applied Delivery Challan No.");
             ItemLedgerEntry.SetRange("Item No.", AppDelChallan."Item No.");
+            ItemLedgerEntry.SetRange(Open, true);
         end;
     end;
 

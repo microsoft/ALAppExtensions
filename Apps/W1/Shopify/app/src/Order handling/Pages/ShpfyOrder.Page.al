@@ -49,6 +49,12 @@ page 30113 "Shpfy Order"
                     ObsoleteTag = '25.0';
                 }
 #endif
+                field("High Risk"; Rec."High Risk")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ToolTip = 'Specifies if the order is considered high risk.';
+                }
                 field(TemplCodeField; Rec."Customer Templ. Code")
                 {
                     ApplicationArea = All;

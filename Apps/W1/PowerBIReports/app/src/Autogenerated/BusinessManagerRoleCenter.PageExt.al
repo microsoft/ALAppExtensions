@@ -114,7 +114,7 @@ pageextension 36953 "Business Manager Role Center" extends "Business Manager Rol
                     ApplicationArea = Basic, Suite;
                     Caption = 'General Ledger Entries';
                     Image = "PowerBI";
-                    RunObject = page "General Ledger Entries";
+                    RunObject = page "PowerBI General Ledg. Entries";
                     Tooltip = 'Open a Power BI Report that provides granular detail about the entries posted to the general ledger. ';
                 }
                 action("Detailed Vendor Ledger Entries")

@@ -10,11 +10,18 @@ pageextension 11758 "VAT Statement Templates CZL" extends "VAT Statement Templat
     {
         addlast(Control1)
         {
+#if not CLEAN26
             field("XML Format CZL"; Rec."XML Format CZL")
             {
                 ApplicationArea = VAT;
                 ToolTip = 'Specifies the XML format for VAT statement reporting.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Replaced by "XML Format CZL" field in VAT Statement Name table.';
+                Visible = false;
+                Enabled = false;
             }
+#endif
             field("Allow Comments/Attachments CZL"; Rec."Allow Comments/Attachments CZL")
             {
                 ApplicationArea = VAT;

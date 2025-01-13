@@ -572,13 +572,17 @@ report 31190 "Sales Credit Memo CZL"
 
                 if UseFunctionalCurrency then
                     if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
-                        CurrencyExchangeRate.FindCurrency("Posting Date", "General Ledger Setup"."Additional Reporting Currency", 1);
-                        CalculatedExchRate := Round(1 / "Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        if CalculatedExchRate <> 1 then begin
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                            CalculatedExchRate := Round(((1 / "VAT Currency Factor CZL") / (1 / "Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                        end else begin
+                            CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                            CalculatedExchRate := Round("Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        end;
                         ExchRateText :=
                           StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                           CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
-                    end else
-                        CalculatedExchRate := 1;
+                          CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                    end;
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then

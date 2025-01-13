@@ -50,6 +50,7 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
             action("Calculate CO2e")
             {
                 Caption = 'Calculate CO2e';
+                Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 Image = Calculate;
                 Promoted = true;

@@ -14,6 +14,15 @@ codeunit 6256 "Sust. Item Post Subscriber"
             PostSustainabilityValueEntry(ItemJournalLine, ValueEntry, ItemLedgerEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertCapValueEntry', '', false, false)]
+    local procedure OnAfterInsertCapValueEntry(ItemJnlLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry")
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        if CanCreateSustValueEntry(ItemJnlLine, ValueEntry) then
+            PostSustainabilityValueEntry(ItemJnlLine, ValueEntry, ItemLedgerEntry);
+    end;
+
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
         if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then

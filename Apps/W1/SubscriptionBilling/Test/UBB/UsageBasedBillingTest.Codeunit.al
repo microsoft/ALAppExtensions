@@ -12,6 +12,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Finance.Currency;
+using Microsoft.Inventory.Item.Catalog;
 
 codeunit 148153 "Usage Based Billing Test"
 {
@@ -78,6 +79,58 @@ codeunit 148153 "Usage Based Billing Test"
         CheckIfCustomerSupplierReferencesAreIsCreated();
         CheckIfSubscriptionSupplierReferencesAreIsCreated();
         CheckIfProductSupplierReferencesAreIsCreated();
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure UpdatingServiceObjectAvailabilityDuringProcessing()
+    var
+        ItemReference: Record "Item Reference";
+    begin
+        // [SCENARIO]: The Service Object Availability should be properly updated after processing imported lines
+        // When there is no available Service Object to be connected to the imported line status should be "Not Available"
+        // When there is available Service Object to be connected to the imported line status should be "Available"
+        // When a Service Object is connected to the imported line status should be "Connected"
+
+        // [GIVEN]: Setup Generic Connector and import lines from a file
+        Initialize();
+        SetupUsageDataForProcessingToGenericImport();
+        ContractTestLibrary.CreateVendor(Vendor);
+        UsageDataSupplier.Validate("Vendor No.", Vendor."No.");
+        UsageDataSupplier.Modify(false);
+        SetupDataExchangeDefinition();
+        UsageBasedBTestLibrary.ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDef.Code, GenericImportSettings);
+        SetupServiceObjectAndContracts(WorkDate());
+        ProcessUsageDataImport(Enum::"Processing Step"::"Create Imported Lines");
+
+        // [WHEN]: process imported lines
+        ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
+
+        // [THEN]: Test if Service Object Availability is set to "Not Available"
+        ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::"Not Available", '');
+
+        // [WHEN]: insert an item reference to a usage data supplier reference
+        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID");
+        UsageDataSupplierReference.FindSupplierReference(UsageDataImport."Supplier No.", UsageDataSubscription."Product ID", Enum::"Usage Data Reference Type"::Product);
+        LibraryItemReference.CreateItemReference(ItemReference, Item."No.", "Item Reference Type"::Vendor, UsageDataSupplier."Vendor No.");
+        ItemReference."Supplier Ref. Entry No." := UsageDataSupplierReference."Entry No.";
+        ItemReference.Modify(false);
+        ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
+
+        // [THEN]: Test if Service Object Availability is set to "Available"
+        ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::Available, '');
+
+        // [WHEN]: insert an subscription reference is set for Service Commitment
+        UsageDataSupplierReference.FindSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
+        ServiceCommitment.FindFirst();
+        ServiceCommitment."Supplier Reference Entry No." := UsageDataSupplierReference."Entry No.";
+        ServiceCommitment.Modify(false);
+        ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
+
+        // [THEN]: Test if Service Object Availability is set to "Connected"
+        ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::Connected, ServiceObject."No.");
     end;
 
     [Test]
@@ -1232,9 +1285,7 @@ codeunit 148153 "Usage Based Billing Test"
 
     local procedure CheckIfUsageDataSubscriptionIsCreated()
     begin
-        UsageDataSubscription.SetRange("Supplier No.", UsageDataImport."Supplier No.");
-        UsageDataSubscription.SetRange("Supplier Reference", UsageDataGenericImport."Subscription ID");
-        UsageDataSubscription.FindFirst();
+        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID");
         UsageDataSubscription.TestField("Customer ID", UsageDataGenericImport."Customer ID");
         UsageDataSubscription.TestField("Product ID", UsageDataGenericImport."Product ID");
         UsageDataSubscription.TestField("Product Name", UsageDataGenericImport."Product Name");
@@ -1557,6 +1608,14 @@ codeunit 148153 "Usage Based Billing Test"
         until ServiceCommitment.Next() = 0;
     end;
 
+    local procedure ValidateUsageDataGenericImportAvailability(UsageDataImportEntryNo: Integer; ExpectedServiceObjectAvailability: Enum "Service Object Availability"; ExpectedServiceObjectNo: Code[20])
+    begin
+        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
+        UsageDataGenericImport.FindFirst();
+        Assert.AreEqual(ExpectedServiceObjectAvailability, UsageDataGenericImport."Service Object Availability", 'Service Object Availability is not set to expected value in Usage Data Generic Import.');
+        Assert.AreEqual(ExpectedServiceObjectNo, UsageDataGenericImport."Service Object No.", 'Service Object No. is not set to expected value in Usage Data Generic Import.');
+    end;
+
     [ModalPageHandler]
     procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
     begin
@@ -1627,6 +1686,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        LibraryItemReference: Codeunit "Library - Item Reference";
         CorrectPostedPurchaseInvoice: Codeunit "Correct Posted Purch. Invoice";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
         AssertThat: Codeunit Assert;

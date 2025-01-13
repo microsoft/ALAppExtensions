@@ -5,18 +5,12 @@ codeunit 27011 "Create CA Tax Group"
     trigger OnRun()
     var
         ContosoCATax: Codeunit "Contoso CA Tax";
-        CreateResource: Codeunit "Create Resource";
     begin
         ContosoCATax.SetOverwriteData(true);
         ContosoCATax.InsertTaxGroup(Labor(), LaborLbl);
         ContosoCATax.InsertTaxGroup(NonTaxable(), NonTaxableLbl);
         ContosoCATax.InsertTaxGroup(Taxable(), TaxableLbl);
         ContosoCATax.SetOverwriteData(false);
-
-        UpdateTaxGroupOnResource(CreateResource.Katherine(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Lina(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Marty(), Labor());
-        UpdateTaxGroupOnResource(CreateResource.Terry(), Labor());
     end;
 
     procedure UpdateTaxGroupOnGL()
@@ -216,16 +210,6 @@ codeunit 27011 "Create CA Tax Group"
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.AccumDepreciationBuildings(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.EmployeesPayable(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.Miscellaneous(), Taxable());
-    end;
-
-    local procedure UpdateTaxGroupOnResource(ResourceNo: Code[20]; TaxGroupCode: Code[20])
-    var
-        Resource: Record Resource;
-    begin
-        Resource.Get(ResourceNo);
-
-        Resource.Validate("Tax Group Code", TaxGroupCode);
-        Resource.Modify(true);
     end;
 
     local procedure UpdateTaxGroupOnGLAccount(GLAccountNo: Code[20]; TaxGroupCode: Code[20])

@@ -632,6 +632,24 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                             GetAmtAndSkipIfEmpty(rez_pren5, 'rez_pren5');
                         end;
                     }
+                    textattribute(opr_dane_dan)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(opr_dane_dan, 'opr_dane_dan');
+                        end;
+                    }
+                    textattribute(opr_dane_zd)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(opr_dane_zd, 'opr_dane_zd');
+                        end;
+                    }
                 }
                 textelement(Veta2)
                 {
@@ -951,6 +969,33 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                         trigger OnBeforePassVariable()
                         begin
                             GetAmtAndSkipIfEmpty(odp_cu_nar, 'odp_cu_nar');
+                        end;
+                    }
+                    textattribute(kor_odp_krac)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_krac, 'kor_odp_krac');
+                        end;
+                    }
+                    textattribute(kor_odp_plne)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_plne, 'kor_odp_plne');
+                        end;
+                    }
+                    textattribute(kor_odp_zd)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_zd, 'kor_odp_zd');
                         end;
                     }
                 }

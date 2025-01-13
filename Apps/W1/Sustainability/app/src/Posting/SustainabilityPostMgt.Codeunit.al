@@ -78,16 +78,19 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);
 
         if (ValueEntry."Order Type" = ValueEntry."Order Type"::Production) and
-           (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Output)
-        then
+           (ValueEntry."Item Ledger Entry Type" in [ValueEntry."Item Ledger Entry Type"::Output, ValueEntry."Item Ledger Entry Type"::" "])
+        then begin
+            SkipUpdateCarbonEmissionValue := true;
             SustainabilityValueEntry."Expected Emission" := false;
+        end;
 
         SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
         UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
 
         ShouldCalcExpectedCO2e :=
             ((SustainabilityValueEntry."Entry Type" = SustainabilityValueEntry."Entry Type"::"Direct Cost") and
-            (((SustainabilityValueEntry."Item Ledger Entry Quantity" = 0) and (SustainabilityValueEntry."Invoiced Quantity" <> 0))));
+            ((SustainabilityValueEntry."Item Ledger Entry Quantity" = 0) and (SustainabilityValueEntry."Invoiced Quantity" <> 0)) and
+            (SustainabilityValueEntry."Item Ledger Entry No." <> 0));
 
         if ShouldCalcExpectedCO2e then
             CalcExpectedCO2e(

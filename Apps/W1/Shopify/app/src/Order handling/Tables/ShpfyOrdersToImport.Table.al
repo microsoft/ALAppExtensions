@@ -92,7 +92,7 @@ table 30121 "Shpfy Orders to Import"
             Caption = 'Risk Level';
             DataClassification = CustomerContent;
             Editable = false;
-            ObsoleteReason = 'This field is not imported.';
+            ObsoleteReason = 'This field is not imported. Use field ';
 #if not CLEAN25
             ObsoleteState = Pending;
             ObsoleteTag = '25.0';
@@ -171,6 +171,12 @@ table 30121 "Shpfy Orders to Import"
         {
             Caption = 'Purchasing Entity';
             DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(24; "High Risk"; Boolean)
+        {
+            Caption = 'High Risk';
+            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(100; "Import Action"; enum "Shpfy Import Action")
