@@ -198,8 +198,8 @@ codeunit 6134 "E-Doc. Integration Management"
     local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; IDocumentReceiver: Interface IDocumentReceiver): Boolean
     var
         ReceiveContext, FetchContextImpl : Codeunit ReceiveContext;
-        ErrorCount: Integer;
         EDocumentContent: Codeunit "Temp Blob";
+        ErrorCount: Integer;
         Success, IsFetchableType : Boolean;
     begin
         ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::Imported);
@@ -223,7 +223,7 @@ codeunit 6134 "E-Doc. Integration Management"
                 exit(false);
         end;
 
-        if not CheckNoDuplicateExists(EDocumentService, EDocument, EDocumentContent) then
+        if not HasNoDuplicate(EDocument, EDocumentContent, EDocumentService."Document Format") then
             exit(false);
 
         // Only after sucecssfully downloading and (optionally) marking as fetched, the document is considered imported
@@ -237,6 +237,25 @@ codeunit 6134 "E-Doc. Integration Management"
 
         exit(true);
     end;
+
+
+    local procedure HasNoDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
+    var
+        EDocument: Record "E-Document";
+        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
+    begin
+        EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
+        if not EDocGetBasicInfo.Run() then
+            exit(true);
+        EDocGetBasicInfo.GetValues(IEDocument, IncomingEDocument, EDocumentContent);
+
+        EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
+        EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
+        exit(EDocument.IsEmpty());
+    end;
+
 
 
     #endregion
@@ -566,25 +585,6 @@ codeunit 6134 "E-Doc. Integration Management"
             end;
 
         exit(true);
-    end;
-
-    local procedure CheckNoDuplicateExists(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"): Boolean
-    var
-        EDocument2: Record "E-Document";
-        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
-        IEDocument: Interface "E-Document";
-    begin
-        IEDocument := EDocumentService."Document Format";
-        EDocGetBasicInfo.SetValues(IEDocument, EDocument, EDocumentContent);
-        if not EDocGetBasicInfo.Run() then
-            exit(true);
-        EDocGetBasicInfo.GetValues(IEDocument, EDocument, EDocumentContent);
-
-        EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
-        EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
-        EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
-        EDocument2.SetRange("Document Date", EDocument."Document Date");
-        exit(EDocument2.IsEmpty());
     end;
 
     #endregion
