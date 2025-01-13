@@ -1377,7 +1377,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
         EDocument2.SetRange("Document Date", EDocument."Document Date");
         EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
-        Assert.IsTrue(EDocument2.IsEmpty(), 'Duplicate E-Document created.');
+        Assert.RecordIsEmpty(EDocument2);
     end;
 
     [ModalPageHandler]
