@@ -6,7 +6,6 @@ namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
-using Microsoft.Inventory.Item;
 using System.Utilities;
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Transfer;
