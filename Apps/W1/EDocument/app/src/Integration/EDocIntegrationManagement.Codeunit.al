@@ -253,7 +253,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
         EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
         EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
-        exit(EDocument.IsEmpty());
+        exit(not EDocument.IsEmpty());
     end;
 
 
