@@ -49,6 +49,7 @@ table 4580 "Ext. SharePoint Account"
         }
         field(8; "Client Secret Key"; Guid)
         {
+            Access = Internal;
             DataClassification = SystemMetadata;
         }
     }

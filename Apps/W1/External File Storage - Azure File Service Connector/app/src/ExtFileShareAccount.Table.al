@@ -10,7 +10,6 @@ namespace System.ExternalFileStorage;
 /// </summary>
 table 4570 "Ext. File Share Account"
 {
-    Access = Internal;
     DataClassification = CustomerContent;
     Caption = 'Azure File Share Account';
 
@@ -38,11 +37,13 @@ table 4570 "Ext. File Share Account"
         }
         field(7; "Authorization Type"; Enum "Ext. File Share Auth. Type")
         {
+            Access = Internal;
             Caption = 'Authorization Type';
             ToolTip = 'The way of authorizing used to access the Blob Storage.';
         }
         field(8; "Secret Key"; Guid)
         {
+            Access = Internal;
             DataClassification = SystemMetadata;
         }
     }
