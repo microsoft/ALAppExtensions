@@ -198,7 +198,9 @@ codeunit 6103 "E-Document Subscription"
     local procedure OnBeforeOnDeletePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
     begin
         if not IsNullGuid(PurchaseHeader."E-Document Link") then
-            Error(DeleteNotAllowedErr);
+            if GuiAllowed() then
+                if not Confirm(this.ConfirmDeleteQst) then
+                    Error('');
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
@@ -309,4 +311,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
         DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        ConfirmDeleteQst: Label 'This purchase document is created from E-Document. Do you want to proceed with deletion?';
 }

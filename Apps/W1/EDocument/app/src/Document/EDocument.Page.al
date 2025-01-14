@@ -345,6 +345,19 @@ page 6121 "E-Document"
                         EDocOrderMatch.RunMatching(Rec);
                     end;
                 }
+                action(DeleteRelatedDocument)
+                {
+                    Caption = 'Delete Related Document';
+                    ToolTip = 'Delete the related purchase document.';
+                    Image = Delete;
+                    Visible = IsIncomingDoc and IsProcessed;
+
+                    trigger OnAction()
+                    begin
+                        if Confirm(StrSubstNo(this.ConfirmDeleteRelatedDocQst, this.RecordLinkTxt)) then
+                            this.EDocumentHelper.DeleteRelatedRecords(Rec);
+                    end;
+                }
             }
             group(Troubleshoot)
             {
@@ -411,6 +424,7 @@ page 6121 "E-Document"
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
+                actionref(DeleteRelatedDocument_Promoted; DeleteRelatedDocument) { }
 
             }
             group(Category_Troubleshoot)
@@ -491,10 +505,11 @@ page 6121 "E-Document"
 
     trigger OnAfterGetRecord()
     begin
+        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
+
         IsProcessed := Rec.Status = Rec.Status::Processed;
         IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
 
-        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
         HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
         HasErrors := EDocumentErrorHelper.ErrorMessageCount(Rec) > 0;
         if HasErrorsOrWarnings then
@@ -600,5 +615,6 @@ page 6121 "E-Document"
         ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
+        ConfirmDeleteRelatedDocQst: Label 'Do you want to delete the related document %1?', Comment = '%1 - related record ID';
 
 }

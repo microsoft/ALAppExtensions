@@ -256,8 +256,12 @@ codeunit 6108 "E-Document Processing"
         VariantRecord: Variant;
     begin
         if GetRecord(EDocument, VariantRecord) and DataTypeManagement.GetRecordRef(VariantRecord, RecRef) then
-            exit(GetRelatedRecordCaption(EDocument, RecRef));
-        exit('');
+            exit(GetRelatedRecordCaption(EDocument, RecRef))
+        else begin
+            EDocument.Status := EDocument.Status::"In Progress";
+            EDocument.Modify(false);
+            exit('');
+        end;
     end;
 
     procedure GetRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean
@@ -292,6 +296,17 @@ codeunit 6108 "E-Document Processing"
     procedure GetEDocTok(): Text
     begin
         exit(EDocTok);
+    end;
+
+    procedure DeleteRelatedRecords(EDocument: Record "E-Document")
+    var
+        RecRef: RecordRef;
+    begin
+        if this.GetRelatedRecord(EDocument, RecRef) then
+            if RecRef.Number = Database::"Purchase Header" then
+                RecRef.Delete(true)
+            else
+                Error(this.CannotDeletePostedRecordErr);
     end;
 
     local procedure GetDocSendingProfileForCustVend(CustomerNo: Code[20]; VendorNo: Code[20]) DocumentSendingProfile: Record "Document Sending Profile";
@@ -444,4 +459,5 @@ codeunit 6108 "E-Document Processing"
         EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
         EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
         EDocTok: Label 'W1 E-Document', Locked = true;
+        CannotDeletePostedRecordErr: Label 'Cannot delete related record because it is already posted.';
 }
