@@ -35,13 +35,13 @@ table 6101 "E-Document Payment"
         field(20; "Date"; Date)
         {
             Caption = 'Date';
-            ToolTip = 'Specifies the value of the Date field.';
+            ToolTip = 'Specifies the date when the payment was made.';
         }
         field(21; Amount; Decimal)
         {
             Caption = 'Amount';
             DecimalPlaces = 2;
-            ToolTip = 'Specifies the value of the Amount field.';
+            ToolTip = 'Specifies the total payment amount including VAT.';
 
             trigger OnValidate()
             begin
@@ -53,27 +53,27 @@ table 6101 "E-Document Payment"
             Caption = 'VAT Base';
             DecimalPlaces = 2;
             Editable = false;
-            ToolTip = 'Specifies the value of the VAT Base field.';
+            ToolTip = 'Specifies the net amount used as basis for VAT calculation for this payment transaction.';
         }
         field(23; "VAT Amount"; Decimal)
         {
             Caption = 'VAT Amount';
             DecimalPlaces = 2;
             Editable = false;
-            ToolTip = 'Specifies the value of the VAT Amount field.';
+            ToolTip = 'Specifies the calculated tax amount for this payment transaction.';
         }
         field(24; Status; Enum "Payment Status")
         {
             Caption = 'Status';
             Editable = false;
             InitValue = Created;
-            ToolTip = 'Specifies the value of the Status field.';
+            ToolTip = 'Specifies the current state of the payment.';
         }
         field(25; Direction; Enum "E-Document Direction")
         {
             Caption = 'Direction';
             Editable = false;
-            ToolTip = 'Specifies the value of the Direction field.';
+            ToolTip = 'Specifies whether this payment is being received (incoming) or sent (outgoing).';
         }
     }
 
