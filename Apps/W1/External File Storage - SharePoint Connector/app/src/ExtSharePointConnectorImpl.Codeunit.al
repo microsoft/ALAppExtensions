@@ -8,6 +8,7 @@ namespace System.ExternalFileStorage;
 using System.Text;
 using System.Integration.Sharepoint;
 using System.Utilities;
+using System.DataAdministration;
 
 codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage Connector"
 {
@@ -380,8 +381,12 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
         SharePointAuth: Codeunit "SharePoint Auth.";
         SharePointAuthorization: Interface "SharePoint Authorization";
         Scopes: List of [Text];
+        AccountDisabledErr: Label 'The account "%1" is disabled.', Comment = '%1 - Account Name';
     begin
         SharePointAccount.Get(AccountId);
+        if SharePointAccount.Disabled then
+            Error(AccountDisabledErr, SharePointAccount.Name);
+
         Scopes.Add('00000003-0000-0ff1-ce00-000000000000/.default');
         SharePointAuthorization := SharePointAuth.CreateAuthorizationCode(Format(SharePointAccount."Tenant Id", 0, 4), Format(SharePointAccount."Client Id", 0, 4), SharePointAccount.GetClientSecret(SharePointAccount."Client Secret Key"), Scopes);
         SharePointClient.Initialize(SharePointAccount."SharePoint Url", SharePointAuthorization);
@@ -437,5 +442,17 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
     begin
         ParentPath := Path.TrimEnd(PathSeparator()).Substring(1, Path.LastIndexOf(PathSeparator()));
         FileName := Path.TrimEnd(PathSeparator()).Substring(Path.LastIndexOf(PathSeparator()) + 1);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]
+    local procedure EnvironmentCleanup_OnClearCompanyConfig(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
+    var
+        ExtSharePointAccount: Record "Ext. SharePoint Account";
+    begin
+        ExtSharePointAccount.SetRange(Disabled, false);
+        if ExtSharePointAccount.IsEmpty() then
+            exit;
+
+        ExtSharePointAccount.ModifyAll(Disabled, true);
     end;
 }

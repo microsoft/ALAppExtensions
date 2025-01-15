@@ -22,7 +22,7 @@ table 4570 "Ext. File Share Account"
         }
         field(2; Name; Text[250])
         {
-            Caption = 'Name of account';
+            Caption = 'Account Name';
             ToolTip = 'Specifies the name of the storage account connection.';
         }
         field(3; "Storage Account Name"; Text[2048])
@@ -45,6 +45,11 @@ table 4570 "Ext. File Share Account"
         {
             Access = Internal;
             DataClassification = SystemMetadata;
+        }
+        field(9; Disabled; Boolean)
+        {
+            Caption = 'Disabled';
+            ToolTip = 'Specifies if the account is disabled. This happens automatically when a sandbox is created.';
         }
     }
 

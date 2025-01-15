@@ -8,6 +8,7 @@ namespace System.ExternalFileStorage;
 using System.Text;
 using System.Utilities;
 using System.Azure.Storage;
+using System.DataAdministration;
 
 codeunit 4560 "Ext. Blob Sto. Connector Impl." implements "External File Storage Connector"
 {
@@ -435,8 +436,12 @@ codeunit 4560 "Ext. Blob Sto. Connector Impl." implements "External File Storage
         BlobStorageAccount: Record "Ext. Blob Storage Account";
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         Authorization: Interface "Storage Service Authorization";
+        AccountDisabledErr: Label 'The account "%1" is disabled.', Comment = '%1 - Account Name';
     begin
         BlobStorageAccount.Get(AccountId);
+        if BlobStorageAccount.Disabled then
+            Error(AccountDisabledErr, BlobStorageAccount.Name);
+
         case BlobStorageAccount."Authorization Type" of
             "Ext. Blob Storage Auth. Type"::SasToken:
                 Authorization := SetReadySAS(StorageServiceAuthorization, BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
@@ -487,5 +492,17 @@ codeunit 4560 "Ext. Blob Sto. Connector Impl." implements "External File Storage
     local procedure PathSeparator(): Text
     begin
         exit('/');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]
+    local procedure EnvironmentCleanup_OnClearCompanyConfig(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
+    var
+        ExtBlobStorageAccount: Record "Ext. Blob Storage Account";
+    begin
+        ExtBlobStorageAccount.SetRange(Disabled, false);
+        if ExtBlobStorageAccount.IsEmpty() then
+            exit;
+
+        ExtBlobStorageAccount.ModifyAll(Disabled, true);
     end;
 }

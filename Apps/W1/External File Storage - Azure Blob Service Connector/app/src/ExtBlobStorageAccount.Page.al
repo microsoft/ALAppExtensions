@@ -26,20 +26,11 @@ page 4560 "Ext. Blob Storage Account"
         {
             field(NameField; Rec.Name)
             {
-                Caption = 'Account Name';
                 ShowMandatory = true;
                 NotBlank = true;
             }
-
-            field(StorageAccountNameField; Rec."Storage Account Name")
-            {
-                Caption = 'Storage Account Name';
-            }
-
-            field("Authorization Type"; Rec."Authorization Type")
-            {
-            }
-
+            field(StorageAccountNameField; Rec."Storage Account Name") { }
+            field("Authorization Type"; Rec."Authorization Type") { }
             field(SecretField; Secret)
             {
                 Caption = 'Password';
@@ -52,10 +43,8 @@ page 4560 "Ext. Blob Storage Account"
                     Rec.SetSecret(Secret);
                 end;
             }
-
             field(ContainerNameField; Rec."Container Name")
             {
-                Caption = 'Container Name';
                 trigger OnLookup(var Text: Text): Boolean
                 var
                     BlobStorageConnectorImpl: Codeunit "Ext. Blob Sto. Connector Impl.";
@@ -68,6 +57,7 @@ page 4560 "Ext. Blob Storage Account"
                     exit(true);
                 end;
             }
+            field(DisabledField; Rec.Disabled) { }
         }
     }
 

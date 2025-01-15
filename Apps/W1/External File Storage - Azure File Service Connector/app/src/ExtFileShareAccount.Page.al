@@ -26,20 +26,11 @@ page 4570 "Ext. File Share Account"
         {
             field(NameField; Rec.Name)
             {
-                Caption = 'Account Name';
                 ShowMandatory = true;
                 NotBlank = true;
             }
-
-            field(StorageAccountNameField; Rec."Storage Account Name")
-            {
-                Caption = 'Storage Account Name';
-            }
-
-            field("Authorization Type"; Rec."Authorization Type")
-            {
-            }
-
+            field(StorageAccountNameField; Rec."Storage Account Name") { }
+            field("Authorization Type"; Rec."Authorization Type") { }
             field(SecretField; Secret)
             {
                 Caption = 'Password';
@@ -52,11 +43,8 @@ page 4570 "Ext. File Share Account"
                     Rec.SetSecret(Secret);
                 end;
             }
-
-            field(FileShareNameField; Rec."File Share Name")
-            {
-                Caption = 'File Share Name';
-            }
+            field(FileShareNameField; Rec."File Share Name") { }
+            field(DisabledField; Rec.Disabled) { }
         }
     }
 

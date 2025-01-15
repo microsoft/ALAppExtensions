@@ -26,19 +26,11 @@ page 4580 "Ext. SharePoint Account"
         {
             field(NameField; Rec.Name)
             {
-                Caption = 'Account Name';
                 ShowMandatory = true;
                 NotBlank = true;
             }
-
-            field("Tenant Id"; Rec."Tenant Id")
-            {
-            }
-
-            field("Client Id"; Rec."Client Id")
-            {
-            }
-
+            field("Tenant Id"; Rec."Tenant Id") { }
+            field("Client Id"; Rec."Client Id") { }
             field(SecretField; ClientSecret)
             {
                 Caption = 'Password';
@@ -51,15 +43,9 @@ page 4580 "Ext. SharePoint Account"
                     Rec.SetClientSecret(ClientSecret);
                 end;
             }
-
-            field("SharePoint Url"; Rec."SharePoint Url")
-            {
-                Caption = 'SharePoint Url';
-            }
-
-            field("Base Relative Folder Path"; Rec."Base Relative Folder Path")
-            {
-            }
+            field("SharePoint Url"; Rec."SharePoint Url") { }
+            field("Base Relative Folder Path"; Rec."Base Relative Folder Path") { }
+            field(Disabled; Rec.Disabled) { }
         }
     }
 

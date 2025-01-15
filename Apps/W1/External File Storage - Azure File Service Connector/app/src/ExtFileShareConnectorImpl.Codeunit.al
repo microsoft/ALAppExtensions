@@ -8,6 +8,7 @@ namespace System.ExternalFileStorage;
 using System.Text;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
+using System.DataAdministration;
 
 codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage Connector"
 {
@@ -388,8 +389,12 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         FileShareAccount: Record "Ext. File Share Account";
         StorageServiceAuthorization: Codeunit "Storage Service Authorization";
         Authorization: Interface "Storage Service Authorization";
+        AccountDisabledErr: Label 'The account "%1" is disabled.', Comment = '%1 - Account Name';
     begin
         FileShareAccount.Get(AccountId);
+        if FileShareAccount.Disabled then
+            Error(AccountDisabledErr, FileShareAccount.Name);
+
         case FileShareAccount."Authorization Type" of
             FileShareAccount."Authorization Type"::SasToken:
                 Authorization := SetReadySAS(StorageServiceAuthorization, FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
@@ -449,5 +454,17 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     local procedure PathSeparator(): Text
     begin
         exit('/');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]
+    local procedure EnvironmentCleanup_OnClearCompanyConfig(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
+    var
+        ExtFileShareAccount: Record "Ext. File Share Account";
+    begin
+        ExtFileShareAccount.SetRange(Disabled, false);
+        if ExtFileShareAccount.IsEmpty() then
+            exit;
+
+        ExtFileShareAccount.ModifyAll(Disabled, true);
     end;
 }
