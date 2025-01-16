@@ -361,17 +361,17 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
 
     internal procedure CreateAccount(var AccountToCopy: Record "Ext. SharePoint Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
-        NewileShPointareAccount: Record "Ext. SharePoint Account";
+        NewExtSharePointAccount: Record "Ext. SharePoint Account";
     begin
-        NewileShPointareAccount.TransferFields(AccountToCopy);
+        NewExtSharePointAccount.TransferFields(AccountToCopy);
 
-        NewileShPointareAccount.Id := CreateGuid();
-        NewileShPointareAccount.SetClientSecret(Password);
+        NewExtSharePointAccount.Id := CreateGuid();
+        NewExtSharePointAccount.SetClientSecret(Password);
 
-        NewileShPointareAccount.Insert();
+        NewExtSharePointAccount.Insert();
 
-        TempFileAccount."Account Id" := NewileShPointareAccount.Id;
-        TempFileAccount.Name := NewileShPointareAccount.Name;
+        TempFileAccount."Account Id" := NewExtSharePointAccount.Id;
+        TempFileAccount.Name := NewExtSharePointAccount.Name;
         TempFileAccount.Connector := Enum::"Ext. File Storage Connector"::"SharePoint";
     end;
 
