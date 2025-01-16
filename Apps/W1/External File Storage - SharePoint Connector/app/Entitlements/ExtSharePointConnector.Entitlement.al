@@ -7,7 +7,7 @@ namespace System.ExternalFileStorage;
 
 entitlement "Ext. SharePoint Connector"
 {
-    Type = Implicit;
 
     ObjectEntitlements = "Ext. SharePoint - Edit";
+    Type = Implicit;
 }

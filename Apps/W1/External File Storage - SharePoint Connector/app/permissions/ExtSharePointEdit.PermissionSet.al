@@ -7,8 +7,8 @@ namespace System.ExternalFileStorage;
 
 permissionset 4582 "Ext. SharePoint - Edit"
 {
-    Assignable = false;
     Access = Public;
+    Assignable = false;
     Caption = 'SharePoint - Edit';
 
     IncludedPermissionSets = "Ext. SharePoint - Read";

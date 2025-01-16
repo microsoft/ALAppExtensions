@@ -9,8 +9,7 @@ enum 4560 "Ext. Blob Storage Auth. Type"
 {
     Access = Internal;
 
-    value(0;
-    SasToken)
+    value(0; SasToken)
     {
         Caption = 'Shared Access Signature';
     }

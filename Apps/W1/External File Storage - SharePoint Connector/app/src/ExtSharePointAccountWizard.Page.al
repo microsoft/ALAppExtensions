@@ -12,14 +12,14 @@ Using System.Environment;
 /// </summary>
 page 4581 "Ext. SharePoint Account Wizard"
 {
+    ApplicationArea = All;
     Caption = 'Setup SharePoint Account';
+    Editable = true;
+    Extensible = false;
+    PageType = NavigatePage;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
     SourceTable = "Ext. SharePoint Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "Ext. SharePoint Account" = rimd;
-    PageType = NavigatePage;
-    Extensible = false;
-    Editable = true;
-    ApplicationArea = All;
 
     layout
     {
@@ -32,19 +32,19 @@ page 4581 "Ext. SharePoint Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
+                    Caption = ' ';
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
-                    Caption = ' ';
                 }
             }
 
             field(NameField; Rec.Name)
             {
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Azure SharePoint account.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the name of the Azure SharePoint account.';
 
                 trigger OnValidate()
                 begin
@@ -76,15 +76,15 @@ page 4581 "Ext. SharePoint Account Wizard"
             {
                 Caption = 'Client Secret';
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the Client Secret of the App Registration.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the Client Secret of the App Registration.';
             }
 
             field("SharePoint Url"; Rec."SharePoint Url")
             {
                 Caption = 'SharePoint Name';
-                ToolTip = 'Specifies the SharePoint to use of the storage account.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the SharePoint to use of the storage account.';
 
                 trigger OnValidate()
                 begin
@@ -111,9 +111,9 @@ page 4581 "Ext. SharePoint Account Wizard"
             action(Back)
             {
                 Caption = 'Back';
-                ToolTip = 'Back';
                 Image = Cancel;
                 InFooterBar = true;
+                ToolTip = 'Back';
 
                 trigger OnAction()
                 begin
@@ -124,8 +124,8 @@ page 4581 "Ext. SharePoint Account Wizard"
             action(Next)
             {
                 Caption = 'Next';
-                Image = NextRecord;
                 Enabled = IsNextEnabled;
+                Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = 'Next';
 

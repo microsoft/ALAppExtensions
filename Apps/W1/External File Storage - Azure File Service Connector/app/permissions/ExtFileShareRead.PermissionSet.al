@@ -7,8 +7,8 @@ namespace System.ExternalFileStorage;
 
 permissionset 4571 "Ext. File Share - Read"
 {
-    Assignable = false;
     Access = Public;
+    Assignable = false;
     Caption = 'File Share - Read';
 
     IncludedPermissionSets = "Ext. File Share - Objects";

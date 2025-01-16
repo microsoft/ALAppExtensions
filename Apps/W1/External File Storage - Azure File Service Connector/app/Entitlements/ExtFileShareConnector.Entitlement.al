@@ -7,7 +7,7 @@ namespace System.ExternalFileStorage;
 
 entitlement "Ext. File Share Connector"
 {
-    Type = Implicit;
 
     ObjectEntitlements = "Ext. File Share - Edit";
+    Type = Implicit;
 }

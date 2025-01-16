@@ -13,9 +13,9 @@ using System.DataAdministration;
 codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Ext. SharePoint Account" = rimd;
-    InherentPermissions = X;
     InherentEntitlements = X;
+    InherentPermissions = X;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use SharePoint to store and retrieve files.', MaxLength = 250;

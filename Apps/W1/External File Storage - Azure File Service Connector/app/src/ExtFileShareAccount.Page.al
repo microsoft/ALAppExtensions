@@ -10,14 +10,14 @@ namespace System.ExternalFileStorage;
 /// </summary>
 page 4570 "Ext. File Share Account"
 {
-    SourceTable = "Ext. File Share Account";
+    ApplicationArea = All;
     Caption = 'Azure File Share Account';
-    Permissions = tabledata "Ext. File Share Account" = rimd;
-    PageType = Card;
+    DataCaptionExpression = Rec.Name;
     Extensible = false;
     InsertAllowed = false;
-    DataCaptionExpression = Rec.Name;
-    ApplicationArea = All;
+    PageType = Card;
+    Permissions = tabledata "Ext. File Share Account" = rimd;
+    SourceTable = "Ext. File Share Account";
     UsageCategory = None;
 
     layout
@@ -26,8 +26,8 @@ page 4570 "Ext. File Share Account"
         {
             field(NameField; Rec.Name)
             {
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
             }
             field(StorageAccountNameField; Rec."Storage Account Name") { }
             field("Authorization Type"; Rec."Authorization Type") { }

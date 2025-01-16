@@ -13,9 +13,9 @@ using System.DataAdministration;
 codeunit 4560 "Ext. Blob Sto. Connector Impl." implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
-    InherentPermissions = X;
     InherentEntitlements = X;
+    InherentPermissions = X;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use Azure Blob Storage to store and retrieve files.';

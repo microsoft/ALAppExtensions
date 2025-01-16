@@ -9,12 +9,12 @@ using System.Azure.Storage;
 
 page 4562 "Ext. Blob Sto Container Lookup"
 {
+    ApplicationArea = All;
     Caption = 'Container Lookup';
-    PageType = List;
-    SourceTable = "ABS Container";
     Editable = false;
     Extensible = false;
-    ApplicationArea = All;
+    PageType = List;
+    SourceTable = "ABS Container";
     UsageCategory = None;
 
     layout

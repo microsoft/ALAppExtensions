@@ -12,14 +12,14 @@ Using System.Environment;
 /// </summary>
 page 4561 "Ext. Blob Stor. Account Wizard"
 {
+    ApplicationArea = All;
     Caption = 'Setup Azure Blob Storage Account';
+    Editable = true;
+    Extensible = false;
+    PageType = NavigatePage;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
     SourceTable = "Ext. Blob Storage Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
-    PageType = NavigatePage;
-    Extensible = false;
-    Editable = true;
-    ApplicationArea = All;
 
     layout
     {
@@ -32,19 +32,19 @@ page 4561 "Ext. Blob Stor. Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
+                    Caption = ' ';
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
-                    Caption = ' ';
                 }
             }
 
             field(NameField; Rec.Name)
             {
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Azure Blob Storage account.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the name of the Azure Blob Storage account.';
 
                 trigger OnValidate()
                 begin
@@ -71,15 +71,15 @@ page 4561 "Ext. Blob Stor. Account Wizard"
             {
                 Caption = 'Secret';
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
             }
 
             field(ContainerNameField; Rec."Container Name")
             {
                 Caption = 'Container Name';
-                ToolTip = 'Specifies the container to use of the Storage Blob.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the container to use of the Storage Blob.';
 
                 trigger OnLookup(var Text: Text): Boolean
                 var
@@ -108,9 +108,9 @@ page 4561 "Ext. Blob Stor. Account Wizard"
             action(Back)
             {
                 Caption = 'Back';
-                ToolTip = 'Back';
                 Image = Cancel;
                 InFooterBar = true;
+                ToolTip = 'Back';
 
                 trigger OnAction()
                 begin
@@ -121,8 +121,8 @@ page 4561 "Ext. Blob Stor. Account Wizard"
             action(Next)
             {
                 Caption = 'Next';
-                Image = NextRecord;
                 Enabled = IsNextEnabled;
+                Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = 'Next';
 

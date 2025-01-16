@@ -10,15 +10,15 @@ namespace System.ExternalFileStorage;
 /// </summary>
 table 4580 "Ext. SharePoint Account"
 {
-    DataClassification = CustomerContent;
     Caption = 'SharePoint Account';
+    DataClassification = CustomerContent;
 
     fields
     {
         field(1; "Id"; Guid)
         {
-            DataClassification = SystemMetadata;
             Caption = 'Primary Key';
+            DataClassification = SystemMetadata;
         }
         field(2; Name; Text[250])
         {

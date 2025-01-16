@@ -10,15 +10,15 @@ namespace System.ExternalFileStorage;
 /// </summary>
 page 4560 "Ext. Blob Storage Account"
 {
-    SourceTable = "Ext. Blob Storage Account";
+    ApplicationArea = All;
     Caption = 'Azure Blob Storage Account';
-    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
-    PageType = Card;
+    DataCaptionExpression = Rec.Name;
     Extensible = false;
     InsertAllowed = false;
-    DataCaptionExpression = Rec.Name;
+    PageType = Card;
+    Permissions = tabledata "Ext. Blob Storage Account" = rimd;
+    SourceTable = "Ext. Blob Storage Account";
     UsageCategory = None;
-    ApplicationArea = All;
 
     layout
     {
@@ -26,8 +26,8 @@ page 4560 "Ext. Blob Storage Account"
         {
             field(NameField; Rec.Name)
             {
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
             }
             field(StorageAccountNameField; Rec."Storage Account Name") { }
             field("Authorization Type"; Rec."Authorization Type") { }

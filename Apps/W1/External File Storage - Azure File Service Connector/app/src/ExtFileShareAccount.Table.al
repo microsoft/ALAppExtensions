@@ -10,15 +10,15 @@ namespace System.ExternalFileStorage;
 /// </summary>
 table 4570 "Ext. File Share Account"
 {
-    DataClassification = CustomerContent;
     Caption = 'Azure File Share Account';
+    DataClassification = CustomerContent;
 
     fields
     {
         field(1; "Id"; Guid)
         {
-            DataClassification = SystemMetadata;
             Caption = 'Primary Key';
+            DataClassification = SystemMetadata;
         }
         field(2; Name; Text[250])
         {

@@ -10,14 +10,14 @@ namespace System.ExternalFileStorage;
 /// </summary>
 page 4580 "Ext. SharePoint Account"
 {
-    SourceTable = "Ext. SharePoint Account";
+    ApplicationArea = All;
     Caption = 'SharePoint Account';
-    Permissions = tabledata "Ext. SharePoint Account" = rimd;
-    PageType = Card;
+    DataCaptionExpression = Rec.Name;
     Extensible = false;
     InsertAllowed = false;
-    DataCaptionExpression = Rec.Name;
-    ApplicationArea = All;
+    PageType = Card;
+    Permissions = tabledata "Ext. SharePoint Account" = rimd;
+    SourceTable = "Ext. SharePoint Account";
     UsageCategory = None;
 
     layout
@@ -26,8 +26,8 @@ page 4580 "Ext. SharePoint Account"
         {
             field(NameField; Rec.Name)
             {
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
             }
             field("Tenant Id"; Rec."Tenant Id") { }
             field("Client Id"; Rec."Client Id") { }

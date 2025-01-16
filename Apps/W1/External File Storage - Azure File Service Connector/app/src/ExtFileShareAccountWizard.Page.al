@@ -12,14 +12,14 @@ Using System.Environment;
 /// </summary>
 page 4571 "Ext. File Share Account Wizard"
 {
+    ApplicationArea = All;
     Caption = 'Setup Azure File Share Account';
+    Editable = true;
+    Extensible = false;
+    PageType = NavigatePage;
+    Permissions = tabledata "Ext. File Share Account" = rimd;
     SourceTable = "Ext. File Share Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "Ext. File Share Account" = rimd;
-    PageType = NavigatePage;
-    Extensible = false;
-    Editable = true;
-    ApplicationArea = All;
 
     layout
     {
@@ -32,19 +32,19 @@ page 4571 "Ext. File Share Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
+                    Caption = ' ';
                     Editable = false;
                     ShowCaption = false;
                     ToolTip = ' ';
-                    Caption = ' ';
                 }
             }
 
             field(NameField; Rec.Name)
             {
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Azure File Share account.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the name of the Azure File Share account.';
 
                 trigger OnValidate()
                 begin
@@ -71,15 +71,15 @@ page 4571 "Ext. File Share Account Wizard"
             {
                 Caption = 'Secret';
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
             }
 
             field(FileShareNameField; Rec."File Share Name")
             {
                 Caption = 'File Share Name';
-                ToolTip = 'Specifies the file share to use of the storage account.';
                 ShowMandatory = true;
+                ToolTip = 'Specifies the file share to use of the storage account.';
 
                 trigger OnValidate()
                 begin
@@ -96,9 +96,9 @@ page 4571 "Ext. File Share Account Wizard"
             action(Back)
             {
                 Caption = 'Back';
-                ToolTip = 'Back';
                 Image = Cancel;
                 InFooterBar = true;
+                ToolTip = 'Back';
 
                 trigger OnAction()
                 begin
@@ -109,8 +109,8 @@ page 4571 "Ext. File Share Account Wizard"
             action(Next)
             {
                 Caption = 'Next';
-                Image = NextRecord;
                 Enabled = IsNextEnabled;
+                Image = NextRecord;
                 InFooterBar = true;
                 ToolTip = 'Next';
 

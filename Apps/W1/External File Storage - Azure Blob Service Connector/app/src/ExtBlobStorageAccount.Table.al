@@ -10,15 +10,15 @@ namespace System.ExternalFileStorage;
 /// </summary>
 table 4560 "Ext. Blob Storage Account"
 {
-    DataClassification = CustomerContent;
     Caption = 'Azure Blob Storage Account';
+    DataClassification = CustomerContent;
 
     fields
     {
         field(1; "Id"; Guid)
         {
-            DataClassification = SystemMetadata;
             Caption = 'Primary Key';
+            DataClassification = SystemMetadata;
         }
 
         field(2; Name; Text[250])

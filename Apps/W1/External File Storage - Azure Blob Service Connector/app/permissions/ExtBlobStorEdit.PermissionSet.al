@@ -7,8 +7,8 @@ namespace System.ExternalFileStorage;
 
 permissionset 4562 "Ext. Blob Stor. - Edit"
 {
-    Assignable = false;
     Access = Public;
+    Assignable = false;
     Caption = 'Blob Storage - Edit';
 
     IncludedPermissionSets = "Ext. Blob Stor. - Read";

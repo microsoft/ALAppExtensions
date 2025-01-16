@@ -13,9 +13,9 @@ using System.DataAdministration;
 codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Ext. File Share Account" = rimd;
-    InherentPermissions = X;
     InherentEntitlements = X;
+    InherentPermissions = X;
+    Permissions = tabledata "Ext. File Share Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use Azure File Share to store and retrieve files.';
