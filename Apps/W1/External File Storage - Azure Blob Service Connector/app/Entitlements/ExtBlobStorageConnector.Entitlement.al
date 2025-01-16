@@ -8,6 +8,6 @@ namespace System.ExternalFileStorage;
 entitlement "Ext. Blob Storage Connector"
 {
 
-    ObjectEntitlements = "Ext. Blob Stor. - Objects";
+    ObjectEntitlements = "Ext. Blob Stor. - Edit";
     Type = Implicit;
 }
