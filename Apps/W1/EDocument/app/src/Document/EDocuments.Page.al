@@ -71,6 +71,22 @@ page 6122 "E-Documents"
                     NewFromFile();
                 end;
             }
+            fileuploadaction(ImportManuallyMultiple)
+            {
+                Caption = 'Import Multiple Files';
+                ToolTip = 'Create multiple electronic documents by uploading multiple files.';
+                Image = Import;
+                AllowedFileExtensions = '.xml';
+                AllowMultipleFiles = true;
+                trigger OnAction(Files: List of [FileUpload])
+                var
+                    EDocImport: Codeunit "E-Doc. Import";
+                begin
+                    EDocImport.UploadDocuments(Files);
+                    CurrPage.Update();
+                end;
+
+            }
             action(EDocumentServices)
             {
                 RunObject = Page "E-Document Services";
