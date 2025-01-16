@@ -256,17 +256,23 @@ codeunit 6108 "E-Document Processing"
         VariantRecord: Variant;
     begin
         if GetRecord(EDocument, VariantRecord) and DataTypeManagement.GetRecordRef(VariantRecord, RecRef) then
-            exit(GetRelatedRecordCaption(EDocument, RecRef))
-        else begin
-            EDocument.Status := EDocument.Status::"In Progress";
-            EDocument.Modify(false);
-            exit('');
-        end;
+            exit(GetRelatedRecordCaption(EDocument, RecRef));
     end;
 
     procedure GetRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean
     begin
         exit(GetPostedRecord(EDocument, RelatedRecord));
+    end;
+
+    procedure DeleteRelatedRecord(EDocument: Record "E-Document")
+    var
+        RecRef: RecordRef;
+    begin
+        if this.GetRelatedRecord(EDocument, RecRef) then
+            if RecRef.Number = Database::"Purchase Header" then
+                RecRef.Delete(true)
+            else
+                Error(this.CannotDeletePostedRecordErr);
     end;
 
     procedure GetTelemetryDimensions(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var Dimensions: Dictionary of [Text, Text])
@@ -296,17 +302,6 @@ codeunit 6108 "E-Document Processing"
     procedure GetEDocTok(): Text
     begin
         exit(EDocTok);
-    end;
-
-    procedure DeleteRelatedRecords(EDocument: Record "E-Document")
-    var
-        RecRef: RecordRef;
-    begin
-        if this.GetRelatedRecord(EDocument, RecRef) then
-            if RecRef.Number = Database::"Purchase Header" then
-                RecRef.Delete(true)
-            else
-                Error(this.CannotDeletePostedRecordErr);
     end;
 
     local procedure GetDocSendingProfileForCustVend(CustomerNo: Code[20]; VendorNo: Code[20]) DocumentSendingProfile: Record "Document Sending Profile";

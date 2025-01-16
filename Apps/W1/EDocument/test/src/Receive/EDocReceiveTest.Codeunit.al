@@ -1342,6 +1342,114 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure RecreateReceivedPurchaseInvoice()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServicePage: TestPage "E-Document Service";
+        EDocumentPage: TestPage "E-Document";
+        i: Integer;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Delete and recreate purchase invoice from E-Document page
+        Initialize();
+
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
+        BindSubscription(EDocImplState);
+
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService.Modify();
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+
+        for i := 1 to 3 do begin
+            LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
+            PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
+            PurchaseLine.Modify(true);
+        end;
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Purchase invoice is created with corresponding values
+        EDocumentPage.OpenView();
+        EDocumentPage.Last();
+
+        CreatedPurchaseHeader.Reset();
+        CreatedPurchaseHeader.SetRange("Document Type", CreatedPurchaseHeader."Document Type"::Invoice);
+        CreatedPurchaseHeader.SetRange("No.", EDocumentPage."Document No.".Value);
+        CreatedPurchaseHeader.FindFirst();
+
+        CheckPurchaseHeadersAreEqual(PurchaseHeader, CreatedPurchaseHeader);
+
+        CreatedPurchaseLine.SetRange("Document Type", CreatedPurchaseHeader."Document Type");
+        CreatedPurchaseLine.SetRange("Document No.", CreatedPurchaseHeader."No.");
+        if CreatedPurchaseLine.FindSet() then
+            repeat
+                PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+                PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+                PurchaseLine.SetRange("Line No.", CreatedPurchaseLine."Line No.");
+                PurchaseLine.FindFirst();
+                CheckPurchaseLinesAreEqual(PurchaseLine, CreatedPurchaseLine);
+            until CreatedPurchaseLine.Next() = 0;
+
+        // [WHEN] Delete created purchase invoice from E-Document page
+        EDocumentPage.DeleteRelatedDocument.Invoke();
+
+        // [THEN] Check that purchase invoice is deleted
+        CreatedPurchaseHeader.Reset();
+        CreatedPurchaseHeader.SetRange("Document Type", CreatedPurchaseHeader."Document Type"::Invoice);
+        CreatedPurchaseHeader.SetRange("No.", EDocumentPage."Document No.".Value);
+        Assert.RecordIsEmpty(CreatedPurchaseHeader);
+
+        // [WHEN] Recreate purchase invoice
+        EDocumentPage.CreateDocument.Invoke();
+
+        // [THEN] Check that purchase invoice is created again with corresponding values
+        CreatedPurchaseHeader.Reset();
+        CreatedPurchaseHeader.SetRange("Document Type", CreatedPurchaseHeader."Document Type"::Invoice);
+        CreatedPurchaseHeader.SetRange("No.", EDocumentPage."Document No.".Value);
+        CreatedPurchaseHeader.FindFirst();
+
+        CheckPurchaseHeadersAreEqual(PurchaseHeader, CreatedPurchaseHeader);
+
+        CreatedPurchaseLine.SetRange("Document Type", CreatedPurchaseHeader."Document Type");
+        CreatedPurchaseLine.SetRange("Document No.", CreatedPurchaseHeader."No.");
+        if CreatedPurchaseLine.FindSet() then
+            repeat
+                PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+                PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+                PurchaseLine.SetRange("Line No.", CreatedPurchaseLine."Line No.");
+                PurchaseLine.FindFirst();
+                CheckPurchaseLinesAreEqual(PurchaseLine, CreatedPurchaseLine);
+            until CreatedPurchaseLine.Next() = 0;
+
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
+        PurchaseHeader.Delete(true);
+
+        CreatedPurchaseHeader.SetHideValidationDialog(true);
+        CreatedPurchaseHeader."E-Document Link" := NullGuid;
+        CreatedPurchaseHeader.Delete(true);
+    end;
+
     [ModalPageHandler]
     procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
     var

@@ -355,7 +355,7 @@ page 6121 "E-Document"
                     trigger OnAction()
                     begin
                         if Confirm(StrSubstNo(this.ConfirmDeleteRelatedDocQst, this.RecordLinkTxt)) then
-                            this.EDocumentHelper.DeleteRelatedRecords(Rec);
+                            this.EDocumentHelper.DeleteRelatedRecord(Rec);
                     end;
                 }
             }
@@ -505,11 +505,10 @@ page 6121 "E-Document"
 
     trigger OnAfterGetRecord()
     begin
-        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
-
         IsProcessed := Rec.Status = Rec.Status::Processed;
         IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
 
+        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
         HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
         HasErrors := EDocumentErrorHelper.ErrorMessageCount(Rec) > 0;
         if HasErrorsOrWarnings then

@@ -203,6 +203,18 @@ codeunit 6103 "E-Document Subscription"
                     Error('');
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure OnAfterDeletePurchaseHeader(var Rec: Record "Purchase Header"; RunTrigger: Boolean)
+    var
+        EDocument: Record "E-Document";
+    begin
+        if not IsNullGuid(Rec."E-Document Link") then begin
+            EDocument.GetBySystemId(Rec."E-Document Link");
+            EDocument.Status := EDocument.Status::"In Progress";
+            EDocument.Modify(false);
+        end;
+    end;
+
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
     var
         EDocument: Record "E-Document";
