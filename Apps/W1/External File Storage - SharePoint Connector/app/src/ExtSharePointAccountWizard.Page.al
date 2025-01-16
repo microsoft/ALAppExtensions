@@ -32,10 +32,9 @@ page 4581 "Ext. SharePoint Account Wizard"
                 Visible = TopBannerVisible;
                 field(NotDoneIcon; MediaResources."Media Reference")
                 {
-                    Caption = ' ';
                     Editable = false;
                     ShowCaption = false;
-                    ToolTip = ' ';
+                    ToolTip = ' ', Locked = true;
                 }
             }
 
@@ -113,7 +112,7 @@ page 4581 "Ext. SharePoint Account Wizard"
                 Caption = 'Back';
                 Image = Cancel;
                 InFooterBar = true;
-                ToolTip = 'Back';
+                ToolTip = 'Move to previous step.';
 
                 trigger OnAction()
                 begin
@@ -127,7 +126,7 @@ page 4581 "Ext. SharePoint Account Wizard"
                 Enabled = IsNextEnabled;
                 Image = NextRecord;
                 InFooterBar = true;
-                ToolTip = 'Next';
+                ToolTip = 'Move to next step.';
 
                 trigger OnAction()
                 begin
