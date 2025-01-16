@@ -17,6 +17,7 @@ table 4560 "Ext. Blob Storage Account"
     {
         field(1; "Id"; Guid)
         {
+            AllowInCustomizations = Never;
             Caption = 'Primary Key';
             DataClassification = SystemMetadata;
         }

@@ -17,6 +17,7 @@ table 4570 "Ext. File Share Account"
     {
         field(1; "Id"; Guid)
         {
+            AllowInCustomizations = Never;
             Caption = 'Primary Key';
             DataClassification = SystemMetadata;
         }

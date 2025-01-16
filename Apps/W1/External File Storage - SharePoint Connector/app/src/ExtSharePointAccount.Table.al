@@ -17,6 +17,7 @@ table 4580 "Ext. SharePoint Account"
     {
         field(1; "Id"; Guid)
         {
+            AllowInCustomizations = Never;
             Caption = 'Primary Key';
             DataClassification = SystemMetadata;
         }
