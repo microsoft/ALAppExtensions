@@ -69,13 +69,12 @@ page 4560 "Ext. Blob Storage Account"
     trigger OnOpenPage()
     begin
         Rec.SetCurrentKey(Name);
-
-        if not IsNullGuid(Rec."Secret Key") then
-            Secret := '***';
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         SecretEditable := CurrPage.Editable();
+        if not IsNullGuid(Rec."Secret Key") then
+            Secret := '***';
     end;
 }

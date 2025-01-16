@@ -57,13 +57,12 @@ page 4580 "Ext. SharePoint Account"
     trigger OnOpenPage()
     begin
         Rec.SetCurrentKey(Name);
-
-        if not IsNullGuid(Rec."Client Secret Key") then
-            ClientSecret := '***';
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         ClientSecretEditable := CurrPage.Editable();
+        if not IsNullGuid(Rec."Client Secret Key") then
+            ClientSecret := '***';
     end;
 }
