@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Manufacturing;
 
 using Microsoft.Manufacturing.Journal;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6251 "Sust. Consumption Journal" extends "Consumption Journal"
 {
@@ -10,6 +11,7 @@ pageextension 6251 "Sust. Consumption Journal" extends "Consumption Journal"
         {
             field("Sust. Account No."; Rec."Sust. Account No.")
             {
+                Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the value of the Sustainability Account No. field.';
@@ -19,9 +21,26 @@ pageextension 6251 "Sust. Consumption Journal" extends "Consumption Journal"
         {
             field("Total CO2e"; Rec."Total CO2e")
             {
+                Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Total CO2e field.';
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        VisibleSustainabilityControls();
+    end;
+
+    local procedure VisibleSustainabilityControls()
+    begin
+        SustainabilitySetup.GetRecordOnce();
+
+        SustainabilityVisible := SustainabilitySetup."Enable Value Chain Tracking";
+    end;
+
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityVisible: Boolean;
 }

@@ -10,7 +10,7 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
 
-codeunit 148195 "M365 Int. Test Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
+codeunit 148195 "M365 Int. Test Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker, IConsentManager
 {
     Access = Internal;
 
@@ -34,6 +34,11 @@ codeunit 148195 "M365 Int. Test Impl." implements IDocumentReceiver, IDocumentSe
         Assert: Codeunit Assert;
     begin
         Assert.AreNotEqual(EDocument."Document Id", '', 'Document Id must have a value when MarkFetched is called');
+    end;
+
+    procedure ObtainPrivacyConsent(): Boolean
+    begin
+        exit(true);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]

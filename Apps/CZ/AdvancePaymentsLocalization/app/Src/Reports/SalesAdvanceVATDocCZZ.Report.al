@@ -447,13 +447,17 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     if UseFunctionalCurrency then begin
                         AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempSalesAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
                         if (AdditionalCurrencyFactor <> 0) and (AdditionalCurrencyFactor <> 1) then begin
-                            CurrencyExchangeRate.FindCurrency("Posting Date", "General Ledger Setup"."Additional Reporting Currency", 1);
-                            CalculatedExchRate := Round(1 / AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                            if CalculatedExchRate <> 1 then begin
+                                CurrencyExchangeRate.FindCurrency(TempSalesAdvLetterEntry."Posting Date", "Currency Code", 1);
+                                CalculatedExchRate := Round(((1 / TempSalesAdvLetterEntry."Currency Factor") / (1 / AdditionalCurrencyFactor)) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                            end else begin
+                                CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                                CalculatedExchRate := Round(AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                            end;
                             ExchRateText :=
                               StrSubstNo(ExchangeRateTxt, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                               CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
-                        end else
-                            CalculatedExchRate := 1;
+                              CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                        end;
                     end;
 
                     FormatAddress.FormatAddr(CustAddr, "Bill-to Name", "Bill-to Name 2", "Bill-to Contact", "Bill-to Address", "Bill-to Address 2",

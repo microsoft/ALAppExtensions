@@ -75,12 +75,17 @@ codeunit 139698 "Shpfy Sales Channel Test"
         ShopifyProductAPI: Codeunit "Shpfy Product API";
         SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
         GraphQueryTxt: Text;
+        OnlineShopId, POSId : BigInteger;
     begin
         // [SCENARIO] Publishing not active product to Shopify Sales Channel.
         Initialize();
 
         // [GIVEN] Product with archived status.
         CreateProductWithStatus(ShopifyProduct, Enum::"Shpfy Product Status"::Archived, Any.IntegerInRange(10000, 99999));
+        // [GIVEN] Default sales channels.
+        OnlineShopId := Any.IntegerInRange(10000, 99999);
+        POSId := OnlineShopId + 1;
+        CreateDefaultSalesChannels(OnlineShopId, POSId);
 
         // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
         BindSubscription(SalesChannelSubs);
@@ -88,8 +93,9 @@ codeunit 139698 "Shpfy Sales Channel Test"
         UnbindSubscription(SalesChannelSubs);
         GraphQueryTxt := SalesChannelSubs.GetGraphQueryTxt();
 
-        // [THEN] Procedure exits without publishing the product.
-        LibraryAssert.AreEqual('', GraphQueryTxt, 'Query for publishing the product is generated');
+        // [THEN] Query for publishing the product is generated.
+        LibraryAssert.IsTrue(GraphQueryTxt.Contains(StrSubstNo('id: \"gid://shopify/Product/%1\"', ShopifyProduct.Id)), 'Product Id is not in the query');
+        LibraryAssert.IsTrue(GraphQueryTxt.Contains(StrSubstNo('publicationId: \"gid://shopify/Publication/%1\"', OnlineShopId)), 'Publication Id for Online Shop is not in the query');
     end;
 
     [Test]
@@ -99,6 +105,7 @@ codeunit 139698 "Shpfy Sales Channel Test"
         ShopifyProductAPI: Codeunit "Shpfy Product API";
         SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
         GraphQueryTxt: Text;
+        OnlineShopId, POSId : BigInteger;
     begin
         // [SCENARIO] Publishing draft product to Shopify Sales Channel.
         Initialize();
@@ -106,7 +113,9 @@ codeunit 139698 "Shpfy Sales Channel Test"
         // [GIVEN] Product with draft status.
         CreateProductWithStatus(ShopifyProduct, Enum::"Shpfy Product Status"::Draft, Any.IntegerInRange(10000, 99999));
         // [GIVEN] Default sales channels.
-        CreateDefaultSalesChannels(Any.IntegerInRange(10000, 99999), Any.IntegerInRange(10000, 99999));
+        OnlineShopId := Any.IntegerInRange(10000, 99999);
+        POSId := OnlineShopId + 1;
+        CreateDefaultSalesChannels(OnlineShopId, POSId);
 
         // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
         BindSubscription(SalesChannelSubs);
@@ -114,8 +123,9 @@ codeunit 139698 "Shpfy Sales Channel Test"
         UnbindSubscription(SalesChannelSubs);
         GraphQueryTxt := SalesChannelSubs.GetGraphQueryTxt();
 
-        // [THEN] Procedure exits without publishing the product.
-        LibraryAssert.AreEqual('', GraphQueryTxt, 'Query for publishing the product is generated');
+        // [THEN] Query for publishing the product is generated.
+        LibraryAssert.IsTrue(GraphQueryTxt.Contains(StrSubstNo('id: \"gid://shopify/Product/%1\"', ShopifyProduct.Id)), 'Product Id is not in the query');
+        LibraryAssert.IsTrue(GraphQueryTxt.Contains(StrSubstNo('publicationId: \"gid://shopify/Publication/%1\"', OnlineShopId)), 'Publication Id for Online Shop is not in the query');
     end;
 
     [Test]

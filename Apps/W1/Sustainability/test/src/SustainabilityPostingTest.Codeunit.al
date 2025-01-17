@@ -23,6 +23,8 @@ codeunit 148184 "Sustainability Posting Test"
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
+        SustLedgerEntryShouldNotBeFoundErr: Label 'Sustainability Ledger Entry should not be found';
+        SustValueEntryShouldNotBeFoundErr: Label 'Sustainability Value Entry should not be found';
 
     [Test]
     procedure TestInformationIsTransferredToLedgerEntry()
@@ -2064,6 +2066,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537481] Verify Sustainability Ledger entry should be created when the sales document is posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -2127,6 +2132,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537481] Verify Sustainability Ledger entry should be created when the sales document is posted.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -2546,6 +2554,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537481] Verify Sustainability Fields in Posted Sales Invoice Statistics.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -2597,6 +2608,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537481] Verify Sustainability fields in Posted Sales Cr Memo Statistics.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -2663,6 +2677,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537481] Verify Sustainability Ledger Entry should be created during Preview Posting of Sales order.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -2713,6 +2730,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537481] Verify Sustainability Ledger Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -2839,6 +2859,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability fields should be updated from Item When "Item No." and Quantity is validated in Assembly Header and Line.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode[1]);
@@ -2908,6 +2931,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability fields should be updated When Document is posted.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -2983,6 +3009,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability fields should be updated When Document is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3062,6 +3091,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Value and Ledger Entry should be created When Document is posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode[1]);
@@ -3123,6 +3155,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability Value and Ledger Entry should be created When Document is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3187,6 +3222,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Value and Ledger Entry should be created during preview posting of Assembly Order.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode[1]);
@@ -3240,6 +3278,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Ledger and Value Entry should be shown when navigating Posted Assembly Order through NavigateFindEntriesHandler handler.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode[1]);
@@ -3292,6 +3333,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability fields should be updated from Item When "Item No." in Transfer Line.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3351,6 +3395,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability fields should be updated in "Transfer Shipment Line" and "Transfer Receipt Line".
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3428,6 +3475,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability fields should be updated in "Transfer Shipment Line" and "Transfer Receipt Line" When Transfer Order is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3511,6 +3561,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Value Entry and Sustainability Ledger Entry When Transfer Order is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -3573,6 +3626,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Value and Ledger Entry should be created for ship during preview posting of Transfer Order.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -3632,6 +3688,9 @@ codeunit 148184 "Sustainability Posting Test"
     begin
         // [SCENARIO 537480] Verify Sustainability Value and Ledger Entry should be created for Receipt during preview posting of Transfer Order.
         LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -3696,6 +3755,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Ledger and Value Entry should be shown when navigating Transfer Shipment through NavigateFindEntriesHandler handler.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -3753,6 +3815,9 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO 537480] Verify Sustainability Ledger and Value Entry should be shown when navigating Transfer Receipt through NavigateFindEntriesHandler handler.
         LibrarySustainability.CleanUpBeforeTesting();
 
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
@@ -3787,6 +3852,228 @@ codeunit 148184 "Sustainability Posting Test"
         // [VERIFY] Verify Sustainability Value and Ledger Entry should be shown when navigating Transfer Receipt Header through NavigateFindEntriesHandler handler.
         GetTransferReceiptHeader(TransferReceiptHeader, FromLocation.Code);
         TransferReceiptHeader.Navigate();
+    end;
+
+    [Test]
+    procedure VerifySustainabilityEntriesIfEnableValueChainTrackingIsFalseWhenPostPurchaseOrder()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        PostedInvoiceNo: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // is not created when Post Purchase Order if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandIntInRange(100, 100);
+        EmissionCH4 := LibraryRandom.RandIntInRange(200, 200);
+        EmissionN2O := LibraryRandom.RandIntInRange(300, 300);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post Purchase Document with Receiving and Invoicing.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Find Sustainability Ledger Entry.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
+
+        // [THEN] Sustainability Ledger Entry is found.
+        Assert.IsFalse(SustainabilityLedgerEntry.IsEmpty(), SustLedgerEntryShouldNotBeFoundErr);
+
+        // [WHEN] Find Sustainability Value Entry.
+        SustainabilityValueEntry.SetRange("Item No.", PurchaseLine."No.");
+
+        // [THEN] Sustainability Value Entry is not found.
+        Assert.IsTrue(SustainabilityValueEntry.IsEmpty(), SustValueEntryShouldNotBeFoundErr);
+    end;
+
+    [Test]
+    procedure VerifySustainabilityEntriesIfEnableValueChainTrackingIsFalseWhenPostPurchaseCrMemo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        PurchCrMemoSubformPage: TestPage "Purch. Cr. Memo Subform";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        CrMemoNo: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        PostedCrMemoNo: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // is not created when Post Purchase Cr. Memo if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(20));
+        PurchaseLine.Validate("Emission CH4", LibraryRandom.RandInt(5));
+        PurchaseLine.Validate("Emission N2O", LibraryRandom.RandInt(5));
+        PurchaseLine.Modify(true);
+
+        // [GIVEN] Save Expected Emission.
+        EmissionCO2 := PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionCH4 := PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+        EmissionN2O := PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(EmissionCO2);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
+        LibraryVariableStorage.Enqueue(EmissionN2O);
+        LibraryVariableStorage.Enqueue(0);
+        LibraryVariableStorage.Enqueue(0);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [WHEN] Create Corrective Credit Memo.
+        CrMemoNo := CreateCorrectiveCreditMemo(PurchaseHeader);
+
+        // [VERIFY] Verify Sustainability fields before posting of Corrective Credit Memo.
+        PurchCrMemoSubformPage.OpenEdit();
+        PurchCrMemoSubformPage.Filter.SetFilter("Document No.", CrMemoNo);
+        PurchCrMemoSubformPage.Filter.SetFilter("No.", PurchaseLine."No.");
+        PurchCrMemoSubformPage."Sust. Account No.".AssertEquals(AccountCode);
+        PurchCrMemoSubformPage."Emission CH4".AssertEquals(EmissionCH4);
+        PurchCrMemoSubformPage."Emission CO2".AssertEquals(EmissionCO2);
+        PurchCrMemoSubformPage."Emission N2O".AssertEquals(EmissionN2O);
+
+        // [GIVEN] Post Corrective Credit Memo.
+        PurchaseHeader.Get(PurchaseHeader."Document Type"::"Credit Memo", CrMemoNo);
+        PostedCrMemoNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Find Sustainability Ledger Entry.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedCrMemoNo);
+
+        // [THEN] Sustainability Ledger Entry is found.
+        Assert.IsFalse(SustainabilityLedgerEntry.IsEmpty(), SustLedgerEntryShouldNotBeFoundErr);
+
+        // [WHEN] Find Sustainability Value Entry.
+        SustainabilityValueEntry.SetRange("Item No.", PurchaseLine."No.");
+
+        // [THEN] Sustainability Value Entry is not found.
+        Assert.IsTrue(SustainabilityValueEntry.IsEmpty(), SustValueEntryShouldNotBeFoundErr);
+    end;
+
+    [Test]
+    procedure VerifySustainabilityEntriesIfEnableValueChainTrackingIsFalseWhenPostPurchaseReturnOrder()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        PostedCrMemoNo: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // is not created when Post Purchase Return Order if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandIntInRange(100, 100);
+        EmissionCH4 := LibraryRandom.RandIntInRange(200, 200);
+        EmissionN2O := LibraryRandom.RandIntInRange(300, 300);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Return Order", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post Purchase Document with Receiving and Invoicing.
+        PostedCrMemoNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Find Sustainability Ledger Entry.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedCrMemoNo);
+
+        // [THEN] Sustainability Ledger Entry is found.
+        Assert.IsFalse(SustainabilityLedgerEntry.IsEmpty(), SustLedgerEntryShouldNotBeFoundErr);
+
+        // [WHEN] Find Sustainability Value Entry.
+        SustainabilityValueEntry.SetRange("Item No.", PurchaseLine."No.");
+
+        // [THEN] Sustainability Value Entry is not found.
+        Assert.IsTrue(SustainabilityValueEntry.IsEmpty(), SustValueEntryShouldNotBeFoundErr);
     end;
 
     local procedure CreateUserSetup(var UserSetup: Record "User Setup"; UserID: Code[50])
@@ -4323,6 +4610,23 @@ codeunit 148184 "Sustainability Posting Test"
             CO2eEmission,
             SustainabilityLedgerEntry."CO2e Emission",
             StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), CO2eEmission, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    local procedure CreateCorrectiveCreditMemo(PurchaseHeader: Record "Purchase Header"): Code[20]
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        PostedDocNumber: Code[20];
+    begin
+        PostedDocNumber := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchInvHeader.Get(PostedDocNumber);
+
+        // Create Corrective Credit Memo.
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvHeader, PurchaseHeader);
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryRandom.RandText(10));
+        PurchaseHeader.Modify(true);
+
+        exit(PurchaseHeader."No.");
     end;
 
     [ModalPageHandler]

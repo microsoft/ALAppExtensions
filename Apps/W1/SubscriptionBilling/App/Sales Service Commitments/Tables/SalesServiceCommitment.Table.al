@@ -562,7 +562,7 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitment.SetRange("Document No.", SalesHeader."No.");
         SalesServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         SalesServiceCommitment.SetRange("Invoicing via", SalesServiceCommitment."Invoicing via"::Contract);
-        if SalesServiceCommitment.Find('-') then
+        if SalesServiceCommitment.FindSet() then
             repeat
                 CreateTempSalesServiceCommitmentBuffForSalesServiceCommitment(SalesServiceCommitment, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary, BasePeriodCount, RhythmPeriodCount);
             until SalesServiceCommitment.Next() = 0;

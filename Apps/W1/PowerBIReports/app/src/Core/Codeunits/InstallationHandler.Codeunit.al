@@ -25,7 +25,7 @@ codeunit 36950 "Installation Handler"
                AssistedSetupDescriptionTxt,
                5,
                ObjectType::Page,
-               Page::"Assisted Setup",
+               Page::"PowerBI Assisted Setup",
                Enum::"Assisted Setup Group"::Connect,
                '',
                Enum::"Video Category"::Connect,

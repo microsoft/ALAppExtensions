@@ -45,11 +45,15 @@ codeunit 148160 "Service Comm. Dimensions"
         LibraryRandom: Codeunit "Library - Random";
         LibraryJob: Codeunit "Library - Job";
         LibraryDimension: Codeunit "Library - Dimension";
+        Assert: Codeunit Assert;
         DimMgt: Codeunit DimensionManagement;
         ItemDimSetID: Integer;
         DimSetIDArr: array[10] of Integer;
         NewDimSetID: Integer;
         IsInitialized: Boolean;
+        DimensionSetEntryValueErr: Label 'Service Commitment should have Dimension "%1" with value "%2".', Locked = true;
+
+    #region Tests
 
     [Test]
     procedure ExpectEqualServiceCommitmentAndItemDimensionSetIDOnCreateServiceObject()
@@ -537,6 +541,234 @@ codeunit 148160 "Service Comm. Dimensions"
         until ServiceCommitment.Next() = 0;
     end;
 
+    [Test]
+    [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
+    procedure ServiceCommitmentDimensionsAreTakenFromSalesLineAndInvoicingItemWhenShipmentPosted()
+    var
+        SalesWithServiceCommitmentItem: Record Item;
+        InvoicingItem: Record Item;
+        InvoicingItemDimension: Record Dimension;
+        InvoicingItemDimensionValue: Record "Dimension Value";
+        SSCDimension: Record Dimension;
+        SSCDimensionValues: array[2] of Record "Dimension Value";
+        DefaultDimension: Record "Default Dimension";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        DimensionSetEntry: Record "Dimension Set Entry";
+        Index: Integer;
+    begin
+        // [SCENARIO] When Service Commitment is created by shipping a Sales Order with "Sales with Service Commitment" type Item,
+        // Service Commitment Dimensions should be assigned first from Invoicing item and then from Sales Line.
+        Initialize();
+
+        // Dimensions with Values created:
+        //
+        // | Dimension | Dimension Values | Record        |
+        // |-----------|------------------|---------------|
+        // | Dim1      | A, B             | Item          |
+        // | Dim2      | X                | InvoicingItem |
+
+
+        // [GIVEN] Dimension "Dim1" with two values "A" and "B"
+        LibraryDimension.CreateDimension(SSCDimension);
+        for Index := 1 to ArrayLen(SSCDimensionValues) do
+            LibraryDimension.CreateDimensionValue(SSCDimensionValues[Index], SSCDimension."Code");
+
+        // [GIVEN] Dimension "Dim2" with value "X"
+        LibraryDimension.CreateDimension(InvoicingItemDimension);
+        LibraryDimension.CreateDimensionValue(InvoicingItemDimensionValue, InvoicingItemDimension."Code");
+
+        // [GIVEN] "SalesWithServiceCommitmentItem" has Dimension "Dim1" with Value "A"
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(SalesWithServiceCommitmentItem, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, SalesWithServiceCommitmentItem."No.", SSCDimension.Code, SSCDimensionValues[1].Code);
+
+        // [GIVEN] "InvoicingItem" has Dimension "Dim2" and Value "X"
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(InvoicingItem, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
+
+        // [GIVEN] Service Commitment Package with "InvoicingItem" item
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', Enum::"Service Partner"::Customer, InvoicingItem."No.", Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(SalesWithServiceCommitmentItem, ServiceCommitmentPackage.Code);
+
+        // [GIVEN] Sales Order with "SalesWithServiceCommitmentItem"
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item, SalesWithServiceCommitmentItem."No.", 1);
+
+        // [GIVEN] Dimension "Dim1" has changed to value "B" for the Sales Line
+        UpdateSalesLineDimension(SSCDimension.Code, SSCDimensionValues[2].Code);
+
+        // [WHEN] Sales Order is shipped
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Service Commitment object is created with Dimension "Dim1" with value "B"
+        FindServiceCommitment();
+
+        // [THEN] Service Commitment created with Dimension "Dim1" and value "B"
+        DimensionSetEntry.Get(ServiceCommitment."Dimension Set ID", SSCDimension.Code);
+        Assert.AreEqual(SSCDimensionValues[2].Code, DimensionSetEntry."Dimension Value Code", 'Service Commitment should have Dimension "Dim1" with value "B" inherited from Sales Line.');
+
+        // Expected Dimensions and Values for Service Commitment:
+        //
+        // | Dimension | Dimension Value |
+        // |-----------|-----------------|
+        // | Dim1      | B               |
+        // | Dim2      | X               |
+
+        // [THEN] Service Commitment created with Dimension "Dim2" and value "X"
+        DimensionSetEntry.Get(ServiceCommitment."Dimension Set ID", InvoicingItemDimension.Code);
+        Assert.AreEqual(InvoicingItemDimensionValue.Code, DimensionSetEntry."Dimension Value Code", 'Service Commitment should have Dimension "Dim2" with value "X" from Invoicing Item.');
+    end;
+
+    [Test]
+    [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
+    procedure ServiceCommitmentDimensionsAreTakenFromItemAndSalesLineWhenShipmentPosted()
+    var
+        ServiceCommitmentItem: Record Item;
+        SalesLineDimension: Record Dimension;
+        SalesLineDimensionValue: Record "Dimension Value";
+        ItemDimensions: array[2] of Record Dimension;
+        ItemDimensionValues: array[3] of Record "Dimension Value";
+        DefaultDimension: Record "Default Dimension";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        Index: Integer;
+    begin
+        // [SCENARIO] When Service Commitment is created by shipping a Sales Order with "Service Commitment" type Item,
+        // Service Commitment Dimensions should be taken first from Sales Line Item and then from Sales Line.
+        Initialize();
+
+        // Dimensions with Values created:
+        //
+        // | Dimension | Dimension Values | Record     |
+        // |-----------|------------------|------------|
+        // | Dim1      | A, X             | Item       |
+        // | Dim2      | B                | Item       |
+        // | Dim3      | C                | Sales Line |
+
+        // [GIVEN] Dimensions "Dim1" with value "A" and "Dim2" with value "B"
+        for Index := 1 to ArrayLen(ItemDimensions) do begin
+            LibraryDimension.CreateDimension(ItemDimensions[Index]);
+            LibraryDimension.CreateDimensionValue(ItemDimensionValues[Index], ItemDimensions[Index].Code);
+        end;
+
+        // [GIVEN] Dimensions "Dim3" with value "C"
+        LibraryDimension.CreateDimension(SalesLineDimension);
+        LibraryDimension.CreateDimensionValue(SalesLineDimensionValue, SalesLineDimension.Code);
+
+        // [GIVEN] Additional dimension Value "X" for "Dim1"
+        LibraryDimension.CreateDimensionValue(ItemDimensionValues[3], ItemDimensions[1].Code);
+
+        // [GIVEN] "ServiceCommitmentItem" with default Dimensions "Dim1" with Value "A" and "Dim2" with value "B"
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(ServiceCommitmentItem, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, ServiceCommitmentItem."No.", ItemDimensions[1].Code, ItemDimensionValues[1].Code);
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, ServiceCommitmentItem."No.", ItemDimensions[2].Code, ItemDimensionValues[2].Code);
+
+        // [GIVEN] Service Commitment Package with "ServiceCommitmentItem" item
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', Enum::"Service Partner"::Customer, '', Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(ServiceCommitmentItem, ServiceCommitmentPackage.Code);
+
+        // [GIVEN] Sales Order with "ServiceCommitmentItem"
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item, ServiceCommitmentItem."No.", 1);
+
+        // [GIVEN] Dimension "Dim1" value changed to "X" for the Sales Line
+        UpdateSalesLineDimension(ItemDimensions[1].Code, ItemDimensionValues[3].Code);
+
+        // [GIVEN] Dimension "Dim3" with value "C" added to the Sales Line
+        AddDimensionToSalesLine(SalesLineDimension.Code, SalesLineDimensionValue.Code);
+
+        // [WHEN] Sales Order is shipped
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // Expected Dimensions and Values for Service Commitment:
+        //
+        // | Dimension | Dimension Values |
+        // |-----------|------------------|
+        // | Dim1      | A                |
+        // | Dim2      | B                |
+        // | Dim3      | C                |
+
+
+        // [THEN] Service Commitment created with Dimension "Dim1" and value "A" and Dimension "Dim2" and value "B"
+        FindServiceCommitment();
+        for Index := 1 to ArrayLen(ItemDimensions) do
+            VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", ItemDimensions[Index].Code, ItemDimensionValues[Index].Code);
+
+        // [THEN] Service Commitment created with Dimension "Dim3" and value "C"
+        VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", SalesLineDimension.Code, SalesLineDimensionValue.Code);
+    end;
+
+    [Test]
+    procedure ServiceCommitmentDimensionsAreTakenFromInvoicingItemAndItemWhenCreatedManually()
+    var
+        InvoicingItem: Record Item;
+        InvoicingItemDimension: Record Dimension;
+        InvoicingItemDimensionValue: Record "Dimension Value";
+        Dimension: Record Dimension;
+        DimensionValues: array[2] of Record "Dimension Value";
+        DefaultDimension: Record "Default Dimension";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        Index: Integer;
+    begin
+        // [SCENARIO] When Service Commitment is created manually, Service Commitment dimensions are taken from Invoicing Item of the Service Commitment Package and then from Item
+        Initialize();
+
+        // Dimensions with Values created:
+        //
+        // | Dimension | Dimension Values | Record         |
+        // |-----------|------------------|----------------|
+        // | Dim1      | A                | Item           |
+        // | Dim1      | B                | Invoicing Item |
+        // | Dim2      | X                | Invoicing Item |
+
+        // [GIVEN] Dimension "Dim1" with two values "A" and "B"
+        LibraryDimension.CreateDimension(Dimension);
+        for Index := 1 to ArrayLen(DimensionValues) do
+            LibraryDimension.CreateDimensionValue(DimensionValues[Index], Dimension."Code");
+
+        // [GIVEN] Dimension "Dim2" with value "X"
+        LibraryDimension.CreateDimension(InvoicingItemDimension);
+        LibraryDimension.CreateDimensionValue(InvoicingItemDimensionValue, InvoicingItemDimension."Code");
+
+        // [GIVEN] Default Dimensions assigned for Item = "Dim1" with value "A" and for Invoicing Item = "Dim1" with value "B" and "Dim2" with value "X"
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, Item."No.", Dimension.Code, DimensionValues[1].Code);
+
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(InvoicingItem, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", Dimension.Code, DimensionValues[2].Code);
+        LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
+
+        // [GIVEN] Service Commitment Package with "Item" and "Invoicing Item" in package line
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommitmentPackage.SetRecFilter();
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(
+                ServiceCommPackageLine, '', 100, '', Enum::"Service Partner"::Customer, InvoicingItem."No.",
+                Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+
+        // [WHEN] Assign Service Commitment Package to Service Object
+        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.", false);
+        ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
+
+        // [THEN] Service Commitment created with Dimension "Dim1" and value "B" from Invoicing Item and "Dim2" and value "X" from Invoicing Item
+        // | Dimension | Dimension Values |
+        // |-----------|------------------|
+        // | Dim1      | B                |
+        // | Dim2      | X                |
+
+        FindServiceCommitment();
+        VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", Dimension.Code, DimensionValues[2].Code);
+        VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
+    end;
+
+    #endregion Tests
+
+    #region Procedures
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Service Comm. Dimensions");
@@ -552,6 +784,21 @@ codeunit 148160 "Service Comm. Dimensions"
         LibraryERMCountryData.CreateVATData();
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Service Comm. Dimensions");
+    end;
+
+    local procedure AddDimensionToSalesLine(NewDimensionCode: Code[20]; NewDimensionValueCode: Code[20])
+    var
+        TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        DimensionManagement.GetDimensionSet(TempDimensionSetEntry, SalesLine."Dimension Set ID");
+        TempDimensionSetEntry.Init();
+        TempDimensionSetEntry."Dimension Set ID" := SalesLine."Dimension Set ID";
+        TempDimensionSetEntry.Validate("Dimension Code", NewDimensionCode);
+        TempDimensionSetEntry.Validate("Dimension Value Code", NewDimensionValueCode);
+        TempDimensionSetEntry.Insert(false);
+        SalesLine.Validate("Dimension Set ID", DimensionManagement.GetDimensionSetID(TempDimensionSetEntry));
+        SalesLine.Modify(true);
     end;
 
     local procedure CreateServiceObjectItemWithDimensions()
@@ -600,6 +847,49 @@ codeunit 148160 "Service Comm. Dimensions"
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, Item."No.");
     end;
 
+    local procedure FindServiceCommitment()
+    begin
+        ServiceObject.FindFirst();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.FindFirst();
+    end;
+
+    local procedure UpdateSalesLineDimension(DimensionCode: Code[20]; NewDimensionValueCode: Code[20])
+    var
+        TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        DimensionManagement.GetDimensionSet(TempDimensionSetEntry, SalesLine."Dimension Set ID");
+        TempDimensionSetEntry.SetRange("Dimension Code", DimensionCode);
+        TempDimensionSetEntry.FindFirst();
+        TempDimensionSetEntry.Validate("Dimension Value Code", NewDimensionValueCode);
+        TempDimensionSetEntry.Modify(false);
+        SalesLine.Validate("Dimension Set ID", DimensionManagement.GetDimensionSetID(TempDimensionSetEntry));
+        SalesLine.Modify(true);
+    end;
+
+    local procedure VerifyDimensionSetValue(DimensionSetID: Integer; DimensionCode: Code[20]; ExpectedDimensionValueCode: Code[20])
+    var
+        DimensionSetEntry: Record "Dimension Set Entry";
+    begin
+        DimensionSetEntry.Get(DimensionSetID, DimensionCode);
+        Assert.AreEqual(
+            ExpectedDimensionValueCode, DimensionSetEntry."Dimension Value Code",
+            StrSubstNo(DimensionSetEntryValueErr, DimensionCode, ExpectedDimensionValueCode));
+    end;
+
+    #endregion Procedures
+
+    #region Handlers
+
+    [ModalPageHandler]
+    procedure AssignServiceCommitmentsModalPageHandler(var AssignServiceCommitments: TestPage "Assign Service Commitments")
+    begin
+        AssignServiceCommitments.FieldServiceAndCalculationStartDate.SetValue(WorkDate());
+        AssignServiceCommitments.First();
+        AssignServiceCommitments.OK().Invoke();
+    end;
+
     [ModalPageHandler]
     procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
     begin
@@ -630,4 +920,6 @@ codeunit 148160 "Service Comm. Dimensions"
     begin
         ExchangeRateSelectionPage.OK().Invoke();
     end;
+
+    #endregion Handlers
 }

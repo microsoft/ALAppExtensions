@@ -309,7 +309,7 @@ codeunit 139689 "Recurring Discount Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
-    internal procedure CreateContractInvoiceFromCustomerContractWhenDiscountLineIsFirst()
+    procedure CreateContractInvoiceFromCustomerContractWhenDiscountLineIsFirst()
     begin
         // when first Service Commitment is discount, but the document total amount is positive, Sales Invoice should be created
         InitTest();
@@ -336,7 +336,7 @@ codeunit 139689 "Recurring Discount Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
-    internal procedure CreateContractInvoiceFromVendorContractWhenDiscountLineIsFirst()
+    procedure CreateContractInvoiceFromVendorContractWhenDiscountLineIsFirst()
     begin
         // when first Service Commitment is discount, but the document total amount is positive, Purchase Invoice should be created
         InitTest();

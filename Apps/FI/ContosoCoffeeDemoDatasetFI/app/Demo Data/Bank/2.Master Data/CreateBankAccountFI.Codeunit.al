@@ -12,22 +12,19 @@ codeunit 13424 "Create Bank Account FI"
     begin
         case Rec."No." of
             CreateBankAccount.Checking():
-                ValidateRecordFields(Rec, -1447200, PostCodeLbl, CheckingLastPaymentLbl);
+                ValidateRecordFields(Rec, -1447200, PostCodeLbl);
             CreateBankAccount.Savings():
-                ValidateRecordFields(Rec, 0, PostCodeLbl, '');
+                ValidateRecordFields(Rec, 0, PostCodeLbl);
         end;
     end;
 
-    local procedure ValidateRecordFields(var BankAccount: Record "Bank Account"; MinBalance: Decimal; PostCode: Code[20]; LastPaymentStatementNo: Code[20])
+    local procedure ValidateRecordFields(var BankAccount: Record "Bank Account"; MinBalance: Decimal; PostCode: Code[20])
     begin
         BankAccount.Validate("Min. Balance", MinBalance);
         BankAccount.Validate("Post Code", PostCode);
-        if LastPaymentStatementNo <> '' then
-            BankAccount.Validate("Last Payment Statement No.", LastPaymentStatementNo);
     end;
 
     var
 
         PostCodeLbl: Label '80100', MaxLength = 20, Locked = true;
-        CheckingLastPaymentLbl: Label 'PREC000', Locked = true;
 }

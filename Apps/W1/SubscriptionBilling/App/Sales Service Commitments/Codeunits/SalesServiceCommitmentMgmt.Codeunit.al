@@ -77,7 +77,7 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         ServiceCommitmentPackage.FilterCodeOnPackageFilter(PackageFilter);
         OnAddAdditionalSalesServiceCommitmentsForSalesLineAfterApplyFilters(ServiceCommitmentPackage, SalesLine);
 
-        if not ServiceCommitmentPackage.IsEmpty() then begin
+        if not ServiceCommitmentPackage.IsEmpty() and GuiAllowed() then begin
             AssignServiceCommitments.SetTableView(ServiceCommitmentPackage);
             AssignServiceCommitments.SetSalesLine(SalesLine);
             AssignServiceCommitments.LookupMode(true);
@@ -166,16 +166,6 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         exit(true);
     end;
 
-    internal procedure IsSalesLineWithServiceCommitmentItemToInvoice(SalesLine: Record "Sales Line"): Boolean
-    begin
-        if not IsSalesLineWithServiceCommitmentItem(SalesLine, true) then
-            exit(false);
-        if SalesLine."Qty. to Invoice" = 0 then
-            exit(false);
-
-        exit(true);
-    end;
-
     local procedure InsertSalesServiceCommitmentFromServiceCommitmentPackage(var SalesLine: Record "Sales Line"; ServCommPackageCode: Code[20])
     var
         ServiceCommitmentPackage: Record "Service Commitment Package";
@@ -214,6 +204,8 @@ codeunit 8069 "Sales Service Commitment Mgmt."
             SalesServiceCommitment.Partner := ServiceCommitmentPackageLine.Partner;
             SalesServiceCommitment.Validate("Calculation Base Type", ServiceCommitmentPackageLine."Calculation Base Type");
             SalesServiceCommitment.Validate("Billing Base Period", ServiceCommitmentPackageLine."Billing Base Period");
+            SalesServiceCommitment."Usage Based Billing" := ServiceCommitmentPackageLine."Usage Based Billing";
+            SalesServiceCommitment."Usage Based Pricing" := ServiceCommitmentPackageLine."Usage Based Pricing";
             SalesServiceCommitment."Calculation Base %" := ServiceCommitmentPackageLine."Calculation Base %";
             SalesServiceCommitment.Validate("Service Comm. Start Formula", ServiceCommitmentPackageLine."Service Comm. Start Formula");
             SalesServiceCommitment.Validate("Billing Rhythm", ServiceCommitmentPackageLine."Billing Rhythm");
@@ -221,8 +213,6 @@ codeunit 8069 "Sales Service Commitment Mgmt."
             SalesServiceCommitment."Price Binding Period" := ServiceCommitmentPackageLine."Price Binding Period";
             SalesServiceCommitment."Period Calculation" := ServiceCommitmentPackageLine."Period Calculation";
             SalesServiceCommitment.CalculateCalculationBaseAmount();
-            SalesServiceCommitment."Usage Based Billing" := ServiceCommitmentPackageLine."Usage Based Billing";
-            SalesServiceCommitment."Usage Based Pricing" := ServiceCommitmentPackageLine."Usage Based Pricing";
             SalesServiceCommitment."Pricing Unit Cost Surcharge %" := ServiceCommitmentPackageLine."Pricing Unit Cost Surcharge %";
             OnBeforeModifySalesServiceCommitmentFromServCommPackageLine(SalesServiceCommitment, ServiceCommitmentPackageLine);
             SalesServiceCommitment.Modify(false);
@@ -434,9 +424,8 @@ codeunit 8069 "Sales Service Commitment Mgmt."
                 SalesServiceCommitment2 := SalesServiceCommitment;
                 SalesServiceCommitment2.SetDocumentFields(ToSalesLine."Document Type", ToSalesLine."Document No.", ToSalesLine."Line No.");
                 SalesServiceCommitment2."Line No." := 0;
+                SalesServiceCommitment2.Validate("Calculation Base Amount", SalesServiceCommitment."Calculation Base Amount");
                 SalesServiceCommitment2.Insert(false);
-                SalesServiceCommitment2.CalculateCalculationBaseAmount();
-                SalesServiceCommitment2.Modify(false);
             until SalesServiceCommitment.Next() = 0;
     end;
 

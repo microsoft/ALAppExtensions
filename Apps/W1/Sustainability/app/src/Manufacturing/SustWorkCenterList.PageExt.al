@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Manufacturing;
 
 using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6256 "Sust. Work Center List" extends "Work Center List"
 {
@@ -12,6 +13,7 @@ pageextension 6256 "Sust. Work Center List" extends "Work Center List"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -27,4 +29,20 @@ pageextension 6256 "Sust. Work Center List" extends "Work Center List"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        VisibleSustainabilityControls();
+    end;
+
+    local procedure VisibleSustainabilityControls()
+    begin
+        SustainabilitySetup.GetRecordOnce();
+
+        SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions" and SustainabilitySetup."Enable Value Chain Tracking";
+    end;
+
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityVisible: Boolean;
 }

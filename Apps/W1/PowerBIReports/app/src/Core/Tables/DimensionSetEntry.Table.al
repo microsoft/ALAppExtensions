@@ -1,6 +1,10 @@
 namespace Microsoft.PowerBIReports;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 36950 "Dimension Set Entry"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Access = Internal;
     // IMPORTANT: do not change the caption - see slice 546954

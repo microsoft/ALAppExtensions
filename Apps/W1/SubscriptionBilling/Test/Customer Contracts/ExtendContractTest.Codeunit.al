@@ -1,5 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.Finance.Currency;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Pricing;
@@ -47,7 +48,7 @@ codeunit 148152 "Extend Contract Test"
         CreateCustomerAndVendorContracts();
         SetupItemWithMultipleServiceCommitmentPackages();
         ServiceObjectQty := LibraryRandom.RandDec(10, 2);
-        ServiceObject.InsertFromItemNoAndSelltoCustomerNo(ServiceObject, Item."No.", ServiceObjectQty, CustomerContract."Sell-to Customer No.", WorkDate());
+        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", ServiceObjectQty, WorkDate(), CustomerContract);
         CheckCreatedServiceObject();
 
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(ServiceObject."Provision Start Date");
@@ -156,6 +157,170 @@ codeunit 148152 "Extend Contract Test"
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
         ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
         Assert.RecordCount(ServiceCommitment, 0);
+    end;
+
+    [Test]
+    procedure ServiceCommitmentCurrencyFactorUpdatedFromCustomerContractLineWithDifferentCurrencyCode()
+    var
+        MockServiceObject: Record "Service Object";
+        MockCustomerContract: Record "Customer Contract";
+        MockServiceCommitment: Record "Service Commitment";
+        Currency: Record Currency;
+        LibraryERM: Codeunit "Library - ERM";
+        ExchangeRateAmount: Decimal;
+        ProvisionStartDate: Date;
+    begin
+        //[SCENARIO]: Check if currency factor is updated in Service commitment, when Customer Contract Line with Different Currency Code is Created from serv. commtiment
+        //[GIVEN]: Create Dummy Service Object, Customer Contract (Currency2), Service Commitment (LCY)
+        LibraryERM.CreateCurrency(Currency);
+        ExchangeRateAmount := LibraryRandom.RandDec(1000, 2);
+        ProvisionStartDate := LibraryRandom.RandDateFrom(WorkDate(), 12);
+        LibraryERM.CreateExchangeRate(Currency.Code, ProvisionStartDate, ExchangeRateAmount, LibraryRandom.RandDec(10, 2));
+
+        MockServiceObject.Init();
+        MockServiceObject."Provision Start Date" := ProvisionStartDate;
+        MockServiceObject.Insert(false);
+
+        MockCustomerContract.Init();
+        MockCustomerContract."Currency Code" := Currency.Code;
+        MockCustomerContract.Insert(false);
+
+        MockServiceCommitment.Init();
+        MockServiceCommitment."Service Object No." := MockServiceObject."No.";
+        MockServiceCommitment."Service Start Date" := MockServiceObject."Provision Start Date";
+        MockServiceCommitment.Insert(false);
+
+        //[WHEN]: Create Customer Contract Line from Service Commitment
+        MockCustomerContract.CreateCustomerContractLineFromServiceCommitment(MockServiceCommitment, MockCustomerContract."No.");
+
+        //[THEN]: Test if currency data is updated in service commitment
+        MockServiceCommitment.Get(MockServiceCommitment."Entry No.");
+        MockServiceCommitment.TestField("Currency Code", Currency.Code);
+        MockServiceCommitment.TestField("Currency Factor", ExchangeRateAmount);
+        MockServiceCommitment.TestField("Currency Factor Date", MockServiceObject."Provision Start Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure ExtendContractWithDifferentBillToCustomerNoAndShipToCode()
+    var
+        Customer2: Record Customer;
+        ShipToAddress: Record "Ship-to Address";
+    begin
+        //[SCENARIO]: Create Customer Contract with different Bill to Customer No. and Ship-to Code
+        //[SCENARIO]: Run Extend Contract action and expect that the data from the Customer contract will be transfered to newly Service Object
+        ResetGlobals();
+        ContractTestLibrary.InitContractsApp();
+
+        //[GIVEN]: Create two customers, additional Ship to Address and assign it to a Customer Contract
+        //[GIVEN]: Create Service Commitment Item
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateCustomer(Customer);
+        LibrarySales.CreateShipToAddress(ShipToAddress, Customer."No.");
+
+        ContractTestLibrary.CreateCustomer(Customer2);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+        CustomerContract.Validate("Bill-to Customer No.", Customer2."No.");
+        CustomerContract.Validate("Ship-to Code", ShipToAddress.Code);
+        CustomerContract.Modify();
+        Assert.AreEqual(Customer2."No.", CustomerContract."Bill-to Customer No.", 'Unexpected Bill-to Customer No. in Customer Contract.');
+        Assert.AreEqual(ShipToAddress.Code, CustomerContract."Ship-to Code", 'Unexpected Ship-to Code in Customer Contract.');
+        SetupItemWithMultipleServiceCommitmentPackages();
+
+        //[WHEN]: Call InsertFromItemNoAndCustomerContract
+        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
+        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", ServiceObjectQty, WorkDate(), CustomerContract);
+
+        //[THEN]: Check if the data in Service Object is transfered from Customer Contract
+        ServiceObject.TestField("End-User Customer No.", CustomerContract."Sell-to Customer No.");
+        ServiceObject.TestField("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
+        ServiceObject.TestField("Ship-to Code", CustomerContract."Ship-to Code");
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [Test]
+    procedure TranslateItemDescriptionBasedOnCustomerLanguageCodeWhenExtendContract()
+    var
+        ItemTranslation: Record "Item Translation";
+    begin
+        // [SCENARIO] When Extend Contract action is run for Item with translation defined that match Customer Language Code, Item Description in Service Object should be translated
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Customer Contract
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+        CreateCustomerWithLanguageCode(ItemTranslation."Language Code");
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        // [WHEN] Extend Contract with Item
+        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", LibraryRandom.RandDec(10, 2), WorkDate(), CustomerContract);
+
+        // [THEN] Item Description should be translated in Service Object
+        Assert.AreEqual(ItemTranslation.Description, ServiceObject.Description, 'Item description should be translated in Service Object');
+    end;
+
+    [Test]
+    procedure UT_UpdateExistingItemDescriptionWhenSetCustomerOnExtendContract()
+    var
+        ItemTranslation: Record "Item Translation";
+        ExtendContract: TestPage "Extend Contract";
+    begin
+        // [SCENARIO] When set Customer on Extend Contract with existing Item, Item Description is updated based on Customer Language Code
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Customer Contract, Set Item on Extend Contract page
+        ResetGlobals();
+
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+        CreateCustomerWithLanguageCode(ItemTranslation."Language Code");
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        // [GIVEN] Setting Item on Extend Contract page first
+        ExtendContract.OpenEdit();
+        ExtendContract.ExtendCustomerContract.SetValue(false);
+        ExtendContract.ItemNo.SetValue(Item."No.");
+        ExtendContract.ItemDescription.AssertEquals(Item.Description);
+        ExtendContract.Close();
+
+        // [WHEN] Customer with Language Code is set on Extend Contract page
+        ExtendContract.OpenEdit();
+        ExtendContract.ExtendCustomerContract.SetValue(true);
+        ExtendContract.CustomerContractNo.SetValue(CustomerContract."No.");
+
+        // [THEN] Item Description should be updated based on Customer Language Code if exist
+        ExtendContract.ItemDescription.AssertEquals(ItemTranslation.Description);
+    end;
+
+    [Test]
+    procedure UT_GetItemTranslationFunctionReturnsBlankWhenItemNoIsBlank()
+    var
+        ContractsItemManagement: Codeunit "Contracts Item Management";
+        Result: Text[100];
+    begin
+        // [SCENARIO] GetItemTranslation function returns blank value whenever the Item No. is blank
+
+        // [GIVEN]
+        ResetGlobals();
+
+        // [WHEN] GetItemTranslation function is called with blank Item No
+        Result := ContractsItemManagement.GetItemTranslation('', '', '');
+
+        // [THEN] Return value of the function GetItemTranslation is blank
+        Assert.AreEqual('', Result, 'GetItemTranslation should return a blank value when Item No. is blank.');
+    end;
+
+    local procedure CreateCustomerWithLanguageCode(LanguageCode: Text[10])
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Language Code", LanguageCode);
+        Customer.Modify(true);
     end;
 
     [MessageHandler]
