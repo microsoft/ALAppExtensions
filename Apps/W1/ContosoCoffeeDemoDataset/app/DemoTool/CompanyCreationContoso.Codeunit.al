@@ -5,10 +5,11 @@ codeunit 5382 "Company Creation Contoso"
 
     trigger OnRun()
     var
-        ContosoDemoDataModule: Record "Contoso Demo Data Module";
+        TempContosoDemoDataModule: Record "Contoso Demo Data Module" temporary;
         AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
         GLSetup: Record "General Ledger Setup";
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
+        IsSetup: Boolean;
     begin
         if AssistedCompanySetupStatus.Get(CompanyName) then begin
             AssistedCompanySetupStatus."Server Instance ID" := ServiceInstanceId();
@@ -21,9 +22,16 @@ codeunit 5382 "Company Creation Contoso"
         if not GLSetup.Get() then
             CODEUNIT.Run(CODEUNIT::"Company-Initialize");
 
-        ContosoDemoTool.RefreshModules(ContosoDemoDataModule);
-
-        ContosoDemoTool.CreateNewCompanyDemoData(Rec, Rec."Is Setup Company");
+        if Rec.IsEmpty() then begin
+            IsSetup := AssistedCompanySetupStatus."Company Demo Data" = Enum::"Company Demo Data Type"::"Production - Setup Data Only";
+            ContosoDemoTool.GetRefreshedModules(TempContosoDemoDataModule);
+            TempContosoDemoDataModule.ModifyAll(Install, true);
+            TempContosoDemoDataModule.ModifyAll("Is Setup Company", IsSetup);
+            ContosoDemoTool.CreateNewCompanyDemoData(TempContosoDemoDataModule, IsSetup);
+        end else begin
+            ContosoDemoTool.RefreshModules();
+            ContosoDemoTool.CreateNewCompanyDemoData(Rec, Rec."Is Setup Company");
+        end;
 
         // Set company setup status to completed
         AssistedCompanySetupStatus.Get(CompanyName);
@@ -52,10 +60,7 @@ codeunit 5382 "Company Creation Contoso"
             Session.LogMessage('0000HUJ', StrSubstNo(CompanyEvaluationTxt, Company."Evaluation Company"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CompanyEvaluationCategoryTok);
         end;
 
-        if ContosoDemoDataModuleTemp.FindSet() then
-            repeat
-                ContosoDemoDataModuleTemp."Is Setup Company" := IsSetup;
-            until ContosoDemoDataModuleTemp.Next() = 0;
+        ContosoDemoDataModuleTemp.ModifyAll("Is Setup Company", IsSetup);
 
         ScheduleRunningContosoDemoData(ContosoDemoDataModuleTemp, NewCompanyName, IsSetup);
     end;
@@ -67,6 +72,11 @@ codeunit 5382 "Company Creation Contoso"
     begin
         AssistedCompanySetupStatus.LockTable();
         AssistedCompanySetupStatus.Get(NewCompanyName);
+        if IsSetup then
+            AssistedCompanySetupStatus."Company Demo Data" := Enum::"Company Demo Data Type"::"Production - Setup Data Only"
+        else
+            AssistedCompanySetupStatus."Company Demo Data" := Enum::"Company Demo Data Type"::"Evaluation - Contoso Sample Data";
+        AssistedCompanySetupStatus.Modify();
 
         Commit();
         AssistedCompanySetupStatus."Task ID" := CreateGuid();
@@ -77,12 +87,7 @@ codeunit 5382 "Company Creation Contoso"
         AssistedCompanySetupStatus."Company Setup Session ID" := ImportSessionID;
         if AssistedCompanySetupStatus."Company Setup Session ID" = 0 then
             Clear(AssistedCompanySetupStatus."Task ID");
-        if IsSetup then
-            AssistedCompanySetupStatus."Company Demo Data" := Format(Enum::"Company Demo Data Type"::"Production - Setup Data Only")
-        else
-            AssistedCompanySetupStatus."Company Demo Data" := Format(Enum::"Company Demo Data Type"::"Evaluation - Contoso Sample Data");
         AssistedCompanySetupStatus.Modify();
-
         Commit();
     end;
 

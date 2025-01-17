@@ -56,6 +56,8 @@ codeunit 8012 "Price By Percent" implements "Contract Price Update"
         NewContractPriceUpdateLine."New Price" := Round(NewContractPriceUpdateLine."Old Price" + NewContractPriceUpdateLine."Old Price" * UpdatePercentValue / 100, Currency."Unit-Amount Rounding Precision");
         NewContractPriceUpdateLine."New Service Amount" := Round(NewContractPriceUpdateLine."New Price" * NewContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
         NewContractPriceUpdateLine."New Calculation Base %" := NewContractPriceUpdateLine."Old Calculation Base %";
+        NewContractPriceUpdateLine."Discount Amount" := Round(NewContractPriceUpdateLine."Discount %" * NewContractPriceUpdateLine."New Service Amount" / 100, Currency."Amount Rounding Precision");
+        NewContractPriceUpdateLine."New Service Amount" := NewContractPriceUpdateLine."New Service Amount" - NewContractPriceUpdateLine."Discount Amount";
         NewContractPriceUpdateLine."Additional Service Amount" := NewContractPriceUpdateLine."New Service Amount" - NewContractPriceUpdateLine."Old Service Amount";
     end;
 }

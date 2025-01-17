@@ -118,11 +118,16 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         VATRegistrationNo: Text[20];
         VendorId: Text;
         VendorNo: Code[20];
+        GLN: Code[13];
     begin
-        // Vendor
-        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VATRegistrationNo));
-        VendorNo := EDocumentImportHelper.FindVendor('', '', VATRegistrationNo);
+        // Read GLN or VAT Registration No based on the scheme ID.
+        if GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID') = GLNSchemeId() then
+            GLN := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(GLN));
 
+        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(VATRegistrationNo));
+        VendorNo := EDocumentImportHelper.FindVendor('', GLN, VATRegistrationNo);
+
+        // If vendor not found, try to find by Service Participant.
         if VendorNo = '' then begin
             VendorId := GetNodeAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID') + ':';
             VendorId += this.GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
@@ -139,6 +144,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
             VendorNo := ServiceParticipant.Participant;
         end;
 
+        // If vendor not found, try to find by name and address.
         if VendorNo = '' then begin
             VendorName := GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name');
             VendorAddress := GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName');
@@ -551,6 +557,11 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
 
         if TempXMLBuffer.FindFirst() then
             exit(TempXMLBuffer.Value);
+    end;
+
+    local procedure GLNSchemeId(): Text
+    begin
+        exit('0088');
     end;
 
     local procedure GetDocumentType(var TempXMLBuffer: Record "XML Buffer" temporary): Text

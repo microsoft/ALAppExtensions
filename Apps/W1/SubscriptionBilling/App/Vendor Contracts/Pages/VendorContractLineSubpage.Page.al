@@ -398,15 +398,13 @@ page 8078 "Vendor Contract Line Subpage"
                     Image = DataEntry;
                     Scope = Repeater;
                     ToolTip = 'Shows the related usage data.';
+                    Enabled = UsageDataEnabled;
 
                     trigger OnAction()
                     var
                         UsageDataBilling: Record "Usage Data Billing";
                     begin
-                        UsageDataBilling.SetRange(Partner, "Service Partner"::Vendor);
-                        UsageDataBilling.SetRange("Contract No.", Rec."Contract No.");
-                        UsageDataBilling.SetRange("Contract Line No.", Rec."Line No.");
-                        Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
+                        UsageDataBilling.ShowForContractLine("Service Partner"::Vendor, Rec."Contract No.", Rec."Line No.");
                     end;
                 }
             }
@@ -435,8 +433,11 @@ page 8078 "Vendor Contract Line Subpage"
     end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        UsageDataBilling: Record "Usage Data Billing";
     begin
         IsDiscountLine := ServiceCommitment.Discount;
+        UsageDataEnabled := UsageDataBilling.ExistForContractLine("Service Partner"::Vendor, Rec."Contract No.", Rec."Line No.");
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -451,6 +452,7 @@ page 8078 "Vendor Contract Line Subpage"
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         NextBillingDateStyleExpr: Text;
         IsDiscountLine: Boolean;
+        UsageDataEnabled: Boolean;
 
     local procedure InitializePageVariables()
     var

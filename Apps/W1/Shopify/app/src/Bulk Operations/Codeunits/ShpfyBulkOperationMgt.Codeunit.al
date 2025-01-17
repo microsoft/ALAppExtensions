@@ -158,7 +158,7 @@ codeunit 30270 "Shpfy Bulk Operation Mgt."
 
     internal procedure GetBulkOperationThreshold(): Integer
     begin
-        exit(10);
+        exit(1000);
     end;
 
     [InternalEvent(false, false)]

@@ -11,10 +11,10 @@ enumextension 6381 "Integration" extends "Service Integration"
 {
     value(6381; "OneDrive")
     {
-        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.";
+        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.", IConsentManager = "Integration Impl.";
     }
     value(6382; "Sharepoint")
     {
-        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.";
+        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.", IConsentManager = "Integration Impl.";
     }
 }

@@ -32,6 +32,7 @@ codeunit 11380 "Create DE Posting Groups"
 
     procedure UpdateGenPostingSetup()
     var
+        GeneralPostingSetup: Record "General Posting Setup";
         ContosoGenPostingSetup: Codeunit "Contoso Posting Setup";
         CreateDEGLAccount: Codeunit "Create DE GL Acc.";
         CreatePostingGroup: Codeunit "Create Posting Groups";
@@ -49,6 +50,9 @@ codeunit 11380 "Create DE Posting Groups"
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.ExportPostingGroup(), CreatePostingGroup.RetailPostingGroup(), CreateDEGLAccount.ResaleofGoods(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.ExportPostingGroup(), CreatePostingGroup.ServicesPostingGroup(), CreateDEGLAccount.SalesofServiceWork(), CreateDEGLAccount.OtherExternalServices(), CreateDEGLAccount.CostofLabor(), CreateDEGLAccount.OtherExternalServices(), CreateDEGLAccount.OtherExternalServices(), '', CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.CostofLabor(), '', '');
         ContosoGenPostingSetup.SetOverwriteData(false);
+
+        GeneralPostingSetup.SetRange("Gen. Prod. Posting Group", CreatePostingGroup.ZeroPostingGroup());
+        GeneralPostingSetup.DeleteAll();
     end;
 
     procedure NoVATPostingGroup(): Code[20]

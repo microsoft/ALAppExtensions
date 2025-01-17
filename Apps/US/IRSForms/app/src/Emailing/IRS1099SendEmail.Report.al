@@ -75,7 +75,8 @@ report 10033 "IRS 1099 Send Email"
     begin
         if IRS1099FormDocHeader.Count() = 1 then begin
             IRS1099FormDocHeader.FindFirst();
-            IRS1099FormDocHeader.TestField(Status, "IRS 1099 Form Doc. Status"::Submitted);
+            if not (IRS1099FormDocHeader.Status in ["IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted]) then
+                IRS1099FormDocHeader.FieldError(Status);
 
             IRS1099PrintParams."Report Type" := ReportType;
             IRSFormsFacade.SaveContentForDocument(IRS1099FormDocHeader, IRS1099PrintParams, false);
@@ -84,7 +85,7 @@ report 10033 "IRS 1099 Send Email"
             exit;
         end;
 
-        IRS1099FormDocHeader.SetRange(Status, "IRS 1099 Form Doc. Status"::Submitted);
+        IRS1099FormDocHeader.SetFilter(Status, '%1|%2', "IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted);
         if not ResendEmail then
             case ReportType of
                 "IRS 1099 Email Report Type"::"Copy B":

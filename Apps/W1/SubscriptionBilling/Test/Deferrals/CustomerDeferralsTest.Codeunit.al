@@ -56,10 +56,10 @@ codeunit 139912 "Customer Deferrals Test"
 
     local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean)
     begin
-        CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1);
+        CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1, false);
     end;
 
-    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommimentCount: Integer)
+    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommimentCount: Integer; Discount: Boolean)
     var
         i: Integer;
     begin
@@ -69,7 +69,10 @@ codeunit 139912 "Customer Deferrals Test"
             ContractTestLibrary.CreateCustomerInLCY(Customer)
         else
             ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        if Discount then
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item")
+        else
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         Item.Validate("Unit Price", 1200);
         Item.Modify(false);
 
@@ -102,7 +105,7 @@ codeunit 139912 "Customer Deferrals Test"
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine); //CreateCustomerBillingDocsContractPageHandler, MessageHandler
         BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        SalesHeader.Get(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.");
     end;
 
     [Test]
@@ -158,7 +161,7 @@ codeunit 139912 "Customer Deferrals Test"
         // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
 
         // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
-        CreateCustomerContractWithDeferrals('<2M-CM>', true, 2);
+        CreateCustomerContractWithDeferrals('<2M-CM>', true, 2, false);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
@@ -271,6 +274,34 @@ codeunit 139912 "Customer Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the contract invoice
+        PostSalesDocumentAndFetchDeferrals();
+
+        // [THEN] Releasing each defferal entry should be correct
+        repeat
+            PostingDate := CustomerContractDeferral."Posting Date";
+            ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
+            CustomerContractDeferral.Get(CustomerContractDeferral."Entry No.");
+            GLEntry.Get(CustomerContractDeferral."G/L Entry No.");
+            GLEntry.TestField("Sub. Contract No.", CustomerContractDeferral."Contract No.");
+            FetchAndTestUpdatedCustomerContractDeferral(CustomerContractDeferral);
+        until CustomerContractDeferral.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
+    procedure TestReleasingCustomerContractDeferralsForCreditMemoAsDiscount()
+    var
+        GLEntry: Record "G/L Entry";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+    begin
+        // [SCENARIO] Making sure that Deferrals are properly realeased when Credit Memo is created from a Serv. Comm Package Line marked as Discount
+
+        // [GIVEN] Contract has been created and the billing proposal with unposted contract credit memo
+        SetPostingAllowTo(0D);
+        CreateCustomerContractWithDeferrals('<2M-CM>', true, 1, true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the credit memo
         PostSalesDocumentAndFetchDeferrals();
 
         // [THEN] Releasing each defferal entry should be correct

@@ -7,7 +7,7 @@ codeunit 36952 "Update Dim. Set Entries"
     var
         PBIDimensionSetEntry: Record "Dimension Set Entry";
         PBISetup: Record "PowerBI Reports Setup";
-        PBIDimensionSets: Query "Dimension Sets";
+        PBIDimensionSets: Query "PowerBI Dimension Sets";
 
     trigger OnRun()
     var

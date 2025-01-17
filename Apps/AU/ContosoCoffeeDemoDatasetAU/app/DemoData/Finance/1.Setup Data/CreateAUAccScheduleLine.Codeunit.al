@@ -5,8 +5,6 @@ codeunit 17156 "Create AU Acc. Schedule Line"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    // ToDo: Need to Check with MS Team why standard Schedule Name are commented in W1
-
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeInsertEvent', '', false, false)]
     local procedure OnInsertRecord(var Rec: Record "Acc. Schedule Line")
     var

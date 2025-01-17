@@ -26,8 +26,6 @@ codeunit 13750 "DK Contoso Localization"
 
         if Module = Enum::"Contoso Demo Data Module"::"Human Resources Module" then
             HumanResource(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::CRM then
-            CRMModule(ContosoDemoDataLevel);
 
         UnBindSubscriptionDemoData(Module);
     end;
@@ -42,16 +40,6 @@ codeunit 13750 "DK Contoso Localization"
         end;
     end;
 
-    local procedure CRMModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create Marketing Setup DK");
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create VAT Statement Line DK");
-        end;
-    end;
-
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreatePostingGroupsDK: Codeunit "Create Posting Groups DK";
@@ -59,11 +47,12 @@ codeunit 13750 "DK Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information DK");
                     Codeunit.Run(Codeunit::"Create Post Code DK");
                     Codeunit.Run(Codeunit::"Create VAT Posting Groups DK");
                     CreatePostingGroupsDK.InsertGenPostingGroup();
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information DK");
         end;
     end;
 
@@ -82,15 +71,11 @@ codeunit 13750 "DK Contoso Localization"
                     CreatePostingGroupsDK.UpdateGenPostingSetup();
                     CreateGenJournalBatchDK.UpdateGenJournalBatch();
                     Codeunit.Run(Codeunit::"Create General Ledger Setup DK");
-
-                    //  CreateGLAccDK.AddCategoriesToGLAccounts()
-                end;
-
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate DK");
+                    Codeunit.Run(Codeunit::"Create VAT Statement Line DK");
                     Codeunit.Run(Codeunit::"Create VAT Setup Post.Grp. DK");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate DK");
         end;
     end;
 
@@ -99,12 +84,8 @@ codeunit 13750 "DK Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
                 Codeunit.Run(Codeunit::"Create Bank Account DK");
-
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create Bank Acc Posting Grp DK");
-
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Bank Acc. Reco. DK");
         end;
     end;
 
@@ -165,7 +146,6 @@ codeunit 13750 "DK Contoso Localization"
         CreateCustPostingGroupDK: Codeunit "Create Cust. Posting Group DK";
         CreateReminderLevelDK: Codeunit "Create Reminder Level DK";
         CreateCustomerDK: codeunit "Create Customer DK";
-        CreateCustomerTemplateDK: Codeunit "Create Customer Template DK";
         CreatePurchDimValueDK: CodeUnit "Create Purch. Dim. Value DK";
         CreateSalesDimValueDK: CodeUnit "Create Sales Dim Value DK";
         CreateEmployeeDK: Codeunit "Create Employee DK";
@@ -173,7 +153,6 @@ codeunit 13750 "DK Contoso Localization"
         CreateShipToAddressDK: Codeunit "Create Ship-to Address DK";
         CreateVATPostingGrpDK: Codeunit "Create Vat Posting Groups DK";
         CreateFADeprBookDK: Codeunit "Create FA Depreciation Book DK";
-        CreateBankAccRecoDK: Codeunit "Create Bank Acc. Reco. DK";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Finance:
@@ -191,7 +170,6 @@ codeunit 13750 "DK Contoso Localization"
                     BindSubscription(CreatePaymentMethodDK);
                     BindSubscription(CreateBankAccountDK);
                     BindSubscription(CreateBankAccPostingGrpDK);
-                    BindSubscription(CreateBankAccRecoDK);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 begin
@@ -215,7 +193,6 @@ codeunit 13750 "DK Contoso Localization"
                     BindSubscription(CreateCustPostingGroupDK);
                     BindSubscription(CreateReminderLevelDK);
                     BindSubscription(CreateCustomerDK);
-                    BindSubscription(CreateCustomerTemplateDK);
                     BindSubscription(CreateSalesDimValueDK);
                     BindSubscription(CreateShipToAddressDK);
                 end;
@@ -251,7 +228,6 @@ codeunit 13750 "DK Contoso Localization"
         CreateCustPostingGroupDK: Codeunit "Create Cust. Posting Group DK";
         CreateReminderLevelDK: Codeunit "Create Reminder Level DK";
         CreateCustomerDK: codeunit "Create Customer DK";
-        CreateCustomerTemplateDK: Codeunit "Create Customer Template DK";
         CreatePurchDimValueDK: Codeunit "Create Purch. Dim. Value DK";
         CreateSalesDimValueDK: CodeUnit "Create Sales Dim Value DK";
         CreateEmployeeDK: Codeunit "Create Employee DK";
@@ -259,7 +235,6 @@ codeunit 13750 "DK Contoso Localization"
         ShipToAddressDK: Codeunit "Create Ship-to Address DK";
         CreateVATPostingGrpDK: Codeunit "Create Vat Posting Groups DK";
         CreateFADeprBookDK: Codeunit "Create FA Depreciation Book DK";
-        CreateBankAccRecoDK: Codeunit "Create Bank Acc. Reco. DK";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Finance:
@@ -277,7 +252,6 @@ codeunit 13750 "DK Contoso Localization"
                     UnBindSubscription(CreatePaymentMethodDK);
                     UnBindSubscription(CreateBankAccountDK);
                     UnBindSubscription(CreateBankAccPostingGrpDK);
-                    UnbindSubscription(CreateBankAccRecoDK);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 begin
@@ -300,7 +274,6 @@ codeunit 13750 "DK Contoso Localization"
                 begin
                     UnBindSubscription(CreateReminderLevelDK);
                     UnBindSubscription(CreateCustomerDK);
-                    UnBindSubscription(CreateCustomerTemplateDK);
                     UnBindSubscription(CreateCustPostingGroupDK);
                     UnbindSubscription(CreateSalesDimValueDK);
                     UnBindSubscription(ShipToAddressDK)

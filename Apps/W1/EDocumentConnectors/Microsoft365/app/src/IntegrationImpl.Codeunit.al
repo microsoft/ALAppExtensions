@@ -5,12 +5,13 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using System.Utilities;
+using System.Privacy;
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
 
-codeunit 6382 "Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
+codeunit 6382 "Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker, IConsentManager
 {
     Permissions = tabledata "E-Document" = r,
                   tabledata "E-Document Log" = r,
@@ -38,6 +39,13 @@ codeunit 6382 "Integration Impl." implements IDocumentReceiver, IDocumentSender,
     procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
         DriveProcessing.MarkEDocumentAsDownloaded(EDocument, EDocumentService);
+    end;
+
+    procedure ObtainPrivacyConsent(): Boolean
+    var
+        CustomerConsentMgt: codeunit "Customer Consent Mgt.";
+    begin
+        exit(CustomerConsentMgt.ConfirmUserConsentToMicrosoftService());
     end;
 
     internal procedure PreviewContent(var EDocument: Record "E-Document")

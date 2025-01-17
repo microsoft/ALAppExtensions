@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Payables;
 
 codeunit 148010 "IRS 1099 Document Tests"
@@ -23,6 +24,8 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit "Assert";
         LibraryRandom: Codeunit "Library - Random";
+        LibrarySetupStorage: Codeunit "Library - Setup Storage";
+        LibraryERM: Codeunit "Library - ERM";
         IsInitialized: Boolean;
         CannotChangeFormBoxWithCalculatedAmountErr: Label 'You cannot change the Form Box No. for the line with calculated amount.';
         CannotCreateFormDocSamePeriodVendorFormErr: Label 'You cannot create multiple form documents with the same period, vendor and form.';
@@ -868,16 +871,95 @@ codeunit 148010 "IRS 1099 Document Tests"
 #endif
     end;
 
+    [Test]
+    procedure AddSecondLineInFormDocWithDiffBoxNo()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine, NewIRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
+    begin
+        // [SCENARIO 560523] Stan can add a second line to the form document with a different box number
+
+        Initialize();
+        // [GIVEN] IRS Form Document with MISC code
+        IRS1099FormDocHeader.Validate("Period No.", LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate()));
+        IRS1099FormDocHeader.Validate("Vendor No.", LibraryPurchase.CreateVendorNo());
+        IRS1099FormDocHeader.Validate("Form No.", LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate()));
+        IRS1099FormDocHeader.Insert(true);
+        // [GIVEN] First line of the document has MISC-01
+        IRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
+        IRS1099FormDocLine.Validate("Line No.", 10000);
+        IRS1099FormDocLine.Validate("Period No.", IRS1099FormDocHeader."Period No.");
+        IRS1099FormDocLine.Validate("Vendor No.", IRS1099FormDocHeader."Vendor No.");
+        IRS1099FormDocLine.Validate("Form No.", IRS1099FormDocHeader."Form No.");
+        IRS1099FormDocLine.Validate(
+            "Form Box No.",
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), IRS1099FormDocHeader."Form No."));
+        IRS1099FormDocLine.Insert(true);
+        // [GIVEN] Second line is added
+        NewIRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
+        NewIRS1099FormDocLine.Validate("Period No.", IRS1099FormDocHeader."Period No.");
+        NewIRS1099FormDocLine.Validate("Vendor No.", IRS1099FormDocHeader."Vendor No.");
+        NewIRS1099FormDocLine.Validate("Form No.", IRS1099FormDocHeader."Form No.");
+        // [WHEN] Validate Form Box No. with MISC-02
+        NewIRS1099FormDocLine.Validate(
+            "Form Box No.",
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), IRS1099FormDocHeader."Form No."));
+        // [THEN] Form Box No. is validated
+        NewIRS1099FormDocLine.TestField("Form Box No.");
+
+        // Tear down
+        IRS1099FormDocHeader.Delete(true);
+    end;
+
+    [Test]
+    procedure PurchInvWithManualNoSeries()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchPayablesSetup: Record "Purchases & Payables Setup";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 561813] It is possible to insert purchase invoice with manual series and 1099 information from vendor
+
+        Initialize();
+
+        // [GIVEN] IRS Forms app is enabled
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        PurchPayablesSetup.Get();
+        PurchPayablesSetup.Validate("Invoice Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchPayablesSetup.Modify(true);
+
+        //PurchaseHeader.Validate("No. Series", PurchPayablesSetup."Invoice Nos.");
+        PurchaseHeader.Validate("Document Type", PurchaseHeader."Document Type"::Invoice);
+        PurchaseHeader.Validate("No.", LibraryUtility.GenerateGUID());
+        // [WHEN] Validate "Buy-from Vendor No." of the purchase header
+        PurchaseHeader.Validate("Buy-from Vendor No.", LibraryPurchase.CreateVendorNo());
+        // [THEN] Posting date is equal current date in the purchase header
+        PurchaseHeader.TestField("No.");
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
     begin
+        LibrarySetupStorage.Restore();
         IRSReportingPeriod.DeleteAll(true);
         LibraryTestInitialize.OnTestInitialize(Codeunit::"IRS 1099 Document Tests");
         if IsInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"IRS 1099 Document Tests");
-
+        LibrarySetupStorage.SavePurchasesSetup();
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"IRS 1099 Document Tests");
     end;

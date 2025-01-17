@@ -239,7 +239,6 @@ codeunit 11748 "Install Application CZL"
         CopyVATStatementTemplate();
         CopyVATStatementLine();
         CopyAccScheduleLine();
-        CopySourceCodeSetup();
         InitUnreliablePayerServiceSetup();
         InitVATCtrlReportSections();
         InitStatutoryReportingSetup();
@@ -465,19 +464,6 @@ codeunit 11748 "Install Application CZL"
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
         if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
-    end;
-
-    local procedure CopySourceCodeSetup();
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-    begin
-        SourceCodeSetup.SetLoadFields("Sales VAT Delay", "Purchase VAT Delay");
-        if SourceCodeSetup.Get() then begin
-            SourceCodeSetup."Sales VAT Delay CZL" := SourceCodeSetup."Sales VAT Delay";
-            SourceCodeSetup."Purchase VAT Delay CZL" := SourceCodeSetup."Purchase VAT Delay";
-            SourceCodeSetup.Modify(false);
-        end;
-
     end;
 
     local procedure ModifyGenJournalTemplate()

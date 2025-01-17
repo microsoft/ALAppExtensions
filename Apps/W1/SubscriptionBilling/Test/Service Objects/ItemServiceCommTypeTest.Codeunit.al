@@ -34,7 +34,6 @@ codeunit 139885 "Item Service Comm. Type Test"
     [Test]
     procedure ExpectErrorServiceCommitmentItemAssignment()
     begin
-        //TODO: for sit.mim -> This test does not check anything although it is successful
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         SalesLine.Type := SalesLine.Type::Item;
         asserterror SalesLine.Validate("No.", Item."No.");

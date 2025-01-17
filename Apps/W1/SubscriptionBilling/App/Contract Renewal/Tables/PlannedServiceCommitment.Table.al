@@ -110,7 +110,6 @@ table 8002 "Planned Service Commitment"
 
             trigger OnValidate()
             begin
-                Validate("Discount %");
                 if "Currency Code" = '' then
                     "Price (LCY)" := Price;
             end;

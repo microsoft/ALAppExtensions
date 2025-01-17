@@ -8,8 +8,6 @@ codeunit 10864 "Contoso FR Localization"
     begin
         if Module = Enum::"Contoso Demo Data Module"::Foundation then
             FoundationModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::Bank then
-            BankModule(ContosoDemoDataLevel);
 
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
@@ -38,17 +36,10 @@ codeunit 10864 "Contoso FR Localization"
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Post Code FR");
-                    Codeunit.Run(Codeunit::"Create Company Information FR");
                     Codeunit.Run(Codeunit::"Create Source Code FR");
                 end;
-        end;
-    end;
-
-    local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line FR");
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information FR");
         end;
     end;
 
@@ -73,13 +64,13 @@ codeunit 10864 "Contoso FR Localization"
                     Codeunit.Run(Codeunit::"Create General Ledger Setup FR");
                     CreateVATPostingGrpFR.UpdateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create Posting Group FR");
+                    Codeunit.Run(Codeunit::"Create VAT Statement FR");
                 end;
 
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Currency Exc. Rate FR");
                     Codeunit.Run(Codeunit::"Create Column Layout FR");
-                    Codeunit.Run(Codeunit::"Create VAT Statement FR");
                 end;
         end;
     end;
@@ -127,10 +118,9 @@ codeunit 10864 "Contoso FR Localization"
         CreateAccScheduleLineFR: Codeunit "Create Acc. Schedule Line FR";
         CreateBankAccPostingGrpFR: Codeunit "Create Bank Acc. Post. Grp FR";
         CreateBankAccountFR: Codeunit "Create Bank Account FR";
-        CreateGenJournalLineFR: Codeunit "Create Gen. Journal Line FR";
         CreateFAPostingGrpFR: Codeunit "Create FA Posting Grp. FR";
         CreateItemFR: Codeunit "Create Item FR";
-        CreateLoactionFR: Codeunit "Create Location FR";
+        CreateLocationFR: Codeunit "Create Location FR";
         CreateVendorPostingGrpFR: Codeunit "Create Vendor Posting Grp FR";
         CreatePurchDimValueFR: Codeunit "Create Purch. Dim. Value FR";
         CreateVendorFR: Codeunit "Create Vendor FR";
@@ -154,14 +144,13 @@ codeunit 10864 "Contoso FR Localization"
                 begin
                     BindSubscription(CreateBankAccPostingGrpFR);
                     BindSubscription(CreateBankAccountFR);
-                    BindSubscription(CreateGenJournalLineFR);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 BindSubscription(CreateFAPostingGrpFR);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateItemFR);
-                    BindSubscription(CreateLoactionFR);
+                    BindSubscription(CreateLocationFR);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
@@ -188,10 +177,9 @@ codeunit 10864 "Contoso FR Localization"
         CreateAccScheduleLineFR: Codeunit "Create Acc. Schedule Line FR";
         CreateBankAccPostingGrpFR: Codeunit "Create Bank Acc. Post. Grp FR";
         CreateBankAccountFR: Codeunit "Create Bank Account FR";
-        CreateGenJournalLineFR: Codeunit "Create Gen. Journal Line FR";
         CreateFAPostingGrpFR: Codeunit "Create FA Posting Grp. FR";
         CreateItemFR: Codeunit "Create Item FR";
-        CreateLoactionFR: Codeunit "Create Location FR";
+        CreateLocationFR: Codeunit "Create Location FR";
         CreateVendorPostingGrpFR: Codeunit "Create Vendor Posting Grp FR";
         CreatePurchDimValueFR: Codeunit "Create Purch. Dim. Value FR";
         CreateVendorFR: Codeunit "Create Vendor FR";
@@ -215,14 +203,13 @@ codeunit 10864 "Contoso FR Localization"
                 begin
                     UnbindSubscription(CreateBankAccPostingGrpFR);
                     UnbindSubscription(CreateBankAccountFR);
-                    UnbindSubscription(CreateGenJournalLineFR);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 UnbindSubscription(CreateFAPostingGrpFR);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateItemFR);
-                    UnbindSubscription(CreateLoactionFR);
+                    UnbindSubscription(CreateLocationFR);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin

@@ -37,7 +37,7 @@ codeunit 139792 "PowerBI API Requests"
     begin
         case PowerBIEndpoint of
             PowerBIEndpoint::"Vendor Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Vendor Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Vendor Ledg. Entries - PBI API"));
             PowerBIEndpoint::"Customer Ledger Entries":
                 exit(GetQueryUrlFromObjectId(Query::"Customer Ledger Entries"));
             PowerBIEndpoint::"G/L Accounts":
@@ -47,7 +47,7 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"G/L Budgets":
                 exit(GetQueryUrlFromObjectId(Query::"G/L Budgets"));
             PowerBIEndpoint::"G/L Budget Entries":
-                exit(GetQueryUrlFromObjectId(Query::"G/L Budget Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"G/L Budget Entries - PBI API"));
             PowerBIEndpoint::"G/L Entries - Income Statement":
                 exit(GetQueryUrlFromObjectId(Query::"G/L Entries - Income Statement"));
             PowerBIEndpoint::"G/L Entries - Balance Sheet":
@@ -65,7 +65,7 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"Service Lines - Order":
                 exit(GetQueryUrlFromObjectId(Query::"Service Lines - Order"));
             PowerBIEndpoint::"Item Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Item Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Item Ledger Entries - PBI API"));
             PowerBIEndpoint::"Warehouse Activity Lines":
                 exit(GetQueryUrlFromObjectId(Query::"Warehouse Activity Lines"));
             PowerBIEndpoint::"Warehouse Entries":
@@ -117,7 +117,7 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"Job Planning Lines":
                 exit(GetQueryUrlFromObjectId(Query::"Job Planning Lines"));
             PowerBIEndpoint::"Job Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Job Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Job Ledger Entries - PBI API"));
             PowerBIEndpoint::"Purch. Lines - Job Outstanding":
                 exit(GetQueryUrlFromObjectId(Query::"Purch. Lines - Job Outstanding"));
             PowerBIEndpoint::"Purch. Lines - Job Received":
