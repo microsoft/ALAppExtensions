@@ -1349,6 +1349,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocService: Record "E-Document Service";
         EDocServicePage: TestPage "E-Document Service";
         EDocumentPage: TestPage "E-Document";
+        CreatedInvoiceNo: Text[20];
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Delete and recreate purchase invoice from E-Document page
@@ -1374,14 +1375,16 @@ codeunit 139628 "E-Doc. Receive Test"
         // [THEN] Purchase invoice is created with corresponding values
         EDocumentPage.OpenView();
         EDocumentPage.Last();
+        CreatedInvoiceNo := EDocumentPage."Document No.".Value;
 
-        CheckPurchaseInvoiceCreatedWithCorrectValues(this.PurchaseHeader, this.CreatedPurchaseHeader, this.PurchaseLine, this.CreatedPurchaseLine, EDocumentPage."Document No.".Value);
+        CheckPurchaseInvoiceCreatedWithCorrectValues(this.PurchaseHeader, this.CreatedPurchaseHeader, this.PurchaseLine, this.CreatedPurchaseLine, CreatedInvoiceNo);
 
         // [WHEN] Delete created purchase invoice from E-Document page
         EDocumentPage.DeleteRelatedDocument.Invoke();
 
         // [THEN] Check that purchase invoice is deleted
-        CheckPurchaseInvoiceDeleted(this.CreatedPurchaseHeader, EDocumentPage."Document No.".Value);
+        this.Assert.AreEqual('', EDocumentPage."Document No.".Value, '');
+        CheckPurchaseInvoiceDeleted(this.CreatedPurchaseHeader, CreatedInvoiceNo);
 
         // [WHEN] Recreate purchase invoice
         EDocumentPage.CreateDocument.Invoke();

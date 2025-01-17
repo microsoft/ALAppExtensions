@@ -211,6 +211,7 @@ codeunit 6103 "E-Document Subscription"
         if not IsNullGuid(Rec."E-Document Link") then begin
             EDocument.GetBySystemId(Rec."E-Document Link");
             EDocument.Status := EDocument.Status::"In Progress";
+            EDocument."Document No." := '';
             EDocument.Modify(false);
         end;
     end;
@@ -322,6 +323,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
-        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
         ConfirmDeleteQst: Label 'This purchase document is created from E-Document. Do you want to proceed with deletion?';
 }
