@@ -132,11 +132,7 @@ codeunit 10851 IntrastatReportManagementFR
     local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
-        IntrastatReportMgt: Codeunit IntrastatReportManagement;
     begin
-        if not IntrastatReportMgt.IsFeatureEnabled() then
-            exit(false);
-
         if not IntrastatReportSetup.Get() then
             exit(false);
 
@@ -323,15 +319,6 @@ codeunit 10851 IntrastatReportManagementFR
         IntrastatReportLine.SetFilter("Transaction Specification", IntrastatReportHeader."Trans. Spec. Filter");
     end;
 
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Page, Page::"Intrastat Report Setup Wizard", 'OnBeforeFinishAction', '', true, true)]
-    local procedure OnBeforeFinishAction();
-    begin
-        CompanyInformation.Get();
-        CompanyInformation."Last Intr. Declaration ID" := CompanyInformation."Last Intrastat Declaration ID";
-        CompanyInformation.Modify();
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeCreateDefaultDataExchangeDef', '', true, true)]
     local procedure OnBeforeCreateDefaultDataExchangeDef(var IsHandled: Boolean);
     begin

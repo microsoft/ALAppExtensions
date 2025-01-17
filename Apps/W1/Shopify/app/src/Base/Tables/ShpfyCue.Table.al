@@ -14,18 +14,18 @@ table 30100 "Shpfy Cue"
 
     fields
     {
-        Field(1; "Primary Key"; Code[10])
+        field(1; "Primary Key"; Code[10])
         {
             Caption = 'Primary Key';
             DataClassification = SystemMetadata;
         }
-        Field(2; "Unmapped Customers"; Integer)
+        field(2; "Unmapped Customers"; Integer)
         {
             CalcFormula = count("Shpfy Customer" where("Customer No." = const('')));
             Caption = 'Unmapped Customers';
             FieldClass = FlowField;
         }
-        Field(3; "Unmapped Products"; Integer)
+        field(3; "Unmapped Products"; Integer)
         {
             CalcFormula = count("Shpfy Product" where("Item No." = const('')));
             Caption = 'Unmapped Products';
@@ -53,7 +53,10 @@ table 30100 "Shpfy Cue"
                                                                 Report::"Shpfy Sync Stock to Shopify" |
                                                                 Report::"Shpfy Sync Images" |
                                                                 Report::"Shpfy Sync Customers" |
-                                                                Report::"Shpfy Sync Payments")));
+                                                                Report::"Shpfy Sync Payments" |
+                                                                Report::"Shpfy Sync Companies" |
+                                                                Report::"Shpfy Sync Catalogs" |
+                                                                Report::"Shpfy Sync Catalog Prices")));
             Caption = 'Synchronization Errors';
             FieldClass = FlowField;
         }
@@ -61,6 +64,18 @@ table 30100 "Shpfy Cue"
         {
             CalcFormula = count("Sales Shipment Header" where("Shpfy Order Id" = filter(<> 0), "Shpfy Fulfillment Id" = filter(= -1)));
             Caption = 'Shipments Errors';
+            FieldClass = FlowField;
+        }
+        field(8; "Unprocessed Order Updates"; Integer)
+        {
+            CalcFormula = count("Shpfy Order Header" where("Has Order State Error" = const(true)));
+            Caption = 'Unprocessed Order Updates';
+            FieldClass = FlowField;
+        }
+        field(9; "Unmapped Companies"; Integer)
+        {
+            CalcFormula = count("Shpfy Company" where("Customer No." = const('')));
+            Caption = 'Unmapped Companies';
             FieldClass = FlowField;
         }
     }

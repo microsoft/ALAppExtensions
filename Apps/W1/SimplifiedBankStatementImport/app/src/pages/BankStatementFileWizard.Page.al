@@ -163,7 +163,6 @@ page 8850 "Bank Statement File Wizard"
                                 Clear(DescriptionColumnNo);
                                 Clear(DateFormat);
                                 Clear(DecimalSeperator);
-                                Clear(SelectBankAccountCode);
                             end else
                                 NextActionEnabled := FileUploaded;
                             CurrPage.Update(false);
@@ -1451,5 +1450,10 @@ page 8850 "Bank Statement File Wizard"
             LineSeparator := LineSeparator::LF;
             exit;
         end;
+    end;
+
+    procedure SetBankAccount(BankAccountCode: Code[20])
+    begin
+        SelectBankAccountCode := BankAccountCode;
     end;
 }

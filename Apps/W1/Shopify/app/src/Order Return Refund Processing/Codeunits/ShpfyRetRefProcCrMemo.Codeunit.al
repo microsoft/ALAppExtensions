@@ -15,7 +15,7 @@ codeunit 30243 "Shpfy RetRefProc Cr.Memo" implements "Shpfy IReturnRefund Proces
         RefundHeader: Record "Shpfy Refund Header";
         AlreadyProcessedMsg: Label 'The refund %1 is already processed.', Comment = '%1 = Refund Id';
         OrderNotFoundErr: Label 'The shopify order id %1 is not found', Comment = '%1 = Order Id';
-        OrderNotProcessedErr: Label 'You must process shopify order %1 first', Comment = '%1 = OrderNumber';
+        OrderNotProcessedErr: Label 'You must process Shopify order %1 first', Comment = '%1 = OrderNumber';
         RefundErr: Label 'Can not create a credit memo for the refund %1. \%2', Comment = '%1 = Refund Id, %2 = detailed error message';
     begin
         RefundHeader.LoadFields("Refund Id", "Order Id");
@@ -57,6 +57,7 @@ codeunit 30243 "Shpfy RetRefProc Cr.Memo" implements "Shpfy IReturnRefund Proces
 
     procedure CreateSalesDocument(SourceDocumentType: Enum "Shpfy Source Document Type"; SourceDocumentId: BigInteger) SalesHeader: Record "Sales Header"
     var
+        RefundLine: Record "Shpfy Refund Line";
         CreateSalesDocRefund: codeunit "Shpfy Create Sales Doc. Refund";
         IDocumentSource: Interface "Shpfy IDocument Source";
         ErrorInfo: ErrorInfo;
@@ -71,6 +72,10 @@ codeunit 30243 "Shpfy RetRefProc Cr.Memo" implements "Shpfy IReturnRefund Proces
                 IDocumentSource.SetErrorInfo(SourceDocumentId, TextBuilder.ToText());
                 exit;
             end;
+        RefundLine.SetRange("Refund Id", SourceDocumentId);
+        RefundLine.SetRange("Can Create Credit Memo", false);
+        if not RefundLine.IsEmpty() then
+            exit;
 
         CreateSalesDocRefund.SetSource(SourceDocumentId);
         CreateSalesDocRefund.SetTargetDocumentType(SalesHeader."Document Type"::"Credit Memo");

@@ -8,6 +8,7 @@
         <ConnectString />
       </ConnectionProperties>
       <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>54c60479-593d-4a21-bb65-dfa7ffc16d01</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <ReportSections>
@@ -2627,6 +2628,7 @@
                                       <TablixCell>
                                         <CellContents>
                                           <Textbox Name="GenJournalLineDescription">
+                                            <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
@@ -2644,6 +2646,9 @@
                                             </Paragraphs>
                                             <ZIndex>39</ZIndex>
                                             <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
                                               <BackgroundColor>=iif(Code.GetRowColor() = TRUE, "#EBEBEB", "White")</BackgroundColor>
                                               <VerticalAlign>Middle</VerticalAlign>
                                               <PaddingLeft>2pt</PaddingLeft>
@@ -4911,6 +4916,7 @@ End Function</Code>
   <Language>=User!Language</Language>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>b64935dc-11f4-4745-9819-152b0021f665</rd:ReportID>
   <DataSets>
     <DataSet Name="DataSet_Result">
       <Fields>

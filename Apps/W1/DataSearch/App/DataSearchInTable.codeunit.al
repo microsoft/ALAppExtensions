@@ -1,13 +1,12 @@
 namespace Microsoft.Foundation.DataSearch;
 
 using System.Reflection;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
-using Microsoft.Service.Document;
-using Microsoft.Service.Contract;
 
 codeunit 2680 "Data Search in Table"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     var
         SetViewLbl: Label 'SORTING(%1) ORDER(Descending)', Comment = 'Do not translate! It will break the feature. %1 is a field name', Locked = true;
 
@@ -125,54 +124,42 @@ codeunit 2680 "Data Search in Table"
             until DataSearchSetupField.Next() = 0;
     end;
 
-    local procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
-    var
-        FldRef: FieldRef;
-    begin 
-        if not RecRef.FieldExist(FieldNo) then
-            exit;
-        FldRef := RecRef.Field(FieldNo);
-        FldRef.SetRange(TableType);
-    end;
-
     local procedure SetListedFieldFiltersOnRecRef(var RecRef: RecordRef; TableType: Integer; SearchString: Text; UseTextSearch: Boolean; var FieldList: List of [Integer])
     var
-        DataSearchEvents: Codeunit "Data Search Events";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
         FldRef: FieldRef;
         FieldNo: Integer;
         LoadFieldsSet: Boolean;
+        UseWildCharSearch: Boolean;
     begin
         if RecRef.Number = 0 then
             exit;
 
-        case RecRef.Number of
-            Database::"Sales Header", Database::"Sales Line",
-            Database::"Purchase Header", Database::"Purchase Line",
-            Database::"Service Header",  Database::"Service Line",
-            Database::"Service Contract Line":
-                FieldNo := 1;
-            Database::"Service Item Line":
-                FieldNo := 43;
-            Database::"Service Contract Header":
-                FieldNo := 2;
-        end;
-        if FieldNo = 0 then
-            DataSearchEvents.OnGetFieldNoForTableType(RecRef.Number, FieldNo);
+        FieldNo := DataSearchObjectMapping.GetTypeNoField(RecRef.Number);
+
         if FieldNo > 0 then
-            SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
+            DataSearchObjectMapping.SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
+
+        if SearchString[1] = '*' then begin
+            UseWildCharSearch := true;
+            SearchString := DelChr(SearchString, '<', '*');
+        end;
 
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do
             if RecRef.FieldExist(FieldNo) then begin
                 FldRef := RecRef.Field(FieldNo);
                 if FldRef.Length >= strlen(SearchString) then begin
-                    if UseTextSearch then
-                        if FldRef.Type = FieldType::Code then
-                            FldRef.SetFilter('*' + UpperCase(SearchString) + '*')
-                        else
-                            FldRef.SetFilter('@*' + SearchString + '*')
+                    if not UseWildCharSearch and FldRef.IsOptimizedForTextSearch then
+                        FldRef.SetFilter('&&' + SearchString + '*')
                     else
-                        FldRef.SetFilter('*' + SearchString + '*');
+                        if UseTextSearch then
+                            if FldRef.Type = FieldType::Code then
+                                FldRef.SetFilter('*' + UpperCase(SearchString) + '*')
+                            else
+                                FldRef.SetFilter('@*' + SearchString + '*')
+                        else
+                            FldRef.SetFilter('*' + SearchString + '*');
                     if LoadFieldsSet then
                         RecRef.AddLoadFields(FieldNo)
                     else
@@ -185,6 +172,7 @@ codeunit 2680 "Data Search in Table"
 
     local procedure SearchTable(TableNo: Integer; TableType: Integer; var FieldList: List of [Integer]; var SearchStrings: List of [Text]; var Results: Dictionary of [Text, Text])
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         [SecurityFiltering(SecurityFilter::Filtered)]
         RecRef: RecordRef;
         FldRef: FieldRef;
@@ -196,7 +184,13 @@ codeunit 2680 "Data Search in Table"
         SearchString: Text;
         SearchString1: Text;
         FieldMatchString: Text;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        DataSearchEvents.OnBeforeSearchTableProcedure(TableNo, TableType, FieldList, SearchStrings, Results, IsHandled);
+        if IsHandled then
+            exit;
+
         SearchStrings.Get(1, SearchString1);
         UseTextSearch := IsTextSearch(SearchString1);
 
@@ -204,6 +198,7 @@ codeunit 2680 "Data Search in Table"
         FldRef := RecRef.Field(RecRef.SystemModifiedAtNo);
         RecRef.SetView(StrSubstNo(SetViewLbl, FldRef.Name));
         SetListedFieldFiltersOnRecRef(RecRef, TableType, SearchString1, UseTextSearch, FieldList);
+        DataSearchEvents.OnBeforeSearchTable(RecRef);
         if RecRef.FindSet() then
             repeat
                 FldRef := RecRef.Field(RecRef.SystemIdNo);
@@ -255,7 +250,7 @@ codeunit 2680 "Data Search in Table"
         foreach FieldNo in FieldList do
             if RecRef.FieldExist(FieldNo) then begin
                 FldRef := RecRef.Field(FieldNo);
-                if StrPos(UpperCase(Format(FldRef.Value)), UpperCase(DelChr(SearchString, '=', '@*'))) > 0 then
+                if StrPos(UpperCase(Format(FldRef.Value)), UpperCase(DelChr(SearchString, '=', '*'))) > 0 then
                     exit(true);
             end;
         exit(false);
@@ -318,7 +313,7 @@ codeunit 2680 "Data Search in Table"
         foreach FieldNo in FieldList do
             if RecRef.FieldExist(FieldNo) then begin
                 FldRef := RecRef.Field(FieldNo);
-                if StrPos(UpperCase(Format(FldRef.Value)), UpperCase(DelChr(SearchString, '=', '@*'))) > 0 then begin
+                if StrPos(UpperCase(Format(FldRef.Value)), UpperCase(DelChr(SearchString, '=', '*'))) > 0 then begin
                     Field.Get(RecRef.Number, FieldNo);
                     exit(Field."Field Caption" + ': ' + Format(FldRef.Value));
                 end;

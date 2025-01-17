@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO;
 using System.DataAdministration;
 using System.Telemetry;
 
@@ -15,6 +16,7 @@ page 6103 "E-Document Services"
     CardPageID = "E-Document Service";
     PageType = List;
     SourceTable = "E-Document Service";
+    AdditionalSearchTerms = 'EServices,Service';
     DataCaptionFields = Code;
     Editable = false;
     InsertAllowed = false;
@@ -37,9 +39,17 @@ page 6103 "E-Document Services"
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
                 }
+#if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
                 {
                     ToolTip = 'Specifies service integration for the electronic document setup.';
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Moved to field "Service Integration V2" on "E-Document Service" table';
+                }
+#endif
+                field("Service Integration V2"; Rec."Service Integration V2")
+                {
                 }
             }
         }
@@ -102,6 +112,30 @@ page 6103 "E-Document Services"
                     Ellipsis = true;
                 }
             }
+            group(DataExchange)
+            {
+                Caption = 'Data Exchange';
+
+                action(ResetFormats)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Reset Data Exch. Formats';
+                    Tooltip = 'Reset E-Document provided Data Exch. Formats';
+                    Image = Restore;
+
+                    trigger OnAction()
+                    var
+                        EDocumentInstall: Codeunit "E-Document Install";
+                    begin
+                        EDocumentInstall.ImportInvoiceXML();
+                        EDocumentInstall.ImportCreditMemoXML();
+                        EDocumentInstall.ImportSalesInvoiceXML();
+                        EDocumentInstall.ImportSalesCreditMemoXML();
+                        EDocumentInstall.ImportServiceInvoiceXML();
+                        EDocumentInstall.ImportServiceCreditMemoXML();
+                    end;
+                }
+            }
         }
     }
 
@@ -109,7 +143,9 @@ page 6103 "E-Document Services"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Processing";
+        EDocumentInstall: Codeunit "E-Document Install";
     begin
         FeatureTelemetry.LogUptake('0000KZ9', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Discovered);
+        EDocumentInstall.InsertDataExch();
     end;
 }

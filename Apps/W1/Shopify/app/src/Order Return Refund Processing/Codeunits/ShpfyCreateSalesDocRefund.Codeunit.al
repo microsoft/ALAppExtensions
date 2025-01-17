@@ -36,17 +36,14 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
     var
         RefundHeader: Record "Shpfy Refund Header";
         ReleaseSalesDocument: Codeunit "Release Sales Document";
-        IsHandled: Boolean;
     begin
         if RefundHeader.Get(RefundId) then begin
             Shop.Get(RefundHeader."Shop Code");
             if DoCreateSalesHeader(RefundHeader, SalesDocumentType, SalesHeader) then begin
                 CreateSalesLines(RefundHeader, SalesHeader);
-                RefundProcessEvents.OnBeforeReleaseSalesHeader(SalesHeader, RefundHeader, IsHandled);
                 RefundHeader.Get(RefundHeader."Refund Id");
-                if not IsHandled then
-                    ReleaseSalesDocument.Run(SalesHeader);
-                RefundProcessEvents.OnAfterReleaseSalesHeader(SalesHeader, RefundHeader);
+                ReleaseSalesDocument.Run(SalesHeader);
+                RefundProcessEvents.OnAfterProcessSalesDocument(RefundHeader, SalesHeader);
             end;
         end;
     end;
@@ -114,7 +111,6 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                 SalesHeader.Validate("Document Date", DT2Date(RefundHeader."Created At"));
                 if OrderMgt.FindTaxArea(OrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
                     SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
-                SalesHeader.Validate("Location Code", Shop."Return Location");
             end;
             SalesHeader."Shpfy Refund Id" := RefundHeader."Refund Id";
             SalesHeader.Modify(true);
@@ -146,6 +142,7 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
         RefundLine: Record "Shpfy Refund Line";
         ReturnLine: Record "Shpfy Return Line";
         GiftCard: Record "Shpfy Gift Card";
+        ShopLocation: Record "Shpfy Shop Location";
         LineNo: Integer;
         OpenAmount: Decimal;
         IsHandled: Boolean;
@@ -184,7 +181,13 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                                         SalesLine.Validate("No.", RefundLine."Item No.");
                                         if RefundLine."Variant Code" <> '' then
                                             SalesLine.Validate("Variant Code", RefundLine."Variant Code");
-                                        SalesLine.Validate("Location Code", Shop."Return Location");
+
+                                        if ShopLocation.Get(Shop.Code, RefundLine."Location Id") then
+                                            SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
+
+                                        If (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
+                                            SalesLine.Validate("Location Code", Shop."Return Location");
+
                                     end;
                                 SalesLine.Validate(Quantity, RefundLine.Quantity);
                                 SalesLine.Validate("Unit Price", RefundLine.Amount);
@@ -236,7 +239,13 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                             SalesLine.Validate("No.", ReturnLine."Item No.");
                             if ReturnLine."Variant Code" <> '' then
                                 SalesLine.Validate("Variant Code", ReturnLine."Variant Code");
-                            SalesLine.Validate("Location Code", Shop."Return Location");
+
+                            if ShopLocation.Get(Shop.Code, ReturnLine."Location Id") then
+                                SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
+
+                            If (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
+                                SalesLine.Validate("Location Code", Shop."Return Location");
+
                             SalesLine.Validate(Quantity, ReturnLine.Quantity);
                             SalesLine.Validate("Unit Price", ReturnLine."Discounted Total Amount" / ReturnLine.Quantity);
                         end;

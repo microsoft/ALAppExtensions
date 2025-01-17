@@ -133,7 +133,6 @@ page 20109 "AMC Bank Signup to Service"
         AdminEmail: Text;
 
     trigger OnOpenPage()
-    var
     begin
         AMCBankingSetup.Get();
         Solution := AMCBankingSetup.Solution;

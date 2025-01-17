@@ -431,6 +431,6 @@ codeunit 10537 "MTD Connection"
     begin
         CompanyInformation.Get();
         CompanyInformation.TestField("VAT Registration No.");
-        exit(CompanyInformation."VAT Registration No.");
+        exit(DelChr(CompanyInformation."VAT Registration No.", '=', DelChr(CompanyInformation."VAT Registration No.", '=', '0123456789')));
     end;
 }

@@ -46,42 +46,6 @@ page 1681 "Email Logging Setup Wizard"
                     ShowCaption = false;
                 }
             }
-#if not CLEAN22
-            group(FeatureNotEnabled)
-            {
-                Caption = '';
-                Visible = false;
-                ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-
-                group(FeatureHeader)
-                {
-                    ShowCaption = false;
-                    InstructionalText = 'The Email Logging Using the Microsoft Graph API feature is not enabled. To continue, open the Feature Management page and enable the feature.';
-                    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                }
-                field(EnableFeature; OpenFeatureManagementTxt)
-                {
-                    ApplicationArea = All;
-                    Editable = false;
-                    ShowCaption = false;
-                    ToolTip = 'Open the Feature Management page.';
-                    Style = StandardAccent;
-                    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-
-                    trigger OnDrillDown()
-                    begin
-                        Commit();
-                        Page.RunModal(Page::"Feature Management");
-                    end;
-                }
-            }
-#endif
             group(Step1)
             {
                 Caption = '';
@@ -137,8 +101,12 @@ page 1681 "Email Logging Setup Wizard"
                     ApplicationArea = RelationshipMgmt;
 
                     trigger OnDrillDown()
+                    var
+                        [NonDebuggable]
+                        NewClientSecret: Text[250];
                     begin
-                        CustomCredentialsSpecified := EmailLoggingManagement.PromptClientCredentials(ClientId, ClientSecret, RedirectUrl);
+                        CustomCredentialsSpecified := EmailLoggingManagement.PromptClientCredentials(ClientId, NewClientSecret, RedirectUrl);
+                        ClientSecret := NewClientSecret;
                         NextEnabled := CustomCredentialsSpecified;
                     end;
                 }
@@ -278,8 +246,7 @@ page 1681 "Email Logging Setup Wizard"
                         EmailLoggingAPIHelper: Codeunit "Email Logging API Helper";
                         OAuthClient: Interface "Email Logging OAuth Client";
                         APIClient: Interface "Email Logging API Client";
-                        [NonDebuggable]
-                        AccessToken: Text;
+                        AccessToken: SecretText;
                     begin
                         EmailLoggingManagement.InitializeOAuthClient(OAuthClient);
                         if CustomCredentialsSpecified then
@@ -288,10 +255,10 @@ page 1681 "Email Logging Setup Wizard"
                             OAuthClient.Initialize();
                         if UseThirdPartyApp then begin
                             OAuthClient.GetAccessToken(Enum::"Prompt Interaction"::"Select Account", AccessToken);
-                            if AccessToken = '' then
+                            if AccessToken.IsEmpty() then
                                 IsMailboxValid := false;
                         end;
-                        if (not UseThirdPartyApp) or (AccessToken <> '') then begin
+                        if (not UseThirdPartyApp) or (not AccessToken.IsEmpty()) then begin
                             EmailLoggingManagement.InitializeAPIClient(APIClient);
                             EmailLoggingAPIHelper.Initialize(OAuthClient, APIClient);
                             IsMailboxValid := EmailLoggingAPIHelper.IsSharedMailboxAvailable(EmailAddress);
@@ -505,6 +472,7 @@ page 1681 "Email Logging Setup Wizard"
                 var
                     EmailLoggingSetup: Record "Email Logging Setup";
                     GuidedExperience: Codeunit "Guided Experience";
+                    EmailLoggingSetUpLbl: Label 'Email Logging has been set up by UserSecurityId %1.', Locked = true;
                 begin
                     if EmailLoggingSetup.Get() then
                         EmailLoggingManagement.ClearEmailLoggingSetup(EmailLoggingSetup);
@@ -520,6 +488,7 @@ page 1681 "Email Logging Setup Wizard"
                     GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Email Logging Setup Wizard");
 
                     Session.LogMessage('0000G0V', EmailLoggingSetupCompletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                    Session.LogAuditMessage(StrSubstNo(EmailLoggingSetUpLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                     CurrPage.Close();
                 end;
             }
@@ -553,11 +522,11 @@ page 1681 "Email Logging Setup Wizard"
             ClientId := EmailLoggingSetup."Client Id";
             if not IsNullGuid(EmailLoggingSetup."Client Secret Key") then
                 if IsolatedStorageManagement.Get(EmailLoggingSetup."Client Secret Key", DataScope::Company, ClientSecretLocal) then
-                    ClientSecret := CopyStr(ClientSecretLocal, 1, MaxStrLen(ClientSecret));
+                    ClientSecret := ClientSecretLocal;
             RedirectUrl := EmailLoggingSetup."Redirect URL";
             if RedirectUrl = '' then
                 RedirectUrl := EmailLoggingSetup.GetDefaultRedirectUrl();
-            CustomCredentialsSpecified := (ClientId <> '') or (ClientSecret <> '') or (RedirectUrl <> '');
+            CustomCredentialsSpecified := (ClientId <> '') or (not ClientSecret.IsEmpty()) or (RedirectUrl <> '');
         end;
         ConsentGiven := EmailLoggingSetup."Consent Given";
 
@@ -592,8 +561,7 @@ page 1681 "Email Logging Setup Wizard"
         IsSaaSInfrastructure: Boolean;
         EmailBatchSize: Integer;
         ClientId: Text[250];
-        [NonDebuggable]
-        ClientSecret: Text[250];
+        ClientSecret: SecretText;
         RedirectUrl: Text[2048];
         BackEnabled: Boolean;
         NextEnabled: Boolean;
@@ -619,9 +587,6 @@ page 1681 "Email Logging Setup Wizard"
         ValidInteractionTemplateSetup: Boolean;
         ErrorText: Text;
         CategoryTok: Label 'Email Logging', Locked = true;
-#if not CLEAN22
-        OpenFeatureManagementTxt: Label 'Open Feature Management';
-#endif
         NotSetUpQst: Label 'Email logging is not set up. \\Are you sure that you want to exit?';
         CreateEmailLoggingJobQueue: Boolean;
         UpdateSetupTxt: Label 'Update email logging setup record.', Locked = true;
@@ -733,11 +698,10 @@ page 1681 "Email Logging Setup Wizard"
     end;
 
     [TryFunction]
-    [NonDebuggable]
     local procedure SignInAndGiveAppConsent()
     var
         OAuthClient: Interface "Email Logging OAuth Client";
-        AccessToken: Text;
+        AccessToken: SecretText;
         TenantId: Text;
     begin
         EmailLoggingManagement.InitializeOAuthClient(OAuthClient);
@@ -750,7 +714,6 @@ page 1681 "Email Logging Setup Wizard"
         ConsentGiven := TenantId <> '';
     end;
 
-    [NonDebuggable]
     local procedure UpdateEmailLoggingSetup(var EmailLoggingSetup: Record "Email Logging Setup")
     var
         DummyEmailLoggingSetup: Record "Email Logging Setup";

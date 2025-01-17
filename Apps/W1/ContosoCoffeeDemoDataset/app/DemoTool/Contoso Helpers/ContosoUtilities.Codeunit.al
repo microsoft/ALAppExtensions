@@ -1,10 +1,9 @@
 codeunit 5142 "Contoso Utilities"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    procedure AdjustPrice(UnitPrice: Decimal): Decimal
+    internal procedure AdjustPrice(UnitPrice: Decimal): Decimal
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
@@ -69,8 +68,51 @@ codeunit 5142 "Contoso Utilities"
         exit(TempBlob);
     end;
 
-    procedure RandBarcodeInt(): Integer
+    internal procedure RandBarcodeInt(): Integer
     begin
         exit(10000000 - 1 + Random(99999999 - 10000000 + 1));
+    end;
+
+    var
+        DefaultBatchNameLbl: Label 'DEFAULT', MaxLength = 10;
+
+    procedure GetDefaultBatchNameLbl(): Code[10]
+    begin
+        exit(DefaultBatchNameLbl);
+    end;
+
+    procedure GetTempBlobFromFile(FilePath: Text) result: Codeunit "Temp Blob"
+    var
+        ObjInStream: InStream;
+        OutStr: OutStream;
+    begin
+        NavApp.GetResource(FilePath, ObjInStream);
+        result.CreateOutStream(OutStr);
+        CopyStream(OutStr, ObjInStream);
+    end;
+
+    [Scope('OnPrem')]
+    procedure InsertBLOBFromFile(FilePath: Text; FileName: Text): Code[50]
+    var
+        MediaResources: Record "Media Resources";
+        BLOBInStream: InStream;
+        BLOBOutStream: OutStream;
+        MediaResourceCode: Code[50];
+    begin
+        MediaResourceCode := CopyStr(FileName, 1, MaxStrLen(MediaResourceCode));
+        if MediaResources.Get(MediaResourceCode) then
+            exit;
+
+        NavApp.GetResource(FilePath + FileName, BLOBInStream);
+
+        MediaResources.Init();
+        MediaResources.Validate(Code, MediaResourceCode);
+        MediaResources.Blob.CreateOutStream(BLOBOutStream);
+        CopyStream(BLOBOutStream, BLOBInStream);
+
+#pragma warning disable AS0059
+        MediaResources.Insert(true);
+#pragma warning restore AS0059
+        exit(MediaResourceCode);
     end;
 }

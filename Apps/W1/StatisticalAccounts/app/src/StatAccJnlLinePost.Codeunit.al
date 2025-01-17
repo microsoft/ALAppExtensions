@@ -17,16 +17,16 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
     var
         LastStatisticalLedgerEntry: Record "Statistical Ledger Entry";
         StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
-        LastEntryNo: Integer;
+        NextEntryNo: Integer;
         TransactionNumber: Integer;
     begin
         StatAccTelemetry.LogPostingUsage();
 
         LastStatisticalLedgerEntry.LockTable();
         if LastStatisticalLedgerEntry.FindLast() then;
-        LastEntryNo := LastStatisticalLedgerEntry."Entry No.";
+        NextEntryNo := LastStatisticalLedgerEntry."Entry No." + 1;
         TransactionNumber := LastStatisticalLedgerEntry."Transaction No." + 1;
-        PostLine(StatisticalAccJournalLine, LastEntryNo, TransactionNumber);
+        PostLine(StatisticalAccJournalLine, NextEntryNo, TransactionNumber);
     end;
 
     internal procedure PostLine(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var NextEntryNo: Integer; TransactionNumber: Integer)
@@ -37,6 +37,7 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         NextEntryNo += 1;
         StatisticalLedgerEntry."Transaction No." := TransactionNumber;
         TransferStatisticalAccJournalLineTo(StatisticalAccJournalLine, StatisticalLedgerEntry);
+        OnBeforeInsertStatisticalLedgerEntry(StatisticalAccJournalLine, StatisticalLedgerEntry);
         StatisticalLedgerEntry.Insert(true);
     end;
 
@@ -51,5 +52,16 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         StatisticalLedgerEntry."Document No." := StatisticalAccJournalLine."Document No.";
         StatisticalLedgerEntry."Global Dimension 1 Code" := StatisticalAccJournalLine."Shortcut Dimension 1 Code";
         StatisticalLedgerEntry."Global Dimension 2 Code" := StatisticalAccJournalLine."Shortcut Dimension 2 Code";
+        OnAfterTransferStatisticalAccJournalLineTo(StatisticalAccJournalLine, StatisticalLedgerEntry);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertStatisticalLedgerEntry(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterTransferStatisticalAccJournalLineTo(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    begin
     end;
 }

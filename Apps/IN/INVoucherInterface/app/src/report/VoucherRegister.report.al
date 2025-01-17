@@ -40,7 +40,7 @@ report 18933 "Voucher Register"
             }
             dataitem("G/L Entry"; "G/L Entry")
             {
-                DataItemTableView = sorting("Document No.", "Posting Date")
+                DataItemTableView = sorting("Document No.", "Posting Date", Amount)
                                     order(descending);
 
                 column(VoucherSourceDesc; SourceDesc + VoucherLbl)
@@ -126,7 +126,7 @@ report 18933 "Voucher Register"
                 }
                 dataitem(PostedNarration; "Posted Narration")
                 {
-                    DataItemLink = "Entry No." = field("Entry No.");
+                    DataItemLink = "Transaction No." = field("Transaction No."), "Entry No." = field("Entry No.");
                     DataItemTableView = sorting("Entry No.", "Transaction No.", "Line No.")
                                          order(ascending);
 
@@ -151,7 +151,8 @@ report 18933 "Voucher Register"
 
                     trigger OnPreDataItem()
                     begin
-                        GLEntry.SetCurrentKey("Document No.", "Posting Date");
+                        GLEntry.SetCurrentKey("Document No.", "Posting Date", Amount);
+                        GLEntry.Ascending(false);
                         GLEntry.SetRange(GLEntry."Posting Date", "G/L Entry"."Posting Date");
                         GLEntry.SetRange(GLEntry."Document No.", "G/L Entry"."Document No.");
                         GLEntry.SetRange(GLEntry."Entry No.", "G/L Register"."From Entry No.", "G/L Register"."To Entry No.");
@@ -175,9 +176,11 @@ report 18933 "Voucher Register"
                     }
                     trigger OnPreDataItem()
                     begin
-                        GLEntry.SetCurrentKey("Document No.", "Posting Date");
+                        GLEntry.SetCurrentKey("Document No.", "Posting Date", Amount);
+                        GLEntry.Ascending(false);
                         GLEntry.SetRange(GLEntry."Posting Date", "G/L Entry"."Posting Date");
                         GLEntry.SetRange(GLEntry."Document No.", "G/L Entry"."Document No.");
+                        GLEntry.SetRange(GLEntry."Entry No.", "G/L Register"."From Entry No.", "G/L Register"."To Entry No.");
                         GLEntry.FindLast();
                         if not (GLEntry."Entry No." = "G/L Entry"."Entry No.") then
                             CurrReport.Break();

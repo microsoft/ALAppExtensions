@@ -42,6 +42,11 @@ page 30121 "Shpfy Orders to Import"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the action to take for this order.';
                 }
+                field(PurchasingEntity; Rec."Purchasing Entity")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchasing entity from Shopify.';
+                }
                 field(NumberOfItems; Rec."Total Quantity of Items")
                 {
                     ApplicationArea = All;
@@ -72,11 +77,17 @@ page 30121 "Shpfy Orders to Import"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the status of payments associated with the order. Valid values are: pending, authorized, partially_paid, paid, partially_refunded, refunded, voided.';
                 }
+#if not CLEAN25
                 field(RiskLevel; Rec."Risk Level")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the risk level from the Shopify order.';
+                    Visible = false;
+                    ObsoleteReason = 'This field is not imported.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '25.0';
                 }
+#endif
                 field(FulfillmentStatus; Rec."Fulfillment Status")
                 {
                     ApplicationArea = All;

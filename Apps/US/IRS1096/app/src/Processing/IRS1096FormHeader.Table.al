@@ -19,10 +19,12 @@ table 10018 "IRS 1096 Form Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     PurchPayablesSetup.GetRecordOnce();
-                    NoSeriesMgt.TestManual(PurchPayablesSetup."IRS 1096 Form No. Series");
+                    NoSeries.TestManual(PurchPayablesSetup."IRS 1096 Form No. Series");
                     "No. Series" := '';
                 end;
             end;
@@ -120,10 +122,13 @@ table 10018 "IRS 1096 Form Header"
 
     var
         PurchPayablesSetup: Record "Purchases & Payables Setup";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+#if not CLEAN24
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
 
     trigger OnInsert()
     var
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -133,7 +138,19 @@ table 10018 "IRS 1096 Form Header"
 
         if "No." = '' then begin
             GetPurchSetupWithIRS1096NoSeries();
-            NoSeriesMgt.InitSeries(PurchPayablesSetup."IRS 1096 Form No. Series", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            IsHandled := false;
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(PurchPayablesSetup."IRS 1096 Form No. Series", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := PurchPayablesSetup."IRS 1096 Form No. Series";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchPayablesSetup."IRS 1096 Form No. Series", 0D, "No.");
+            end;
+#endif
         end;
     end;
 
@@ -155,6 +172,7 @@ table 10018 "IRS 1096 Form Header"
     procedure AssistEdit(xIRS1096FormHeader: Record "IRS 1096 Form Header") Result: Boolean
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -164,8 +182,8 @@ table 10018 "IRS 1096 Form Header"
 
         IRS1096FormHeader := Rec;
         GetPurchSetupWithIRS1096NoSeries();
-        if NoSeriesMgt.SelectSeries(PurchPayablesSetup."IRS 1096 Form No. Series", xIRS1096FormHeader."No. Series", IRS1096FormHeader."No. Series") then begin
-            NoSeriesMgt.SetSeries(IRS1096FormHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(PurchPayablesSetup."IRS 1096 Form No. Series", xIRS1096FormHeader."No. Series", IRS1096FormHeader."No. Series") then begin
+            IRS1096FormHeader."No." := NoSeries.GetNextNo(IRS1096FormHeader."No. Series");
             Rec := IRS1096FormHeader;
             exit(true);
         end;

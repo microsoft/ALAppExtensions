@@ -20,13 +20,12 @@ using System.Utilities;
 
 codeunit 6102 "E-Doc. Export"
 {
-    Access = Internal;
     Permissions =
         tabledata "E-Document" = im,
         tabledata "E-Doc. Mapping" = im,
         tabledata "E-Doc. Mapping Log" = im;
 
-    procedure CheckEDocument(var EDocSourceRecRef: RecordRef; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    internal procedure CheckEDocument(var EDocSourceRecRef: RecordRef; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     var
         EDocumentService: Record "E-Document Service";
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -38,7 +37,7 @@ codeunit 6102 "E-Doc. Export"
         if IsHandled then
             exit;
 
-        DocumentSendingProfile := EDocumentHelper.GetDocSendingProfileForDocRef(EDocSourceRecRef);
+        DocumentSendingProfile := EDocumentProcessing.GetDocSendingProfileForDocRef(EDocSourceRecRef);
         if (DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow") and (not WorkFlow.Get(DocumentSendingProfile."Electronic Service Flow")) then
             Error(DocumentSendingProfileWithWorkflowErr, DocumentSendingProfile."Electronic Service Flow", Format(DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow"), DocumentSendingProfile.Code);
         WorkFlow.TestField(Enabled);
@@ -46,61 +45,84 @@ codeunit 6102 "E-Doc. Export"
         if EDocWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, DocumentSendingProfile."Electronic Service Flow") then
             if EDocumentService.FindSet() then
                 repeat
-                    EDocumentInterface := EDocumentService."Document Format";
-                    EDocumentInterface.Check(EDocSourceRecRef, EDocumentService, EDocumentProcessingPhase);
+                    if IsDocumentTypeSupportedByService(EDocumentService, EDocSourceRecRef, true) then begin
+                        EDocumentInterface := EDocumentService."Document Format";
+                        EDocumentInterface.Check(EDocSourceRecRef, EDocumentService, EDocumentProcessingPhase);
+                    end;
                 until EDocumentService.Next() = 0;
 
         OnAfterEDocumentCheck(EDocSourceRecRef, EDocumentProcessingPhase);
     end;
 
-    procedure CreateEDocument(var SourceDocumentHeader: RecordRef)
+    internal procedure CreateEDocument(var SourceDocumentHeader: RecordRef)
     var
+        DocumentSendingProfile: Record "Document Sending Profile";
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+        EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
+        IsDocumentTypeSupported: Boolean;
     begin
         EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
         if not EDocument.IsEmpty() then
             exit;
 
-        OnBeforeCreateEDocument(EDocument, SourceDocumentHeader);
+        IsDocumentTypeSupported := false;
+        DocumentSendingProfile := EDocumentProcessing.GetDocSendingProfileForDocRef(SourceDocumentHeader);
+        if EDocWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, DocumentSendingProfile."Electronic Service Flow") then
+            if EDocumentService.FindSet() then
+                repeat
+                    IsDocumentTypeSupported := IsDocumentTypeSupportedByService(EDocumentService, SourceDocumentHeader, false);
+                until (EDocumentService.Next() = 0) or IsDocumentTypeSupported;
 
-        PopulateEDocument(EDocument, SourceDocumentHeader);
+        if IsDocumentTypeSupported then begin
+            OnBeforeCreateEDocument(EDocument, SourceDocumentHeader);
 
-        OnAfterCreateEDocument(EDocument, SourceDocumentHeader);
+            PopulateEDocument(EDocument, SourceDocumentHeader);
 
-        EDocumentLog.InsertLog(EDocument, Enum::"E-Document Service Status"::Created);
+            OnAfterCreateEDocument(EDocument, SourceDocumentHeader);
 
-        EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+            EDocumentLog.InsertLog(EDocument, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
+
+            EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+        end;
     end;
 
-    procedure ExportEDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service") Success: Boolean
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service") Success: Boolean
     var
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
+        EDocLog: Record "E-Document Log";
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         SourceDocumentHeaderMapped, SourceDocumentLineMapped : RecordRef;
         SourceDocumentHeader, SourceDocumentLines : RecordRef;
-        EDocLogEntryNo, ErrorCount : Integer;
+        EDocServiceStatus: Enum "E-Document Service Status";
+        ErrorCount: Integer;
     begin
         SourceDocumentHeader.Get(EDocument."Document Record ID");
-        EDocumentHelper.GetLines(EDocument, SourceDocumentLines);
-        MapEDocument(SourceDocumentHeader, SourceDocumentLines, EDocService, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempEDocMapping, false);
+        EDocumentProcessing.GetLines(EDocument, SourceDocumentLines);
+        MapEDocument(SourceDocumentHeader, SourceDocumentLines, EDocumentService, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempEDocMapping, false);
 
         ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
-        CreateEDocument(EDocService, EDocument, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempBlob);
+        CreateEDocument(EDocumentService, EDocument, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempBlob);
         Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-        if Success then begin
-            EDocLogEntryNo := EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Exported);
-            EDocumentLog.InsertMappingLog(EDocLogEntryNo, TempEDocMapping);
-        end else
-            EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Export Error");
+        if Success then
+            EDocServiceStatus := Enum::"E-Document Service Status"::Exported
+        else
+            EDocServiceStatus := Enum::"E-Document Service Status"::"Export Error";
+
+        EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocServiceStatus);
+        EDocumentLog.InsertMappingLog(EDocLog, TempEDocMapping);
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
     end;
 
-    procedure ExportEDocumentBatch(var EDocuments: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; var EDocumentsErrorCount: Dictionary of [Integer, Integer])
+    internal procedure ExportEDocumentBatch(var EDocuments: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; var EDocumentsErrorCount: Dictionary of [Integer, Integer])
     var
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
-        EDocumentLog: Codeunit "E-Document Log";
         SourceDocumentHeaderMapped, SourceDocumentLineMapped : RecordRef;
         SourceDocumentHeader, SourceDocumentLines : RecordRef;
         I: Integer;
@@ -110,18 +132,19 @@ codeunit 6102 "E-Doc. Export"
         repeat
             TempEDocMapping.DeleteAll();
             SourceDocumentHeader.Get(EDocuments."Document Record ID");
-            EDocumentHelper.GetLines(EDocuments, SourceDocumentLines);
+            EDocumentProcessing.GetLines(EDocuments, SourceDocumentLines);
             MapEDocument(SourceDocumentHeader, SourceDocumentLines, EDocService, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempEDocMapping, false);
             if TempEDocMapping.FindSet() then
                 repeat
                     TempEDocMappingLogs.InitFromMapping(TempEDocMapping);
-                    TempEDocMappingLogs."Entry No." := I;
+                    TempEDocMappingLogs."Entry No." := I; // We need to set key for temp record when inserting
                     TempEDocMappingLogs.Validate("E-Doc Entry No.", EDocuments."Entry No");
                     TempEDocMappingLogs.Insert();
                     I += 1;
                 until TempEDocMapping.Next() = 0;
             SourceDocumentLines.Close();
-            EDocumentLog.UpdateServiceStatus(EDocuments, EDocService, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.ModifyServiceStatus(EDocuments, EDocService, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocuments, Enum::"E-Document Service Status"::Created);
             EDocumentsErrorCount.Add(EDocuments."Entry No", EDocumentErrorHelper.ErrorMessageCount(EDocuments));
         until EDocuments.Next() = 0;
 
@@ -134,12 +157,12 @@ codeunit 6102 "E-Doc. Export"
         CreateEDocumentBatch(EDocService, EDocuments, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempBlob);
     end;
 
-    procedure Recreate(EDocument: Record "E-Document"; EDocService: Record "E-Document Service")
+    internal procedure Recreate(EDocument: Record "E-Document"; EDocService: Record "E-Document Service")
     begin
         ExportEDocument(EDocument, EDocService);
     end;
 
-    procedure MapEDocument(var EDocumentSource: RecordRef; var EDocumentSourceLine: RecordRef; EDocumentFormat: Record "E-Document Service"; var EDocumentSourceMapped: RecordRef; var EDocumentSourceLineMapped: RecordRef; var TempEDocMapping: Record "E-Doc. Mapping" temporary; ForImport: Boolean)
+    internal procedure MapEDocument(var EDocumentSource: RecordRef; var EDocumentSourceLine: RecordRef; EDocumentFormat: Record "E-Document Service"; var EDocumentSourceMapped: RecordRef; var EDocumentSourceLineMapped: RecordRef; var TempEDocMapping: Record "E-Doc. Mapping" temporary; ForImport: Boolean)
     var
         EDocMapping: Record "E-Doc. Mapping";
         EDocMappingNgt: Codeunit "E-Doc. Mapping";
@@ -171,9 +194,9 @@ codeunit 6102 "E-Doc. Export"
         RemainingAmount, InterestAmount, AdditionalFee, VATAmount : Decimal;
     begin
         EDocument.Init();
-        EDocument."Document Record ID" := SourceDocumentHeader.RecordId;
+        EDocument.Validate("Document Record ID", SourceDocumentHeader.RecordId);
         EDocument.Validate(Status, EDocument.Status::"In Progress");
-        DocumentSendingProfile.Get(EDocumentHelper.GetDocSendingProfileForDocRef(SourceDocumentHeader).Code);
+        DocumentSendingProfile.Get(EDocumentProcessing.GetDocSendingProfileForDocRef(SourceDocumentHeader).Code);
         EDocument."Document Sending Profile" := DocumentSendingProfile.Code;
         EDocument."Workflow Code" := DocumentSendingProfile."Electronic Service Flow";
         EDocument.Direction := EDocument.Direction::Outgoing;
@@ -297,21 +320,22 @@ codeunit 6102 "E-Doc. Export"
         EDocument.Insert();
     end;
 
-    local procedure CreateEDocument(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
+    local procedure CreateEDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     var
         EDocumentCreate: Codeunit "E-Document Create";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         // Commit before create document with error handling
         Commit();
-        EDocumentHelper.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBF', EDocTelemetryCreateScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        Clear(EDocumentCreate);
-        EDocumentCreate.SetSource(EDocService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
+        EDocumentCreate.SetSource(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         if not EDocumentCreate.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
+        // After interface call, reread the EDocument for the latest values.
+        EDocument.Get(EDocument."Entry No");
         Telemetry.LogMessage('0000LBG', EDocTelemetryCreateScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
@@ -323,7 +347,7 @@ codeunit 6102 "E-Doc. Export"
     begin
         // Commit before create document with error handling
         Commit();
-        EDocumentHelper.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBH', EDocTelemetryCreateBatchScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
         Clear(EDocumentCreate);
@@ -336,11 +360,116 @@ codeunit 6102 "E-Doc. Export"
             until EDocument.Next() = 0;
         end;
 
+        // Read E-Document from database as multiple docs could be modified inside EDocumentCreate;
+        EDocument.FindSet();
         Telemetry.LogMessage('0000LBI', EDocTelemetryCreateBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
+    local procedure IsDocumentTypeSupportedByService(EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; ForCheck: Boolean): Boolean
     var
-        EDocumentHelper: Codeunit "E-Document Processing";
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+        SalesHeader: Record "Sales Header";
+        ServiceHeader: Record "Service Header";
+        PurchHeader: Record "Purchase Header";
+        EDocSourceType: Enum "E-Document Type";
+        SalesDocumentType: Enum "Sales Document Type";
+        ServiceDocumentType: Enum "Service Document Type";
+        PurchDocumentType: Enum "Purchase Document Type";
+
+    begin
+        case SourceDocumentHeader.Number of
+            Database::"Sales Header":
+                begin
+                    SalesDocumentType := SourceDocumentHeader.Field(SalesHeader.FieldNo("Document Type")).Value;
+                    case SalesDocumentType of
+                        SalesHeader."Document Type"::Quote:
+                            EDocSourceType := EDocSourceType::"Sales Quote";
+                        SalesHeader."Document Type"::Order:
+                            if ForCheck then
+                                exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Sales Order") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Sales Invoice"))
+                            else
+                                EDocSourceType := EDocSourceType::"Sales Order";
+                        SalesHeader."Document Type"::"Return Order":
+                            if ForCheck then
+                                exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Sales Return Order") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Sales Credit Memo"))
+                            else
+                                EDocSourceType := EDocSourceType::"Sales Return Order";
+                        SalesHeader."Document Type"::Invoice:
+                            EDocSourceType := EDocSourceType::"Sales Invoice";
+                        SalesHeader."Document Type"::"Credit Memo":
+                            EDocSourceType := EDocSourceType::"Sales Credit Memo";
+                    end;
+                end;
+            Database::"Sales Invoice Header":
+                EDocSourceType := EDocSourceType::"Sales Invoice";
+            Database::"Sales Cr.Memo Header":
+                EDocSourceType := EDocSourceType::"Sales Credit Memo";
+            Database::"Service Header":
+                begin
+                    ServiceDocumentType := SourceDocumentHeader.Field(ServiceHeader.FieldNo("Document Type")).Value;
+                    case ServiceDocumentType of
+                        ServiceHeader."Document Type"::Order:
+                            if ForCheck then
+                                exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Service Order") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Service Invoice"))
+                            else
+                                EDocSourceType := EDocSourceType::"Service Order";
+                        ServiceHeader."Document Type"::Invoice:
+                            EDocSourceType := EDocSourceType::"Service Invoice";
+                        ServiceHeader."Document Type"::"Credit Memo":
+                            EDocSourceType := EDocSourceType::"Service Credit Memo";
+                    end;
+                end;
+            Database::"Service Invoice Header":
+                EDocSourceType := EDocSourceType::"Service Invoice";
+            Database::"Service Cr.Memo Header":
+                EDocSourceType := EDocSourceType::"Service Credit Memo";
+            Database::"Finance Charge Memo Header":
+                if ForCheck then
+                    exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Finance Charge Memo") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Issued Finance Charge Memo"))
+                else
+                    EDocSourceType := EDocSourceType::"Finance Charge Memo";
+            Database::"Issued Fin. Charge Memo Header":
+                EDocSourceType := EDocSourceType::"Issued Finance Charge Memo";
+            Database::"Reminder Header":
+                if ForCheck then
+                    exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::Reminder) or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Issued Reminder"))
+                else
+                    EDocSourceType := EDocSourceType::Reminder;
+            Database::"Issued Reminder Header":
+                EDocSourceType := EDocSourceType::"Issued Reminder";
+            Database::"Purchase Header":
+                begin
+                    PurchDocumentType := SourceDocumentHeader.Field(PurchHeader.FieldNo("Document Type")).Value;
+                    case PurchDocumentType of
+                        PurchHeader."Document Type"::Quote:
+                            EDocSourceType := EDocSourceType::"Purchase Quote";
+                        PurchHeader."Document Type"::Order:
+                            if ForCheck then
+                                exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Purchase Order") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Purchase Invoice"))
+                            else
+                                EDocSourceType := EDocSourceType::"Purchase Order";
+                        PurchHeader."Document Type"::"Return Order":
+                            if ForCheck then
+                                exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Purchase Return Order") or EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType::"Purchase Credit Memo"))
+                            else
+                                EDocSourceType := EDocSourceType::"Purchase Return Order";
+                        PurchHeader."Document Type"::Invoice:
+                            EDocSourceType := EDocSourceType::"Purchase Invoice";
+                        PurchHeader."Document Type"::"Credit Memo":
+                            EDocSourceType := EDocSourceType::"Purchase Credit Memo";
+                    end;
+                end;
+            Database::"Purch. Inv. Header":
+                EDocSourceType := EDocSourceType::"Purchase Invoice";
+            Database::"Purch. Cr. Memo Hdr.":
+                EDocSourceType := EDocSourceType::"Purchase Credit Memo";
+        end;
+
+        exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
+    end;
+
+    var
+        EDocumentProcessing: Codeunit "E-Document Processing";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         Telemetry: Codeunit Telemetry;
         EDocumentInterface: Interface "E-Document";

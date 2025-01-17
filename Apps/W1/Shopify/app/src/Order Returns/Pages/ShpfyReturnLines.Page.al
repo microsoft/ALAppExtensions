@@ -55,7 +55,7 @@ page 30149 "Shpfy Return Lines"
                 field(Weight; Rec.Weight)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'he weight value using the unit.';
+                    ToolTip = 'The weight value using the unit.';
                 }
                 field("Weight Unit"; Rec."Weight Unit")
                 {

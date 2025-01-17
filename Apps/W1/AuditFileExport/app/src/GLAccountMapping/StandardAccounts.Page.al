@@ -11,6 +11,7 @@ page 5263 "Standard Accounts"
     UsageCategory = Administration;
     SourceTable = "Standard Account";
     Caption = 'Standard Accounts';
+    DelayedInsert = true;
 
     layout
     {
@@ -18,6 +19,12 @@ page 5263 "Standard Accounts"
         {
             repeater(Groupings)
             {
+                field("Category No."; Rec."Category No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the category of standard general ledger accounts that is used for mapping.';
+                    Visible = false;
+                }
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = Basic, Suite;
@@ -27,12 +34,6 @@ page 5263 "Standard Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the description of the standard account that is used for mapping.';
-                }
-                field("Category No."; Rec."Category No.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the category of standard general ledger accounts that is used for mapping.';
-                    Visible = false;
                 }
             }
         }

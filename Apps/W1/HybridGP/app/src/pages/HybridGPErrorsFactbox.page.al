@@ -36,26 +36,6 @@ page 4031 "Hybrid GP Errors Factbox"
                         DataSyncStatus.RunModal();
                     end;
                 }
-
-#if not CLEAN23
-                field("Posting Errors"; Rec.PostingErrorCount)
-                {
-                    Caption = 'Posting Errors';
-                    ApplicationArea = Basic, Suite;
-                    Style = Unfavorable;
-                    StyleExpr = (Rec.PostingErrorCount > 0);
-                    ToolTip = 'Indicates the number of posting errors that occurred during the migration.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Removed functionality because of false positives and performance issues.';
-                    ObsoleteTag = '23.0';
-
-                    trigger OnDrillDown()
-                    begin
-                        Page.RunModal(Page::"Data Sync Status");
-                    end;
-                }
-#endif                
             }
         }
     }

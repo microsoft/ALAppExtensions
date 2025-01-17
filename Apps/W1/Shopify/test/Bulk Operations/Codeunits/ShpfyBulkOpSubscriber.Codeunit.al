@@ -9,14 +9,6 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
         BulkOperationRunning: Boolean;
         BulkUploadFail: Boolean;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Bulk Operation Mgt.", 'OnIsBulkOperationFeatureEnabled', '', true, false)]
-    local procedure OnGetAccessToken(var FeatureEnabled: Boolean)
-    begin
-        FeatureEnabled := true;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Bulk Operation Mgt.", 'OnInvalidUser', '', true, false)]
     local procedure OnInvalidUser(var IsHandled: Boolean)
     begin
@@ -75,11 +67,16 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        if BulkUploadFail then
-            Body := '{ "data": { "stagedUploadsCreate": { "userErrors": [], "stagedTargets": [ { "url": "", "resourceUrl": null, "parameters": [ { "name": "key", "value": "tmp/21759409/bulk/2d278b12-d153-4667-a05c-a5d8181623de/bulk_op_vars" }, { "name": "Content-Type", "value": "text/jsonl" }, { "name": "success_action_status", "value": "201" }, { "name": "acl", "value": "private" }, { "name": "policy", "value": "123456789" }, { "name": "x-goog-credential", "value": "merchant-assets@shopify-tiers.iam.gserviceaccount.com/20220830/auto/storage/goog4_request" }, { "name": "x-goog-algorithm", "value": "GOOG4-RSA-SHA256" }, { "name": "x-goog-date", "value": "20220830T025127Z" }, { "name": "x-goog-signature", "value": "123456789" } ] } ] } }, "extensions": { "cost": { "requestedQueryCost": 11, "actualQueryCost": 11 } } }'
-        else
-            Body := '{ "data": { "stagedUploadsCreate": { "userErrors": [], "stagedTargets": [ { "url": "' + UploadUrlLbl + '", "resourceUrl": null, "parameters": [ { "name": "key", "value": "tmp/21759409/bulk/2d278b12-d153-4667-a05c-a5d8181623de/bulk_op_vars" }, { "name": "Content-Type", "value": "text/jsonl" }, { "name": "success_action_status", "value": "201" }, { "name": "acl", "value": "private" }, { "name": "policy", "value": "123456789" }, { "name": "x-goog-credential", "value": "merchant-assets@shopify-tiers.iam.gserviceaccount.com/20220830/auto/storage/goog4_request" }, { "name": "x-goog-algorithm", "value": "GOOG4-RSA-SHA256" }, { "name": "x-goog-date", "value": "20220830T025127Z" }, { "name": "x-goog-signature", "value": "123456789" } ] } ] } }, "extensions": { "cost": { "requestedQueryCost": 11, "actualQueryCost": 11 } } }';
+        if BulkUploadFail then begin
+            NavApp.GetResource('Bulk Operations/StagedUploadFailedResult.txt', ResInStream, TextEncoding::UTF8);
+            ResInStream.ReadText(Body);
+        end else begin
+            NavApp.GetResource('Bulk Operations/StagedUploadResult.txt', ResInStream, TextEncoding::UTF8);
+            ResInStream.ReadText(Body);
+            Body := StrSubstNo(Body, UploadUrlLbl)
+        end;
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -88,9 +85,11 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "bulkOperationRunMutation": { "bulkOperation": { "id": "gid://shopify/BulkOperation/' + Format(BulkOperationId) + '", "url": null, "status": "CREATED" }, "userErrors": [] } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 10 } } }';
-        HttpResponseMessage.Content.WriteFrom(Body);
+        NavApp.GetResource('Bulk Operations/BulkMutationResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, Format(BulkOperationId)));
         exit(HttpResponseMessage);
     end;
 
@@ -98,9 +97,11 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "currentBulkOperation": { "id": "gid://shopify/BulkOperation/' + Format(BulkOperationId) + '", "status": "COMPLETED", "errorCode": null, "createdAt": "2021-01-28T19:10:59Z", "completedAt": "2021-01-28T19:11:09Z", "objectCount": "16", "fileSize": "0", "url": "", "partialDataUrl": null } }, "extensions": { "cost": { "requestedQueryCost": 1, "actualQueryCost": 1 } } }';
-        HttpResponseMessage.Content.WriteFrom(Body);
+        NavApp.GetResource('Bulk Operations/BulkOperationCompletedResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, Format(BulkOperationId)));
         exit(HttpResponseMessage);
     end;
 
@@ -108,9 +109,11 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResInStream: InStream;
     begin
-        Body := '{ "data": { "currentBulkOperation": { "id": "gid://shopify/BulkOperation/' + Format(BulkOperationId) + '", "status": "RUNNING", "errorCode": null, "createdAt": "2021-01-28T19:10:59Z", "completedAt": "2021-01-28T19:11:09Z", "objectCount": "16", "fileSize": "0", "url": "", "partialDataUrl": null } }, "extensions": { "cost": { "requestedQueryCost": 1, "actualQueryCost": 1 } } }';
-        HttpResponseMessage.Content.WriteFrom(Body);
+        NavApp.GetResource('Bulk Operations/BulkOperationRunningResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, Format(BulkOperationId)));
         exit(HttpResponseMessage);
     end;
 

@@ -8,11 +8,9 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata GPPOPTaxHist = RIMD,
                   tabledata GPSOPTrxHist = RIMD,
                   tabledata GPSOPProcessHoldWorkHist = RIMD,
-#if not CLEAN21
+#if not CLEAN26
 #pragma warning disable AL0432
-#endif
                   tabledata GPForecastTemp = RIMD,
-#if not CLEAN21
 #pragma warning restore AL0432
 #endif
                   tabledata GPIVTrxAmountsHist = RIMD,
@@ -73,6 +71,7 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP Bank MSTR" = RIMD,
                   tabledata "GP Checkbook MSTR" = RIMD,
                   tabledata "GP Checkbook Transactions" = RIMD,
+                  tabledata "GP CM20600" = RIMD,
                   tabledata "GP MC40200" = RIMD,
                   tabledata "GP SY06000" = RIMD,
                   tabledata "GP PM00100" = RIMD,
@@ -111,5 +110,11 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP PM00204" = RIMD,
                   tabledata "GP Upgrade Settings" = RIMD,
                   tabledata "GP Migration Error Overview" = RIMD,
-                  tabledata "GP Known Countries" = RIMD;
+                  tabledata "GP Known Countries" = RIMD,
+                  tabledata "GP PM10200" = RIMD,
+                  tabledata "GP PM30300" = RIMD,
+                  tabledata "GP RM20201" = RIMD,
+                  tabledata "GP RM30201" = RIMD,
+                  tabledata "GP Migration Warnings" = RIMD,
+                  tabledata "GP IV00104" = RIMD;
 }

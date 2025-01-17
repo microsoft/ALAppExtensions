@@ -5,7 +5,6 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.AuditFileExport;
-using Microsoft.Finance.VAT.Setup;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Security.Authentication;
@@ -129,11 +128,7 @@ page 10696 "Elec. VAT Submission Wizard"
 
                         trigger OnDrillDown()
                         begin
-#if CLEAN23
                             Page.Run(Page::"VAT Reporting Codes", TempMissingVATReportingCode);
-#else
-                            Page.Run(Page::"VAT Codes", TempMissingVATCode);
-#endif
                         end;
                     }
                     field(AddMissingCodesControl; AddCodesLbl)
@@ -145,11 +140,7 @@ page 10696 "Elec. VAT Submission Wizard"
 
                         trigger OnDrillDown()
                         begin
-#if CLEAN23
                             ElecVATDataMgt.AddVATReportingCodes(TempMissingVATReportingCode);
-#else
-                            ElecVATDataMgt.AddVATCodes(TempMissingVATCode);
-#endif
                             Message(MissingCodesAddedLbl);
                         end;
                     }
@@ -167,11 +158,7 @@ page 10696 "Elec. VAT Submission Wizard"
 
                         trigger OnDrillDown()
                         begin
-#if CLEAN23
                             Page.Run(Page::"VAT Reporting Codes");
-#else
-                            Page.Run(Page::"VAT Codes");
-#endif
                         end;
                     }
                     field(UpdateVATCodesControl; UpdateLbl)
@@ -185,11 +172,7 @@ page 10696 "Elec. VAT Submission Wizard"
                         var
                             ElecVATDataMgt: Codeunit "Elec. VAT Data Mgt.";
                         begin
-#if CLEAN23
                             ElecVATDataMgt.SetVATRatesForReportingOnVATReportingCodes();
-#else
-                            ElecVATDataMgt.SetVATRatesForReportingForVATCodes();
-#endif
                             SetVATCodesUpdatedText();
                         end;
                     }
@@ -315,11 +298,7 @@ page 10696 "Elec. VAT Submission Wizard"
 
     var
         ElecVATSetup: Record "Elec. VAT Setup";
-#if CLEAN23
         TempMissingVATReportingCode: Record "VAT Reporting Code" temporary;
-#else
-        TempMissingVATCode: Record "VAT Code" temporary;
-#endif
         OAuth20Setup: Record "OAuth 2.0 Setup";
         MediaRepositoryDone: Record "Media Repository";
         MediaRepositoryStandard: Record "Media Repository";
@@ -369,11 +348,7 @@ page 10696 "Elec. VAT Submission Wizard"
         ElecVATOAuthMgt.GetOAuthSetup(OAuth20Setup);
         UpdateAuthorizationStatus();
         ElecVATDataMgt.InsertMissingVATSpecificationsAndNotes();
-#if CLEAN23
         MissingVATCodesExist := ElecVATDataMgt.GetMissingVATReportingCodes(TempMissingVATReportingCode);
-#else
-        MissingVATCodesExist := ElecVATDataMgt.GetMissingVATCodes(TempMissingVATCode);
-#endif
         SetVATCodesUpdatedText();
         EnableControls();
     end;
@@ -539,7 +514,6 @@ page 10696 "Elec. VAT Submission Wizard"
         CurrPage.Update(false);
     end;
 
-#if CLEAN23
     local procedure SetVATCodesUpdatedText()
     var
         VATReportingCode: Record "VAT Reporting Code";
@@ -549,15 +523,4 @@ page 10696 "Elec. VAT Submission Wizard"
         VATReportingCode.SetRange("Report VAT Rate", true);
         VATCodesUpdatedText := StrSubstNo(PartInfoMsg, VATReportingCode.Count(), TotalCount);
     end;
-#else
-    local procedure SetVATCodesUpdatedText()
-    var
-        VATCode: Record "VAT Code";
-        TotalCount: Integer;
-    begin
-        TotalCount := VATCode.Count();
-        VATCode.SetRange("Report VAT Rate", true);
-        VATCodesUpdatedText := StrSubstNo(PartInfoMsg, VATCode.Count(), TotalCount);
-    end;
-#endif
 }

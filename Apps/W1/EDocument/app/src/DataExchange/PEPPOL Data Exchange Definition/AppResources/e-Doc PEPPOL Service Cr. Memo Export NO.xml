@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="EDOCPEPPOLSRVCRMEXP" Name="e-Doc PEPPOL - Service Credit Memo Export" Type="5" ExternalDataHandlingCodeunit="6155" FileType="0" ReadingWritingCodeunit="1283">
+    <DataExchLineDef LineType="1" Code="01-CRNOTE" Name="CreditNote" ColumnCount="0" Namespace="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2">
+      <DataExchColumnDef ColumnNo="1" Name="CreditNote" Show="false" DataType="0" Path="/CreditNote" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="CustomizationID" Show="false" DataType="0" Path="/CreditNote/cbc:CustomizationID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="ProfileID" Show="false" DataType="0" Path="/CreditNote/cbc:ProfileID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="ID" Show="false" DataType="0" Path="/CreditNote/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="IssueDate" Show="false" DataType="1" Path="/CreditNote/cbc:IssueDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="CreditNoteTypeCode" Show="false" DataType="0" Path="/CreditNote/cbc:CreditNoteTypeCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="Note" Show="false" DataType="0" Path="/CreditNote/cbc:Note" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="TaxPointDate" Show="false" DataType="0" Path="/CreditNote/cbc:TaxPointDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="DocumentCurrencyCode" Show="false" DataType="0" Path="/CreditNote/cbc:DocumentCurrencyCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="TaxCurrencyCode" Show="false" DataType="0" Path="/CreditNote/cbc:TaxCurrencyCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="AccountingCost" Show="false" DataType="0" Path="/CreditNote/cbc:AccountingCost" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="BuyerReference" Show="false" DataType="0" Path="/CreditNote/cbc:BuyerReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="2" UseDefaultValue="true" DefaultValue="urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0" />
+        <DataExchFieldMapping ColumnNo="3" UseDefaultValue="true" DefaultValue="urn:fdc:peppol.eu:2017:poacc:billing:01:1.0" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="99" />
+        <DataExchFieldMapping ColumnNo="7" UseDefaultValue="true" DefaultValue="381" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="32" Optional="true" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="11" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="02-INVPERIOD" Name="Invoice Period" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="InvoicePeriod" Show="false" DataType="0" Path="/cac:InvoicePeriod" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="StartDate" Show="false" DataType="1" Path="/cac:InvoicePeriod/cbc:StartDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="EndDate" Show="false" DataType="1" Path="/cac:InvoicePeriod/cbc:EndDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="2" UseDefaultValue="true" />
+        <DataExchFieldMapping ColumnNo="3" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="03-ORDREF" Name="Order Reference" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="OrderReference" Show="false" DataType="0" Path="/cac:OrderReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ID" Show="false" DataType="0" Path="/cac:OrderReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="2" FieldID="10606" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="04-BILLINGREF" Name="Billing Reference" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="BillingReference" Show="false" DataType="0" Path="/cac:BillingReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="InvoiceDocumentReference" Show="false" DataType="0" Path="/cac:BillingReference/cac:InvoiceDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="ID" Show="false" DataType="0" Path="/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="IssueDate" Show="false" DataType="1" Path="/cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="05-CONTDOCREF" Name="Contract Document Reference" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="ContractDocumentReference" Show="false" DataType="0" Path="/cac:ContractDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ID" Show="false" DataType="0" Path="/cac:ContractDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="2" FieldID="3" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="06-ADDDOCREF" Name="Additional Document Reference" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="AdditionalDocumentReference" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ID" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="DocumentType" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cbc:DocumentType" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="Attachment" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="EmbeddedDocumentBinaryObject" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="ExternalReference" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="URI" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:URI" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="MimeCode" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@mimeCode]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="Filename" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@filename]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="1173" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="07-ACCSUPPPARTY" Name="Accounting Supplier Party" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="AccountingSupplierParty" Show="false" DataType="0" Path="/cac:AccountingSupplierParty" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="Party" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="EndpointID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="PartyIdentification" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="ID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="PartyName" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="Name" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="PostalAddress" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="StreetName" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="AdditionalStreetName" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AdditionalStreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="CityName" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="14" Name="PostalZone" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="15" Name="CountrySubentity" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CountrySubentity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="16" Name="Country" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="17" Name="IdentificationCode" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="18" Name="PartyTaxScheme" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="19" Name="CompanyID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="20" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="21" Name="ExemptionReason" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="22" Name="TaxScheme" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="23" Name="ID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="24" Name="PartyLegalEntity" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="25" Name="RegistrationName" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="26" Name="CompanyID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="27" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="28" Name="Contact" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:Contact" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="29" Name="Name" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="30" Name="Telephone" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Telephone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="31" Name="Telefax" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Telefax" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="32" Name="ElectronicMail" Show="false" DataType="0" Path="/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ElectronicMail" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="79" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="9" FieldID="2" />
+        <DataExchFieldMapping ColumnNo="25" FieldID="2" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="08-ACCCUSTPARTY" Name="Accounting Customer Party" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="AccountingSupplierParty" Show="false" DataType="0" Path="/cac:AccountingCustomerParty" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="Party" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="EndpointID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="PartyIdentification" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="ID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="PartyName" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="Name" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="PostalAddress" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="StreetName" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="AdditionalStreetName" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AdditionalStreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="CityName" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CityName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="14" Name="PostalZone" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PostalZone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="15" Name="CountrySubentity" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CountrySubentity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="16" Name="Country" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="17" Name="IdentificationCode" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="18" Name="PartyTaxScheme" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="19" Name="CompanyID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="20" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="21" Name="ExemptionReason" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="22" Name="TaxScheme" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="23" Name="ID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="24" Name="PartyLegalEntity" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="25" Name="RegistrationName" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="26" Name="CompanyID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="27" Name="schemeID" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="28" Name="Contact" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:Contact" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="29" Name="Name" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="30" Name="Telephone" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Telephone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="31" Name="Telefax" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Telefax" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="32" Name="ElectronicMail" Show="false" DataType="0" Path="/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ElectronicMail" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="9" FieldID="5" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="8" Optional="true" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="9" />
+        <DataExchFieldMapping ColumnNo="14" FieldID="85" />
+        <DataExchFieldMapping ColumnNo="15" FieldID="86" Optional="true" />
+        <DataExchFieldMapping ColumnNo="17" FieldID="87" TransformationRule="LOOKUPISOCOUTRYCODE">
+          <TransformationRules>
+            <Code>LOOKUPISOCOUTRYCODE</Code>
+            <Description>Lookup ISO Country code</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>9</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>4</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="09-TAXREPRPARTY" Name="Tax Representative Party" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="TaxRepresentativeParty" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="PartyName" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="Name" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyName/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="PartyTaxScheme" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyTaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="CompanyID" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyTaxScheme/cbc:CompanyID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="schemeID" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyTaxScheme/cbc:CompanyID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="TaxScheme" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyTaxScheme/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="ID" Show="false" DataType="0" Path="/cac:TaxRepresentativeParty/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="10-DELIVERY" Name="Delivery" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="Delivery" Show="false" DataType="0" Path="/cac:Delivery" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ActualDeliveryDate" Show="false" DataType="0" Path="/cac:Delivery/cbc:ActualDeliveryDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="DeliveryLocation" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="ID" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="schemeID" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cbc:ID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="Address" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="StreetName" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:StreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="AdditionalStreetName" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AdditionalStreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="CityName" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="PostalZone" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="CountrySubentity" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="Country" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="IdentificationCode" Show="false" DataType="0" Path="/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="7" FieldID="15" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="16" Optional="true" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="17" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="91" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="92" Optional="true" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="93" TransformationRule="LOOKUPISOCOUTRYCODE">
+          <TransformationRules>
+            <Code>LOOKUPISOCOUTRYCODE</Code>
+            <Description>Lookup ISO Country code</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>9</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>4</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="11-PMTMEANS" Name="Payment Means" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="PaymentMeans" Show="false" DataType="0" Path="/cac:PaymentMeans" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="PaymentMeansCode" Show="false" DataType="0" Path="/cac:PaymentMeans/cbc:PaymentMeansCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="PaymentChannelCode" Show="false" DataType="0" Path="/cac:PaymentMeans/cbc:PaymentChannelCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="PaymentID" Show="false" DataType="0" Path="/cac:PaymentMeans/cbc:PaymentID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="CardAccount" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:CardAccount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="PrimaryAccountNumberID" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:CardAccount/cbc:PrimaryAccountNumberID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="NetworkID" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:CardAccount/cbc:NetworkID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="PayeeFinancialAccount" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:PayeeFinancialAccount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="ID" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="FinancialInstitutionBranch" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="ID" Show="false" DataType="0" Path="/cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="12-PMTTERMS" Name="Payment Terms" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="PaymentTerms" Show="false" DataType="0" Path="/cac:PaymentTerms" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="Note" Show="false" DataType="0" Path="/cac:PaymentTerms/cbc:Note" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="13-ALLCHARGE" Name="Allowance Charge" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="AllowanceCharge" Show="false" DataType="0" Path="/cac:AllowanceCharge" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ChargeIndicator" Show="false" DataType="0" Path="/cac:AllowanceCharge/cbc:ChargeIndicator" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="AllowanceChargeReasonCode" Show="false" DataType="0" Path="/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="AllowanceChargeReason" Show="false" DataType="0" Path="/cac:AllowanceCharge/cbc:AllowanceChargeReason" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="Amount" Show="false" DataType="0" Path="/cac:AllowanceCharge/cbc:Amount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="currencyID" Show="false" DataType="0" Path="/cac:AllowanceCharge/cbc:Amount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="TaxCategory" Show="false" DataType="0" Path="/cac:AllowanceCharge/cac:TaxCategory" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="ID" Show="false" DataType="0" Path="/cac:AllowanceCharge/cac:TaxCategory/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="Percent" Show="false" DataType="0" Path="/cac:AllowanceCharge/cac:TaxCategory/cbc:Percent" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="TaxScheme" Show="false" DataType="0" Path="/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="ID" Show="false" DataType="0" Path="/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="2000000026" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="14-TAXTOTAL" Name="Tax Total" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="TaxTotal" Show="false" DataType="0" Path="/cac:TaxTotal" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="TaxAmount" Show="false" DataType="0" Path="/cac:TaxTotal/cbc:TaxAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="currencyID" Show="false" DataType="0" Path="/cac:TaxTotal/cbc:TaxAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="16-TAXTOTALLCY" Name="Tax Total LCY" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="TaxTotal" Show="false" DataType="0" Path="/cac:TaxTotal" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="TaxAmount" Show="false" DataType="0" Path="/cac:TaxTotal/cbc:TaxAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="currencyID" Show="false" DataType="0" Path="/cac:TaxTotal/cbc:TaxAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="17-LEGALMONTOTAL" Name="Legal Monetary Total" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="LegalMonetaryTotal" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="LineExtensionAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:LineExtensionAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:LineExtensionAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="TaxExclusiveAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="TaxInclusiveAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="AllowanceTotalAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="ChargeTotalAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:ChargeTotalAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:ChargeTotalAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="PrepaidAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PrepaidAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PrepaidAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="14" Name="PayableRoundingAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PayableRoundingAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="15" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PayableRoundingAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="16" Name="PayableAmount" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PayableAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="17" Name="currencyID" Show="false" DataType="0" Path="/cac:LegalMonetaryTotal/cbc:PayableAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5994" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="18-CREDITNOTE-LINES" Name="Credit Note Line" ColumnCount="0" DataLineTag="/CreditNote" ParentCode="01-CRNOTE">
+      <DataExchColumnDef ColumnNo="1" Name="Line" Show="false" DataType="0" Path="/cac:CreditNoteLine" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="ID" Show="false" DataType="2" Path="/cac:CreditNoteLine/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="Note" Show="false" DataType="0" Path="/cac:CreditNoteLine/cbc:Note" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="InvoicedQuantity" Show="false" DataType="2" Path="/cac:CreditNoteLine/cbc:CreditedQuantity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="unitCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cbc:CreditedQuantity[@unitCode]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="LineExtensionAmount" Show="false" DataType="2" Description="Set to line amount" Path="/cac:CreditNoteLine/cbc:LineExtensionAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="currencyID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cbc:LineExtensionAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="AccountingCost" Show="false" DataType="0" Path="/cac:CreditNoteLine/cbc:AccountingCost" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="InvoicePeriod" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:InvoicePeriod" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="StartDate" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:InvoicePeriod/cbc:StartDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="EndDate" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:InvoicePeriod/cbc:EndDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="12" Name="OrderLineReference" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:OrderLineReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="13" Name="LineID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:OrderLineReference/cbc:LineID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="14" Name="BillingReference" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="15" Name="InvoiceDocumentReference" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:InvoiceDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="16" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="17" Name="CreditNoteDocumentReference" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:CreditNoteDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="18" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:CreditNoteDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="19" Name="BillingReferenceLine" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:BillingReferenceLine" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="20" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:BillingReference/cac:BillingReferenceLine/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="21" Name="Delivery" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="22" Name="ActualDeliveryDate" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cbc:ActualDeliveryDate" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="23" Name="DeliveryLocation" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="24" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="25" Name="schemeID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cbc:ID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="26" Name="Address" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="27" Name="StreetName" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:StreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="28" Name="AdditionalStreetName" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AdditionalStreetName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="29" Name="CityName" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="30" Name="PostalZone" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="31" Name="CountrySubentity" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="32" Name="Country" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="33" Name="IdentificationCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="34" Name="AllowanceCharge" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:AllowanceCharge" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="35" Name="ChargeIndicator" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:AllowanceCharge/cbc:ChargeIndicator" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="36" Name="AllowanceChargeReason" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:AllowanceCharge/cbc:AllowanceChargeReason" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="37" Name="Amount" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:AllowanceCharge/cbc:Amount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="38" Name="currencyID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:AllowanceCharge/cbc:Amount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="39" Name="Item" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="40" Name="Description" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cbc:Description" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="41" Name="Name" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="42" Name="SellersItemIdentification" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="43" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="44" Name="StandardItemIdentification" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="45" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="46" Name="schemeID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ID[@schemeID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="47" Name="OriginCountry" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:OriginCountry" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="48" Name="IdentificationCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:OriginCountry/cbc:IdentificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="49" Name="listID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:OriginCountry/cbc:IdentificationCode[@listID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="50" Name="CommodityClassification" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:CommodityClassification" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="51" Name="CommodityCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="52" Name="listID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode[@listID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="53" Name="ItemClassificationCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="54" Name="listID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode[@listID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="55" Name="ClassifiedTaxCategory" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="56" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="57" Name="Percent" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="58" Name="TaxScheme" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="59" Name="ID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="60" Name="AdditionalItemProperty" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:AdditionalItemProperty" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="61" Name="Name" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:AdditionalItemProperty/cbc:Name" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="62" Name="Value" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Item/cac:AdditionalItemProperty/cbc:Value" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="63" Name="Price" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="64" Name="PriceAmount" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cbc:PriceAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="65" Name="currencyID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cbc:PriceAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="66" Name="BaseQuantity" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cbc:BaseQuantity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="67" Name="unitCode" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cbc:BaseQuantity[@unitCode]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="68" Name="AllowanceCharge" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="69" Name="ChargeIndicator" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:ChargeIndicator" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="70" Name="Amount" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:Amount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="71" Name="currencyID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:Amount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="72" Name="BaseAmount" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:BaseAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="73" Name="currencyID" Show="false" DataType="0" Path="/cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:BaseAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="5995" Name="" MappingCodeunit="1269" PreMappingCodeunit="6159">
+        <DataExchFieldMapping ColumnNo="2" FieldID="4" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="5" Optional="true" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="15" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="5407" Optional="true" TransformationRule="LOOKUPUOMINTCODE">
+          <TransformationRules>
+            <Code>LOOKUPUOMINTCODE</Code>
+            <Description>Lookup UOM international code</Description>
+            <TransformationType>13</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>0</StartPosition>
+            <Length>0</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>204</TableID>
+            <SourceFieldID>1</SourceFieldID>
+            <TargetFieldID>3</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0.00</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="6" FieldID="103" Optional="true" />
+        <DataExchFieldMapping ColumnNo="40" FieldID="12" Optional="true" />
+        <DataExchFieldMapping ColumnNo="41" FieldID="11" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="15-TAXSUBTOTAL-LINES" Name="Tax Subtotal" ColumnCount="0" DataLineTag="//cac:TaxTotal" ParentCode="14-TAXTOTAL">
+      <DataExchColumnDef ColumnNo="1" Name="TaxSubtotal" Show="false" DataType="0" Path="/cac:TaxSubtotal" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="2" Name="TaxableAmount" Show="false" DataType="0" Path="/cac:TaxSubtotal/cbc:TaxableAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="currencyID" Show="false" DataType="0" Path="/cac:TaxSubtotal/cbc:TaxableAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="4" Name="TaxAmount" Show="false" DataType="0" Path="/cac:TaxSubtotal/cbc:TaxAmount" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="5" Name="currencyID" Show="false" DataType="0" Path="/cac:TaxSubtotal/cbc:TaxAmount[@currencyID]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="6" Name="TaxCategory" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="7" Name="ID" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="8" Name="Percent" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory/cbc:Percent" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="TaxExemptionReason" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReason" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="10" Name="TaxScheme" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="11" Name="ID" Show="false" DataType="0" Path="/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="2000000026" Name="" MappingCodeunit="1269">
+        <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

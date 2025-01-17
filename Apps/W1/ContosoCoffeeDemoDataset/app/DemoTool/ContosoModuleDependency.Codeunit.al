@@ -21,8 +21,8 @@ codeunit 5138 "Contoso Module Dependency"
         if IsCircularDependency(Name, DependsOn) then
             Error(CircularDependencyErr, Name, DependsOn);
 
-        DemoDataFeatureDependency.Validate(Name, Name);
-        DemoDataFeatureDependency.Validate(DependsOn, DependsOn);
+        DemoDataFeatureDependency.Name := Name;
+        DemoDataFeatureDependency.DependsOn := DependsOn;
         DemoDataFeatureDependency.Insert(true);
     end;
 
@@ -36,7 +36,7 @@ codeunit 5138 "Contoso Module Dependency"
             repeat
                 if DemoDataFeatureDependency.DependsOn = Name then
                     exit(true);
-                IsCircularDependency(Name, DemoDataFeatureDependency.DependsOn);
+                exit(IsCircularDependency(Name, DemoDataFeatureDependency.DependsOn));
 
             until DemoDataFeatureDependency.Next() = 0;
         exit(false);

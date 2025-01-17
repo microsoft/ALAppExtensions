@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL InventoryEntries (ID 30133) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL InventoryEntries (ID 30133) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30133 "Shpfy GQL InventoryEntries" implements "Shpfy IGraphQL"
 {
@@ -13,7 +13,7 @@ codeunit 30133 "Shpfy GQL InventoryEntries" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{location(id:\"gid://shopify/Location/{{LocationId}}\"){inventoryLevels(first:100){pageInfo{hasNextPage} edges{cursor node{id available item{id variant{id product{id}}}}}}}}"}');
+        exit('{"query":"{location(id:\"gid://shopify/Location/{{LocationId}}\"){inventoryLevels(first:100){pageInfo{hasNextPage} edges{cursor node{id quantities(names: \"available\") {quantity} item{id variant{id product{id}}}}}}}}"}');
     end;
 
     /// <summary>

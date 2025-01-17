@@ -1,0 +1,97 @@
+[
+    {
+        "codeunitId": 139784,
+        "CodeunitName": "Document Lookup Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139783,
+        "CodeunitName": "Document Lookup Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139782,
+        "CodeunitName": "Magic Function Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139781,
+        "CodeunitName": "SLS Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139780,
+        "CodeunitName": "Search Item Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139785,
+        "CodeunitName": "SLS Test Utility",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139786,
+        "CodeunitName": "Item Search In Doc Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139787,
+        "CodeunitName": "Item Srch. In Doc. Lookup Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149820,
+        "CodeunitName": "Extract Info. from csv Prompt",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149821,
+        "CodeunitName": "Magic Function Attmt. Prompt",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149822,
+        "CodeunitName": "Load Mappings from csv",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149824,
+        "CodeunitName": "Red Teaming Tests",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149825,
+        "CodeunitName": "RedT XPIA Tests",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149826,
+        "CodeunitName": "Extract Info. Accuracy",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139782,
+        "CodeunitName": "Item Entity Search",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149823,
+        "CodeunitName": "Load Suggestions from csv",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149828,
+        "CodeunitName": "Search Items With Filters Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139788,
+        "CodeunitName": "Save File Mapping Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139789,
+        "CodeunitName": "Attachment Data Size Test",
+        "Method": "*"
+    }
+]

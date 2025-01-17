@@ -31,13 +31,6 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
         AddElectronicTaxCode(TempNameValueBuffer, '3C', 'InstallationDistanceSalesWithinTheEC');
     end;
 
-#if not CLEAN21
-    [Obsolete('SmallEntrepreneurProvisionReduction tag must not be used since 2022.', '21.0')]
-    procedure AddSmallEntrepreneurProvisionReduction(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
-    begin
-        AddElectronicTaxCode(TempNameValueBuffer, '5D', 'SmallEntrepreneurProvisionReduction');
-    end;
-#endif
     procedure AddSuppliesServicesNotTaxed(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
     begin
         AddElectronicTaxCode(TempNameValueBuffer, '1E', 'SuppliesServicesNotTaxed');
@@ -85,7 +78,7 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
 
     procedure AddTurnoverSuppliesServicesByWhichVATTaxationIsTransferred(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
     begin
-        AddElectronicTaxCode(TempNameValueBuffer, '4A-1', 'TurnoverSuppliesServicesByWhichVATTaxationIsTransferred');
+        AddElectronicTaxCode(TempNameValueBuffer, '2A-1', 'TurnoverSuppliesServicesByWhichVATTaxationIsTransferred');
     end;
 
     procedure AddValueAddedTaxOnInput(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)

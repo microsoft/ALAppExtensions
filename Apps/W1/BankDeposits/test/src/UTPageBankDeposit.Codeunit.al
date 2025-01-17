@@ -663,11 +663,11 @@ codeunit 139768 "UT Page Bank Deposit"
         Page.Run(Page::"Bank Deposit", BankDepositHeader);
         BankDeposit.Subform."Account Type".SetValue(GenJnlLine."Account Type"::Vendor.AsInteger());
         BankDeposit.Subform."Account No.".SetValue(LibraryPurchase.CreateVendorNo());
-        BankDeposit.Subform."Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
+        BankDeposit.Subform."External Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
         BankDeposit.Subform."Credit Amount".SetValue(BankDepositHeader."Total Deposit Amount");
 
         // [GIVEN] Get the created General Jnl Line.
-        GenJnlLine.SetFilter("External Document No.", BankDepositHeader."No.");
+        GenJnlLine.SetFilter("Document No.", BankDepositHeader."No.");
         GenJnlLine.FindFirst();
         SourceCodeSetup.Get();
 
@@ -709,6 +709,59 @@ codeunit 139768 "UT Page Bank Deposit"
 
         // [VERIFY] Verify the Document No. have same value as last line.
         BankDeposit.Subform."Document No.".AssertEquals(DocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('BankDepositHandler,GenJournalBatchHandler')]
+    procedure VerifyEditJournalOpenBAnkDepositCardPage()
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        BAnkDepositHeader: Record "Bank Deposit Header";
+        GenJournalTemplatePage: TestPage "General Journal Templates";
+        GenJournalBatchPage: TestPage "General Journal Batches";
+    begin
+        // [SCENARIO 472257] "The table IDs do not match." error message appears on using Edit Journal from the General Journal 
+        // Batches page for Bank Deposits
+        Initialize();
+
+        // [GIVEN] Create General Journal Template and update Type as "Bank Deposits"
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::"Bank Deposits");
+        GenJournalTemplate.Modify();
+
+        // [GIVEN] Create General Journal Batch
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+
+        // [WHEN] Open General Journal Template page and got Batches and click on "Edit Journal"
+        GenJournalBatchPage.Trap();
+        GenJournalTemplatePage.OpenEdit();
+        GenJournalTemplatePage.GoToRecord(GenJournalTemplate);
+        GenJournalTemplatePage.Batches.Invoke();
+        GenJournalBatchPage.EditJournal.Invoke();
+
+        // [THEN] Close the General Journal Batch Page
+        GenJournalBatchPage.Close();
+
+        // [VERIFY] Find the first record of Bank Deposit and verify Journal Template Name
+        BankDepositHeader.FindFirst();
+        Assert.AreEqual(GenJournalTemplate.Name, BAnkDepositHeader."Journal Template Name", '');
+    end;
+
+    [Test]
+    procedure DefaultValueOfDocumentNoForDepositLineIsTheBankDepositNo()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        BankDeposit: TestPage "Bank Deposit";
+    begin
+        // [SCENARIO 537832] Bank Deposit default values for lines should be the bank deposit number for the "Document No." and blank for the "External Document No."
+        // [GIVEN] A Bank Deposit Header without lines
+        CreateBankDepositHeader(BankDepositHeader, '');
+        // [WHEN] Opening the Bank Deposit page
+        OpenDepositPage(BankDeposit, BankDepositHeader);
+        // [THEN] The default values for the lines are as expected.
+        Assert.AreEqual(BankDepositHeader."No.", BankDeposit.Subform."Document No.".Value(), 'The default value of Document No. for the Deposit Line should be the Bank Deposit No.');
+        Assert.AreEqual('', BankDeposit.Subform."External Document No.".Value(), 'The default value of External Document No. for the Deposit Line should be empty.');
     end;
 
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
@@ -1097,6 +1150,20 @@ codeunit 139768 "UT Page Bank Deposit"
     procedure ConfirmHandlerTRUE(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure BankDepositHandler(var BankDeposit: TestPage "Bank Deposit")
+    begin
+        BankDeposit.Close();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure GenJournalBatchHandler(var GenJournalBatchPage: TestPage "General Journal Batches")
+    begin
+        // Handle the page which is already Open.
     end;
 
     [IntegrationEvent(false, false)]

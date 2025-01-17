@@ -24,9 +24,6 @@ codeunit 11295 "Install SE Core"
     trigger OnInstallAppPerCompany()
     begin
         SetDefaultReportLayouts();
-#if not CLEAN23
-        UpgradeCompanyInformationTable();
-#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
@@ -34,20 +31,6 @@ codeunit 11295 "Install SE Core"
     begin
         SetDefaultReportLayouts();
     end;
-
-#if not CLEAN23
-    local procedure UpgradeCompanyInformationTable()
-    var
-        CompanyInformation: Record "Company Information";
-    begin
-        if not CompanyInformation.Get() then
-            exit;
-
-        CompanyInformation."Plus Giro Number" := CompanyInformation."Plus Giro No.";
-        CompanyInformation."Registered Office Info" := CompanyInformation."Registered Office";
-        CompanyInformation.Modify();
-    end;
-#endif
 
     internal procedure SetDefaultReportLayouts()
     var

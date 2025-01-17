@@ -18,7 +18,6 @@ codeunit 139521 "VAT Group Representative Logic"
         ControlShouldNotBeVisibleTxt: Label 'Control should not be visible';
         VATGroupSettlementQst: Label 'Do you want to post the VAT settlement for the group members';
         VATGroupSettlementErr: Label 'Could not post the VAT group settlement because the following error occurred. %1', Comment = '%1 is the error itself';
-        GenJournalTemplateDoesNotExistErr: Label 'No. Series must have a value in Gen. Journal Template: Name=%1. It cannot be zero or empty.', Comment = '%1 - gen. journal template name';
         NoDueBoxNoErr: Label 'The VAT Due Box No. is missing in VAT Report Setup.';
         NoVATSettlementAccountErr: Label 'The VAT Settlement Account is missing in VAT Report Setup.';
         NoGroupSettlementAccountErr: Label 'The Group Settlement Account is missing in VAT Report Setup.';
@@ -346,8 +345,7 @@ codeunit 139521 "VAT Group Representative Logic"
         Commit();
 
         asserterror VATReport."Post VAT Group Settlement".Invoke();
-        Assert.ExpectedError(
-            StrSubstNo(VATGroupSettlementErr, StrSubstNo(GenJournalTemplateDoesNotExistErr, GenJournalTemplate.Name)));
+        Assert.ExpectedTestFieldError(GenJournalTemplate.FieldCaption("No. Series"), '');
 
         for i := 1 to 5 do
             Assert.ExpectedMessage(VATGroupSettlementQst, LibraryVariableStorage.DequeueText());
@@ -629,15 +627,15 @@ codeunit 139521 "VAT Group Representative Logic"
     local procedure CreateGenJournalTemplateWithNoSeries(var TemplateName: Code[10]; var NextDocumentNo: Code[20]; SkipNextNoSeriesDocNo: Boolean)
     var
         GenJournalTemplate: Record "Gen. Journal Template";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
         GenJournalTemplate."No. Series" := LibraryERM.CreateNoSeriesCode('vat');
         GenJournalTemplate.Modify();
         TemplateName := GenJournalTemplate.Name;
         if SkipNextNoSeriesDocNo then
-            NoSeriesManagement.GetNextNo(GenJournalTemplate."No. Series", WorkDate(), true);
-        NextDocumentNo := NoSeriesManagement.GetNextNo(GenJournalTemplate."No. Series", WorkDate(), false);
+            NoSeries.GetNextNo(GenJournalTemplate."No. Series");
+        NextDocumentNo := NoSeries.PeekNextNo(GenJournalTemplate."No. Series");
     end;
 
     local procedure CreateGLAccountNo(Category: Enum "G/L Account Category"): Code[20]

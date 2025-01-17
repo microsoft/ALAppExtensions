@@ -14,17 +14,13 @@ codeunit 4018 "GP Customer Migrator"
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
+        MigrationLogAreaTxt: Label 'Customer', Locked = true;
+        PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
 
-#if not CLEAN22
 #pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
-    procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     internal procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPCustomer: Record "GP Customer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -37,17 +33,10 @@ codeunit 4018 "GP Customer Migrator"
         MigrateCustomerAddresses(GPCustomer);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
-    procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     internal procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PostingGroupNo: Code[20];
@@ -58,6 +47,9 @@ codeunit 4018 "GP Customer Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
 
         Sender.CreatePostingSetupIfNeeded(
             CopyStr(PostingGroupCodeTxt, 1, 5),
@@ -70,16 +62,8 @@ codeunit 4018 "GP Customer Migrator"
         Sender.ModifyCustomer(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
-    procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
     internal procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
@@ -93,6 +77,9 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
 
         if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
@@ -280,7 +267,10 @@ codeunit 4018 "GP Customer Migrator"
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
-        HelperFunctions: Codeunit "Helper Functions";
+        GPRM00101: Record "GP RM00101";
+        GPSY01200: Record "GP SY01200";
+        Customer: Record Customer;
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
@@ -318,14 +308,19 @@ codeunit 4018 "GP Customer Migrator"
             CopyStr(MigrationGPCustomer.CITY, 1, 30));
 
         CustomerDataMigrationFacade.SetContact(CopyStr(MigrationGPCustomer.CNTCPRSN, 1, 50));
-        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
-        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
-        CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
-        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
-        CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
+        SetPhoneAndFaxNumberIfValid(MigrationGPCustomer, CustomerDataMigrationFacade);
+
+        if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
+            CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+            CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+        end;
+
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
+
+        GPRM00101.SetLoadFields(ADRSCODE);
+        if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
+            if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
+                CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
 
         if MigrationGPCustomer.STMTCYCL = true then
             CustomerDataMigrationFacade.SetPrintStatement(true);
@@ -364,6 +359,29 @@ codeunit 4018 "GP Customer Migrator"
         CustomerDataMigrationFacade.ModifyCustomer(true);
     end;
 
+    local procedure SetPhoneAndFaxNumberIfValid(var MigrationGPCustomer: Record "GP Customer"; var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    var
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        HelperFunctions: Codeunit "Helper Functions";
+        WarningContext: Text[50];
+    begin
+        WarningContext := CopyStr(MigrationGPCustomer.CUSTNMBR.Trim(), 1, MaxStrLen(GPMigrationWarnings.Context));
+        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
+        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
+
+        if MigrationGPCustomer.PHONE1 <> '' then
+            if not HelperFunctions.ContainsAlphaChars(MigrationGPCustomer.PHONE1) then
+                CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.PHONE1));
+
+        if MigrationGPCustomer.FAX <> '' then
+            if not HelperFunctions.ContainsAlphaChars(MigrationGPCustomer.FAX) then
+                CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.FAX));
+    end;
+
     local procedure MigrateCustomerAddresses(MigrationGPCustomer: Record "GP Customer")
     var
         GPCustomerAddress: Record "GP Customer Address";
@@ -374,28 +392,6 @@ codeunit 4018 "GP Customer Migrator"
                 GPCustomerAddress.MoveStagingData();
             until GPCustomerAddress.Next() = 0;
     end;
-
-#if not CLEAN22
-    [Obsolete('Method is not supported, it was using files', '22.0')]
-    procedure GetAll()
-#if not CLEAN21
-    var
-        MigrationGPCustomer: Record "GP Customer";
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
-    begin
-#pragma warning disable AL0432        
-        HelperFunctions.GetEntities('Customer', JArray);
-        MigrationGPCustomer.DeleteAll();
-        GetCustomersFromJson(JArray);
-        GetTransactions();
-#pragma warning restore AL0432               
-    end;
-#else
-    begin
-    end;
-#endif
-#endif
 
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
@@ -469,27 +465,6 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldValue(RecordVariant, MigrationGPCustomer.FieldNo(UPSZONE), JToken.AsObject(), 'UPSZONE');
         HelperFunctions.UpdateFieldValue(RecordVariant, MigrationGPCustomer.FieldNo(TAXEXMT1), JToken.AsObject(), 'TAXEXMT1');
     end;
-
-#if not CLEAN22
-    [Obsolete('Method is not supported, it was using files', '22.0')]
-    local procedure GetTransactions()
-#if not CLEAN21    
-    var
-        MigrationGPCustTrans: Record "GP Customer Transactions";
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
-#endif
-    begin
-#if not CLEAN21
-        MigrationGPCustTrans.DeleteAll();
-        GlobalDocumentNo := 'C00000';
-#pragma warning disable AL0432
-        if (HelperFunctions.GetEntities('RMTrx', JArray)) then
-            GetRMTrxFromJson(JArray);
-#pragma warning restore AL0432            
-#endif
-    end;
-#endif
 
     local procedure GetRMTrxFromJson(JArray: JsonArray);
     var
@@ -570,11 +545,4 @@ codeunit 4018 "GP Customer Migrator"
         if ReceivablesAccountNo = '' then
             ReceivablesAccountNo := DefaultReceivablesAccountNo;
     end;
-
-#if not CLEAN23
-    [Obsolete('Updated to use the OnMigrateCustomerPostingGroups event subscriber.', '23.0')]
-    procedure MigrateCustomerClasses()
-    begin
-    end;
-#endif
 }

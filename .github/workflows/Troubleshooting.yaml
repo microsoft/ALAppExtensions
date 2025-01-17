@@ -1,0 +1,37 @@
+name: 'Troubleshooting'
+
+on:
+  workflow_dispatch:
+    inputs:
+      displayNameOfSecrets:
+        description: Display the name (not the value) of secrets available to the repository
+        type: boolean
+        default: false
+
+permissions:
+  actions: read
+  contents: read
+
+defaults:
+  run:
+    shell: powershell
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  Troubleshooting:
+    runs-on: [ windows-latest ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          lfs: true
+
+      - name: Troubleshooting
+        uses: microsoft/AL-Go-Actions/Troubleshooting@v6.2
+        with:
+          shell: powershell
+          gitHubSecrets: ${{ toJson(secrets) }}
+          displayNameOfSecrets: ${{ github.event.inputs.displayNameOfSecrets }}

@@ -11,7 +11,7 @@ enum 30135 "Shpfy Stock Calculation" implements "Shpfy Stock Calculation", "Shpf
                             "Shpfy IStock Available" = "Shpfy Can Not Have Stock";
     value(0; Disabled)
     {
-        Caption = 'Disabled';
+        Caption = 'Off';
         Implementation = "Shpfy Stock Calculation" = "Shpfy Disabled Value",
                          "Shpfy IStock Available" = "Shpfy Can Not Have Stock";
     }
@@ -20,6 +20,12 @@ enum 30135 "Shpfy Stock Calculation" implements "Shpfy Stock Calculation", "Shpf
     {
         Caption = 'Projected Available Balance at Today';
         Implementation = "Shpfy Stock Calculation" = "Shpfy Balance Today",
+                         "Shpfy IStock Available" = "Shpfy Can Have Stock";
+    }
+    value(2; "Non-reserved Inventory")
+    {
+        Caption = 'Free Inventory (not reserved)';
+        Implementation = "Shpfy Stock Calculation" = "Shpfy Free Inventory",
                          "Shpfy IStock Available" = "Shpfy Can Have Stock";
     }
 }

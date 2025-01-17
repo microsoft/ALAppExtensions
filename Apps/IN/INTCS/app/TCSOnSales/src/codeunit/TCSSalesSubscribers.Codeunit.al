@@ -11,6 +11,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Location;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.PostingHandler;
 using Microsoft.Sales.Posting;
 using Microsoft.Utilities;
 
@@ -53,34 +54,6 @@ codeunit 18838 "TCS Sales Subscribers"
         else
             SalesHeader."Assessee Code" := '';
     end;
-
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure PostCustEntry(
-        var GenJnlLine: Record "Gen. Journal Line";
-        var SalesHeader: Record "Sales Header";
-        var TotalSalesLine: Record "Sales Line";
-        var TotalSalesLineLCY: Record "Sales Line")
-    var
-        SalesLine: Record "Sales Line";
-        CompanyInformation: Record "Company Information";
-        Location: Record Location;
-    begin
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        if SalesLine.FindFirst() then
-            GenJnlLine."TCS Nature of Collection" := SalesLine."TCS Nature of Collection";
-
-        if GenJnlLine."Location Code" <> '' then begin
-            Location.Get(GenJnlLine."Location Code");
-            if Location."T.C.A.N. No." <> '' then
-                GenJnlLine."T.C.A.N. No." := Location."T.C.A.N. No."
-        end else begin
-            CompanyInformation.Get();
-            GenJnlLine."T.C.A.N. No." := CompanyInformation."T.C.A.N. No.";
-        end;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(
@@ -139,6 +112,30 @@ codeunit 18838 "TCS Sales Subscribers"
     begin
         if not RecalculateLines then
             CalculateTax.CallTaxEngineOnSalesLine(ToSalesLine, ToSalesLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Get Shipment", 'OnAfterInsertLine', '', false, false)]
+    local procedure CallTaxEngineOnAfterInsertLine(var SalesLine: Record "Sales Line")
+    var
+        CalculateTax: Codeunit "Calculate Tax";
+    begin
+        if SalesLine."TCS Nature of Collection" <> '' then
+            CalculateTax.CallTaxEngineOnSalesLine(SalesLine, SalesLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Posting Buffer Mgmt.", 'OnBeforeInitTempGroupTaxPostingBuffer2', '', false, false)]
+    local procedure OnBeforeInitTempGroupTaxPostingBuffer2(var TempGroupTaxPostingBuffer2: Record "Transaction Posting Buffer" temporary; var TempGroupTaxPostingBuffer: Record "Transaction Posting Buffer" temporary; TaxID: Guid; var IsHandled: Boolean)
+    begin
+        TempGroupTaxPostingBuffer.Reset();
+        TempGroupTaxPostingBuffer.SetRange("Tax Id", TaxID);
+        TempGroupTaxPostingBuffer.SetRange("Tax Type", 'TCS');
+        TempGroupTaxPostingBuffer.SetRange("Skip Posting", false);
+        TempGroupTaxPostingBuffer.SetFilter("Account No.", '<>%1', '');
+        if not TempGroupTaxPostingBuffer.IsEmpty() then begin
+            TempGroupTaxPostingBuffer.SetFilter("Account No.", '%1', '');
+            if TempGroupTaxPostingBuffer.FindFirst() then
+                TempGroupTaxPostingBuffer.Delete();
+        end;
     end;
 
     var

@@ -6,7 +6,6 @@ codeunit 2632 "Stat. Acc. Allocation Account"
 {
     trigger OnRun()
     begin
-
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Alloc. Account Distribution", 'OnLookupBreakdownAccountNumber', '', false, false)]

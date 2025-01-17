@@ -6,7 +6,6 @@ using Microsoft.Finance.Dimension;
 using System.Globalization;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Bank.Ledger;
 using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 
@@ -177,30 +176,6 @@ table 1691 "Posted Bank Deposit Header"
         UnableToFindGLRegisterErr: Label 'Cannot find a G/L Register for the selected posted bank deposit.';
         UnableToFindGLRegisterTelemetryErr: Label 'Cannot find a G/L Register for the selected posted bank deposit %1.', Locked = true;
 
-#if not CLEAN21
-    [Obsolete('Finding related entries is done through the `Navigate` page.', '21.0')]
-    internal procedure FindEntries()
-    var
-        TempBankAccountLedgerEntry: Record "Bank Account Ledger Entry" temporary;
-        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
-        PostedBankDepositLine: Record "Posted Bank Deposit Line";
-    begin
-        PostedBankDepositLine.SetRange("Bank Deposit No.", "No.");
-        if not PostedBankDepositLine.FindSet() then
-            exit;
-
-        repeat
-            if BankAccountLedgerEntry.Get(PostedBankDepositLine."Bank Account Ledger Entry No.") then
-                if not TempBankAccountLedgerEntry.Get(BankAccountLedgerEntry."Entry No.") then begin
-                    TempBankAccountLedgerEntry.TransferFields(BankAccountLedgerEntry);
-                    TempBankAccountLedgerEntry.Insert()
-                end;
-        until PostedBankDepositLine.Next() = 0;
-
-        Page.Run(Page::"Bank Account Ledger Entries", TempBankAccountLedgerEntry);
-    end;
-#endif
-
     // no commits during the method execution. if one line fails to reverse, reversal of lines before it must not be committed
     [CommitBehavior(CommitBehavior::Ignore)]
     internal procedure ReverseTransactions(): Boolean
@@ -244,6 +219,18 @@ table 1691 "Posted Bank Deposit Header"
     internal procedure ShowDocDim()
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", TableCaption() + ' ' + "No.");
+    end;
+
+    internal procedure IsReversed(): Boolean
+    var
+        GLRegister: Record "G/L Register";
+        GLRegNo: Integer;
+    begin
+        if not Rec.FindGLRegisterNo(GLRegNo) then
+            exit(false);
+
+        GLRegister.Get(GLRegNo);
+        exit(GLRegister.Reversed);
     end;
 
     [IntegrationEvent(false, false)]

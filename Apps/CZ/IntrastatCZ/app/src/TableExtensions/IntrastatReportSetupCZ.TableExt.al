@@ -52,6 +52,11 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
             Caption = 'Intrastat Rounding Type';
             DataClassification = CustomerContent;
         }
+        field(31315; "Def. Phys. Trans. - Returns CZ"; Boolean)
+        {
+            Caption = 'Default Phys. Trans. - Returns';
+            DataClassification = CustomerContent;
+        }
     }
 
     var
@@ -68,5 +73,22 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
             "Intrastat Rounding Type CZ"::Down:
                 exit('<');
         end;
+    end;
+
+    procedure GetDefaultPhysicalTransferCZ(): Boolean
+    begin
+        if not Get() then
+            exit(false);
+        exit("Def. Phys. Trans. - Returns CZ");
+    end;
+
+    procedure GetDefaultTransactionTypeCZ(IsPhysicalTransfer: Boolean; IsCreditDocType: Boolean): Code[10]
+    begin
+        Get();
+        if (IsCreditDocType and IsPhysicalTransfer) or
+           (not IsCreditDocType and not IsPhysicalTransfer)
+        then
+            exit("Default Trans. - Return");
+        exit("Default Trans. - Purchase");
     end;
 }

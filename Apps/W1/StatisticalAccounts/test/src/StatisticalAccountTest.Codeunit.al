@@ -10,6 +10,8 @@ codeunit 139683 "Statistical Account Test"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
+        LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
         Initialized: Boolean;
         EMPLOYEESLbl: Label 'EMPLOYEES';
         OFFICESPACELbl: Label 'OFFICESPACE';
@@ -397,6 +399,210 @@ codeunit 139683 "Statistical Account Test"
             StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
     end;
 
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure VerifyShortcutDimensionsInTheStatisticalAccountsJournal()
+    var
+        DimensionValue: array[8] of Record "Dimension Value";
+        StatisticalAccount: Record "Statistical Account";
+    begin
+        // [SCENARIO 484054] Verify that the Shortcut Dimensions in the Statistical Accounts Journal.
+        Initialize();
+
+        // [GIVEN] Setup Demo Data.
+        CreateDemoData();
+
+        // [GIVEN] Update ShortCut Dimension.
+        UpdateShortcutDimensionSetup(DimensionValue);
+
+        // [GIVEN] Create a Statistical Account.
+        CreateStatisticalAccount(StatisticalAccount);
+
+        // [GIVEN] Create a Statistical Account Journal Lines.
+        CreateStatisticalAccountsJournal(DimensionValue, StatisticalAccount, LibraryRandom.RandInt(10));
+
+        // [VERIFY] Verify that the Shortcut Dimensions in the Statistical Accounts Journal.
+        VerifyShortcutDimensionsInStatisticalAccountsJournal(DimensionValue, StatisticalAccount);
+    end;
+
+    [Test]
+    procedure VerifyShortcutDimensionClearWhenNewLineSetupOnStatisticalAccountJournal()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        DimensionValue: Record "Dimension Value";
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        // [SCENARIO 487974] Issues with manually entering the lines on the Statistical Account Journal with Dimensions as well as copying & pasting into the journal.
+        Initialize();
+
+        // [GIVEN] - Create Statistical Account with Dimension
+        CreateStatisticalAccountWithDimensions(StatisticalAccount);
+
+        // [GIVEN] Create new Shortcut Dimensiona and update ShortCut Dimension.
+        LibraryDimension.CreateDimWithDimValue(DimensionValue);
+        LibraryERM.SetShortcutDimensionCode(3, DimensionValue."Dimension Code");
+
+        // [THEN] Create Statistical Account Journal Lines on Page, set defaults and Shortcut Dimension 3
+        StatisticalAccountsJournal.OpenEdit();
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal.Amount.SetValue(LibraryRandom.RandInt(20));
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue.Code);
+
+        // [WHEN] Move to Next Line
+        StatisticalAccountsJournal.Next();
+
+        // [VERIFY] Verify: Moving to next line the shortcut dimension 3 should blank
+        StatisticalAccountsJournal.ShortcutDimCode3.AssertEquals('');
+        StatisticalAccountsJournal.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('StatAccJnlBatcheModalPageHandler')]
+    procedure SwitchBatchNameOnStatAccJnl()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatAccJnlBatch: array[2] of Record "Statistical Acc. Journal Batch";
+        StatAccJnlLine: Record "Statistical Acc. Journal Line";
+        StatAccJnlPage: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        // [SCENARIO 544841] Switching the batch name on the Statistical Account Journal works correctly
+
+        Initialize();
+        CreateStatisticalAccount(StatisticalAccount);
+        // [GIVEN] Two statistical Account Journal Batches - "X" and "Y"
+        for i := 1 to ArrayLen(StatAccJnlBatch) do begin
+            StatAccJnlBatch[i].Validate(Name, LibraryUtility.GenerateGUID());
+            StatAccJnlBatch[i].Insert(true);
+        end;
+        // [GIVEN] Statistical Account Journal Line for batch "X"
+        StatAccJnlLine.Validate("Journal Batch Name", StatAccJnlBatch[1].Name);
+        StatAccJnlLine.Validate("Statistical Account No.", StatisticalAccount."No.");
+        StatAccJnlLine.Insert(true);
+
+        // [GIVEN] Statistical account opened for the batch "X"
+        StatAccJnlPage.OpenEdit();
+        StatAccJnlPage.CurrentJnlBatchName.SetValue(StatAccJnlBatch[1].Name);
+
+        LibraryVariableStorage.Enqueue(StatAccJnlBatch[2].Name); // for StatAccJnlBatcheModalPageHandler
+        // [WHEN] Stan switches the batch to "Y" via lookup
+        StatAccJnlPage.CurrentJnlBatchName.Lookup();
+
+        // [THEN] No statistical account journal lines shown for this batch
+        StatAccJnlPage.StatisticalAccountNo.AssertEquals('');
+        LibraryVariableStorage.AssertEmpty();
+
+        // Tear down
+        StatAccJnlPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure JnlLinesBindToNewBatchAfterPostingInOldBatch()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        TempStatisticalAccountLedgerEntries: Record "Statistical Ledger Entry" temporary;
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        // [SCENARIO 559516] Stan can create journal lines in the new batch after posting in the old one
+
+        Initialize();
+        // [GIVEN] A statistical journal line is registered in the default batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        CreateJournal(StatisticalAccountsJournal, TempStatisticalAccountLedgerEntries);
+        RegisterJournal(StatisticalAccountsJournal);
+
+        // [GIVEN] New batch is created
+        StatisticalAccJournalBatch.Name := LibraryUtility.GenerateGUID();
+        StatisticalAccJournalBatch.Insert();
+
+        // [GIVEN] New batch is chosen in the journal
+        StatisticalAccountsJournal.CurrentJnlBatchName.SetValue(StatisticalAccJournalBatch.Name);
+
+        // [GIVEN] A new line is added to the journal for the new batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(TempStatisticalAccountLedgerEntries."Posting Date");
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(TempStatisticalAccountLedgerEntries."Statistical Account No.");
+        StatisticalAccountsJournal.Amount.SetValue(TempStatisticalAccountLedgerEntries.Amount);
+
+        // [WHEN] Click register journal and choose "No"
+        CancelRegisterJournal(StatisticalAccountsJournal);
+
+        // [THEN] The line is still under the new batch
+        StatisticalAccountsJournal.StatisticalAccountNo.AssertEquals(StatisticalAccount."No.");
+
+        // Tear down
+        StatisticalAccountsJournal.Close();
+
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure AccountRangeShouldRecognizedForTotalingTypeStatisticalAccountInFinancialReport()
+    var
+        ColumnLayout: Record "Column Layout";
+        ColumnLayoutName: Record "Column Layout Name";
+        AccScheduleName: Record "Acc. Schedule Name";
+        AccScheduleLine: Record "Acc. Schedule Line";
+        FinancialReport: Record "Financial Report";
+        StatisticalAccount: array[3] of Record "Statistical Account";
+        FinancialReports: TestPage "Financial Reports";
+        AccScheduleOverview: TestPage "Acc. Schedule Overview";
+        ExpectedAmount: Decimal;
+        DateFilter: Text;
+    begin
+        // [SCENARIO 556238] Account ranges are not getting recognized when the Totaling Type is Statistical Account in Financial reports row definition
+        Initialize();
+
+        // [GIVEN] Setup Demo Data.
+        SetupFinancialReport();
+
+        // [GIVEN] Create Statistical Account and Post Journal
+        CreateStatisticalAccount(StatisticalAccount, 3);
+        CreateStatisticalAccountsJournalAndPost(StatisticalAccount, 3, ExpectedAmount);
+
+        // [GIVEN] Create a Column Name and Column Layout.
+        LibraryERM.CreateColumnLayoutName(ColumnLayoutName);
+        LibraryERM.CreateColumnLayout(ColumnLayout, ColumnLayoutName.Name);
+        ColumnLayout.Validate("Column Type", "Column Layout Type"::"Balance at Date");
+        ColumnLayout.Modify();
+
+        // [GIVEN] Create a Account Schedule Name and Line with "Statistical Account" and Range in Totaling
+        LibraryERM.CreateAccScheduleName(AccScheduleName);
+        LibraryERM.CreateAccScheduleLine(AccScheduleLine, AccScheduleName.Name);
+        AccScheduleLine.Validate("Totaling Type", "Acc. Schedule Line Totaling Type"::"Statistical Account");
+        AccScheduleLine.Validate(Totaling, StatisticalAccount[1]."No." + '..' + StatisticalAccount[3]."No.");
+        AccScheduleLine.Modify();
+
+        // [GIVEN] Update "Financial Report Column Group" in Financial report.
+        FinancialReport.Get(AccScheduleLine."Schedule Name");
+        FinancialReport.Validate("Financial Report Column Group", ColumnLayout."Column Layout Name");
+        FinancialReport.Modify();
+
+        // [WHEN] Run Account Schedule Overview with "Period Type" as year.
+        FinancialReports.OpenEdit();
+        FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
+        AccScheduleOverview.Trap();
+        FinancialReports.Overview.Invoke();
+        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
+
+        // [GIVEN] Save the Date Filter.
+        DateFilter := Format(AccScheduleOverview.DateFilter);
+
+        // [VERIFY] Verify Balance should be shown correctly filtered by Range in the Financial Reports.
+        Assert.AreEqual(
+            ExpectedAmount,
+            AccScheduleOverview.ColumnValues1.AsDecimal(),
+            StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -459,6 +665,13 @@ codeunit 139683 "Statistical Account Test"
         LibraryVariableStorage.Enqueue('register');
         LibraryVariableStorage.Enqueue(true);
         LibraryVariableStorage.Enqueue('successfully');
+        StatisticalAccountsJournal.Register.Invoke();
+    end;
+
+    local procedure CancelRegisterJournal(var StatisticalAccountsJournal: TestPage "Statistical Accounts Journal")
+    begin
+        LibraryVariableStorage.Enqueue('register');
+        LibraryVariableStorage.Enqueue(false);
         StatisticalAccountsJournal.Register.Invoke();
     end;
 
@@ -638,4 +851,102 @@ codeunit 139683 "Statistical Account Test"
 
         exit(StatisticalLedgerEntry.Amount);
     end;
+
+    local procedure UpdateShortcutDimensionSetup(var DimensionValue: array[8] of Record "Dimension Value")
+    var
+        i: Integer;
+    begin
+        for i := 3 to ArrayLen(DimensionValue) do begin
+            LibraryDimension.CreateDimWithDimValue(DimensionValue[i]);
+            LibraryERM.SetShortcutDimensionCode(i, DimensionValue[i]."Dimension Code");
+        end;
+    end;
+
+    local procedure CreateStatisticalAccountsJournal(
+        var DimensionValue: array[8] of Record "Dimension Value";
+        StatisticalAccount: Record "Statistical Account";
+        NoOfLines: Integer)
+    var
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        for i := 1 to NoOfLines do begin
+            StatisticalAccountsJournal.OpenEdit();
+            StatisticalAccountsJournal.New();
+            StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+            StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+            StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+            StatisticalAccountsJournal.Amount.SetValue(LibraryRandom.RandInt(20));
+            StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue[3].Code);
+            StatisticalAccountsJournal.ShortcutDimCode4.SetValue(DimensionValue[4].Code);
+            StatisticalAccountsJournal.ShortcutDimCode5.SetValue(DimensionValue[5].Code);
+            StatisticalAccountsJournal.ShortcutDimCode6.SetValue(DimensionValue[6].Code);
+            StatisticalAccountsJournal.ShortcutDimCode7.SetValue(DimensionValue[7].Code);
+            StatisticalAccountsJournal.ShortcutDimCode8.SetValue(DimensionValue[8].Code);
+            StatisticalAccountsJournal.Close();
+        end;
+    end;
+
+    local procedure VerifyShortcutDimensionsInStatisticalAccountsJournal(
+        DimensionValue: array[8] of Record "Dimension Value";
+        StatisticalAccount: Record "Statistical Account")
+    var
+        StatisticalAccountJournalLine: Record "Statistical Acc. Journal Line";
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        StatisticalAccountJournalLine.Reset();
+        StatisticalAccountJournalLine.SetRange("Statistical Account No.", StatisticalAccount."No.");
+        if StatisticalAccountJournalLine.FindSet() then
+            repeat
+                StatisticalAccountsJournal.OpenView();
+                StatisticalAccountsJournal.GoToRecord(StatisticalAccountJournalLine);
+                StatisticalAccountsJournal.ShortcutDimCode3.AssertEquals(DimensionValue[3].Code);
+                StatisticalAccountsJournal.ShortcutDimCode4.AssertEquals(DimensionValue[4].Code);
+                StatisticalAccountsJournal.ShortcutDimCode5.AssertEquals(DimensionValue[5].Code);
+                StatisticalAccountsJournal.ShortcutDimCode6.AssertEquals(DimensionValue[6].Code);
+                StatisticalAccountsJournal.ShortcutDimCode7.AssertEquals(DimensionValue[7].Code);
+                StatisticalAccountsJournal.ShortcutDimCode8.AssertEquals(DimensionValue[8].Code);
+                StatisticalAccountsJournal.Close();
+            until StatisticalAccountJournalLine.Next() = 0;
+    end;
+
+    local procedure CreateStatisticalAccount(var StatisticalAccount: array[3] of Record "Statistical Account"; NoOfLines: Integer)
+    var
+        i: Integer;
+    begin
+        for i := 1 to NoOfLines do begin
+            StatisticalAccount[i]."No." := Format(LibraryRandom.RandIntInRange(1000, 1000) + i);
+            StatisticalAccount[i].Name := StatisticalAccount[i]."No.";
+            StatisticalAccount[i].Insert();
+        end;
+    end;
+
+    local procedure CreateStatisticalAccountsJournalAndPost(
+        var StatisticalAccount: array[3] of Record "Statistical Account";
+        NoOfLines: Integer; var Amount: Decimal)
+    var
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        for i := 1 to NoOfLines do begin
+            StatisticalAccountsJournal.OpenEdit();
+            StatisticalAccountsJournal.New();
+            StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+            StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+            StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount[i]."No.");
+            StatisticalAccountsJournal.Amount.SetValue(LibraryRandom.RandIntInRange(1000, 1000));
+            Amount += StatisticalAccountsJournal.Amount.AsDecimal();
+            StatisticalAccountsJournal.Close();
+        end;
+        StatisticalAccountsJournal.OpenEdit();
+        RegisterJournal(StatisticalAccountsJournal);
+    end;
+
+    [ModalPageHandler]
+    procedure StatAccJnlBatcheModalPageHandler(var StatBatch: TestPage "Statistical Acc. Journal Batch")
+    begin
+        StatBatch.Filter.SetFilter(Name, LibraryVariableStorage.DequeueText());
+        StatBatch.OK().Invoke();
+    end;
+
 }

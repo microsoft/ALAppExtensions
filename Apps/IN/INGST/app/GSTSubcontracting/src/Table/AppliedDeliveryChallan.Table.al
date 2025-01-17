@@ -415,6 +415,7 @@ table 18466 "Applied Delivery Challan"
     procedure OpenItemTrackingLinesSubcon(Type_: Option Consume,RejectVE,RejectCE,Receive,Rework)
     var
         TrackingSpecification: Record "Tracking Specification";
+        ApplyDeliveryChallanMgt: Codeunit "Apply Delivery Challan Mgt.";
         ItemTrackingForm: Page "Item Tracking Lines";
     begin
         TestField("Item No.");
@@ -446,8 +447,10 @@ table 18466 "Applied Delivery Challan"
         end;
 
         Clear(ItemTrackingForm);
+        ApplyDeliveryChallanMgt.SetAppDelChallan(true, "Applied Delivery Challan No.");
         ItemTrackingForm.SetSourceSpec(TrackingSpecification, WorkDate());
         ItemTrackingForm.RunModal();
+        ApplyDeliveryChallanMgt.SetAppDelChallan(false, '');
     end;
 
     procedure InsertAppDelChLnEntry(Quantity_: Decimal; Type_: Option Consume,RejectVE,RejectCE,Receive,Rework)

@@ -47,14 +47,14 @@ table 30121 "Shpfy Orders to Import"
 
         field(6; "Created At"; DateTime)
         {
-            Caption = 'Created At';
+            Caption = 'Created At (Shopify)';
             DataClassification = CustomerContent;
             Editable = false;
         }
 
         field(7; "Updated At"; DateTime)
         {
-            Caption = 'UpdatedAt';
+            Caption = 'Updated At (Shopify)';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -86,13 +86,22 @@ table 30121 "Shpfy Orders to Import"
             DataClassification = CustomerContent;
             Editable = false;
         }
-
+#if not CLEANSCHEMA28
         field(12; "Risk Level"; enum "Shpfy Risk Level")
         {
             Caption = 'Risk Level';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteReason = 'This field is not imported. Use field ';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+                                ObsoleteState = Removed;
+                                ObsoleteTag = '28.0';
+#endif
         }
+#endif
         field(13; "Financial Status"; enum "Shpfy Financial Status")
         {
             Caption = 'Financial Status';
@@ -158,13 +167,49 @@ table 30121 "Shpfy Orders to Import"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(23; "Purchasing Entity"; Enum "Shpfy Order Purchasing Entity")
+        {
+            Caption = 'Purchasing Entity';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(24; "High Risk"; Boolean)
+        {
+            Caption = 'High Risk';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(25; "Sell-to Country/Region Code"; Code[20])
+        {
+            Caption = 'Sell-to Country/Region Code';
+            DataClassification = CustomerContent;
+        }
+        field(26; "Ship-to Country/Region Code"; Code[20])
+        {
+            Caption = 'Ship-to Country/Region Code';
+            DataClassification = CustomerContent;
+        }
+        field(27; "Bill-to Country/Region Code"; Code[20])
+        {
+            Caption = 'Bill-to Country/Region Code';
+            DataClassification = CustomerContent;
+        }
+        field(28; "VAT Amount"; Decimal)
+        {
+            Caption = 'VAT Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(29; "Presentment VAT Amount"; Decimal)
+        {
+            Caption = 'Presentment VAT Amount';
+            DataClassification = SystemMetadata;
+        }
         field(100; "Import Action"; enum "Shpfy Import Action")
         {
             Caption = 'Import Action';
             DataClassification = CustomerContent;
             Editable = false;
         }
-
         field(102; "Has Error"; Boolean)
         {
             Caption = 'Has Error';

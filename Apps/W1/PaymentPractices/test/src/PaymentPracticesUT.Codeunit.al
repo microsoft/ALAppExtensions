@@ -463,6 +463,100 @@ codeunit 134197 "Payment Practices UT"
         Assert.AreEqual(ExpectedAgreedPaymentTime, PaymentPracticeHeader."Average Actual Payment Period", 'Average Actual Payment Time is not equal to expected.');
     end;
 
+
+    [Test]
+    procedure ReportDataSetForVendorsByPeriod_DaysToZero()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+        PaymentPeriod: Record "Payment Period";
+        VendorNo: Code[20];
+    begin
+        // [SCENARIO 493671] Payment is processed correctly for Payment Period with Days To = 0
+        Initialize();
+
+        // [GIVEN] Create a vendor
+        VendorNo := LibraryPurchase.CreateVendorNo();
+
+        // [GIVEN] Create a payment period with DaysTo = 0
+        PaymentPracticesLibrary.InitAndGetLastPaymentPeriod(PaymentPeriod);
+
+        // [GIVEN] Create a payment practice header for Current Year of type Vendor
+        PaymentPracticesLibrary.CreatePaymentPracticeHeaderSimple(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::Period);
+
+        // [GIVEN] Post an entry for the vendor in the period
+        MockVendorInvoiceAndPaymentInPeriod(VendorNo, WorkDate(), PaymentPeriod."Days From", PaymentPeriod."Days To");
+
+        // [WHEN] Lines were generated for Header
+        PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [THEN] Check that report dataset contains the line for the period correcly
+        PaymentPracticesLibrary.VerifyPeriodLine(PaymentPracticeHeader."No.", "Paym. Prac. Header Type"::Vendor, PaymentPeriod.Code, 100, 0);
+    end;
+
+    [Test]
+    procedure PaymentPracticeHeader_EmptyDate()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+    begin
+        // [SCENARIO 492413] Payment Practice header with empty date is not allowed to generate
+        Initialize();
+
+        // [GIVEN] Create a payment practice header with Starting Date = 0D
+        PaymentPracticesLibrary.CreatePaymentPracticeHeader(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::"Company Size", 0D, 0D);
+
+        // [WHEN] Generate payment practices for vendors by size
+        asserterror PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [THEN] Error occurs for empty date
+        Assert.ExpectedErrorCode('TestField');
+    end;
+
+    [Test]
+    procedure PaymentPracticeHeader_ValidDates()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+    begin
+        // [SCENARIO 492413] Payment Practice header can't accept starting date > ending date
+        Initialize();
+
+        // [GIVEN] Create a payment practice header with Starting Date = 0D and Ending date = 01/01/2020
+        PaymentPracticesLibrary.CreatePaymentPracticeHeader(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::"Company Size", 0D, WorkDate());
+
+        // [WHEN] Assigning Startin Date = 10/01/2020
+        asserterror PaymentPracticeHeader.Validate("Starting Date", WorkDate() + LibraryRandom.RandInt(10));
+
+        // [THEN] Error occurs for invalid dates
+        Assert.ExpectedError('Starting Date must be less than or equal to Ending Date.');
+    end;
+
+    [Test]
+    procedure PaymentPracticeLine_ModifiedManually()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+        PaymentPracticeLine: Record "Payment Practice Line";
+    begin
+        // [SCENARIO 492413] Payment Practice Line "Modified Manually" gets changed when validating numerical values
+        Initialize();
+
+        // [GIVEN] Create vendor with size code
+        PaymentPracticesLibrary.CreateVendorNoWithSizeAndExcl(CompanySizeCodes[1], false);
+
+        // [GIVEN] Generate payment practices for vendors by size
+        PaymentPracticesLibrary.CreatePaymentPracticeHeaderSimple(PaymentPracticeHeader);
+        PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [GIVEN] Find the generated line
+        PaymentPracticeLine.SetRange("Header No.", PaymentPracticeHeader."No.");
+        PaymentPracticeLine.FindFirst();
+
+        // [WHEN] Modify Pct Paid in Period in line
+        PaymentPracticeLine.Validate("Pct Paid in Period", LibraryRandom.RandDecInDecimalRange(0, 50, 2));
+        PaymentPracticeLine.Modify();
+
+        // [THEN] "Modified Manually" = true
+        PaymentPracticeLine.TestField("Modified Manually");
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Payment Practices UT");
@@ -523,7 +617,10 @@ codeunit 134197 "Payment Practices UT"
     begin
         PostingDate := StartingDate;
         DueDate := StartingDate;
-        PaymentPostingDate := PostingDate + LibraryRandom.RandIntInRange(PaidInDays_min, PaidInDays_max);
+        if PaidInDays_max <> 0 then
+            PaymentPostingDate := PostingDate + LibraryRandom.RandIntInRange(PaidInDays_min, PaidInDays_max)
+        else
+            PaymentPostingDate := PostingDate + PaidInDays_min + LibraryRandom.RandInt(10);
         InvoiceAmount := MockVendorInvoiceAndPayment(VendorNo, PostingDate, DueDate, PaymentPostingDate);
     end;
 

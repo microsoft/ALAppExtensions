@@ -8,10 +8,12 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.TaxEngine.Core;
 using Microsoft.Inventory.Transfer;
+using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Archive;
 
 table 20261 "Tax Transaction Value"
 {
@@ -129,6 +131,11 @@ table 20261 "Tax Transaction Value"
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Currency Factor';
         }
+        field(24; "Version No. Filter"; Integer)
+        {
+            FieldClass = FlowFilter;
+            Caption = 'Version No. Filter';
+        }
     }
     keys
     {
@@ -207,6 +214,7 @@ table 20261 "Tax Transaction Value"
         TemplateNameFilter: Text;
         BatchFilter: Text;
         LineNoFilter: Integer;
+        VersionNoFilter: Integer;
         IsHandled: Boolean;
     begin
         Clear(TaxRecordID);
@@ -224,6 +232,8 @@ table 20261 "Tax Transaction Value"
             TemplateNameFilter := GetRangeMax("Template Name Filter");
         if GetFilter("Batch Name Filter") <> '' then
             BatchFilter := GetRangeMax("Batch Name Filter");
+        if GetFilter("Version No. Filter") <> '' then
+            VersionNoFilter := GetRangeMax("Version No. Filter");
 
         FilterGroup(0);
 
@@ -232,6 +242,8 @@ table 20261 "Tax Transaction Value"
                 GetTaxRecIDForSalesDocument(TableIDFilter, DocumentTypeFilter, DocumentNoFilter, LineNoFilter, TaxRecordID);
             Database::"Purchase Line", Database::"Purch. Inv. Line", database::"Purch. Cr. Memo Line":
                 GetTaxRecIDForPurchDocument(TableIDFilter, DocumentTypeFilter, DocumentNoFilter, LineNoFilter, TaxRecordID);
+            Database::"Purchase Line Archive", Database::"Sales Line Archive":
+                GetTaxRecIDForArchiveDocument(TableIDFilter, DocumentTypeFilter, DocumentNoFilter, LineNoFilter, VersionNoFilter, TaxRecordID);
             Database::"Transfer Line", Database::"Transfer Shipment Line", Database::"Transfer Receipt Line":
                 GetTaxRecIDForTransferDocument(TableIDFilter, DocumentNoFilter, LineNoFilter, TaxRecordID);
             database::"Gen. Journal Line":
@@ -297,6 +309,33 @@ table 20261 "Tax Transaction Value"
             database::"Purch. Cr. Memo Line":
                 if PurchCrMemoLine.Get(DocumentNoFilter, LineNoFilter) then
                     TaxRecordID := PurchCrMemoLine.RecordId();
+        end;
+    end;
+
+    local procedure GetTaxRecIDForArchiveDocument(TableID: Integer; DocumentTypeFilter: Integer; DocumentNoFilter: Text; LineNoFilter: Integer; VersionNoFilter: Integer; var TaxRecordID: RecordId)
+    var
+        PurchaseLineArchive: Record "Purchase Line Archive";
+        SalesLineArchive: Record "Sales Line Archive";
+    begin
+        case TableID of
+            database::"Purchase Line Archive":
+                begin
+                    PurchaseLineArchive.SetRange("Document Type", DocumentTypeFilter);
+                    PurchaseLineArchive.SetRange("Document No.", DocumentNoFilter);
+                    PurchaseLineArchive.SetRange("Version No.", VersionNoFilter);
+                    PurchaseLineArchive.SetRange("Line No.", LineNoFilter);
+                    if PurchaseLineArchive.FindFirst() then
+                        TaxRecordID := PurchaseLineArchive.RecordId();
+                end;
+            database::"Sales Line Archive":
+                begin
+                    SalesLineArchive.SetRange("Document Type", DocumentTypeFilter);
+                    SalesLineArchive.SetRange("Document No.", DocumentNoFilter);
+                    SalesLineArchive.SetRange("Version No.", VersionNoFilter);
+                    SalesLineArchive.SetRange("Line No.", LineNoFilter);
+                    if SalesLineArchive.FindFirst() then
+                        TaxRecordID := SalesLineArchive.RecordId();
+                end;
         end;
     end;
 

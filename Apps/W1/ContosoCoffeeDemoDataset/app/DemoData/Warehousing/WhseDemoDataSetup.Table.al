@@ -1,16 +1,13 @@
+#if not CLEANSCHEMA26
 table 4763 "Whse Demo Data Setup"
 {
     DataClassification = CustomerContent;
     ObsoleteReason = 'The table is moved to "Warehouse Module Setup" table';
     InherentEntitlements = rimdX;
     InherentPermissions = rimdX;
-#if not CLEAN23
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
-#endif
+    ReplicateData = false;
 
     fields
     {
@@ -60,6 +57,7 @@ table 4763 "Whse Demo Data Setup"
             DataClassification = CustomerContent;
             Caption = 'Domestic - VAT Posting Group';
             TableRelation = "VAT Business Posting Group";
+            ValidateTableRelation = false;
         }
         field(35; "Resale Code"; code[20])
         {
@@ -213,3 +211,4 @@ table 4763 "Whse Demo Data Setup"
         }
     }
 }
+#endif

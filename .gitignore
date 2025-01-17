@@ -22,7 +22,7 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
-[Ll]og/
+/[Ll]og/
 [Oo]ut/
 
 # Visual Studio 2015 cache/options directory
@@ -297,6 +297,8 @@ __pycache__/
 .alcache/
 #Symbols folder
 .alpackages/
+#.NET packages
+.netpackages/
 #Snapshots folder
 .snapshots/
 #Testing Output folder

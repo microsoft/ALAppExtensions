@@ -5,6 +5,9 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Integration.Action;
 
 table 6103 "E-Document Service"
 {
@@ -29,21 +32,47 @@ table 6103 "E-Document Service"
             Caption = 'Document Format';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA29
         field(4; "Service Integration"; Enum "E-Document Integration")
         {
             Caption = 'Service Integration';
             DataClassification = SystemMetadata;
-        }
+            ObsoleteReason = 'Use Service Integration V2 integration enum instead';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
 
+            trigger OnValidate()
+            var
+                ConsentManagerDefaultImpl: Codeunit "Consent Manager Default Impl.";
+            begin
+                if (xRec."Service Integration" = xRec."Service Integration"::"No Integration") and (Rec."Service Integration" <> xRec."Service Integration") then
+                    if not ConsentManagerDefaultImpl.ObtainPrivacyConsent() then
+                        Rec."Service Integration" := xRec."Service Integration";
+            end;
+#endif
+        }
+#endif
         field(5; "Use Batch Processing"; Boolean)
         {
             Caption = 'Use Batch Processing';
             DataClassification = SystemMetadata;
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
+            end;
         }
         field(6; "Update Order"; Boolean)
         {
             Caption = 'Update Order';
-            DataClassification = SystemMetadata;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
+            ObsoleteTag = '24.0';
+#endif
         }
         field(7; "Create Journal Lines"; Boolean)
         {
@@ -147,7 +176,12 @@ table 6103 "E-Document Service"
         {
             Caption = 'Auto Import';
             DataClassification = SystemMetadata;
-            InitValue = true;
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(19; "Import Start Time"; Time)
         {
@@ -196,6 +230,41 @@ table 6103 "E-Document Service"
             Caption = 'Batch Recurrent Job Id';
             DataClassification = SystemMetadata;
         }
+        field(27; "Service Integration V2"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration V2';
+            ToolTip = 'Specifies the integration for sending documents to the service.';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                ConsentManager: Interface IConsentManager;
+            begin
+                if (xRec."Service Integration V2" = xRec."Service Integration V2"::"No Integration") and (Rec."Service Integration V2" <> xRec."Service Integration V2") then begin
+                    ConsentManager := Rec."Service Integration V2";
+                    if not ConsentManager.ObtainPrivacyConsent() then
+                        Rec."Service Integration V2" := xRec."Service Integration V2";
+                end;
+            end;
+        }
+        field(28; "Sent Actions Integration"; Enum "Sent Document Actions")
+        {
+            Caption = 'Sent Actions For Service';
+            ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            DataClassification = SystemMetadata;
+        }
+        field(29; "Buyer Reference"; Enum "E-Document Buyer Reference")
+        {
+            Caption = 'Buyer Reference';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the buyer reference for the document export.';
+        }
+        field(30; "Buyer Reference Mandatory"; Boolean)
+        {
+            Caption = 'Buyer Reference Mandatory';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies whether the buyer reference is mandatory for the document.';
+        }
     }
     keys
     {
@@ -205,12 +274,34 @@ table 6103 "E-Document Service"
         }
     }
 
+    trigger OnDelete()
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+        EDocBackgroundJobs: Codeunit "E-Document Background Jobs";
+        EDocumentWorkflowProcesssing: Codeunit "E-Document WorkFlow Processing";
+    begin
+        if EDocumentWorkflowProcesssing.IsServiceUsedInActiveWorkflow(Rec) then
+            Error(ServiceInActiveFlowErr);
+
+        EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
+        EDocServiceSupportedType.DeleteAll();
+
+        EDocBackgroundJobs.RemoveJob(Rec."Batch Recurrent Job Id");
+        EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
+    end;
+
     internal procedure ToString(): Text
     begin
+#if not CLEAN26
         exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration", "Use Batch Processing", "Batch Mode"));
+#else
+        exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration V2", "Use Batch Processing", "Batch Mode"));
+#endif
     end;
 
     var
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
+        ServiceInActiveFlowErr: Label 'The service is used in an active workflow. You cannot delete it.';
 }

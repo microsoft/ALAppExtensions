@@ -1,0 +1,382 @@
+namespace Microsoft.Finance.PowerBIReports.Test;
+
+using Microsoft.PowerBIReports;
+using Microsoft.PowerBIReports.Test;
+using System.TestLibraries.Security.AccessControl;
+
+codeunit 139875 "PowerBI Core Test"
+{
+    Subtype = Test;
+    Access = Internal;
+
+    var
+        Assert: Codeunit Assert;
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBIAPIRequests: Codeunit "PowerBI API Requests";
+        FilterScenario: Enum "PowerBI Filter Scenarios";
+
+    [Test]
+    procedure TestGenerateItemSalesReportDateFilter_StartEndDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemSalesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Start/End Date";
+
+        // [GIVEN] Mock start & end date values are entered 
+        PBISetup."Item Sales Start Date" := Today();
+        PBISetup."Item Sales End Date" := Today() + 10;
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
+
+        // [WHEN] GenerateItemSalesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure TestGenerateItemSalesReportDateFilter_RelativeDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemSalesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Relative Date";
+
+        // [GIVEN] A mock date formula value
+        Evaluate(PBISetup."Item Sales Date Formula", '30D');
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Sales Date Formula")) + '..';
+
+        // [WHEN] GenerateItemSalesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
+
+        // [THEN] A filter text of format "%1.." should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure TestGenerateItemSalesReportDateFilter_Blank()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemSalesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] GenerateItemSalesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
+
+        // [THEN] A blank filter text should be created 
+        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateItemPurchasesReportDateFilter_StartEndDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Start/End Date";
+
+        // [GIVEN] Mock start & end date values are entered 
+        PBISetup."Item Purch. Start Date" := Today();
+        PBISetup."Item Purch. End Date" := Today() + 10;
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
+
+        // [WHEN] GenerateItemPurchasesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateItemPurchasesReportDateFilter_RelativeDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Relative Date";
+
+        // [GIVEN] A mock date formula value
+        Evaluate(PBISetup."Item Purch. Date Formula", '30D');
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Item Purch. Date Formula")) + '..';
+
+        // [WHEN] GenerateItemPurchasesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
+
+        // [THEN] A filter text of format "%1.." should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateItemPurchasesReportDateFilter_Blank()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] GenerateItemPurchasesReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
+
+        // [THEN] A blank filter text should be created 
+        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateFilter_StartEndDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
+
+        // [GIVEN] Mock start & end date values are entered 
+        PBISetup."Manufacturing Start Date" := Today();
+        PBISetup."Manufacturing End Date" := Today() + 10;
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
+
+        // [WHEN] GenerateManufacturingReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateFilter_RelativeDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
+
+        // [GIVEN] A mock date formula value
+        Evaluate(PBISetup."Manufacturing Date Formula", '30D');
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Manufacturing Date Formula")) + '..';
+
+        // [WHEN] GenerateManufacturingReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
+
+        // [THEN] A filter text of format "%1.." should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateFilter_Blank()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] GenerateManufacturingReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
+
+        // [THEN] A blank filter text should be created 
+        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateTimeFilter_StartEndDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
+
+        // [GIVEN] Mock start & end date values are entered 
+        PBISetup."Manufacturing Start Date" := Today();
+        PBISetup."Manufacturing End Date" := Today() + 10;
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(CreateDateTime(Today(), 0T)) + '..' + Format(CreateDateTime(Today() + 10, 0T));
+
+        // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date Time");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateTimeFilter_RelativeDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
+
+        // [GIVEN] A mock date formula value
+        Evaluate(PBISetup."Manufacturing Date Formula", '30D');
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)) + '..';
+
+        // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date Time");
+
+        // [THEN] A filter text of format "%1.." should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateManufacturingReportDateTimeFilter_Blank()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
+        // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date Time");
+
+        // [THEN] A blank filter text should be created 
+        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateFinanceReportDateFilter_StartEndDate()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+        ExpectedFilterTxt: Text;
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateFinanceReportDateFilter
+        // [GIVEN] Power BI setup record is created
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+
+        // [GIVEN] Mock start & end date values are entered 
+        PBISetup."Finance Start Date" := Today();
+        PBISetup."Finance End Date" := Today() + 10;
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
+
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
+
+        // [WHEN] GenerateFinanceReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Finance Date");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure GenerateFinanceReportDateFilter_Blank()
+    var
+        ActualFilterTxt: Text;
+    begin
+        // [SCENARIO] Test GenerateFinanceReportDateFilter
+        // [GIVEN] Power BI setup record is created with blank start & end dates
+        AssignAdminPermissionSet();
+        RecreatePBISetup();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] GenerateFinanceReportDateFilter executes 
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Finance Date");
+
+        // [THEN] A filter text of format "%1..%2" should be created 
+        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    local procedure RecreatePBISetup()
+    var
+        PBISetup: Record "PowerBI Reports Setup";
+    begin
+        if PBISetup.Get() then
+            PBISetup.Delete();
+        PBISetup.Init();
+        PBISetup.Insert();
+    end;
+
+    procedure AssignAdminPermissionSet()
+    begin
+        PermissionsMock.Assign('PowerBI Report Admin');
+        PermissionsMock.Assign('D365 BUS FULL ACCESS');
+    end;
+}

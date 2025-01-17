@@ -14,15 +14,17 @@ codeunit 139554 "Library - Intrastat"
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
         LibraryRandom: Codeunit "Library - Random";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
 
     procedure CreateIntrastatReportSetup()
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         NoSeriesCode: Code[20];
     begin
-        If IntrastatReportSetup.Get() then
+        if IntrastatReportSetup.Get() then
             exit;
         NoSeriesCode := LibraryERM.CreateNoSeriesCode();
         IntrastatReportSetup.Init();
@@ -235,6 +237,28 @@ codeunit 139554 "Library - Intrastat"
         SalesHeader.Modify(true);
     end;
 
+    procedure CreateServiceDocument(var ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Service Document Type"; Type: Enum "Service Line Type"; No: Code[20];
+                                                                                                                                                                              NoOfLines: Integer)
+    var
+        i: Integer;
+    begin
+        // Create Service Order with Random Quantity and Unit Price.
+        CreateServiceHeader(ServiceHeader, CustomerNo, PostingDate, DocumentType);
+        for i := 1 to NoOfLines do begin
+            LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, Type, No);
+            ServiceLine.Validate(Quantity, LibraryRandom.RandDec(100, 2));
+            ServiceLine.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
+            ServiceLine.Modify(true);
+        end;
+    end;
+
+    procedure CreateServiceHeader(var ServiceHeader: Record "Service Header"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Service Document Type")
+    begin
+        LibraryService.CreateServiceHeader(ServiceHeader, DocumentType, CustomerNo);
+        ServiceHeader.Validate("Posting Date", PostingDate);
+        ServiceHeader.Modify(true);
+    end;
+
     procedure CreateAndPostSalesInvoiceWithItemAndItemCharge(PostingDate: Date): Code[20]
     var
         SalesHeader: Record "Sales Header";
@@ -407,6 +431,63 @@ codeunit 139554 "Library - Intrastat"
         Item: Record Item;
     begin
         LibraryInventory.CreateItemWithTariffNo(Item, CopyStr(LibraryUtility.CreateCodeRecord(DATABASE::"Tariff Number"), 3, 10));
+        exit(Item."No.");
+    end;
+
+    procedure CreateTrackedItem(Tracking: Integer; CreateInfo: Boolean; CreateInfoOnPosting: Boolean;
+        var SerialNoInformation: Record "Serial No. Information";
+        var LotNoInformation: Record "Lot No. Information";
+        var PackageNoInformation: Record "Package No. Information"): Code[20]
+    var
+        CountryRegion: Record "Country/Region";
+        Item: Record Item;
+        ItemTrackingCode: Record "Item Tracking Code";
+    begin
+        CreateCountryRegion(CountryRegion, false);
+        LibraryInventory.CreateItem(Item);
+        case Tracking of
+            1:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, true, false, false); // Serial No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreateSerialNoInformation(SerialNoInformation, Item."No.", '', LibraryUtility.GenerateGUID());
+                        SerialNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        SerialNoInformation.Modify(true);
+                    end;
+                    if CreateInfoOnPosting then begin
+                        ItemTrackingCode.Validate("Create SN Info on Posting", true);
+                        ItemTrackingCode.Modify(true);
+                    end;
+                end;
+            2:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, false, true, false); // Lot No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreateLotNoInformation(LotNoInformation, Item."No.", '', LibraryUtility.GenerateGUID());
+                        LotNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        LotNoInformation.Modify(true);
+                    end;
+                    if CreateInfoOnPosting then begin
+                        ItemTrackingCode.Validate("Create Lot No. Info on posting", true);
+                        ItemTrackingCode.Modify(true);
+                    end;
+                end;
+            3:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, false, false, true); // Package No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreatePackageNoInformation(PackageNoInformation, Item."No.", LibraryUtility.GenerateGUID());
+                        PackageNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        PackageNoInformation.Modify(true);
+                    end;
+                end;
+        end;
+
+        Item.Validate("Item Tracking Code", ItemTrackingCode.Code);
+        CreateCountryRegion(CountryRegion, true);
+        Item.Validate("Country/Region of Origin Code", CountryRegion.Code);
+        Item.Modify(true);
+
         exit(Item."No.");
     end;
 
@@ -670,11 +751,11 @@ codeunit 139554 "Library - Intrastat"
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.SetFilter(NoSeries.Code, IntrastatReportSetup."Intrastat Nos.");
         NoSeries.FindFirst();
-        NoSeriesCode := NoSeriesManagement.GetNextNo(NoSeries.Code, WorkDate(), true);
+        NoSeriesCode := NoSeriesCodeunit.GetNextNo(NoSeries.Code);
     end;
 
     procedure GetStatisticalPeriod(ReportDate: Date): code[20]
@@ -811,12 +892,39 @@ codeunit 139554 "Library - Intrastat"
         SalesReceivablesSetup.Modify(true);
     end;
 
+    procedure UpdateRetReceiptOnCrMemoSalesSetup(RetReceiptOnCrMemo: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Return Receipt on Credit Memo", RetReceiptOnCrMemo);
+        SalesReceivablesSetup.Modify(true);
+    end;
+
+    procedure UpdateShipmentOnInvoiceServiceSetup(ShipmentOnInvoice: Boolean)
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup.Validate("Shipment on Invoice", ShipmentOnInvoice);
+        ServiceMgtSetup.Modify(true);
+    end;
+
     procedure UpdateRetShpmtOnCrMemoPurchSetup(RetShpmtOnCrMemo: Boolean)
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
         PurchasesPayablesSetup.Get();
         PurchasesPayablesSetup.Validate("Return Shipment on Credit Memo", RetShpmtOnCrMemo);
+        PurchasesPayablesSetup.Modify(true);
+    end;
+
+    procedure UpdateReceiptOnInvoicePurchSetup(ReceiptOnInvoice: Boolean)
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Receipt on Invoice", ReceiptOnInvoice);
         PurchasesPayablesSetup.Modify(true);
     end;
 
@@ -923,11 +1031,5 @@ codeunit 139554 "Library - Intrastat"
         Purchasing.Modify(true);
         SalesLine.Validate("Purchasing Code", Purchasing.Code);
         SalesLine.Modify(true);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnAfterCheckFeatureEnabled', '', true, true)]
-    local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
-    begin
-        IsEnabled := true;
     end;
 }

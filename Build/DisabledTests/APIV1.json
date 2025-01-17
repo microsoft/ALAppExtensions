@@ -1,0 +1,222 @@
+[
+    {
+        "codeunitId":  139700,
+        "CodeunitName": "APIV1 - Items E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139701,
+        "CodeunitName": "APIV1 - Accounts E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139702,
+        "CodeunitName": "APIV1 - Customers E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139703,
+        "CodeunitName": "APIV1 - Vendors E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139704,
+        "CodeunitName": "APIV1 - Payment Terms E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139705,
+        "CodeunitName": "APIV1 - Shipment Methods E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139706,
+        "CodeunitName": "APIV1 - Company Info. E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139707,
+        "CodeunitName": "APIV1 - Item Categories E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139708,
+        "CodeunitName": "Tax Groups E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139709,
+        "CodeunitName": "Sales Invoices E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139710,
+        "CodeunitName": "Countries/Regions E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139711,
+        "CodeunitName": "APIV1 - Sales Orders E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139712,
+        "CodeunitName": "APIV1 - UofM E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139713,
+        "CodeunitName": "APIV1 - Currencies E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139714,
+        "CodeunitName": "Payment Methods E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139715,
+        "CodeunitName": "APIV1 - Balance Sheet E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139716,
+        "CodeunitName": "APIV1 - Income Statement E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139717,
+        "CodeunitName": "APIV1 - CashFlow Statement E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139718,
+        "CodeunitName": "APIV1 - Trial Balance E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139719,
+        "CodeunitName": "APIV1 - Aged AP E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139720,
+        "CodeunitName": "APIV1 - Aged AR E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139721,
+        "CodeunitName": "APIV1 - Ret. Earnings E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139722,
+        "CodeunitName": "APIV1 - Employees E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139723,
+        "CodeunitName": "APIV1 - Sales Quotes E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139724,
+        "CodeunitName": "APIV1 - Dimensions E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139725,
+        "CodeunitName": "APIV1 - Dimension Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139726,
+        "CodeunitName": "APIV1 - Tax Areas E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139727,
+        "CodeunitName": "APIV1 - Journals E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139728,
+        "CodeunitName": "APIV1 - Sales Credit Memos E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139729,
+        "CodeunitName": "APIV1 - Purchase Invoices E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139730,
+        "CodeunitName": "APIV1 - GLEntries E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139731,
+        "CodeunitName": "APIV1 - Automation RS Package",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139732,
+        "CodeunitName": "APIV1 - Default Dimensions E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139733,
+        "CodeunitName": "APIV1 - Attachments E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139734,
+        "CodeunitName": "APIV1 - Sales Inv. Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139735,
+        "CodeunitName": "APIV1 - Sales Order Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139736,
+        "CodeunitName": "APIV1 - Sales Quote Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139737,
+        "CodeunitName": "APIV1 - Sales CrMemo Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139738,
+        "CodeunitName": "APIV1 - Purchase Inv Lines E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139739,
+        "CodeunitName": "APIV1 - Item Variants E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139742,
+        "CodeunitName": "APIV1 - Pictures E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139743,
+        "CodeunitName": "APIV1 - Customer Payments E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139744,
+        "CodeunitName": "APIV1 - PDF Document E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId":  139745,
+        "CodeunitName": "APIV1 - Journal Lines E2E",
+        "Method": "*"
+    }
+]

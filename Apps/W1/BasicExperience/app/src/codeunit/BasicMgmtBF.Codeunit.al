@@ -6,7 +6,6 @@ namespace System.Environment.Configuration;
 
 using System.Environment;
 using System.Reflection;
-using System.Security.AccessControl;
 
 codeunit 20601 "Basic Mgmt BF"
 {
@@ -57,19 +56,9 @@ codeunit 20601 "Basic Mgmt BF"
     internal procedure IsAssignedToGroupsOrUsers(AllProfile: Record "All Profile"): Boolean
     var
         UserPersonalization: Record "User Personalization";
-#if not CLEAN22
-        UserGroup: Record "User Group";
-#endif
     begin
         if AllProfile."Default Role Center" then
             exit(true);
-
-#if not CLEAN22
-        UserGroup.SetRange("Default Profile ID", AllProfile."Profile ID");
-        UserGroup.SetRange("Default Profile App ID", AllProfile."App ID");
-        if not UserGroup.IsEmpty() then
-            exit(true);
-#endif
 
         UserPersonalization.SetRange("Profile ID", AllProfile."Profile ID");
         UserPersonalization.SetRange("App ID", AllProfile."App ID");

@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Finance.Currency;
 using Microsoft.Sales.Document;
 using Microsoft.Foundation.Address;
 using Microsoft.Sales.History;
@@ -56,9 +57,8 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        ShopLocation: Record "Shpfy Shop Location";
         ShopifyTaxArea: Record "Shpfy Tax Area";
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         OrdersAPI: Codeunit "Shpfy Orders API";
@@ -66,7 +66,7 @@ codeunit 30166 "Shpfy Process Order"
         BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
-        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, IsHandled);
+        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, LastCreatedDocumentId, IsHandled);
         if not IsHandled then begin
             ShopifyOrderHeader.TestField("Sell-to Customer No.");
             SalesHeader.Init();
@@ -109,19 +109,26 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Ship-to Post Code" := CopyStr(ShopifyOrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
             SalesHeader."Ship-to County" := CopyStr(ShopifyOrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
             SalesHeader."Ship-to Contact" := ShopifyOrderHeader."Ship-to Contact Name";
-            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.PricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
+            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.DoPricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
             SalesHeader.Validate("Currency Code", ShopifyShop."Currency Code");
             SalesHeader."Shpfy Order Id" := ShopifyOrderHeader."Shopify Order Id";
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
             SalesHeader.Validate("Document Date", ShopifyOrderHeader."Document Date");
-            if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderHeader."Location Id") and (ShopLocation."Default Location Code" <> '') then
-                SalesHeader.Validate("Location Code", ShopLocation."Default Location Code");
+            SalesHeader.Validate("External Document No.", ShopifyOrderHeader."PO Number");
+            if ShopifyOrderHeader."Due Date" <> 0D then
+                SalesHeader.Validate("Due Date", ShopifyOrderHeader."Due Date");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
                 SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
             if ShopifyOrderHeader."Shipping Method Code" <> '' then
                 SalesHeader.Validate("Shipment Method Code", ShopifyOrderHeader."Shipping Method Code");
+            if ShopifyOrderHeader."Shipping Agent Code" <> '' then begin
+                SalesHeader.Validate("Shipping Agent Code", ShopifyOrderHeader."Shipping Agent Code");
+                SalesHeader.Validate("Shipping Agent Service Code", ShopifyOrderHeader."Shipping Agent Service Code");
+            end;
             if ShopifyOrderHeader."Payment Method Code" <> '' then
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
+            if ShopifyOrderHeader."Payment Terms Type" <> '' then
+                UpdatePaymentTerms(SalesHeader, ShopifyOrderHeader."Payment Terms Type", ShopifyOrderHeader."Payment Terms Name");
 
             SalesHeader.Modify(true);
 
@@ -135,7 +142,8 @@ codeunit 30166 "Shpfy Process Order"
             if ShopifyOrderHeader."Work Description".HasValue then
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
-        OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
+        if ShopifyShop."Order Attributes To Shopify" then
+            OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
         DocLinkToBCDoc.Init();
         DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
         DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
@@ -143,6 +151,17 @@ codeunit 30166 "Shpfy Process Order"
         DocLinkToBCDoc."Document No." := SalesHeader."No.";
         DocLinkToBCDoc.Insert();
         OrderEvents.OnAfterCreateSalesHeader(ShopifyOrderHeader, SalesHeader);
+    end;
+
+    local procedure UpdatePaymentTerms(var SalesHeader: Record "Sales Header"; PaymentTermsType: Code[20]; PaymentTermsName: Text[50])
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShpfyPaymentTerms.SetRange(Type, PaymentTermsType);
+        ShpfyPaymentTerms.SetRange("Shop Code", ShopifyShop.Code);
+        ShpfyPaymentTerms.SetRange(Name, PaymentTermsName);
+        if ShpfyPaymentTerms.FindFirst() then
+            SalesHeader.Validate("Payment Terms Code", ShpfyPaymentTerms."Payment Terms Code");
     end;
 
     local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
@@ -168,15 +187,17 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
         ShopifyOrderLine: Record "Shpfy Order Line";
         OrderShippingCharges: Record "Shpfy Order Shipping Charges";
         ShopLocation: Record "Shpfy Shop Location";
+        ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
         SuppressAsmWarning: Codeunit "Shpfy Suppress Asm Warning";
         IsHandled: Boolean;
+        ShipmentChargeType: Boolean;
         ShopfyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
     begin
         BindSubscription(SuppressAsmWarning);
@@ -212,16 +233,10 @@ codeunit 30166 "Shpfy Process Order"
                         end else begin
                             SalesLine.Validate(Type, SalesLine.Type::Item);
                             SalesLine.Validate("No.", ShopifyOrderLine."Item No.");
-                            if Item.Get(SalesLine."No.") and (Item.Type = Item.Type::Inventory) then begin
+                            if Item.Get(SalesLine."No.") then
                                 if (ShopifyOrderLine."Location Id" <> 0) then
-                                    if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") then
+                                    if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") and (ShopLocation."Default Location Code" <> '') then
                                         SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-                                if (ShopifyOrderLine."Location Id" <> 0)
-                                    and ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id")
-                                    and (ShopLocation."Default Location Code" <> '')
-                                then
-                                    SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-                            end;
                         end;
                     SalesLine.Validate("Unit of Measure Code", ShopifyOrderLine."Unit of Measure Code");
                     SalesLine.Validate("Variant Code", ShopifyOrderLine."Variant Code");
@@ -231,6 +246,8 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine."Shpfy Order Line Id" := ShopifyOrderLine."Line Id";
                     SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
+                    if (SalesLine."Document Type" = SalesLine."Document Type"::Order) and (SalesLine.Type = SalesLine.Type::Item) and (SalesLine.Reserve = SalesLine.Reserve::Always) then
+                        SalesLine.AutoReserve(false);
                 end;
                 OrderEvents.OnAfterCreateItemSalesLine(ShopifyOrderHeader, ShopifyOrderLine, SalesHeader, SalesLine);
             until ShopifyOrderLine.Next() = 0;
@@ -238,12 +255,21 @@ codeunit 30166 "Shpfy Process Order"
         OrderShippingCharges.Reset();
         OrderShippingCharges.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
         OrderShippingCharges.SetFilter(Amount, '>0');
-        if OrderShippingCharges.FindSet() then begin
-            ShopifyShop.TestField("Shipping Charges Account");
+        if OrderShippingCharges.FindSet() then
             repeat
                 IsHandled := false;
                 OrderEvents.OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine, IsHandled);
                 if not IsHandled then begin
+
+                    if ShipmentMethodMapping.Get(ShopifyShop.Code, OrderShippingCharges.Title) then
+                        if ShipmentMethodMapping."Shipping Charges Type" <> ShipmentMethodMapping."Shipping Charges Type"::" " then begin
+                            ShipmentMethodMapping.TestField("Shipping Charges No.");
+                            ShipmentChargeType := true;
+                        end;
+
+                    if not ShipmentChargeType then
+                        ShopifyShop.TestField("Shipping Charges Account");
+
                     SalesLine.Init();
                     SalesLine.SetHideValidationDialog(true);
                     SalesLine.Validate("Document Type", SalesHeader."Document Type");
@@ -251,18 +277,111 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Validate("Line No.", GetNextLineNo(SalesHeader));
                     SalesLine.Insert(true);
 
-                    SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
-                    SalesLine.Validate("No.", ShopifyShop."Shipping Charges Account");
+                    if ShipmentChargeType then begin
+                        SalesLine.Validate(Type, ShipmentMethodMapping."Shipping Charges Type");
+                        SalesLine.Validate("No.", ShipmentMethodMapping."Shipping Charges No.");
+                    end else begin
+                        SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
+                        SalesLine.Validate("No.", ShopifyShop."Shipping Charges Account");
+                    end;
+
+                    SalesLine.Validate("Shipping Agent Code", ShipmentMethodMapping."Shipping Agent Code");
+                    SalesLine.Validate("Shipping Agent Service Code", ShipmentMethodMapping."Shipping Agent Service Code");
                     SalesLine.Validate(Quantity, 1);
                     SalesLine.Validate(Description, OrderShippingCharges.Title);
                     SalesLine.Validate("Unit Price", OrderShippingCharges.Amount);
                     SalesLine.Validate("Line Discount Amount", OrderShippingCharges."Discount Amount");
                     SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
+
+                    if SalesLine.Type = SalesLine.Type::"Charge (Item)" then
+                        AssignItemCharges(SalesHeader, SalesLine);
                 end;
                 OrderEvents.OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine);
             until OrderShippingCharges.Next() = 0;
+    end;
+
+    local procedure AssignItemCharges(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    var
+        AssignItemChargeSales: Codeunit "Item Charge Assgnt. (Sales)";
+        ItemChargeAssgntLineAmt: Decimal;
+        AssignableQty: Decimal;
+    begin
+        SalesLine.TestField("No.");
+        SalesLine.TestField(Quantity);
+
+        PrepareAssignItemChargesLines(SalesHeader, SalesLine, AssignableQty, ItemChargeAssgntLineAmt);
+        AssignItemChargeSales.AssignItemCharges(SalesLine, AssignableQty, ItemChargeAssgntLineAmt, AssignableQty, ItemChargeAssgntLineAmt, AssignItemChargeSales.AssignEquallyMenuText());
+    end;
+
+    local procedure PrepareAssignItemChargesLines(
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        var AssignableQty: Decimal;
+        var ItemChargeAssgntLineAmt: Decimal
+    )
+    var
+        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+    begin
+        GetItemChargeAssgntLineAmt(SalesHeader, SalesLine, ItemChargeAssgntSales, ItemChargeAssgntLineAmt);
+        GetAssignableQty(SalesLine, ItemChargeAssgntSales, AssignableQty);
+    end;
+
+    local procedure GetItemChargeAssgntLineAmt(
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        var ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+        var ItemChargeAssgntLineAmt: Decimal
+    )
+    var
+        Currency: Record Currency;
+    begin
+        SalesHeader := SalesLine.GetSalesHeader();
+        Currency.Initialize(SalesHeader."Currency Code");
+        if (SalesLine."Inv. Discount Amount" = 0) and (SalesLine."Line Discount Amount" = 0) and
+            (not SalesHeader."Prices Including VAT")
+        then
+            ItemChargeAssgntLineAmt := SalesLine."Line Amount"
+        else
+            if SalesHeader."Prices Including VAT" then
+                ItemChargeAssgntLineAmt :=
+                    Round(SalesLine.CalcLineAmount() / (1 + SalesLine."VAT %" / 100), Currency."Amount Rounding Precision")
+            else
+                ItemChargeAssgntLineAmt := SalesLine.CalcLineAmount();
+
+        ItemChargeAssgntSales.Reset();
+        ItemChargeAssgntSales.SetRange("Document Type", SalesLine."Document Type");
+        ItemChargeAssgntSales.SetRange("Document No.", SalesLine."Document No.");
+        ItemChargeAssgntSales.SetRange("Document Line No.", SalesLine."Line No.");
+        ItemChargeAssgntSales.SetRange("Item Charge No.", SalesLine."No.");
+        if not ItemChargeAssgntSales.FindLast() then begin
+            ItemChargeAssgntSales."Document Type" := SalesLine."Document Type";
+            ItemChargeAssgntSales."Document No." := SalesLine."Document No.";
+            ItemChargeAssgntSales."Document Line No." := SalesLine."Line No.";
+            ItemChargeAssgntSales."Item Charge No." := SalesLine."No.";
+            ItemChargeAssgntSales."Unit Cost" :=
+                Round(ItemChargeAssgntLineAmt / SalesLine.Quantity, Currency."Unit-Amount Rounding Precision");
         end;
+
+        ItemChargeAssgntLineAmt :=
+          Round(ItemChargeAssgntLineAmt * (SalesLine."Qty. to Invoice" / SalesLine.Quantity), Currency."Amount Rounding Precision");
+    end;
+
+    local procedure GetAssignableQty(
+        SalesLine: Record "Sales Line";
+        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+        var AssignableQty: Decimal
+    )
+    var
+        AssignItemChargeSales: Codeunit "Item Charge Assgnt. (Sales)";
+    begin
+        if SalesLine.IsCreditDocType() then
+            AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Return Receipt No.")
+        else
+            AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Shipment No.");
+
+        SalesLine.CalcFields("Qty. to Assign", "Item Charge Qty. to Handle", "Qty. Assigned");
+        AssignableQty := SalesLine."Qty. to Invoice" + SalesLine."Quantity Invoiced" - SalesLine."Qty. Assigned";
     end;
 
     /// <summary> 
@@ -314,6 +433,11 @@ codeunit 30166 "Shpfy Process Order"
     begin
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
+    end;
+
+    internal procedure SetShopifyShop(Shop: Record "Shpfy Shop")
+    begin
+        ShopifyShop := Shop;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]

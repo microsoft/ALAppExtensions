@@ -27,6 +27,7 @@ table 4768 "Contoso Coffee Demo Data Setup"
         {
             TableRelation = "Country/Region";
             Caption = 'Country/Region Code';
+            InitValue = 'GB';
         }
         field(5; "Price Factor"; Decimal)
         {
@@ -37,6 +38,13 @@ table 4768 "Contoso Coffee Demo Data Setup"
         {
             Caption = 'Rounding Precision';
             InitValue = 0.01;
+        }
+        field(7; "Language ID"; Integer)
+        {
+            Caption = 'Language ID';
+            Editable = false;
+            InitValue = 0;
+            TableRelation = "Windows Language";
         }
     }
 
@@ -55,7 +63,7 @@ table 4768 "Contoso Coffee Demo Data Setup"
             exit;
 
         Rec.Init();
-        Rec.Validate("Starting Year", Date2DMY(Today, 3) - 1);
+        Rec.Validate("Starting Year", Date2DMY(Today(), 3) - 1);
         Rec.Insert();
     end;
 }

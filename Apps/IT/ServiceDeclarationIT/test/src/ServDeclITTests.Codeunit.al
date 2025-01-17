@@ -36,6 +36,7 @@ codeunit 144112 "Serv. Decl. IT Tests"
         ServDeclDataExchSaleCodeLbl: Label 'SERVDECLITS-2023', Locked = true;
         ServDeclDataExchPurchaseCorrectionCodeLbl: Label 'SERVDECLITPC-2023', Locked = true;
         ServDeclDataExchSaleCorrectionCodeLbl: Label 'SERVDECLITSC-2023', Locked = true;
+        TaxCategoryPLbl: Label 'P', Locked = true;
 
     [Test]
     [Scope('OnPrem')]
@@ -455,6 +456,98 @@ codeunit 144112 "Serv. Decl. IT Tests"
         LibraryServDecl.DeleteServDecl(ServDeclNo2);
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure ServiceDeclarationshowCorrectAmount()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EUServiceVATPostingSetup: Record "VAT Posting Setup";
+        VATPostingSetup: Record "VAT Posting Setup";
+        VATBusinessPostingGroup: Record "VAT Business Posting Group";
+        VATProductPostingGroup: Record "VAT Product Posting Group";
+        EUServiceVATProductPostingGroup: Record "VAT Product Posting Group";
+        ServiceTariffNumber: Record "Service Tariff Number";
+        InvoiceDate: Date;
+        GLAccountCode, ServDeclNo, InvoiceNo, CreditMemoNo, VendorNo : Code[20];
+    begin
+        // [SCENARIO 555216] The Service Declaration suggest an Incorrect amount for both Purchase / Sales Invoice and Credit Memo in the same month in the Italian version.
+        Initialize();
+
+        // [GIVEN] Create VAT Business Posting Group
+        LibraryERM.CreateVATBusinessPostingGroup(VATBusinessPostingGroup);
+
+        // [GIVEN] Create Non EU VAT Product Posting Group
+        LibraryERM.CreateVATProductPostingGroup(VATProductPostingGroup);
+
+        // [GIVEN] Create EU Service VAT Product Posting Group
+        LibraryERM.CreateVATProductPostingGroup(EUServiceVATProductPostingGroup);
+
+        // [GIVEN] Create VAT Posting Setup with VAT Calculation Type as Reverse Charge VAT and Deductible as 100%
+        LibraryERM.CreateVATPostingSetup(VATPostingSetup, VATBusinessPostingGroup.Code, VATProductPostingGroup.Code);
+        VATPostingSetup.Validate("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT");
+        VATPostingSetup.Validate("VAT %", LibraryRandom.RandIntInRange(1, 25));
+        VATPostingSetup.Validate("Purchase VAT Account", LibraryERM.CreateGLAccountNo());
+        VATPostingSetup.Validate("Reverse Chrg. VAT Acc.", LibraryERM.CreateGLAccountNo());
+        VATPostingSetup.Validate("Tax Category", TaxCategoryPLbl);
+        VATPostingSetup."Deductible %" := 100;
+        VATPostingSetup.Modify(true);
+
+        // [GIVEN] Create VAT Posting Setup with EU Service, VAT Calculation Type as Reverse Charge VAT  and deductible as 100%
+        LibraryERM.CreateVATPostingSetup(EUServiceVATPostingSetup, VATBusinessPostingGroup.Code, EUServiceVATProductPostingGroup.Code);
+        EUServiceVATPostingSetup.Validate("VAT Calculation Type", EUServiceVATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT");
+        EUServiceVATPostingSetup.Validate("VAT %", LibraryRandom.RandIntInRange(1, 25));
+        EUServiceVATPostingSetup.Validate("Purchase VAT Account", LibraryERM.CreateGLAccountNo());
+        EUServiceVATPostingSetup.Validate("Reverse Chrg. VAT Acc.", LibraryERM.CreateGLAccountNo());
+        EUServiceVATPostingSetup.Validate("Tax Category", TaxCategoryPLbl);
+        EUServiceVATPostingSetup."Deductible %" := 100;
+        EUServiceVATPostingSetup.Validate("EU Service", true);
+        EUServiceVATPostingSetup.Modify(true);
+
+        // [GIVEN] Posted Purchase Order and Credit Memo for service declaration in same period
+        InvoiceDate := CalcDate('<5Y>', WorkDate());
+        WorkDate(InvoiceDate);
+
+        // [GIVEN] Create new G/L Account
+        GLAccountCode := LibraryERM.CreateGLAccountWithPurchSetup();
+
+        // [GIVEN] Create and Post Purchase Order with two Purchase Lines, one line for EU Service and second line non EU Service
+        VendorNo := LibraryServDecl.CreateVendor(LibraryServDecl.GetCountryRegionCode());
+        LibraryServDecl.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, InvoiceDate, VendorNo);
+        PurchaseHeader.Validate("VAT Bus. Posting Group", VATBusinessPostingGroup.Code);
+        PurchaseHeader.Modify(true);
+
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", GLAccountCode, 1);
+        PurchaseLine.Validate("VAT Prod. Posting Group", EUServiceVATPostingSetup."VAT Prod. Posting Group");
+        ServiceTariffNumber.Init();
+        ServiceTariffNumber."No." := '162534';
+        if not ServiceTariffNumber.Insert() then;
+        PurchaseLine.Validate("Service Tariff No.", ServiceTariffNumber."No.");
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(800, 1000, 2));
+        PurchaseLine.Modify(true);
+
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", GLAccountCode, 1);
+        PurchaseLine.Validate("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(90, 100, 2));
+        PurchaseLine.Modify(true);
+
+        InvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Create and Post Corrective Credit Memo with two lines
+        CreditMemoNo := CreateAndPostMultipleLineCorrectivePurchCrMemo(InvoiceNo, InvoiceDate);
+
+        // [WHEN] Create Service Declaration and suggest lines
+        WorkDate(Today);
+        FileNo := IncStr(FileNo);
+        CreateServDeclAndSuggestLines(InvoiceDate, ServDeclNo, Periodicity::Month, Type::Purchase, false, FileNo);
+        Commit();
+
+        // [THEN] Verify Service Declaration Amount
+        VerifyServDeclLineAmount(ServDeclNo, InvoiceNo, CreditMemoNo);
+
+        LibraryServDecl.DeleteServDecl(ServDeclNo);
+    end;
+
     local procedure Initialize()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -545,17 +638,18 @@ codeunit 144112 "Serv. Decl. IT Tests"
 
     local procedure ResetNoSeries()
     var
-        NoSeriesLinePurchase: Record "No. Series Line Purchase";
-        NoSeriesLineSales: Record "No. Series Line Sales";
+        NoSeriesLine: Record "No. Series Line";
         VATBusinessPostingGroup: Record "VAT Business Posting Group";
     begin
         if VATBusinessPostingGroup.FindSet() then
             repeat
-                NoSeriesLineSales.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
-                NoSeriesLineSales.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("No. Series Type", NoSeriesLine."No. Series Type"::Sales);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
 
-                NoSeriesLinePurchase.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
-                NoSeriesLinePurchase.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("No. Series Type", NoSeriesLine."No. Series Type"::Purchase);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
             until VATBusinessPostingGroup.Next() = 0;
     end;
 
@@ -585,6 +679,70 @@ codeunit 144112 "Serv. Decl. IT Tests"
         CreateServDeclAndSuggestLines(WorkDate(), ServDeclNo, Periodicity2, Type2, false, FileNo);
         // Verify
         VerifyServDeclLine(DocumentNo, ServDeclNo, LibraryServDecl.GetCountryRegionCode(), ServiceTariffNo, Amount);
+
+        LibraryServDecl.DeleteServDecl(ServDeclNo);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ServiceDeclarationSumInvoiceAndCreditMemoAmount()
+    var
+        ServiceDeclarationLine: Record "Service Declaration Line";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        ItemNo: Code[20];
+        DirectUnitCost: List of [Decimal];
+        i: Integer;
+        InvoiceDate: Date;
+        ServDeclPage: TestPage "Service Declaration";
+        ServDeclNo, InvoiceNo : Code[20];
+    begin
+        // [SCENARIO 555251] Service Declaration sums absolute values causing errors in total amount in the Italian version
+        Initialize();
+
+        // [GIVEN] Posted Purchase Order and Credit Memo for service declaration in same period
+        InvoiceDate := CalcDate('<5Y>', WorkDate());
+        WorkDate(InvoiceDate);
+
+        // [GIVEN] Create and Post Purchase Order with DirectUnitCost as -300 and 1000   
+        ItemNo := LibraryServDecl.CreateItem();
+        DirectUnitCost.Add(-300);
+        DirectUnitCost.Add(1000);
+        LibraryServDecl.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, InvoiceDate, LibraryServDecl.CreateVendor(LibraryServDecl.GetCountryRegionCode()));
+        for i := 1 to DirectUnitCost.Count do begin
+            LibraryServDecl.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+            PurchaseLine.Validate("Direct Unit Cost", DirectUnitCost.Get(i));
+            PurchaseLine.Modify();
+        end;
+        InvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Create and Post Purchase Credit Memo with DirectUnitCost as 400
+        PurchInvHeader.Get(InvoiceNo);
+        LibraryServDecl.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", InvoiceDate, PurchInvHeader."Buy-from Vendor No.");
+        LibraryServDecl.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+        PurchaseLine.Validate("Direct Unit Cost", 400);
+        PurchaseLine.Modify();
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+
+        // [GIVEN] Create Service Declaration
+        FileNo := IncStr(FileNo);
+        CreateServDeclAndSuggestLines(InvoiceDate, ServDeclNo, Periodicity::Month, Type::Purchase, false, FileNo);
+        Commit();
+
+        // [GIVEN] A Service Declaration
+        ServDeclPage.OpenEdit();
+        ServDeclPage.Filter.SetFilter("No.", ServDeclNo);
+        ValidateMissingFields(ServDeclPage);
+
+        // [WHEN] Running Create File
+        ServDeclPage.CreateFile.Invoke();
+
+        // [THEN] Check file content for purchase monthly invoice 
+        ServiceDeclarationLine.SetRange("Service Declaration No.", ServDeclNo);
+        ServiceDeclarationLine.CalcSums(Amount);
+        CheckFileContentForAbsoluteSumReporting(ServDeclPage, 'A', 'M', ServiceDeclarationLine.Amount);
+        ServDeclPage.Close();
 
         LibraryServDecl.DeleteServDecl(ServDeclNo);
     end;
@@ -645,6 +803,31 @@ codeunit 144112 "Serv. Decl. IT Tests"
         Assert.AreEqual(MustExist, ServDeclLine.FindFirst(), LineNotExistErr);
     end;
 
+    local procedure VerifyServDeclLineAmount(ServDeclNo: Code[20]; DocumentNo: Code[20]; CreditMemoNo: code[20])
+    var
+        ServDeclLine: Record "Service Declaration Line";
+        PurchaseInvLine: Record "Purch. Inv. Line";
+        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+    begin
+        Commit();  // Commit is required to commit the posted entries.
+
+        ServDeclLine.SetFilter("Service Declaration No.", ServDeclNo);
+        ServDeclLine.SetFilter("Document No.", DocumentNo);
+        ServDeclLine.FindFirst();
+
+        // Purchase Invoice Amount
+        PurchaseInvLine.SetRange("Document No.", DocumentNo);
+        if not PurchaseInvLine.IsEmpty() then
+            PurchaseInvLine.CalcSums("Amount Including VAT");
+
+        // Purchase Credit Memo Amount
+        PurchCrMemoLine.SetRange("Document No.", CreditMemoNo);
+        if not PurchCrMemoLine.IsEmpty() then
+            PurchCrMemoLine.CalcSums("Amount Including VAT");
+
+        Assert.AreEqual(ServDeclLine.Amount, PurchaseInvLine."Amount Including VAT" - PurchCrMemoLine."Amount Including VAT", LineNotExistErr);
+    end;
+
     local procedure ValidateMissingFields(var ServDeclPage: TestPage "Service Declaration")
     var
         TransportMethod: Record "Transport Method";
@@ -677,6 +860,30 @@ codeunit 144112 "Serv. Decl. IT Tests"
         PurchaseHeader.Validate("Posting Date", PostingDate);
         PurchaseHeader.Validate("Vendor Cr. Memo No.", PurchaseHeader."No.");
         PurchaseHeader.Modify(true);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true));
+    end;
+
+    local procedure CreateAndPostMultipleLineCorrectivePurchCrMemo(PostedPurchInvoiceCode: Code[20]; PostingDate: Date): Code[20]
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvoiceHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+    begin
+        PurchInvoiceHeader.Get(PostedPurchInvoiceCode);
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", PurchaseHeader."No.");
+        PurchaseHeader.Modify(true);
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange(Type, PurchaseLine.Type::"G/L Account");
+        if PurchaseLine.FindSet() then
+            repeat
+                PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(50, 80, 2));
+                PurchaseLine.Modify(true);
+            until PurchaseLine.Next() = 0;
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true));
     end;
 
@@ -943,5 +1150,63 @@ codeunit 144112 "Serv. Decl. IT Tests"
         ReadFromPosition += 1;
         Assert.AreEqual(ServDeclPage.Lines."Country/Region of Payment Code".Value, LibraryTextFileValidation.ReadValue(Line1, ReadFromPosition, 2), ServDeclFileOutputErr);
         ReadFromPosition += 2;
+    end;
+
+    local procedure CheckFileContentForAbsoluteSumReporting(var ServDeclPage: TestPage "Service Declaration"; FileType: Char; Periodicity2: Char; ExpectedAmount: Decimal)
+    var
+        DataExch: Record "Data Exch.";
+        CompanyInfo: Record "Company Information";
+        FileMgt: Codeunit "File Management";
+        LibraryTextFileValidation: Codeunit "Library - Text File Validation";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        Header: Text;
+        ReadFromPosition: Integer;
+    begin
+        DataExch.FindLast();
+        Assert.IsTrue(DataExch."File Content".HasValue(), DataExchFileContentMissingErr);
+
+        DataExch.CalcFields("File Content");
+        TempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+
+        FileName := FileMgt.ServerTempFileName('txt');
+        FileMgt.BLOBExportToServerFile(TempBlob, FileName);
+
+        Header := LibraryTextFileValidation.ReadLine(FileName, 1);
+        CompanyInfo.Get();
+
+        // Verify header line
+        ReadFromPosition := 1;
+        Assert.AreEqual(EUROXLbl, LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 5), ServDeclFileOutputErr);
+        ReadFromPosition += 5;
+        Assert.AreEqual(ServDeclMgtIT.GetCompanyRepresentativeVATNo(), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 11), ServDeclFileOutputErr);
+        ReadFromPosition += 11;
+        Assert.AreEqual(Format(ServDeclPage."File Disk No.").PadLeft(6, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 6), ServDeclFileOutputErr);
+        ReadFromPosition += 6;
+        Assert.AreEqual('000000', LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 6), ServDeclFileOutputErr);
+        ReadFromPosition += 6;
+        Assert.AreEqual(FileType, LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 1), ServDeclFileOutputErr);
+        ReadFromPosition += 1;
+        Assert.AreEqual(CopyStr(Format(ServDeclPage."Statistics Period"), 1, 2).PadLeft(2, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 2), ServDeclFileOutputErr);
+        ReadFromPosition += 2;
+        Assert.AreEqual(Periodicity2, LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 1), ServDeclFileOutputErr);
+        ReadFromPosition += 1;
+        Assert.AreEqual(CopyStr(Format(ServDeclPage."Statistics Period"), 3, 2).PadLeft(2, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 2), ServDeclFileOutputErr);
+        ReadFromPosition += 2;
+        Assert.AreEqual(ServDeclMgtIT.RemoveLeadingCountryCode(CompanyInfo."VAT Registration No.", CompanyInfo."Country/Region Code").PadLeft(11, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 11), ServDeclFileOutputErr);
+        ReadFromPosition += 11;
+        Assert.AreEqual('00', LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 2), ServDeclFileOutputErr);
+        ReadFromPosition += 2;
+        Assert.AreEqual('00000000000', LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 11), ServDeclFileOutputErr);
+        ReadFromPosition += 11;
+        if ServDeclPage."Corrective Entry".AsBoolean() then begin
+            Assert.AreEqual(Format('').PadLeft(54, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 54), ServDeclFileOutputErr);
+            ReadFromPosition += 54;
+        end else begin
+            Assert.AreEqual(Format('').PadLeft(36, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 36), ServDeclFileOutputErr);
+            ReadFromPosition += 36;
+        end;
+        ReadFromPosition += 5;
+        Assert.AreEqual(Format(Round(Abs(ExpectedAmount), 1), 0, 9).PadLeft(13, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 13), ServDeclFileOutputErr);
     end;
 }

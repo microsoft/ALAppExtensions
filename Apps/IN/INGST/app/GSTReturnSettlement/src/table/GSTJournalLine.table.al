@@ -551,7 +551,6 @@ table 18325 "GST Journal Line"
         BankAcc: Record "Bank Account";
         GLSetup: Record "General Ledger Setup";
         GSTAdjustmentBuffer: Record "GST Adjustment Buffer";
-        NoSeriesMgt: Codeunit "NoSeriesManagement";
         DimMgt: Codeunit "DimensionManagement";
         GSTJournalPost: Codeunit "GST Journal Post";
         ReplaceInfo: Boolean;
@@ -568,6 +567,8 @@ table 18325 "GST Journal Line"
     end;
 
     procedure SetUpNewLine(LastGSTJournalLine: Record "GST Journal Line"; Balance: Decimal; BottomLine: Boolean)
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         GSTJournalTemplate.Get("Journal Template Name");
         GSTJournalBatch.Get("Journal Template Name", "Journal Batch Name");
@@ -583,10 +584,8 @@ table 18325 "GST Journal Line"
                 "Document No." := IncStr("Document No.");
         end else begin
             "Posting Date" := WorkDate();
-            if GSTJournalBatch."No. Series" <> '' then begin
-                CLEAR(NoSeriesMgt);
-                "Document No." := NoSeriesMgt.GetNextNo(GSTJournalBatch."No. Series", "Posting Date", false);
-            end;
+            if GSTJournalBatch."No. Series" <> '' then
+                "Document No." := NoSeries.PeekNextNo(GSTJournalBatch."No. Series", "Posting Date");
         end;
 
         "Account Type" := LastGSTJournalLine."Account Type";

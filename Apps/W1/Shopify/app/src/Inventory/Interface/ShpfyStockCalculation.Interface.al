@@ -4,5 +4,5 @@ using Microsoft.Inventory.Item;
 
 interface "Shpfy Stock Calculation"
 {
-    procedure GetStock(var Item: Record Item): decimal;
+    procedure GetStock(var Item: Record Item): Decimal;
 }

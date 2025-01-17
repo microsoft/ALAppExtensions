@@ -11,6 +11,8 @@ page 2633 "Statistical Accounts Journal"
     ApplicationArea = All;
     UsageCategory = Tasks;
     AutoSplitKey = true;
+    DelayedInsert = true;
+    SaveValues = true;
 
     layout
     {
@@ -28,7 +30,9 @@ page 2633 "Statistical Accounts Journal"
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
+                        CurrPage.SaveRecord();
                         Rec.LookupBatchName(CurrentJnlBatchName, Rec);
+                        CurrPage.Update(false)
                     end;
 
                     trigger OnValidate()
@@ -63,6 +67,11 @@ page 2633 "Statistical Accounts Journal"
                     ApplicationArea = All;
                     Caption = 'Statistical Account No.';
                     ToolTip = 'Specifies the account number that the entry on the journal line will be posted to.';
+
+                    trigger OnValidate()
+                    begin
+                        Rec.ShowShortcutDimCode(ShortcutDimCode);
+                    end;
                 }
                 field(Description; Rec.Description)
                 {
@@ -343,12 +352,21 @@ page 2633 "Statistical Accounts Journal"
     begin
         StatAccTelemetry.LogSetup();
         Rec.SetUpNewLine(xRec, CurrentJnlBatchName);
+        if Rec."Statistical Account No." <> '' then
+            Rec.ShowShortcutDimCode(ShortcutDimCode);
+        Clear(ShortcutDimCode);
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         NumberOfRecords := Rec.Count();
         Rec.GetBalance(Rec, BalanceAfterPosting, Balance);
+        Rec.ShowShortcutDimCode(ShortcutDimCode);
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        Rec.ShowShortcutDimCode(ShortcutDimCode);
     end;
 
     local procedure SetDimensionVisibility()

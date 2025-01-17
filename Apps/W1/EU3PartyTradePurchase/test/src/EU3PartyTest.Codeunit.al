@@ -116,7 +116,6 @@ codeunit 139614 "EU 3-Party Test"
         PurchaseDropShipmentWithEUThirdParty(false, false, false);  // EU 3-Party Trade - False on Sales Header, False and False on Purchase Header.
     end;
 
-#if CLEAN23
     [Test]
     [HandlerFunctions('SalesListModalPageHandler')]
     [Scope('OnPrem')]
@@ -125,7 +124,6 @@ codeunit 139614 "EU 3-Party Test"
         // Test to verify EU 3-Party Trade on Purchase Order, When EU 3-Party Trade True on Sales Header, True on Purchase Header.
         PurchaseDropShipmentWithEUThirdParty(true, true, true);  // EU 3-Party Trade - True on Sales Header, True and True on Purchase Header.
     end;
-#endif
 
     local procedure Initialize()
     begin
@@ -134,10 +132,6 @@ codeunit 139614 "EU 3-Party Test"
         if IsInitialized then
             exit;
         EnableEU3PartyTradePurchase();
-#if not CLEAN23
-        EnableEU3PartyOnInitializeFeatureDataUpdateStatus();
-        Commit();
-#endif
         DisableCheckDocTotalAmount();
         IsInitialized := true;
     end;
@@ -483,35 +477,6 @@ codeunit 139614 "EU 3-Party Test"
             TestField("EU 3-Party Trade", EUThirdPartyTrade);
         end;
     end;
-
-#if not CLEAN23
-    [Obsolete('The EU 3-Party Trade Purhcase feature will be enabled by default.', '23.0')]
-    procedure EnableEU3PartyOnInitializeFeatureDataUpdateStatus()
-    var
-        FeatureKey: Record "Feature Key";
-        FeatureDataUpdateStatus: Record "Feature Data Update Status";
-        EU3PartyTradeFeatureMgt: Codeunit "EU3 Party Trade Feature Mgt.";
-        FeatureKeyId: Text;
-    begin
-        FeatureKeyId := EU3PartyTradeFeatureMgt.GetFeatureKeyId();
-        if not FeatureDataUpdateStatus.Get(FeatureKeyId, CompanyName) then begin
-            FeatureDataUpdateStatus.Init();
-            FeatureDataUpdateStatus."Feature Key" := FeatureKeyId;
-            FeatureDataUpdateStatus."Company Name" := CompanyName;
-            FeatureDataUpdateStatus."Data Update Required" := true;
-            FeatureDataUpdateStatus.Insert()
-        end;
-
-        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
-        FeatureDataUpdateStatus.Modify();
-
-        if FeatureKey.Get(FeatureDataUpdateStatus."Feature Key") then begin
-            FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
-            FeatureKey.Modify();
-        end;
-        Commit();
-    end;
-#endif
 
     [PageHandler]
     [Scope('OnPrem')]

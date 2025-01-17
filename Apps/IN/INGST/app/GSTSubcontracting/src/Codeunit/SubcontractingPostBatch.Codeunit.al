@@ -13,6 +13,7 @@ using Microsoft.Inventory.Tracking;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.Currency;
 
 codeunit 18467 "Subcontracting Post Batch"
 {
@@ -104,7 +105,9 @@ codeunit 18467 "Subcontracting Post Batch"
         Item: Record Item;
         ItemTrackingCode: Record "Item Tracking Code";
         ItemTrackingSetup: Record "Item Tracking Setup";
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
         ItemTrackingManagement: Codeunit "Item Tracking Management";
+        ItemJnlPostBatch: Codeunit "Item Jnl.-Post Batch";
 
         Inbound: Boolean;
         SNRequired: Boolean;
@@ -127,12 +130,13 @@ codeunit 18467 "Subcontracting Post Batch"
         ItemJnlLine."Order No." := SubOrderCompList."Production Order No.";
         ItemJnlLine."Order Line No." := SubOrderCompList."Production Order Line No.";
         ItemJnlLine."Prod. Order Comp. Line No." := SubOrderCompList."Line No.";
-        ItemJnlLine."Location Code" := SubOrderCompList."Company Location";
-        ItemJnlLine."New Location Code" := SubOrderCompList."Vendor Location";
         ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::Transfer;
         ItemJnlLine."Item No." := SubOrderCompList."Item No.";
         ItemJnlLine.Description := SubOrderCompList.Description;
         ItemJnlLine."Gen. Prod. Posting Group" := SubOrderCompList."Gen. Prod. Posting Group";
+        ItemJnlLine.Validate("Location Code", SubOrderCompList."Company Location");
+        ItemJnlLine.Validate("New Location Code", SubOrderCompList."Vendor Location");
+        ItemJnlLine.Validate("Bin Code", SubOrderCompList."Bin Code");
         ItemJnlLine.Quantity := SubOrderCompList."Quantity To Send";
         ItemJnlLine."Unit of Measure Code" := SubOrderCompList."Unit of Measure Code";
         ItemJnlLine."Qty. per Unit of Measure" := SubOrderCompList."Quantity per";
@@ -191,7 +195,12 @@ codeunit 18467 "Subcontracting Post Batch"
         if Item."Item Tracking Code" <> '' then
             SubcontractingPost.TransferTrackingToItemJnlLine(SubOrderCompList, ItemJnlLine, SubOrderCompList."Quantity To Send", 0);
 
-        ItemJnlPostLine.RunWithCheck(ItemJnlLine);
+        if ItemJnlLine."Value Entry Type" <> ItemJnlLine."Value Entry Type"::Revaluation then begin
+            if not ItemJnlPostLine.RunWithCheck(ItemJnlLine) then
+                ItemJnlPostLine.CheckItemTracking();
+            ItemJnlPostLine.CollectTrackingSpecification(TempTrackingSpecification);
+            ItemJnlPostBatch.PostWhseJnlLine(ItemJnlLine, ItemJnlLine.Quantity, ItemJnlLine."Quantity (Base)", TempTrackingSpecification);
+        end;
     end;
 
     procedure PostPurchOrder(MultiSubOrderDet: Record "Multiple Subcon. Order Details")
@@ -199,6 +208,7 @@ codeunit 18467 "Subcontracting Post Batch"
         PurchHeader: Record "Purchase Header";
         PurchLine: Record "Purchase Line";
         PurchLineToUpdate: Record "Purchase Line";
+        Currency: Record Currency;
         PurchPost: Codeunit "Purch.-Post";
     begin
         if not Confirm(PostConfirmationQst) then
@@ -230,6 +240,13 @@ codeunit 18467 "Subcontracting Post Batch"
                 PurchHeader.SetRange("No.", PurchLine."Document No.");
                 PurchHeader.SetRange("Subcon. Multiple Receipt", false);
                 if PurchHeader.FindFirst() then begin
+                    if PurchHeader."Currency Code" = '' then
+                        Currency.InitRoundingPrecision()
+                    else begin
+                        PurchHeader.TestField("Currency Factor");
+                        Currency.Get(PurchHeader."Currency Code");
+                        Currency.TestField("Amount Rounding Precision");
+                    end;
                     PurchHeader."Vendor Shipment No." := MultiSubOrderDet."Vendor Shipment No.";
                     PurchHeader.Receive := true;
                     PurchHeader.Invoice := false;
@@ -239,6 +256,11 @@ codeunit 18467 "Subcontracting Post Batch"
                 end;
                 PurchLineToUpdate.Get(PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
                 PurchLineToUpdate."Applies-to ID (Receipt)" := '';
+                PurchLineToUpdate."Line Discount Amount" := Round(
+                    Round(PurchLineToUpdate.Quantity * PurchLineToUpdate."Direct Unit Cost", Currency."Amount Rounding Precision") *
+                        PurchLineToUpdate."Line Discount %" / 100,
+                        Currency."Amount Rounding Precision");
+                PurchLineToUpdate.UpdateAmounts();
                 PurchLineToUpdate.Modify();
             until PurchLine.Next() = 0
         else

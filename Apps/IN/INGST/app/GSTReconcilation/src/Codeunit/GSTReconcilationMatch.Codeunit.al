@@ -401,7 +401,12 @@ codeunit 18280 "GST Reconcilation Match"
     var
         DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
         GSTRegistrationNos: Record "GST Registration Nos.";
+        IsHandled: Boolean;
     begin
+        OnBeforeInsertGSTRecoLines(GSTReconcilationLine, DetailedGSTLedgerEntry, GSTRegNo, GSTMonth, GSTYear, IsHandled);
+        if IsHandled then
+            exit;
+
         if DetailedGSTLedgerEntryInfo.Get(DetailedGSTLedgerEntry."Entry No.") then
             GSTReconcilationLine."State Code" := DetailedGSTLedgerEntryInfo."Location State Code";
 
@@ -427,6 +432,7 @@ codeunit 18280 "GST Reconcilation Match"
         GSTReconcilationLine."Credit Availed" := DetailedGSTLedgerEntry."Credit Availed";
         GSTRegistrationNos.Get(GSTRegNo);
         GSTReconcilationLine."Input Service Distribution" := GSTRegistrationNos."Input Service Distributor";
+        OnAfterFillGSTRecoLineOnBeforeInsert(GSTReconcilationLine, DetailedGSTLedgerEntry, DetailedGSTLedgerEntryInfo, GSTRegistrationNos);
         GSTReconcilationLine.Insert(true);
     end;
 
@@ -542,5 +548,15 @@ codeunit 18280 "GST Reconcilation Match"
             GSTReconcilationLine."Error Type" := StrSubstNo(
                 CompAmtTxtErr,
                 GSTReconMapping."GST Component Code");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertGSTRecoLines(var GSTReconcilationLine: Record "GST Reconcilation Line"; var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; GSTRegNo: Code[20]; GSTMonth: Integer; GSTYear: Integer; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterFillGSTRecoLineOnBeforeInsert(var GSTReconcilationLine: Record "GST Reconcilation Line"; var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; var GSTRegistrationNos: Record "GST Registration Nos.")
+    begin
     end;
 }

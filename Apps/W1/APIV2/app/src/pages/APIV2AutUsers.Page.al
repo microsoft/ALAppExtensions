@@ -50,19 +50,10 @@ page 30004 "APIV2 - Aut. Users"
                 {
                     Caption = 'Expiry Date';
                 }
-#if not CLEAN22
-                part(userGroupMember; "APIV2 - Aut. User Gr. Members")
+                field(contactEmail; Rec."Contact Email")
                 {
-                    Caption = 'User Group Member';
-                    EntityName = 'userGroupMember';
-                    EntitySetName = 'userGroupMembers';
-                    SubPageLink = "User Security ID" = field("User Security ID");
-                    Visible = LegacyUserGroupsVisible;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The user groups functionality is deprecated.';
-                    ObsoleteTag = '22.0';
+                    Caption = 'Contact Email';
                 }
-#endif
                 part(securityGroupMember; "APIV2 - Aut. Sec. Gr. Members")
                 {
                     Caption = 'User Group Member';
@@ -94,16 +85,8 @@ page 30004 "APIV2 - Aut. Users"
 
     trigger OnOpenPage()
     var
-#if not CLEAN22
-#pragma warning disable AL0432
-        LegacyUserGroups: Codeunit "Legacy User Groups";
-#pragma warning restore AL0432
-#endif
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-#if not CLEAN22
-        LegacyUserGroupsVisible := LegacyUserGroups.UiElementsVisible();
-#endif
         BindSubscription(AutomationAPIManagement);
         if EnvironmentInformation.IsSaaS() then
             Rec.SetFilter("License Type", '<>%1', Rec."License Type"::"External User");
@@ -113,9 +96,6 @@ page 30004 "APIV2 - Aut. Users"
         AutomationAPIManagement: Codeunit "Automation - API Management";
         APIV2AutCreateNewUsers: Codeunit "APIV2 - Aut. Create New Users";
         AlreadyScheduledCreateUsersJobLbl: Label 'You cannot get new users while a task is already in progress.';
-#if not CLEAN22
-        LegacyUserGroupsVisible: Boolean;
-#endif
 
     [ServiceEnabled]
     [Scope('Cloud')]

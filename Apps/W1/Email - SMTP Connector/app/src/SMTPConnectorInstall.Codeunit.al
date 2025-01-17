@@ -33,6 +33,5 @@ codeunit 4515 "SMTP Connector Install"
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo("Secure Connection"));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo(Server));
         DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo("Server Port"));
-        DataClassificationMgt.SetFieldToNormal(Database::"SMTP Account", Account.FieldNo(Authentication));
     end;
 }

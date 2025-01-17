@@ -12,7 +12,6 @@ codeunit 4027 "W1 Transformation"
         if TargetVersion <> 15.0 then
             exit;
 
-        TransformIncomingDocument();
         OnAfterW1TransformationForVersion(CountryCode, TargetVersion);
     end;
 
@@ -132,17 +131,6 @@ codeunit 4027 "W1 Transformation"
             exit;
 
         OnAfterW1NonCompanyTransformationForVersion(CountryCode, TargetVersion);
-    end;
-
-    local procedure TransformIncomingDocument()
-    var
-        StgIncomingDocument: Record "Stg Incoming Document";
-    begin
-        if StgIncomingDocument.FindSet(true) then
-            repeat
-                StgIncomingDocument.URL := StgIncomingDocument.URL1 + StgIncomingDocument.URL2 + StgIncomingDocument.URL3 + StgIncomingDocument.URL4;
-                StgIncomingDocument.Modify();
-            until StgIncomingDocument.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

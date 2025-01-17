@@ -14,7 +14,7 @@ using System.Threading;
 
 table 6121 "E-Document"
 {
-    DataCaptionFields = "Document No.", "Bill-to/Pay-to Name";
+    DataCaptionFields = "Entry No", "Bill-to/Pay-to Name";
     LookupPageId = "E-Documents";
     DrillDownPageId = "E-Documents";
     DataClassification = CustomerContent;
@@ -30,6 +30,13 @@ table 6121 "E-Document"
         {
             Caption = 'Document Record ID';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                EDocAttachmentProcessor: Codeunit "E-Doc. Attachment Processor";
+            begin
+                EDocAttachmentProcessor.MoveAttachmentsAndDelete(Rec, Rec."Document Record ID");
+            end;
         }
         field(3; "Bill-to/Pay-to No."; Code[20])
         {
@@ -170,6 +177,12 @@ table 6121 "E-Document"
         {
             DataClassification = SystemMetadata;
         }
+        field(31; "Receiving Company Id"; Text[250])
+        {
+            Caption = 'Receiving Company Id';
+            ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
+        }
+
     }
     keys
     {

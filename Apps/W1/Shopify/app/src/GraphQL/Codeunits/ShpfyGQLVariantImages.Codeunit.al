@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL VariantImages (ID 30152) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL VariantImages (ID 30152) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30152 "Shpfy GQL VariantImages" implements "Shpfy IGraphQL"
 {
@@ -13,7 +13,7 @@ codeunit 30152 "Shpfy GQL VariantImages" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{productVariants(first:200){pageInfo{hasNextPage} edges{cursor node{legacyResourceId image(maxHeight: 360, maxWidth: 360) {id, transformedSrc}}}}}"}');
+        exit('{"query":"{productVariants(first:200){pageInfo{hasNextPage} edges{cursor node{legacyResourceId media(first:1) { edges { node { mediaContentType ... on MediaImage { id image { url(transform: {maxHeight: 360, maxWidth: 360})} mediaContentType}}}}}}}}"}');
     end;
 
     /// <summary>

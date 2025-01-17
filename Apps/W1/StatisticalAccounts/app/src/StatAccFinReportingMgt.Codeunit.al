@@ -3,7 +3,6 @@ namespace Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
 
 codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
@@ -156,6 +155,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
         StatisticalLedgerEntry.SetCurrentKey("Statistical Account No.", "Posting Date");
         StatisticalLedgerEntry.SetRange("Statistical Account No.", StatisticalAccount."No.");
         StatisticalAccount.CopyFilter("Date Filter", StatisticalLedgerEntry."Posting Date");
+        StatisticalAccount.CopyFilter("No.", StatisticalLedgerEntry."Statistical Account No.");
 
         SourceAccScheduleLine.CopyFilter("Dimension 1 Filter", StatisticalLedgerEntry."Global Dimension 1 Code");
         SourceAccScheduleLine.CopyFilter("Dimension 2 Filter", StatisticalLedgerEntry."Global Dimension 2 Code");

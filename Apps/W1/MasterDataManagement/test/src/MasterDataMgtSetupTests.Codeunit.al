@@ -14,6 +14,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryMasterDataMgt: Codeunit "Library - Master Data Mgt.";
         InitializeHandled: Boolean;
 
     [Test]
@@ -106,6 +107,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
         EmptyGuid: Guid;
     begin
         Initialize();
@@ -113,8 +115,10 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         MasterDataManagementSetup."Company Name" := CopyStr(LibraryRandom.RandText(30), 1, MaxStrLen(MasterDataManagementSetup."Company Name"));
         MasterDataManagementSetup.Validate("Is Enabled", true);
         BindSubscription(MasterDataMgtSetupTests);
+        BindSubscription(MasterDataMgtSynchTests);
         MasterDataManagementSetup.Insert(true);
         UnbindSubscription(MasterDataMgtSetupTests);
+        UnbindSubscription(MasterDataMgtSynchTests);
 
         // insert a dummy coupling
         MasterDataMgtCoupling."Integration System ID" := EmptyGuid;
@@ -176,6 +180,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
         TempBlob: Codeunit "Temp Blob";
         InStr: InStream;
@@ -195,6 +200,9 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         TempBlob.CreateInStream(InStr, TEXTENCODING::UTF16);
 
         // mappings and job queue entries are deleted
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
+        JobQueueEntry.SetRange("Recurring Job", true);
+        JobQueueEntry.DeleteAll();
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
         if IntegrationTableMapping.FindSet() then
             repeat
@@ -234,6 +242,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         LibraryVariableStorage.Enqueue(Database::"Activity Log");
         MasterDataSynchFields.Trap();
         MasterDataSynchTables.New();
+        MasterDataSynchTables.TableCaptionValue.AssistEdit();
         MasterDataSynchFields.Close();
 
         // export setup
@@ -279,15 +288,20 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
         EmptyGuid: Guid;
     begin
         Initialize();
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
+        JobQueueEntry.DeleteAll();
         MasterDataManagementSetup.Init();
         MasterDataManagementSetup."Company Name" := CopyStr(LibraryRandom.RandText(30), 1, MaxStrLen(MasterDataManagementSetup."Company Name"));
         MasterDataManagementSetup.Validate("Is Enabled", true);
         BindSubscription(MasterDataMgtSetupTests);
+        BindSubscription(MasterDataMgtSynchTests);
         MasterDataManagementSetup.Insert(true);
         UnbindSubscription(MasterDataMgtSetupTests);
+        UnbindSubscription(MasterDataMgtSynchTests);
 
         // insert a dummy coupling
         MasterDataMgtCoupling."Integration System ID" := EmptyGuid;
@@ -310,13 +324,31 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         Assert.AreEqual(0, MasterDataMgtCoupling.Count(), '');
     end;
 
+    [Test]
+    procedure NoDuplicatesAddedToSetupOnSelectingTableWithCyclicReference()
+    var
+        SynchTables: List of [Integer];
+        RelatedTablesToAdd: List of [Integer];
+        TablesToAddText: Text;
+        IncorrectTablesListErr: Label 'Synchronization tables list is incorrect.';
+    begin
+        // [SCENARIO] When selecting a table that has a self-reference or other reference that create a cycle, duplicate records are not added to the setup list
+
+        Initialize();
+
+        LibraryMasterDataMgt.FindRelatedTables(SynchTables, RelatedTablesToAdd, TablesToAddText, Database::"MDM Test Table A");
+
+        Assert.AreEqual(1, RelatedTablesToAdd.Count, IncorrectTablesListErr);
+        Assert.IsTrue(RelatedTablesToAdd.Contains(Database::"MDM Test Table B"), IncorrectTablesListErr);
+    end;
+
     local procedure Initialize()
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
         MasterDataMgtSubscriber: Record "Master Data Mgt. Subscriber";
-        JObQueueEntry: Record "Job Queue Entry";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
     begin
         OnBeforeInitialize(InitializeHandled);
         if InitializeHandled then
@@ -324,16 +356,16 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
 
         LibrarySetupStorage.Restore();
 
+        BindSubscription(MasterDataMgtSynchTests);
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
         if IntegrationTableMapping.FindSet() then
             repeat
                 IntegrationTableMapping.Delete(true);
             until IntegrationTableMapping.Next() = 0;
-        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
-        JobQueueEntry.DeleteAll();
         MasterDataMgtCoupling.DeleteAll();
         MasterDataManagementSetup.DeleteAll();
         MasterDataMgtSubscriber.DeleteAll();
+        UnbindSubscription(MasterDataMgtSynchTests);
         Commit();
         OnAfterInitialize(InitializeHandled);
     end;

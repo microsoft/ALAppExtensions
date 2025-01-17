@@ -84,11 +84,21 @@ table 30115 "Shpfy Log Entry"
             Caption = 'Has Error';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA28
         field(13; "Request Id"; Guid)
         {
             Caption = 'Request Id';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Replaced with "Shpfy Request Id" field';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
         }
+#endif
         field(14; "Request Preview"; Text[50])
         {
             Caption = 'Request Preview';
@@ -107,6 +117,11 @@ table 30115 "Shpfy Log Entry"
         field(17; "Query Cost"; Integer)
         {
             Caption = 'Query Cost';
+            DataClassification = SystemMetadata;
+        }
+        field(18; "Shpfy Request Id"; Text[100])
+        {
+            Caption = 'Request Id';
             DataClassification = SystemMetadata;
         }
     }

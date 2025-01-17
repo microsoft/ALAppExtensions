@@ -17,7 +17,7 @@ query 4700 "VAT Group Submission Status"
     EntitySetName = 'vatGroupSubmissionStatus';
     // The representative can have multiple rows with the same "No." in the table "VAT Group Submission Header".
     // Only the one with the latest date needs to be retrieved
-    OrderBy = Descending(submittedOn);
+    OrderBy = descending(submittedOn);
     TopNumberOfRows = 1;
 
     elements

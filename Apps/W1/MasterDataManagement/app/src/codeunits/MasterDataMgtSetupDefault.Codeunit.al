@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Purchases.Vendor;
 using Microsoft.CRM.Contact;
 using Microsoft.Foundation.Address;
+using System.Globalization;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Sales.Setup;
@@ -21,6 +22,7 @@ using Microsoft.Finance.SalesTax;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Dimension;
 using Microsoft.Utilities;
+using Microsoft.CRM.BusinessRelation;
 using System.Threading;
 
 codeunit 7230 "Master Data Mgt. Setup Default"
@@ -67,6 +69,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         ResetNumberSeriesLineMapping('MDM_NUMBERSERIESLINE', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetSalesReceivablesSetupMapping('MDM_SALESRECSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetMarketingSetupMapping('MDM_MARKETINGSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetBusinessRelationMapping('MDM_BUSINESSRELATION', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetPurchasespayablesSetupMapping('MDM_PURCHPAYSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetSalesPeopleSystemUserMapping('MDM_SALESPERSON', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetCustomerAccountMapping(CustomerTableMappingNameTxt, (not MasterDataManagementSetup."Delay Job Scheduling"));
@@ -146,11 +149,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Customer.FieldNo(Customer.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Coupled to CRM"), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -193,11 +192,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Vendor.FieldNo(Vendor.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Coupled to CRM"), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -241,11 +236,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Contact.FieldNo(Contact.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Coupled to CRM"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#else
                 if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -271,6 +262,14 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             IntegrationFieldMapping."Constant Value" := PersonTok;
             IntegrationFieldMapping.Modify();
         end;
+
+        IntegrationFieldMapping.SetRange("Field No.", Contact.FieldNo("No."));
+        if IntegrationFieldMapping.FindFirst() then begin
+            IntegrationFieldMapping."Use For Match-Based Coupling" := true;
+            IntegrationFieldMapping."Match Priority" := 1;
+            IntegrationFieldMapping.Modify();
+        end;
+
         SetIntegrationFieldMappingClearValueOnFailedSync(IntegrationTableMapping, Contact.FieldNo(Name));
         SetIntegrationFieldMappingClearValueOnFailedSync(IntegrationTableMapping, Contact.FieldNo("E-Mail"));
         SetIntegrationFieldMappingClearValueOnFailedSync(IntegrationTableMapping, Contact.FieldNo("E-Mail 2"));
@@ -377,11 +376,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Currency.FieldNo(Currency.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Coupled to CRM"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#else
                 if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -606,6 +601,10 @@ codeunit 7230 "Master Data Mgt. Setup Default"
 
         FieldNumbers.Add(MarketingSetup.FieldNo("Primary Key"));
         FieldNumbers.Add(MarketingSetup.FieldNo("Contact Nos."));
+        FieldNumbers.Add(MarketingSetup.FieldNo("Bus. Rel. Code for Customers"));
+        FieldNumbers.Add(MarketingSetup.FieldNo("Bus. Rel. Code for Vendors"));
+        FieldNumbers.Add(MarketingSetup.FieldNo("Bus. Rel. Code for Bank Accs."));
+        FieldNumbers.Add(MarketingSetup.FieldNo("Bus. Rel. Code for Employees"));
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::"Marketing Setup", '', true, ShouldRecreateJobQueueEntry);
         IntegrationTableMapping."Dependency Filter" := 'MDM_PURCHPAYSETUP';
@@ -620,6 +619,38 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             IntegrationFieldMapping."Match Priority" := 1;
             IntegrationFieldMapping.Modify();
         end;
+
+        OnAfterResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+    end;
+
+    internal procedure ResetBusinessRelationMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean);
+    var
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        BusinessRelation: Record "Business Relation";
+        FieldNumbers: List of [Integer];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        FieldNumbers.Add(BusinessRelation.FieldNo(Code));
+
+        GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::"Business Relation", '', true, ShouldRecreateJobQueueEntry);
+        IntegrationTableMapping."Update-Conflict Resolution" := "Integration Update Conflict Resolution"::"Get Update from Integration";
+        IntegrationTableMapping."Synch. After Bulk Coupling" := true;
+        IntegrationTableMapping.Modify();
+
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange("Field No.", BusinessRelation.FieldNo(Code));
+        if IntegrationFieldMapping.FindFirst() then begin
+            IntegrationFieldMapping."Use For Match-Based Coupling" := true;
+            IntegrationFieldMapping."Match Priority" := 1;
+            IntegrationFieldMapping.Modify();
+        end;
+
         OnAfterResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
     end;
 
@@ -713,7 +744,12 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         FieldNumbers.Add(NoSeriesLine.FieldNo(Open));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Sequence Name"));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Starting Sequence No."));
+#if not CLEAN24
+#pragma warning disable AL0432
         FieldNumbers.Add(NoSeriesLine.FieldNo("Allow Gaps in Nos."));
+#pragma warning restore AL0432
+#endif
+        FieldNumbers.Add(NoSeriesLine.FieldNo(Implementation));
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::"No. Series Line", '', true, ShouldRecreateJobQueueEntry);
         IntegrationTableMapping."Dependency Filter" := 'MDM_NUMBERSERIES';
@@ -1179,6 +1215,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             until TableField.Next() = 0;
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::Dimension, '', true, ShouldRecreateJobQueueEntry);
+        IntegrationTableMapping."Dependency Filter" := 'MDM_BUSINESSRELATION';
         IntegrationTableMapping."Synch. After Bulk Coupling" := true;
         IntegrationTableMapping.Modify();
 
@@ -1251,6 +1288,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         IntegrationTableMapping."Coupling Codeunit ID" := Codeunit::"Master Data Mgt. Table Couple";
         IntegrationTableMapping."Uncouple Codeunit ID" := Codeunit::"Master Data Mgt. Tbl. Uncouple";
         IntegrationTableMapping."Update-Conflict Resolution" := "Integration Update Conflict Resolution"::"Get Update from Integration";
+        IntegrationTableMapping."Table Caption" := GetTableCaption(TableNo);
         IntegrationTableMapping.Modify();
     end;
 
@@ -1277,8 +1315,18 @@ codeunit 7230 "Master Data Mgt. Setup Default"
                 end;
             until TableField.Next() = 0;
 
-        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, DefaultNumberOfMinutesBetweenRuns(), ShouldRecreateJobQueueEntry, DefaultInactivityTimeoutPeriod());
         Commit();
+    end;
+
+    internal procedure DefaultNumberOfMinutesBetweenRuns(): Integer
+    begin
+        exit(20 + Random(10))
+    end;
+
+    internal procedure DefaultInactivityTimeoutPeriod(): Integer
+    begin
+        exit(680 + Random(40))
     end;
 
     internal procedure InsertIntegrationFieldMapping(IntegrationTableMappingName: Code[20]; var IntegrationFieldMapping: Record "Integration Field Mapping"; TableFieldNo: Integer; IntegrationTableFieldNo: Integer; SynchDirection: Option; ConstValue: Text; ValidateField: Boolean; ValidateIntegrationTableField: Boolean)
@@ -1294,7 +1342,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         end;
     end;
 
-    local procedure GetFieldCaption(TableID: Integer; FieldID: Integer): Text
+    internal procedure GetFieldCaption(TableID: Integer; FieldID: Integer): Text
     var
         "Field": Record "Field";
         TypeHelper: Codeunit "Type Helper";
@@ -1303,6 +1351,16 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             if TypeHelper.GetField(TableID, FieldID, Field) then
                 exit(Field."Field Caption");
         exit('');
+    end;
+
+    internal procedure GetTableCaption(TableID: Integer): Text[250]
+    var
+        ObjectTranslation: Record "Object Translation";
+    begin
+        if TableID = 0 then
+            exit('');
+
+        exit(ObjectTranslation.TranslateObject(ObjectTranslation."Object Type"::Table, TableID));
     end;
 
     local procedure SetIntegrationFieldMappingClearValueOnFailedSync(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNo: Integer)
@@ -1391,6 +1449,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     var
         JobQueueEntry: Record "Job Queue Entry";
         MasterDataManagement: Codeunit "Master Data Management";
+        SynchronizationTableRecRef: RecordRef;
         IsHandled: Boolean;
     begin
         MasterDataManagement.OnHandleRecreateJobQueueEntryFromIntegrationTableMapping(JobQueueEntry, IntegrationTableMapping, IsHandled);
@@ -1406,8 +1465,11 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         JobQueueEntry."Object ID to Run" := Codeunit::"Integration Synch. Job Runner";
         JobQueueEntry."Record ID to Process" := IntegrationTableMapping.RecordId();
         JobQueueEntry."Run in User Session" := false;
-        JobQueueEntry.Description :=
-          CopyStr(StrSubstNo(JobQueueEntryNameTok, IntegrationTableMapping.Name, ServiceName), 1, MaxStrLen(JobQueueEntry.Description));
+        if IntegrationTableMapping."Table ID" <> 0 then begin
+            SynchronizationTableRecRef.Open(IntegrationTableMapping."Table ID");
+            JobQueueEntry.Description := CopyStr(StrSubstNo(JobQueueEntryNameTok, SynchronizationTableRecRef.Caption(), ServiceName), 1, MaxStrLen(JobQueueEntry.Description));
+        end else
+            JobQueueEntry.Description := CopyStr(StrSubstNo(JobQueueEntryNameTok, IntegrationTableMapping.Name, ServiceName), 1, MaxStrLen(JobQueueEntry.Description));
         JobQueueEntry."Maximum No. of Attempts to Run" := 10;
         JobQueueEntry.Status := JobQueueEntry.Status::Ready;
         JobQueueEntry."Rerun Delay (sec.)" := 30;
@@ -1418,6 +1480,8 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             JobQueueEntry."Job Queue Category Code" := CustomerContactJobQueueCategoryLbl
         else
             JobQueueEntry."Job Queue Category Code" := JobQueueCategoryLbl;
+
+        OnBeforeInsertJobQueueEntryForSynchronizationTable(JobQueueEntry, IntegrationTableMapping, ShouldRecreateJobQueueEntry);
         if ShouldRecreateJobQueueEntry then
             Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry)
         else begin
@@ -1604,12 +1668,17 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    internal procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
     begin
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertJobQueueEntryForSynchronizationTable(var JobQueueEntry: Record "Job Queue Entry"; var IntegrationTableMapping: Record "Integration Table Mapping"; var ShouldScheduleJobQueueEntry: Boolean);
     begin
     end;
 }

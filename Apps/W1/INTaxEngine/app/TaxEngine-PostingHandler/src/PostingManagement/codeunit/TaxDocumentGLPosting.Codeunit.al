@@ -63,6 +63,7 @@ codeunit 20341 "Tax Document GL Posting"
         ToTaxTransactionValue: Record "Tax Transaction Value";
     begin
         FromTaxTransactionValue.Reset();
+        FromTaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         FromTaxTransactionValue.SetRange("Tax Record ID", FromRecID);
         if FromTaxTransactionValue.FindSet() then
             repeat
@@ -88,7 +89,8 @@ codeunit 20341 "Tax Document GL Posting"
     begin
         if QtyToInvoice = 0 then
             exit;
-
+            
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", RecID);
         if TaxTransactionValue.FindSet() then
             repeat
@@ -445,7 +447,6 @@ codeunit 20341 "Tax Document GL Posting"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostGenJnlLine', '', false, false)]
     local procedure OnAfterPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; Balancing: Boolean)
-    var
     begin
         if not IsNullGuid(GenJournalLine."Tax ID") then
             RevertGenJnlLineAmount(GenJournalLine, Balancing);

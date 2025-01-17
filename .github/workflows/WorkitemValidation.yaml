@@ -1,0 +1,62 @@
+name: Work Item Validation
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+    branches: [main]
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  GitHubIssueValidation:
+    if: github.repository_owner == 'microsoft' && github.event.pull_request.state == 'open'
+    name: 'Validate link to issues'
+    permissions:
+        contents: read
+        pull-requests: write
+        issues: write
+        repository-projects: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Validate work items for pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          Build/Scripts/PullRequestValidation/ValidateIssuesForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+  
+  WorkItemValidationForMicrosoft:
+    if: github.repository_owner == 'microsoft' && github.event.pull_request.state == 'open'
+    name: 'For Microsoft: Validate link to internal work items' 
+    permissions:
+        contents: read
+        pull-requests: write
+        issues: write
+        repository-projects: read
+    runs-on: ubuntu-latest
+    needs: GitHubIssueValidation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Link work items to pull request if possible
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          Build/Scripts/PullRequestValidation/LinkPullRequestToWorkItem.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+      
+      - name: Validate internal work items for pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          Build/Scripts/PullRequestValidation/ValidateInternalWorkItemForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+
+      - name: Add Linked label to PR
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels  -f "labels[]=Linked" -H "Accept: application/vnd.github.v3+json" -H "X-GitHub-Api-Version: 2022-11-28"

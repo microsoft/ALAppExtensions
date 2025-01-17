@@ -764,7 +764,7 @@ report 18049 "GSTR-1 File Format"
         if GSTR1ExpQuery.Finance_Charge_Memo then
             AddNumberColumn(GetInvoiceValueFinCharge(GSTR1ExpQuery.Document_No_))
         else
-            AddNumberColumn(GetInvoiceValue(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice));
+            AddNumberColumn(GetInvoiceValueForExportCustomerType(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice));
 
         AddTextColumn(GetExitPoint(GSTR1ExpQuery.Document_No_));
         AddTextColumn(GSTR1ExpQuery.Bill_Of_Export_No_);
@@ -1028,6 +1028,7 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRPerQuery.SetRange(Posting_Date, StartDate, EndDate);
         GSTR1CDNRPerQuery.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRPerQuery.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRPerQuery.SetRange(Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRPerQuery.Open();
         while GSTR1CDNRPerQuery.Read() do
             if GSTR1CDNRPerQuery.GST_Jurisdiction_Type = GSTR1CDNRPerQuery.GST_Jurisdiction_Type::Intrastate then
@@ -1042,9 +1043,9 @@ report 18049 "GSTR-1 File Format"
 
         GSTR1CDNRCess.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1CDNRCess.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRCess.Open();
         if GSTR1CDNRCess.Read() then
             AddNumberColumn(Abs(GSTR1CDNRCess.GST_Amount))
@@ -1598,6 +1599,16 @@ report 18049 "GSTR-1 File Format"
         if CustLedgerEntry.FindFirst() then
             CustLedgerEntry.CalcFields("Amount (LCY)");
         exit(Abs(CustLedgerEntry."Amount (LCY)"));
+    end;
+
+    local procedure GetInvoiceValueForExportCustomerType(DocumentNo: Code[20]; DocumentType: Enum "GST Document Type"): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.SetRange("Document Type", GSTDocumentType2GenJnlDocumentType(DocumentType));
+        CustLedgerEntry.SetRange("Document No.", DocumentNo);
+        if CustLedgerEntry.FindFirst() then
+            exit(Abs(CustLedgerEntry."Sales (LCY)"));
     end;
 
     local procedure GSTDocumentType2GenJnlDocumentType(GSTDocumentType: Enum "GST Document Type"): Enum "Gen. Journal Document Type"

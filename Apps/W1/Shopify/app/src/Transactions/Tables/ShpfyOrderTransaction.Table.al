@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
 using Microsoft.Sales.History;
 
 /// <summary>
@@ -32,7 +33,7 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(4; Type; enum "Shpfy Transaction Type")
+        field(4; Type; Enum "Shpfy Transaction Type")
         {
             Caption = 'Type';
             DataClassification = SystemMetadata;
@@ -44,7 +45,7 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(6; Status; enum "Shpfy Transaction Status")
+        field(6; Status; Enum "Shpfy Transaction Status")
         {
             Caption = 'Status';
             DataClassification = SystemMetadata;
@@ -86,13 +87,23 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA28
         field(15; "Source Name"; Code[20])
         {
             Caption = 'Source Name';
             DataClassification = SystemMetadata;
             Editable = false;
             Access = Internal;
+            ObsoleteReason = 'Source name is no longer used.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
         }
+#endif
         field(16; "Credit Card Bin"; Code[10])
         {
             Caption = 'Credit Card Bin';
@@ -140,6 +151,12 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(23; "Payment Id"; Text[250])
+        {
+            Caption = 'Payment Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(101; "Sales Document No."; code[20])
         {
             Caption = 'Sales Document No.';
@@ -165,11 +182,27 @@ table 30133 "Shpfy Order Transaction"
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Payment Method Mapping"."Payment Method Code" where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
         }
+#if not CLEANSCHEMA28
         field(105; "Payment Priority"; Integer)
         {
             Caption = 'Payment Priority';
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Payment Method Mapping".Priority where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
+            ObsoleteReason = 'Priority is no longer used.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
+        }
+#endif
+        field(106; Used; Boolean)
+        {
+            Caption = 'Used';
+            FieldClass = FlowField;
+            CalcFormula = exist("Cust. Ledger Entry" where("Shpfy Transaction Id" = field("Shopify Transaction Id")));
         }
     }
 
@@ -184,6 +217,9 @@ table 30133 "Shpfy Order Transaction"
             SumIndexFields = Amount;
         }
         key(Idx002; "Created At")
+        {
+        }
+        key(Idx003; Type)
         {
         }
     }

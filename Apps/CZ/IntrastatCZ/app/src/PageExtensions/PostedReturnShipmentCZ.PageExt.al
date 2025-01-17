@@ -10,8 +10,15 @@ pageextension 31372 "Posted Return Shipment CZ" extends "Posted Return Shipment"
 {
     layout
     {
-        addlast(Shipping)
+        addlast("Foreign Trade")
         {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                Editable = false;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = Basic, Suite;

@@ -7,7 +7,6 @@ using Microsoft.Inventory.Location;
 /// </summary>
 table 30113 "Shpfy Shop Location"
 {
-    Access = Internal;
     Caption = 'Shopify Shop Location';
     DataClassification = CustomerContent;
     DrillDownPageId = "Shpfy Shop Locations Mapping";
@@ -78,24 +77,17 @@ table 30113 "Shpfy Shop Location"
                     Rec."Location Filter" := Rec."Default Location Code";
             end;
         }
-
+#if not CLEANSCHEMA25
         field(7; Disabled; Boolean)
         {
             Caption = 'Disabled';
             DataClassification = CustomerContent;
-#if not CLEAN22            
-            ObsoleteReason = 'Replaced by Stock Calculation field.';
-            ObsoleteTag = '22.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteReason = 'Replaced by Stock Calculation field.';
             ObsoleteTag = '25.0';
             ObsoleteState = Removed;
-#endif
             Description = 'This disabled the synchronisation of the stock to Shopify.';
-            InitValue = true;
         }
-
+#endif
         field(8; Active; Boolean)
         {
             Caption = 'Active';

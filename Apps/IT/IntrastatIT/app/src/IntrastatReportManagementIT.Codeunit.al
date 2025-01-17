@@ -258,6 +258,8 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
+#if not CLEAN24
+    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterValueEntryOnPreDataItem', '', true, true)]
     local procedure OnAfterValueEntryOnPreDataItem(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
     begin
@@ -278,6 +280,7 @@ codeunit 148121 "Intrastat Report Management IT"
         else
             ValueEntry.SetRange("Item Ledger Entry Type", "Item Ledger Entry Type"::Sale);
     end;
+#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCheckDropShipment', '', true, true)]
     local procedure OnBeforeCheckDropShipment(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; Country: Record "Country/Region"; var Result: Boolean; var IsHandled: Boolean)
@@ -496,7 +499,7 @@ codeunit 148121 "Intrastat Report Management IT"
                             if SalesInvoiceLine.FindSet() then begin
                                 SalesInvoiceHeader.Get(ValueEntry."Document No.");
                                 repeat
-                                    TotalInvoicedQty -= SalesInvoiceLine.Quantity;
+                                    TotalInvoicedQty -= SalesInvoiceLine."Quantity (Base)";
                                     if SalesInvoiceHeader."Currency Factor" <> 0 then
                                         TotalAmt -= SalesInvoiceLine.Amount / SalesInvoiceHeader."Currency Factor"
                                     else
@@ -524,7 +527,7 @@ codeunit 148121 "Intrastat Report Management IT"
                                 if SalesCrMemoLine.FindSet() then begin
                                     SalesCrMemoHeader.Get(ValueEntry."Document No.");
                                     repeat
-                                        TotalInvoicedQty += SalesCrMemoLine.Quantity;
+                                        TotalInvoicedQty += SalesCrMemoLine."Quantity (Base)";
                                         if SalesCrMemoHeader."Currency Factor" <> 0 then
                                             TotalAmt += SalesCrMemoLine.Amount / SalesCrMemoHeader."Currency Factor"
                                         else

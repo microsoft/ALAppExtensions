@@ -77,6 +77,14 @@ codeunit 30167 "Shpfy Process Orders"
             until ShopifyOrderHeader.Next() = 0;
     end;
 
+    internal procedure ClearProcessedDocuments(OrderHeader: Record "Shpfy Order Header")
+    begin
+        OrderHeader."Sales Order No." := '';
+        OrderHeader."Sales Invoice No." := '';
+        OrderHeader.Processed := false;
+        OrderHeader.Modify();
+    end;
+
     local procedure ProcessShopifyRefunds()
     var
         RefundHeader: Record "Shpfy Refund Header";

@@ -7,6 +7,7 @@ namespace Microsoft.Finance.GST.Subcontracting;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
+using Microsoft.Warehouse.Structure;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Tracking;
@@ -254,6 +255,12 @@ table 18479 "Sub Order Component List"
             Caption = 'Identification Mark';
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(61; "Bin Code"; Code[20])
+        {
+            Caption = 'Bin Code';
+            TableRelation = if ("Quantity To Send" = filter(> 0)) "Bin Content"."Bin Code" where("Location Code" = field("Company Location"), "Item No." = field("Item No."), "Variant Code" = field("Variant Code"));
+            DataClassification = EndUserIdentifiableInformation;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -330,7 +337,7 @@ table 18479 "Sub Order Component List"
         SubOrderComponents.FindSet();
         repeat
             SubOrderComponents.Validate(
-              "Quantity To Send", ("Deliver Comp. For" * SubOrderComponents."Quantity per"));
+              "Quantity To Send", PurchLine.GetQuantityToSendForSubOrderCompList(SubOrderComponents, "Deliver Comp. For"));
             SubOrderComponents.Validate(
               "Qty. for Rework", (SubOrderComponents."Quantity per" * "Qty. to Reject (Rework)"));
             if SubOrderComponents."Scrap %" <> 0 then begin

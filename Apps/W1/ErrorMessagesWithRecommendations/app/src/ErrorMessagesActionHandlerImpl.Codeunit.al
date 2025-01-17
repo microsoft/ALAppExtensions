@@ -2,6 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Shared.Error;
+
+using System.Utilities;
+using System.Telemetry;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.Dimension;
 codeunit 7905 ErrorMessagesActionHandlerImpl
 {
     Access = Internal;
@@ -38,18 +45,15 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
     local procedure InvokeErrorConfirmDialog(var ErrorMessage: Record "Error Message")
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        CustomDimensions: Dictionary of [Text, Text];
     begin
+        FeatureTelemetry.LogUptake('0000LH5', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
         if Dialog.Confirm(StrSubstNo(ConfirmationPrefixQuestionLbl, ErrorMessage."Recommended Action Caption") + '\\' + ErrorMessage.Message) then begin
+            FeatureTelemetry.LogUptake('0000LH6', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
             ExecuteAction(ErrorMessage, true);
 
-            // Log telemetry
-            CustomDimensions.Add('Errors', '1');
+            // Log usage telemetry, ExecuteAction(...) logs the error
             if ErrorMessage."Message Status" = ErrorMessage."Message Status"::Fixed then
-                CustomDimensions.Add('FixedErrors', '1')
-            else
-                CustomDimensions.Add('FixedErrors', '0');
-            FeatureTelemetry.LogUsage('0000KDA', GetFeatureTelemetryName(), 'Execute action using drilldown', CustomDimensions);
+                FeatureTelemetry.LogUsage('0000KDA', GetFeatureTelemetryName(), 'Execute action using drilldown');
         end
     end;
 
@@ -76,6 +80,8 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
         SelectedErrorMessage.SetFilter("Message Status", '<>%1', SelectedErrorMessage."Message Status"::Fixed);
         ErrorsToFixCount := SelectedErrorMessage.Count();
 
+        LogSetupStateForBulkFixToTelemetry(CustomDimensions, SelectedErrorMessage, TotalSelectedCount, ErrorsToFixCount);
+
         if SelectedErrorMessage.FindSet() then begin
             if ErrorsToFixCount < TotalSelectedCount then
                 ConfirmationMsg := StrSubstNo(AcceptRecommendationPartialTok, ErrorsToFixCount, TotalSelectedCount)
@@ -83,6 +89,7 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
                 ConfirmationMsg := StrSubstNo(AcceptRecommendationTok, ErrorsToFixCount);
 
             if Dialog.Confirm(ConfirmationMsg, true) then begin
+                FeatureTelemetry.LogUptake('0000LH9', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used, CustomDimensions);
                 repeat
                     ExecuteAction(SelectedErrorMessage, false);
                 until SelectedErrorMessage.Next() = 0;
@@ -97,10 +104,11 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
                 else //Some of the errors are fixed.
                     AckLabel := StrSubstNo(FixedPartialAckLbl, FixedCount - xFixedCount, FailedToFixCount);
 
-                // Log telemetry
-                CustomDimensions.Add('Errors', Format(ErrorsToFixCount));
-                CustomDimensions.Add('FixedErrors', Format(FixedCount - xFixedCount));
-                FeatureTelemetry.LogUsage('0000KDB', GetFeatureTelemetryName(), 'Accept recommended actions', CustomDimensions);
+                // Log usage telemetry when at least of one of the errors were fixed. ExecuteAction(...) logs the error
+                if FixedCount > xFixedCount then begin
+                    CustomDimensions.Add('FixedErrors', Format(FixedCount - xFixedCount));
+                    FeatureTelemetry.LogUsage('0000KDB', GetFeatureTelemetryName(), 'Accept recommended actions', CustomDimensions);
+                end;
 
                 Message(AckLabel);
             end;
@@ -112,10 +120,15 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
     var
         ErrorMessage: Record "Error Message";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        Telemetry: Codeunit Telemetry;
         ErrorMessageFixProvider: Interface ErrorMessageFix;
+        ErrorMessageFixImplementationName: Text;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         // Execute the recommended action. If the action fails, continue to the next error message by updating the error message status.
         ErrorMessageFixProvider := TempErrorMessage."Error Msg. Fix Implementation";
+        ErrorMessageFixImplementationName := TempErrorMessage."Error Msg. Fix Implementation".Names.Get(TempErrorMessage."Error Msg. Fix Implementation".Ordinals.IndexOf(TempErrorMessage."Error Msg. Fix Implementation".AsInteger()));
+        Telemetry.LogMessage('0000LHH', 'Error Msg. Fix Implementation: ' + ErrorMessageFixImplementationName, Verbosity::Normal, DataClassification::SystemMetadata);
         if ExecuteActionWithCollectErr(TempErrorMessage, ErrorMessageFixProvider) then begin
             TempErrorMessage."Message Status" := TempErrorMessage."Message Status"::Fixed;
             TempErrorMessage.Modify();
@@ -123,7 +136,8 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
                 Message(ErrorMessageFixProvider.OnSuccessMessage());
         end
         else begin
-            FeatureTelemetry.LogError('0000KD9', GetFeatureTelemetryName(), 'Execute action', GetLastErrorText(true), GetLastErrorCallStack());
+            CustomDimensions.Add('Error Msg. Fix Implementation', ErrorMessageFixImplementationName);
+            FeatureTelemetry.LogError('0000KD9', GetFeatureTelemetryName(), 'Execute action', GetLastErrorText(true), GetLastErrorCallStack(), CustomDimensions);
             TempErrorMessage."Message Status" := TempErrorMessage."Message Status"::"Failed to fix";
             TempErrorMessage.Modify();
         end;
@@ -133,6 +147,22 @@ codeunit 7905 ErrorMessagesActionHandlerImpl
             ErrorMessage."Message Status" := TempErrorMessage."Message Status";
             ErrorMessage.Modify();
         end;
+    end;
+
+    local procedure LogSetupStateForBulkFixToTelemetry(var CustomDimensions: Dictionary of [Text, Text]; var SelectedErrorMessage: Record "Error Message" temporary; TotalSelectedCount: Integer; ErrorsToFixCount: Integer)
+    var
+        TempTotalErrorsOnPage: Record "Error Message" temporary;
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        TempTotalErrorsOnPage.Copy(SelectedErrorMessage, true);
+        TempTotalErrorsOnPage.Reset();
+        CustomDimensions.Add('TotalErrorsOnPage', Format(TempTotalErrorsOnPage.Count()));
+        TempTotalErrorsOnPage.SetFilter("Error Msg. Fix Implementation", '<>%1', Enum::"Error Msg. Fix Implementation"::" ");
+        TempTotalErrorsOnPage.SetFilter("Message Status", '<>%1', TempTotalErrorsOnPage."Message Status"::Fixed);
+        CustomDimensions.Add('TotalFixableErrorsOnPage', Format(TempTotalErrorsOnPage.Count()));
+        CustomDimensions.Add('SelectedErrors', Format(TotalSelectedCount));
+        CustomDimensions.Add('SelectedFixableErrors', Format(ErrorsToFixCount));
+        FeatureTelemetry.LogUptake('0000LH8', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up", CustomDimensions);
     end;
 
     [ErrorBehavior(ErrorBehavior::Collect)]

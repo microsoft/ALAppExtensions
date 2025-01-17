@@ -24,6 +24,7 @@ codeunit 18469 "Subcontracting Subscribers"
     var
         DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontracting Order no. %1.', Comment = '%1 = Subcontracting Order No.';
         QutstandingQuantityErr: Label 'Cannot delete Subcontracting order No: %1 as there is remaining quantity pending to be received. Continue with next order?', Comment = '%1 = Document No.';
+        VendorTypeErr: Label 'The field "GST Vendor Type" of Vendor should have a value in Vendor Card, Vendor No: %1', Comment = '%1 = Vendor No.';
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeTestNoSeries', '', false, false)]
     local procedure TestSubcontractingNoSeries(var PurchaseHeader: Record "Purchase Header"; Var Ishandled: boolean)
@@ -284,6 +285,44 @@ codeunit 18469 "Subcontracting Subscribers"
                 if not Confirm(QutstandingQuantityErr, true, PurchaseLine."Document No.") then
                     Error('Order not deleted');
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Qty. to Invoice', false, false)]
+    local procedure OnValidateQtyToInvoiceSubcon(var Rec: Record "Purchase Line")
+    var
+        InvalidQtyErr: label 'Quantity should be less than or equal to outstanding quantity.';
+    begin
+        if (Rec.Subcontracting) and
+            (Rec."Prod. Order No." <> '') and
+            (Rec."Prod. Order Line No." <> 0) then
+            if Rec."Qty. to Invoice" > Rec.Quantity then
+                Error(InvalidQtyErr);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterInitOutstandingQty', '', false, false)]
+    local procedure OnAfterInitOutstandingQty(var PurchaseLine: Record "Purchase Line")
+    begin
+        if (PurchaseLine.Subcontracting) and
+            (PurchaseLine."Prod. Order No." <> '') and
+            (PurchaseLine."Prod. Order Line No." <> 0) then
+            if PurchaseLine."Outstanding Qty. (Base)" <> 0 then
+                PurchaseLine."Outstanding Qty. (Base)" := 0;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Requisition Line", 'OnAfterValidateEvent', 'Vendor No.', false, false)]
+    local procedure OnAfterValidateVendorNo(var Rec: Record "Requisition Line")
+    var
+        Vendor: Record Vendor;
+    begin
+        if (Rec."Vendor No." = '') and (Rec."Prod. Order No." = '') then
+            exit;
+
+        if not Vendor.Get(Rec."Vendor No.") then
+            exit;
+
+        if Vendor.Subcontractor then
+            if Vendor."GST Vendor Type" = Vendor."GST Vendor Type"::" " then
+                Error(VendorTypeErr, Vendor."No.");
     end;
 
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")

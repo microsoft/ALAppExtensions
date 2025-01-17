@@ -1,3 +1,5 @@
+using module .\GitHub\GitHubPullRequest.class.psm1
+
 <#
 .Synopsis
     Set the git config for the current actor
@@ -17,7 +19,7 @@ function Set-GitConfig
 }
 
 <#
-.Synopsis 
+.Synopsis
     Stages files for commit and pushes them to the specified branch
 .Parameter BranchName
     The name of the branch to push to
@@ -32,7 +34,7 @@ function Push-GitBranch
     [string] $BranchName,
     [string[]] $Files,
     [string] $CommitMessage
-) 
+)
 {
     git add $Files
     git commit -m $commitMessage
@@ -63,10 +65,88 @@ function New-TopicBranch
         $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmm")
         $BranchName = "automation/$Category/$currentDate"
     }
-    
+
     git checkout -b $BranchName | Out-Null
 
     return $BranchName
+}
+
+function New-TopicBranchIfNeeded
+{
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $Repository,
+        [Parameter(Mandatory=$true, ParameterSetName = 'BranchName')]
+        [string] $BranchName,
+        [Parameter(Mandatory=$true, ParameterSetName = 'Category')]
+        [string] $Category,
+        [Parameter(Mandatory=$false)]
+        [string] $PullRequestTitle
+    )
+    $openPullRequests = gh api "/repos/$Repository/pulls" --method GET -f state=open | ConvertFrom-Json
+
+    $openPullRequests = $openPullRequests | Where-Object { $_.head.ref -match $Category }
+    if ($PullRequestTitle) {
+        $openPullRequests = $openPullRequests | Where-Object { $_.title -eq $PullRequestTitle }
+    }
+
+    $existingPullRequest = $openPullRequests | Select-Object -First 1
+
+    if ($existingPullRequest) {
+        $BranchName = $existingPullRequest.head.ref
+        git fetch origin $BranchName
+        git checkout $BranchName | Out-Null
+    } else {
+        $BranchName = New-TopicBranch -Category $Category
+    }
+
+    return $BranchName
+}
+
+function New-GitHubPullRequest
+{
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $Repository,
+        [Parameter(Mandatory=$true)]
+        [string] $BranchName,
+        [Parameter(Mandatory=$true)]
+        [string] $TargetBranch,
+        [Parameter(Mandatory=$false)]
+        [string] $label = "automation",
+        [Parameter(Mandatory=$false)]
+        [string] $PullRequestDescription
+    )
+
+    if ([GitHubPullRequest]::GetFromBranch($BranchName, $Repository)) {
+        Write-Host "Pull request already exists for branch $BranchName"
+        return
+    }
+
+    $params = @(
+        "--head '$($BranchName)'",
+        "--base '$($TargetBranch)'",
+        "--fill"
+    )
+
+    if ($label) {
+        $availableLabels = gh label list --json name | ConvertFrom-Json
+        if ($label -in $availableLabels.name) {
+            $params += "--label '$($label)'"
+        }
+    }
+
+    if ($PullRequestDescription) {
+        $params += "--body '$($PullRequestDescription)'"
+    }
+
+    $parameters = ($params -join " ")
+
+    Write-Host "gh pr create $parameters"
+    Invoke-Expression "gh pr create $parameters"
+    gh pr merge --auto --squash --delete-branch
 }
 
 Export-ModuleMember -Function *-*

@@ -207,10 +207,10 @@ page 5280 "SAF-T Wizard"
 
                         trigger OnDrillDown()
                         var
-                            GLAccountMappingCard: Page "G/L Account Mapping Card";
+                            GLAccMappingCard: Page "G/L Acc. Mapping Card";
                         begin
-                            GLAccountMappingCard.SetTableView(Rec);
-                            GLAccountMappingCard.RunModal();
+                            GLAccMappingCard.SetTableView(Rec);
+                            GLAccMappingCard.RunModal();
                             UpdateGLAccountsMappedInfo();
                         end;
                     }
@@ -387,7 +387,7 @@ page 5280 "SAF-T Wizard"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Match chart of accounts';
                 ToolTip = 'Automatically match existing G/L accounts with SAF-T standard accounts codes, with either two or four digits depending on the mapping type selected in the previous step.';
-                Visible = MappingAccountVisible and SAFTStandardAccMappingSelected;
+                Visible = MappingAccountVisible;
                 Image = MapAccounts;
                 InFooterBar = true;
                 trigger OnAction();
@@ -404,7 +404,7 @@ page 5280 "SAF-T Wizard"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Create chart of accounts';
                 ToolTip = 'Create a chart of accounts in Business Central from SAF-T standard accounts codes, with either two or four digits depending on mapping type selected in the previous step.';
-                Visible = MappingRangeStepVisible and SAFTStandardAccMappingSelected;
+                Visible = MappingRangeStepVisible;
                 Image = MapAccounts;
                 InFooterBar = true;
                 trigger OnAction();
@@ -420,7 +420,6 @@ page 5280 "SAF-T Wizard"
     }
 
     trigger OnQueryClosePage(CloseAction: action): Boolean;
-    var
     begin
         if GetLastErrorText() <> '' then
             exit(true);
@@ -442,14 +441,6 @@ page 5280 "SAF-T Wizard"
         AuditMappingHelper: Codeunit "Audit Mapping Helper";
         MappingHelperSAFT: Codeunit "Mapping Helper SAF-T";
     begin
-#if not CLEAN23
-        if not SAFTDataMgt.IsFeatureEnabled() then
-            if not IsRunFromFeatureMgt then begin
-                SAFTDataMgt.ShowNotEnabledMessage(CurrPage.Caption());
-                Error('');
-            end;
-#endif
-
         FeatureTelemetry.LogUptake('0000KTC', SAFTExportTok, Enum::"Feature Uptake Status"::Discovered);
         Commit();
 
@@ -463,6 +454,8 @@ page 5280 "SAF-T Wizard"
         EnableControls();
         UpdateVATPostingSetupMappedCount();
         MappingHelperSAFT.MapRestSourceCodesToAssortedJournals();
+        MappingHelperSAFT.InitDimensionFieldsSAFT();
+        MappingHelperSAFT.InitVATPostingSetupFieldsSAFT();
 
         InitDataUpgradeInterface();
         DataUpgradeRequired := DataUpgradeSAFT.IsDataUpgradeRequired();
@@ -497,14 +490,10 @@ page 5280 "SAF-T Wizard"
         DimensionExportVisible: Boolean;
         ContactVisible: Boolean;
         TopBannerVisible: Boolean;
-        SAFTStandardAccMappingSelected: Boolean;
         StandardAccountsLoaded: Boolean;
         SetupCompleted: Boolean;
         DataUpgradeAgreed: Boolean;
         DataUpgradeRequired: Boolean;
-#if not CLEAN23
-        IsRunFromFeatureMgt: Boolean;
-#endif
         StandardAccTypeNotSpecifiedErr: label 'A standard account type is not specified.';
         SetupNotCompletedQst: label 'Set up SAF-T has not been completed.\\Are you sure that you want to exit?';
         MappingSourceNotLoadedMsg: label 'A source for mapping was not loaded due to the following error: %1.', Comment = '%1 - error text';
@@ -546,7 +535,6 @@ page 5280 "SAF-T Wizard"
     end;
 
     local procedure FinishAction();
-    var
     begin
         FeatureTelemetry.LogUptake('0000KTD', SAFTExportTok, Enum::"Feature Uptake Status"::"Set up");
         SetupCompleted := true;
@@ -844,12 +832,4 @@ page 5280 "SAF-T Wizard"
     begin
         VATStartingDateSetCount := MappingHelperSAFT.GetVATPostingSetupMappedCount();
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature will be enabled by default.', '23.0')]
-    procedure SetRunFromFeatureMgt()
-    begin
-        IsRunFromFeatureMgt := true;
-    end;
-#endif
 }

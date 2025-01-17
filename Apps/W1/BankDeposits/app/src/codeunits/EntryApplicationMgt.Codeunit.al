@@ -32,9 +32,8 @@ codeunit 1696 "Entry Application Mgt"
             repeat
                 PmtDetailedCustLedgEntry.SetFilter("Cust. Ledger Entry No.", '<>%1', CustLedgerEntry."Entry No.");
                 PmtDetailedCustLedgEntry.SetRange("Entry Type", DetailedCustLedgEntry."Entry Type"::Application);
-                PmtDetailedCustLedgEntry.SetRange("Transaction No.", DetailedCustLedgEntry."Transaction No.");
-                PmtDetailedCustLedgEntry.SetRange("Application No.", DetailedCustLedgEntry."Application No.");
                 PmtDetailedCustLedgEntry.SetRange("Customer No.", DetailedCustLedgEntry."Customer No.");
+                PmtDetailedCustLedgEntry.SetRange("Applied Cust. Ledger Entry No.", CustLedgerEntry."Entry No.");
                 OnGetAppliedCustEntriesOnAfterFilterPmtDetailedCustLedgEntry(DetailedCustLedgEntry, PmtDetailedCustLedgEntry);
                 PmtDetailedCustLedgEntry.FindSet();
                 repeat
@@ -85,9 +84,8 @@ codeunit 1696 "Entry Application Mgt"
             repeat
                 PmtDetailedVendorLedgEntry.SetFilter("Vendor Ledger Entry No.", '<>%1', VendorLedgerEntry."Entry No.");
                 PmtDetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::Application);
-                PmtDetailedVendorLedgEntry.SetRange("Transaction No.", DetailedVendorLedgEntry."Transaction No.");
-                PmtDetailedVendorLedgEntry.SetRange("Application No.", DetailedVendorLedgEntry."Application No.");
                 PmtDetailedVendorLedgEntry.SetRange("Vendor No.", DetailedVendorLedgEntry."Vendor No.");
+                PmtDetailedVendorLedgEntry.SetRange("Applied Vend. Ledger Entry No.", VendorLedgerEntry."Entry No.");
                 PmtDetailedVendorLedgEntry.FindSet();
                 repeat
                     IsHandled := false;

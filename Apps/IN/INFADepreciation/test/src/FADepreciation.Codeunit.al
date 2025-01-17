@@ -544,8 +544,51 @@ codeunit 18649 "FA Depreciation"
         VerifyFALedgerEntriesFirstYrUtilise(DepreciationBook, FixedAsset, FADepreciationBook, DocNo, DeprAmount, NewPostingDate, false, true);
     end;
 
-    local procedure Initialize()
+    [Test]
+    [HandlerFunctions('PostConfirmation')]
+    procedure VerifyNumberofDaysCalculationForLeapYear()
     var
+        DepreciationBook: Record "Depreciation Book";
+        FixedAsset: Record "Fixed Asset";
+        FAClass: Record "FA Class";
+        FixedAssetBlock: Record "Fixed Asset Block";
+        FASubclass: Record "FA Subclass";
+        FALocation: Record "FA Location";
+        FADepreciationBook: Record "FA Depreciation Book";
+        FAPostingGroup: Record "FA Posting Group";
+        DepreciationMethod: Enum "Depreciation Method";
+        DocNo: Code[20];
+        AcquisitionAmount: Decimal;
+    begin
+        // [SCENARIO] [497185] Calculate number of days in leap year while calculating FA Depreciation Report
+        InitializeFAIncomeTaxPeriod(DMY2Date(01, 01, 2024));
+
+        // [GIVEN] Create FA Card and depreciation book with Straight Line for 3 Years
+        CreateFABasicsWithCompanyDepBook(DepreciationBook, FAClass, FixedAssetBlock, FASubclass, FALocation, FAPostingGroup);
+        CreateNewFixedAsset(FixedAsset, FAClass.Code, FASubclass.Code, FALocation.Code, '', false);
+        CreateFADepreciationBookWithCompanyDepBookForLeapYear(FADepreciationBook, FixedAsset."No.", DepreciationBook.Code, DepreciationMethod::"Straight-Line", 0, DMY2Date(01, 01, 2024), 3);
+        CreateAndPostPurchaseInvoice(FixedAsset, AcquisitionAmount);
+        UpdateFiscalYear365DaysInDeprBook(DepreciationBook, true);
+
+
+        // [WHEN] Run FA Depreciation Report for Leap Year
+        RunCalculateDepreciation(FixedAsset."No.", DepreciationBook.Code, false, GetFiscalYearEndDateInc(DMY2Date(01, 01, 2024)), DocNo);
+
+        // [THEN] Check Number of Days For Leap Year
+        VerifyNumberofDaysInGenJournalLine(DocNo, GetFiscalYearEndDateInc(DMY2Date(01, 01, 2024)), 91);
+    end;
+
+    local procedure InitializeFAIncomeTaxPeriod(StartDate: Date)
+    begin
+        if IsInitialized then
+            exit;
+
+        IsInitialized := true;
+        WorkDate := System.WorkDate(DMY2Date(01, 01, 2024));
+        CreateFAIncomeTaxAccPeriod(StartDate);
+    end;
+
+    local procedure Initialize()
     begin
         if IsInitialized then
             exit;
@@ -754,7 +797,6 @@ codeunit 18649 "FA Depreciation"
     end;
 
     local procedure CreateNewFixedAsset(var FixedAsset: Record "Fixed Asset"; FAClass: Code[10]; FASubClass: Code[10]; FALocation: Code[10]; FixedAssetBlock: Code[10]; AddlDep: Boolean)
-    var
     begin
         LibraryFixedAsset.CreateFAWithPostingGroup(FixedAsset);
         FixedAsset.Validate("Add. Depr. Applicable", AddlDep);
@@ -795,6 +837,48 @@ codeunit 18649 "FA Depreciation"
                 LibraryAssert.AreNearlyEqual(DepreciationPct, FADepreciationBook."Declining-Balance %", 1,
                 StrSubstNo(AmountErr, FADepreciationBook.FieldCaption("Declining-Balance %"), FADepreciationBook.TableCaption));
         end;
+    end;
+
+    local procedure CreateFADepreciationBookWithCompanyDepBookForLeapYear(
+        var FADepreciationBook: Record "FA Depreciation Book";
+        FANo: Code[20];
+        DepreciationBookCode: Code[10];
+        DepreciationMethod: Enum "Depreciation Method";
+        DepreciationPct: Decimal;
+        LeapYearDate: Date;
+        NoofYears: Integer)
+    var
+        FixedAsset: Record "Fixed Asset";
+    begin
+        FixedAsset.Get(FANo);
+        LibraryFixedAsset.CreateFADepreciationBook(FADepreciationBook, FANo, DepreciationBookCode);
+        FADepreciationBook.Validate("FA Book Type", FADepreciationBook."FA Book Type"::" ");
+        FADepreciationBook.Validate("Depreciation Method", DepreciationMethod);
+        FADepreciationBook.Validate("Depreciation Starting Date", GetFiscalYearStartDateInc(LeapYearDate));
+        Case FADepreciationBook."Depreciation Method" of
+            FADepreciationBook."Depreciation Method"::"Straight-Line":
+                FADepreciationBook.Validate("Straight-Line %", DepreciationPct);
+            FADepreciationBook."Depreciation Method"::"Declining-Balance 1":
+                FADepreciationBook.Validate("Declining-Balance %", DepreciationPct);
+        end;
+        FADepreciationBook.Validate("FA Posting Group", FixedAsset."FA Posting Group");
+        FADepreciationBook.Validate("No. of Depreciation Years", NoofYears);
+        FADepreciationBook.Validate("Acquisition Date", GetFiscalYearStartDateInc(LeapYearDate));
+        FADepreciationBook.Modify(true);
+        Case FADepreciationBook."Depreciation Method" of
+            FADepreciationBook."Depreciation Method"::"Straight-Line":
+                LibraryAssert.AreNearlyEqual(DepreciationPct, FADepreciationBook."Straight-Line %", 1,
+                StrSubstNo(AmountErr, FADepreciationBook.FieldCaption("Straight-Line %"), FADepreciationBook.TableCaption));
+            FADepreciationBook."Depreciation Method"::"Declining-Balance 1":
+                LibraryAssert.AreNearlyEqual(DepreciationPct, FADepreciationBook."Declining-Balance %", 1,
+                StrSubstNo(AmountErr, FADepreciationBook.FieldCaption("Declining-Balance %"), FADepreciationBook.TableCaption));
+        end;
+    end;
+
+    local procedure UpdateFiscalYear365DaysInDeprBook(var DepreciationBook: Record "Depreciation Book"; FiscalYear365Days: Boolean)
+    begin
+        DepreciationBook.Validate("Fiscal Year 365 Days", FiscalYear365Days);
+        DepreciationBook.Modify();
     end;
 
     local procedure CreateFADepreciationBookWithIncTaxDepBook(
@@ -876,10 +960,10 @@ codeunit 18649 "FA Depreciation"
     local procedure GetDocumentNo(FAJournalBatch: Record "FA Journal Batch"): Code[20]
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.Get(FAJournalBatch."No. Series");
-        exit(NoSeriesManagement.GetNextNo(FAJournalBatch."No. Series", WorkDate(), FALSE));
+        exit(NoSeriesCodeunit.PeekNextNo(FAJournalBatch."No. Series"));
     end;
 
     local procedure CheckFAValueAndBookValue(
@@ -959,7 +1043,7 @@ codeunit 18649 "FA Depreciation"
                 FADepreciationBook.Validate("Declining-Balance %", StorageDec.Get(XDepRateTok));
         end;
         Evaluate(DayCalculation, Format(-DepreciationBook."Depr. Threshold Days" - LibraryRandom.RandInt(DepreciationBook."Depr. Threshold Days")) + 'D');
-        FADepreciationBook.validate("Depreciation Starting Date", CalcDate(DayCalculation, NewPostingDate));
+        FADepreciationBook.Validate("Depreciation Starting Date", CalcDate(DayCalculation, NewPostingDate));
         FADepreciationBook.Modify();
         RunCalculateDepreciation(No, DepreciationBookCode, true, NewPostingDate, DocNo);
         if FirstYearUtilizationFullYear then
@@ -1015,6 +1099,17 @@ codeunit 18649 "FA Depreciation"
             LibraryAssert.AreNearlyEqual(VerifyAmount, -FAJournalLine.Amount, 1,
                 StrSubstNo(AmountErr, FAJournalLine.FieldCaption(Amount), FAJournalLine.TableCaption));
         end;
+    end;
+
+    local procedure VerifyNumberofDaysInGenJournalLine(DocumentNo: Code[20]; PostingDate: Date; NumberofDays: Integer)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        GenJournalLine.SetRange("Document No.", DocumentNo);
+        GenJournalLine.SetRange("Posting Date", PostingDate);
+        GenJournalLine.FindFirst();
+        LibraryAssert.AreNearlyEqual(GenJournalLine."No. of Depreciation Days", NumberofDays, 1,
+        StrSubstNo(AmountErr, GenJournalLine.FieldCaption("No. of Depreciation Days"), GenJournalLine.TableCaption));
     end;
 
     local procedure VerifyDeprBeforePostingHalfYr(
@@ -1302,7 +1397,6 @@ codeunit 18649 "FA Depreciation"
         var FAShitf: Record "Fixed Asset Shift";
         ShiftType: Enum "Shift Type";
         IndustryType: Enum "Industry type")
-    var
     begin
         FAShitf.Init();
         FAShitf.Validate("FA No.", FixedAsset."No.");

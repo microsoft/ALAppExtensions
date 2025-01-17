@@ -15,18 +15,32 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                     ApplicationArea = All;
                     Caption = 'GP Payables Transactions';
                     Image = Documents;
-                    RunObject = Page "Hist. Payables Documents";
                     ToolTip = 'View the GP payables transactions.';
                     Visible = GPPayablesDataAvailable;
+
+                    trigger OnAction()
+                    var
+                        HistPayablesDocuments: Page "Hist. Payables Documents";
+                    begin
+                        HistPayablesDocuments.SetFilterVendorNo(Rec."No.");
+                        HistPayablesDocuments.Run();
+                    end;
                 }
                 action("GP Purchase Recv.")
                 {
                     ApplicationArea = All;
                     Caption = 'Receivings Transactions';
                     Image = ReceivablesPayables;
-                    RunObject = Page "Hist. Purchase Recv. Headers";
                     ToolTip = 'View the GP purchase receivings transactions.';
                     Visible = GPPurchaseRecvDataAvailable;
+
+                    trigger OnAction()
+                    var
+                        HistPurchaseRecvHeaders: Page "Hist. Purchase Recv. Headers";
+                    begin
+                        HistPurchaseRecvHeaders.SetFilterVendorNo(Rec."No.");
+                        HistPurchaseRecvHeaders.Run();
+                    end;
                 }
             }
         }

@@ -144,10 +144,10 @@ page 5314 "SIE Setup Wizard"
 
                         trigger OnDrillDown()
                         var
-                            GLAccountMappingCard: Page "G/L Account Mapping Card";
+                            GLAccMappingCard: Page "G/L Acc. Mapping Card";
                         begin
-                            GLAccountMappingCard.SetTableView(Rec);
-                            GLAccountMappingCard.RunModal();
+                            GLAccMappingCard.SetTableView(Rec);
+                            GLAccMappingCard.RunModal();
                             UpdateGLAccountsMappedInfo();
                         end;
                     }
@@ -184,9 +184,6 @@ page 5314 "SIE Setup Wizard"
                         var
                             DimensionsSIE: Page "Dimensions SIE";
                         begin
-#if not CLEAN22
-                            DimensionsSIE.SetRunFromWizard(true);
-#endif
                             DimensionsSIE.RunModal();
                         end;
                     }
@@ -254,7 +251,6 @@ page 5314 "SIE Setup Wizard"
     }
 
     trigger OnQueryClosePage(CloseAction: action): Boolean;
-    var
     begin
         if GetLastErrorText() <> '' then
             exit(true);
@@ -277,13 +273,6 @@ page 5314 "SIE Setup Wizard"
         SIEManagement: Codeunit "SIE Management";
         AuditFileExportFormat: Enum "Audit File Export Format";
     begin
-#if not CLEAN22
-        if not SIEManagement.IsFeatureEnabled() then
-            if not IsRunFromFeatureMgt then begin
-                SIEManagement.ShowNotEnabledMessage(CurrPage.Caption());
-                Error('');
-            end;
-#endif
         FeatureTelemetry.LogUptake('0000JPP', SIEExportTok, Enum::"Feature Uptake Status"::Discovered);
         Commit();
 
@@ -313,9 +302,6 @@ page 5314 "SIE Setup Wizard"
         DimensionExportVisible: Boolean;
         TopBannerVisible: Boolean;
         SetupCompleted: Boolean;
-#if not CLEAN22
-        IsRunFromFeatureMgt: Boolean;
-#endif
         GLAccountsMapped: Text[20];
         StandardAccTypeNotSpecifiedErr: label 'A standard account type is not specified.';
         SetupNotCompletedQst: label 'Set up SIE has not been completed.\\Are you sure that you want to exit?', Comment = '%1 = Set-up of SIE';
@@ -518,13 +504,4 @@ page 5314 "SIE Setup Wizard"
     begin
         GLAccountsMapped := AuditMappingHelper.GetGLAccountsMappedInfo(Rec.Code);
     end;
-#if not CLEAN22
-#pragma warning disable AS0072
-    [Obsolete('Feature will be enabled by default.', '22.0')]
-    procedure SetRunFromFeatureMgt()
-    begin
-        IsRunFromFeatureMgt := true;
-    end;
-#pragma warning restore AS0072
-#endif
 }

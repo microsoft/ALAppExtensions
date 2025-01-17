@@ -2,31 +2,23 @@ namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
 using Microsoft.Foundation.AuditCodes;
 using System.Globalization;
-using System.Reflection;
 
 tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
 {
     fields
     {
+#if not CLEANSCHEMA26
+#pragma warning disable PTE0022
         field(50050; "Statistical Account Journal"; Code[10])
         {
             Caption = 'Statistical Account Journal';
             TableRelation = "Source Code";
             ObsoleteReason = 'Moved to new field - Stat. Account Journal';
-#if not CLEAN23            
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-
-            trigger OnValidate()
-            begin
-                Rec."Stat. Account Journal" := Rec."Statistical Account Journal";
-            end;
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#endif
         }
-
+#pragma warning restore PTE0022
+#endif
         field(2630; "Stat. Account Journal"; Code[10])
         {
             Caption = 'Statistical Account Journal';
@@ -43,14 +35,7 @@ tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
         if SourceCodeSetup."Stat. Account Journal" <> '' then
             exit;
 
-#if not CLEAN23
-        if SourceCodeSetup."Statistical Account Journal" <> '' then
-            SourceCodeSetup."Stat. Account Journal" := SourceCodeSetup."Statistical Account Journal"
-        else
-            SourceCodeSetup."Stat. Account Journal" := StatistAccJnlTok;
-#else
         SourceCodeSetup."Stat. Account Journal" := StatistAccJnlTok;
-#endif
         SourceCodeSetup.Modify();
         InsertSourceCode(SourceCodeSetup."Stat. Account Journal", PageName(PAGE::"Statistical Accounts Journal"));
         exit(SourceCodeSetup."Stat. Account Journal");

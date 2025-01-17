@@ -10,39 +10,22 @@ pageextension 31367 "Posted Service Shipment CZ" extends "Posted Service Shipmen
 {
     layout
     {
-#if not CLEAN22
-#pragma warning disable AL0432
-        modify("Physical Transfer CZL")
-#pragma warning restore AL0432
+        addlast("Foreign Trade")
         {
-            Enabled = not IntrastatEnabled;
-            Visible = not IntrastatEnabled;
-        }
-#endif
-        addafter("EU 3-Party Trade")
-        {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                Editable = false;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Physical Transfer';
                 ToolTip = 'Specifies if there is physical transfer of the item.';
                 Editable = false;
-#if not CLEAN22
-                Enabled = IntrastatEnabled;
-                Visible = IntrastatEnabled;
-#endif
             }
         }
     }
-#if not CLEAN22
-
-    trigger OnOpenPage()
-    begin
-        IntrastatEnabled := IntrastatReportManagement.IsFeatureEnabled();
-    end;
-
-    var
-        IntrastatReportManagement: Codeunit IntrastatReportManagement;
-        IntrastatEnabled: Boolean;
-#endif
 }

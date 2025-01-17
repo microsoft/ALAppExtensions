@@ -53,17 +53,14 @@ tableextension 10826 "Audit File Export Header FEC" extends "Audit File Export H
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA26
         field(10830; "Use Transaction No."; Boolean)
         {
             ObsoleteReason = 'The transaction number will be used as the progressive number by default. This field is no longer needed.';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
+#endif
     }
 
     var

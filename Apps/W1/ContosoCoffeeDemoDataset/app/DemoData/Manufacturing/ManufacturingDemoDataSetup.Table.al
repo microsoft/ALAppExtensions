@@ -1,15 +1,12 @@
+#if not CLEANSCHEMA26
 table 4760 "Manufacturing Demo Data Setup"
 {
     ObsoleteReason = 'The table is moved to "Manufacturing Module Setup" table';
     InherentEntitlements = rimdX;
     InherentPermissions = rimdX;
-#if not CLEAN23
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
-#endif
+    ReplicateData = false;
 
     fields
     {
@@ -106,3 +103,4 @@ table 4760 "Manufacturing Demo Data Setup"
         }
     }
 }
+#endif

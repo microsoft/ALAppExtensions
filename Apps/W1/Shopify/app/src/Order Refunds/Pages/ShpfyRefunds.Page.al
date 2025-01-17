@@ -97,9 +97,11 @@ page 30147 "Shpfy Refunds"
 
                 trigger OnAction()
                 var
+                    RefundsAPI: Codeunit "Shpfy Refunds API";
                     IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
                     ErrorInfo: ErrorInfo;
                 begin
+                    RefundsAPI.VerifyRefundCanCreateCreditMemo(Rec."Refund Id");
                     IReturnRefundProcess := "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo";
                     if IReturnRefundProcess.CanCreateSalesDocumentFor("Shpfy Source Document Type"::Refund, Rec."Refund Id", ErrorInfo) then
                         IReturnRefundProcess.CreateSalesDocument("Shpfy Source Document Type"::Refund, Rec."Refund Id")

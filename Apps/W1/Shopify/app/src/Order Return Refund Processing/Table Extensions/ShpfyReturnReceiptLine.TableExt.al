@@ -8,7 +8,7 @@ tableextension 30111 "Shpfy Return Receipt Line" extends "Return Receipt Line"
     {
         field(30103; "Shpfy Refund Id"; BigInteger)
         {
-            Caption = 'Shpfy Refund Id';
+            Caption = 'Shopify Refund Id';
             DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = "Shpfy Refund Header"."Refund Id";

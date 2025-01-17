@@ -32,9 +32,65 @@ codeunit 18719 "TDS Statistics"
             until PurchaseLine.Next() = 0;
 
         for i := 1 to RecordIDList.Count() do
-            TDSAmount += GetTDSAmount(RecordIDList.Get(i));
+            TDSAmount += TDSEntityManagement.RoundTDSAmount(GetTDSAmount(RecordIDList.Get(i)));
+    end;
 
-        TDSAmount := TDSEntityManagement.RoundTDSAmount(TDSAmount);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseHeaderTDSAmount', '', false, false)]
+    local procedure OnGetPartialPurchaseHeaderTDSAmount(PurchaseHeader: Record "Purchase Header"; var PartialTDSAmount: Decimal)
+    begin
+        GetPartialPurchaseInvStatisticsAmount(PurchaseHeader, PartialTDSAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseRcptTDSAmount', '', false, false)]
+    local procedure OnGetPartialPurchaseRcptGSTAmount(PurchaseHeader: Record "Purchase Header"; var PartialTDSAmount: Decimal)
+    begin
+        GetPartialPurchaseRcptStatisticsAmount(PurchaseHeader, PartialTDSAmount);
+    end;
+
+    procedure GetPartialPurchaseInvStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialTDSAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        TDSEntityManagement: Codeunit "TDS Entity Management";
+    begin
+        Clear(PartialTDSAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Invoice");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    PartialTDSAmount += (GetTDSAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialTDSAmount := TDSEntityManagement.RoundTDSAmount(PartialTDSAmount);
+    end;
+
+    procedure GetPartialPurchaseRcptStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialTDSAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        TDSEntityManagement: Codeunit "TDS Entity Management";
+    begin
+        Clear(PartialTDSAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Receive", "Return Qty. to Ship");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    if PurchaseLine."Document Type" = PurchaseLine."Document Type"::Order then
+                        PartialTDSAmount += (GetTDSAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Receive" / PurchaseLine.Quantity)
+                    else
+                        if PurchaseLine."Document Type" = PurchaseLine."Document Type"::"Return Order" then
+                            PartialTDSAmount += (GetTDSAmount(PurchaseLine.RecordId()) * PurchaseLine."Return Qty. to Ship" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialTDSAmount := TDSEntityManagement.RoundTDSAmount(PartialTDSAmount);
     end;
 
     procedure GetStatisticsPostedAmount(

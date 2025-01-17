@@ -207,6 +207,7 @@ page 30047 "APIV2 - Purchase Invoice Lines"
                 field(discountAppliedBeforeTax; Rec."Discount Applied Before Tax")
                 {
                     Caption = 'Discount Applied Before Tax';
+                    Editable = false;
                 }
                 field(amountExcludingTax; Rec."Line Amount Excluding Tax")
                 {

@@ -101,8 +101,8 @@ table 30124 "Shpfy Payment Transaction"
             Clustered = true;
         }
 
-        Key(Idx1; "Payout Id") { }
-        Key(Idx2; "Shop Code") { }
+        key(Idx1; "Payout Id") { }
+        key(Idx2; "Shop Code") { }
     }
 
 }

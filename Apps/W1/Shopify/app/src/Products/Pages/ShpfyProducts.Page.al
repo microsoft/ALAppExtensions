@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
+using System.Environment.Configuration;
 
 /// <summary>
 /// Page Shpfy Products (ID 30126).
@@ -314,6 +315,25 @@ page 30126 "Shpfy Products"
                     Tags.RunModal();
                 end;
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Add metafields to a product. This can be used for adding custom data fields to products in Shopify.';
+
+                trigger OnAction()
+                var
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Rec.TestField(Id);
+                    Metafields.RunForResource(Database::"Shpfy Product", Rec.Id, Rec."Shop Code");
+                end;
+            }
             group(Sync)
             {
                 action(SyncProducts)
@@ -389,4 +409,36 @@ page 30126 "Shpfy Products"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        Shop: Record "Shpfy Shop";
+        Product: Record "Shpfy Product";
+        MyNotifications: Record "My Notifications";
+        ShopMgt: Codeunit "Shpfy Shop Mgt.";
+        NoItemNotification: Notification;
+    begin
+        if Shop.Get(Rec.GetFilter("Shop Code")) then begin
+            Product.SetRange("Shop Code", Shop.Code);
+            if Product.IsEmpty() then
+                if MyNotifications.IsEnabled(ShopMgt.GetNoItemNotificationId()) then begin
+                    NoItemNotification.Id := ShopMgt.GetNoItemNotificationId();
+                    NoItemNotification.Message := NoItemNotificationMsg;
+                    NoItemNotification.Scope := NotificationScope::LocalScope;
+                    NoItemNotification.SetData('ShopCode', Shop.Code);
+                    if (Shop."Sync Item" = Shop."Sync Item"::" ") or (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") then
+                        NoItemNotification.AddAction(AddItemsMsg, Codeunit::"Shpfy Sync Products", 'AddItemsToShopifyNotification');
+                    if Shop."Sync Item" = Shop."Sync Item"::"From Shopify" then
+                        NoItemNotification.AddAction(SyncProductsMsg, Codeunit::"Shpfy Sync Products", 'SyncProductsNotification');
+                    NoItemNotification.AddAction(DontShowThisAgainMsg, Codeunit::"Shpfy Shop Mgt.", 'DisableNoItemNotification');
+                    NoItemNotification.Send();
+                end;
+        end;
+    end;
+
+    var
+        DontShowThisAgainMsg: Label 'Don''t show this again.';
+        AddItemsMsg: Label 'Add Items to Shopify';
+        SyncProductsMsg: Label 'Sync Products';
+        NoItemNotificationMsg: Label 'There isn''t data here yet. Do you want to synchronize products?';
 }

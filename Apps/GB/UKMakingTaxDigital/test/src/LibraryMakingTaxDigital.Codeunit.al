@@ -213,7 +213,6 @@ codeunit 148080 "Library - Making Tax Digital"
     begin
         LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
         LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('UKHMRC-MTDVAT-Sandbox-ClientID', ClientToken);
-        LibraryAzureKVMockMgmt.EnsureSecretNameIsAllowed('UKHMRC-MTDVAT-Sandbox-ClientID');
         LibraryAzureKVMockMgmt.UseAzureKeyvaultSecretProvider();
     end;
 
@@ -355,13 +354,21 @@ codeunit 148080 "Library - Making Tax Digital"
     end;
 
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
+    var
+        ClientIdText: Text;
+        ClientSecretText: Text;
+        AccessTokenText: Text;
+        RefreshTokenText: Text;
     begin
-        with OAuth20Setup do begin
-            SetToken("Client ID", 'Dummy Test Client ID');
-            SetToken("Client Secret", 'Dummy Test Client Secret');
-            SetToken("Access Token", 'Dummy Test Access Token');
-            SetToken("Refresh Token", 'Dummy Test Refresh Token');
-        end;
+        ClientIdText := 'Dummy Test Client ID';
+        ClientSecretText := 'Dummy Test Client Secret';
+        AccessTokenText := 'Dummy Test Access Token';
+        RefreshTokenText := 'Dummy Test Refresh Token';
+
+        OAuth20Setup.SetToken(OAuth20Setup."Client ID", ClientIdText);
+        OAuth20Setup.SetToken(OAuth20Setup."Client Secret", ClientSecretText);
+        OAuth20Setup.SetToken(OAuth20Setup."Access Token", AccessTokenText);
+        OAuth20Setup.SetToken(OAuth20Setup."Refresh Token", RefreshTokenText);
     end;
 
     internal procedure SetOAuthSetupSandbox(IsSandbox: Boolean)

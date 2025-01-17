@@ -1,15 +1,19 @@
 namespace Microsoft.Foundation.DataSearch;
 
 using System.Reflection;
+using System.Utilities;
 
 page 2684 "Data Search Setup (Field) List"
 {
-    Caption = 'Search Setup (Field) List';
+    Caption = 'Enable fields for searching';
     DataCaptionExpression = SelectedPageCaption;
     DeleteAllowed = false;
     InsertAllowed = false;
+    LinksAllowed = true;
     PageType = List;
     SourceTable = "Field";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -21,7 +25,7 @@ page 2684 "Data Search Setup (Field) List"
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'No.';
+                    Caption = 'Field No.';
                     Editable = false;
                     Lookup = false;
                     ToolTip = 'Specifies the number of the field.';
@@ -29,10 +33,16 @@ page 2684 "Data Search Setup (Field) List"
                 field("Field Caption"; Rec."Field Caption")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Field Caption';
+                    Caption = 'Field Name';
                     DrillDown = false;
                     Editable = false;
                     ToolTip = 'Specifies the caption of the field, that is, the name that will be shown in the user interface.';
+
+                    trigger OnAssistEdit()
+                    begin
+                        SearchSetupField."Enable Search" := not SearchSetupField."Enable Search";
+                        UpdateRec();
+                    end;
                 }
                 field(FieldType; Rec."Type Name")
                 {
@@ -40,7 +50,15 @@ page 2684 "Data Search Setup (Field) List"
                     Caption = 'Field Type';
                     DrillDown = false;
                     Editable = false;
+                    Visible = false;
                     ToolTip = 'Specifies the type of the field.';
+                }
+                field(OptimizeForTextSearch; Rec.OptimizeForTextSearch)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Optimized for text search';
+                    Editable = false;
+                    ToolTip = 'Specifies whether this field is optimized for text search. If this field is optimized for text search, the search can be faster.';
                 }
                 field("Enable Search"; SearchSetupField."Enable Search")
                 {
@@ -52,6 +70,16 @@ page 2684 "Data Search Setup (Field) List"
                     begin
                         UpdateRec();
                     end;
+                }
+                field(TableCaption; GetTableCaption(Rec.TableNo))
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Table Name';
+                    DrillDown = false;
+                    Enabled = false;
+                    Visible = ShowMultipleTables;
+                    Style = Subordinate;
+                    ToolTip = 'Specifies the caption of the field, that is, the name that will be shown in the user interface.';
                 }
             }
         }
@@ -71,7 +99,7 @@ page 2684 "Data Search Setup (Field) List"
                 trigger OnAction()
                 begin
                     if Confirm(ResetQst, false) then
-                        InitDefaultSetup();
+                        InitDefaultSetup(true);
                 end;
             }
         }
@@ -86,7 +114,8 @@ page 2684 "Data Search Setup (Field) List"
     trigger OnAfterGetCurrRecord()
     begin
         GetRec();
-        SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
+        if SelectedPageCaption = '' then
+            SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
     end;
 
     trigger OnAfterGetRecord()
@@ -99,13 +128,19 @@ page 2684 "Data Search Setup (Field) List"
         DataSearchSetupTable: Record "Data Search Setup (Table)";
     begin
         Rec.FilterGroup(2);
+        ShowMultipleTables := StrPos(Rec.GetFilter(TableNo), '|') > 0;
         Rec.SetRange(Class, Rec.Class::Normal);
         Rec.setrange(ObsoleteState, Rec.ObsoleteState::No);
         Rec.setfilter(Type, '%1|%2', Rec.Type::Code, Rec.Type::Text);
         Rec.FilterGroup(0);
-        SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
+        Rec.SetRange(OptimizeForTextSearch, true);
+        TableHasFullTextIndex := not Rec.IsEmpty();
+        Rec.SetRange(OptimizeForTextSearch);
+        if Rec.FindFirst() then;
+        if SelectedPageCaption = '' then
+            SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
         if DataSearchSetupTable.Get(Rec.TableNo) then
-            InitDefaultSetup();
+            InitDefaultSetup(false);
     end;
 
     var
@@ -113,22 +148,64 @@ page 2684 "Data Search Setup (Field) List"
         SelectedPageCaption: Text;
         PrevTableCaption: Text;
         PrevTableNo: Integer;
+        ShowMultipleTables: Boolean;
+        TableHasFullTextIndex: Boolean;
         ResetQst: Label 'Do you want to remove the current setup and insert the default?';
+        NotFullTextMsg: Label 'Field %1 is not optimized for text search. The search will be slower.', Comment = '%1 is a field name';
 
-    local procedure InitDefaultSetup()
+    local procedure InitDefaultSetup(ResetData: Boolean)
     var
+        IntegerRec: Record Integer;
         DataSearchDefaults: codeunit "Data Search Defaults";
     begin
-        DataSearchDefaults.AddDefaultFields(Rec.TableNo);
+        if ShowMultipleTables then begin
+            Rec.FilterGroup(2);
+            Rec.CopyFilter(TableNo, IntegerRec.Number);
+            Rec.FilterGroup(0);
+            if IntegerRec.GetFilter(Number) = '' then
+                exit; // emergency brake to avoid 'infinite' loop
+            if IntegerRec.FindSet() then
+                repeat
+                    if ResetData then
+                        RemoveFieldSetup(Rec.TableNo);
+                    DataSearchDefaults.AddDefaultFields(IntegerRec.Number);
+                until IntegerRec.Next() = 0;
+        end else begin
+            if ResetData then
+                RemoveFieldSetup(Rec.TableNo);
+            DataSearchDefaults.AddDefaultFields(Rec.TableNo);
+        end;
+    end;
+
+    local procedure RemoveFieldSetup(TableNo: Integer)
+    var
+        DataSearchSetupField: Record "Data Search Setup (Field)";
+    begin
+        DataSearchSetupField.SetRange("Table No.", TableNo);
+        DataSearchSetupField.DeleteAll();
+    end;
+
+    internal procedure SetPageCaption(NewCaption: Text)
+    begin
+        SelectedPageCaption := NewCaption;
     end;
 
     local procedure UpdateRec()
+    var
+        Field: Record Field;
+        Notification: Notification;
     begin
         if not SearchSetupField."Enable Search" then begin
             if SearchSetupField.Delete() then;
         end else
             if not SearchSetupField.Modify() then
                 SearchSetupField.Insert();
+        if SearchSetupField."Enable Search" and TableHasFullTextIndex then
+            if Field.Get(SearchSetupField."Table No.", SearchSetupField."Field No.") then
+                if not Field.OptimizeForTextSearch then begin
+                    Notification.Message(StrSubstNo(NotFullTextMsg, Field."Field Caption"));
+                    Notification.Send();
+                end;
     end;
 
     local procedure GetRec()

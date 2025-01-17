@@ -20,7 +20,6 @@ tableextension 5314 "Audit File Export Header SIE" extends "Audit File Export He
         }
         modify("Audit File Export Format")
         {
-#if CLEAN22
             trigger OnBeforeValidate()
             var
                 SIEManagement: Codeunit "SIE Management";
@@ -29,19 +28,6 @@ tableextension 5314 "Audit File Export Header SIE" extends "Audit File Export He
                     if not SIEManagement.SIEFormatSetupExists() then
                         Error(AuditExportFormatSetupNotExistMsg);
             end;
-#else
-            trigger OnBeforeValidate()
-            var
-                SIEManagement: Codeunit "SIE Management";
-            begin
-                if Rec."Audit File Export Format" = Enum::"Audit File Export Format"::SIE then begin
-                    if not SIEManagement.IsFeatureEnabled() then
-                        Error(FeatureNotEnabledMsg);
-                    if not SIEManagement.SIEFormatSetupExists() then
-                        Error(AuditExportFormatSetupNotExistMsg);
-                end;
-            end;
-#endif
 
             trigger OnAfterValidate()
             begin
@@ -111,9 +97,6 @@ tableextension 5314 "Audit File Export Header SIE" extends "Audit File Export He
         FilterStringParseErr: label 'Could not parse the filter expression. Use the lookup action, or type a string in the following format: "Account Type: Total, Account Category: Assets".';
         TooManyFiltersErr: label 'You have selected too many filters for G/L accounts. Open the filter page again and set fewer filters.';
         AuditExportFormatSetupNotExistMsg: label 'Audit File Export Format Setup does not exist for the SIE export format. Open the SIE Audit File Export Setup Guide page and follow the instructions.';
-#if not CLEAN22
-        FeatureNotEnabledMsg: label 'SIE feature is not enabled yet in your Business Central. An administrator can enable the feature on the Feature Management page.';
-#endif
         FilterTxt: label '%1=FILTER(%2)', Locked = true;
         WhereTxt: label '%1 WHERE(%2)', Locked = true;
 

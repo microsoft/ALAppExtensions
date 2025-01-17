@@ -18,10 +18,30 @@ report 30106 "Shpfy Add Item to Shopify"
             RequestFilterFields = "No.", "Item Category Code";
             trigger OnPreDataItem()
             var
-                NoShopSellectedErr: Label 'You must select a shop to add the items to.';
+                ShopLocation: Record "Shpfy Shop Location";
+                MissingSKUMappingErrorInfo: ErrorInfo;
             begin
                 if ShopCode = '' then
                     Error(NoShopSellectedErr);
+
+                if ShopifyShop.Get(ShopCode) then
+                    if ShopifyShop."SKU Mapping" = ShopifyShop."SKU Mapping"::" " then begin
+                        ShopLocation.SetRange("Shop Code", ShopCode);
+                        ShopLocation.SetRange("Is Fulfillment Service", true);
+                        ShopLocation.SetRange("Default Product Location", true);
+                        if not ShopLocation.IsEmpty() then begin
+                            MissingSKUMappingErrorInfo.DataClassification := MissingSKUMappingErrorInfo.DataClassification::SystemMetadata;
+                            MissingSKUMappingErrorInfo.ErrorType := MissingSKUMappingErrorInfo.ErrorType::Client;
+                            MissingSKUMappingErrorInfo.Verbosity := MissingSKUMappingErrorInfo.Verbosity::Error;
+                            MissingSKUMappingErrorInfo.Message := MissingSKUMappingErr;
+                            MissingSKUMappingErrorInfo.RecordId(ShopifyShop.RecordId());
+                            MissingSKUMappingErrorInfo.FieldNo(ShopifyShop.FieldNo("SKU Mapping"));
+                            MissingSKUMappingErrorInfo.AddNavigationAction(ChangeSKUMappingLbl);
+                            MissingSKUMappingErrorInfo.PageNo(Page::"Shpfy Shop Card");
+                            MissingSKUMappingErrorInfo.AddAction(ChangeDefaultLocationLbl, Codeunit::"Shpfy Create Product", 'ChangeDefaultProductLocation');
+                            Error(MissingSKUMappingErrorInfo);
+                        end;
+                    end;
 
                 Clear(ShopifyCreateProduct);
                 ShopifyCreateProduct.SetShop(ShopCode);
@@ -34,7 +54,19 @@ report 30106 "Shpfy Add Item to Shopify"
             end;
 
             trigger OnAfterGetRecord()
+            var
+                SkippedRecord: Codeunit "Shpfy Skipped Record";
             begin
+                if Item.Blocked or Item."Sales Blocked" then begin
+                    SkippedRecord.LogSkippedRecord(Item.RecordId, ItemIsBlockedLbl, ShopifyShop);
+                    exit;
+                end;
+
+                if Item.Description = '' then begin
+                    SkippedRecord.LogSkippedRecord(Item.RecordId, ItemDescriptionIsEmptyLbl, ShopifyShop);
+                    exit;
+                end;
+
                 if GuiAllowed then begin
                     CurrItemNo := Item."No.";
                     ProcessDialog.Update();
@@ -148,6 +180,7 @@ report 30106 "Shpfy Add Item to Shopify"
     end;
 
     var
+        ShopifyShop: Record "Shpfy Shop";
         ShopifyCreateProduct: Codeunit "Shpfy Create Product";
         ShopCode: Code[20];
         CurrItemNo: Code[20];
@@ -156,10 +189,14 @@ report 30106 "Shpfy Add Item to Shopify"
         SyncInventoryVisible: Boolean;
         SyncImagesVisible: Boolean;
         ProcessMsg: Label 'Adding item #1####################', Comment = '#1 = Item no.';
+        NoShopSellectedErr: Label 'You must select a shop to add the items to.';
         ProcessDialog: Dialog;
         ProductFilter: Text;
-
-
+        MissingSKUMappingErr: Label 'You selected Business Central Fullment Services as default location. Inventory is stocked at Business Central Fulfilment Services for created products. This setting requires SKU field in the products.';
+        ChangeDefaultLocationLbl: Label 'Change default location';
+        ChangeSKUMappingLbl: Label 'Change SKU mapping';
+        ItemIsBlockedLbl: Label 'Item is blocked or sales blocked.';
+        ItemDescriptionIsEmptyLbl: Label 'Item description is empty.';
 
     /// <summary> 
     /// Set Shop.

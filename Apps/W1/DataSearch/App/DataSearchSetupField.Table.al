@@ -6,13 +6,15 @@ table 2682 "Data Search Setup (Field)"
 {
     Caption = 'Search Setup (Field)';
     ReplicateData = true;
+    InherentEntitlements = R;
+    InherentPermissions = R;
 
     fields
     {
         field(1; "Table No."; Integer)
         {
             Caption = 'Table No.';
-            TableRelation = "Data Search Setup (Table)";
+            TableRelation = "Table Metadata";
             DataClassification = SystemMetadata;
         }
         field(2; "Field No."; Integer)

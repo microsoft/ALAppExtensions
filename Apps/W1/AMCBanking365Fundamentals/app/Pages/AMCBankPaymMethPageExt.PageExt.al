@@ -28,7 +28,6 @@ pageextension 20104 "AMC Bank Paym. Meth. Page Ext" extends "Payment Methods"
         IsAMCFundamentalsEnabled: Boolean;
 
     trigger OnOpenPage()
-    var
     begin
         IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
     end;

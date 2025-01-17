@@ -361,7 +361,6 @@ codeunit 18273 "Jnl Bank Charges Tests"
     end;
 
     local procedure Initialize()
-    var
     begin
         FillCompanyInformation();
         Clear(LibraryStorage);

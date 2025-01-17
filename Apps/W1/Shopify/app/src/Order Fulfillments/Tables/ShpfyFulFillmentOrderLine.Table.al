@@ -52,6 +52,16 @@ table 30144 "Shpfy FulFillment Order Line"
             Caption = 'Shopify Variant Id';
             DataClassification = SystemMetadata;
         }
+        field(10; "Delivery Method Type"; Enum "Shpfy Delivery Method Type")
+        {
+            Caption = 'Delivery Method Type';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(11; "Fulfillment Status"; Text[50])
+        {
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

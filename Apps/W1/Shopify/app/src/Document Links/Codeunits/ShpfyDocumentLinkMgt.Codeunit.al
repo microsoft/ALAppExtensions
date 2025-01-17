@@ -6,6 +6,8 @@ using Microsoft.Sales.Posting;
 
 codeunit 30262 "Shpfy Document Link Mgt."
 {
+    Permissions = TableData "Shpfy Doc. Link To Doc." = imd;
+
     var
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         ShpfyBCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
@@ -70,8 +72,14 @@ codeunit 30262 "Shpfy Document Link Mgt."
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
                 CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Credit Memo", SalesCrMemoHdrNo);
+            end else begin
+                DocLinkToBCDoc.SetRange("Document Type", DocLinkToBCDoc."Document Type"::"Posted Sales Invoice");
+                DocLinkToBCDoc.SetRange("Document No.", SalesInvHdrNo);
+                if DocLinkToBCDoc.FindFirst() then begin
+                    CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
+                    CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
+                end;
             end;
-
         end;
     end;
 

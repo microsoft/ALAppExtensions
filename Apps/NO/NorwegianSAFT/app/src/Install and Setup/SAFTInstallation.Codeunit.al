@@ -40,7 +40,6 @@ codeunit 10670 "SAF-T Installation"
         ImportMappingCodesIfSaaS();
         SAFTMappingHelper.UpdateMasterDataWithNoSeries();
         SAFTMappingHelper.UpdateSAFTSourceCodesBySetup();
-        SAFTMappingHelper.AddSAFTAssistedSetup();
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()

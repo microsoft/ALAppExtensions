@@ -33,14 +33,6 @@ table 4511 "SMTP Account"
             DataClassification = CustomerContent;
         }
 
-        field(4; Authentication; Enum "SMTP Authentication")
-        {
-            DataClassification = CustomerContent;
-            ObsoleteReason = 'Replaced by "Authentication Types" as the enum is moving to SMTP API app.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-
         field(5; "User Name"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -102,14 +94,6 @@ table 4511 "SMTP Account"
         {
             DataClassification = CustomerContent;
         }
-
-        field(12; "Created By"; Text[50])
-        {
-            DataClassification = EndUserIdentifiableInformation;
-            ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '20.0';
-        }
         field(13; "Authentication Type"; Enum "SMTP Authentication Types")
         {
             DataClassification = CustomerContent;
@@ -135,7 +119,7 @@ table 4511 "SMTP Account"
     end;
 
     [NonDebuggable]
-    procedure SetPassword(Password: Text)
+    procedure SetPassword(Password: SecretText)
     begin
         if IsNullGuid(Rec."Password Key") then
             Rec."Password Key" := CreateGuid();
@@ -145,7 +129,7 @@ table 4511 "SMTP Account"
     end;
 
     [NonDebuggable]
-    procedure GetPassword(PasswordKey: Guid) Password: Text
+    procedure GetPassword(PasswordKey: Guid) Password: SecretText
     begin
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
             Error(UnableToGetPasswordMsg);

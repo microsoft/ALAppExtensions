@@ -17,9 +17,9 @@ function Restore-TranslationsForApp {
     # Translations need to be restored in the Translations folder in the app folder
     $appTranslationsFolder = Join-Path $AppProjectFolder "Translations"
     New-Directory -Path "$appTranslationsFolder" -ForceEmpty
-    
+
     $appName = (Get-ChildItem -Path $AppProjectFolder -Filter "app.json" | Get-Content | ConvertFrom-Json).name
-   
+
     Write-Host "Restoring translations for app $appName in $appTranslationsFolder"
 
     $translationsOutputFolder = Join-Path (Get-BaseFolder) "out/translations/"
@@ -27,14 +27,16 @@ function Restore-TranslationsForApp {
     $tranlationsPath = Join-Path $translationPackagePath "Translations"
 
     $translationsFound = $false
-    
+
     # Copy the translations from the package to the app folder
-    Get-ChildItem $tranlationsPath -Filter *-* -Directory | ForEach-Object {
-        $localeFolder = $_.FullName
-        $locale = $_.Name
-        
+    $translationFolders = Get-ChildItem $tranlationsPath -Filter *-* -Directory
+
+    foreach($translationFolder in $translationFolders) {
+        $localeFolder = $translationFolder.FullName
+        $locale = $translationFolder.Name
+
         # Translations are located in the ExtensionsV2 folder
-        $translationFilePath = Join-Path $localeFolder "ExtensionsV2/$appName.$locale.xlf" 
+        $translationFilePath = Join-Path $localeFolder "ExtensionsV2/$appName.$locale.xlf"
         if(Test-Path $translationFilePath) {
             Write-Host "Using translation for $appName in locale $locale."
             $translationsFound = $true

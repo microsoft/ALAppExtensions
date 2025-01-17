@@ -5,6 +5,7 @@
 namespace Microsoft.Purchases.Document;
 
 using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.TDS.TDSOnPurchase;
 
 pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statistics"
 {
@@ -20,6 +21,26 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
                 Caption = 'TDS Amount';
             }
         }
+        addlast(Invoicing)
+        {
+            field("TDS Amt"; PartialInvTDSAmount)
+            {
+                Caption = 'TDS Amount';
+                ToolTip = 'Specifies the amount of TDS that is included in the total amount.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
+        addlast(Shipping)
+        {
+            field("TDS Purch Amt"; PartialRcptTDSAmount)
+            {
+                Caption = 'TDS Amount';
+                ToolTip = 'Specifies the amount of TDS that is included in the total amount.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
@@ -30,8 +51,11 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
     local procedure GetTDSAmount()
     var
         TDSStatsManagement: Codeunit "TDS Stats Management";
+        TDSStatistics: Codeunit "TDS Statistics";
     begin
         TDSAmount := TDSStatsManagement.GetTDSStatsAmount();
+        TDSStatistics.GetPartialPurchaseInvStatisticsAmount(Rec, PartialInvTDSAmount);
+        TDSStatistics.GetPartialPurchaseRcptStatisticsAmount(Rec, PartialRcptTDSAmount);
         Calculated := true;
         TDSStatsManagement.ClearSessionVariable();
     end;
@@ -45,5 +69,7 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
     var
 
         TDSAmount: Decimal;
+        PartialInvTDSAmount: Decimal;
+        PartialRcptTDSAmount: Decimal;
         Calculated: Boolean;
 }

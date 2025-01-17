@@ -5,9 +5,8 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 enum 30133 "Shpfy Transaction Status"
 {
-    Access = Internal;
     Caption = 'Shopify Transaction Status';
-    Extensible = true;
+    Extensible = false;
 
     value(0; " ")
     {
@@ -29,5 +28,12 @@ enum 30133 "Shpfy Transaction Status"
     {
         Caption = 'Error';
     }
-
+    value(5; "Awaiting Response")
+    {
+        Caption = 'Awaiting Response';
+    }
+    value(6; "Unknown")
+    {
+        Caption = 'Unknown';
+    }
 }

@@ -1,14 +1,14 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
-  "bcContainerHelperVersion": "preview",
+  "bcContainerHelperVersion": "latest",
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcartifacts//23.0/base/latest",
+  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/26.0.29027.0/base",
   "country": "base",
   "useProjectDependencies": true,
-  "repoVersion": "23.0",
+  "repoVersion": "26.0",
   "cleanModePreprocessorSymbols": [
     "CLEAN17",
     "CLEAN18",
@@ -16,7 +16,10 @@
     "CLEAN20",
     "CLEAN21",
     "CLEAN22",
-    "CLEAN23"
+    "CLEAN23",
+    "CLEAN24",
+    "CLEAN25",
+    "CLEAN26"
   ],
   "unusedALGoSystemFiles": [
     "AddExistingAppOrTestApp.yaml",
@@ -26,22 +29,35 @@
     "CreateRelease.yaml",
     "CreateTestApp.yaml",
     "Current.yaml",
+    "IncrementVersionNumber.yaml",
     "NextMajor.yaml",
     "NextMinor.yaml",
-    "PublishToEnvironment.yaml"
+    "PublishToEnvironment.yaml",
+    "Test Current.settings.json"
+  ],
+  "excludeEnvironments": [
+    "Official-Build"
   ],
   "buildModes": [
-    "Default",
-    "Clean"
+    "Translated"
   ],
-  "excludeEnvironments":  [
-    "Official"
-  ],
-  "enableCodeCop": true,
-  "CICDPushBranches": [
+  "CICDPushBranches": [],
+  "CICDSchedule": "0 2 * * *",
+  "CICDPullRequestBranches": [
     "main"
   ],
-  "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json",
+  "enableCodeCop": true,
+  "enableAppSourceCop": true,
+  "enablePerTenantExtensionCop": true,
+  "enableUICop": true,
+  "rulesetFile": "..\\..\\..\\Build\\rulesets\\app.ruleset.json",
+  "skipUpgrade": true,
+  "fullBuildPatterns": [
+    "Build/*",
+    ".github/workflows/PullRequestHandler.yaml",
+    ".github/workflows/_BuildALGoProject.yaml"
+  ],
+  "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "alwaysBuildAllProjects": true
+  "templateSha": "ef914042bcf3fb640cbf150a975c08e33657cf4a"
 }

@@ -134,7 +134,6 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     procedure IsSolutionSandbox(AMCBankingSetup: Record "AMC Banking Setup"): Boolean
-    var
     begin
         if ((UpperCase(AMCBankingSetup.Solution) <> UpperCase(GetEnterPriseSolutionCode())) and
             (EnvironmentInformation.IsSandbox()) and (not IsLicenseEqualAMC())) then
@@ -230,6 +229,9 @@ codeunit 20105 "AMC Banking Mgt."
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
+        if CompanyName() <> CompanyName then
+            AMCBankingSetup.ChangeCompany(CompanyName);
+
         if (AMCBankingSetup.Get()) then
             if (IsSolutionSandbox(AMCBankingSetup)) then
                 SetURLsToDefault(AMCBankingSetup);
@@ -249,7 +251,6 @@ codeunit 20105 "AMC Banking Mgt."
     // To substitute code in Codeunit 2 "Company-Initialize"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
     local procedure AMCBankOnCompanyInitialize();
-    var
     begin
         AMCBankInitializeBaseData();
         InitBankDataConvServiceSetup();
@@ -621,7 +622,6 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     internal procedure updateValue(var fieldref: FieldRef; ValueVariant: Variant; UseValidate: Boolean)
-    var
     begin
         if (UseValidate) then
             fieldref.Validate(ValueVariant)
@@ -663,7 +663,6 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     internal procedure GetBankFileName(BankAccount: Record "Bank Account"): Text[250]
-    var
     begin
 
         if (BankAccount."AMC Bank File Name" <> '') then begin
@@ -677,7 +676,6 @@ codeunit 20105 "AMC Banking Mgt."
     end;
 
     internal procedure AMCTenantId(): Text
-    var
     begin
         Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40));
     end;

@@ -830,8 +830,8 @@ report 18017 "Sales - Quote GST"
             var
                 "Sell-to Country": Text[50];
             begin
-                CurrReport.Language := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.Language := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 CompanyInfo.Get();
 
                 IsGSTApplicable := CheckGSTDoc("Sales Line");
@@ -1059,7 +1059,7 @@ report 18017 "Sales - Quote GST"
         Country: Record "Country/Region";
         CurrExchRate: Record "Currency Exchange Rate";
         SalesCountPrinted: Codeunit "Sales-Printed";
-        Language: Codeunit Language;
+        GlobalLanguage: Codeunit Language;
         FormatAddr: Codeunit "Format Address";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;

@@ -22,7 +22,6 @@ codeunit 18200 "GST Distribution"
         GeneralLedgerSetup: Record "General Ledger Setup";
         SourceCodeSetup: Record "Source Code Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         ZeroDistPercentErr: Label '%1 cannot be zero for Location Code: %2 in Distribution Line.', Comment = '%1 = Distribution % , %2 =From Location Code';
         selectDitributionErr: Label 'No entries are selected for distribution.';
         ToGSTCompErr: Label 'GST Component Distribution setup must be provided for GST Component Code %1 and GST Jurisdiction Type %2.', Comment = '%1 = GSTComponentCode , %2 = JurisdictionType';
@@ -305,6 +304,7 @@ codeunit 18200 "GST Distribution"
         PostedGSTDistributionHeader: Record "Posted GST Distribution Header";
         Location: Record "Location";
         GSTDistributionSubcsribers: Codeunit "GST Distribution Subcsribers";
+        NoSeries: Codeunit "No. Series";
         Record: Variant;
     begin
         Location.Get(GSTDistributionHeader."From Location Code");
@@ -316,11 +316,11 @@ codeunit 18200 "GST Distribution"
         if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::Invoice then begin
             GSTDistributionSubcsribers.GetDistributionNoSeriesCode(Record);
             GSTDistributionHeader := Record;
-            PostedGSTDistributionHeader."No." := NoSeriesManagement.GetNextNo(GSTDistributionHeader."Posting No. Series", WorkDate(), true);
+            PostedGSTDistributionHeader."No." := NoSeries.GetNextNo(GSTDistributionHeader."Posting No. Series");
         end else begin
             GSTDistributionSubcsribers.GetDistributionNoSeriesCode(Record);
             GSTDistributionHeader := Record;
-            PostedGSTDistributionHeader."No." := NoSeriesManagement.GetNextNo(GSTDistributionHeader."Posting No. Series", WorkDate(), true);
+            PostedGSTDistributionHeader."No." := NoSeries.GetNextNo(GSTDistributionHeader."Posting No. Series");
         end;
 
         PostedGSTDistributionHeader.Insert(true);

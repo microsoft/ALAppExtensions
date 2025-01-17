@@ -1395,41 +1395,6 @@ page 18556 "Contra Voucher"
                         end;
                     }
                 }
-#if not CLEAN22
-                action(CreateFlow)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Create a Flow';
-                    Image = Flow;
-                    ToolTip = 'Create a new Flow from a list of relevant Flow templates.';
-                    Visible = IsSaaS;
-                    ObsoleteReason = 'This action can be handled by a custom action of type FlowTemplateGallery instead.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-
-                    trigger OnAction()
-                    var
-                        FlowServiceManagement: Codeunit "Flow Service Management";
-                        FlowTemplateSelector: Page "Flow Template Selector";
-                    begin
-                        // Opens page 6400 where the user can use filtered templates to create new flows.
-                        FlowTemplateSelector.SetSearchText(FlowServiceManagement.GetJournalTemplateFilter());
-                        FlowTemplateSelector.Run();
-                    end;
-                }
-                action(SeeFlows)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'See my Flows';
-                    Image = Flow;
-                    RunObject = Page "Flow Selector";
-                    ToolTip = 'View and configure Flows that you created.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This funcionality has been moved to Power Automate menu';
-                    ObsoleteTag = '22.0';
-                }
-#endif
             }
             group(Approval)
             {
@@ -1902,7 +1867,7 @@ page 18556 "Contra Voucher"
     var
         GenJournalLine: Record "Gen. Journal Line";
         GenJnlBatch: Record "Gen. Journal Batch";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
         LastDocNo: Code[20];
     begin
         if Count() = 0 then
@@ -1914,9 +1879,9 @@ page 18556 "Contra Voucher"
         GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
         if GenJournalLine.FindLast() then begin
             LastDocNo := GenJournalLine."Document No.";
-            IncrementDocumentNo(GenJnlBatch, LastDocNo);
+            LastDocNo := NoSeriesBatch.SimulateGetNextNo(GenJnlBatch."No. Series", GenJournalLine."Posting Date", LastDocNo)
         end else
-            LastDocNo := NoSeriesMgt.TryGetNextNo(GenJnlBatch."No. Series", "Posting Date");
+            LastDocNo := NoSeriesBatch.PeekNextNo(GenJnlBatch."No. Series", "Posting Date");
 
         CurrentDocNo := LastDocNo;
         SetDocumentNumberFilter(CurrentDocNo);

@@ -13,6 +13,7 @@ codeunit 139507 "Test Data Search"
     var
         LibraryAssert: Codeunit "Library Assert";
 
+
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSetupTables()
@@ -20,7 +21,6 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable: Record "Data Search Setup (Table)";
         DataSearchSetupField: Record "Data Search Setup (Field)";
         TestDataSearchOnArchives: Codeunit "Test Data Search On Archives";
-        DataSearchPage: TestPage "Data Search";
     begin
         // precondition: no setup exists
         DataSearchSetupTable.DeleteAll();
@@ -29,10 +29,8 @@ codeunit 139507 "Test Data Search"
         // activate the sales archive test subscribers
         BindSubscription(TestDataSearchOnArchives);
 
-        // When a search is initiated, a default setup is added
-        DataSearchPage.OpenEdit();
-        DataSearchPage.SearchString.Value('Gibberish');  // doesn't matter if it finds anything
-        DataSearchPage.Close();
+        // When a search is initiated, a default setup is added via "Data Search Defaults"
+        Codeunit.run(Codeunit::"Data Search Defaults");
 
         UnBindSubscription(TestDataSearchOnArchives);
 
@@ -45,23 +43,61 @@ codeunit 139507 "Test Data Search"
     end;
 
     [Test]
+    [HandlerFunctions('DataSearchSetupListsPageHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestSearchNothingFound()
+    procedure TestSetupListsToSearch()
+    var
+        DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchPage: TestPage "Data Search";
+    begin
+        Init();
+        // Precondition: Reminders are not selected for search
+        DataSearchSetupTable.SetFilter("Table No.", '%1|%2', Database::"Reminder Header", Database::"Reminder Line");
+        DataSearchSetupTable.DeleteAll();
+
+        // Open Search, select to also search 'Reminders'
+        DataSearchPage.OpenEdit();
+        DataSearchPage.LinesPart.SetupLists.Invoke();
+        DataSearchPage.Close();
+
+        // Now both Reminder Header and Reminder Line should be active.
+        LibraryAssert.AreEqual(2, DataSearchSetupTable.Count(), 'Reminders not activated.');
+
+        // Cleanup
+        DataSearchSetupTable.DeleteAll();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestInvalidSearchTerm()
     var
         DataSearchPage: TestPage "Data Search";
     begin
         Init();
         DataSearchPage.OpenEdit();
-        DataSearchPage.SearchString.Value(Format(CreateGuid())); // should hopeully not find anything
-
-        LibraryAssert.AreEqual('', Format(DataSearchPage.LinesPart.Description), 'Should be empty');
+        asserterror DataSearchPage.SearchString.Value('10000..30000'); // ranges are not allowed as search filters
+        asserterror DataSearchPage.SearchString.Value('(hello)'); // parentheses are not allowed as search filters
     end;
 
+    /*  Bug 546705: [Test Defect]Tests that involve pagebackgroundtasks make the system hang
+        [Test]
+        [TransactionModel(TransactionModel::AutoRollback)]
+        procedure TestSearchNothingFound()
+        var
+            DataSearchPage: TestPage "Data Search";
+        begin
+            Init();
+            DataSearchPage.OpenEdit();
+            DataSearchPage.SearchString.Value(Format(CreateGuid())); // should hopeully not find anything
+
+            LibraryAssert.AreEqual('', Format(DataSearchPage.LinesPart.Description), 'Should be empty');
+        end;
+    */
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSearchFewFound()
     var
-        Customer: Record Customer;
+        TestDataSearch: Record "Test Data Search";
         DataSearchInTable: Codeunit "Data Search in Table";
         Results: Dictionary of [Text, Text];
         SearchTerm: Text;
@@ -70,10 +106,10 @@ codeunit 139507 "Test Data Search"
         Init();
         SearchTerm := CopyStr(Format(CreateGuid()), 1, 35);
         for i := 1 to 3 do begin
-            CreateDummyCustomer(Customer, SearchTerm, 1);
-            DataSearchInTable.FindInTable(Database::Customer, 0, SearchTerm, Results);
+            CreateDummyTestDataSearch(TestDataSearch, SearchTerm, 1);
+            DataSearchInTable.FindInTable(Database::"Test Data Search", 0, SearchTerm, Results);
             LibraryAssert.AreEqual(i, Results.Count, 'Wrong no. of results returned');
-            LibraryAssert.AreEqual(Format(Customer.SystemId), Results.Keys.Get(i), 'Wrong system id');
+            LibraryAssert.AreEqual(Format(TestDataSearch.SystemId), Results.Keys.Get(i), 'Wrong system id');
             LibraryAssert.IsTrue(StrPos(Results.Values.Get(i), SearchTerm) > 0, 'Wrong match');
         end;
     end;
@@ -82,15 +118,15 @@ codeunit 139507 "Test Data Search"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSearchManyFound()
     var
-        Customer: Record Customer;
+        TestDataSearch: Record "Test Data Search";
         DataSearchInTable: Codeunit "Data Search in Table";
         Results: Dictionary of [Text, Text];
         SearchTerm: Text;
     begin
         Init();
         SearchTerm := CopyStr(Format(CreateGuid()), 1, 35);
-        CreateDummyCustomer(Customer, SearchTerm, 5);
-        DataSearchInTable.FindInTable(Database::Customer, 0, SearchTerm, Results);
+        CreateDummyTestDataSearch(TestDataSearch, SearchTerm, 5);
+        DataSearchInTable.FindInTable(Database::"Test Data Search", 0, SearchTerm, Results);
         LibraryAssert.AreEqual(4, Results.Count, 'Wrong no. of results returned');
     end;
 
@@ -98,15 +134,15 @@ codeunit 139507 "Test Data Search"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestMultiTermSearch()
     var
-        Customer: Record Customer;
+        TestDataSearch: Record "Test Data Search";
         DataSearchInTable: Codeunit "Data Search in Table";
         Results: Dictionary of [Text, Text];
         SearchTerm: Text;
     begin
         Init();
         SearchTerm := CopyStr(Format(CreateGuid()), 1, 35);
-        CreateDummyCustomer(Customer, SearchTerm, 5);
-        DataSearchInTable.FindInTable(Database::Customer, 0, SearchTerm + ' ' + Customer."No.", Results);
+        CreateDummyTestDataSearch(TestDataSearch, SearchTerm, 5);
+        DataSearchInTable.FindInTable(Database::"Test Data Search", 0, SearchTerm + ' ' + TestDataSearch."No.", Results);
         LibraryAssert.AreEqual(1, Results.Count, 'Wrong no. of results returned');
     end;
 
@@ -144,6 +180,7 @@ codeunit 139507 "Test Data Search"
         SalesLine: Record "Sales Line";
         Customer: Record Customer;
         DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchSetupField: Record "Data Search Setup (Field)";
         TestDataSearchOnArchives: Codeunit "Test Data Search On Archives";
         LibrarySales: Codeunit "Library - Sales";
         DataSearchPage: TestPage "Data Search";
@@ -158,18 +195,32 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
         DataSearchSetupTable."Table No." := Database::"Sales Line";
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
+        DataSearchSetupField.Init();
+        DataSearchSetupField."Table No." := Database::"Sales Line";
+        DataSearchSetupField."Field No." := 40; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField."Enable Search" := true;
+        DataSearchSetupField.Insert();
+        DataSearchSetupField."Field No." := 41; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField.Insert();
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Table No." := Database::"Sales Line Archive";
         DataSearchSetupTable."Table Subtype" := 0;
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
+        DataSearchSetupField.Init();
+        DataSearchSetupField."Table No." := Database::"Sales Line Archive";
+        DataSearchSetupField."Field No." := 40; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField."Enable Search" := true;
+        DataSearchSetupField.Insert();
+        DataSearchSetupField."Field No." := 41; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField.Insert();
 
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateSalesOrder(SalesHeader);
         SalesDocumentType := SalesHeader."Document Type";
         LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, SalesDocumentType);
-        SalesLine.Description := 'Hello';
-        SalesLine."Description 2" := 'World';
+        SalesLine."Shortcut Dimension 1 Code" := 'Hello';  // are not marked as OptimizeForTextSearch
+        SalesLine."Shortcut Dimension 2 Code" := 'World';
         SalesLine.Modify();
 
         // When user searches for 'hello world'...
@@ -180,10 +231,11 @@ codeunit 139507 "Test Data Search"
         DataSearchPage.LinesPart.First();
         LibraryAssert.AreEqual('Sales Orders - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header');
         DataSearchPage.LinesPart.Next();
-        // example:  '  Order 101017 20000: Description: Hello, Description 2: World'
-        LibraryAssert.AreEqual(StrSubstNo(
-            '  %1 %2 %3: Description: Hello, Description 2: World', SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No."),
-            DataSearchPage.LinesPart.Description.Value, 'wrong line');
+        // example:  '  Order 101017 20000: hortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD'
+#pragma warning disable AA0217
+        LibraryAssert.AreEqual(StrSubstNo('  %1 %2 %3: Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD', SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No."),
+#pragma warning restore AA0217
+                DataSearchPage.LinesPart.Description.Value, 'wrong line');
         DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order page which invokes the archive function
 
         // New search for same data - this time there should also be a sales order archive
@@ -197,27 +249,142 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
         DataSearchSetupTable."Table No." := Database::"Sales Line Archive";
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
 
         DataSearchPage.TestSearchForSalesOrders.Invoke();
 
         DataSearchPage.LinesPart.First(); // the sales lines header
         DataSearchPage.LinesPart.Next();  // The first sales line
         i := 0;
-        while (i < 4) and (StrPos(DataSearchPage.LinesPart.Description.Value, 'Sales List Archive') < 1) do begin
+        while (i < 4) and (StrPos(DataSearchPage.LinesPart.Description.Value, 'Sales Order Archives') < 1) do begin
             DataSearchPage.LinesPart.Next();  // Maybe the sales line archive header
             i += 1;
         end;
-        LibraryAssert.AreEqual('Sales List Archive - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header for archive');
+        LibraryAssert.AreEqual('Sales Order Archives - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header for archive');
 
         DataSearchPage.LinesPart.Next();  // The first sales line archive
-        // example:  '  Order 101017 1 1 20000: Description: Hello, Description 2: World'
+                                          // example:  '  Order 101017 1 1 20000: Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD'
         LibraryAssert.IsTrue(StrPos(DataSearchPage.LinesPart.Description.Value, 'Order') > 0, 'wrong line for archive');
-        LibraryAssert.IsTrue(StrPos(DataSearchPage.LinesPart.Description.Value, 'Description: Hello, Description 2: World') > 0, 'wrong line for archive 2');
+        LibraryAssert.IsTrue(StrPos(DataSearchPage.LinesPart.Description.Value, 'Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD') > 0, 'wrong line for archive 2');
         DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order archive page which invokes the archive function
 
         UnBindSubscription(TestDataSearchOnArchives);
         DataSearchPage.Close();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetPageIdForCustomer()
+    var
+        Customer: Record Customer;
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::Customer, Customer.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Customer Card", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::Customer, 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, Customer.SystemId, 'Wrong system id for TestDataSearch');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetPageIdForSalesOrder()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        LibrarySales.CreateSalesOrder(SalesHeader);
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::"Sales Header", SalesHeader.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Sales Order", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::"Sales Header", 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, SalesHeader.SystemId, 'Wrong system id for SalesHeader');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestGetPageIdForSalesOrderLine()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::"Sales Line", SalesLine.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Sales Order", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::"Sales Header", 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, SalesHeader.SystemId, 'Wrong system id for SalesHeader');
+    end;
+
+
+    /*
+    Expects the search setup in the format of (example):
+    [
+      {
+         "tableNo": 1234,
+         "tableSubtype": 0,
+         "tableSubtypeFieldNo": 3,
+         "tableSearchFieldNos": [ 1, 2, 5, 8 ]
+      }
+    ]
+    */
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestGetSetup()
+    var
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        jArray: JsonArray;
+        jObject: JsonObject;
+        jToken: JsonToken;
+        i: Integer;
+    begin
+        DataSearchObjectMapping.GetDataSearchSetup(jArray);
+
+        LibraryAssert.IsTrue(jArray.Count() > 0, 'Setup was empty');
+        jArray.Get(1, jToken);
+        jObject := jToken.AsObject();
+        jObject.Get('tableNo', jToken);
+        LibraryAssert.IsTrue(jToken.AsValue().AsInteger() > 0, 'No tableNo provided.');
+        jObject.Get('tableSubtype', jToken);
+        i := jToken.AsValue().AsInteger(); // to verify that it can be read as an integer
+        jObject.Get('tableSubtypeFieldNo', jToken);
+        i := jToken.AsValue().AsInteger(); // to verify that it can be read as an integer
+        jObject.Get('tableSearchFieldNos', jToken);
+        jArray := jToken.AsArray();
+        LibraryAssert.IsTrue(jArray.Count() > 0, 'tableSearchFieldNos not provided.');
+    end;
+
+    [ModalPageHandler]
+    procedure DataSearchSetupListsPageHandler(var DataSearchSetupListsPage: TestPage "Data Search Setup (Lists)")
+    begin
+        DataSearchSetupListsPage.ShowAllLists.Invoke();
+        DataSearchSetupListsPage.GoToKey(Page::"Reminder List");
+        DataSearchSetupListsPage.ListIsEnabledCtrl.SetValue(true);
     end;
 
     [PageHandler]
@@ -226,7 +393,6 @@ codeunit 139507 "Test Data Search"
         SalesOrder."Archive Document".Invoke();
         SalesOrder.Close();
     end;
-
 
     [PageHandler]
     procedure SalesOrderArchivePageHandler(var SalesOrderArchive: TestPage "Sales Order Archive")
@@ -245,23 +411,25 @@ codeunit 139507 "Test Data Search"
     begin
     end;
 
-    [Test]
-    [HandlerFunctions('DataSearchPageHandler')]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestStartUpParameter()
-    var
-        DataSearch: Page "Data Search";
-    begin
-        DataSearch.SetSearchString('Hello World');
-        DataSearch.Run();
-    end;
+    /*  Bug 546705: [Test Defect]Tests that involve pagebackgroundtasks make the system hang
+        [Test]
+        [HandlerFunctions('DataSearchPageHandler')]
+        [TransactionModel(TransactionModel::AutoRollback)]
+        procedure TestStartUpParameter()
+        var
+            DataSearch: Page "Data Search";
+        begin
+            DataSearch.SetSearchString('*Hello World');
+            DataSearch.Run();
+        end;
 
-    [PageHandler]
-    procedure DataSearchPageHandler(var DataSearch: TestPage "Data Search")
-    begin
-        LibraryAssert.AreEqual('Searching for "Hello World"...', DataSearch.SearchString.Value, 'Start-up parameter not specified correctly.');
-        DataSearch.Close();
-    end;
+        [PageHandler]
+        procedure DataSearchPageHandler(var DataSearch: TestPage "Data Search")
+        begin
+            LibraryAssert.IsTrue(StrPos(DataSearch.SearchString.Value, 'Searching for "*Hello World"') = 1, 'Start-up parameter not specified correctly.');
+            DataSearch.Close();
+        end;
+    */
 
     local procedure VerifyTableCaptionForTable(TableNo: Integer; TableSubType: Integer; PageNo: Integer)
     var
@@ -285,15 +453,15 @@ codeunit 139507 "Test Data Search"
         LibraryAssert.AreEqual(ExpectedCaption, TempDataSearchResult.GetTableCaption(), 'Wrong table caption');
     end;
 
-    local procedure CreateDummyCustomer(var Customer: Record Customer; PartOfName: Text; NoOfCustomers: Integer)
+    local procedure CreateDummyTestDataSearch(var TestDataSearch: Record "Test Data Search"; PartOfName: Text; NoOfTestDataSearchs: Integer)
     var
         i: Integer;
     begin
-        for i := 1 to NoOfCustomers do begin
-            Customer.Init();
-            Customer."No." := CopyStr(Format(CreateGuid()), 1, MaxStrLen(Customer."No."));
-            Customer.Name := 'a' + PartOfName + format(i);
-            Customer.Insert();
+        for i := 1 to NoOfTestDataSearchs do begin
+            TestDataSearch.Init();
+            TestDataSearch."No." := CopyStr(Format(CreateGuid()), 1, MaxStrLen(TestDataSearch."No."));
+            TestDataSearch.Name := 'a ' + PartOfName + format(i);
+            TestDataSearch.Insert();
         end;
     end;
 
@@ -305,7 +473,7 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable.DeleteAll();
         DataSearchSetupField.DeleteAll();
         DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
-        DataSearchSetupTable."Table No." := Database::Customer;
+        DataSearchSetupTable."Table No." := Database::"Test Data Search";
         DataSearchSetupTable.Insert(true);
 
         LibraryAssert.IsFalse(DataSearchSetupField.IsEmpty, 'Data Search (Field) should not be empty.');

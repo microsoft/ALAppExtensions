@@ -1,0 +1,1 @@
+{ "data": { "productVariant": { "metafields": { "edges": [] } } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 3, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1997, "restoreRate": 100 } } } }

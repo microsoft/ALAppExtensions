@@ -22,22 +22,35 @@ codeunit 18151 "GST Ship To Address"
     var
         SelltoCustomer: Record Customer;
     begin
-        if SelltoCustomer.Get(SalesHeader."Sell-to Customer No.") then
-            SalesHeader.State := SelltoCustomer."State Code";
+        if SalesHeader."Sell-to Customer No." <> SalesHeader."Bill-to Customer No." then begin
+            if SelltoCustomer.Get(SalesHeader."Bill-to Customer No.") then
+                SalesHeader.State := SelltoCustomer."State Code";
+        end
+        else
+            if SelltoCustomer.Get(SalesHeader."Sell-to Customer No.") then
+                SalesHeader.State := SelltoCustomer."State Code";
     end;
 
     procedure UpdateShiptoAddressState(var SalesHeader: Record "Sales Header")
     var
         ShiptoAddress: Record "Ship-to Address";
+        IsHandled: Boolean;
     begin
+        OnBeforeUpdateShiptoAddressState(SalesHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         if SalesHeader."GST Customer Type" in [
                 "GST Customer Type"::Exempted,
                 "GST Customer Type"::"Deemed Export",
                 "GST Customer Type"::"SEZ Development",
                 "GST Customer Type"::"SEZ Unit",
-                "GST Customer Type"::Registered] then
+                "GST Customer Type"::Registered,
+                "GST Customer Type"::Unregistered] then
             if ShipToAddress.Get(SalesHeader."Sell-to Customer No.", SalesHeader."Ship-to Code") then
                 SalesHeader.State := ShipToAddress.State;
+
+        OnAfterUpdateShiptoAddressState(SalesHeader);
     end;
 
     procedure UpdateLocationAddressState(var SalesHeader: Record "Sales Header")
@@ -64,7 +77,12 @@ codeunit 18151 "GST Ship To Address"
         SalesHeader: Record "Sales Header";
         Customer: Record Customer;
         ShiptoAddress: Record "Ship-to Address";
+        IsHandled: Boolean;
     begin
+        OnBeforeValidateGSTRegistration(SalesLine, IsHandled);
+        if IsHandled then
+            exit;
+
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         if SalesHeader."Bill-to Customer No." = '' then
             exit;
@@ -108,17 +126,16 @@ codeunit 18151 "GST Ship To Address"
                                         SalesHeader.TestField("GST Ship-to State Code");
                                 end;
                             SalesHeader."GST Customer Type"::Unregistered:
-                                begin
-                                    SalesHeader.TestField("Ship-to GST Reg. No.", '');
-                                    if SalesHeader."GST Ship-to State Code" = '' then
-                                        Error(GSTShipToStateCodeErr);
-                                end;
+                                if SalesHeader."GST Ship-to State Code" = '' then
+                                    Error(GSTShipToStateCodeErr);
                             SalesHeader."GST Customer Type"::Export:
                                 SalesHeader.TestField("Ship-to GST Reg. No.", '');
                         end;
                     end;
                 end;
         end;
+
+        OnAfterValidateGSTRegistration(SalesLine, SalesHeader, Customer);
     end;
 
     local procedure CheckSimilarGSTPlaceOfSupply(SalesHeader: Record "Sales Header")
@@ -179,14 +196,15 @@ codeunit 18151 "GST Ship To Address"
                         PresentRegNo := ShipToAddress."ARN No.";
         end;
 
-        Exit(PresentRegNo);
+        exit(PresentRegNo);
     end;
 
-    procedure CheckUpdatePreviousLineGSTPlaceofSupply(Var SalesLine: Record "Sales Line")
+    procedure CheckUpdatePreviousLineGSTPlaceofSupply(var SalesLine: Record "Sales Line")
     var
         PreviousSalesLine: Record "Sales Line";
     begin
         PreviousSalesLine.SetCurrentKey("Document Type", "Document No.", Type, "No.");
+        PreviousSalesLine.LoadFields("Document Type", "Document No.", Type, "No.");
         PreviousSalesLine.SetRange("Document Type", SalesLine."Document Type");
         PreviousSalesLine.SetRange("Document No.", SalesLine."Document No.");
         PreviousSalesLine.SetFilter(Type, '<>%1', Type::" ");
@@ -194,5 +212,25 @@ codeunit 18151 "GST Ship To Address"
         if PreviousSalesLine.FindFirst() then
             if PreviousSalesLine."GST Place Of Supply" <> SalesLine."GST Place Of Supply" then
                 SalesLine."GST Place Of Supply" := PreviousSalesLine."GST Place Of Supply";
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateShiptoAddressState(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateShiptoAddressState(var SalesHeader: Record "Sales Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateGSTRegistration(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateGSTRegistration(SalesLine: Record "Sales Line"; SalesHeader: Record "Sales Header"; Customer: Record Customer)
+    begin
     end;
 }

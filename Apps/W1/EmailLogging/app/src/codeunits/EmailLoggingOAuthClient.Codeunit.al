@@ -15,13 +15,11 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         OAuth2: Codeunit OAuth2;
         [NonDebuggable]
         ClientId: Text;
-        [NonDebuggable]
-        ClientSecret: Text;
+        ClientSecret: SecretText;
         RedirectUrl: Text;
         [NonDebuggable]
         ClientIdSaved: Text;
-        [NonDebuggable]
-        ClientSecretSaved: Text;
+        ClientSecretSaved: SecretText;
         SavedRedirectUrl: Text;
         AreSavedParamsLoaded: Boolean;
         UseFirstPartyApp: Boolean;
@@ -48,34 +46,29 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         AcquireAccessTokenTxt: Label 'Asquire access token.', Locked = true;
         ThirdPartyAppOnlyErr: Label 'Authentication using the client ID and secret for email logging is not enabled.';
 
-    [NonDebuggable]
-    internal procedure GetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text)
+    internal procedure GetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: SecretText)
     begin
         TryGetAccessTokenInternal(PromptInteraction, AccessToken);
     end;
 
-    [NonDebuggable]
-    internal procedure TryGetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text): Boolean
+    internal procedure TryGetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: SecretText): Boolean
     begin
         exit(TryGetAccessTokenInternal(PromptInteraction, AccessToken));
     end;
 
-    [NonDebuggable]
-    internal procedure GetAccessToken(var AccessToken: Text)
+    internal procedure GetAccessToken(var AccessToken: SecretText)
     begin
         TryGetAccessTokenInternal(AccessToken);
     end;
 
-    [NonDebuggable]
-    internal procedure TryGetAccessToken(var AccessToken: Text): Boolean
+    internal procedure TryGetAccessToken(var AccessToken: SecretText): Boolean
     begin
         exit(TryGetAccessTokenInternal(AccessToken));
     end;
 
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]
-    [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(var AccessToken: Text)
+    local procedure TryGetAccessTokenInternal(var AccessToken: SecretText)
     var
         AzureAdMgt: Codeunit "Azure AD Mgt.";
         UrlHelper: Codeunit "Url Helper";
@@ -85,21 +78,20 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         Session.LogMessage('0000G06', AcquireAccessTokenTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
         if UseFirstPartyApp then begin
-            AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
-            if AccessToken = '' then begin
+            AccessToken := AzureAdMgt.GetAccessTokenAsSecretText(UrlHelper.GetGraphUrl(), '', false);
+            if AccessToken.IsEmpty() then begin
                 Session.LogMessage('0000G07', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
             end;
         end else
             TryGetAccessTokenInternal(Enum::"Prompt Interaction"::None, AccessToken);
-        if AccessToken = '' then
+        if AccessToken.IsEmpty() then
             Error(CouldNotGetAccessTokenErr);
     end;
 
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]
-    [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text)
+    local procedure TryGetAccessTokenInternal(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: SecretText)
     var
         OAuthError: Text;
     begin
@@ -112,15 +104,15 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
 
         if PromptInteraction = PromptInteraction::None then begin
             if not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectUrl, CommonOAuthAuthorityUrlLbl, Scopes, AccessToken) then
-                AccessToken := '';
-            if AccessToken <> '' then
+                Clear(AccessToken);
+            if not AccessToken.IsEmpty() then
                 Session.LogMessage('0000G09', AccessTokenReceivedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
             else
                 Session.LogMessage('0000G0A', AuthTokenNotReceivedTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
         end else begin
             if not OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, CommonOAuthAuthorityUrlLbl, RedirectUrl, Scopes, PromptInteraction, AccessToken, OAuthError) then
-                AccessToken := '';
-            if AccessToken <> '' then
+                Clear(AccessToken);
+            if not AccessToken.IsEmpty() then
                 Session.LogMessage('0000G0B', AccessTokenReceivedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok)
             else begin
                 Session.LogMessage('0000G0C', AuthTokenNotReceivedTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -128,17 +120,15 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
                     Session.LogMessage('0000G0D', OAuthError, Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             end;
         end;
-        if AccessToken = '' then
+        if AccessToken.IsEmpty() then
             Error(CouldNotGetAccessTokenErr);
     end;
 
-    [NonDebuggable]
     internal procedure GetLastErrorMessage(): Text
     begin
         exit(OAuth2.GetLastErrorMessage());
     end;
 
-    [NonDebuggable]
     internal procedure Initialize()
     begin
         if IsInitialized then
@@ -154,8 +144,7 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         Initialize(ClientId, ClientSecret, RedirectUrl);
     end;
 
-    [NonDebuggable]
-    internal procedure Initialize(NewClientId: Text; NewClientSecret: Text; NewRedirectUrl: Text)
+    internal procedure Initialize(NewClientId: Text; NewClientSecret: SecretText; NewRedirectUrl: Text)
     begin
         Scopes.Add(GraphScopesLbl);
 
@@ -166,7 +155,7 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
             exit;
         end;
 
-        if (NewClientId <> '') and (NewClientSecret <> '') then begin
+        if (NewClientId <> '') and (not NewClientSecret.IsEmpty()) then begin
             ClientId := NewClientId;
             ClientSecret := NewClientSecret;
         end;
@@ -179,11 +168,10 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
 
     internal procedure AuthorizationCodeTokenCacheExists(): Boolean
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectUrl, CommonOAuthAuthorityUrlLbl, Scopes, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectUrl, CommonOAuthAuthorityUrlLbl, Scopes, AccessToken) and (not AccessToken.IsEmpty()))
     end;
 
     internal procedure GetApplicationType() ApplicationType: Enum "Email Logging App Type"
@@ -246,16 +234,25 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
     end;
 
     [NonDebuggable]
-    local procedure GetClientSecret(): Text
+    local procedure GetClientSecretFromEvent(): SecretText
+    var
+        ClientSecretOverriden: Text;
+    begin
+        OnGetClientSecret(ClientSecretOverriden);
+        exit(ClientSecretOverriden);
+    end;
+
+    local procedure GetClientSecret(): SecretText
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
         EnvironmentInformation: Codeunit "Environment Information";
-        ClientSecretLocal: Text;
+        ClientSecretOverriden: SecretText;
+        ClientSecretLocal: SecretText;
     begin
-        OnGetClientSecret(ClientSecretLocal);
-        if ClientSecretLocal <> '' then begin
+        ClientSecretOverriden := GetClientSecretFromEvent();
+        if not ClientSecretOverriden.IsEmpty() then begin
             Session.LogMessage('0000G0J', InitializedClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-            exit(ClientSecretLocal);
+            exit(ClientSecretOverriden);
         end;
 
         if EnvironmentInformation.IsSaaSInfrastructure() then
@@ -268,7 +265,7 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
 
         if LoadSavedParams() then begin
             ClientSecretLocal := ClientSecretSaved;
-            if ClientSecretLocal <> '' then begin
+            if not ClientSecretLocal.IsEmpty() then begin
                 Session.LogMessage('0000G0M', InitializedClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                 exit(ClientSecretLocal);
             end;
@@ -298,7 +295,6 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         exit('');
     end;
 
-    [NonDebuggable]
     local procedure LoadSavedParams(): Boolean
     var
         EmailLoggingSetup: Record "Email Logging Setup";

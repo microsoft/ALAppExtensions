@@ -27,7 +27,7 @@ codeunit 139633 "Shpfy Bulk Operations Test"
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         BulkOperationId1 := Any.IntegerInRange(100000, 555555);
         BulkOperationId2 := Any.IntegerInRange(555555, 999999);
-        BindSubscription(BulkOpSubscriber);
+        if BindSubscription(BulkOpSubscriber) then;
     end;
 
     local procedure Clear()

@@ -81,6 +81,12 @@ table 30145 "Shpfy Refund Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(13; "Can Create Credit Memo"; Boolean)
+        {
+            Caption = 'Can Create Credit Memo';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(101; "Item No."; Code[20])
         {
             Caption = 'Item No.';
@@ -107,6 +113,12 @@ table 30145 "Shpfy Refund Line"
             Caption = 'Gift Card';
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Order Line"."Gift Card" where("Line Id" = field("Order Line Id")));
+            Editable = false;
+        }
+        field(105; "Location Id"; BigInteger)
+        {
+            Caption = 'Location Id';
+            DataClassification = SystemMetadata;
             Editable = false;
         }
     }

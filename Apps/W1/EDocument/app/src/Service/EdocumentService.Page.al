@@ -5,7 +5,8 @@
 namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
-
+using Microsoft.eServices.EDocument.IO.Peppol;
+using Microsoft.eServices.EDocument.Integration.Receive;
 page 6133 "E-Document Service"
 {
     ApplicationArea = Basic, Suite;
@@ -13,6 +14,7 @@ page 6133 "E-Document Service"
     Caption = 'E-Document Service';
     SourceTable = "E-Document Service";
     DataCaptionFields = Code;
+    AdditionalSearchTerms = 'Edoc service,Electronic Document';
 
     layout
     {
@@ -31,15 +33,23 @@ page 6133 "E-Document Service"
                 field("Export Format"; Rec."Document Format")
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
-
-                    trigger OnValidate()
-                    begin
-                        CurrPage.Update(false);
-                    end;
                 }
+#if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
                 {
                     ToolTip = 'Specifies integration code for the electronic export setup.';
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced with field "Service Integration V2"';
+                }
+#endif
+                field("Service Integration V2"; Rec."Service Integration V2")
+                {
+                    ToolTip = 'Specifies integration code for the electronic export setup.';
+                }
+                field("Sent Actions"; Rec."Sent Actions Integration")
+                {
+                    ToolTip = 'Specifies integration code for sent e-document actions.';
                 }
                 field("Use Batch Processing"; Rec."Use Batch Processing")
                 {
@@ -116,13 +126,20 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies if an invoice total shall be verified during the import.';
                 }
+#if not CLEAN24
                 field("Update Order"; Rec."Update Order")
                 {
                     ToolTip = 'Specifies if corresponding purchase order must be updated.';
+                    Visible = false;
+                    Enabled = false;
+                    ObsoleteTag = '24.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
                 }
+#endif
                 field("Create Journal Lines"; Rec."Create Journal Lines")
                 {
-                    ToolTip = 'Specifies if journal line must be created instead of purchase document.';
+                    ToolTip = 'Specifies if journal line must be created instead of purchase document. Only applicable if vendor receives e-document to purchase invoice.';
                 }
                 field("General Journal Template Name"; Rec."General Journal Template Name")
                 {
@@ -155,6 +172,22 @@ page 6133 "E-Document Service"
                     }
                 }
             }
+            group(Export)
+            {
+                field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
+                {
+                }
+                field("Buyer Reference"; Rec."Buyer Reference")
+                {
+                }
+            }
+            part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
+            {
+                ApplicationArea = All;
+                Caption = 'Data Exchange Definition';
+                SubPageLink = "E-Document Format Code" = field(Code);
+                Visible = Rec."Document Format" = Rec."Document Format"::"Data Exchange";
+            }
             part(EDocumentExportFormatMapping; "E-Doc. Mapping Part")
             {
                 Caption = 'Export Mapping';
@@ -173,46 +206,46 @@ page 6133 "E-Document Service"
         {
             action("SetupServiceIntegration")
             {
-                Caption = 'Setup Service Integration';
-                ToolTip = 'Setup Service Integration';
+                Caption = 'Set up service integration';
+                ToolTip = 'Set up service integration';
                 Image = Setup;
 
                 trigger OnAction()
-                var
-                    EDocumentIntegration: Interface "E-Document Integration";
-                    SetupPage, SetupTable : integer;
                 begin
-                    EDocumentIntegration := Rec."Service Integration";
-                    EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
-                    if SetupPage = 0 then
-                        Message(ServiceIntegrationSetupMsg)
-                    else
-                        Page.Run(SetupPage);
+                    RunSetupServiceIntegration();
                 end;
+            }
+            action(SupportedDocTypes)
+            {
+                Caption = 'Supported document types';
+                ToolTip = 'Set up supported document types';
+                Image = Documents;
+                RunObject = Page "E-Doc Service Supported Types";
+                RunPageLink = "E-Document Service Code" = field(Code);
             }
             action(Receive)
             {
                 Caption = 'Receive';
-                ToolTip = 'Manually Trigger Receive';
+                ToolTip = 'Manually trigger receive';
                 Image = Import;
 
                 trigger OnAction()
-                var
-                    EDocImport: Codeunit "E-Doc. Import";
                 begin
-                    EDocImport.ReceiveDocument(Rec);
+                    ReceiveDocs();
                 end;
             }
         }
         area(Promoted)
         {
-            actionref("Promoted Setup service integration"; SetupServiceIntegration) { }
+            actionref("Promoted Setup Service Integration"; SetupServiceIntegration) { }
+            actionref("Promoted Supported Doc Types"; SupportedDocTypes) { }
             actionref("Promoted Receive"; Receive) { }
         }
     }
 
     var
         ServiceIntegrationSetupMsg: Label 'There is no configuration setup for this service integration.';
+        DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
 
     trigger OnOpenPage()
     var
@@ -224,11 +257,81 @@ page 6133 "E-Document Service"
         CurrPage.EDocumentImportFormatMapping.Page.SaveAsImport(true);
     end;
 
-    trigger OnClosePage()
+#if not CLEAN26
+    local procedure RunSetupServiceIntegration()
     var
-        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+        EDocumentIntegration: Interface "E-Document Integration";
+        SetupPage, SetupTable : Integer;
+        PageOpened: Boolean;
     begin
-        EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
-        EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then begin
+            EDocumentIntegration := Rec."Service Integration";
+            EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
+            if SetupPage <> 0 then begin
+                PageOpened := true;
+                Page.Run(SetupPage);
+            end;
+        end;
+
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
+#else
+    local procedure RunSetupServiceIntegration()
+    var
+        PageOpened: Boolean;
+    begin
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
+    end;
+#endif
+
+#if not CLEAN26
+    local procedure ReceiveDocs()
+    var
+        FailedEDocument: Record "E-Document";
+        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
+        EDocImport: Codeunit "E-Doc. Import";
+        ReceiveContext: Codeunit ReceiveContext;
+        EDocIntegration: Interface "E-Document Integration";
+    begin
+        if Rec."Service Integration V2" <> Rec."Service Integration V2"::"No Integration" then begin
+            EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
+            EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
+
+            if FailedEDocument."Entry No" <> 0 then
+                if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
+                    Page.Run(Page::"E-Document", FailedEDocument);
+            exit;
+        end;
+
+        EDocIntegration := Rec."Service Integration";
+        EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
+    end;
+#else
+    local procedure ReceiveDocs()
+    var
+        FailedEDocument: Record "E-Document";
+        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
+        EDocImport: Codeunit "E-Doc. Import";
+        ReceiveContext: Codeunit ReceiveContext;
+    begin
+        EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
+        EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
+
+        if FailedEDocument."Entry No" <> 0 then
+            if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
+                Page.Run(Page::"E-Document", FailedEDocument);
+
+    end;
+#endif
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    begin
+    end;
+
 }

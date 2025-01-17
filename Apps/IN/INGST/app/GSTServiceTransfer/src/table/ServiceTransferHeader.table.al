@@ -28,11 +28,11 @@ table 18350 "Service Transfer Header"
 
             trigger OnValidate()
             var
-                NoSeriesManagement: Codeunit NoSeriesManagement;
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     GetInventorySetup();
-                    NoSeriesManagement.TestManual(GetNoSeriesCode());
+                    NoSeries.TestManual(GetNoSeriesCode());
                     "No. Series" := '';
                 end;
             end;
@@ -436,17 +436,30 @@ table 18350 "Service Transfer Header"
 
     trigger OnInsert()
     var
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        IsHandled: Boolean;
+#endif
+        NoSeriesCode: Code[20];
     begin
         GetInventorySetup();
         if "No." = '' then begin
             InventorySetup.TestField("Service Transfer Order Nos.");
-            NoSeriesManagement.InitSeries(
-                GetNoSeriesCode(),
-                xRec."No. Series",
-                "Shipment Date",
-                "No.",
-                "No. Series");
+            NoSeriesCode := GetNoSeriesCode();
+#if not CLEAN24
+            IsHandled := false;
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Shipment Date", "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := NoSeriesCode;
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Shipment Date", "No.");
+            end;
+#endif
         end;
         InitRecord();
     end;
@@ -506,13 +519,13 @@ table 18350 "Service Transfer Header"
 
     procedure AssistEdit(OldServiceTransferHeader: Record "Service Transfer Header"): Boolean
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         ServiceTransferHeader := Rec;
         GetInventorySetup();
         InventorySetup.TestField("Service Transfer Order Nos.");
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             Rec := ServiceTransferHeader;
             exit(true);
         end;

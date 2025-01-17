@@ -662,11 +662,11 @@ codeunit 139512 "Library - IT Intrastat"
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.SetFilter(NoSeries.Code, IntrastatReportSetup."Intrastat Nos.");
         NoSeries.FindFirst();
-        NoSeriesCode := NoSeriesManagement.GetNextNo(NoSeries.Code, WorkDate(), true);
+        NoSeriesCode := NoSeriesCodeunit.GetNextNo(NoSeries.Code);
     end;
 
     procedure GetStatisticalPeriod(ReportDate: Date): code[20]
@@ -845,11 +845,5 @@ codeunit 139512 "Library - IT Intrastat"
         IntrastatReportLine.Validate(Quantity, LibraryRandom.RandDecInRange(10, 20, 2));
         IntrastatReportLine.Modify(true);
         exit(Item."Net Weight");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnAfterCheckFeatureEnabled', '', true, true)]
-    local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
-    begin
-        IsEnabled := true;
     end;
 }

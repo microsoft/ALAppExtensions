@@ -44,22 +44,6 @@ pageextension 18144 "GST Posted Sales Invoice Ext" extends "Posted Sales Invoice
                 Editable = false;
                 ToolTip = 'Specifies the customer number for which merchant id has to be recorded.';
             }
-#if not CLEAN23
-            field("E-Commerce Merchant Id"; Rec."E-Commerce Merchant Id")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
-                ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-
-                trigger OnValidate()
-                begin
-                    error(UnusedFieldLbl);
-                end;
-            }
-#endif
             field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
             {
                 ApplicationArea = Basic, Suite;
@@ -361,9 +345,6 @@ pageextension 18144 "GST Posted Sales Invoice Ext" extends "Posted Sales Invoice
         MakeFieldUneditable: Boolean;
         eInvoiceNonGSTTransactionErr: Label 'E-Invoicing is not applicable for Non-GST Transactions.';
         eInvoiceNotApplicableCustomerErr: Label 'E-Invoicing is not applicable for Unregistered, Export and Deemed Export Customers.';
-#if not CLEAN23
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Idâ€™';
-#endif
         QRCodeAlreadyExistErr: Label 'QR Code for the Invoice no. %1 is already been generated', Comment = '%1 = DocumentNo';
 
     local procedure CheckQrCode(DocumentNo: Text[20]; QRCodeHasValue: Boolean)

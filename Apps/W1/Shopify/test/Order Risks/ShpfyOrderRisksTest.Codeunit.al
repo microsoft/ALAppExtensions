@@ -18,7 +18,7 @@ codeunit 139579 "Shpfy Order Risks Test"
         OrderRisks: Codeunit "Shpfy Order Risks";
         JRisks: JsonArray;
     begin
-        JRisks.ReadFrom('[{"level": "low", "message": "Low Risk", "display": true}, {"level": "medium", "message": "Medium Risk", "display": true}, {"level": "high", "message": "High Risk", "display": true}]');
+        JRisks.ReadFrom('[{ "facts": [{ "description": "Low Risk", "sentiment": "POSITIVE" }], "provider": null, "riskLevel": "LOW" },{ "facts": [{ "description": "Medium Risk", "sentiment": "NEUTRAL" }], "provider": null, "riskLevel": "MEDIUM" },{ "facts": [{ "description": "High Risk", "sentiment": "NEGATIVE" } ], "provider": null, "riskLevel": "HIGH" }]');
         OrderHeader.Init();
         OrderHeader."Shopify Order Id" := Any.IntegerInRange(10000, 99999);
 

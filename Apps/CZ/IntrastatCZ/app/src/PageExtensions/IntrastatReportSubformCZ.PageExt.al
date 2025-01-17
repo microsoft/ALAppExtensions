@@ -21,6 +21,15 @@ pageextension 31300 "Intrastat Report Subform CZ" extends "Intrastat Report Subf
                 ToolTip = 'Specifies the Specific movement code of the Intrastat report line.';
             }
         }
+        addafter("Shpt. Method Code")
+        {
+            field("Intrastat Delivery Group CZ"; Rec."Intrastat Delivery Group CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Intrastat Delivery Group of the Intrastat report line.';
+                Visible = false;
+            }
+        }
         addlast(Control1)
         {
             field("Internal Note 1 CZ"; Rec."Internal Note 1 CZ")
@@ -32,6 +41,13 @@ pageextension 31300 "Intrastat Report Subform CZ" extends "Intrastat Report Subf
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the internal note 2 code of the Intrastat report line.';
+                Visible = false;
+            }
+            field(CompletelyInvoicedCZ; Rec.CompletelyInvoiced())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Completely Invoiced';
+                ToolTip = 'Specifies if the entry has been fully invoiced or if more posted invoices are expected.';
                 Visible = false;
             }
         }

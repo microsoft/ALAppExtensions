@@ -1,0 +1,71 @@
+{
+  "id": "8c9976e6-0de3-4b8f-870e-42bacdc6baea",
+  "name": "Field Service Integration Test",
+  "publisher": "Microsoft",
+  "brief": "Tests for the Field Service Integration extension.",
+  "description": "Tests for the Field Service Integration extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
+      "name": "Field Service Integration",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "41b3ab6e-3f20-47c7-a67f-feccc4d58a55",
+      "name": "Field Service Integration Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "155bc500-e420-4113-803e-7aa8e8eea112",
+      "name": "Tests-CRM integration",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "name": "Library Variable Storage",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139204,
+      "to": 139204
+    }
+  ],
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

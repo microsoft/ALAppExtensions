@@ -1,7 +1,6 @@
 namespace Microsoft.DataMigration.BC;
 
 using Microsoft.DataMigration;
-using Microsoft.EServices.EDocument;
 
 codeunit 4028 "W1 Data Load"
 {
@@ -23,7 +22,6 @@ codeunit 4028 "W1 Data Load"
         if TargetVersion <> 15.0 then
             exit;
 
-        LoadIncomingDocument(HybridReplicationSummary);
         OnAfterW1DataLoadForVersion(HybridReplicationSummary, CountryCode, TargetVersion);
     end;
 
@@ -144,25 +142,6 @@ codeunit 4028 "W1 Data Load"
             exit;
 
         OnAfterW1DataLoadNonCompanyForVersion(CountryCode, TargetVersion);
-    end;
-
-    local procedure LoadIncomingDocument(HybridReplicationSummary: Record "Hybrid Replication Summary")
-    var
-        IncomingDocument: Record "Incoming Document";
-        StgIncomingDocument: Record "Stg Incoming Document";
-    begin
-        if StgIncomingDocument.FindSet(false) then begin
-            repeat
-                IncomingDocument.SetRange("Entry No.", StgIncomingDocument."Entry No.");
-                if IncomingDocument.FindFirst() then begin
-                    IncomingDocument.TransferFields(StgIncomingDocument);
-                    IncomingDocument.Modify();
-                end;
-            until StgIncomingDocument.Next() = 0;
-
-            OnAfterCompanyTableLoad(IncomingDocument.RecordId().TableNo(), HybridReplicationSummary."Synced Version");
-            StgIncomingDocument.DeleteAll();
-        end;
     end;
 
     [IntegrationEvent(false, false)]

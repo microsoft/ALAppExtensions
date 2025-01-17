@@ -120,6 +120,12 @@ table 30119 "Shpfy Order Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(20; "Delivery Method Type"; Enum "Shpfy Delivery Method Type")
+        {
+            Caption = 'Delivery Method Type';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(1000; "Item No."; Code[20])
         {
             Caption = 'Item No.';

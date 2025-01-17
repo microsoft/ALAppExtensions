@@ -773,6 +773,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
         Initialize();
 
         SetupPaymentNotification(MSPayPalStandardAccount, SalesInvoiceHeader);
+        MSPayPalStandardAccount."Disable Webhook Notifications" := false;
+        MSPayPalStandardAccount.Modify();
 
         // Exercise
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
@@ -1288,8 +1290,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
           ExpectedMSPayPalStandardAccount."Always Include on Documents", MSPayPalStandardAccount."Always Include on Documents",
           'Wrong value set for Always Include on Documents');
         Assert.AreEqual(
-          LOWERCASE(ExpectedMSPayPalStandardAccount."Account ID"), LOWERCASE(MSPayPalStandardAccount."Account ID"),
-          'Wrong value set for Account ID');
+            ExpectedMSPayPalStandardAccount."Account ID", MSPayPalStandardAccount."Account ID",
+            'Wrong value set for Account ID');
 
         ExpectedTargetURL := ExpectedMSPayPalStandardAccount.GetTargetURL();
         ActualTargetURL := MSPayPalStandardAccount.GetTargetURL();

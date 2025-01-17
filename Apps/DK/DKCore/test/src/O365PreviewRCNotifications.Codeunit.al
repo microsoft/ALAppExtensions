@@ -40,8 +40,8 @@ codeunit 138075 "O365 Preview RC Notifications"
     var
         RoleCenterNotifications: Record "Role Center Notifications";
     begin
-        if RoleCenterNotifications.IsFirstLogon then begin
-            RoleCenterNotifications.Get(UserSecurityId);
+        if RoleCenterNotifications.IsFirstLogon() then begin
+            RoleCenterNotifications.Get(UserSecurityId());
             RoleCenterNotifications."First Session ID" := -2;
             RoleCenterNotifications."Last Session ID" := -1;
             RoleCenterNotifications.Modify();
@@ -78,22 +78,6 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState.Insert();
     end;
 
-#if not CLEAN21
-#pragma warning disable AS0072
-    [Obsolete('Evaluation notification is removed', '21.0')]
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestEvaluationNotification()
-    var
-        TenantLicenseState: Record "Tenant License State";
-    begin
-        Initialize();
-        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow);
-        RoleCenterNotificationMgt.ShowEvaluationNotification();
-    end;
-#pragma warning restore AS0072
-#endif
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
@@ -102,9 +86,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
-        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow);
-        RoleCenterNotificationMgt.ShowTrialNotification;
+        SimulateSecondLogon();
+        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow());
+        RoleCenterNotificationMgt.ShowTrialNotification();
     end;
 
     [Test]
@@ -115,9 +99,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
-        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow - 2 * MillisecondsPerDay);
-        RoleCenterNotificationMgt.ShowTrialNotification;
+        SimulateSecondLogon();
+        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow() - 2 * MillisecondsPerDay);
+        RoleCenterNotificationMgt.ShowTrialNotification();
     end;
 
     [Test]
@@ -128,10 +112,10 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
-        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow);
-        SetLicenseState(TenantLicenseState.State::Suspended, GetUtcNow + MillisecondsPerDay);
-        RoleCenterNotificationMgt.ShowTrialSuspendedNotification;
+        SimulateSecondLogon();
+        SetLicenseState(TenantLicenseState.State::Trial, GetUtcNow());
+        SetLicenseState(TenantLicenseState.State::Suspended, GetUtcNow() + MillisecondsPerDay);
+        RoleCenterNotificationMgt.ShowTrialSuspendedNotification();
     end;
 
     [Test]
@@ -142,9 +126,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
+        SimulateSecondLogon();
         SetLicenseState(TenantLicenseState.State::Warning, CurrentDateTime);
-        RoleCenterNotificationMgt.ShowPaidWarningNotification;
+        RoleCenterNotificationMgt.ShowPaidWarningNotification();
     end;
 
     [Test]
@@ -155,10 +139,10 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
-        SetLicenseState(TenantLicenseState.State::Paid, GetUtcNow);
-        SetLicenseState(TenantLicenseState.State::Warning, GetUtcNow + MillisecondsPerDay);
-        RoleCenterNotificationMgt.ShowPaidWarningNotification;
+        SimulateSecondLogon();
+        SetLicenseState(TenantLicenseState.State::Paid, GetUtcNow());
+        SetLicenseState(TenantLicenseState.State::Warning, GetUtcNow() + MillisecondsPerDay);
+        RoleCenterNotificationMgt.ShowPaidWarningNotification();
     end;
 
     [Test]
@@ -169,9 +153,9 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
+        SimulateSecondLogon();
         SetLicenseState(TenantLicenseState.State::Suspended, CurrentDateTime);
-        RoleCenterNotificationMgt.ShowPaidSuspendedNotification;
+        RoleCenterNotificationMgt.ShowPaidSuspendedNotification();
     end;
 
     [Test]
@@ -182,30 +166,12 @@ codeunit 138075 "O365 Preview RC Notifications"
         TenantLicenseState: Record "Tenant License State";
     begin
         Initialize();
-        SimulateSecondLogon;
-        SetLicenseState(TenantLicenseState.State::Paid, GetUtcNow);
-        SetLicenseState(TenantLicenseState.State::Suspended, GetUtcNow + MillisecondsPerDay);
-        RoleCenterNotificationMgt.ShowPaidSuspendedNotification;
+        SimulateSecondLogon();
+        SetLicenseState(TenantLicenseState.State::Paid, GetUtcNow());
+        SetLicenseState(TenantLicenseState.State::Suspended, GetUtcNow() + MillisecondsPerDay);
+        RoleCenterNotificationMgt.ShowPaidSuspendedNotification();
     end;
 
-#if not CLEAN21
-#pragma warning disable AS0072
-    [Obsolete('Evaluation notification is removed', '21.0')]
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [Scope('OnPrem')]
-    procedure TestNoNotificationInSandbox()
-    var
-        TenantLicenseState: Record "Tenant License State";
-    begin
-        Initialize();
-        EnableSandbox;
-        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow);
-        RoleCenterNotificationMgt.ShowEvaluationNotification();
-        DisableSandbox;
-    end;
-#pragma warning restore AS0072
-#endif
     [Test]
     [HandlerFunctions('SendSandboxNotificationHandler')]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -216,10 +182,10 @@ codeunit 138075 "O365 Preview RC Notifications"
     begin
         // [SCENARIO 218238] User is getting notification when logs into a sandbox environment
         Initialize();
-        EnableSandbox;
-        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow);
-        RoleCenterNotificationMgt.ShowSandboxNotification;
-        DisableSandbox;
+        EnableSandbox();
+        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow());
+        RoleCenterNotificationMgt.ShowSandboxNotification();
+        DisableSandbox();
     end;
 
     [Test]
@@ -233,22 +199,21 @@ codeunit 138075 "O365 Preview RC Notifications"
     begin
         // [SCENARIO 218896] User can disable sandbox notification by clicking on 'Don't show this again.'
         Initialize();
-        EnableSandbox;
-        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow);
+        EnableSandbox();
+        SetLicenseState(TenantLicenseState.State::Evaluation, GetUtcNow());
         // [GIVEN] Open role center once and see the notification
         LibraryVariableStorage.Enqueue(0); // to count calls of DontShowSandboxNotificationHandler
         with RoleCenterNotificationMgt do begin
-            ShowSandboxNotification;
+            ShowSandboxNotification();
             // [WHEN] Click on "Don't show this again." on the notification
-            Assert.AreEqual(1, LibraryVariableStorage.DequeueInteger, 'Notification should be called once.');
+            Assert.AreEqual(1, LibraryVariableStorage.DequeueInteger(), 'Notification should be called once.');
             // [THEN] Sandbox notification is disabled.
             Assert.IsFalse(MyNotifications.IsEnabled(GetSandboxNotificationId()), 'Notification should be disabled');
 
             // [WHEN] Open role center again
             LibraryVariableStorage.Enqueue(0); // to count calls of DontShowSandboxNotificationHandler
         end;
-
-        DisableSandbox;
+        DisableSandbox();
     end;
 
     [SendNotificationHandler]
@@ -256,7 +221,7 @@ codeunit 138075 "O365 Preview RC Notifications"
     procedure SendSandboxNotificationHandler(var Notification: Notification): Boolean
     begin
         Assert.AreEqual(
-          RoleCenterNotificationMgt.SandboxNotificationMessage, Notification.Message, UnexpectedNotificationMsgTxt);
+          RoleCenterNotificationMgt.SandboxNotificationMessage(), Notification.Message, UnexpectedNotificationMsgTxt);
     end;
 
     [SendNotificationHandler]
@@ -265,9 +230,9 @@ codeunit 138075 "O365 Preview RC Notifications"
     var
         RoleCenterNotificationMgt: Codeunit "Role Center Notification Mgt.";
     begin
-        LibraryVariableStorage.Enqueue(LibraryVariableStorage.DequeueInteger + 1);
+        LibraryVariableStorage.Enqueue(LibraryVariableStorage.DequeueInteger() + 1);
         Assert.AreEqual(
-          RoleCenterNotificationMgt.SandboxNotificationMessage, Notification.Message, UnexpectedNotificationMsgTxt);
+          RoleCenterNotificationMgt.SandboxNotificationMessage(), Notification.Message, UnexpectedNotificationMsgTxt);
         // Simulate click on "Don't show this again"
         RoleCenterNotificationMgt.DisableSandboxNotification(Notification);
     end;

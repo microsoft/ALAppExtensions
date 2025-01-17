@@ -32,6 +32,10 @@ page 40056 "GP Company Migration Settings"
                 {
                     ToolTip = 'Specify the segment from Dynamics GP you would like as the second global dimension in Business Central.';
                 }
+                field("Migrate GL Module"; Rec."Migrate GL Module")
+                {
+                    ToolTip = 'Specify whether to migrate the GL module.';
+                }
                 field("Migrate Bank Module"; Rec."Migrate Bank Module")
                 {
                     ToolTip = 'Specify whether to migrate the Bank module.';
@@ -39,10 +43,6 @@ page 40056 "GP Company Migration Settings"
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
                     ToolTip = 'Specify whether to migrate customer classes.';
-                }
-                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
-                {
-                    ToolTip = 'Specify whether to migrate discontinued items.';
                 }
                 field("Migrate Hist. AP Trx."; Rec."Migrate Hist. AP Trx.")
                 {
@@ -76,9 +76,21 @@ page 40056 "GP Company Migration Settings"
                 {
                     ToolTip = 'Specify whether to migrate inactive items.';
                 }
+                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
+                {
+                    ToolTip = 'Specify whether to migrate discontinued items.';
+                }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    ToolTip = 'Specifies the value of the Migrate Kit Items field.';
+                }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
                     ToolTip = 'Specify whether to migrate inactive vendors.';
+                }
+                field("Migrate Temporary Vendors"; Rec."Migrate Temporary Vendors")
+                {
+                    ToolTip = 'Specify whether to migrate temporary vendors.';
                 }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
@@ -151,6 +163,10 @@ page 40056 "GP Company Migration Settings"
                 field("Skip Posting Vendor Batches"; Rec."Skip Posting Vendor Batches")
                 {
                     ToolTip = 'Specify whether to disable auto posting Vendor batches.';
+                }
+                field("Skip Posting Item Batches"; Rec."Skip Posting Item Batches")
+                {
+                    ToolTip = 'Specify whether to disable auto posting Item batches.';
                 }
             }
         }

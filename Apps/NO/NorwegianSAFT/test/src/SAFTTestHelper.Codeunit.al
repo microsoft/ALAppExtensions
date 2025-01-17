@@ -126,6 +126,14 @@ codeunit 148099 "SAF-T Test Helper"
         SAFTExportHeader.Insert(true);
     end;
 
+    procedure CreateSAFTExportHeader(var SAFTExportHeader: Record "SAF-T Export Header"; MappingRangeCode: Code[20]; Version: Enum "SAF-T Version")
+    begin
+        SAFTExportHeader.Init();
+        SAFTExportHeader.Validate("Mapping Range Code", MappingRangeCode);
+        SAFTExportHeader.Validate(Version, Version);
+        SAFTExportHeader.Insert(true);
+    end;
+
     procedure RunSAFTExport(var SAFTExportHeader: Record "SAF-T Export Header")
     begin
         Codeunit.Run(Codeunit::"SAF-T Export Mgt.", SAFTExportHeader);
@@ -228,6 +236,16 @@ codeunit 148099 "SAF-T Test Helper"
     end;
 
     procedure MockVATEntry(var VATEntry: Record "VAT Entry"; PostingDate: Date; Type: Integer; TransactionNo: Integer)
+    begin
+        MockVATEntryCustom(VATEntry, PostingDate, LibraryUtility.GenerateGUID(), Type, TransactionNo);
+    end;
+
+    procedure MockVATEntry(var VATEntry: Record "VAT Entry"; PostingDate: Date; DocumentNo: Code[20]; Type: Integer; TransactionNo: Integer)
+    begin
+        MockVATEntryCustom(VATEntry, PostingDate, DocumentNo, Type, TransactionNo);
+    end;
+
+    local procedure MockVATEntryCustom(var VATEntry: Record "VAT Entry"; PostingDate: Date; DocumentNo: Code[20]; Type: Integer; TransactionNo: Integer)
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -236,7 +254,7 @@ codeunit 148099 "SAF-T Test Helper"
         VATEntry."Posting Date" := PostingDate;
         VATEntry."VAT Reporting Date" := PostingDate;
         VATEntry."Transaction No." := TransactionNo;
-        VATEntry."Document No." := LibraryUtility.GenerateGUID();
+        VATEntry."Document No." := DocumentNo;
         VATEntry.Type := Type;
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         VATEntry."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
@@ -426,6 +444,9 @@ codeunit 148099 "SAF-T Test Helper"
         VATReportingCode: Record "VAT Reporting Code";
     begin
         VATPostingSetup.FindSet();
+        VATPostingSetup.Validate("Sale VAT Reporting Code", '');
+        VATPostingSetup.Validate("Purch. VAT Reporting Code", '');
+        VATPostingSetup.Modify(true);
         VATPostingSetup.Next(); // do not specify any value for Standard Tax Code in order to verify that NA value will be exported in the XML file
         VATReportingCode.FindSet();
         repeat

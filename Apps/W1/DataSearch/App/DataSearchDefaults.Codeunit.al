@@ -42,6 +42,8 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
+using Microsoft.RoleCenters;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
@@ -68,16 +70,23 @@ using Microsoft.Intercompany.Partner;
 using System.Globalization;
 using System.Reflection;
 using System.Security.AccessControl;
-using Microsoft.RoleCenters;
 
 codeunit 2681 "Data Search Defaults"
 {
     Permissions = tabledata "Data Search Setup (Table)" = rim,
                   tabledata "Data Search Setup (Field)" = rim;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         BaseLbl: Label '(default)';
         AllProfileDescriptionFilterTxt: Label 'Navigation menu only.';
+
+    // OnRun mainly provided for test, but can also be used for default init
+    trigger OnRun()
+    begin
+        InitSetupForAllProfiles();
+    end;
 
     internal procedure InitSetupForAllProfiles()
     var
@@ -165,6 +174,7 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Cust. Ledger Entry");
         TableList.Add(Database::Item);
         TableList.Add(Database::Resource);
+        TableList.Add(Database::Location);
         TableList.Add(Database::"Sales Invoice Header");
         TableList.Add(Database::"Sales Invoice Line");
         TableList.Add(Database::"Sales Shipment Header");
@@ -182,6 +192,7 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Cust. Ledger Entry");
         TableList.Add(Database::Vendor);
         TableList.Add(Database::"Vendor Ledger Entry");
+        TableList.Add(Database::"Gen. Journal Line");
         TableList.Add(Database::"Sales Invoice Header");
         TableList.Add(Database::"Sales Invoice Line");
         TableList.Add(Database::"Sales Cr.Memo Header");
@@ -190,25 +201,17 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Purch. Inv. Line");
         TableList.Add(Database::"Purch. Cr. Memo Hdr.");
         TableList.Add(Database::"Purch. Cr. Memo Line");
+        TableList.Add(Database::"Reminder Header");
+        TableList.Add(Database::"Reminder Line");
+        TableList.Add(Database::"Issued Reminder Header");
+        TableList.Add(Database::"Issued Reminder Line");
     end;
 
     local procedure GetTableListForBusinessManager(var TableList: List of [Integer])
     begin
-        TableList.Add(Database::"G/L Entry");
-        TableList.Add(Database::Customer);
-        TableList.Add(Database::"Cust. Ledger Entry");
-        TableList.Add(Database::Vendor);
-        TableList.Add(Database::"Vendor Ledger Entry");
+        GetTableListForAccountant(TableList);
         TableList.Add(Database::Item);
         TableList.Add(Database::Contact);
-        TableList.Add(Database::"Sales Invoice Header");
-        TableList.Add(Database::"Sales Invoice Line");
-        TableList.Add(Database::"Sales Cr.Memo Header");
-        TableList.Add(Database::"Sales Cr.Memo Line");
-        TableList.Add(Database::"Purch. Inv. Header");
-        TableList.Add(Database::"Purch. Inv. Line");
-        TableList.Add(Database::"Purch. Cr. Memo Hdr.");
-        TableList.Add(Database::"Purch. Cr. Memo Line");
     end;
 
     local procedure GetTableListForServiceManager(var TableList: List of [Integer])
@@ -285,11 +288,13 @@ codeunit 2681 "Data Search Defaults"
     begin
         TableList.Add(Database::Item);
         TableList.Add(Database::"Item Ledger Entry");
+        TableList.Add(Database::Location);
     end;
 
     local procedure GetTableListForWarehouseManager(var TableList: List of [Integer])
     begin
         TableList.Add(Database::Item);
+        TableList.Add(Database::Location);
         TableList.Add(Database::"Sales Shipment Header");
         TableList.Add(Database::"Sales Shipment Line");
         TableList.Add(Database::"Purch. Rcpt. Header");
@@ -313,6 +318,7 @@ codeunit 2681 "Data Search Defaults"
 
     local procedure GetTableListForWarehouseEmployee(var TableList: List of [Integer])
     begin
+        TableList.Add(Database::Location);
         TableList.Add(Database::"Sales Shipment Header");
         TableList.Add(Database::"Sales Shipment Line");
         TableList.Add(Database::"Purch. Rcpt. Header");
@@ -339,15 +345,18 @@ codeunit 2681 "Data Search Defaults"
     var
         DataSearchSetupTable: Record "Data Search Setup (Table)";
     begin
-        if DataSearchSetupTable.Get(TableNo, RoleCenterID) then
+        DataSearchSetupTable.SetRange("Table No.", TableNo);
+        DataSearchSetupTable.SetRange("Role Center ID", RoleCenterID);
+        if not DataSearchSetupTable.IsEmpty then
             exit;
+        DataSearchSetupTable.Reset();
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Table No." := TableNo;
         DataSearchSetupTable."Role Center ID" := RoleCenterID;
         DataSearchSetupTable."No. of Hits" := 0;
         if DataSearchSetupTable."Table No." in [Database::Contact] then
             DataSearchSetupTable."No. of Hits" := 1; // move to top of list
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
         AddDefaultFields(TableNo);
     end;
 
@@ -355,10 +364,28 @@ codeunit 2681 "Data Search Defaults"
     var
         FieldList: List of [Integer];
     begin
-        AddTextFields(TableNo, FieldList);
-        AddIndexedFields(TableNo, FieldList);
-        AddOtherFields(TableNo, FieldList);
+        if not AddFullTextIndexedFields(TableNo, FieldList) then begin
+            AddTextFields(TableNo, FieldList);
+            AddIndexedFields(TableNo, FieldList);
+            AddOtherFields(TableNo, FieldList);
+        end;
         InsertFields(TableNo, FieldList);
+    end;
+
+    internal procedure AddFullTextIndexedFields(TableNo: Integer; var FieldList: List of [Integer]): Boolean
+    var
+        Field: Record Field;
+    begin
+        Field.SetRange(TableNo, TableNo);
+        Field.SetRange(Class, Field.Class::Normal);
+        Field.SetRange(OptimizeForTextSearch, true);
+        if not Field.FindSet() then
+            exit(false);
+        repeat
+            if not FieldList.Contains(Field."No.") then
+                FieldList.Add(Field."No.");
+        until Field.Next() = 0;
+        exit(true);
     end;
 
     internal procedure AddTextFields(TableNo: Integer; var FieldList: List of [Integer])

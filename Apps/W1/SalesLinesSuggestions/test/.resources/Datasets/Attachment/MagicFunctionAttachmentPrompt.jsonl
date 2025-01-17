@@ -1,0 +1,23 @@
+{"question": "Need all the items from sales order on next week"}
+{"question": "Need all the items from sales order from last month to next week"}
+{"question": "Need all the items from sales invoice on next week"}
+{"question": "Need all the items from sales invoice from last month to next week"}
+{"question": "Need all the items from sales shipment on next week"}
+{"question": "Need all the items from sales shipment from last month to next week"}
+{"question": "Need all the items from sales Quote on next week"}
+{"question": "Need all the items from sales Quote from last month to next week"}
+{"question": "Hello! Could you do a quick review of items from recent sales orders? Just a general stock check. Thanks!"}
+{"question": "Hey! Can you assess the items receiving 5-star reviews from our previous sales order? I need them for customer satisfaction analysis. Thanks a lot!"}
+{"question": "Can you check for any damaged goods in sales invoice 55566? We need to process returns or replacements."}
+{"question": "Hello, a quick request: could you highlight items with delivery delays in shipment SHIP-987651? We need to proactively address any customer concerns. Thanks for your prompt action!"}
+{"question": "Need all the items from previous sales invoice"}
+{"question": "Need all the items from sales invoice 12345"}
+{"question": "Need 5 loud speaker from sales invoice"}
+{"question": "Need 5 loud speaker from sales invoice SO12345"}
+{"question": "Need all the items from sales invoice from last week to today"}
+{"question": "Need 5 loud speaker from sales invoice from last week to today"}
+{"question": "Need all the items from sales invoice on 2023-01-01"}
+{"question": "Need all the items from sales invoice on last February 1st"}
+{"question": "Hi team, please retrieve all electronics from sales invoice 54321 for our tech inventory update. Thanks!"}
+{"question": "Hello, can you list all office supplies from sales invoice 67890? We need it for our office supplies audit."}
+{"question": "Subject: Request for additional items \nHello,\nI hope this email finds you well. I am writing to you regarding the sales invoice 123456 that you sent me on January 15, 2024. I appreciate your prompt delivery and excellent service.\nHowever, I would like to request some additional items that are related to the ones I purchased from you. Specifically, I am interested in the following products:\n\t- 10 units of Product A (SKU: 789012)\n\t- 5 units of Product B (SKU: 345678)\n\t- 3 units of Product C (SKU: 901234)\nCould you please send me a quote for these items, along with the shipping and handling fees? I would also appreciate it if you could expedite the order, as I need them by February 10, 2024.\nPlease reply to this email with your confirmation and payment details. If you have any questions or concerns, feel free to contact me at any time.\nThank you for your cooperation and attention.\nSincerely,\nYour customer/colleague"}

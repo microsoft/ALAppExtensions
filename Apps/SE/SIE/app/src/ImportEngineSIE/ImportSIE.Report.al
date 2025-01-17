@@ -106,26 +106,11 @@ report 5314 "Import SIE"
         actions
         {
         }
-#if CLEAN22
         trigger OnOpenPage()
         begin
             FeatureTelemetry.LogUptake('0000JPN', SieImportTok, Enum::"Feature Uptake Status"::Discovered);
             OnActivateForm();
         end;
-#else
-        trigger OnOpenPage()
-        var
-            SIEManagement: Codeunit "SIE Management";
-        begin
-            if not SIEManagement.IsFeatureEnabled() then begin
-                Report.Run(Report::"SIE Import");
-                Error('');
-            end;
-
-            FeatureTelemetry.LogUptake('0000JPN', SieImportTok, Enum::"Feature Uptake Status"::Discovered);
-            OnActivateForm();
-        end;
-#endif
     }
 
     labels
@@ -184,7 +169,7 @@ report 5314 "Import SIE"
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLineGlobal: Record "Gen. Journal Line";
         GLAccount: Record "G/L Account";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TempBlobGlobal: Codeunit "Temp Blob";
         DimensionsSiePage: Page "Dimensions SIE";
@@ -300,7 +285,7 @@ report 5314 "Import SIE"
                         else
                             DocumentNo := CopyStr(DelChr(TempImportBufferSie."Import Field 3", '=', '"'), 1, MaxStrLen(DocumentNo));
                         if StrLen(DocumentNo) = 0 then
-                            DocumentNo := NoSeriesMgt.GetNextNo(GenJournalBatch."No. Series", WorkDate(), false);
+                            DocumentNo := NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series");
 
                         TempImportBufferSie."Import Field 4" := DelChr(TempImportBufferSie."Import Field 4", '=<>', DelChr(TempImportBufferSie."Import Field 4", '=<>', '0123456789'));
                         // File format YYYYMMDD according to swedish standard
@@ -393,7 +378,7 @@ report 5314 "Import SIE"
         GenJournalLine: Record "Gen. Journal Line";
     begin
         if DocumentNo = '' then
-            DocumentNo := NoSeriesMgt.GetNextNo(GenJournalBatch."No. Series", WorkDate(), false);
+            DocumentNo := NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series");
         GenJournalLine.Init();
         GenJournalLine."Journal Template Name" := GenJournalBatch."Journal Template Name";
         GenJournalLine."Journal Batch Name" := GenJournalBatch.Name;

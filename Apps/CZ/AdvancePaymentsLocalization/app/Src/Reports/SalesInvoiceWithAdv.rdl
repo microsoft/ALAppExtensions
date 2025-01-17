@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>8.90581in</Height>
+                  <Height>8.75543in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -4254,7 +4254,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                     <Width>0.98425in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>0.7874in</Width>
+                                    <Width>0.52912in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>0.98425in</Width>
@@ -4263,7 +4263,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                     <Width>0.98425in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>0.98425in</Width>
+                                    <Width>0.84883in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>0.98425in</Width>
@@ -4488,7 +4488,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -4529,7 +4529,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -5004,11 +5004,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </TablixMember>
                                   <TablixMember />
                                   <TablixMember>
-                                    <Group Name="Group1">
-                                      <GroupExpressions>
-                                        <GroupExpression>=Fields!VATAmtLineVATIdentifier.Value</GroupExpression>
-                                      </GroupExpressions>
-                                    </Group>
+                                    <Group Name="Group1" />
                                     <SortExpressions>
                                       <SortExpression>
                                         <Value>=Fields!VATAmtLineVATIdentifier.Value</Value>
@@ -5034,7 +5030,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <Top>521.8pt</Top>
                               <Left>0.00003cm</Left>
                               <Height>0.70868in</Height>
-                              <Width>5.70865in</Width>
+                              <Width>5.31495in</Width>
                               <ZIndex>2</ZIndex>
                               <Style>
                                 <Border>
@@ -5147,8 +5143,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>20.68625cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>20.38438cm</Top>
                               <Height>0.45001cm</Height>
                               <Width>17.99998cm</Width>
                               <ZIndex>3</ZIndex>
@@ -5231,8 +5226,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>21.16801cm</Top>
-                              <Left>11.99998cm</Left>
+                              <Top>20.86614cm</Top>
+                              <Left>11.99995cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>6.00001cm</Width>
                               <ZIndex>4</ZIndex>
@@ -5246,7 +5241,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <TablixBody>
                                 <TablixColumns>
                                   <TablixColumn>
-                                    <Width>4.5cm</Width>
+                                    <Width>2.5cm</Width>
                                   </TablixColumn>
                                 </TablixColumns>
                                 <TablixRows>
@@ -6026,7 +6021,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               </Filters>
                               <Top>15.64562cm</Top>
                               <Height>2.25cm</Height>
-                              <Width>14.5cm</Width>
+                              <Width>12.5cm</Width>
                               <ZIndex>5</ZIndex>
                               <Visibility>
                                 <Hidden>=Fields!PrepaymentAmt_SalesInvoiceHeader.Value = 0</Hidden>
@@ -6138,8 +6133,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>22.02103cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>21.71916cm</Top>
                               <Height>0.42333cm</Height>
                               <Width>17.80794cm</Width>
                               <ZIndex>6</ZIndex>
@@ -6149,6 +6143,75 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Border>
                               </Style>
                             </Tablix>
+                            <Textbox Name="QRCode">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentCode.Value</Value>
+                                      <Style>
+                                        <FontFamily>IDAutomation2D</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>QRCode</rd:DefaultName>
+                              <Top>16.13657cm</Top>
+                              <Left>14.30806cm</Left>
+                              <Height>3.6919cm</Height>
+                              <Width>3.6919cm</Width>
+                              <ZIndex>7</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border />
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                            <Textbox Name="Textbox11">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentLbl.Value</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox1</rd:DefaultName>
+                              <Top>19.89903cm</Top>
+                              <Left>14.50008cm</Left>
+                              <Height>0.30896cm</Height>
+                              <Width>2.5cm</Width>
+                              <ZIndex>8</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
                           </ReportItems>
                           <KeepTogether>true</KeepTogether>
                           <Style>
@@ -6193,7 +6256,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                 </FilterValues>
               </Filter>
             </Filters>
-            <Height>8.90581in</Height>
+            <Height>8.75543in</Height>
             <Width>18.00001cm</Width>
             <Style>
               <Border>
@@ -6202,7 +6265,7 @@ Cstr(Fields!PageLbl.Value)</Value>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>22.62076cm</Height>
+        <Height>22.29172cm</Height>
         <Style>
           <Border />
         </Style>
@@ -6370,7 +6433,7 @@ Cstr(Fields!PageLbl.Value)</Value>
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.77002cm</Height>
+          <Height>0.67639cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -6389,7 +6452,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>1.27001cm</Top>
+              <Top>0.17639cm</Top>
               <Height>0.5cm</Height>
               <Width>12cm</Width>
               <Style>
@@ -6418,7 +6481,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>1.26999cm</Top>
+              <Top>0.17637cm</Top>
               <Left>12cm</Left>
               <Height>0.5cm</Height>
               <Width>6cm</Width>
@@ -6609,6 +6672,9 @@ End Function</Code>
         <Field Name="LCYCode_GeneralLedgerSetup">
           <DataField>LCYCode_GeneralLedgerSetup</DataField>
         </Field>
+        <Field Name="VATCurrencyCode">
+          <DataField>VATCurrencyCode</DataField>
+        </Field>
         <Field Name="DocumentLbl">
           <DataField>DocumentLbl</DataField>
         </Field>
@@ -6692,6 +6758,9 @@ End Function</Code>
         </Field>
         <Field Name="DocumentNoLbl">
           <DataField>DocumentNoLbl</DataField>
+        </Field>
+        <Field Name="QRPaymentLbl">
+          <DataField>QRPaymentLbl</DataField>
         </Field>
         <Field Name="No_SalesInvoiceHeader">
           <DataField>No_SalesInvoiceHeader</DataField>
@@ -6866,6 +6935,9 @@ End Function</Code>
         </Field>
         <Field Name="ShipToAddr6">
           <DataField>ShipToAddr6</DataField>
+        </Field>
+        <Field Name="QRPaymentCode">
+          <DataField>QRPaymentCode</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

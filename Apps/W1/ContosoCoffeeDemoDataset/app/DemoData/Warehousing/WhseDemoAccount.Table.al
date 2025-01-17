@@ -1,15 +1,12 @@
+#if not CLEANSCHEMA26
 table 4762 "Whse. Demo Account"
 {
     TableType = Temporary;
     DataClassification = CustomerContent;
     ObsoleteReason = 'This table will be replaced by "Contoso GL Account".';
-#if not CLEAN23
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
-#endif
+    ReplicateData = false;
 
     fields
     {
@@ -27,3 +24,4 @@ table 4762 "Whse. Demo Account"
         }
     }
 }
+#endif

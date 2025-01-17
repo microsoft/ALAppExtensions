@@ -5,6 +5,8 @@ page 41010 "Hist. Inventory Trx."
     PageType = Card;
     Caption = 'Historical Inventory Transaction';
     SourceTable = "Hist. Inventory Trx. Header";
+    ApplicationArea = All;
+    UsageCategory = None;
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -75,6 +77,34 @@ page 41010 "Hist. Inventory Trx."
                     ApplicationArea = All;
                     SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No.");
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Promoted)
+        {
+            actionref(ViewDistributions_Promoted; ViewDistributions)
+            {
+            }
+        }
+        area(Processing)
+        {
+            action(ViewDistributions)
+            {
+                ApplicationArea = All;
+                Caption = 'View Distributions';
+                ToolTip = 'View the G/L account distributions related to this transaction.';
+                Image = RelatedInformation;
+
+                trigger OnAction()
+                var
+                    HistGenJournalLines: Page "Hist. Gen. Journal Lines";
+                begin
+                    HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
+                    HistGenJournalLines.Run();
+                end;
             }
         }
     }

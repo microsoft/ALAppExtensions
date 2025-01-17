@@ -218,7 +218,7 @@ codeunit 18318 "GST Settlement"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GenLedgerSetup: Record "General Ledger Setup";
         GenJournalPostLine: Codeunit "Gen. Jnl.-Post Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         GSTHelpers: Codeunit "GST Helpers";
         GSTBaseValidation: Codeunit "GST Base Validation";
         EntryNo: Integer;
@@ -344,7 +344,7 @@ codeunit 18318 "GST Settlement"
                             EntryNo := GenJournalPostLine.RunWithCheck(GenJnlLine);
                         until TempGSTPostingBuffer[1].Next(-1) = 0;
                 until GSTCreditAdjustmentJournal.Next() = 0;
-                NoSeriesManagement.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date", true);
+                NoSeries.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date");
             end;
         end;
 
@@ -409,7 +409,7 @@ codeunit 18318 "GST Settlement"
             if VendorLedgerEntry.FindSet() then
                 repeat
                     VendorLedgerEntry.CalcFields("Remaining Amt. (LCY)");
-                    RemainingAmount := VendorLedgerEntry."Remaining Amt. (LCY)" - Abs(VendorLedgerEntry."Total TDS Including SHE CESS");
+                    RemainingAmount := VendorLedgerEntry."Remaining Amt. (LCY)" - Abs(VendorLedgerEntry."Total TDS Including SHE CESS" / VendorLedgerEntry."Original Currency Factor");
                     FillAppBufferInvoice(
                         VendorLedgerEntry."Document No.",
                         VendorLedgerEntry."Location GST Reg. No.",
@@ -529,7 +529,7 @@ codeunit 18318 "GST Settlement"
                 else
                     GSTLiabilityBuffer[1]."GST Base Amount" := DetailedGSTLedgerEntry[1]."GST Base Amount";
 
-                GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."GST Amount" * CurrencyFactor);
+                GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."GST Amount" * CurrencyFactor);
 
                 if (DetailedGSTLedgerEntry[1]."Cr. & Liab. Adjustment Type" =
                     DetailedGSTLedgerEntry[1]."Cr. & Liab. Adjustment Type"::Generate) and
@@ -540,7 +540,7 @@ codeunit 18318 "GST Settlement"
                     else
                         GSTLiabilityBuffer[1]."GST Base Amount" := DetailedGSTLedgerEntry[1]."Remaining Base Amount";
 
-                    GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."Remaining GST Amount" * CurrencyFactor);
+                    GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."Remaining GST Amount" * CurrencyFactor);
                 end;
 
                 if NatureOfAdj = NatureOfAdj::Reverse then begin
@@ -549,7 +549,7 @@ codeunit 18318 "GST Settlement"
                     else
                         GSTLiabilityBuffer[1]."Applied Base Amount" := DetailedGSTLedgerEntry[1]."AdjustmentBase Amount";
 
-                    GSTLiabilityBuffer[1]."Applied Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."Adjustment Amount" * CurrencyFactor);
+                    GSTLiabilityBuffer[1]."Applied Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."Adjustment Amount" * CurrencyFactor);
                     if DetailedGSTLedgerEntry[1]."GST Credit" = DetailedGSTLedgerEntry[1]."GST Credit"::Availment then
                         GSTLiabilityBuffer[1]."Credit Amount" := GSTLiabilityBuffer[1]."Applied Amount";
                 end;
@@ -576,7 +576,7 @@ codeunit 18318 "GST Settlement"
         GSTLiabilityBuffer: Record "GST Liability Buffer";
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GenJnlLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         AppliedBase: Decimal;
         AppliedAmount: Decimal;
         RemainingBase: Decimal;
@@ -732,7 +732,7 @@ codeunit 18318 "GST Settlement"
                     until TempGSTPostingBuffer1[1].Next(-1) = 0;
             until GSTLiabilityAdjustment.Next() = 0;
 
-            NoSeriesManagement.GetNextNo(GetNoSeriesCode(true), GSTLiabilityAdjustment."Adjustment Posting Date", true);
+            NoSeries.GetNextNo(GetNoSeriesCode(true), GSTLiabilityAdjustment."Adjustment Posting Date");
         end;
     end;
 
@@ -1127,7 +1127,7 @@ codeunit 18318 "GST Settlement"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GeneralPostingSetup: Record "General Posting Setup";
         GenJournalLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         GSTHelpers: Codeunit "GST Helpers";
         TotalGSTAmt: Decimal;
         TotalGSTAmt1: Decimal;
@@ -1266,7 +1266,7 @@ codeunit 18318 "GST Settlement"
                 if GSTCreditAdjustmentJournal.Type = Type::Item then
                     PostRevaluationEntry(GSTCreditAdjustmentJournal)
             until GSTCreditAdjustmentJournal.Next() = 0;
-            NoSeriesManagement.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date", true);
+            NoSeries.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date");
         end;
 
         Clear(GenJnlPostLine);
@@ -1847,8 +1847,8 @@ codeunit 18318 "GST Settlement"
         TempGSTPostingBuffer1[1]."GST Group Code" := '';
         TempGSTPostingBuffer1[1].Availment := DetailedGSTLedgerEntry."GST Credit" = DetailedGSTLedgerEntry."GST Credit"::Availment;
         TempGSTPostingBuffer1[1]."GST Group Type" := TempGSTPostingBuffer1[1]."GST Group Type"::Service;
-        TempGSTPostingBuffer1[1]."GST Base Amount" := GSTBaseValidation.RoundGSTPrecision(AppliedBaseAmount);
-        TempGSTPostingBuffer1[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(AppliedAmount);
+        TempGSTPostingBuffer1[1]."GST Base Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry."GST Component Code", AppliedBaseAmount);
+        TempGSTPostingBuffer1[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry."GST Component Code", AppliedAmount);
         TempGSTPostingBuffer1[1]."GST %" := DetailedGSTLedgerEntry."GST %";
         TempGSTPostingBuffer1[1]."Normal Payment" := DetailedGSTLedgerEntry."Payment Type" = "Payment Type"::Normal;
         TempGSTPostingBuffer1[1]."Dimension Set ID" := DimensionSetID;
@@ -2006,14 +2006,16 @@ codeunit 18318 "GST Settlement"
             Error(PostingDateErr);
     end;
 
-    local procedure GetSettlementDocumentNo(PostingDate: Date; modifyTrue: Boolean): Code[20]
+    local procedure GetSettlementDocumentNo(PostingDate: Date; ModifyNoSeries: Boolean): Code[20]
     var
         GenLedgerSetup: Record "General Ledger Setup";
-        NoSeriesMgmt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         GenLedgerSetup.Get();
         GenLedgerSetup.TestField("GST Settlement Nos.");
-        exit(NoSeriesMgmt.GetNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate, modifyTrue));
+        if ModifyNoSeries then
+            exit(NoSeries.GetNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate));
+        exit(NoSeries.PeekNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate));
     end;
 
     local procedure CreateGSTPaymentBuffer(

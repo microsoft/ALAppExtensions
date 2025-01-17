@@ -1,13 +1,19 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4026 "GP Posting Accounts"
 {
+    Caption = 'GP Posting Accounts';
     PageType = Card;
     SourceTable = "GP Posting Accounts";
     DeleteAllowed = false;
     InsertAllowed = false;
-    Caption = 'Posting Accounts';
     PromotedActionCategories = 'Posting Accounts';
+    ApplicationArea = All;
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
 
     layout
     {
@@ -137,3 +143,4 @@ page 4026 "GP Posting Accounts"
         }
     }
 }
+#endif

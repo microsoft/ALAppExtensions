@@ -58,12 +58,22 @@ table 20142 "Lookup Table Filter"
     var
         LookupFieldFilter: Record "Lookup Field Filter";
         ScriptSymbolStore: Codeunit "Script Symbol Store";
+        IsHandled: Boolean;
     begin
+        OnBeforeDeleteLookupFilter(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         ScriptSymbolStore.OnBeforeValidateIfUpdateIsAllowed("Case ID");
 
         LookupFieldFilter.SetRange("Case ID", "Case ID");
         LookupFieldFilter.SetRange("Table Filter ID", ID);
         if not LookupFieldFilter.IsEmpty() then
             LookupFieldFilter.DeleteAll(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeDeleteLookupFilter(Rec: Record "Lookup Table Filter"; var IsHandled: Boolean)
+    begin
     end;
 }

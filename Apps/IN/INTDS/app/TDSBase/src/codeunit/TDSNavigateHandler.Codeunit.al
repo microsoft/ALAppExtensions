@@ -8,8 +8,6 @@ using Microsoft.Foundation.Navigate;
 
 codeunit 18686 "TDS Navigate Handler"
 {
-    var
-        Navigate: Page Navigate;
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
     local procedure FindTDSEntries(
@@ -23,22 +21,24 @@ codeunit 18686 "TDS Navigate Handler"
             TDSEntry.SetCurrentKey("Document No.", "Posting Date");
             TDSEntry.SetFilter("Document No.", DocNoFilter);
             TDSEntry.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"TDS Entry", 0, CopyStr(TDSEntry.TableCaption(), 1, 1024), TDSEntry.Count());
+            DocumentEntry.InsertIntoDocEntry(Database::"TDS Entry", 0, CopyStr(TDSEntry.TableCaption(), 1, 1024), TDSEntry.Count());
         end;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateShowRecords', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
     local procedure ShowEntries(
-        TableID: Integer;
         DocNoFilter: Text;
         PostingDateFilter: Text;
-        var TempDocumentEntry: Record "Document Entry")
+        var TempDocumentEntry: Record "Document Entry";
+        var IsHandled: Boolean)
     var
         TDSEntry: Record "TDS Entry";
     begin
-        TDSEntry.SetRange("Document No.", DocNoFilter);
-        TDSEntry.SetFilter("Posting Date", PostingDateFilter);
-        if TableID = Database::"TDS Entry" then
+        if TempDocumentEntry."Table ID" = Database::"TDS Entry" then begin
+            TDSEntry.SetRange("Document No.", DocNoFilter);
+            TDSEntry.SetFilter("Posting Date", PostingDateFilter);
             Page.Run(Page::"TDS Entries", TDSEntry);
+            IsHandled := true;
+        end;
     end;
 }

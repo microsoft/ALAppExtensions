@@ -120,17 +120,17 @@ codeunit 1697 "Setup Bank Deposit Reports"
 
     procedure InitBaseSeries(var SeriesCode: Code[20]; "Code": Code[20]; Description: Text[100]; "Starting No.": Code[20]; "Ending No.": Code[20]; "Last Number Used": Code[20]; "Warning at No.": Code[20]; "Increment-by No.": Integer)
     begin
-        InitBaseSeries(SeriesCode, "Code", Description, "Starting No.", "Ending No.", "Last Number Used", "Warning at No.", "Increment-by No.", false);
+        InitBaseSeries(SeriesCode, "Code", Description, "Starting No.", "Ending No.", "Last Number Used", "Warning at No.", "Increment-by No.", Enum::"No. Series Implementation"::Normal);
     end;
 
-    internal procedure InitBaseSeries(var SeriesCode: Code[20]; "Code": Code[20]; Description: Text[100]; "Starting No.": Code[20]; "Ending No.": Code[20]; "Last Number Used": Code[20]; "Warning at No.": Code[20]; "Increment-by No.": Integer; "Allow Gaps": Boolean)
+    internal procedure InitBaseSeries(var SeriesCode: Code[20]; "Code": Code[20]; Description: Text[100]; "Starting No.": Code[20]; "Ending No.": Code[20]; "Last Number Used": Code[20]; "Warning at No.": Code[20]; "Increment-by No.": Integer; Implementation: Enum "No. Series Implementation")
     begin
         InsertSeries(
           SeriesCode, Code, Description,
-          "Starting No.", "Ending No.", "Last Number Used", "Warning at No.", "Increment-by No.", true, "Allow Gaps");
+          "Starting No.", "Ending No.", "Last Number Used", "Warning at No.", "Increment-by No.", true, Implementation);
     end;
 
-    local procedure InsertSeries(var SeriesCode: Code[20]; "Code": Code[20]; Description: Text[100]; "Starting No.": Code[20]; "Ending No.": Code[20]; "Last Number Used": Code[20]; "Warning No.": Code[20]; "Increment-by No.": Integer; "Manual Nos.": Boolean; "Allow Gaps": Boolean)
+    local procedure InsertSeries(var SeriesCode: Code[20]; "Code": Code[20]; Description: Text[100]; "Starting No.": Code[20]; "Ending No.": Code[20]; "Last Number Used": Code[20]; "Warning No.": Code[20]; "Increment-by No.": Integer; "Manual Nos.": Boolean; Implementation: Enum "No. Series Implementation")
     var
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
@@ -153,7 +153,7 @@ codeunit 1697 "Setup Bank Deposit Reports"
         if "Warning No." <> '' then
             NoSeriesLine.Validate("Warning No.", "Warning No.");
         NoSeriesLine.Validate("Increment-by No.", "Increment-by No.");
-        NoSeriesLine.Validate("Allow Gaps in Nos.", "Allow Gaps");
+        NoSeriesLine.Validate(Implementation, Implementation);
         NoSeriesLine."Line No." := 10000;
         NoSeriesLine.Insert(true);
 

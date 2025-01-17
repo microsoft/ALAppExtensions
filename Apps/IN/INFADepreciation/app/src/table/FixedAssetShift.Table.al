@@ -185,14 +185,20 @@ table 18633 "Fixed Asset Shift"
                 ModifyDeprFields();
             end;
         }
+#if not CLEANSCHEMA26
         field(13; "FA Posting Group"; Code[10])
         {
             Caption = 'FA Posting Group';
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'New field introduced as Fixed Asset Posting Group';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '23.0';
-
+#endif
+#endif
             trigger OnValidate()
             begin
                 ModifyDeprFields();

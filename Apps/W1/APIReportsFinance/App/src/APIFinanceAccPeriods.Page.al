@@ -1,6 +1,5 @@
 namespace Microsoft.API.FinancialManagement;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
 
 page 30300 "API Finance - Acc Periods"

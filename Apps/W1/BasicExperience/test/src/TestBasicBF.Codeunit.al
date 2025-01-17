@@ -19,7 +19,6 @@ codeunit 139502 "Test Basic BF"
 
     [Test]
     procedure TestBasicExperienceTierAfterInstall();
-    var
     begin
         // [SCENARIO] Check the Basic Experience Tier After Install of Basic Extension 
         // [GIVEN] Basic Extension is installed
@@ -31,7 +30,6 @@ codeunit 139502 "Test Basic BF"
 
     [Test]
     procedure TestBasicApplicationAreaAfterInstall();
-    var
     begin
         // [SCENARIO] Check the Basic Application Area After Install of Basic Extension 
         // [GIVEN] Basic Extension is installed
@@ -43,7 +41,6 @@ codeunit 139502 "Test Basic BF"
 
     [Test]
     procedure TestDisabledRoleCenterAfterInstall();
-    var
     begin
         // [SCENARIO] Check disable Role Center After Install of Basic Extension 
         // [GIVEN] Basic Extension is installed

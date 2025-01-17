@@ -18,7 +18,11 @@ codeunit 40112 "GP Migration Error Handler"
     local procedure UpdateErrorOverviewOnDelete(RunTrigger: Boolean; var Rec: Record "Data Migration Error")
     var
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         ErrorOccured := true;
         if GPMigrationErrorOverview.Get(Rec.Id, CompanyName()) then begin
             GPMigrationErrorOverview."Error Dismissed" := true;
@@ -29,19 +33,24 @@ codeunit 40112 "GP Migration Error Handler"
     local procedure UpdateErrorOverview(var DataMigrationError: Record "Data Migration Error")
     var
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
         Exists: Boolean;
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
         ErrorOccured := true;
         GPMigrationErrorOverview.ReadIsolation := IsolationLevel::ReadUncommitted;
         Exists := GPMigrationErrorOverview.Get(DataMigrationError.Id, CompanyName());
         if not Exists then begin
             GPMigrationErrorOverview.Id := DataMigrationError.Id;
-            GPMigrationErrorOverview."Company Name" := CompanyName();
+            GPMigrationErrorOverview."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(GPMigrationErrorOverview."Company Name"));
             GPMigrationErrorOverview.Insert();
         end;
 
         GPMigrationErrorOverview.TransferFields(DataMigrationError);
         GPMigrationErrorOverview.SetFullExceptionMessage(DataMigrationError.GetFullExceptionMessage());
+        GPMigrationErrorOverview.SetLastRecordUnderProcessingLog(DataMigrationError.GetLastRecordsUnderProcessingLog());
+        GPMigrationErrorOverview.SetExceptionCallStack(DataMigrationError.GetExceptionCallStack());
         GPMigrationErrorOverview.Modify();
     end;
 
@@ -61,6 +70,7 @@ codeunit 40112 "GP Migration Error Handler"
         GPUpgradeSettings: Record "GP Upgrade Settings";
     begin
         GPUpgradeSettings.GetonInsertGPUpgradeSettings(GPUpgradeSettings);
+        GPMigrationErrorOverview.SetRange("Company Name", CompanyName());
         GPMigrationErrorOverview.SetFilter(SystemModifiedAt, '>%1', GPUpgradeSettings."Data Upgrade Started");
         exit(not GPMigrationErrorOverview.IsEmpty());
     end;

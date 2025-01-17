@@ -254,7 +254,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithPurchaseOrder()
     var
@@ -278,13 +278,11 @@ codeunit 139511 "Intrastat IT Test"
 
         // [GIVEN] Two Intrastat Reports for the same period
         Commit();  // Commit is required to commit the posted entries.
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(NewPostingDate, IntrastatReportNo1, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(NewPostingDate, IntrastatReportNo2, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
         Commit();
-        // [WHEN] Get Entries from Intrastat Report pages for two Reports with the same period with "Show item charge entries" options set to TRUE
+        // [WHEN] Get Entries from Intrastat Report pages for two Reports with the same period 
         // [THEN] Verify that Entry values on Intrastat Report Page match Purchase Line values
         VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo1, IntrastatReportLine.Type::Receipt,
             LibraryIntrastat.GetCountryRegionCode(), PurchaseLine."No.", PurchaseLine.Quantity);
@@ -297,7 +295,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeAssignmentAfterPurchaseCreditMemo()
     var
@@ -309,7 +307,6 @@ codeunit 139511 "Intrastat IT Test"
         DocumentNo, ReceiptNo : Code[20];
         IntrastatReportNo1: Code[20];
         IntrastatReportNo2: Code[20];
-
     begin
         // [FEATURE] [Purchase]
         // [SCENARIO] Check Intrastat Report Entries after Posting Purchase Order, Purchase Credit Memo with Item Charge Assignment and Get Entries with New Posting Date.
@@ -333,11 +330,9 @@ codeunit 139511 "Intrastat IT Test"
         LibraryIntrastat.CreateItemChargeAssignmentForPurchaseCreditMemo(ChargePurchaseLine, ReceiptNo);
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
-        // [GIVEN] Two Reports for January and February with "Show item charge entries" options set to TRUE
+        // [GIVEN] Two Reports for January and February
         // [WHEN] User runs Get Entries in Intrastat Report for January and February
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(NewPostingDate, IntrastatReportNo1, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatReportNo2, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
         Commit();
@@ -358,7 +353,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeAssignmentAfterSalesCreditMemo()
     var
@@ -384,18 +379,18 @@ codeunit 139511 "Intrastat IT Test"
             SalesLine.Type::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), 1);
         LibraryIntrastat.CreateItemChargeAssignmentForSalesCreditMemo(SalesLine, DocumentNo);
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+
         CreateIntrastatReportAndSuggestLines(SalesHeader."Posting Date", IntrastatReportNo, Periodicity::Month, Type::Sales, true, IncStr(FileNo), false);
 
-        // [WHEN] Open Intrastat Report Line Page and Get Entries and "Show item charge entries" options set to TRUE
-        // [THEN] Verify Intrastat Report Line exists
-        VerifyIntrastatReportLineExist(IntrastatReportNo, DocumentNo, true);
+        // [WHEN] Open Intrastat Report Line Page and Get Entries
+        // [THEN] Verify Intrastat Report Line does not exist
+        VerifyIntrastatReportLineExist(IntrastatReportNo, DocumentNo, false);
 
         LibraryIntrastat.DeleteIntrastatReport(IntrastatReportNo);
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithSalesOrder()
     var
@@ -416,8 +411,7 @@ codeunit 139511 "Intrastat IT Test"
 
         Commit();  // Commit is required to commit the posted entries.
 
-        // [WHEN] Get Entries from Intrastat Report page with "Show item charge entries" options set to TRUE.
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
+        // [WHEN] Get Entries from Intrastat Report
         CreateIntrastatReportAndSuggestLines(NewPostingDate, IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
 
         // [THEN] Verify Intrastat Report Lines.
@@ -509,7 +503,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure VerifyNoIntraLinesCreatedForCrossedBoardItemChargeInNextPeriod()
     var
@@ -544,21 +538,18 @@ codeunit 139511 "Intrastat IT Test"
         DocumentNo2 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
         WorkDate(Today);
         // [GIVEN] Intrastat Batches for "Y" and "F" period
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(InvoicePostingDate, IntrastatNo1, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
-
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatNo2, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
-        // [WHEN] Entries suggested to Intrastat Report "J" and "F" with "Show item charge entries" options set to TRUE
+        // [WHEN] Entries suggested to Intrastat Report "J" and "F"
         // [THEN] Intrastat Report "J" contains 1 line for Posted Invoice
-        // [THEN] Intrastat Report "F" contains 1 line for Posted Item Charge
+        // [THEN] Intrastat Report "F" contains no lines for Posted Item Charge
         VerifyIntrastatReportLineExist(IntrastatNo1, DocumentNo1, true);
-        VerifyIntrastatReportLineExist(IntrastatNo2, DocumentNo2, true);
+        VerifyIntrastatReportLineExist(IntrastatNo2, DocumentNo2, false);
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure VerifyIntrastatReportLineSuggestedForNonCrossedBoardItemChargeInNextPeriod()
     var
@@ -595,13 +586,10 @@ codeunit 139511 "Intrastat IT Test"
         DocumentNo2 := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
         // [GIVEN] Intrastat Batches for "Y" and "F" period
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(InvoicePostingDate, IntrastatNo1, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
-
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatNo2, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
-        // [WHEN] Entries suggested to Intrastat Report "J" and "F" with "Show item charge entries" options set to TRUE
+        // [WHEN] Entries suggested to Intrastat Report "J" and "F" 
         // [THEN] Intrastat Report "J" contains no lines
         // [THEN] Intrastat Report "F" contains no lines
         VerifyIntrastatReportLineExist(IntrastatNo1, DocumentNo1, false);
@@ -783,7 +771,7 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeOnStartDate()
     var
@@ -812,10 +800,8 @@ codeunit 139511 "Intrastat IT Test"
         // [GIVEN] Purchase Order is Received and Invoiced on 01.Jan
         DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
 
-        // [WHEN] Run Get Entries on Intrastat Report with "Show item charge entries" options set to TRUE
+        // [WHEN] Run Get Entries on Intrastat Report
         // [THEN] No Intrastat Report Lines should be created for Item "X"
-        //OpenAndVerifyIntrastatReportLine(PurchaseLine."No.", false);
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatReportNo, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
         VerifyIntrastatLineForItemExist(DocumentNo, IntrastatReportNo);
     end;
@@ -834,7 +820,7 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportNo2: Code[20];
     begin
         // [FEATURE] [Purchase] [Item Charge]
-        // [SCENARIO 377846] No Item Charge entries should be suggested to Intrastat Report if "Show item charge entries" option is set to FALSE
+        // [SCENARIO 377846] No Item Charge entries should be suggested to Intrastat Report
 
         Initialize();
 
@@ -853,12 +839,10 @@ codeunit 139511 "Intrastat IT Test"
 
         // [GIVEN] Intrastat Reports for "Y" and "F" period
 
-        // [WHEN] Suggest Entries to Intrastat Report "Y" and "F" with "Show item charge entries" options set to FALSE
+        // [WHEN] Suggest Entries to Intrastat Report "Y" and "F"
         // [THEN] Intrastat Report "Y" contains 1 line for Posted Invoice
         // [THEN] Intrastat Report "F" does not contain lines for Posted Item Charge
-        LibraryVariableStorage.Enqueue(false); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(InvoicePostingDate, IntrastatReportNo1, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
-        LibraryVariableStorage.Enqueue(false); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatReportNo2, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
         VerifyIntrastatReportLineExist(IntrastatReportNo2, DocumentNo, false)
@@ -1503,17 +1487,16 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,MessageHandlerEmpty')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeInvoiceRevoked()
     var
-        IntrastatReportLine: Record "Intrastat Report Line";
         PostingDate: Date;
         DocumentNo: Code[20];
         IntrastatReportNo: Code[20];
     begin
         // [FEATURE] [Corrective Credit Memo] [Item Charge]
-        // [SCENARIO 286107] Item Charge entry posted by Credit Memo must be reported as Receipt in Intrastat Report
+        // [SCENARIO 286107] Item Charge entry posted by Credit Memo must not be reported in Intrastat Report
         Initialize();
 
         // [GIVEN] Sales Invoice with Item and Item Charge posted on 'X'
@@ -1523,28 +1506,24 @@ codeunit 139511 "Intrastat IT Test"
         PostingDate := CalcDate('<1M>', PostingDate);
         DocumentNo := LibraryIntrastat.CreateAndPostSalesCrMemoForItemCharge(DocumentNo, PostingDate);
 
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         // [WHEN] Get Intrastat Entries to include only Sales Credit Memo
         CreateIntrastatReportAndSuggestLines(PostingDate, IntrastatReportNo, Periodicity::Month, Type::Sales, true, IncStr(FileNo), false);
 
-        // [THEN] Intrastat line for Item Charge from Sales Credit Memo has type Receipt
-        IntrastatReportLine.SetRange("Document No.", DocumentNo);
-        IntrastatReportLine.FindFirst();
-        IntrastatReportLine.TestField(Type, IntrastatReportLine.Type::Receipt);
+        // [THEN] Intrastat line for Item Charge from Sales Credit Memo does not exist        
+        VerifyIntrastatReportLineExist(IntrastatReportNo, DocumentNo, false);
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeInvoiced()
     var
-        IntrastatReportLine: Record "Intrastat Report Line";
         ItemLedgerEntry: Record "Item Ledger Entry";
         ValueEntry: Record "Value Entry";
         PostingDate: Date;
         IntrastatReportNo: Code[20];
     begin
-        // [SCENARIO 286107] Item Charge entry posted by Sales Invoice must be reported as Shipment in Intrastat Report
+        // [SCENARIO 286107] Item Charge entry posted by Sales Invoice must not be reported in Intrastat Report
         Initialize();
 
         // [GIVEN] Item Ledger Entry with Quantity < 0
@@ -1561,13 +1540,10 @@ codeunit 139511 "Intrastat IT Test"
         LibraryIntrastat.CreateValueEntry(ValueEntry, ItemLedgerEntry, ValueEntry."Document Type"::"Sales Invoice", PostingDate);
 
         // [WHEN] Get Intrastat Entries on second posting date
-        LibraryVariableStorage.Enqueue(true); // Show Item Charge entries
         CreateIntrastatReportAndSuggestLines(PostingDate, IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
 
-        // [THEN] Intrastat line for Item Charge from Value Entry has type Shipment
-        IntrastatReportLine.SetRange("Item No.", ItemLedgerEntry."Item No.");
-        IntrastatReportLine.FindFirst();
-        IntrastatReportLine.TestField(Type, IntrastatReportLine.Type::Shipment);
+        // [THEN] Intrastat line for Item Charge from Sales Credit Memo does not exist        
+        VerifyIntrastatReportLineExist(IntrastatReportNo, '', false);
     end;
 
     [Test]
@@ -2265,6 +2241,66 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportPage.Close();
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure IntrastatReportTotalWeight()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        BaseUnitOfMeasure: Record "Unit of Measure";
+        UnitOfMeasure: Record "Unit of Measure";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        NewPostingDate: Date;
+        ShipmentDocumentNo, InvoiceDocumentNo, CustomerNo, IntrastatReportNo : Code[20];
+    begin
+        // [SCENARIO 537508] Incorrect values in "Total Weight" field in the Intrastat report in the Italian Version
+
+        // [GIVEN] Create 2 Unit of Measure
+        Initialize();
+        NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
+        WorkDate(NewPostingDate);
+
+        LibraryInventory.CreateUnitOfMeasureCode(BaseUnitOfMeasure);
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+
+        // Create Item with Base Unit of Measure and Net Weight and Gross Weight as 1
+        LibraryInventory.CreateItem(Item);
+        Item."Base Unit of Measure" := BaseUnitOfMeasure.Code;
+        Item."Net Weight" := 1;
+        Item."Gross Weight" := 1;
+        item.Modify(true);
+
+        // [GIVEN] Create 2 Item Unit Of Measure 
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", BaseUnitOfMeasure.Code, 1);
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure.Code, LibraryRandom.RandDecInRange(0, 1, 4));
+
+        // [GIVEN] Create and Post Sales Order
+        CustomerNo := LibraryIntrastat.CreateCustomer();
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesLine."Document Type"::Order,
+            SalesLine.Type::Item, Item."No.", 1);
+        SalesLine.Validate(Quantity, LibraryRandom.RandDecInRange(1600, 1800, 5));
+        SalesLine.Validate("Unit of Measure Code", UnitOfMeasure.Code);
+        SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(0, 1, 3));
+        SalesLine.Modify(true);
+
+        ShipmentDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        InvoiceDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [WHEN] Create and Get Intrastat Report Lines based on WORKDATE for Sales.
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
+
+        // [THEN] Verify Item Ledger Entry and Total Weight of Intrastat Report Line
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.SetRange("Document No.", InvoiceDocumentNo);
+        IntrastatReportLine.FindFirst();
+        VerifyItemLedgerEntryExist(ItemLedgerEntry."Document Type"::"Sales Shipment", ShipmentDocumentNo, LibraryIntrastat.GetCountryRegionCode(), -IntrastatReportLine.Quantity);
+        IntrastatReportLine.TestField("Total Weight", IntrastatReportLine.Quantity * IntrastatReportLine."Net Weight");
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -2300,17 +2336,16 @@ codeunit 139511 "Intrastat IT Test"
 
     local procedure ResetNoSeries()
     var
-        NoSeriesLinePurchase: Record "No. Series Line Purchase";
-        NoSeriesLineSales: Record "No. Series Line Sales";
+        NoSeriesLine: Record "No. Series Line";
         VATBusinessPostingGroup: Record "VAT Business Posting Group";
     begin
         if VATBusinessPostingGroup.FindSet() then
             repeat
-                NoSeriesLineSales.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
-                NoSeriesLineSales.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
 
-                NoSeriesLinePurchase.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
-                NoSeriesLinePurchase.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
             until VATBusinessPostingGroup.Next() = 0;
     end;
 
@@ -2438,6 +2473,25 @@ codeunit 139511 "Intrastat IT Test"
         Assert.AreEqual(
           Quantity, ItemLedgerEntry."Remaining Quantity",
           StrSubstNo(ValidationErr, ItemLedgerEntry.FieldCaption("Remaining Quantity"), Quantity, ItemLedgerEntry.TableCaption()));
+    end;
+
+    local procedure VerifyItemLedgerEntryExist(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20];
+                                                               CountryRegionCode: Code[10];
+                                                               Quantity: Decimal)
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetRange("Document Type", DocumentType);
+        ItemLedgerEntry.SetRange("Document No.", DocumentNo);
+        ItemLedgerEntry.FindFirst();
+
+        Assert.AreEqual(
+          CountryRegionCode, ItemLedgerEntry."Country/Region Code", StrSubstNo(ValidationErr,
+            ItemLedgerEntry.FieldCaption("Country/Region Code"), CountryRegionCode, ItemLedgerEntry.TableCaption()));
+
+        Assert.AreEqual(
+          Quantity, ItemLedgerEntry.Quantity,
+          StrSubstNo(ValidationErr, ItemLedgerEntry.FieldCaption(Quantity), Quantity, ItemLedgerEntry.TableCaption()));
     end;
 
     local procedure VerifyIntrastatLineForItemExist(DocumentNo: Code[20]; IntrastatNo: Code[20])
@@ -2806,14 +2860,6 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportGetLines.OK().Invoke();
     end;
 
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure IntrastatReportGetLinesShowingItemChargesPageHandler(var IntrastatReportGetLines: TestRequestPage "Intrastat Report Get Lines")
-    begin
-        IntrastatReportGetLines.ShowingItemCharges.SetValue(LibraryVariableStorage.DequeueBoolean());
-        IntrastatReportGetLines.OK().Invoke();
-    end;
-
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportModalPageHandler(var IntrastatReport: TestPage "Intrastat Report")
@@ -2829,14 +2875,12 @@ codeunit 139511 "Intrastat IT Test"
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportChecklistModalPageHandler(var IntrastatReportChecklist: TestPage "Intrastat Report Checklist")
-    var
     begin
     end;
 
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportSetupModalPageHandler(var IntrastatReportSetupPage: TestPage "Intrastat Report Setup")
-    var
     begin
     end;
 

@@ -17,29 +17,6 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-#if not CLEAN23
-    [Obsolete('This event is not used.', '23.0')]
-    [IntegrationEvent(false, false)]
-    /// <summary> 
-    /// Raised After Modify Shopify Order.
-    /// </summary>
-    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    /// <param name="OldShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure OnAfterModifyShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header"; var OldShopifyOrderHeader: Record "Shpfy Order Header")
-    begin
-    end;
-
-    [Obsolete('This event is not used.', '23.0')]
-    [IntegrationEvent(false, false)]
-    /// <summary> 
-    /// Raised After NewShopify Order.
-    /// </summary>
-    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure OnAfterNewShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header")
-    begin
-    end;
-#endif
-
     [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforeMapCustomer.
@@ -75,6 +52,25 @@ codeunit 30162 "Shpfy Order Events"
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     internal procedure OnAfterMapShipmentMethod(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Description for OnBeforeMapShipmentAgent.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    /// <param name="Handled">Parameter of type Boolean.</param>
+    internal procedure OnBeforeMapShipmentAgent(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Description for OnAfterMapShipmentAgent.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    internal procedure OnAfterMapShipmentAgent(var ShopifyOrderHeader: Record "Shpfy Order Header")
     begin
     end;
 
@@ -161,7 +157,7 @@ codeunit 30162 "Shpfy Order Events"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var Handled: Boolean)
+    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var LastCreatedDocumentId: Guid; var Handled: Boolean)
     begin
     end;
 
@@ -210,6 +206,31 @@ codeunit 30162 "Shpfy Order Events"
 
     [InternalEvent(false)]
     internal procedure OnBeforeConvertToOrderReturnStatus(Value: Text; var ShpfyOrderReturnStatus: Enum "Shpfy Order Return Status"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [InternalEvent(false)]
+    internal procedure OnBeforeMapCompany(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Description for OnAfterMapCompany.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    internal procedure OnAfterMapCompany(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised after refunds are deducted from the quantity and amounts of the orders.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    /// <param name="OrderLine">Parameter of type Record "Shopify Order Line".</param>
+    /// <param name="RefundLine">Parameter of type Record "Shopify Refund Line".</param>
+    internal procedure OnAfterConsiderRefundsInQuantityAndAmounts(OrderHeader: Record "Shpfy Order Header"; var OrderLine: Record "Shpfy Order Line"; RefundLine: Record "Shpfy Refund Line")
     begin
     end;
 }

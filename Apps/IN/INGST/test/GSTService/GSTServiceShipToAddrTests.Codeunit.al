@@ -26,6 +26,7 @@ codeunit 18480 "GST Service Ship To Addr Tests"
         CustomerNoLbl: Label 'CustomerNo';
         ToStateCodeLbl: Label 'ToStateCode';
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
+        ReverseDocumentNoLbl: Label 'ReverseDocumentNo';
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
@@ -219,6 +220,37 @@ codeunit 18480 "GST Service Ship To Addr Tests"
         LibraryGST.VerifyGLEntries(ServiceHeader."Document Type"::Invoice, PostedDocumentNo, 5);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ReferencePageHandler,CustomerLedgerEntries')]
+    procedure PostFromRegCustServiceCrMemoInterstateWithShipToAddrItem()
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        PostedDocumentNo: Code[20];
+        ReverseDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is calculating Inter State Service of Goods from Registered Customer through Service Credit Memo.
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Customer where GST Group Type is Goods for InterState Transactions
+        CreateGSTSetup(Enum::"GST Customer Type"::Registered, Enum::"GST Group Type"::Goods, true, true);
+        InitializeShareStep(false, false);
+
+        // [GIVEN] Create and Post Service Invoice with GST and Line Type as Item for Interstate Transaction With Ship To Address
+        PostedDocumentNo := CreateAndPostServiceDocument(
+            ServiceHeader,
+            ServiceLine, Enum::"Service Line Type"::Item,
+            Enum::"Service Document Type"::Invoice);
+
+        // [WHEN] Create and Post Service Cr. Memo with GST and Line Type as Item for Interstate Transaction With Ship To Address
+        ReverseDocumentNo := CreateAndPostServiceCreditMemo(
+            ServiceHeader,
+            ServiceLine, Enum::"Service Line Type"::Item,
+            Enum::"Service Document Type"::"Credit Memo");
+
+        // [THEN] Verify G/L Entry
+        LibraryGST.VerifyGLEntries(ServiceHeader."Document Type"::"Credit Memo", ReverseDocumentNo, 3);
+    end;
+
     local procedure CreateServiceHeaderWithGST(
         var ServiceHeader: Record "Service Header";
         CustomerNo: Code[20];
@@ -259,7 +291,8 @@ codeunit 18480 "GST Service Ship To Addr Tests"
 
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, LineType, LineTypeno);
         LibraryService.CreateServiceLineWithQuantity(ServiceLine, ServiceHeader, LineType, LineTypeno, Quantity);
-        LibraryERM.CreateGeneralPostingSetup(GenPostingSetup, ServiceLine."Gen. Bus. Posting Group", GenProductPostSetupLbl);
+        if ServiceLine."Document Type" <> ServiceLine."Document Type"::"Credit Memo" then
+            LibraryERM.CreateGeneralPostingSetup(GenPostingSetup, ServiceLine."Gen. Bus. Posting Group", GenProductPostSetupLbl);
 
         if LineDiscount then begin
             ServiceLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
@@ -528,7 +561,7 @@ codeunit 18480 "GST Service Ship To Addr Tests"
         ServicePost: Codeunit "Service-Post";
         Assert: Codeunit Assert;
         LibraryService: Codeunit "Library - Service";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         NoSeriesCode: Code[20];
         WrongDocumentTypeErr: Label 'Document type not supported: %1';
     begin
@@ -537,12 +570,14 @@ codeunit 18480 "GST Service Ship To Addr Tests"
             case "Document Type" of
                 "Document Type"::Invoice:
                     NoSeriesCode := "Posting No. Series";  // posted service invoice.
+                "Document Type"::"Credit Memo":
+                    NoSeriesCode := "Posting No. Series";
                 else
                     Assert.Fail(StrSubstNo(WrongDocumentTypeErr, "Document Type"));
             end;
 
         if ServiceHeader."Posting No." = '' then
-            DocumentNo := NoSeriesManagement.GetNextNo(NoSeriesCode, GetNextNoSeriesServiceDate(NoSeriesCode), false)
+            DocumentNo := NoSeries.PeekNextNo(NoSeriesCode, GetNextNoSeriesServiceDate(NoSeriesCode))
         else
             DocumentNo := ServiceHeader."Posting No.";
         Clear(ServicePost);
@@ -557,4 +592,49 @@ codeunit 18480 "GST Service Ship To Addr Tests"
         NoSeries.TestField("Date Order", false); // Use of Date Order is only tested on IT
         exit(WorkDate());
     end;
+
+    local procedure CreateAndPostServiceCreditMemo(
+        var ServiceHeader: Record "Service Header";
+        var ServiceLine: Record "Service Line";
+        LineType: Enum "Service Line Type";
+        DocumentType: Enum "Service Document Type"): Code[20];
+    var
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+        ReverseDocumentNo: Code[20];
+    begin
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        Evaluate(LocationCode, CopyStr(Storage.Get(LocationCodeLbl), 1, 10));
+        CreateServiceHeaderWithGST(ServiceHeader, CustomerNo, DocumentType, LocationCode);
+        CreateServiceLineWithGST(ServiceHeader, ServiceLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        UpdateReferenceInvoiceNoAndVerify(ServiceHeader);
+        ReverseDocumentNo := PostServiceOrder(ServiceHeader, ServiceLine);
+        Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
+        exit(ReverseDocumentNo);
+    end;
+
+    local procedure UpdateReferenceInvoiceNoAndVerify(ServiceHeader: Record "Service Header")
+    var
+        ServiceCreditMemo: TestPage "Service Credit Memo";
+    begin
+        ServiceCreditMemo.OpenEdit();
+        ServiceCreditMemo.Filter.SetFilter("No.", ServiceHeader."No.");
+        ServiceCreditMemo."Update Reference Invoice No.".Invoke();
+    end;
+
+    [PageHandler]
+    procedure ReferencePageHandler(var UpdateReferenceInvoiceNo: TestPage "Update Reference Invoice No")
+    begin
+        UpdateReferenceInvoiceNo."Reference Invoice Nos.".Lookup();
+        UpdateReferenceInvoiceNo."Reference Invoice Nos.".SetValue(Storage.Get(PostedDocumentNoLbl));
+        UpdateReferenceInvoiceNo.Verify.Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CustomerLedgerEntries(var CustomerLedgerEntries: TestPage "Customer Ledger Entries")
+    begin
+        CustomerLedgerEntries.Filter.SetFilter("Document No.", Storage.Get(PostedDocumentNoLbl));
+        CustomerLedgerEntries.OK().Invoke();
+    end;
+
 }

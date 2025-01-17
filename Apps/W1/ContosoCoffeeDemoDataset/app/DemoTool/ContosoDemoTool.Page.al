@@ -5,14 +5,13 @@ page 5194 "Contoso Demo Tool"
     UsageCategory = Administration;
     SourceTable = "Contoso Demo Data Module";
     Caption = 'Contoso Demo Tool';
+    AdditionalSearchTerms = 'Demo Data';
     Extensible = false;
     InsertAllowed = false;
     DeleteAllowed = false;
     Editable = false;
     RefreshOnActivate = true;
-    Permissions =
-        tabledata "Service Mgt. Setup" = r,
-        tabledata "Manufacturing Setup" = r;
+    AnalysisModeEnabled = false;
 
     layout
     {
@@ -116,28 +115,8 @@ page 5194 "Contoso Demo Tool"
     begin
         FeatureTelemetry.LogUptake('0000KZY', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
         ContosoDemoTool.RefreshModules();
-        FilterModulesWithPermission();
+        ContosoDemoTool.FilterModulesWithApplicationAreas(Rec);
         FeatureTelemetry.LogUptake('0000KZZ', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::"Set up");
-    end;
-
-    local procedure FilterModulesWithPermission()
-    var
-        ServiceMgtSetup: Record "Service Mgt. Setup";
-        ManufacturingSetup: Record "Manufacturing Setup";
-        ModuleFilter: Text;
-    begin
-        ModuleFilter := Rec.GetFilter(Module);
-
-        if not ServiceMgtSetup.WritePermission() then
-            if ModuleFilter = '' then
-                Rec.SetFilter(Module, '<>%1', Enum::"Contoso Demo Data Module"::"Service Module")
-            else
-            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Enum::"Contoso Demo Data Module"::"Service Module");
-
-        ModuleFilter := Rec.GetFilter(Module);
-
-        if not ManufacturingSetup.WritePermission() then
-            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Enum::"Contoso Demo Data Module"::"Manufacturing Module");
     end;
 
     var

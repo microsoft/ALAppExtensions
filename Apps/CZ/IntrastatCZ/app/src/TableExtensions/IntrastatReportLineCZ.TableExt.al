@@ -6,6 +6,8 @@ namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Inventory.Item;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Ledger;
 
 tableextension 31300 "Intrastat Report Line CZ" extends "Intrastat Report Line"
 {
@@ -40,7 +42,7 @@ tableextension 31300 "Intrastat Report Line CZ" extends "Intrastat Report Line"
         }
         field(31320; "Intrastat Delivery Group CZ"; Code[10])
         {
-            Caption = 'Internal Note 2';
+            Caption = 'Intrastat Delivery Group ';
             DataClassification = CustomerContent;
         }
         modify("Tariff No.")
@@ -76,6 +78,19 @@ tableextension 31300 "Intrastat Report Line CZ" extends "Intrastat Report Line"
                 end;
             end;
         }
+        modify("Shpt. Method Code")
+        {
+            trigger OnAfterValidate()
+            var
+                ShipmentMethod: Record "Shipment Method";
+            begin
+                if "Shpt. Method Code" = '' then
+                    Clear(ShipmentMethod)
+                else
+                    ShipmentMethod.Get("Shpt. Method Code");
+                "Intrastat Delivery Group CZ" := ShipmentMethod."Intrastat Deliv. Grp. Code CZ";
+            end;
+        }
     }
 
     trigger OnAfterInsert()
@@ -103,4 +118,14 @@ tableextension 31300 "Intrastat Report Line CZ" extends "Intrastat Report Line"
             Modify();
     end;
 
+    procedure CompletelyInvoiced(): Boolean
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        if "Source Type" = "Source Type"::"Item Entry" then begin
+            ItemLedgerEntry.Get("Source Entry No.");
+            exit(ItemLedgerEntry."Completely Invoiced");
+        end;
+        exit(true);
+    end;
 }

@@ -73,22 +73,6 @@ pageextension 18145 "GST Posted Sales Shipment Ext" extends "Posted Sales Shipme
                     Editable = false;
                     ToolTip = 'Specifies the customer number for which merchant id has to be recorded.';
                 }
-#if not CLEAN23
-                field("E-Commerce Merchant Id"; Rec."E-Commerce Merchant Id")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Editable = false;
-                    ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
-                    ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-
-                    trigger OnValidate()
-                    begin
-                        error(UnusedFieldLbl);
-                    end;
-                }
-#endif
                 field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
                 {
                     ApplicationArea = Basic, Suite;
@@ -122,7 +106,4 @@ pageextension 18145 "GST Posted Sales Shipment Ext" extends "Posted Sales Shipme
     }
 
     var
-#if not CLEAN23
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Idâ€™';
-#endif
 }

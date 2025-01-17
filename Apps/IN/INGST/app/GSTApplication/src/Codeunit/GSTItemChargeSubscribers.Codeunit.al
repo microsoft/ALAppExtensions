@@ -30,6 +30,8 @@ codeunit 18438 "GST Item Charge Subscribers"
 
             GSTSetup.TestField("GST Tax Type");
 
+            TaxTransactionValue.SetLoadFields("Tax Record ID", "Tax Type", Percent, "Value ID", "Amount (LCY)");
+            TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
             TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
             TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
             TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
