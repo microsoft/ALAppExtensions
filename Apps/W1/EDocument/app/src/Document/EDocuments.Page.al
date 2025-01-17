@@ -105,6 +105,7 @@ page 6122 "E-Documents"
         area(Promoted)
         {
             actionref(Promoted_ImportManually; ImportManually) { }
+            actionref(Promoted_ImportManuallyMultiple; ImportManuallyMultiple) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }

@@ -703,13 +703,20 @@ codeunit 6140 "E-Doc. Import"
     end;
 
     local procedure HandleMultipleDocumentUpload(var Documents: List of [FileUpload]; var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var Document: FileUpload)
+    var
+        DuplicateExists: Boolean;
     begin
         foreach Document in Documents do begin
             Clear(EDocument);
-            this.UploadDocument(EDocument, EDocumentService, Document);
+            if not this.UploadDocument(EDocument, EDocumentService, Document) then
+                DuplicateExists := true;
+
             if EDocument."Entry No" <> 0 then
-                this.GetBasicInfo(EDocument);
+                EDocument.Modify(false);
         end;
+
+        if DuplicateExists then
+            Message(DuplicatesMsg);
     end;
 
     var
@@ -728,6 +735,7 @@ codeunit 6140 "E-Doc. Import"
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
         DocNotCreatedQst: Label 'Failed to create new %1 from E-Document. Do you want to open E-Document and see the reported errors?', Comment = '%1 - E-Document Document Type';
         EDocumentAlreadyExistErr: Label 'E-Document with %1 %2, %3 %4 and %5 %6 already exists.', Comment = '%1 - Incoming E-Document No. fieldcaption, %2 - Incoming E-Document No. value, %3 - Bill-to/Pay-to No. fieldcaption, %4 - Bill-to/Pay-to No. value, %5 - Document Date fieldcaption, %6 - Document Date value.';
+        DuplicatesMsg: Label 'Some of the documents were not imported because they already exist in the system.';
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterProcessImportedDocument(var EDocument: Record "E-Document"; var DocumentHeader: RecordRef)
