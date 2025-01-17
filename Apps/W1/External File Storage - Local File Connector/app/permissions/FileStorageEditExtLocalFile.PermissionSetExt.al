@@ -5,14 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-permissionset 4822 "Ext. Local File - Edit"
+permissionsetextension 4821 "File Storage - Edit - Ext. Local File" extends "File Storage - Edit"
 {
-    Access = Public;
-    Assignable = false;
-    Caption = 'Local File - Edit';
-
     IncludedPermissionSets = "Ext. Local File - Read";
-
-    Permissions =
-        tabledata "Ext. Local File Account" = imd;
 }

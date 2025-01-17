@@ -7,7 +7,7 @@ namespace System.ExternalFileStorage;
 
 entitlement "Ext. Local File Connector"
 {
-    Type = Implicit;
 
     ObjectEntitlements = "Ext. Local File - Objects";
+    Type = Implicit;
 }

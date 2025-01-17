@@ -7,8 +7,8 @@ namespace System.ExternalFileStorage;
 
 permissionset 4821 "Ext. Local File - Read"
 {
-    Assignable = false;
     Access = Public;
+    Assignable = false;
     Caption = 'Local File - Read';
 
     IncludedPermissionSets = "Ext. Local File - Objects";

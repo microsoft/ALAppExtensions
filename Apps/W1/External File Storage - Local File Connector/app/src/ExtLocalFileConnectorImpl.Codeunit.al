@@ -13,9 +13,9 @@ using System;
 codeunit 4820 "Ext. Local File Connector Impl" implements "External File Storage Connector"
 {
     Access = Internal;
-    Permissions = tabledata "Ext. Local File Account" = rimd;
-    InherentPermissions = X;
     InherentEntitlements = X;
+    InherentPermissions = X;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
 
     var
         ConnectorDescriptionTxt: Label 'Use Local File to store and retrieve files from the server file system.';
@@ -226,9 +226,9 @@ codeunit 4820 "Ext. Local File Connector Impl" implements "External File Storage
     end;
 
     /// <summary>
-    /// Gets the registered accounts for the File Share connector.
+    /// Gets the registered accounts for the Local File connector.
     /// </summary>
-    /// <param name="Accounts">Out parameter holding all the registered accounts for the File Share connector.</param>
+    /// <param name="Accounts">Out parameter holding all the registered accounts for the Local File connector.</param>
     procedure GetAccounts(var TempAccounts: Record "File Account" temporary)
     var
         Account: Record "Ext. Local File Account";
@@ -250,55 +250,55 @@ codeunit 4820 "Ext. Local File Connector Impl" implements "External File Storage
     /// <param name="AccountId">The ID of the account to show.</param>
     procedure ShowAccountInformation(AccountId: Guid)
     var
-        FileShareAccountLocal: Record "Ext. Local File Account";
+        ExtLocalFileAccountLocal: Record "Ext. Local File Account";
     begin
-        if not FileShareAccountLocal.Get(AccountId) then
+        if not ExtLocalFileAccountLocal.Get(AccountId) then
             Error(NotRegisteredAccountErr);
 
-        FileShareAccountLocal.SetRecFilter();
-        Page.Run(Page::"Ext. Local File Account", FileShareAccountLocal);
+        ExtLocalFileAccountLocal.SetRecFilter();
+        Page.Run(Page::"Ext. Local File Account", ExtLocalFileAccountLocal);
     end;
 
     /// <summary>
-    /// Register an file account for the File Share connector.
+    /// Register an file account for the Local File connector.
     /// </summary>
     /// <param name="TempAccount">Out parameter holding details of the registered account.</param>
     /// <returns>True if the registration was successful; false - otherwise.</returns>
     procedure RegisterAccount(var TempAccount: Record "File Account" temporary): Boolean
     var
-        FileShareAccountWizard: Page "Ext. Local File Account Wizard";
+        ExtLocalFileAccountWizard: Page "Ext. Local File Account Wizard";
     begin
-        FileShareAccountWizard.RunModal();
+        ExtLocalFileAccountWizard.RunModal();
 
-        exit(FileShareAccountWizard.GetAccount(TempAccount));
+        exit(ExtLocalFileAccountWizard.GetAccount(TempAccount));
     end;
 
     /// <summary>
-    /// Deletes an file account for the File Share connector.
+    /// Deletes an file account for the Local File connector.
     /// </summary>
-    /// <param name="AccountId">The ID of the File Share account</param>
+    /// <param name="AccountId">The ID of the Local File account</param>
     /// <returns>True if an account was deleted.</returns>
     procedure DeleteAccount(AccountId: Guid): Boolean
     var
-        FileShareAccountLocal: Record "Ext. Local File Account";
+        ExtLocalFileAccountLocal: Record "Ext. Local File Account";
     begin
-        if FileShareAccountLocal.Get(AccountId) then
-            exit(FileShareAccountLocal.Delete());
+        if ExtLocalFileAccountLocal.Get(AccountId) then
+            exit(ExtLocalFileAccountLocal.Delete());
 
         exit(false);
     end;
 
     /// <summary>
-    /// Gets a description of the File Share connector.
+    /// Gets a description of the Local File connector.
     /// </summary>
-    /// <returns>A short description of the File Share connector.</returns>
+    /// <returns>A short description of the Local File connector.</returns>
     procedure GetDescription(): Text[250]
     begin
         exit(ConnectorDescriptionTxt);
     end;
 
     /// <summary>
-    /// Gets the File Share connector logo.
+    /// Gets the Local File connector logo.
     /// </summary>
     /// <returns>A base64-formatted image to be used as logo.</returns>
     procedure GetLogoAsBase64(): Text

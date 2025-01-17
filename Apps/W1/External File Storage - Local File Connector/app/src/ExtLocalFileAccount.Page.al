@@ -6,18 +6,18 @@
 namespace System.ExternalFileStorage;
 
 /// <summary>
-/// Displays an account that was registered via the File Share connector.
+/// Displays an account that was registered via the Local File connector.
 /// </summary>
 page 4820 "Ext. Local File Account"
 {
     ApplicationArea = All;
-    SourceTable = "Ext. Local File Account";
     Caption = 'Local File Account';
-    Permissions = tabledata "Ext. Local File Account" = rimd;
-    PageType = Card;
+    DataCaptionExpression = Rec.Name;
     Extensible = false;
     InsertAllowed = false;
-    DataCaptionExpression = Rec.Name;
+    PageType = Card;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
+    SourceTable = "Ext. Local File Account";
     UsageCategory = None;
 
     layout
@@ -27,17 +27,17 @@ page 4820 "Ext. Local File Account"
             field(NameField; Rec.Name)
             {
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the storage account connection.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the name of the storage account connection.';
             }
             field(BasePath; Rec."Base Path")
             {
                 ApplicationArea = All;
                 Caption = 'Base Path';
-                ToolTip = 'Specifies the a base path of the account like D:\share\.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the a base path of the account like D:\share\.';
             }
         }
     }

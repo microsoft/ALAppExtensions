@@ -6,24 +6,24 @@
 namespace System.ExternalFileStorage;
 
 /// <summary>
-/// Holds the information for all file accounts that are registered via the File Share connector
+/// Holds the information for all file accounts that are registered via the Local File connector
 /// </summary>
 table 4820 "Ext. Local File Account"
 {
     Access = Internal;
-    DataClassification = CustomerContent;
     Caption = 'Local File Account';
+    DataClassification = CustomerContent;
 
     fields
     {
         field(1; "Id"; Guid)
         {
-            DataClassification = SystemMetadata;
             Caption = 'Primary Key';
+            DataClassification = SystemMetadata;
         }
         field(2; Name; Text[250])
         {
-            Caption = 'Name of account';
+            Caption = 'Account Name';
         }
         field(3; "Base Path"; Text[2048])
         {

@@ -8,17 +8,17 @@ namespace System.ExternalFileStorage;
 Using System.Environment;
 
 /// <summary>
-/// Displays an account that is being registered via the File Share connector.
+/// Displays an account that is being registered via the Local File connector.
 /// </summary>
 page 4821 "Ext. Local File Account Wizard"
 {
     Caption = 'Setup Local File Account';
+    Editable = true;
+    Extensible = false;
+    PageType = NavigatePage;
+    Permissions = tabledata "Ext. Local File Account" = rimd;
     SourceTable = "Ext. Local File Account";
     SourceTableTemporary = true;
-    Permissions = tabledata "Ext. Local File Account" = rimd;
-    PageType = NavigatePage;
-    Extensible = false;
-    Editable = true;
 
     layout
     {
@@ -34,18 +34,15 @@ page 4821 "Ext. Local File Account Wizard"
                     ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
-                    ToolTip = ' ';
-                    Caption = ' ';
+                    ToolTip = ' ', Locked = true;
                 }
             }
-
             field(NameField; Rec.Name)
             {
                 ApplicationArea = All;
-                Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Azure File Share account.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the name of the Local File account.';
 
                 trigger OnValidate()
                 begin
@@ -55,10 +52,9 @@ page 4821 "Ext. Local File Account Wizard"
             field(BasePath; Rec."Base Path")
             {
                 ApplicationArea = All;
-                Caption = 'Base Path';
-                ToolTip = 'Specifies the a base path of the account like D:\share\.';
-                ShowMandatory = true;
                 NotBlank = true;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the a base path of the account like D:\share\.';
 
                 trigger OnValidate()
                 begin
@@ -76,9 +72,9 @@ page 4821 "Ext. Local File Account Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Back';
-                ToolTip = 'Back';
                 Image = Cancel;
                 InFooterBar = true;
+                ToolTip = 'Move to the previous step.';
 
                 trigger OnAction()
                 begin
@@ -90,10 +86,10 @@ page 4821 "Ext. Local File Account Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Next';
-                Image = NextRecord;
                 Enabled = IsNextEnabled;
+                Image = NextRecord;
                 InFooterBar = true;
-                ToolTip = 'Next';
+                ToolTip = 'Move to the next step.';
 
                 trigger OnAction()
                 begin
@@ -128,7 +124,6 @@ page 4821 "Ext. Local File Account Wizard"
             exit(false);
 
         FileAccount := LocalFileAccount;
-
         exit(true);
     end;
 }

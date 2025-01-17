@@ -7,8 +7,8 @@ namespace System.ExternalFileStorage;
 
 permissionset 4820 "Ext. Local File - Objects"
 {
-    Assignable = false;
     Access = Public;
+    Assignable = false;
     Caption = 'Local File - Objects';
 
     Permissions =
