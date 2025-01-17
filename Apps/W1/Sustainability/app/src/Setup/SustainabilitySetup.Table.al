@@ -141,6 +141,10 @@ table 6217 "Sustainability Setup"
         {
             Caption = 'Work/Machine Center Emissions';
         }
+        field(25; "Enable Value Chain Tracking"; Boolean)
+        {
+            Caption = 'Enable Value Chain Tracking';
+        }
     }
 
     keys
@@ -155,7 +159,24 @@ table 6217 "Sustainability Setup"
         GLSetup: Record "General Ledger Setup";
         SustainabilitySetup: Record "Sustainability Setup";
         SustainabilitySetupRetrieved: Boolean;
+        RecordHasBeenRead: Boolean;
         AutoFormatExprLbl: Label '<Precision,%1><Standard Format,0>', Locked = true;
+
+    procedure GetRecordOnce()
+    begin
+        if RecordHasBeenRead then
+            exit;
+        Get();
+        RecordHasBeenRead := true;
+    end;
+
+    procedure IsValueChainTrackingEnabled(): Boolean
+    begin
+        SetLoadFields("Enable Value Chain Tracking");
+        GetRecordOnce();
+
+        exit("Enable Value Chain Tracking");
+    end;
 
     internal procedure GetFormat(FieldNo: Integer): Text
     begin

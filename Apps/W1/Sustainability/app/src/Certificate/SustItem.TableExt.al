@@ -119,6 +119,12 @@ tableextension 6220 "Sust. Item" extends Item
             MinValue = 0;
             DataClassification = CustomerContent;
         }
+        field(6219; "CO2e Last Date Modified"; Date)
+        {
+            Caption = 'CO2e Last Date Modified';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 
     var

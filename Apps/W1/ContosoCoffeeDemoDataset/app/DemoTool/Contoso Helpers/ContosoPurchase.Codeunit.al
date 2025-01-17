@@ -10,7 +10,7 @@ codeunit 4781 "Contoso Purchase"
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; VendorOrderNo: Code[20]; PostingDate: Date; LocationCode: Code[20]): Record "Purchase Header"
     begin
-        exit(InsertPurchaseHeader(DocumentType, VendorNo, '', PostingDate, PostingDate, 0D, '', LocationCode, VendorOrderNo, '', PostingDate, ''));
+        exit(InsertPurchaseHeader(DocumentType, VendorNo, '', PostingDate, PostingDate, 0D, '', CopyStr(LocationCode, 1, 10), VendorOrderNo, '', PostingDate, ''));
     end;
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]): Record "Purchase Header";

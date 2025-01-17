@@ -942,9 +942,27 @@ codeunit 18080 "GST Purchase Subscribers"
             PurchaseLine.Reset();
             PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
             PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+            PurchaseLine.SetFilter("No.", '<>%1', '');
             PurchaseLine.SetFilter(PurchaseLine.Type, '<>%1', PurchaseLine.Type::"G/L Account");
             if not PurchaseLine.IsEmpty() then
                 Error(TypeErr, PurchaseLine.Type);
+
+            UpdateGSTJurisdictionForPosAsVendor(PurchaseHeader);
+        end;
+    end;
+
+    local procedure UpdateGSTJurisdictionForPosAsVendor(var PurchaseHeader: Record "Purchase Header")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        if PurchaseHeader."POS as Vendor State" then begin
+            PurchaseLine.Reset();
+            PurchaseLine.LoadFields("Document Type", "Document No.", Type);
+            PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+            PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+            PurchaseLine.SetRange(PurchaseLine.Type, PurchaseLine.Type::"G/L Account");
+            if PurchaseLine.FindSet() then
+                PurchaseLine.ModifyAll("GST Jurisdiction Type", "GST Jurisdiction Type"::Intrastate);
         end;
     end;
 

@@ -23,10 +23,11 @@ codeunit 14628 "IS Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information IS");
                     Codeunit.Run(Codeunit::"Create Post Code IS");
                     Codeunit.Run(Codeunit::"Create Vat Posting Groups IS");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information IS");
         end;
     end;
 
@@ -39,7 +40,6 @@ codeunit 14628 "IS Contoso Localization"
                 begin
                     CreateVatPostingGroupIS.UpdateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create General Ledger Setup IS");
-                    Codeunit.Run(Codeunit::"Create Vat Report IS");
                 end;
 
             Enum::"Contoso Demo Data Level"::"Master Data":

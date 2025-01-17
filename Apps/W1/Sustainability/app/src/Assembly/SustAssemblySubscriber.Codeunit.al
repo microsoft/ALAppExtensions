@@ -1,33 +1,37 @@
 namespace Microsoft.Sustainability.Assembly;
 
 using Microsoft.Assembly.Document;
+using Microsoft.Assembly.History;
+using Microsoft.Assembly.Posting;
 using Microsoft.Inventory.Item;
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.Inventory.Journal;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
-using Microsoft.Sustainability.Account;
-using Microsoft.Assembly.Posting;
-using Microsoft.Assembly.History;
+using Microsoft.Sustainability.Setup;
 
 codeunit 6255 "Sust. Assembly Subscriber"
 {
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterCopyFromItem', '', false, false)]
     local procedure OnAfterCopyFromItem(var AssemblyLine: Record "Assembly Line"; Item: Record Item)
     begin
-        AssemblyLine.Validate("Sust. Account No.", Item."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            AssemblyLine.Validate("Sust. Account No.", Item."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Header", 'OnAfterValidateEvent', "Item No.", false, false)]
     local procedure OnAfterValidateNoEventOnAssemblyHeader(var Rec: Record "Assembly Header")
     begin
-        UpdateDefaultSustAccOnAssemblyHeader(Rec);
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            UpdateDefaultSustAccOnAssemblyHeader(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterCopyFromResource', '', false, false)]
     local procedure OnAfterCopyFromResource(var AssemblyLine: Record "Assembly Line"; Resource: Record Resource)
     begin
-        AssemblyLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            AssemblyLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterValidateEvent', "No.", false, false)]
@@ -39,7 +43,7 @@ codeunit 6255 "Sust. Assembly Subscriber"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Header", 'OnValiateQuantityOnAfterCalcBaseQty', '', false, false)]
-    local procedure OnValiateQuantityOnAfterCalcBaseQty(var AssemblyHeader: Record "Assembly Header")
+    local procedure OnValidateQuantityOnAfterCalcBaseQty(var AssemblyHeader: Record "Assembly Header")
     begin
         AssemblyHeader.UpdateSustainabilityEmission(AssemblyHeader);
     end;
@@ -167,9 +171,9 @@ codeunit 6255 "Sust. Assembly Subscriber"
         ItemJournalLine."Total CO2e" := CO2eToPost;
     end;
 
-    local procedure UpdatePostedSustainabilityEmission(CO2ePerUnit: Decimal; QtyperUnitofMeasure: Decimal; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2e: Decimal)
+    local procedure UpdatePostedSustainabilityEmission(CO2ePerUnit: Decimal; QtyPerUnitOfMeasure: Decimal; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2e: Decimal)
     begin
-        PostedEmissionCO2e := (CO2ePerUnit * Abs(Quantity) * QtyperUnitofMeasure) * Sign;
+        PostedEmissionCO2e := (CO2ePerUnit * Abs(Quantity) * QtyPerUnitOfMeasure) * Sign;
     end;
 
     local procedure PostSustainabilityLineForOutput(var AssemblyHeader: Record "Assembly Header"; PostingDate: Date; QtyToOutputBase: Decimal; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
@@ -292,6 +296,9 @@ codeunit 6255 "Sust. Assembly Subscriber"
         if AccountNo = '' then
             exit(false);
 
+        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
+            exit(false);
+
         if SustAccountCategory.Get(AccountCategory) then
             if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
                 Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, AccountNo);
@@ -306,6 +313,7 @@ codeunit 6255 "Sust. Assembly Subscriber"
     end;
 
     var
+        SustainabilitySetup: Record "Sustainability Setup";
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in Assembly document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

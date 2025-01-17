@@ -86,6 +86,10 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the value of the Work/Machine Center Emissions field.';
                 }
+                field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
+                {
+                    ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
+                }
             }
             group(Calculations)
             {

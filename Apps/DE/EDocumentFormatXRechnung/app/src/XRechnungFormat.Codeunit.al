@@ -5,7 +5,11 @@
 namespace Microsoft.eServices.EDocument.Formats;
 
 using System.Utilities;
+using Microsoft.Sales.History;
 using Microsoft.Purchases.Document;
+using System.IO;
+using Microsoft.Sales.Customer;
+using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
@@ -18,10 +22,13 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
+        CheckCompanyInfoMandatory();
+        CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     begin
+        CreateSourceDocumentBlob(SourceDocumentHeader, TempBlob, EDocumentService);
     end;
 
     procedure CreateBatch(EDocumentService: Record "E-Document Service"; var EDocuments: Record "E-Document"; var SourceDocumentHeaders: RecordRef; var SourceDocumentsLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -42,6 +49,59 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
         CreatedDocumentHeader.GetTable(TempPurchaseHeader);
         CreatedDocumentLines.GetTable(TempPurchaseLine);
+    end;
+
+    local procedure CreateSourceDocumentBlob(DocumentRecordRef: RecordRef; var TempBlob: Codeunit "Temp Blob"; EDocumentService: Record "E-Document Service")
+    var
+        TempRecordExportBuffer: Record "Record Export Buffer" temporary;
+        ExportXRechnungDocument: Codeunit "Export XRechnung Document";
+    begin
+        TempRecordExportBuffer.RecordID := DocumentRecordRef.RecordId;
+        TempRecordExportBuffer."Electronic Document Format" := Format(EDocumentService."Document Format");
+        TempRecordExportBuffer.Insert();
+
+        ExportXRechnungDocument.Run(TempRecordExportBuffer);
+        if not TempRecordExportBuffer."File Content".HasValue() then
+            exit;
+        TempBlob.FromRecord(TempRecordExportBuffer, TempRecordExportBuffer.FieldNo("File Content"));
+    end;
+
+    local procedure CheckCompanyInfoMandatory()
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.TestField("E-Mail");
+    end;
+
+    local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        Customer: Record Customer;
+        CustomerNoFieldRef: FieldRef;
+        YourReferenceFieldRef: FieldRef;
+    begin
+        if EDocumentService."Document Format" <> EDocumentService."Document Format"::XRechnung then
+            exit;
+
+        if not EDocumentService."Buyer Reference Mandatory" then
+            exit;
+
+        case EDocumentService."Buyer Reference" of
+            EDocumentService."Buyer Reference"::"Customer Reference":
+                begin
+                    CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Sell-to Customer No."));
+                    Customer.Get(Format(CustomerNoFieldRef.Value));
+                    Customer.TestField("E-Invoice Routing No.");
+                end;
+            EDocumentService."Buyer Reference"::"Your Reference":
+                begin
+                    YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
+                    YourReferenceFieldRef.TestField();
+                end;
+            else
+                OnBuyerReferenceOnElseCase(SourceDocumentHeader, EDocumentService);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
@@ -69,5 +129,10 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Purchase Credit Memo";
         EDocServiceSupportedType.Insert();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
+    begin
     end;
 }

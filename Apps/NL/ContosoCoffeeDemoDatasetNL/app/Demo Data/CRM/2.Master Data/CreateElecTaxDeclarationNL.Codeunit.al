@@ -11,13 +11,10 @@ codeunit 11528 "Create Elec Tax Declaration NL"
 
     local procedure InsertElecTaxDeclarationSetup()
     var
-        SalespersonPurchaser: Record "Salesperson/Purchaser";
         ContosoBankNL: Codeunit "Contoso Bank NL";
         CreateNoSeriesNL: Codeunit "Create No. Series NL";
-        CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
     begin
-        SalespersonPurchaser.Get(CreateSalespersonPurchaser.OtisFalls());
-        ContosoBankNL.InsertElecTaxDeclarationSetup(CreateNoSeriesNL.ElVATDecl(), CreateNoSeriesNL.ElICLDecl(), CopyStr(SalespersonPurchaser.Name, 1, 35), '6549-3216-7415');
+        ContosoBankNL.InsertElecTaxDeclarationSetup(CreateNoSeriesNL.ElVATDecl(), CreateNoSeriesNL.ElICLDecl(), OtisFallsLbl, '6549-3216-7415');
         InsertElecTaxDeclVATCategory();
     end;
 
@@ -202,4 +199,5 @@ codeunit 11528 "Create Elec Tax Declaration NL"
         ElecVatCategory5ETok: Label '5E';
         ElecVatCategory5FTok: Label '5F';
         ElecVatCategory5GTok: Label '5G';
+        OtisFallsLbl: Label 'Otis Falls', MaxLength = 35;
 }

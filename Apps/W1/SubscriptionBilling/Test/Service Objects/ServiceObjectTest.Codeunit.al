@@ -2,6 +2,8 @@ namespace Microsoft.SubscriptionBilling;
 
 
 using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Calendar;
+using Microsoft.Finance.Currency;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Attribute;
 using Microsoft.Sales.Customer;
@@ -9,7 +11,6 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.Pricing;
 using Microsoft.CRM.Contact;
 using Microsoft.Pricing.Calculation;
-using Microsoft.Finance.Currency;
 using Microsoft.Pricing.Source;
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.PriceList;
@@ -236,6 +237,8 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.TestField("Currency Factor", 0);
         ServiceCommitment.TestField("Currency Factor Date", 0D);
         ServiceCommitment.TestField(Discount, false);
+        ServiceCommitment.TestField("Price Binding Period", ServiceCommPackageLine."Price Binding Period");
+        ServiceCommitment.TestField("Next Price Update", CalcDate(ServiceCommPackageLine."Price Binding Period", ServiceCommitment."Service Start Date"));
     end;
 
     [Test]
@@ -646,6 +649,7 @@ codeunit 148157 "Service Object Test"
     [Test]
     procedure CheckUpdatingTerminationDatesOnManualValidation()
     var
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
         ServiceAndCalculationStartDate: Date;
         DateFormulaLbl: Label '-%1', Locked = true;
@@ -669,7 +673,10 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.Validate("Cancellation Possible Until", CalcDate('<+5D>', ServiceCommitment."Cancellation Possible Until"));
         AssertThat.AreEqual(CalcDate(ServiceCommitment."Notice Period", ServiceCommitment."Cancellation Possible Until"), ServiceCommitment."Term Until", '"Term Until" Date is not calculated correctly.');
 
-        ServiceCommitment.Validate("Term Until", CalcDate('<-7D>', ServiceCommitment."Term Until"));
+        if DateTimeManagement.IsLastDayOfMonth(CalcDate('<-7D>', ServiceCommitment."Term Until")) then
+            ServiceCommitment.Validate("Term Until", CalcDate('<-8D>', ServiceCommitment."Term Until"))
+        else
+            ServiceCommitment.Validate("Term Until", CalcDate('<-7D>', ServiceCommitment."Term Until"));
         Evaluate(NegativeDateFormula, StrSubstNo(DateFormulaLbl, ServiceCommitment."Notice Period"));
         AssertThat.AreEqual(CalcDate(NegativeDateFormula, ServiceCommitment."Term Until"), ServiceCommitment."Cancellation Possible Until", '"Cancellation Possible Until" Date is not calculated correctly.');
     end;
@@ -1089,9 +1096,7 @@ codeunit 148157 "Service Object Test"
 
         // Check if archive has saved the correct (old) Variant Code
         ServiceCommitmentArchive.SetRange("Service Object No.", ServiceObject."No.");
-#pragma warning disable AA0210
         ServiceCommitmentArchive.SetRange("Variant Code (Service Object)", PreviousVariantCode);
-#pragma warning restore AA0210
         AssertThat.RecordIsNotEmpty(ServiceCommitmentArchive);
     end;
 
@@ -1257,6 +1262,7 @@ codeunit 148157 "Service Object Test"
         Evaluate(ServiceCommPackageLine."Initial Term", '<1M>');
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Vendor;
         Evaluate(ServiceCommPackageLine."Billing Rhythm", '<12M>');
+        Evaluate(ServiceCommPackageLine."Price Binding Period", '<1M>');
         ServiceCommPackageLine.Modify(false);
 
         ServiceObjectPage.OpenEdit();
@@ -1357,6 +1363,56 @@ codeunit 148157 "Service Object Test"
 
         ServiceObject.Delete(true);
         AssertThat.AreEqual(0, DocumentAttachment.Count(), 'Document Attachment(s) should be deleted.');
+    end;
+
+    [Test]
+    procedure UT_ExpectItemDescriptionWhenCreateServiceObjectWithoutEndUser()
+    var
+        ItemTranslation: Record "Item Translation";
+    begin
+        // [SCENARIO] When Create Service Object Without End User and add Item with translation, Item Description in Service Object should not be translated
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+
+        // [WHEN] Create Service Object without End User
+        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+
+        // [THEN] Item Description should not be translated in Service Object
+        AssertThat.AreEqual(Item.Description, ServiceObject.Description, 'Item description should not be translated in Service Object');
+    end;
+
+    [Test]
+    procedure UT_ExpectTranslatedItemDescriptionBasedOnCustomerLanguageCodeWhenCreateServiceObjectWithEndUser()
+    var
+        ItemTranslation: Record "Item Translation";
+    begin
+        // [SCENARIO] When Create Service Object With End User and add Item with translation defined that match Customer Language Code, Item Description in Service Object should be translated
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Service Object with End User
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+        LibrarySales.CreateCustomer(Customer);
+        Customer."Language Code" := ItemTranslation."Language Code";
+        Customer.Modify(false);
+        MockServiceObjectWithEndUserCustomerNo();
+
+        // [WHEN] add Item in Service Object
+        ServiceObject.Validate("Item No.", Item."No.");
+        ServiceObject.Modify(false);
+
+        // [THEN] Item Description should be translated in Service Object
+        AssertThat.AreEqual(ItemTranslation.Description, ServiceObject.Description, 'Item description should be translated in Service Object');
+    end;
+
+    local procedure MockServiceObjectWithEndUserCustomerNo()
+    begin
+        ServiceObject.Init();
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Insert(true);
     end;
 
     local procedure Initialize()
@@ -1523,13 +1579,16 @@ codeunit 148157 "Service Object Test"
 
     local procedure GetUpdatedCancellationPossibleUntilDate(CalculationStartDate: Date; SourceServiceCommitment: Record "Service Commitment") CancellationPossibleUntil: Date
     var
+        CalendarManagement: Codeunit "Calendar Management";
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
-        DateFormulaLbl: Label '-%1', Locked = true;
     begin
-        if Format(SourceServiceCommitment."Notice Period") = '' then
+        if SourceServiceCommitment.IsNoticePeriodEmpty() then
             exit(0D);
-        Evaluate(NegativeDateFormula, StrSubstNo(DateFormulaLbl, SourceServiceCommitment."Notice Period"));
+        CalendarManagement.ReverseDateFormula(NegativeDateFormula, SourceServiceCommitment."Notice Period");
         CancellationPossibleUntil := CalcDate(NegativeDateFormula, CalculationStartDate);
+        if DateTimeManagement.IsLastDayOfMonth(SourceServiceCommitment."Term until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth(CancellationPossibleUntil);
     end;
 
     local procedure ValidateServiceDateCombination(StartDate: Date; EndDate: Date; NextCalcDate: Date)

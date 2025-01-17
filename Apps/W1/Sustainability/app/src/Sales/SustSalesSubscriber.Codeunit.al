@@ -10,31 +10,36 @@ using Microsoft.Sales.Posting;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
+using Microsoft.Sustainability.Setup;
 
 codeunit 6253 "Sust. Sales Subscriber"
 {
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignGLAccountValues', '', false, false)]
     local procedure OnAfterAssignGLAccountValues(var SalesLine: Record "Sales Line"; GLAccount: Record "G/L Account")
     begin
-        SalesLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure OnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
     begin
-        SalesLine.Validate("Sust. Account No.", Item."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", Item."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignResourceValues', '', false, false)]
     local procedure OnAfterAssignResourceValues(var SalesLine: Record "Sales Line"; Resource: Record Resource)
     begin
-        SalesLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemChargeValues', '', false, false)]
     local procedure OnAfterAssignItemChargeValues(var SalesLine: Record "Sales Line"; ItemCharge: Record "Item Charge")
     begin
-        SalesLine.Validate("Sust. Account No.", ItemCharge."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", ItemCharge."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnValidateQuantityOnBeforeResetAmounts', '', false, false)]
@@ -230,6 +235,9 @@ codeunit 6253 "Sust. Sales Subscriber"
         if AccountNo = '' then
             exit(false);
 
+        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
+            exit(false);
+
         if SustAccountCategory.Get(AccountCategory) then
             if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
                 Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, AccountNo);
@@ -244,6 +252,7 @@ codeunit 6253 "Sust. Sales Subscriber"
     end;
 
     var
+        SustainabilitySetup: Record "Sustainability Setup";
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in sales document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

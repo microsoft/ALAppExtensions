@@ -18,7 +18,11 @@ using System.Security.Encryption;
 using System.Threading;
 using Microsoft.Projects.Resources.Resource;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6623 "FS Connection Setup"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Caption = 'Dynamics 365 Field Service Integration Setup';
     Permissions = tabledata "FS Connection Setup" = r;

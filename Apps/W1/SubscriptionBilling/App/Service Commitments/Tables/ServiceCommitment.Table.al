@@ -515,6 +515,7 @@ table 8059 "Service Commitment"
         CalendarManagement: Codeunit "Calendar Management";
         DateFormulaManagement: Codeunit "Date Formula Management";
         DimMgt: Codeunit DimensionManagement;
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
         SkipArchiving: Boolean;
         SkipTestPackageCode: Boolean;
@@ -648,15 +649,15 @@ table 8059 "Service Commitment"
             (("Term Until" = 0D) and ("Service Start Date" = 0D))) then
             exit(false);
         if "Term Until" <> 0D then begin
-            if IsDateLastDayOfMonth("Term Until") then begin
+            if DateTimeManagement.IsLastDayOfMonth("Term until") then begin
                 "Term Until" := CalcDate("Extension Term", "Term Until");
-                MoveDateToLastDayOfMonth("Term Until");
+                DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
             end else
                 "Term Until" := CalcDate("Extension Term", "Term Until");
         end else begin
             "Term Until" := CalcDate("Extension Term", "Service Start Date");
-            if IsDateLastDayOfMonth("Service Start Date") then
-                MoveDateToLastDayOfMonth("Term Until");
+            if DateTimeManagement.IsLastDayOfMonth("Service Start Date") then
+                DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
         end;
         exit(true);
     end;
@@ -669,8 +670,8 @@ table 8059 "Service Commitment"
             exit;
         "Term Until" := CalcDate("Notice Period", "Cancellation Possible Until");
 
-        if IsDateLastDayOfMonth("Cancellation Possible Until") then
-            MoveDateToLastDayOfMonth("Term Until");
+        if DateTimeManagement.IsLastDayOfMonth("Cancellation possible until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
     end;
 
     internal procedure UpdateCancellationPossibleUntil(): Boolean
@@ -679,8 +680,8 @@ table 8059 "Service Commitment"
             exit(false);
         CalendarManagement.ReverseDateFormula(NegativeDateFormula, "Notice Period");
         "Cancellation Possible Until" := CalcDate(NegativeDateFormula, "Term Until");
-        if IsDateLastDayOfMonth("Term Until") then
-            MoveDateToLastDayOfMonth("Cancellation Possible Until");
+        if DateTimeManagement.IsLastDayOfMonth("Term until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth("Cancellation possible until");
 
         exit(true);
     end;
@@ -776,10 +777,8 @@ table 8059 "Service Commitment"
         if ((Rec."Currency Factor" = 0) and (Rec."Currency Code" = '')) then
             exit;
         Currency.Initialize("Currency Code");
-        Rec.Price := Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Price (LCY)", "Currency Factor"), Currency."Unit-Amount Rounding Precision");
-        Rec."Service Amount" := Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Service Amount (LCY)", "Currency Factor"), Currency."Amount Rounding Precision");
-        Rec."Discount Amount" := Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Discount Amount (LCY)", "Currency Factor"), Currency."Amount Rounding Precision");
-        Rec."Calculation Base Amount" := Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor"), Currency."Unit-Amount Rounding Precision");
+        Currency.Initialize("Currency Code");
+        Rec.Validate("Calculation Base Amount", Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor"), Currency."Unit-Amount Rounding Precision"));
     end;
 
     internal procedure ResetAmountsAndCurrencyFromLCY()
@@ -816,7 +815,7 @@ table 8059 "Service Commitment"
         exit(Format("Extension Term") = '');
     end;
 
-    local procedure IsNoticePeriodEmpty(): Boolean
+    internal procedure IsNoticePeriodEmpty(): Boolean
     begin
         exit(Format("Notice Period") = '');
     end;
@@ -1038,16 +1037,6 @@ table 8059 "Service Commitment"
             if "Currency Code" <> xRec."Currency Code" then
                 RecalculateAmountsFromCurrencyData();
         end;
-    end;
-
-    local procedure IsDateLastDayOfMonth(ReferenceDate: Date): Boolean
-    begin
-        exit(ReferenceDate = CalcDate('<CM>', ReferenceDate));
-    end;
-
-    local procedure MoveDateToLastDayOfMonth(var ReferenceDate: Date)
-    begin
-        ReferenceDate := CalcDate('<CM>', ReferenceDate);
     end;
 
     local procedure RecalculateHarmonizedBillingFieldsOnCustomerContract()
@@ -1319,7 +1308,7 @@ table 8059 "Service Commitment"
             until BillingLineArchive.Next() = 0;
     end;
 
-    local procedure UpdateNextPriceUpdate()
+    internal procedure UpdateNextPriceUpdate()
     begin
         if Format(Rec."Price Binding Period") = '' then
             exit;
@@ -1373,6 +1362,7 @@ table 8059 "Service Commitment"
         Rec.Validate("Calculation Base Amount", ContractPriceUpdateLine."New Calculation Base");
         Rec.Validate(Price, ContractPriceUpdateLine."New Price");
         Rec.Validate("Service Amount", ContractPriceUpdateLine."New Service Amount");
+        Rec.Validate("Discount %", ContractPriceUpdateLine."Discount %");
         Rec."Next Price Update" := ContractPriceUpdateLine."Next Price Update";
         if PriceUpdateTemplate.Get(ContractPriceUpdateLine."Price Update Template Code") then
             Rec."Price Binding Period" := PriceUpdateTemplate."Price Binding Period";

@@ -11,6 +11,7 @@ using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
+using Microsoft.Sustainability.Setup;
 
 codeunit 6225 "Sust. Purchase Subscriber"
 {
@@ -131,6 +132,9 @@ codeunit 6225 "Sust. Purchase Subscriber"
         CO2ToPost := CO2ToPost * Sign;
         CH4ToPost := CH4ToPost * Sign;
         N2OToPost := N2OToPost * Sign;
+
+        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
+            exit;
 
         if not CanPostSustainabilityJnlLine(PurchaseLine."Sust. Account No.", PurchaseLine."Sust. Account Category", PurchaseLine."Sust. Account Subcategory", CO2ToPost, CH4ToPost, N2OToPost) then
             exit;
@@ -289,17 +293,18 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustPreviewPostInstance: Codeunit "Sust. Preview Post Instance";
     begin
         SustPreviewPostInstance.Initialize();
-        exit(BindSubscription(SustPreviewPostingHandler));
+        exit(SustPreviewPostingHandler.TryBindPostingPreviewHandler());
     end;
 
     local procedure TryUnbindPostingPreviewHandler(): Boolean
     var
         SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
     begin
-        exit(UnbindSubscription(SustPreviewPostingHandler));
+        exit(SustPreviewPostingHandler.TryUnbindPostingPreviewHandler());
     end;
 
     var
+        SustainabilitySetup: Record "Sustainability Setup";
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in purchase document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

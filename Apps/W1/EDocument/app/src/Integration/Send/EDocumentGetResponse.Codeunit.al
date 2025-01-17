@@ -145,6 +145,9 @@ codeunit 6144 "E-Document Get Response"
         EDocument.Get(EDocument."Entry No");
         EDocumentService.Get(EDocumentService.Code);
         Result := GetResponseRunner.GetResponseResult();
+#if not CLEAN26
+        GetResponseRunner.GetContext(SendContext);
+#endif
 
         Telemetry.LogMessage('0000LBR', EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;

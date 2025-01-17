@@ -759,13 +759,19 @@ table 30102 "Shpfy Shop"
         }
         field(131; "Customer Metafields To Shopify"; Boolean)
         {
-            Caption = 'Sync Customer Metafields to Shopify';
+            Caption = 'Sync Customer Metafields';
             DataClassification = SystemMetadata;
             InitValue = true;
         }
         field(132; "Company Metafields To Shopify"; Boolean)
         {
-            Caption = 'Sync Company Metafields to Shopify';
+            Caption = 'Sync Company Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(133; "Order Attributes To Shopify"; Boolean)
+        {
+            Caption = 'Sync Business Central Doc. No. as Attribute';
             DataClassification = SystemMetadata;
             InitValue = true;
         }
