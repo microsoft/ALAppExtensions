@@ -238,7 +238,6 @@ codeunit 6134 "E-Doc. Integration Management"
         exit(true);
     end;
 
-
     local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
     var
         EDocument: Record "E-Document";
@@ -255,8 +254,6 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
         exit(not EDocument.IsEmpty());
     end;
-
-
 
     #endregion
 
