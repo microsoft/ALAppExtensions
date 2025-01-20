@@ -257,6 +257,7 @@ codeunit 6108 "E-Document Processing"
     begin
         if GetRecord(EDocument, VariantRecord) and DataTypeManagement.GetRecordRef(VariantRecord, RecRef) then
             exit(GetRelatedRecordCaption(EDocument, RecRef));
+        exit('');
     end;
 
     procedure GetRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean
