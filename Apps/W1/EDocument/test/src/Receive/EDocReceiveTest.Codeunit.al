@@ -1468,10 +1468,10 @@ codeunit 139628 "E-Doc. Receive Test"
     var
         i: Integer;
     begin
-        this.LibraryPurchase.CreateVendorWithAddress(Vendor);
-        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
-        Vendor.Modify();
-        this.LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, Vendor."No.");
+        this.LibraryPurchase.CreateVendorWithAddress(this.Vendor);
+        this.Vendor."Receive E-Document To" := this.Vendor."Receive E-Document To"::"Purchase Invoice";
+        this.Vendor.Modify();
+        this.LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, this.Vendor."No.");
 
         for i := 1 to 3 do begin
             this.LibraryPurchase.CreatePurchaseLine(PurchLine, PurchHeader, PurchLine.Type::Item, this.LibraryInventory.CreateItemNo(), this.LibraryRandom.RandInt(100));
