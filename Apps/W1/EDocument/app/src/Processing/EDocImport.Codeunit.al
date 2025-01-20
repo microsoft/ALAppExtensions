@@ -45,7 +45,6 @@ codeunit 6140 "E-Doc. Import"
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
         Document: FileUpload;
-        DocumentsWithError: List of [Integer];
     begin
         if Documents.Count = 0 then
             exit;
