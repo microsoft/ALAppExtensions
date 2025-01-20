@@ -73,8 +73,8 @@ page 6122 "E-Documents"
             }
             fileuploadaction(ImportManuallyMultiple)
             {
-                Caption = 'Import Multiple Files';
-                ToolTip = 'Create multiple electronic documents by uploading multiple files.';
+                Caption = 'Import Files';
+                ToolTip = 'Create multiple electronic documents by uploading single or multiple files.';
                 Image = Import;
                 AllowedFileExtensions = '.xml';
                 AllowMultipleFiles = true;
