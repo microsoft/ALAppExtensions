@@ -711,8 +711,10 @@ codeunit 6140 "E-Doc. Import"
             if not this.UploadDocument(EDocument, EDocumentService, Document) then
                 DuplicateExists := true;
 
-            if EDocument."Entry No" <> 0 then
-                EDocument.Modify(false);
+            if EDocument."Entry No" <> 0 then begin
+                this.SetHideDialogs(true);
+                this.ProcessDocument(EDocument, false);
+            end;
         end;
 
         if DuplicateExists then
