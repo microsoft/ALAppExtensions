@@ -207,17 +207,21 @@ codeunit 6103 "E-Document Subscription"
     local procedure OnAfterDeletePurchaseHeader(var Rec: Record "Purchase Header"; RunTrigger: Boolean)
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         EDocumentProcessing: Codeunit "E-Document Processing";
-        EDocServiceStatus: Enum "E-Document Service Status";
+        EDocServiceStatusDeleted: Enum "E-Document Service Status";
     begin
         if not IsNullGuid(Rec."E-Document Link") then begin
             EDocument.GetBySystemId(Rec."E-Document Link");
+
+            EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
+            EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+
+            EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
             EDocument."Document No." := '';
-            EDocServiceStatus := Enum::"E-Document Service Status"::"Imported Document Deleted";
-            EDocumentLog.InsertLog(EDocument, EDocumentLog.GetLastServiceFromLog(EDocument), EDocServiceStatus);
-            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentLog.GetLastServiceFromLog(EDocument), EDocServiceStatus);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
         end;
     end;
 
