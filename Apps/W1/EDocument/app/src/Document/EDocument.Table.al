@@ -189,6 +189,7 @@ table 6121 "E-Document"
             Editable = false;
             FieldClass = FlowField;
             CalcFormula = sum("E-Document Payment".Amount where("E-Document Entry No." = field("Entry No")));
+            ToolTip = 'Specifies the amount that has already been paid.';
         }
     }
     keys

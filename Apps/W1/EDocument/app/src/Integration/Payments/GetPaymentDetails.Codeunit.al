@@ -23,14 +23,16 @@ codeunit 6107 "Get Payment Details"
     /// <summary>
     /// Sets the global variable PaymentContext.
     /// </summary>
+    /// <param name="PaymentContext">Payment context codeunit.</param>
     procedure SetContext(PaymentContext: Codeunit PaymentContext)
     begin
         this.PaymentContext := PaymentContext;
     end;
 
     /// <summary>
-    /// Sets the IPaymentHandler instance.
+    /// Sets the IDocumentPaymentHandler instance.
     /// </summary>
+    /// <param name="PaymentHandler">IDocumentPaymentHandler implementation used for receiving payment details.</param>
     procedure SetInstance(PaymentHandler: Interface IDocumentPaymentHandler)
     begin
         this.IDocumentPaymentHandler := PaymentHandler;
