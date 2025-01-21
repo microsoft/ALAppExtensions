@@ -1,4 +1,4 @@
-codeunit 139501 "E-Doc. Receive Manual Test"
+codeunit 139501 "E-Doc. Manual Import Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
@@ -28,9 +28,8 @@ codeunit 139501 "E-Doc. Receive Manual Test"
         DocumentInStream: InStream;
         DuplicateExists: Boolean;
         NotProcessedDocuments: Integer;
-        txt: Text;
     begin
-        // [FEATURE] [E-Document] [Receive] [Manual]
+        // [FEATURE] [E-Document] [Import] [Manual]
         // [SCENARIO] Manually create e-document from stream
         Initialize();
         BindSubscription(EDocImplState);
@@ -51,6 +50,57 @@ codeunit 139501 "E-Doc. Receive Manual Test"
 
         // [THEN] Document and attachments are created correctly
         VerifyDocumentCreated(EDocument);
+
+        // Cleanup
+        UnbindSubscription(EDocImplState);
+    end;
+
+    [Test]
+    procedure ManuallyCreateTwoEDocumentsFromStreamWithDuplicate()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+        TempBlob: Codeunit "Temp Blob";
+        DocumentInStream, DocumentInStream2 : InStream;
+        DuplicateExists: Boolean;
+        NotProcessedDocuments: Integer;
+    begin
+        // [FEATURE] [E-Document] [Import] [Manual]
+        // [SCENARIO] Manually create two e-documents from stream where second one will be duplicate
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive invoices
+        CreateEDocServiceToReceivePurchaseInvoice(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Two incoming PEPPOL document streams with same document number
+        CreateIncomingPEPPOLBlob(DocumentVendor, TempBlob);
+        TempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DocumentInStream2, TextEncoding::UTF8);
+
+        // [WHEN] Creating first e-document from stream
+        Clear(EDocument);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream, true, DuplicateExists, NotProcessedDocuments);
+
+        // [THEN] Document and attachments are created correctly for first document
+        VerifyDocumentCreated(EDocument);
+        Assert.IsFalse(DuplicateExists, 'First document should not be duplicate');
+        Assert.AreEqual(0, NotProcessedDocuments, 'Wrong number of not processed documents');
+
+        // [WHEN] Creating second e-document from stream (duplicate)
+        Clear(EDocument);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream2, true, DuplicateExists, NotProcessedDocuments);
+
+        // [THEN] Second document is skipped as duplicate 
+        Assert.IsTrue(DuplicateExists, 'Second document should be marked as duplicate');
+        Assert.AreEqual(1, NotProcessedDocuments, 'Wrong number of not processed documents');
+        Assert.AreEqual(0, EDocument."Entry No", 'Duplicate document should not be created');
 
         // Cleanup
         UnbindSubscription(EDocImplState);
@@ -157,33 +207,48 @@ codeunit 139501 "E-Doc. Receive Manual Test"
         exit(not ErrorMessage.IsEmpty());
     end;
 
-
-    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
-    begin
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
-        SetDefaultEDocServiceValues(EDocService);
-    end;
-
     local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
     begin
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
-        DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
+        DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         DocumentVendor.Modify(false);
     end;
 
     local procedure CreateItemWithReference(var Item: Record Item; var VATPostingSetup: Record "VAT Posting Setup")
     var
         ItemReference: Record "Item Reference";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        LibraryInventory: Codeunit "Library - Inventory";
+        UnitofMeasure: Record "Unit of Measure";
+        ItemUnitofMeasure: Record "Item Unit of Measure";
     begin
-        Item.FindFirst();
+        Item.Init();
+        Item."No." := '1000';
+        LibraryERM.CreateGenProdPostingGroup(GenProductPostingGroup);
+        Item."Gen. Prod. Posting Group" := GenProductPostingGroup."Code";
         Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
-        Item.Modify(false);
+        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroup);
+        Item."Inventory Posting Group" := InventoryPostingGroup."Code";
+        if not Item.Insert(false) then
+            Item.Modify(false);
         ItemReference.DeleteAll(false);
         ItemReference."Item No." := Item."No.";
         ItemReference."Reference No." := '1000';
         ItemReference.Insert(false);
+        if not UnitofMeasure.Get('PCS') then begin
+            UnitofMeasure.Init();
+            UnitofMeasure."Code" := 'PCS';
+            UnitofMeasure.Insert(false);
+        end;
+        if not ItemUnitofMeasure.Get(Item."No.", 'PCS') then begin
+            ItemUnitofMeasure.Init();
+            ItemUnitofMeasure."Item No." := Item."No.";
+            ItemUnitofMeasure.Code := UnitofMeasure."Code";
+            ItemUnitofMeasure.Insert(false);
+        end;
     end;
 
     local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
