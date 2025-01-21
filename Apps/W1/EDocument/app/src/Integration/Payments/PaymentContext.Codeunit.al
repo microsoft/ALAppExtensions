@@ -12,6 +12,7 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Get the Http Message State codeunit.
     /// </summary>
+    /// <returns>codeunit Http Message State that contains http request and response messages.</returns>
     procedure Http(): Codeunit "Http Message State"
     begin
         exit(this.HttpMessageState);
@@ -20,6 +21,7 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Retrieves the payment date.
     /// </summary>
+    /// <returns>Date when the payment was made.</returns>
     procedure GetDate(): Date
     begin
         exit(this.Date);
@@ -28,6 +30,7 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Retrieves the payment amount.
     /// </summary>
+    /// <returns>Amount of the payment.</returns>
     procedure GetAmount(): Decimal
     begin
         exit(this.Amount);
@@ -36,6 +39,8 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Sets the payment date and amount.
     /// </summary>
+    /// <param name="Date">Date when the payment was made.</param>
+    /// <param name="Amount">Amount of the payment.</param>
     procedure SetPaymentInformation(Date: Date; Amount: Decimal)
     begin
         this.Date := Date;
@@ -45,6 +50,7 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Retrieves the payment status.
     /// </summary>
+    /// <returns>Current payment status.</returns>
     procedure GetPaymentStatus(): Enum "Payment Status"
     begin
         exit(this.PaymentStatus);
@@ -53,6 +59,7 @@ codeunit 6104 PaymentContext
     /// <summary>
     /// Sets the payment status.
     /// </summary>
+    /// <param name="NewPaymentStatus">New payment status.</param>
     procedure SetPaymentStatus(NewPaymentStatus: Enum "Payment Status")
     begin
         this.PaymentStatus := NewPaymentStatus;
@@ -63,5 +70,4 @@ codeunit 6104 PaymentContext
         PaymentStatus: Enum "Payment Status";
         Date: Date;
         Amount: Decimal;
-
 }

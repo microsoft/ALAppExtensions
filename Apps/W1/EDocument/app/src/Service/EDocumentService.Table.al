@@ -255,7 +255,7 @@ table 6103 "E-Document Service"
         field(29; "Payment Integration"; Enum "Payment Integration")
         {
             Caption = 'Payment Integration';
-            ToolTip = 'Specifies the integration for receiving payments from the service.';
+            ToolTip = 'Specifies the integration for sending and receiving payments from the service.';
             DataClassification = SystemMetadata;
         }
         field(30; "Calculate Payment VAT"; Boolean)
@@ -283,7 +283,7 @@ table 6103 "E-Document Service"
             NotBlank = true;
             InitValue = 0T;
         }
-        field(33; "Payment Sync Min between runs"; Integer)
+        field(33; "Payment Sync Min Between Runs"; Integer)
         {
             Caption = 'Minutes between runs';
             ToolTip = 'Specifies the time between synchronization runs.';

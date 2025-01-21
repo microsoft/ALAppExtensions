@@ -363,6 +363,7 @@ page 6121 "E-Document"
             group(Payments)
             {
                 Caption = 'Payments';
+
                 action(ReceivePayments)
                 {
                     Caption = 'Receive Payments';
@@ -641,7 +642,7 @@ page 6121 "E-Document"
             if Rec."Paid Amount" < Rec."Amount Incl. VAT" then
                 this.PaymentStatus := this.PaymentStatus::"Partially Paid"
             else
-                this.PaymentStatus := this.PaymentStatus::Paid
+                this.PaymentStatus := this.PaymentStatus::Paid;
     end;
 
     local procedure ReceivePaymentsForEDoc()

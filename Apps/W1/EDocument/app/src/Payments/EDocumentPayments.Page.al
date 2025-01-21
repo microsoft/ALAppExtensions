@@ -20,31 +20,25 @@ page 6101 "E-Document Payments"
             {
                 field("Date"; Rec."Date")
                 {
-                    ApplicationArea = All;
                     Editable = this.PaymentEditable;
                 }
                 field(Amount; Rec.Amount)
                 {
-                    ApplicationArea = All;
                     Editable = this.PaymentEditable;
                 }
                 field("VAT Base"; Rec."VAT Base")
                 {
-                    ApplicationArea = All;
                     Visible = false;
                 }
                 field("VAT Amount"; Rec."VAT Amount")
                 {
-                    ApplicationArea = All;
                     Visible = false;
                 }
                 field(Status; Rec.Status)
                 {
-                    ApplicationArea = All;
                 }
                 field(Direction; Rec.Direction)
                 {
-                    ApplicationArea = All;
                 }
             }
         }

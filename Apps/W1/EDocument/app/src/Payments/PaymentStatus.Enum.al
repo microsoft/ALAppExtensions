@@ -10,7 +10,7 @@ enum 6103 "Payment Status"
 
     value(0; " ")
     {
-        Caption = '';
+        Caption = ' ';
     }
     value(1; Created)
     {

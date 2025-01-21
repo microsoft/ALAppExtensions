@@ -20,16 +20,27 @@ codeunit 6116 "Send Payment"
         this.IPaymentHandler.Send(this.EDocument, this.EDocumentService, this.PaymentContext);
     end;
 
+    /// <summary>
+    /// Sets the IPaymentHandler instance.
+    /// </summary>
     procedure SetInstance(PaymentHandler: Interface IDocumentPaymentHandler)
     begin
         this.IPaymentHandler := PaymentHandler;
     end;
 
+    /// <summary>
+    /// Sets the global variable PaymentContext.
+    /// </summary>
     procedure SetContext(PaymentContext: Codeunit PaymentContext)
     begin
         this.PaymentContext := PaymentContext;
     end;
 
+    /// <summary>
+    /// Sets the parameters for the payment handler.
+    /// </summary>
+    /// <param name="EDocument">Electronic document for which payments are sent.</param>
+    /// <param name="EDocumentService">Service for sending payments.</param>
     procedure SetDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     begin
         this.EDocument.Copy(EDocument);

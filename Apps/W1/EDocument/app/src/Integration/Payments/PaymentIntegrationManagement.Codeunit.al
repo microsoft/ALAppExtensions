@@ -78,7 +78,7 @@ codeunit 6117 "Payment Integration Management"
         Payment.Date := PaymentContext.GetDate();
         Payment.Validate(Amount, PaymentContext.GetAmount());
         Payment.Status := PaymentContext.GetPaymentStatus();
-        Payment.Insert();
+        Payment.Insert(true);
     end;
 
     local procedure RunGetPaymentDetails(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; PaymentMetadata: Codeunit "Temp Blob"; IDocumentPaymentHandler: Interface IDocumentPaymentHandler; PaymentContext: Codeunit PaymentContext): Boolean

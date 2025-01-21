@@ -113,20 +113,26 @@ codeunit 6133 "E-Document Background Jobs"
             exit;
 
         if not this.IsRecurrentJobScheduledForAService(EDocumentService."Payment Sync Recurrent Job Id") then begin
-            JobQueueEntry.ScheduleRecurrentJobQueueEntryWithFrequency(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"Sync Payments Job", EDocumentService.RecordId, EDocumentService."Payment Sync Min between runs", EDocumentService."Payment Sync Start Time");
+            JobQueueEntry.ScheduleRecurrentJobQueueEntryWithFrequency(
+                JobQueueEntry."Object Type to Run"::Codeunit,
+                Codeunit::"Sync Payments Job",
+                EDocumentService.RecordId,
+                EDocumentService."Payment Sync Min between runs",
+                EDocumentService."Payment Sync Start Time");
+
             EDocumentService."Payment Sync Recurrent Job Id" := JobQueueEntry.ID;
-            EDocumentService.Modify();
+            EDocumentService.Modify(false);
 
             JobQueueEntry."Rerun Delay (sec.)" := 600;
             JobQueueEntry."No. of Attempts to Run" := 0;
             JobQueueEntry."Job Queue Category Code" := this.JobQueueCategoryTok;
-            JobQueueEntry.Modify();
+            JobQueueEntry.Modify(false);
         end else begin
             JobQueueEntry.Get(EDocumentService."Payment Sync Recurrent Job Id");
             JobQueueEntry."Starting Time" := EDocumentService."Payment Sync Start Time";
             JobQueueEntry."No. of Minutes between Runs" := EDocumentService."Payment Sync Min between runs";
             JobQueueEntry."No. of Attempts to Run" := 0;
-            JobQueueEntry.Modify();
+            JobQueueEntry.Modify(false);
             if not JobQueueEntry.IsReadyToStart() then
                 JobQueueEntry.Restart();
         end;
