@@ -212,17 +212,18 @@ codeunit 6103 "E-Document Subscription"
         EDocumentProcessing: Codeunit "E-Document Processing";
         EDocServiceStatusDeleted: Enum "E-Document Service Status";
     begin
-        if not IsNullGuid(Rec."E-Document Link") then begin
-            EDocument.GetBySystemId(Rec."E-Document Link");
+        if IsNullGuid(Rec."E-Document Link") then
+            exit;
 
-            EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
-            EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+        EDocument.GetBySystemId(Rec."E-Document Link");
 
-            EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
-            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
-            EDocument."Document No." := '';
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
-        end;
+        EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
+        EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
+        EDocument."Document No." := '';
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")

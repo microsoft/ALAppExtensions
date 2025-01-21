@@ -1359,9 +1359,9 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
         BindSubscription(this.EDocImplState);
 
-        SetupEDocService(EDocService);
+        SetDefaultEDocServiceValues(EDocService);
 
-        // [GIVEN] purchase invoice
+        // [GIVEN] Purchase invoice
         CreatePurchaseInvoiceWithLines(this.PurchaseHeader, this.PurchaseLine, this.Vendor);
 
         PurchOrderTestBuffer.ClearTempVariables();
@@ -1452,16 +1452,18 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocument.DeleteAll();
     end;
 
-    local procedure SetupEDocService(var EDocumentService: Record "E-Document Service")
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
     begin
-        EDocumentService."Lookup Account Mapping" := false;
-        EDocumentService."Lookup Item GTIN" := false;
-        EDocumentService."Lookup Item Reference" := false;
-        EDocumentService."Resolve Unit Of Measure" := false;
-        EDocumentService."Validate Line Discount" := false;
-        EDocumentService."Verify Totals" := false;
-        EDocumentService."Use Batch Processing" := false;
-        EDocumentService.Modify(false);
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify(false);
     end;
 
     local procedure CreatePurchaseInvoiceWithLines(var PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; var Vendor: Record Vendor)
@@ -1470,7 +1472,7 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         this.LibraryPurchase.CreateVendorWithAddress(this.Vendor);
         this.Vendor."Receive E-Document To" := this.Vendor."Receive E-Document To"::"Purchase Invoice";
-        this.Vendor.Modify();
+        this.Vendor.Modify(false);
         this.LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, this.Vendor."No.");
 
         for i := 1 to 3 do begin

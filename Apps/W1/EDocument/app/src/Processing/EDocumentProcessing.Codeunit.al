@@ -265,6 +265,10 @@ codeunit 6108 "E-Document Processing"
         exit(GetPostedRecord(EDocument, RelatedRecord));
     end;
 
+    /// <summary>
+    /// Deletes related record if it is not posted.
+    /// </summary>
+    /// <param name="EDocument">E-Document record</param>
     procedure DeleteRelatedRecord(EDocument: Record "E-Document")
     var
         RecRef: RecordRef;
