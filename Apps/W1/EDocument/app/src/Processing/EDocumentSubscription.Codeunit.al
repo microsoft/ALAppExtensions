@@ -322,24 +322,49 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
-    local procedure SendInvoiceEdocument(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary)
+    local procedure AttachEDocumentToInvoiceEmail(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary; EmailDocName: Text[250])
     var
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        EDocumentLog: Codeunit "E-Document Log";
-        TempBlob: Codeunit "Temp Blob";
-        EDocumentInStream: InStream;
     begin
         SalesInvoiceHeader.Get(PostedDocNo);
         if SalesInvoiceHeader."Send E-Document via Email" then begin
             EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
-            EDocument.FindFirst();
-            EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
-            EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
-            TempBlob.CreateInStream(EDocumentInStream);
-            TempEmailItem.AddAttachment(EDocumentInStream, 'E-Document.xml');
+            if EDocument.FindFirst() then
+                AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument)
         end;
+    end;
+
+    local procedure AttachEDocumentToCrMemoEmail(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary; EmailDocName: Text[250])
+    var
+        EDocument: Record "E-Document";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+    begin
+        SalesCrMemoHeader.Get(PostedDocNo);
+        if SalesCrMemoHeader."Send E-Document via Email" then begin
+            EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
+            if EDocument.FindFirst() then
+                AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument)
+        end;
+    end;
+
+    local procedure AddEDocumentEmailAttachment(
+        PostedDocNo: Code[20];
+        var TempEmailItem: Record "Email Item" temporary;
+        EmailDocName: Text[250];
+        EDocument: Record "E-Document")
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        EDocumentInStream: InStream;
+        EDocumentAttchmentName: Text[250];
+    begin
+        EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+        TempBlob.CreateInStream(EDocumentInStream);
+        EDocumentAttchmentName := StrSubstNo(EDocumentAttchmentNameTok, EmailDocName, PostedDocNo);
+        TempEmailItem.AddAttachment(EDocumentInStream, EDocumentAttchmentName);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
@@ -358,11 +383,34 @@ codeunit 6103 "E-Document Subscription"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document-Mailing", OnBeforeSendEmail, '', false, false)]
-    local procedure DocumentMailing_OnBeforeSendEmail(var ReportUsage: Integer; var TempEmailItem: Record "Email Item" temporary; var IsFromPostedDoc: Boolean; var PostedDocNo: Code[20])
+    local procedure AttachEDocumentOnBeforeSendEmail(
+        var ReportUsage: Integer;
+        var TempEmailItem: Record "Email Item" temporary;
+        var IsFromPostedDoc: Boolean;
+        var PostedDocNo: Code[20];
+        EmailDocName: Text[250])
     begin
-        if IsFromPostedDoc and (ReportUsage = Enum::"Report Selection Usage"::"S.Invoice".AsInteger()) then
-            SendInvoiceEdocument(PostedDocNo, TempEmailItem);
+        if IsFromPostedDoc then
+            case ReportUsage of
+                Enum::"Report Selection Usage"::"S.Invoice".AsInteger():
+                    AttachEDocumentToInvoiceEmail(PostedDocNo, TempEmailItem, EmailDocName);
+                Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger():
+                    AttachEDocumentToCrMemoEmail(PostedDocNo, TempEmailItem, EmailDocName);
+            end;
     end;
+
+
+    // [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnAfterSendToEMail', '', false, false)]
+    // local procedure OnAfterSendToEMail(var DocumentSendingProfile: Record "Document Sending Profile"; ReportUsage: Enum "Report Selection Usage"; RecordVariant: Variant; DocNo: Code[20]; DocName: Text[150]; ToCust: Code[20]; DocNoFieldNo: Integer; ShowDialog: Boolean)
+    // begin
+    //     if DocumentSendingProfile."E-Mail Attachment" = DocumentSendingProfile."E-Mail Attachment"::"E-Document" then
+    //         case ReportUsage of
+    //             Enum::"Report Selection Usage"::"S.Invoice".AsInteger():
+    //                 AttachEDocumentToInvoiceEmail(DocNo, TempEmailItem, DocName);
+    //             Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger():
+    //                 AttachEDocumentToCrMemoEmail(DocNo, TempEmailItem, DocName);
+    //         end;
+    // end; //Implement email generation for Attachment E-Document type
 
     var
         EDocExport: Codeunit "E-Doc. Export";
@@ -370,4 +418,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
         DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        EDocumentAttchmentNameTok: Label '%1 %2.xml', Locked = true;
 }

@@ -476,10 +476,16 @@ codeunit 6102 "E-Doc. Export"
     local procedure SourceDocumentRequiresSendingEmail(var SourceDocumentHeader: RecordRef): Boolean
     var
         SalesInvHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
-        if SourceDocumentHeader.Number = Database::"Sales Invoice Header" then
-            if SalesInvHeader.GetBySystemId(SourceDocumentHeader.Field(SalesInvHeader.FieldNo(SystemId)).Value()) then
-                exit(SalesInvHeader."Send E-Document via Email");
+        case SourceDocumentHeader.Number of
+            Database::"Sales Invoice Header":
+                if SalesInvHeader.GetBySystemId(SourceDocumentHeader.Field(SalesInvHeader.FieldNo(SystemId)).Value()) then
+                    exit(SalesInvHeader."Send E-Document via Email");
+            Database::"Sales Cr.Memo Header":
+                if SalesCrMemoHeader.GetBySystemId(SourceDocumentHeader.Field(SalesCrMemoHeader.FieldNo(SystemId)).Value()) then
+                    exit(SalesCrMemoHeader."Send E-Document via Email");
+        end;
     end;
 
     var
