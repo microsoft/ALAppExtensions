@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
@@ -11,6 +13,7 @@ using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using System.EMail;
 using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
@@ -168,11 +171,27 @@ codeunit 6103 "E-Document Subscription"
         ExchServiceEnabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
-    local procedure BeforeSendEDocument(Sender: Record "Document Sending Profile"; RecordVariant: Variant; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnBeforeSend, '', false, false)]
+    local procedure BeforeSendEDocument(
+        Sender: Record "Document Sending Profile";
+        RecordVariant: Variant;
+        var IsHandled: Boolean;
+        ReportUsage: Integer;
+        DocumentNoFieldNo: Integer;
+        DocName: Text[150];
+        CustomerFieldNo: Integer)
     begin
         if Sender."Electronic Document" <> Sender."Electronic Document"::"Extended E-Document Service Flow" then
             exit;
+
+        if Sender."E-Mail" <> Sender."E-Mail"::No then
+            Sender.TrySendToEMailGroupedMultipleSelection(
+                Enum::"Report Selection Usage".FromInteger(ReportUsage),
+                RecordVariant,
+                DocumentNoFieldNo,
+                DocName,
+                CustomerFieldNo,
+                true);
 
         IsHandled := true;
     end;
@@ -303,11 +322,46 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
+    local procedure SendInvoiceEdocument(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary)
+    var
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        EDocumentInStream: InStream;
+    begin
+        SalesInvoiceHeader.Get(PostedDocNo);
+        if SalesInvoiceHeader."Send E-Document via Email" then begin
+            EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
+            EDocument.FindFirst();
+            EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+            EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+            TempBlob.CreateInStream(EDocumentInStream);
+            TempEmailItem.AddAttachment(EDocumentInStream, 'E-Document.xml');
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
     local procedure SetSendEDocViaEmailOnBeforePostAndSend(var SalesHeader: Record "Sales Header")
     begin
         SalesHeader.Validate("Send E-Document via Email", true);
         SalesHeader.Modify(false);
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforeValidateElectronicFormats, '', false, false)]
+    local procedure OnBeforeValidateElectronicFormats(DocumentSendingProfile: Record "Document Sending Profile"; var IsHandled: Boolean)
+    begin
+        if DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow" then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document-Mailing", OnBeforeSendEmail, '', false, false)]
+    local procedure DocumentMailing_OnBeforeSendEmail(var ReportUsage: Integer; var TempEmailItem: Record "Email Item" temporary; var IsFromPostedDoc: Boolean; var PostedDocNo: Code[20])
+    begin
+        if IsFromPostedDoc and (ReportUsage = Enum::"Report Selection Usage"::"S.Invoice".AsInteger()) then
+            SendInvoiceEdocument(PostedDocNo, TempEmailItem);
     end;
 
     var

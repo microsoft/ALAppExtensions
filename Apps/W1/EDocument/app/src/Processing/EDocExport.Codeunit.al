@@ -62,6 +62,8 @@ codeunit 6102 "E-Doc. Export"
         EDocumentLog: Codeunit "E-Document Log";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
+        WorkflowManagement: Codeunit "Workflow Management";
+        EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
         IsDocumentTypeSupported: Boolean;
     begin
         EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
@@ -87,7 +89,10 @@ codeunit 6102 "E-Doc. Export"
             EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
 
-            EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+            if SourceDocumentRequiresSendingEmail(SourceDocumentHeader) then
+                WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocCreated(), EDocument)
+            else
+                EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
         end;
     end;
 
@@ -466,6 +471,15 @@ codeunit 6102 "E-Doc. Export"
         end;
 
         exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
+    end;
+
+    local procedure SourceDocumentRequiresSendingEmail(var SourceDocumentHeader: RecordRef): Boolean
+    var
+        SalesInvHeader: Record "Sales Invoice Header";
+    begin
+        if SourceDocumentHeader.Number = Database::"Sales Invoice Header" then
+            if SalesInvHeader.GetBySystemId(SourceDocumentHeader.Field(SalesInvHeader.FieldNo(SystemId)).Value()) then
+                exit(SalesInvHeader."Send E-Document via Email");
     end;
 
     var
