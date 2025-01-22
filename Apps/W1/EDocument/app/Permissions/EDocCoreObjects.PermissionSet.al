@@ -5,10 +5,12 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.eServices.EDocument.IO;
+using Microsoft.eServices.EDocument.Integration.Payments;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.EServices.EDocument.OrderMatch.Copilot;
 using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.eServices.EDocument.Payments;
 permissionset 6100 "E-Doc. Core - Objects"
 {
     Assignable = false;
@@ -28,6 +30,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Doc. Imported Line" = X,
         table "E-Doc. PO Match Prop. Buffer" = X,
         table "Service Participant" = X,
+        table "E-Document Payment" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -69,6 +72,12 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Doc. PO Copilot Matching" = X,
         codeunit "E-Doc. Attachment Processor" = X,
         codeunit "Service Participant" = X,
+        codeunit "Payment Integration Management" = X,
+        codeunit "Empty Payment Handler" = X,
+        codeunit "Send Payment" = X,
+        codeunit "Receive Payments" = X,
+        codeunit "Get Payment Details" = X,
+        codeunit "Sync Payments Job" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,
@@ -91,5 +100,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Doc. PO Copilot Prop" = X,
         page "E-Doc. PO Match Prop. Sub" = X,
         page "E-Doc. Order Match Act." = X,
-        page "Service Participants" = X;
+        page "Service Participants" = X,
+        page "E-Document Payments" = X;
 }

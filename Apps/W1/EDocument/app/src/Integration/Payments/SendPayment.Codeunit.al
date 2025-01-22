@@ -21,8 +21,9 @@ codeunit 6116 "Send Payment"
     end;
 
     /// <summary>
-    /// Sets the IPaymentHandler instance.
+    /// Sets the IDocumentPaymentHandler instance.
     /// </summary>
+    /// <param name="PaymentHandler">IDocumentPaymentHandler implementation used for sending payments.</param>
     procedure SetInstance(PaymentHandler: Interface IDocumentPaymentHandler)
     begin
         this.IPaymentHandler := PaymentHandler;
@@ -31,6 +32,7 @@ codeunit 6116 "Send Payment"
     /// <summary>
     /// Sets the global variable PaymentContext.
     /// </summary>
+    /// <param name="PaymentContext">Payment context codeunit.</param>
     procedure SetContext(PaymentContext: Codeunit PaymentContext)
     begin
         this.PaymentContext := PaymentContext;

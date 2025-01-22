@@ -16,13 +16,14 @@ codeunit 6106 "Receive Payments"
 
     trigger OnRun()
     begin
-        EDocumentService.TestField(Code);
-        IDocumentPaymentHandler.Receive(this.EDocument, this.EDocumentService, this.PaymentsMetadata, this.PaymentContext);
+        this.EDocumentService.TestField(Code);
+        this.IDocumentPaymentHandler.Receive(this.EDocument, this.EDocumentService, this.PaymentsMetadata, this.PaymentContext);
     end;
 
     /// <summary>
-    /// Sets the IPaymentHandler instance.
-    ///</summary>
+    /// Sets the IDocumentPaymentHandler instance.
+    /// </summary>
+    /// <param name="PaymentHandler">IDocumentPaymentHandler implementation used for receiving payments.</param>
     procedure SetInstance(PaymentHandler: Interface IDocumentPaymentHandler)
     begin
         this.IDocumentPaymentHandler := PaymentHandler;
@@ -30,7 +31,8 @@ codeunit 6106 "Receive Payments"
 
     /// <summary>
     /// Sets the global variable PaymentContext.
-    ///</summary>
+    /// </summary>
+    /// <param name="PaymentContext">Payment context codeunit.</param>
     procedure SetContext(PaymentContext: Codeunit PaymentContext)
     begin
         this.PaymentContext := PaymentContext;
@@ -38,7 +40,8 @@ codeunit 6106 "Receive Payments"
 
     /// <summary>
     /// Sets the received payments to Temp Blob List.
-    ///</summary>
+    /// </summary>
+    /// <param name="PaymentsMetadata">Temp Blob List to save received payments.</param>
     procedure SetPayments(PaymentsMetadata: Codeunit "Temp Blob List")
     begin
         this.PaymentsMetadata := PaymentsMetadata
@@ -46,7 +49,8 @@ codeunit 6106 "Receive Payments"
 
     /// <summary>
     /// Sets the E-Document Service used for receiving payments.
-    ///</summary>
+    /// </summary>
+    /// <param name="EDocumentService">Service for receiving payments.</param>
     procedure SetService(var EDocumentService: Record "E-Document Service")
     begin
         this.EDocumentService.Copy(EDocumentService);
@@ -54,7 +58,8 @@ codeunit 6106 "Receive Payments"
 
     /// <summary>
     /// Sets the E-Document for which payments are received.
-    ///</summary>
+    /// </summary>
+    /// <param name="EDocument">E-Document for which payments are received.</param>
     procedure SetDocument(var EDocument: Record "E-Document")
     begin
         this.EDocument.Copy(EDocument);

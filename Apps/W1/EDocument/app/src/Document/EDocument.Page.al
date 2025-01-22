@@ -126,12 +126,11 @@ page 6121 "E-Document"
                     Caption = 'Payment Status';
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Specifies the payment status of the electronic document.';
+                    ToolTip = 'Specifies the electronic document payment status.';
                 }
                 field("Paid Amount"; Rec."Paid Amount")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the paid amount of the electronic document.';
                 }
             }
             group(ReceivingCompanyInfo)
