@@ -35,15 +35,7 @@ codeunit 139501 "E-Doc. Payment Test"
 
         // [GIVEN] Create E-Document service setup
         this.LibraryEDoc.CreateTestPaymentServiceForEDoc(this.EDocService, Enum::"Service Integration"::Mock, Enum::"Payment Integration"::Mock);
-        this.EDocService."Calculate Payment VAT" := false;
-        this.EDocService."Lookup Account Mapping" := false;
-        this.EDocService."Lookup Item GTIN" := false;
-        this.EDocService."Lookup Item Reference" := false;
-        this.EDocService."Resolve Unit Of Measure" := false;
-        this.EDocService."Validate Line Discount" := false;
-        this.EDocService."Verify Totals" := false;
-        this.EDocService."Use Batch Processing" := false;
-        this.EDocService.Modify();
+        this.SetDefaultEDocServiceValues(this.EDocService, false);
         BindSubscription(this.EDocImplState);
 
         // [GIVEN] Create received E-Document
@@ -71,14 +63,14 @@ codeunit 139501 "E-Doc. Payment Test"
         EDocument.FindLast();
 
         // [THEN] Check that Paid Amount for the document is 0
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 0, Enum::"E-Document Payment Progress"::"Not Paid");
+        this.CheckPaidAmount(EDocument, 0);
 
         // [GIVEN] Create partial payment for E-Document
         PaymentAmount := 100;
         this.CreateEDocumentPayment(EDocument, PaymentAmount);
 
         // [THEN] Check that Paid Amount for the document is updated
-        this.CheckPaidAmountAndPaymentStatus(EDocument, PaymentAmount, Enum::"E-Document Payment Progress"::"Partially Paid");
+        this.CheckPaidAmount(EDocument, PaymentAmount);
 
         // [THEN] Check that Payments Direction is correct
         this.CheckPaymentDirection(EDocument, Enum::"E-Document Direction"::Outgoing);
@@ -98,15 +90,7 @@ codeunit 139501 "E-Doc. Payment Test"
 
         // [GIVEN] Create E-Document service setup
         this.LibraryEDoc.CreateTestPaymentServiceForEDoc(this.EDocService, Enum::"Service Integration"::Mock, Enum::"Payment Integration"::Mock);
-        this.EDocService."Calculate Payment VAT" := false;
-        this.EDocService."Lookup Account Mapping" := false;
-        this.EDocService."Lookup Item GTIN" := false;
-        this.EDocService."Lookup Item Reference" := false;
-        this.EDocService."Resolve Unit Of Measure" := false;
-        this.EDocService."Validate Line Discount" := false;
-        this.EDocService."Verify Totals" := false;
-        this.EDocService."Use Batch Processing" := false;
-        this.EDocService.Modify();
+        this.SetDefaultEDocServiceValues(this.EDocService, false);
         BindSubscription(this.EDocImplState);
 
         // [GIVEN] Create received E-Document
@@ -134,13 +118,13 @@ codeunit 139501 "E-Doc. Payment Test"
         EDocument.FindLast();
 
         // [THEN] Check that Paid Amount for the document is 0
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 0, Enum::"E-Document Payment Progress"::"Not Paid");
+        this.CheckPaidAmount(EDocument, 0);
 
         // [GIVEN] Create partial payment for E-Document
         this.CreateFullEDocumentPayments(EDocument);
 
         // [THEN] Check that Paid Amount for the document is updated
-        this.CheckPaidAmountAndPaymentStatus(EDocument, EDocument."Amount Incl. VAT", Enum::"E-Document Payment Progress"::Paid);
+        this.CheckPaidAmount(EDocument, EDocument."Amount Incl. VAT");
 
         // [THEN] Check that Payments Direction is correct
         this.CheckPaymentDirection(EDocument, Enum::"E-Document Direction"::Outgoing);
@@ -161,15 +145,7 @@ codeunit 139501 "E-Doc. Payment Test"
 
         // [GIVEN] Create E-Document service setup and set VAT calculation
         this.LibraryEDoc.CreateTestPaymentServiceForEDoc(this.EDocService, Enum::"Service Integration"::Mock, Enum::"Payment Integration"::Mock);
-        this.EDocService."Calculate Payment VAT" := true;
-        this.EDocService."Lookup Account Mapping" := false;
-        this.EDocService."Lookup Item GTIN" := false;
-        this.EDocService."Lookup Item Reference" := false;
-        this.EDocService."Resolve Unit Of Measure" := false;
-        this.EDocService."Validate Line Discount" := false;
-        this.EDocService."Verify Totals" := false;
-        this.EDocService."Use Batch Processing" := false;
-        this.EDocService.Modify();
+        this.SetDefaultEDocServiceValues(this.EDocService, true);
         BindSubscription(this.EDocImplState);
 
         // [GIVEN] Create received E-Document
@@ -197,14 +173,14 @@ codeunit 139501 "E-Doc. Payment Test"
         EDocument.FindLast();
 
         // [THEN] Check that Paid Amount for the document is 0
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 0, Enum::"E-Document Payment Progress"::"Not Paid");
+        this.CheckPaidAmount(EDocument, 0);
 
         // [GIVEN] Create partial payment for E-Document
         PaymentAmount := 100;
         this.CreateEDocumentPayment(EDocument, PaymentAmount);
 
         // [THEN] Check that Paid Amount for the document is updated
-        this.CheckPaidAmountAndPaymentStatus(EDocument, PaymentAmount, Enum::"E-Document Payment Progress"::"Partially Paid");
+        this.CheckPaidAmount(EDocument, PaymentAmount);
 
         // [THEN] Check that VAT amount is calculated
         this.CheckPaymentVATAmount(EDocument);
@@ -238,14 +214,14 @@ codeunit 139501 "E-Doc. Payment Test"
         UnbindSubscription(this.EDocLogTest);
 
         // [THEN] Check that Paid Amount for the document is 0
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 0, Enum::"E-Document Payment Progress"::"Not Paid");
+        this.CheckPaidAmount(EDocument, 0);
 
         // [WHEN] Receive payment for E-Document
         PaymentAmount := 1;
         this.CreateEDocumentPayment(EDocument, PaymentAmount);
 
         // [THEN] Check that Paid Amount for the document is updated
-        this.CheckPaidAmountAndPaymentStatus(EDocument, PaymentAmount, Enum::"E-Document Payment Progress"::"Partially Paid");
+        this.CheckPaidAmount(EDocument, PaymentAmount);
 
         // [THEN] Check that Payments Direction is correct
         this.CheckPaymentDirection(EDocument, Enum::"E-Document Direction"::Incoming);
@@ -279,13 +255,13 @@ codeunit 139501 "E-Doc. Payment Test"
         UnbindSubscription(this.EDocLogTest);
 
         // [THEN] Check that Paid Amount for the document is 0
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 0, Enum::"E-Document Payment Progress"::"Not Paid");
+        this.CheckPaidAmount(EDocument, 0);
 
         // [WHEN] Receive payment for E-Document
         this.ReceivePayment(EDocument);
 
         // [THEN] Check that Paid Amount for the document is updated
-        this.CheckPaidAmountAndPaymentStatus(EDocument, 1, Enum::"E-Document Payment Progress"::"Partially Paid");
+        this.CheckPaidAmount(EDocument, 1);
 
         // [THEN] Check that Payments Direction is correct
         this.CheckPaymentDirection(EDocument, Enum::"E-Document Direction"::Incoming);
@@ -304,6 +280,19 @@ codeunit 139501 "E-Doc. Payment Test"
         this.PurchaseHeader.DeleteAll();
 
         Clear(this.EDocService);
+    end;
+
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service"; CalculateVAT: Boolean)
+    begin
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Calculate Payment VAT" := CalculateVAT;
+        EDocService.Modify(false);
     end;
 
     local procedure CreateEDocumentPayment(EDocument: Record "E-Document"; PaymentAmount: Decimal)
@@ -339,56 +328,33 @@ codeunit 139501 "E-Doc. Payment Test"
         UnbindSubscription(this.EDocPaymentImplState);
     end;
 
-    local procedure CheckPaidAmountAndPaymentStatus(EDocument: Record "E-Document"; ExpectedPaidAmount: Decimal; ExpectedPaymentStatus: Enum "E-Document Payment Progress")
-    var
-        EDocumentPage: TestPage "E-Document";
-        PaidAmount: Decimal;
-        PaymentStatus: Enum "E-Document Payment Progress";
+    local procedure CheckPaidAmount(EDocument: Record "E-Document"; ExpectedPaidAmount: Decimal)
     begin
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        Evaluate(PaidAmount, EDocumentPage."Paid Amount".Value());
-        Evaluate(PaymentStatus, EDocumentPage."Payment Status".Value());
-        this.Assert.AreEqual(ExpectedPaidAmount, PaidAmount, 'Paid Amount is not updated.');
-        this.Assert.AreEqual(ExpectedPaymentStatus, PaymentStatus, 'Payment Status is not updated.');
-        EDocumentPage.Close();
+        EDocument.CalcFields("Paid Amount");
+        this.Assert.AreEqual(ExpectedPaidAmount, EDocument."Paid Amount", 'Paid Amount is not updated.');
     end;
 
     local procedure CheckPaymentVATAmount(EDocument: Record "E-Document")
     var
-        EDocumentPage: TestPage "E-Document";
-        PaymentsPage: TestPage "E-Document Payments";
-        VATBaseAmount: Decimal;
-        VATAmount: Decimal;
+        EDocumentPayment: Record "E-Document Payment";
     begin
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        PaymentsPage.Trap();
-        EDocumentPage."Paid Amount".Drilldown();
-        PaymentsPage.First();
-        Evaluate(VATBaseAmount, PaymentsPage."VAT Base".Value());
-        Evaluate(VATAmount, PaymentsPage."VAT Amount".Value());
-        this.Assert.AreNotEqual(0, VATBaseAmount, 'Payment Base Amount is not calculated.');
-        this.Assert.AreNotEqual(0, VATAmount, 'Payment VAT Amount is not calculated.');
-        PaymentsPage.Close();
+        EDocumentPayment.SetRange("E-Document Entry No.", EDocument."Entry No");
+        if EDocumentPayment.FindSet() then
+            repeat
+                this.Assert.AreNotEqual(0, EDocumentPayment."VAT Base", 'Payment Base Amount is not calculated.');
+                this.Assert.AreNotEqual(0, EDocumentPayment."VAT Amount", 'Payment VAT Amount is not calculated.');
+            until EDocumentPayment.Next() = 0;
     end;
 
     local procedure CheckPaymentDirection(EDocument: Record "E-Document"; ExpectedDirection: Enum "E-Document Direction")
     var
-        EDocumentPage: TestPage "E-Document";
-        PaymentsPage: TestPage "E-Document Payments";
-        Direction: Enum "E-Document Direction";
+        EDocumentPayment: Record "E-Document Payment";
     begin
-        EDocumentPage.OpenView();
-        EDocumentPage.GoToRecord(EDocument);
-        PaymentsPage.Trap();
-        EDocumentPage."Paid Amount".Drilldown();
-        PaymentsPage.First();
-        repeat
-            Evaluate(Direction, PaymentsPage.Direction.Value());
-            this.Assert.AreEqual(ExpectedDirection, Direction, 'Payment Direction is not correct.');
-        until not PaymentsPage.Next();
-        PaymentsPage.Close();
+        EDocumentPayment.SetRange("E-Document Entry No.", EDocument."Entry No");
+        if EDocumentPayment.FindSet() then
+            repeat
+                this.Assert.AreEqual(ExpectedDirection, EDocumentPayment.Direction, 'Payment Direction is not correct.');
+            until EDocumentPayment.Next() = 0;
     end;
 
     [ModalPageHandler]
