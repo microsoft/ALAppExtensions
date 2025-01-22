@@ -677,27 +677,6 @@ codeunit 6140 "E-Doc. Import"
     end;
 #endif
 
-    // local procedure HandleSingleDocumentUpload(var Documents: List of [FileUpload]; var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var Document: FileUpload)
-
-    // begin
-    //     Document := Documents.Get(1);
-    //     if not this.UploadDocument(EDocument, EDocumentService, Document) then
-    //         Error(EDocumentAlreadyExistErr,
-    //                 EDocument.FieldCaption("Incoming E-Document No."),
-    //                 EDocument."Incoming E-Document No.",
-    //                 EDocument.FieldCaption("Bill-to/Pay-to No."),
-    //                 EDocument."Bill-to/Pay-to No.",
-    //                 EDocument.FieldCaption("Document Date"),
-    //                 EDocument."Document Date");
-
-    //     if EDocument."Entry No" <> 0 then begin
-    //         this.ProcessDocument(EDocument, false);
-    //         if EDocErrorHelper.HasErrors(EDocument) then
-    //             if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
-    //                 Page.Run(Page::"E-Document", EDocument);
-    //     end;
-    // end;
-
     local procedure HandleMultipleDocumentUpload(var Documents: List of [FileUpload]; var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         Document: FileUpload;
