@@ -191,6 +191,7 @@ table 6121 "E-Document"
             CalcFormula = sum("E-Document Payment".Amount where("E-Document Entry No." = field("Entry No")));
         }
     }
+
     keys
     {
         key(Key1; "Entry No")

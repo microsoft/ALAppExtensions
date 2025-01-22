@@ -32,5 +32,4 @@ codeunit 6105 "Empty Payment Handler" implements IDocumentPaymentHandler
     begin
         // This method serves as a placeholder implementation for the IDocumentPaymentHandler interface.
     end;
-
 }

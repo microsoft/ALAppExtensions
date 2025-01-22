@@ -297,11 +297,11 @@ codeunit 139501 "E-Doc. Payment Test"
         EDocumentPayment: Record "E-Document Payment";
     begin
         Clear(this.EDocPaymentImplState);
-        EDocument.DeleteAll();
-        EDocumentPayment.DeleteAll();
+        EDocument.DeleteAll(false);
+        EDocumentPayment.DeleteAll(false);
 
         Clear(this.PurchaseHeader);
-        this.PurchaseHeader.DeleteAll();
+        this.PurchaseHeader.DeleteAll(false);
 
         Clear(this.EDocService);
     end;
@@ -325,7 +325,7 @@ codeunit 139501 "E-Doc. Payment Test"
         EDocumentPayment.Validate("E-Document Entry No.", EDocumentEntryNo);
         EDocumentPayment.Date := Today();
         EDocumentPayment.Validate(Amount, Amount);
-        EDocumentPayment.Insert();
+        EDocumentPayment.Insert(true);
     end;
 
     local procedure ReceivePayment(EDocument: Record "E-Document")

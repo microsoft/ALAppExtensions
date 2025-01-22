@@ -767,7 +767,7 @@ codeunit 139629 "Library - E-Document"
             EDocService."Document Format" := "E-Document Format"::Mock;
             EDocService."Service Integration V2" := ServiceIntegration;
             EDocService."Payment Integration" := PaymentIntegration;
-            EDocService.Insert();
+            EDocService.Insert(true);
         end;
     end;
 

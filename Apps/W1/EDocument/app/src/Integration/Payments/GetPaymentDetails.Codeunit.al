@@ -36,7 +36,6 @@ codeunit 6107 "Get Payment Details"
         this.IDocumentPaymentHandler := PaymentHandler;
     end;
 
-
     /// <summary>
     /// Sets the parameters for the payment information receiving.
     /// </summary>
