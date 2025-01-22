@@ -303,6 +303,13 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
+    local procedure SetSendEDocViaEmailOnBeforePostAndSend(var SalesHeader: Record "Sales Header")
+    begin
+        SalesHeader.Validate("Send E-Document via Email", true);
+        SalesHeader.Modify(false);
+    end;
+
     var
         EDocExport: Codeunit "E-Doc. Export";
         EDocumentHelper: Codeunit "E-Document Helper";
