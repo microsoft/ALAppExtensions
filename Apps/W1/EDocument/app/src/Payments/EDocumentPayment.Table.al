@@ -32,7 +32,7 @@ table 6101 "E-Document Payment"
             AutoIncrement = true;
             AllowInCustomizations = Always;
         }
-        field(20; "Date"; Date)
+        field(20; Date; Date)
         {
             Caption = 'Date';
             ToolTip = 'Specifies the date when the payment was made.';

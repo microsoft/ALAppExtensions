@@ -18,7 +18,7 @@ page 6101 "E-Document Payments"
         {
             repeater(General)
             {
-                field("Date"; Rec."Date")
+                field(Date; Rec.Date)
                 {
                     Editable = this.PaymentEditable;
                 }

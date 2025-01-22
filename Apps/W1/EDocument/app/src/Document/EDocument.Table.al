@@ -192,6 +192,7 @@ table 6121 "E-Document"
             ToolTip = 'Specifies the amount that has already been paid.';
         }
     }
+
     keys
     {
         key(Key1; "Entry No")
