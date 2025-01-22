@@ -65,6 +65,7 @@ page 6122 "E-Documents"
                 Caption = 'New From File';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
+                Visible = false;
 
                 trigger OnAction()
                 begin
@@ -74,7 +75,7 @@ page 6122 "E-Documents"
             fileuploadaction(ImportManuallyMultiple)
             {
                 Caption = 'Import Files';
-                ToolTip = 'Create multiple electronic documents by uploading single or multiple files.';
+                ToolTip = 'Create electronic documents by uploading single or multiple files.';
                 Image = Import;
                 AllowedFileExtensions = '.xml';
                 AllowMultipleFiles = true;
@@ -104,7 +105,7 @@ page 6122 "E-Documents"
         }
         area(Promoted)
         {
-            actionref(Promoted_ImportManually; ImportManually) { }
+            actionref(Promoted_ImportManually; ImportManually) { Visible = false; }
             actionref(Promoted_ImportManuallyMultiple; ImportManuallyMultiple) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
