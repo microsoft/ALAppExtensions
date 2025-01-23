@@ -60,18 +60,23 @@ page 6122 "E-Documents"
     {
         area(Processing)
         {
+#if not CLEAN26
             action(ImportManually)
             {
                 Caption = 'New From File';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
                 Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Functionality moved to "Import Files" action.';
 
                 trigger OnAction()
                 begin
                     NewFromFile();
                 end;
             }
+#endif
             fileuploadaction(ImportManuallyMultiple)
             {
                 Caption = 'Import Files';

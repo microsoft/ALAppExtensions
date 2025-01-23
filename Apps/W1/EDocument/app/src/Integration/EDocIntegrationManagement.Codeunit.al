@@ -244,7 +244,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocument: Record "E-Document";
         EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
     begin
-        // Commit before getting basic info with error handling (if Codeunit.Run then )
+        // Commit before getting basic info with error handling (if Codeunit.Run then)
         Commit();
         EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
         if not EDocGetBasicInfo.Run() then
