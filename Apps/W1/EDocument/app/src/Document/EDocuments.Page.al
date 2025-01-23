@@ -113,7 +113,15 @@ page 6122 "E-Documents"
         }
         area(Promoted)
         {
-            actionref(Promoted_ImportManually; ImportManually) { Visible = false; }
+#if not CLEAN26
+            actionref(Promoted_ImportManually; ImportManually)
+            {
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Functionality moved to "Import Files" action.';
+            }
+#endif
             actionref(Promoted_ImportManuallyMultiple; ImportManuallyMultiple) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
