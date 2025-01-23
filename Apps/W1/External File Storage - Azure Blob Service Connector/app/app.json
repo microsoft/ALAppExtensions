@@ -12,7 +12,13 @@
     "logo":  "ExtensionLogo.png",
     "application":  "26.0.0.0",
     "platform":  "26.0.0.0",
-    "internalsVisibleTo":  [],
+    "internalsVisibleTo":  [
+        {
+            "id": "adcda309-4da8-43b8-b05d-d0287462ed42",
+            "name": "External File Storage - Azure Blob Service Connector Tests",
+            "publisher": "Microsoft"
+        }
+    ],
     "dependencies":  [],
     "screenshots":  [],
     "idRanges":  [

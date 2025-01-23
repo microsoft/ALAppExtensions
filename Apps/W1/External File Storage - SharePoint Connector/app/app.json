@@ -12,7 +12,13 @@
     "logo":  "ExtensionLogo.png",
     "application":  "26.0.0.0",
     "platform":  "26.0.0.0",
-    "internalsVisibleTo":  [],
+    "internalsVisibleTo":  [
+        {
+            "id": "b072f3f0-db0e-4331-b30d-4c0ebbcde681",
+            "name": "External File Storage - SharePoint Connector Tests",
+            "publisher": "Microsoft"
+        }
+    ],
     "dependencies":  [],
     "screenshots":  [],
     "idRanges":  [
