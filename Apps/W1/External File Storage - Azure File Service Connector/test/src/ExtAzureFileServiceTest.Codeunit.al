@@ -26,7 +26,7 @@ codeunit 144571 "Ext. Azure File Service Test"
 
         // [When] Multiple accounts are registered
         for Index := 1 to 3 do begin
-            SetBasicAccount(Index);
+            SetBasicAccount();
 
             Assert.IsTrue(ExtFileConnector.RegisterAccount(FileAccount), 'Failed to register account.');
             AccountIds[Index] := FileAccount."Account Id";
@@ -45,6 +45,44 @@ codeunit 144571 "Ext. Azure File Service Test"
         end;
     end;
 
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('AccountRegisterPageHandler')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEnviromentCleanupDisablesAccounts()
+    var
+        FileAccount: Record "File Account";
+        ExtSharePointAccount: Record "Ext. File Share Account";
+        ExtFileConnector: Codeunit "Ext. File Share Connector Impl";
+        EnvironmentTriggers: Codeunit "Environment Triggers";
+        AccountIds: array[3] of Guid;
+        Index: Integer;
+    begin
+        // [Scenario] Create multiple accounts
+        Initialize();
+
+        // [When] Multiple accounts are registered
+        for Index := 1 to 3 do begin
+            SetBasicAccount();
+
+            Assert.IsTrue(ExtFileConnector.RegisterAccount(FileAccount), 'Failed to register account.');
+            AccountIds[Index] := FileAccount."Account Id";
+
+            // [Then] Accounts are retrieved from the GetAccounts method
+            FileAccount.DeleteAll();
+            ExtFileConnector.GetAccounts(FileAccount);
+            Assert.RecordCount(FileAccount, Index);
+        end;
+
+        ExtSharePointAccount.SetRange(Disabled, true);
+        Assert.IsTrue(ExtSharePointAccount.IsEmpty(), 'Accounts are already disabled.');
+
+        EnvironmentTriggers.OnAfterCopyEnvironmentPerCompany(0, Any.AlphabeticText(30), 1, Any.AlphabeticText(30));
+
+        Assert.IsFalse(ExtSharePointAccount.IsEmpty(), 'Accounts are not disabled.');
+    end;
+
     [Test]
     [Scope('OnPrem')]
     [HandlerFunctions('AccountRegisterPageHandler,AccountShowPageHandler')]
@@ -58,7 +96,7 @@ codeunit 144571 "Ext. Azure File Service Test"
 
         // [Given] An file account
         Initialize();
-        SetBasicAccount(1);
+        SetBasicAccount();
         FileConnector.RegisterAccount(FileAccount);
 
         // [When] The ShowAccountInformation method is invoked
@@ -75,7 +113,7 @@ codeunit 144571 "Ext. Azure File Service Test"
         ExtFileShareAccount.DeleteAll();
     end;
 
-    local procedure SetBasicAccount(Index: Integer)
+    local procedure SetBasicAccount()
     begin
         FileAccountMock.Name(CopyStr(Any.AlphanumericText(250), 1, 250));
         FileAccountMock.StorageAccountName(CopyStr(Any.AlphanumericText(250), 1, 250));
