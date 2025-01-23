@@ -14,7 +14,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         Assert: Codeunit Assert;
         EDocReceiveFiles: Codeunit "E-Doc. Receive Files";
         LibraryRandom: Codeunit "Library - Random";
-        IsInitialized: Boolean;
 
     [Test]
     procedure ManuallyCreateEDocumentFromStream()
@@ -26,13 +25,10 @@ codeunit 139501 "E-Doc. Manual Import Test"
         DocumentVendor: Record Vendor;
         TempBlob: Codeunit "Temp Blob";
         DocumentInStream: InStream;
-        DuplicateExists: Boolean;
-        NotProcessedDocuments: Integer;
     begin
         // [FEATURE] [E-Document] [Import] [Manual]
         // [SCENARIO] Manually create e-document from stream
         Initialize();
-        BindSubscription(EDocImplState);
 
         // [GIVEN] e-Document service to receive one single purchase invoice
         CreateEDocServiceToReceivePurchaseInvoice(EDocService);
@@ -46,64 +42,10 @@ codeunit 139501 "E-Doc. Manual Import Test"
 
         // [WHEN] Creating e-document from stream
         Clear(EDocument);
-        CreateEDocFromStream(EDocument, EDocService, DocumentInStream, false, DuplicateExists, NotProcessedDocuments);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream);
 
         // [THEN] Document and attachments are created correctly
         VerifyDocumentCreated(EDocument);
-
-        // Cleanup
-        UnbindSubscription(EDocImplState);
-    end;
-
-    [Test]
-    procedure ManuallyCreateTwoEDocumentsFromStreamWithDuplicate()
-    var
-        EDocService: Record "E-Document Service";
-        EDocument: Record "E-Document";
-        Item: Record Item;
-        VATPostingSetup: Record "VAT Posting Setup";
-        DocumentVendor: Record Vendor;
-        TempBlob: Codeunit "Temp Blob";
-        DocumentInStream, DocumentInStream2 : InStream;
-        DuplicateExists: Boolean;
-        NotProcessedDocuments: Integer;
-    begin
-        // [FEATURE] [E-Document] [Import] [Manual]
-        // [SCENARIO] Manually create two e-documents from stream where second one will be duplicate
-        Initialize();
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] e-Document service to receive invoices
-        CreateEDocServiceToReceivePurchaseInvoice(EDocService);
-        // [GIVEN] Vendor with VAT Posting Setup
-        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
-        // [GIVEN] Item with item reference
-        CreateItemWithReference(Item, VATPostingSetup);
-        // [GIVEN] Two incoming PEPPOL document streams with same document number
-        CreateIncomingPEPPOLBlob(DocumentVendor, TempBlob);
-        TempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
-        TempBlob.CreateInStream(DocumentInStream2, TextEncoding::UTF8);
-
-        // [WHEN] Creating first e-document from stream
-        Clear(EDocument);
-        CreateEDocFromStream(EDocument, EDocService, DocumentInStream, true, DuplicateExists, NotProcessedDocuments);
-
-        // [THEN] Document and attachments are created correctly for first document
-        VerifyDocumentCreated(EDocument);
-        Assert.IsFalse(DuplicateExists, 'First document should not be duplicate');
-        Assert.AreEqual(0, NotProcessedDocuments, 'Wrong number of not processed documents');
-
-        // [WHEN] Creating second e-document from stream (duplicate)
-        Clear(EDocument);
-        CreateEDocFromStream(EDocument, EDocService, DocumentInStream2, true, DuplicateExists, NotProcessedDocuments);
-
-        // [THEN] Second document is skipped as duplicate 
-        Assert.IsTrue(DuplicateExists, 'Second document should be marked as duplicate');
-        Assert.AreEqual(1, NotProcessedDocuments, 'Wrong number of not processed documents');
-        Assert.AreEqual(0, EDocument."Entry No", 'Duplicate document should not be created');
-
-        // Cleanup
-        UnbindSubscription(EDocImplState);
     end;
 
     local procedure CreateEDocServiceToReceivePurchaseInvoice(var EDocService: Record "E-Document Service")
@@ -141,23 +83,17 @@ codeunit 139501 "E-Doc. Manual Import Test"
         exit(IncommingDocNo);
     end;
 
-    local procedure CreateEDocFromStream(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var DocumentInStream: InStream; MultipleDocuments: Boolean; var DuplicateExists: Boolean; var NotProcessedDocuments: Integer)
+    local procedure CreateEDocFromStream(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var DocumentInStream: InStream)
     var
         EDocumentReceive: Codeunit "E-Doc. Import";
     begin
-        EDocumentReceive.CreateEDocumentFromStream(
-            EDocument,
-            EDocService,
-            DocumentInStream,
-            MultipleDocuments,
-            DuplicateExists,
-            NotProcessedDocuments);
+        EDocumentReceive.CreateEDocumentFromStream(EDocument, EDocService, DocumentInStream);
     end;
 
     local procedure VerifyDocumentCreated(var EDocument: Record "E-Document")
     begin
         Assert.AreEqual(
-            Format(Enum::"E-Document Service Status"::"Imported Document Created"),
+            Enum::"E-Document Service Status"::"Imported Document Created",
             GetLastServiceStatus(EDocument),
             'Wrong service status for processed document');
         Assert.IsFalse(HasErrors(EDocument), 'Document should not have errors');
@@ -183,20 +119,15 @@ codeunit 139501 "E-Doc. Manual Import Test"
         DocumentAttachment.DeleteAll(false);
 
         EDocument.DeleteAll();
-
-        if IsInitialized then
-            exit;
-
-        IsInitialized := true;
     end;
 
-    local procedure GetLastServiceStatus(EDocument: Record "E-Document"): Text
+    local procedure GetLastServiceStatus(EDocument: Record "E-Document"): Enum "E-Document Service Status"
     var
         EDocServiceStatus: Record "E-Document Service Status";
     begin
         EDocServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         if EDocServiceStatus.FindLast() then
-            exit(Format(EDocServiceStatus.Status));
+            exit(EDocServiceStatus.Status);
     end;
 
     local procedure HasErrors(EDocument: Record "E-Document"): Boolean
