@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.Sales.Customer;
+using System.Reflection;
 using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
@@ -325,27 +327,41 @@ codeunit 6103 "E-Document Subscription"
     local procedure AttachEDocumentToInvoiceEmail(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary; EmailDocName: Text[250])
     var
         EDocument: Record "E-Document";
+    begin
+        if GetEDocumentForSalesInvocie(PostedDocNo, EDocument) then
+            AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument);
+    end;
+
+    local procedure GetEDocumentForSalesInvocie(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
+    var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
         SalesInvoiceHeader.Get(PostedDocNo);
         if SalesInvoiceHeader."Send E-Document via Email" then begin
             EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
             if EDocument.FindFirst() then
-                AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument)
+                exit(true);
         end;
     end;
 
-    local procedure AttachEDocumentToCrMemoEmail(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary; EmailDocName: Text[250])
+    local procedure GetEDocumentForSalesCrMemo(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
     var
-        EDocument: Record "E-Document";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
         SalesCrMemoHeader.Get(PostedDocNo);
         if SalesCrMemoHeader."Send E-Document via Email" then begin
             EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
             if EDocument.FindFirst() then
-                AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument)
+                exit(true);
         end;
+    end;
+
+    local procedure AttachEDocumentToCrMemoEmail(PostedDocNo: Code[20]; var TempEmailItem: Record "Email Item" temporary; EmailDocName: Text[250])
+    var
+        EDocument: Record "E-Document";
+    begin
+        if GetEDocumentForSalesCrMemo(PostedDocNo, EDocument) then
+            AddEDocumentEmailAttachment(PostedDocNo, TempEmailItem, EmailDocName, EDocument);
     end;
 
     local procedure AddEDocumentEmailAttachment(
@@ -354,17 +370,23 @@ codeunit 6103 "E-Document Subscription"
         EmailDocName: Text[250];
         EDocument: Record "E-Document")
     var
-        EDocumentService: Record "E-Document Service";
-        EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocumentInStream: InStream;
         EDocumentAttchmentName: Text[250];
     begin
+        GetBlobAttachmentFromEDocument(EDocument, PostedDocNo, EmailDocName, TempBlob, EDocumentAttchmentName);
+        TempBlob.CreateInStream(EDocumentInStream);
+        TempEmailItem.AddAttachment(EDocumentInStream, EDocumentAttchmentName);
+    end;
+
+    local procedure GetBlobAttachmentFromEDocument(EDocument: Record "E-Document"; PostedDocNo: Code[20]; EmailDocName: Text[250]; var TempBlob: Codeunit "Temp Blob"; var EDocumentAttchmentName: Text[250])
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocumentLog: Codeunit "E-Document Log";
+    begin
         EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
-        TempBlob.CreateInStream(EDocumentInStream);
         EDocumentAttchmentName := StrSubstNo(EDocumentAttchmentNameTok, EmailDocName, PostedDocNo);
-        TempEmailItem.AddAttachment(EDocumentInStream, EDocumentAttchmentName);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
@@ -400,17 +422,68 @@ codeunit 6103 "E-Document Subscription"
     end;
 
 
-    // [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnAfterSendToEMail', '', false, false)]
-    // local procedure OnAfterSendToEMail(var DocumentSendingProfile: Record "Document Sending Profile"; ReportUsage: Enum "Report Selection Usage"; RecordVariant: Variant; DocNo: Code[20]; DocName: Text[150]; ToCust: Code[20]; DocNoFieldNo: Integer; ShowDialog: Boolean)
-    // begin
-    //     if DocumentSendingProfile."E-Mail Attachment" = DocumentSendingProfile."E-Mail Attachment"::"E-Document" then
-    //         case ReportUsage of
-    //             Enum::"Report Selection Usage"::"S.Invoice".AsInteger():
-    //                 AttachEDocumentToInvoiceEmail(DocNo, TempEmailItem, DocName);
-    //             Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger():
-    //                 AttachEDocumentToCrMemoEmail(DocNo, TempEmailItem, DocName);
-    //         end;
-    // end; //Implement email generation for Attachment E-Document type
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnAfterSendToEMail', '', false, false)]
+    local procedure OnAfterSendToEMail(
+        var DocumentSendingProfile: Record "Document Sending Profile";
+        ReportUsage: Enum "Report Selection Usage";
+        RecordVariant: Variant;
+        DocNo: Code[20];
+        DocName: Text[150];
+        ToCust: Code[20];
+        DocNoFieldNo: Integer;
+        ShowDialog: Boolean)
+    var
+        ReportSelections: Record "Report Selections";
+        Customer: Record Customer;
+        EDocument: Record "E-Document";
+        DocumentMailing: Codeunit "Document-Mailing";
+        TypeHelper: Codeunit "Type Helper";
+        TempBlob: Codeunit "Temp Blob";
+        SourceReference: RecordRef;
+        SourceTableIDs: List of [Integer];
+        SourceIDs: List of [Guid];
+        SourceRelationTypes: List of [Integer];
+        ServerEmailBodyFilePath: Text[250];
+        SendToEmailAddress: Text[250];
+        AttachmentFileName: Text[250];
+        AttachmentStream: InStream;
+    begin
+        if DocumentSendingProfile."E-Mail Attachment" = DocumentSendingProfile."E-Mail Attachment"::"E-Document" then begin
+            TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
+
+            case SourceReference.Number() of
+                Database::"Sales Invoice Header":
+                    if GetEDocumentForSalesInvocie(DocNo, EDocument) then;
+            // GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
+            end;
+            SourceTableIDs.Add(SourceReference.Number());
+            SourceIDs.Add(SourceReference.Field(SourceReference.SystemIdNo).Value());
+            SourceRelationTypes.Add(Enum::"Email Relation Type"::"Primary Source".AsInteger());
+
+            if Customer.Get(ToCust) then begin
+                SourceTableIDs.Add(Database::Customer);
+                SourceIDs.Add(Customer.SystemId);
+                SourceRelationTypes.Add(Enum::"Email Relation Type"::"Related Entity".AsInteger());
+            end;
+
+            TempBlob.CreateInStream(AttachmentStream);
+
+            ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
+            DocumentMailing.EmailFile(
+                AttachmentStream,
+                AttachmentFileName,
+                ServerEmailBodyFilePath,
+                DocNo,
+                SendToEmailAddress,
+                DocName,
+                not ShowDialog,
+                ReportUsage.AsInteger(),
+                SourceTableIDs,
+                SourceIDs,
+                SourceRelationTypes
+            );
+        end;
+    end; //Implement email generation for Attachment E-Document type
 
     var
         EDocExport: Codeunit "E-Doc. Export";
