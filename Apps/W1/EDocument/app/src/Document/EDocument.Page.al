@@ -357,9 +357,13 @@ page 6121 "E-Document"
                     Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
+                    var
+                        EDocumentService: Record "E-Document Service";
                     begin
-                        EDocImport.UploadDocument(Rec);
-                        CurrPage.Update();
+                        if EDocImport.ChooseEDocumentService(EDocumentService) then begin
+                            EDocImport.UploadDocument(Rec, EDocumentService);
+                            CurrPage.Update();
+                        end;
                     end;
                 }
                 action(TextToAccountMapping)

@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
@@ -17,15 +16,11 @@ codeunit 6140 "E-Doc. Import"
         tabledata "E-Document" = im,
         tabledata "E-Doc. Imported Line" = imd;
 
-    internal procedure UploadDocument(var EDocument: Record "E-Document")
+    internal procedure UploadDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
-        EDocumentService: Record "E-Document Service";
         InStr: InStream;
         FileName: Text;
     begin
-        if not this.ChooseEDocumentService(EDocumentService) then
-            exit;
-
         if not UploadIntoStream('', '', '', FileName, InStr) then
             exit;
 
@@ -40,15 +35,11 @@ codeunit 6140 "E-Doc. Import"
         exit(this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInStream));
     end;
 
-    internal procedure UploadDocuments(Documents: List of [FileUpload])
+    internal procedure UploadDocuments(Documents: List of [FileUpload]; EDocumentService: Record "E-Document Service")
     var
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
     begin
-        if Documents.Count = 0 then
-            exit;
-
-        if not this.ChooseEDocumentService(EDocumentService) then
+        if Documents.Count() = 0 then
             exit;
 
         this.HandleMultipleDocumentUpload(Documents, EDocument, EDocumentService);
@@ -309,8 +300,7 @@ codeunit 6140 "E-Doc. Import"
         UpdateEDocumentRecordId(EDocument, EDocument."Document Type", DocNo, RecordId);
     end;
 
-    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20];
-                                                                                              RecordId: RecordId)
+    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20]; RecordId: RecordId)
     begin
         EDocument."Document Type" := EDocType;
         EDocument."Document No." := DocNo;
@@ -627,9 +617,9 @@ codeunit 6140 "E-Doc. Import"
             until TempEDocImportedLine.Next() = 0;
     end;
 
-    local procedure ChooseEDocumentService(var EDocumentService: Record "E-Document Service"): Boolean
+    internal procedure ChooseEDocumentService(var EDocumentService: Record "E-Document Service"): Boolean
     begin
-        exit(not (Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK));
+        exit(Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK);
     end;
 
     local procedure ImportEDocumentFromStream(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var InStr: InStream): Boolean

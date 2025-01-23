@@ -79,14 +79,17 @@ page 6122 "E-Documents"
                 Image = Import;
                 AllowedFileExtensions = '.xml';
                 AllowMultipleFiles = true;
+
                 trigger OnAction(Files: List of [FileUpload])
                 var
+                    EDocumentService: Record "E-Document Service";
                     EDocImport: Codeunit "E-Doc. Import";
                 begin
-                    EDocImport.UploadDocuments(Files);
-                    CurrPage.Update();
+                    if EDocImport.ChooseEDocumentService(EDocumentService) then begin
+                        EDocImport.UploadDocuments(Files, EDocumentService);
+                        CurrPage.Update(true);
+                    end;
                 end;
-
             }
             action(EDocumentServices)
             {
@@ -118,15 +121,18 @@ page 6122 "E-Documents"
     local procedure NewFromFile()
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocImport: Codeunit "E-Doc. Import";
         EDocErrorHelper: Codeunit "E-Document Error Helper";
     begin
-        EDocImport.UploadDocument(EDocument);
-        if EDocument."Entry No" <> 0 then begin
-            EDocImport.ProcessDocument(EDocument, false);
-            if EDocErrorHelper.HasErrors(EDocument) then
-                if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
-                    Page.Run(Page::"E-Document", EDocument);
+        if EDocImport.ChooseEDocumentService(EDocumentService) then begin
+            EDocImport.UploadDocument(EDocument, EDocumentService);
+            if EDocument."Entry No" <> 0 then begin
+                EDocImport.ProcessDocument(EDocument, false);
+                if EDocErrorHelper.HasErrors(EDocument) then
+                    if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
+                        Page.Run(Page::"E-Document", EDocument);
+            end;
         end;
     end;
 }
