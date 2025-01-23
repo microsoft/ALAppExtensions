@@ -20,6 +20,8 @@ codeunit 139624 "E-Doc E2E Test"
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
         SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
         DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
+        DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted.';
 
     [Test]
     procedure CreateEDocumentBeforeAfterEventsSuccessful()
@@ -1448,6 +1450,87 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Delete();
     end;
 
+    [Test]
+    internal procedure DeleteDuplicateEDocumentSuccess()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"E-Document Integration"::"Mock");
+
+        // [GIVEN] Create duplicate e-document
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+
+        // [THEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [THEN] Delete ok
+        EDocument.Delete(true);
+    end;
+
+    [Test]
+    internal procedure DeleteNonDuplicateEDocumentNotAllowed()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"E-Document Integration"::"Mock");
+
+        // [GIVEN] Create single e-document
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+
+        // [THEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [THEN] Delete not allowed
+        asserterror EDocument.Delete(true);
+        Assert.ExpectedError(this.DeleteUniqueNotAllowedErr);
+    end;
+
+    [Test]
+    internal procedure DeleteProcessedEDocumentNotAllowed()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"E-Document Integration"::"Mock");
+
+        // [GIVEN] Create duplicate e-document and set to processed
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::Processed);
+
+        // [THEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [THEN] Delete not allowed
+        asserterror EDocument.Delete(true);
+        Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
+    end;
+
+    local procedure CreateIncomingEDocument(VendorNo: Code[20]; Status: Enum "E-Document Status")
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.Init();
+        EDocument."Document Type" := "E-Document Type"::"Purchase Invoice";
+        EDocument.Direction := Enum::"E-Document Direction"::Incoming;
+        EDocument."Document Date" := WorkDate();
+        EDocument."Incoming E-Document No." := 'TEST';
+        EDocument."Bill-to/Pay-to No." := VendorNo;
+        EDocument.Status := Status;
+        EDocument.Insert(false);
+    end;
+
     [ModalPageHandler]
     internal procedure EDocServicesPageHandler(var EDocServicesPage: TestPage "E-Document Services")
     var
@@ -2252,6 +2335,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [THEN] Delete ok
         PurchaseHeader.Delete();
     end;
+
 
 #endif
 #pragma warning restore AS0018
