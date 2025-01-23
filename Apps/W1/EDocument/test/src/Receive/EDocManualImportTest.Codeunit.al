@@ -125,14 +125,14 @@ codeunit 139501 "E-Doc. Manual Import Test"
         TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
         TempXMLBuffer.FindFirst();
         TempXMLBuffer.Value := DocumentVendor."VAT Registration No.";
-        TempXMLBuffer.Modify();
+        TempXMLBuffer.Modify(false);
 
         TempXMLBuffer.Reset();
         TempXMLBuffer.SetRange(Path, '/Invoice/cbc:ID');
         TempXMLBuffer.FindFirst();
         IncommingDocNo := LibraryRandom.RandText(20);
         TempXMLBuffer.Value := IncommingDocNo;
-        TempXMLBuffer.Modify();
+        TempXMLBuffer.Modify(false);
 
         TempXMLBuffer.Reset();
         TempXMLBuffer.FindFirst();
@@ -179,8 +179,8 @@ codeunit 139501 "E-Doc. Manual Import Test"
         Clear(PurchaseHeader);
         Clear(LibraryVariableStorage);
 
-        PurchaseHeader.DeleteAll();
-        DocumentAttachment.DeleteAll();
+        PurchaseHeader.DeleteAll(false);
+        DocumentAttachment.DeleteAll(false);
 
         EDocument.DeleteAll();
 
@@ -190,7 +190,7 @@ codeunit 139501 "E-Doc. Manual Import Test"
         IsInitialized := true;
     end;
 
-    local procedure GetLastServiceStatus(EDocument: Record "E-Document") StatusText: Text
+    local procedure GetLastServiceStatus(EDocument: Record "E-Document"): Text
     var
         EDocServiceStatus: Record "E-Document Service Status";
     begin
@@ -221,9 +221,9 @@ codeunit 139501 "E-Doc. Manual Import Test"
         ItemReference: Record "Item Reference";
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         InventoryPostingGroup: Record "Inventory Posting Group";
-        LibraryInventory: Codeunit "Library - Inventory";
         UnitofMeasure: Record "Unit of Measure";
         ItemUnitofMeasure: Record "Item Unit of Measure";
+        LibraryInventory: Codeunit "Library - Inventory";
     begin
         Item.Init();
         Item."No." := '1000';
