@@ -47,9 +47,15 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
                 }
             }
         }
+
+        modify(Control16)
+        {
+            Visible = ElectronicDocumentFormatEmailVisible;
+        }
     }
     var
         ElectronicDocumentVisible: Boolean;
+        ElectronicDocumentFormatEmailVisible: Boolean;
 
     trigger OnOpenPage()
     var
@@ -57,5 +63,21 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
         EDocumentFormat: Record "E-Document Service";
     begin
         ElectronicDocumentVisible := not ElectronicDocumentFormat.IsEmpty() or not EDocumentFormat.IsEmpty();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        SetEmailElectronicDocumentVisibility();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        SetEmailElectronicDocumentVisibility();
+    end;
+
+    local procedure SetEmailElectronicDocumentVisibility()
+    begin
+        ElectronicDocumentFormatEmailVisible := (Rec."E-Mail Attachment" <> Rec."E-Mail Attachment"::PDF) and
+                                                    (Rec."E-Mail Attachment" <> Rec."E-Mail Attachment"::"E-Document");
     end;
 }
