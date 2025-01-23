@@ -488,6 +488,12 @@ codeunit 6102 "E-Doc. Export"
         end;
     end;
 
+    internal procedure CreateEDocumentForPostedDocument(SourceDocumentHeader: RecordRef)
+    begin
+        this.CheckEDocument(SourceDocumentHeader, "E-Document Processing Phase"::Create);
+        this.CreateEDocument(SourceDocumentHeader);
+    end;
+
     var
         EDocumentProcessing: Codeunit "E-Document Processing";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
