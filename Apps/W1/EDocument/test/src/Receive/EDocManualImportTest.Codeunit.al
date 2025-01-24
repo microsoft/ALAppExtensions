@@ -85,9 +85,9 @@ codeunit 139501 "E-Doc. Manual Import Test"
 
     local procedure CreateEDocFromStream(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var DocumentInStream: InStream)
     var
-        EDocumentReceive: Codeunit "E-Doc. Import";
+        EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocumentReceive.CreateEDocumentFromStream(EDocument, EDocService, DocumentInStream);
+        EDocImport.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocService);
     end;
 
     local procedure VerifyDocumentCreated(var EDocument: Record "E-Document")

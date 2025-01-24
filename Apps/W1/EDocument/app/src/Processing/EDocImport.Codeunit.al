@@ -24,19 +24,21 @@ codeunit 6140 "E-Doc. Import"
         if not UploadIntoStream('', '', '', FileName, InStr) then
             exit;
 
-        this.ImportEDocumentFromStream(EDocument, EDocumentService, InStr);
+        this.HandleSingleDocumentUpload(InStr, EDocument, EDocumentService);
     end;
 
     internal procedure UploadDocuments(Documents: List of [FileUpload]; EDocumentService: Record "E-Document Service")
     var
         EDocument: Record "E-Document";
+        DocumentInStream: InStream;
     begin
         if Documents.Count() = 0 then
             exit;
 
-        if Documents.Count() = 1 then
-            this.HandleSingleDocumentUpload(Documents.Get(1), EDocument, EDocumentService)
-        else
+        if Documents.Count() = 1 then begin
+            Documents.Get(1).CreateInStream(DocumentInStream);
+            this.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocumentService)
+        end else
             this.HandleMultipleDocumentUpload(Documents, EDocument, EDocumentService);
     end;
 
@@ -662,7 +664,6 @@ codeunit 6140 "E-Doc. Import"
         TempBlob: Codeunit "Temp Blob";
         Document: FileUpload;
         DocumentInstream: InStream;
-        DocumentOutStream: OutStream;
         NotProcessedDocuments: Integer;
     begin
         this.SetHideDialogs(true);
@@ -671,13 +672,12 @@ codeunit 6140 "E-Doc. Import"
             Clear(EDocument);
             Clear(DocumentInstream);
             Clear(TempBlob);
-            TempBlob.CreateOutStream(DocumentOutStream);
             Document.CreateInStream(DocumentInstream);
-            CopyStream(DocumentOutStream, DocumentInstream);
+            CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
             if HasDuplciate(EDocument, TempBlob, EDocumentService."Document Format") then
                 NotProcessedDocuments += 1
             else begin
-                TempBlob.CreateInStream(DocumentInstream); // Restore InSteram as it was consumed by CopyStream
+                DocumentInstream.ResetPosition();
                 CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
             end;
         end;
@@ -688,15 +688,11 @@ codeunit 6140 "E-Doc. Import"
             Message(DocsImportedMsg);
     end;
 
-    internal procedure HandleSingleDocumentUpload(Document: FileUpload; EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure HandleSingleDocumentUpload(DocumentInstream: InStream; EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         TempBlob: Codeunit "Temp Blob";
-        DocumentInstream: InStream;
-        DocumentOutStream: OutStream;
     begin
-        TempBlob.CreateOutStream(DocumentOutStream);
-        Document.CreateInStream(DocumentInstream);
-        CopyStream(DocumentOutStream, DocumentInstream);
+        CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
         if HasDuplciate(EDocument, TempBlob, EDocumentService."Document Format") then
             Error(
                 EDocumentAlreadyExistErr,
@@ -707,7 +703,7 @@ codeunit 6140 "E-Doc. Import"
                 EDocument.FieldCaption("Document Date"),
                 EDocument."Document Date")
         else begin
-            TempBlob.CreateInStream(DocumentInstream); // Restore InStream as it was consumed by CopyStream
+            DocumentInstream.ResetPosition();
             CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
         end;
 
@@ -720,8 +716,7 @@ codeunit 6140 "E-Doc. Import"
     var
         IntegrationManagement: Codeunit "E-Doc. Integration Management";
     begin
-        if IntegrationManagement.HasDuplicate(EDocument, TempBlob, IEDocument) then
-            exit(true);
+        exit(IntegrationManagement.HasDuplicate(EDocument, TempBlob, IEDocument));
     end;
 
     internal procedure CreateEDocumentFromStream(
@@ -732,7 +727,6 @@ codeunit 6140 "E-Doc. Import"
         this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
         this.ProcessDocument(EDocument, false);
     end;
-
 
     var
         EDocumentLog: Codeunit "E-Document Log";
