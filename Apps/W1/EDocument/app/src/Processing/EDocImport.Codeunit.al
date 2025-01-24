@@ -622,10 +622,8 @@ codeunit 6140 "E-Doc. Import"
     local procedure ImportEDocumentFromStream(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var InStr: InStream)
     var
         TempBlob: Codeunit "Temp Blob";
-        OutStr: OutStream;
     begin
-        TempBlob.CreateOutStream(OutStr);
-        CopyStream(OutStr, InStr);
+        CopyStream(TempBlob.CreateOutStream(), InStr);
 
         EDocument.Direction := EDocument.Direction::Incoming;
         EDocument."Document Type" := Enum::"E-Document Type"::None;
@@ -676,10 +674,8 @@ codeunit 6140 "E-Doc. Import"
             CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
             if HasDuplciate(EDocument, TempBlob, EDocumentService."Document Format") then
                 NotProcessedDocuments += 1
-            else begin
-                DocumentInstream.ResetPosition();
+            else
                 CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
-            end;
         end;
 
         if NotProcessedDocuments > 0 then
@@ -688,7 +684,7 @@ codeunit 6140 "E-Doc. Import"
             Message(DocsImportedMsg);
     end;
 
-    internal procedure HandleSingleDocumentUpload(DocumentInstream: InStream; EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure HandleSingleDocumentUpload(DocumentInstream: InStream; var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         TempBlob: Codeunit "Temp Blob";
     begin
@@ -702,10 +698,8 @@ codeunit 6140 "E-Doc. Import"
                 EDocument."Bill-to/Pay-to No.",
                 EDocument.FieldCaption("Document Date"),
                 EDocument."Document Date")
-        else begin
-            DocumentInstream.ResetPosition();
+        else
             CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
-        end;
 
         if not this.HideDialogs and EDocErrorHelper.HasErrors(EDocument) then
             if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
@@ -724,6 +718,7 @@ codeunit 6140 "E-Doc. Import"
         EDocumentService: Record "E-Document Service";
         var DocumentInstream: InStream)
     begin
+        DocumentInstream.ResetPosition();
         this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
         this.ProcessDocument(EDocument, false);
     end;

@@ -48,6 +48,49 @@ codeunit 139501 "E-Doc. Manual Import Test"
         VerifyDocumentCreated(EDocument);
     end;
 
+    [Test]
+    procedure ManuallyCreateEDocumentFromStreamTwiceShouldThrowError()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+        TempBlob: Codeunit "Temp Blob";
+        DocumentInStream: InStream;
+        DocumentInStream2: InStream;
+        ErrorMessage: Text;
+    begin
+        // [FEATURE] [E-Document] [Import] [Manual] [Duplicate]
+        // [SCENARIO] Manually create e-document from stream twice should throw error for duplicate document
+        Initialize();
+
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        CreateEDocServiceToReceivePurchaseInvoice(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Incoming PEPPOL document stream (creating two streams from same blob for two imports)
+        CreateIncomingPEPPOLBlob(DocumentVendor, TempBlob);
+        TempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
+        TempBlob.CreateInStream(DocumentInStream2, TextEncoding::UTF8);
+
+        // [WHEN] Creating first e-document from stream
+        Clear(EDocument);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream);
+
+        // [THEN] First document should be created successfully
+        VerifyDocumentCreated(EDocument);
+
+        // [WHEN] Trying to create second e-document from same stream
+        Clear(EDocument);
+        asserterror CreateEDocFromStream(EDocument, EDocService, DocumentInStream2);
+
+        // [THEN] Error should be thrown about duplicate document
+        Assert.ExpectedError(GetDuplciateErrorText(EDocument));
+    end;
+
     local procedure CreateEDocServiceToReceivePurchaseInvoice(var EDocService: Record "E-Document Service")
     begin
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
@@ -194,5 +237,12 @@ codeunit 139501 "E-Doc. Manual Import Test"
         EDocService."Use Batch Processing" := false;
         EDocService."Validate Receiving Company" := false;
         EDocService.Modify(false);
+    end;
+
+    local procedure GetDuplciateErrorText(EDocument: Record "E-Document"): Text
+    var
+        EDocumentAlreadyExistErr: Label 'E-Document with %1 %2, %3 %4 and %5 %6 already exists.', Comment = '%1 - Incoming E-Document No. field caption, %2 - Incoming E-Document No. value, %3 - Bill-to/Pay-to No. field caption, %4 - Bill-to/Pay-to No. value, %5 - Document Date field caption, %6 - Document Date value.';
+    begin
+        exit(StrSubstNo(EDocumentAlreadyExistErr, EDocument.FieldCaption("Incoming E-Document No."), EDocument."Incoming E-Document No.", EDocument.FieldCaption("Bill-to/Pay-to No."), EDocument."Bill-to/Pay-to No.", EDocument.FieldCaption("Document Date"), EDocument."Document Date"));
     end;
 }
