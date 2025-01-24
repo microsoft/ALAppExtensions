@@ -297,6 +297,7 @@ codeunit 6103 "E-Document Subscription"
         EDocService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         EDocLogHelper: Codeunit "E-Document Log Helper";
+        EDocumentProcessing: Codeunit "E-Document Processing";
         PostedSourceDocumentHeader: RecordRef;
     begin
         PostedSourceDocumentHeader.GetTable(PostedRecord);
@@ -308,6 +309,7 @@ codeunit 6103 "E-Document Subscription"
 
         EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocLogHelper.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported Document Created");
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported Document Created");
     end;
 
     local procedure CreateEDocumentFromPosedDocument(PostedRecord: Variant)
