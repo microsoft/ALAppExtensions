@@ -18,7 +18,6 @@ page 6121 "E-Document"
     PageType = Card;
     SourceTable = "E-Document";
     InsertAllowed = false;
-    DeleteAllowed = false;
     ModifyAllowed = false;
     RefreshOnActivate = true;
 
