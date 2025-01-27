@@ -142,24 +142,9 @@ codeunit 6132 "E-Document Log"
     internal procedure GetDocumentBlobFromLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Boolean
     var
         EDocumentLog: Record "E-Document Log";
-        EDocumentHelper: Codeunit "E-Document Processing";
-        Telemetry: Codeunit Telemetry;
-        TelemetryDimensions: Dictionary of [Text, Text];
     begin
-        EDocumentLog.SetLoadFields("E-Doc. Entry No", Status);
-        EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
-        EDocumentLog.SetRange("Service Code", EDocumentService.Code);
-#if not CLEAN26
-        EDocumentLog.SetRange("Service Integration", EDocumentService."Service Integration");
-#endif
-        EDocumentLog.SetRange("Document Format", EDocumentService."Document Format");
-        EDocumentLog.SetRange(Status, EDocumentServiceStatus);
-        if not EDocumentLog.FindLast() then begin
-            EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
-            Telemetry.LogMessage('0000LCE', EDocTelemetryGetLogFailureLbl, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
-            exit(false);
-        end;
-        exit(EDocumentLog.GetDataStorage(TempBlob));
+        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, EDocumentServiceStatus) then
+            exit(EDocumentLog.GetDataStorage(TempBlob));
     end;
 
     internal procedure GetLastServiceFromLog(EDocument: Record "E-Document") EDocumentService: Record "E-Document Service"
@@ -173,7 +158,6 @@ codeunit 6132 "E-Document Log"
 
     var
         EDocDataStorageAlreadySetErr: Label 'E-Doc. Data Storage can not be overwritten with new entry';
-        EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
 
 #if not CLEAN26
     [IntegrationEvent(false, false)]

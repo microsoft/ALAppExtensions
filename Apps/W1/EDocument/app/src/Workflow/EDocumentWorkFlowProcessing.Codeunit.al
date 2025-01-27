@@ -118,6 +118,25 @@ codeunit 6135 "E-Document WorkFlow Processing"
             Filter := Filter + '|' + Value;
     end;
 
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; ResponseWorkflowStepInstance: Record "Workflow Step Instance")
+    var
+        WorkflowStepArgument: Record "Workflow Step Argument";
+        EDocumentService: Record "E-Document Service";
+    begin
+        if not ValidateFlowStep(EDocument, WorkflowStepArgument, ResponseWorkflowStepInstance) then
+            exit;
+        EDocumentService.Get(WorkflowStepArgument."E-Document Service");
+        ExportEDocument(EDocument, EDocumentService);
+    end;
+
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    begin
+        if IsEdocServiceUsingBatch(EDocumentService) then
+            DoBatchExport(EDocument, EDocumentService)
+        else
+            DoExport(EDocument, EDocumentService);
+    end;
+
     local procedure DoBatchSend(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     var
         TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary;
@@ -208,14 +227,14 @@ codeunit 6135 "E-Document WorkFlow Processing"
 
     local procedure DoSend(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     var
-        EDocExport: Codeunit "E-Doc. Export";
+        EDocumentLog: Record "E-Document Log";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         SendContext: Codeunit SendContext;
         Sent, IsAsync : Boolean;
     begin
         Sent := false;
-        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Exported) then
             Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then
@@ -272,6 +291,20 @@ codeunit 6135 "E-Document WorkFlow Processing"
                 exit(true);
             end;
         end;
+    end;
+
+    local procedure DoBatchExport(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    begin
+        Error('Procedure DoBatchExport not implemented.');
+    end;
+
+    local procedure DoExport(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        EDocExport: Codeunit "E-Doc. Export";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+    begin
+        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+            EDocumentBackgroundJobs.StartEdocumentExportedFlow(EDocument);
     end;
 
     var

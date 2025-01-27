@@ -89,10 +89,7 @@ codeunit 6102 "E-Doc. Export"
             EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
 
-            if SourceDocumentRequiresSendingEmail(SourceDocumentHeader) then
-                WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocCreated(), EDocument)
-            else
-                EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+            WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocCreated(), EDocument)
         end;
     end;
 
