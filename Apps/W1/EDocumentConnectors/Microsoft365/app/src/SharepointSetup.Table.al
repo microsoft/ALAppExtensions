@@ -30,7 +30,7 @@ table 6382 "Sharepoint Setup"
             var
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 DriveProcessing: Codeunit "Drive Processing";
-                IntegrationImpl: Codeunit "Integration Impl.";
+                DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
             begin
                 if Rec.Enabled then begin
                     if (Rec."Imp. Documents Folder" = '') or (Rec."Documents Folder" = '') then
@@ -38,14 +38,14 @@ table 6382 "Sharepoint Setup"
 
                     FeatureTelemetry.LogUptake('0000OBB', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Used);
                     FeatureTelemetry.LogUsage('0000OBC', DriveProcessing.FeatureName(), 'Sharepoint');
-                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, IntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
+                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
                 end else
-                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, IntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
+                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
             end;
         }
         field(3; "Documents Folder"; Text[2048])
         {
-            Caption = 'Documents';
+            Caption = 'Document Folder';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -60,7 +60,7 @@ table 6382 "Sharepoint Setup"
         }
         field(4; "Imp. Documents Folder"; Text[2048])
         {
-            Caption = 'Imported Documents';
+            Caption = 'Archive Folder';
             DataClassification = CustomerContent;
 
             trigger OnValidate()

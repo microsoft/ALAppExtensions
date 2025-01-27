@@ -71,7 +71,7 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityValueEntry: Record "Sustainability Value Entry";
         ShouldCalcExpectedCO2e: Boolean;
     begin
-        SkipUpdateCarbonEmissionValue := ItemLedgerEntry."Entry Type" <> ItemLedgerEntry."Entry Type"::Purchase;
+        SkipUpdateCarbonEmissionValue := ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase;
         SustainabilityValueEntry.Init();
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;

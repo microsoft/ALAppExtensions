@@ -34,6 +34,33 @@ pageextension 6230 "Sust. Resource Card" extends "Resource Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Default N2O Emission field.';
                 }
+                field("CO2e per Unit"; Rec."CO2e per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the CO2e per Unit field.';
+                }
+            }
+        }
+    }
+
+    actions
+    {
+        addafter("Resource Usage")
+        {
+            action("Calculate CO2e")
+            {
+                Caption = 'Calculate CO2e';
+                ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
             }
         }
     }
@@ -50,6 +77,16 @@ pageextension 6230 "Sust. Resource Card" extends "Resource Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Resource Emissions";
+    end;
+
+    local procedure RunCalculateCO2e()
+    var
+        Resource: Record Resource;
+        CalculateCO2e: Report "Sust. Resource Calculate CO2e";
+    begin
+        Resource.SetFilter("No.", Rec."No.");
+        CalculateCO2e.SetTableView(Resource);
+        CalculateCO2e.Run();
     end;
 
     var

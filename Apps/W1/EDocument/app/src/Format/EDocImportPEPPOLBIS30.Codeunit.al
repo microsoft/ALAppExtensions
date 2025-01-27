@@ -199,6 +199,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
 
         // Insert last line
         PurchaseLine.Insert();
+        PurchaseHeader."Prices Including VAT" := false;
         PurchaseHeader.Modify();
 
         // Allowance charge

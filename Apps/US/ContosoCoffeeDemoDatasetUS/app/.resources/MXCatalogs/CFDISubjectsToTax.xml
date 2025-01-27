@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-SubjectToTax xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ObjetoImp>
+		<Code>01</Code>
+		<Descripcion>No objeto de impuesto.</Descripcion>
+	</ObjetoImp>
+	<ObjetoImp>
+		<Code>02</Code>
+		<Descripcion>Sí objeto de impuesto.</Descripcion>
+	</ObjetoImp>
+	<ObjetoImp>
+		<Code>03</Code>
+		<Descripcion>Sí objeto del impuesto y no obligado al desglose.</Descripcion>
+	</ObjetoImp>
+</data-set-SubjectToTax>

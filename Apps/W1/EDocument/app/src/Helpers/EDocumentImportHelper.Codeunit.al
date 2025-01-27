@@ -269,9 +269,8 @@ codeunit 6109 "E-Document Import Helper"
         if (CompanyInformation.GLN = '') and (CompanyInformation."VAT Registration No." = '') then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), MissingCompanyInfoSetupErr);
 
-        if EDocument."Receiving Company GLN" <> '' then
-            if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
-                EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
+        if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
+            EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
 
         if not (ExtractVatRegNo(CompanyInformation."VAT Registration No.", '') in ['', ExtractVatRegNo(EDocument."Receiving Company VAT Reg. No.", '')]) then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo("VAT Registration No."), StrSubstNo(InvalidCompanyInfoVATRegNoErr, EDocument."Receiving Company VAT Reg. No."));

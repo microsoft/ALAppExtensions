@@ -13,11 +13,11 @@ permissionset 36951 "PowerBi Report Basic"
     Caption = 'Power BI Core Basic', MaxLength = 30;
     Assignable = true;
     Permissions =
-        tabledata "Dimension Set Entry" = R,
+        tabledata "PowerBI Flat Dim. Set Entry" = R,
         tabledata "PowerBI Reports Setup" = R,
         tabledata "Working Day" = R,
         tabledata "Account Category" = R,
-        table "Dimension Set Entry" = X,
+        table "PowerBI Flat Dim. Set Entry" = X,
         table "PowerBI Reports Setup" = X,
         table "Working Day" = X,
         table "Account Category" = X,

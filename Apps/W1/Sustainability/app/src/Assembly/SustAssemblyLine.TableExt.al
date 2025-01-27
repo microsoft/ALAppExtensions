@@ -1,9 +1,10 @@
 namespace Microsoft.Sustainability.Assembly;
 
 using Microsoft.Assembly.Document;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Inventory.Item;
 
 tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
 {
@@ -21,6 +22,7 @@ tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
                     ClearEmissionInformation(Rec);
 
                 if Rec."Sust. Account No." = '' then begin
+                    ClearEmissionInformation(Rec);
                     Rec.Validate("Sust. Account Category", '');
                     "Sust. Account Name" := '';
                 end else begin
@@ -79,6 +81,8 @@ tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("CO2e per Unit"));
 
                 UpdateSustainabilityEmission(Rec);
+                if not UpdateCO2eOnAssemblyHeader then
+                    UpdateCO2ePerUnitOnAssemblyHeader(Rec, Rec."Line No.", Rec."Total CO2e", true, (Rec."Sust. Account No." <> ''), true);
             end;
         }
         field(6215; "Total CO2e"; Decimal)
@@ -125,6 +129,19 @@ tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
             AssemblyLine."CO2e per Unit" := AssemblyLine."Total CO2e" / Denominator;
     end;
 
+    procedure SuspendUpdateCO2eInAssemblyHeader(SuspendUpdateCO2eOnHeader: Boolean)
+    begin
+        UpdateCO2eOnAssemblyHeader := SuspendUpdateCO2eOnHeader;
+    end;
+
+    procedure UpdateCO2ePerUnitOnAssemblyHeader(AssemblyLine: Record "Assembly Line"; CurrAssemblyLineNo: Integer; NewTotalCO2e: Decimal; ApplyLineNoFilter: Boolean; ExistSustAccLines: Boolean; CallModify: Boolean)
+    var
+        AssemblyHeader: Record "Assembly Header";
+    begin
+        if AssemblyHeader.Get(AssemblyLine."Document Type", AssemblyLine."Document No.") then
+            AssemblyHeader.UpdateCO2eInformation(AssemblyHeader, CurrAssemblyLineNo, NewTotalCO2e, ApplyLineNoFilter, ExistSustAccLines, CallModify);
+    end;
+
     local procedure ClearEmissionInformation(var AssemblyLine: Record "Assembly Line")
     begin
         AssemblyLine.Validate("CO2e per Unit", 0);
@@ -155,14 +172,22 @@ tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
     local procedure UpdateCO2eInformation()
     var
         Item: Record Item;
+        Resource: Record Resource;
     begin
-        if Rec.Type <> Rec.Type::Item then
-            exit;
+        case Rec.Type of
+            Rec.Type::Item:
+                begin
+                    Item.Get(Rec."No.");
 
-        if not Item.Get(Rec."No.") then
-            exit;
+                    Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+                end;
+            Rec.Type::Resource:
+                begin
+                    Resource.Get(Rec."No.");
 
-        Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+                    Rec.Validate("CO2e per Unit", Resource."CO2e per Unit");
+                end;
+        end;
     end;
 
     local procedure CopyFromSustainabilityAccount(var AssemblyLine: Record "Assembly Line")
@@ -180,5 +205,6 @@ tableextension 6252 "Sust. Assembly Line" extends "Assembly Line"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
+        UpdateCO2eOnAssemblyHeader: Boolean;
         NotAllowedToUseSustAccountForWaterOrWasteErr: Label 'It is not allowed to use Sustainability Account %1 for water or waste in Assembly document.', Comment = '%1 = Sust. Account No.';
 }
