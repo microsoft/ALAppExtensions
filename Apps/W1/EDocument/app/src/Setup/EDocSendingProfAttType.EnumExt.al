@@ -8,4 +8,8 @@ enumextension 6102 "E-Doc. Sending Prof. Att. Type" extends "Document Sending Pr
     {
         Caption = 'E-Document';
     }
+    value(6101; "PDF & E-Document")
+    {
+        Caption = 'PDF & E-Document';
+    }
 }

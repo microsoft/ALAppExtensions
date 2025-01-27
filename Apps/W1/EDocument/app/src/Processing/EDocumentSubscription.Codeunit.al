@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using System.IO;
 using Microsoft.Sales.Customer;
 using System.Reflection;
 using System.Utilities;
@@ -188,7 +189,8 @@ codeunit 6103 "E-Document Subscription"
             exit;
 
         if (Sender."E-Mail" <> Sender."E-Mail"::No) and
-            (Sender."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document") then
+            ((Sender."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document") or
+            (Sender."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document")) then
             Sender.TrySendToEMailGroupedMultipleSelection(
                 Enum::"Report Selection Usage".FromInteger(ReportUsage),
                 RecordVariant,
@@ -326,7 +328,7 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
-    local procedure GetEDocumentForSalesInvocie(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
+    local procedure GetEDocumentForSalesInvoice(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
@@ -360,13 +362,48 @@ codeunit 6103 "E-Document Subscription"
         EDocumentAttchmentName := StrSubstNo(EDocumentAttchmentNameTok, EmailDocName, PostedDocNo);
     end;
 
+    local procedure GetAttachment(DocNo: Code[20]; DocName: Text[150]; var SourceReference: RecordRef; var AttachmentFileName: Text[250]; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        case SourceReference.Number() of
+            Database::"Sales Invoice Header":
+                if GetEDocumentForSalesInvoice(DocNo, EDocument) then
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
+            Database::"Sales Cr.Memo Header":
+                if GetEDocumentForSalesCrMemo(DocNo, EDocument) then
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
+            else
+                exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure CreateSourceLists(
+        ToCust: Code[20]; var SourceReference: RecordRef;
+        var SourceTableIDs: List of [Integer]; var SourceIDs: List of [Guid];
+        var SourceRelationTypes: List of [Integer])
+    var
+        Customer: Record Customer;
+    begin
+        SourceTableIDs.Add(SourceReference.Number());
+        SourceIDs.Add(SourceReference.Field(SourceReference.SystemIdNo).Value());
+        SourceRelationTypes.Add(Enum::"Email Relation Type"::"Primary Source".AsInteger());
+
+        if Customer.Get(ToCust) then begin
+            SourceTableIDs.Add(Database::Customer);
+            SourceIDs.Add(Customer.SystemId);
+            SourceRelationTypes.Add(Enum::"Email Relation Type"::"Related Entity".AsInteger());
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
     local procedure SetSendEDocViaEmailOnBeforePostAndSend(var SalesHeader: Record "Sales Header")
     begin
         SalesHeader.Validate("Send E-Document via Email", true);
         SalesHeader.Modify(false);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforeValidateElectronicFormats, '', false, false)]
     local procedure OnBeforeValidateElectronicFormats(DocumentSendingProfile: Record "Document Sending Profile"; var IsHandled: Boolean)
@@ -375,7 +412,7 @@ codeunit 6103 "E-Document Subscription"
             IsHandled := true;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnAfterSendToEMail', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnAfterSendToEMail, '', false, false)]
     local procedure OnAfterSendToEMail(
         var DocumentSendingProfile: Record "Document Sending Profile";
         ReportUsage: Enum "Report Selection Usage";
@@ -387,10 +424,9 @@ codeunit 6103 "E-Document Subscription"
         ShowDialog: Boolean)
     var
         ReportSelections: Record "Report Selections";
-        Customer: Record Customer;
-        EDocument: Record "E-Document";
         DocumentMailing: Codeunit "Document-Mailing";
         TypeHelper: Codeunit "Type Helper";
+        DataCompression: Codeunit "Data Compression";
         TempBlob: Codeunit "Temp Blob";
         SourceReference: RecordRef;
         SourceTableIDs: List of [Integer];
@@ -399,48 +435,68 @@ codeunit 6103 "E-Document Subscription"
         ServerEmailBodyFilePath: Text[250];
         SendToEmailAddress: Text[250];
         AttachmentFileName: Text[250];
-        AttachmentStream: InStream;
+        ZipAttachmentFileName: Text[250];
     begin
-        if DocumentSendingProfile."E-Mail Attachment" = DocumentSendingProfile."E-Mail Attachment"::"E-Document" then begin
-            TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
+        case DocumentSendingProfile."E-Mail Attachment" of
+            Enum::"Document Sending Profile Attachment Type"::"E-Document":
+                begin
+                    TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
 
-            case SourceReference.Number() of
-                Database::"Sales Invoice Header":
-                    if GetEDocumentForSalesInvocie(DocNo, EDocument) then
-                        GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
-                Database::"Sales Cr.Memo Header":
-                    if GetEDocumentForSalesCrMemo(DocNo, EDocument) then
-                        GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
-                else
-                    exit;
-            end;
+                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlob) then
+                        exit;
 
-            SourceTableIDs.Add(SourceReference.Number());
-            SourceIDs.Add(SourceReference.Field(SourceReference.SystemIdNo).Value());
-            SourceRelationTypes.Add(Enum::"Email Relation Type"::"Primary Source".AsInteger());
+                    CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
 
-            if Customer.Get(ToCust) then begin
-                SourceTableIDs.Add(Database::Customer);
-                SourceIDs.Add(Customer.SystemId);
-                SourceRelationTypes.Add(Enum::"Email Relation Type"::"Related Entity".AsInteger());
-            end;
 
-            TempBlob.CreateInStream(AttachmentStream);
+                    ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
+                    DocumentMailing.EmailFile(
+                        TempBlob.CreateInStream(),
+                        AttachmentFileName,
+                        ServerEmailBodyFilePath,
+                        DocNo,
+                        SendToEmailAddress,
+                        DocName,
+                        not ShowDialog,
+                        ReportUsage.AsInteger(),
+                        SourceTableIDs,
+                        SourceIDs,
+                        SourceRelationTypes
+                    );
+                end;
+            Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document":
+                begin
+                    TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
 
-            ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
-            DocumentMailing.EmailFile(
-                AttachmentStream,
-                AttachmentFileName,
-                ServerEmailBodyFilePath,
-                DocNo,
-                SendToEmailAddress,
-                DocName,
-                not ShowDialog,
-                ReportUsage.AsInteger(),
-                SourceTableIDs,
-                SourceIDs,
-                SourceRelationTypes
-            );
+                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlob) then
+                        exit;
+
+                    CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
+
+                    DataCompression.CreateZipArchive();
+                    DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName);
+                    ReportSelections.GetPdfReportForCust(TempBlob, ReportUsage, RecordVariant, ToCust);
+                    DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName.Replace('.xml', '.pdf'));
+                    DataCompression.SaveZipArchive(TempBlob);
+                    DataCompression.CloseZipArchive();
+                    ZipAttachmentFileName := AttachmentFileName.Replace('.xml', '.zip');
+
+                    ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
+
+
+                    DocumentMailing.EmailFile(
+                        TempBlob.CreateInStream(),
+                        ZipAttachmentFileName,
+                        ServerEmailBodyFilePath,
+                        DocNo,
+                        SendToEmailAddress,
+                        DocName,
+                        not ShowDialog,
+                        ReportUsage.AsInteger(),
+                        SourceTableIDs,
+                        SourceIDs,
+                        SourceRelationTypes
+                    );
+                end;
         end;
     end;
 
