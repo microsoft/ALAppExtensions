@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 144561 "Ext. Azure Blob Service Test"
+codeunit 144566 "Ext. Azure Blob Service Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
