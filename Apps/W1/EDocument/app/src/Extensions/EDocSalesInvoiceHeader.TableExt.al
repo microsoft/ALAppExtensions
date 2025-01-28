@@ -1,3 +1,7 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Sales.History;
@@ -24,8 +28,8 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         DocumentTypeTxt := ReportDistributionMgt.GetFullDocumentTypeText(Rec);
 
         DocumentSendingProfile.TrySendToEMailWithEDocument(
-          DummyReportSelections.Usage::"S.Invoice".AsInteger(), Rec, FieldNo("No."), DocumentTypeTxt,
-          FieldNo("Bill-to Customer No."), ShowDialog);
+          DummyReportSelections.Usage::"S.Invoice".AsInteger(), Rec, this.FieldNo("No."), DocumentTypeTxt,
+          this.FieldNo("Bill-to Customer No."), ShowDialog);
     end;
 
     internal procedure CreateEDocument()
@@ -40,7 +44,7 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
     internal procedure CreateAndEmailEDocument()
     begin
         Rec.Validate("Send E-Document via Email", true);
-        Rec.Modify(true);
+        Rec.Modify(false);
         Rec.CreateEDocument();
         Rec.EmailEDocument(true);
     end;

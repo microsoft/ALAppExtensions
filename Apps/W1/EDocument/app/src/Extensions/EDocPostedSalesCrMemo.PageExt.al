@@ -32,26 +32,35 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
                 action("CreateEDocument")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and send E-Document';
-                    Image = PostSendTo;
+                    Caption = 'Create E-Document';
+                    Image = CreateDocument;
                     ToolTip = 'Creates an electronic document from the posted sales credit memo.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
-                    var
-                        EDocExport: Codeunit "E-Doc. Export";
-                        SalesCrMemoRecordRef: RecordRef;
                     begin
-                        SalesCrMemoRecordRef.GetTable(Rec);
-                        EDocExport.CreateEDocumentForPostedDocument(SalesCrMemoRecordRef);
+                        Rec.CreateEDocument();
                         Message(EDocumentCreatedMsg);
+                    end;
+                }
+                action(CreateAndSendEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create and email E-Document';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an electronic document and attaches it to email.';
+                    Enabled = not EDocumentExists;
+
+                    trigger OnAction()
+                    begin
+                        Rec.CreateAndEmailEDocument();
                     end;
                 }
             }
         }
         addlast(Category_Category7)
         {
-            actionref("CreateEDocument_Promoted"; "CreateEDocument") { }
+            actionref("CreateEDocument_Promoted"; CreateAndSendEDocument) { }
         }
     }
 

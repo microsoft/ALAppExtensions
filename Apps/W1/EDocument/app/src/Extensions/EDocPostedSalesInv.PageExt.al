@@ -52,7 +52,7 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
 
                     trigger OnAction()
                     begin
-                        CreateAndEmailEDocument();
+                        Rec.CreateAndEmailEDocument();
                     end;
                 }
             }
