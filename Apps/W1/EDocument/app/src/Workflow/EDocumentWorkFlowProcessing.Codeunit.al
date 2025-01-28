@@ -294,8 +294,13 @@ codeunit 6135 "E-Document WorkFlow Processing"
     end;
 
     local procedure DoBatchExport(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        EDocExport: Codeunit "E-Doc. Export";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
     begin
-        Error('Procedure DoBatchExport not implemented.');
+        if EDocument."Send E-Document via Email" then
+            EDocExport.ExportEDocument(EDocument, EDocumentService);
+        EDocumentBackgroundJobs.StartEdocumentExportedFlow(EDocument);
     end;
 
     local procedure DoExport(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")

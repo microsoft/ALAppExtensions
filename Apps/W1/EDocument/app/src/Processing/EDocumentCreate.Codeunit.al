@@ -12,7 +12,10 @@ codeunit 6141 "E-Document Create"
     trigger OnRun()
     begin
         if EDocService."Use Batch Processing" then
-            CreateBatch()
+            if CreateSingleDocument then
+                Create()
+            else
+                CreateBatch()
         else
             Create();
     end;
@@ -45,10 +48,16 @@ codeunit 6141 "E-Document Create"
         EDocument2.Copy(EDocument);
     end;
 
+    internal procedure SetCreateSingleDocument(NewCreateSingleDocument: Boolean)
+    begin
+        CreateSingleDocument := NewCreateSingleDocument;
+    end;
+
     var
         EDocService: Record "E-Document Service";
         EDocument: Record "E-Document";
         TempBlob: Codeunit "Temp Blob";
         SourceDocumentHeader, SourceDocumentLines : RecordRef;
         EDocumentInterface: Interface "E-Document";
+        CreateSingleDocument: Boolean;
 }
