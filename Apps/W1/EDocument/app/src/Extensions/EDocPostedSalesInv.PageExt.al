@@ -31,27 +31,35 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                 action(CreateEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and send E-Document';
+                    Caption = 'Create E-Document';
                     Image = CreateDocument;
                     ToolTip = 'Creates an electronic document from the posted sales invoice.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
-                    var
-                        EDocExport: Codeunit "E-Doc. Export";
-                        SalesInvoiceRecordRef: RecordRef;
                     begin
-                        SalesInvoiceRecordRef.GetTable(Rec);
-                        EDocExport.CreateEDocumentForPostedDocument(SalesInvoiceRecordRef);
+                        Rec.CreateEDocument();
                         Message(EDocumentCreatedMsg);
                     end;
                 }
+                action(CreateAndSendEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create and email E-Document';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an electronic document and attaches it to email.';
+                    Enabled = not EDocumentExists;
 
+                    trigger OnAction()
+                    begin
+                        CreateAndEmailEDocument();
+                    end;
+                }
             }
         }
         addlast(Category_Category6)
         {
-            actionref("CreateEDocument_Promoted"; "CreateEDocument") { }
+            actionref(CreateEDocument_Promoted; CreateAndSendEDocument) { }
         }
     }
 
