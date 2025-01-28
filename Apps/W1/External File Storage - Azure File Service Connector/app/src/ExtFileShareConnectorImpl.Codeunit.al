@@ -148,12 +148,13 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         AFSOptionalParameters.Range(0, 1);
 
         AFSOperationResponse := AFSFileClient.GetFileAsText(Path, TargetText, AFSOptionalParameters);
-        if AFSOperationResponse.GetError().Contains(NotFoundTok) then
-            exit(false)
-        else
-            Error(AFSOperationResponse.GetError());
+        if AFSOperationResponse.IsSuccessful() then
+            exit(true);
 
-        exit(true);
+        if AFSOperationResponse.GetError().Contains(NotFoundTok) then
+            exit(false);
+
+        Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -241,13 +242,14 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOptionalParameters.MaxResults(1);
         AFSOperationResponse := AFSFileClient.ListDirectory(CopyStr(Path, 1, 2048), AFSDirectoryContent, AFSOptionalParameters);
-        if not AFSOperationResponse.IsSuccessful() then
-            if AFSOperationResponse.GetError().Contains(NotFoundTok) then
-                exit(false)
-            else
-                Error(AFSOperationResponse.GetError());
+        if AFSOperationResponse.IsSuccessful() then
+            exit(not AFSDirectoryContent.IsEmpty());
 
-        exit(not AFSDirectoryContent.IsEmpty());
+        if AFSOperationResponse.GetError().Contains(NotFoundTok) then
+            exit(false)
+        else
+            Error(AFSOperationResponse.GetError());
+
     end;
 
     /// <summary>
