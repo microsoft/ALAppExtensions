@@ -751,6 +751,28 @@ table 6620 "FS Work Order Service"
             Description = 'Duration invoiced in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
             Caption = 'Duration Invoiced';
         }
+        field(114; DurationShipped; Integer)
+        {
+            ExternalName = 'bcbi_durationshipped';
+            ExternalType = 'Integer';
+            Description = 'Duration shipped in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
+            Caption = 'Duration Shipped';
+        }
+        field(120; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
+        }
+        field(121; LocationCode; Code[10])
+        {
+            ExternalName = 'bcbi_locationcode';
+            ExternalType = 'String';
+            Description = 'Unique identifier of the warehouse associated with the entity.';
+            Caption = 'Location Code';
+            ExternalAccess = Read;
+        }
     }
     keys
     {
