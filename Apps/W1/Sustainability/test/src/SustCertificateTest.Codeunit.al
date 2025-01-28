@@ -5132,6 +5132,48 @@ codeunit 148187 "Sust. Certificate Test"
         Assert.IsTrue(SustainabilityValueEntry.IsEmpty(), SustValueEntryShouldNotBeFoundErr);
     end;
 
+    [Test]
+    procedure VerifyConfirmationShouldNotPopUpWhenEmissionIsEmptyOnItem()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 562472] Verify that the confirmation box should not pop up When Default Sust. fields is Zero.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [GIVEN] Update "Default Sust Account" in Item card.
+        ItemCard."Default Sust. Account".SetValue(AccountCode);
+
+        // [WHEN] Update "Replenishment System" in Item.
+        ItemCard."Replenishment System".SetValue(Item."Replenishment System"::"Prod. Order");
+
+        // [THEN] Confirmation Box should not pop up as there is no confirm Handler. 
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);

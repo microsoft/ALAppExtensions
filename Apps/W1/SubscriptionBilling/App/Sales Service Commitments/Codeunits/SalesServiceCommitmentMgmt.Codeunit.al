@@ -26,7 +26,13 @@ codeunit 8069 "Sales Service Commitment Mgmt."
     var
         ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
         SalesHeader: Record "Sales Header";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeAddSalesServiceCommitmentsForSalesLine(SalesLine, SkipAddAdditionalSalesServComm, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsSalesLineWithSalesServiceCommitments(SalesLine, false) then
             exit;
 
@@ -61,13 +67,13 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         SalesHeader: Record "Sales Header";
         AssignServiceCommitments: Page "Assign Service Commitments";
         PackageFilter: Text;
-        NoAddServicesForContractRenewalAllowedErr: Label 'Pricess must not be Contract Renewal. Additional services cannot be added to a Contract Renewal';
+        NoAddServicesForContractRenewalAllowedErr: Label 'Process must not be Contract Renewal. Additional services cannot be added to a Contract Renewal';
+        ShowAssignServiceCommitments: Boolean;
     begin
         if SalesLine."Line No." = 0 then
             exit;
         if SalesLine.IsContractRenewal() then
             Error(NoAddServicesForContractRenewalAllowedErr);
-
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         ServiceCommitmentPackage.SetRange("Price Group", SalesHeader."Customer Price Group");
         if ServiceCommitmentPackage.IsEmpty then
@@ -77,7 +83,10 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         ServiceCommitmentPackage.FilterCodeOnPackageFilter(PackageFilter);
         OnAddAdditionalSalesServiceCommitmentsForSalesLineAfterApplyFilters(ServiceCommitmentPackage, SalesLine);
 
-        if not ServiceCommitmentPackage.IsEmpty() and GuiAllowed() then begin
+        ShowAssignServiceCommitments := not ServiceCommitmentPackage.IsEmpty();
+        OnAfterShowAssignServiceCommitmentsDetermined(SalesLine, ServiceCommitmentPackage, ShowAssignServiceCommitments);
+
+        if ShowAssignServiceCommitments and GuiAllowed() then begin
             AssignServiceCommitments.SetTableView(ServiceCommitmentPackage);
             AssignServiceCommitments.SetSalesLine(SalesLine);
             AssignServiceCommitments.LookupMode(true);
@@ -473,6 +482,16 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         CustomerContract: Record "Customer Contract";
     begin
         CustomerContract.DontNotifyCurrentUserAgain(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddSalesServiceCommitmentsForSalesLine(SalesLine: Record "Sales Line"; SkipAddAdditionalSalesServComm: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterShowAssignServiceCommitmentsDetermined(SalesLine: Record "Sales Line"; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ShowAssignServiceCommitments: Boolean)
+    begin
     end;
 
     var

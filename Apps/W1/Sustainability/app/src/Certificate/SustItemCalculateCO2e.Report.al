@@ -2,6 +2,7 @@ namespace Microsoft.Sustainability.Certificate;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Posting;
 
 report 6215 "Sust. Item Calculate CO2e"
@@ -89,22 +90,36 @@ report 6215 "Sust. Item Calculate CO2e"
 
     local procedure UpdateCO2ePerUnit(var NewItem: Record Item)
     var
+        SustCostManagement: Codeunit SustCostManagement;
         CO2eEmission: Decimal;
         CarbonFee: Decimal;
     begin
-        SustainabilityPostMgt.UpdateCarbonFeeEmissionValues(
-            "Emission Scope"::" ",
-            WorkDate(),
-            '',
-            NewItem."Default CO2 Emission",
-            NewItem."Default N2O Emission",
-            NewItem."Default CH4 Emission",
-            CO2eEmission,
-            CarbonFee);
+        if ExistSustainabilityValueEntry(NewItem) then begin
+            if not SustCostManagement.CalculateAverageCost(NewItem, CO2eEmission) then
+                exit;
+        end else
+            SustainabilityPostMgt.UpdateCarbonFeeEmissionValues(
+                "Emission Scope"::" ",
+                WorkDate(),
+                '',
+                NewItem."Default CO2 Emission",
+                NewItem."Default N2O Emission",
+                NewItem."Default CH4 Emission",
+                CO2eEmission,
+                CarbonFee);
 
         NewItem.Validate("CO2e per Unit", CO2eEmission);
         NewItem.Validate("CO2e Last Date Modified", Today());
         NewItem.Modify(true);
+    end;
+
+    local procedure ExistSustainabilityValueEntry(Item: Record Item): Boolean
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+    begin
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        if not SustainabilityValueEntry.IsEmpty() then
+            exit(true);
     end;
 
     var

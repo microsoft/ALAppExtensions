@@ -2874,7 +2874,6 @@ codeunit 148184 "Sustainability Posting Test"
         // [GIVEN] Create a Assembly Item.
         CreateAssembledItem(ParentItem, "Assembly Policy"::"Assemble-to-Order", 1, 1);
         ParentItem.Validate("Default Sust. Account", AccountCode[1]);
-        ParentItem.Validate("CO2e per Unit", CO2ePerUnit[1]);
         ParentItem.Modify();
 
         // [GIVEN] Create Sustainability Account and update Sustainability Account No., "CO2e per unit" in Component item.
@@ -2892,13 +2891,13 @@ codeunit 148184 "Sustainability Posting Test"
             AssemblyHeader."Sust. Account No.",
             StrSubstNo(ValueMustBeEqualErr, AssemblyHeader.FieldCaption("Sust. Account No."), AccountCode[1], AssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1],
+            CO2ePerUnit[2],
             AssemblyHeader."CO2e per Unit",
-            StrSubstNo(ValueMustBeEqualErr, AssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[1], AssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, AssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[2], AssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1] * Quantity,
+            CO2ePerUnit[2] * Quantity,
             AssemblyHeader."Total CO2e",
-            StrSubstNo(ValueMustBeEqualErr, AssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[1] * Quantity, AssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, AssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[2] * Quantity, AssemblyHeader.TableCaption()));
         Assert.AreEqual(
             AccountCode[2],
             AssemblyLine."Sust. Account No.",
@@ -2970,13 +2969,13 @@ codeunit 148184 "Sustainability Posting Test"
             PostedAssemblyHeader."Sust. Account No.",
             StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Sust. Account No."), AccountCode[1], PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1],
+            CO2ePerUnit[2],
             PostedAssemblyHeader."CO2e per Unit",
-            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[1], PostedAssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[2], PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1] * Quantity,
+            CO2ePerUnit[2] * Quantity,
             PostedAssemblyHeader."Total CO2e",
-            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[1] * Quantity, PostedAssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[2] * Quantity, PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
             AccountCode[2],
             PostedAssemblyLine."Sust. Account No.",
@@ -3050,13 +3049,13 @@ codeunit 148184 "Sustainability Posting Test"
             PostedAssemblyHeader."Sust. Account No.",
             StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Sust. Account No."), AccountCode[1], PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1],
+            CO2ePerUnit[2],
             PostedAssemblyHeader."CO2e per Unit",
-            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[1], PostedAssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("CO2e per Unit"), CO2ePerUnit[2], PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
-            CO2ePerUnit[1] * LibraryRandom.RandIntInRange(5, 5),
+            CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5),
             PostedAssemblyHeader."Total CO2e",
-            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[1] * LibraryRandom.RandIntInRange(5, 5), PostedAssemblyHeader.TableCaption()));
+            StrSubstNo(ValueMustBeEqualErr, PostedAssemblyHeader.FieldCaption("Total CO2e"), CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5), PostedAssemblyHeader.TableCaption()));
         Assert.AreEqual(
             AccountCode[2],
             PostedAssemblyLine."Sust. Account No.",
@@ -3126,12 +3125,12 @@ codeunit 148184 "Sustainability Posting Test"
         SustainabilityLedgerEntry.SetRange("Document No.", PostedAssemblyHeader."No.");
 
         Assert.RecordCount(SustainabilityLedgerEntry, 2);
-        VerifySustainabilityLedgerEntry(AccountCode[1], CO2ePerUnit[1] * Quantity);
+        VerifySustainabilityLedgerEntry(AccountCode[1], CO2ePerUnit[2] * Quantity);
         VerifySustainabilityLedgerEntry(AccountCode[2], -CO2ePerUnit[2] * Quantity);
 
         SustainabilityValueEntry.SetRange("Document No.", PostedAssemblyHeader."No.");
         Assert.RecordCount(SustainabilityValueEntry, 2);
-        VerifySustainabilityValueEntry(ParentItem."No.", 0, CO2ePerUnit[1] * Quantity);
+        VerifySustainabilityValueEntry(ParentItem."No.", 0, CO2ePerUnit[2] * Quantity);
         VerifySustainabilityValueEntry(CompItem."No.", 0, -CO2ePerUnit[2] * Quantity);
 
         NotificationLifecycleMgt.RecallAllNotifications();
@@ -3193,12 +3192,12 @@ codeunit 148184 "Sustainability Posting Test"
         SustainabilityLedgerEntry.SetRange("Document No.", PostedAssemblyHeader."No.");
 
         Assert.RecordCount(SustainabilityLedgerEntry, 2);
-        VerifySustainabilityLedgerEntry(AccountCode[1], CO2ePerUnit[1] * LibraryRandom.RandIntInRange(5, 5));
+        VerifySustainabilityLedgerEntry(AccountCode[1], CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5));
         VerifySustainabilityLedgerEntry(AccountCode[2], -CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5));
 
         SustainabilityValueEntry.SetRange("Document No.", PostedAssemblyHeader."No.");
         Assert.RecordCount(SustainabilityValueEntry, 2);
-        VerifySustainabilityValueEntry(ParentItem."No.", 0, CO2ePerUnit[1] * LibraryRandom.RandIntInRange(5, 5));
+        VerifySustainabilityValueEntry(ParentItem."No.", 0, CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5));
         VerifySustainabilityValueEntry(CompItem."No.", 0, -CO2ePerUnit[2] * LibraryRandom.RandIntInRange(5, 5));
 
         NotificationLifecycleMgt.RecallAllNotifications();
@@ -3206,7 +3205,7 @@ codeunit 148184 "Sustainability Posting Test"
 
     [Test]
     [HandlerFunctions('GLPostingPreviewHandlerForAssemblyOrder')]
-    procedure VerifySustainabilityValueAndLedgerEntryShouldBeCreatedDuringPreviePostingofAssemblyOrder()
+    procedure VerifySustainabilityValueAndLedgerEntryShouldBeCreatedDuringPreviewPostingOfAssemblyOrder()
     var
         CompItem: Record Item;
         ParentItem: Record Item;
@@ -3255,7 +3254,7 @@ codeunit 148184 "Sustainability Posting Test"
         // [WHEN] Preview Assembly Document.
         asserterror AssemblyPostYesNo.Preview(AssemblyHeader);
 
-        // [VERIFY] No errors occured - preview mode error only.
+        // [VERIFY] No errors occurred - preview mode error only.
         Assert.ExpectedError('');
         NotificationLifecycleMgt.RecallAllNotifications();
     end;
@@ -3345,7 +3344,7 @@ codeunit 148184 "Sustainability Posting Test"
         CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
         Quantity := LibraryRandom.RandIntInRange(10, 10);
 
-        // [GIVEN] Create FromLocation, ToLocation and IntransitLocation that will be used to create Transfer Order.
+        // [GIVEN] Create FromLocation, ToLocation and Intransit Location that will be used to create Transfer Order.
         LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
 
         // [GIVEN] Create Item with Inventory.

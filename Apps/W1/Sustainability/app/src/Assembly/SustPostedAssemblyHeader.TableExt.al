@@ -38,6 +38,7 @@ tableextension 6253 "Sust. Posted Assembly Header" extends "Posted Assembly Head
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'CO2e per Unit';
+            Editable = false;
             DataClassification = CustomerContent;
         }
         field(6215; "Total CO2e"; Decimal)
@@ -45,6 +46,7 @@ tableextension 6253 "Sust. Posted Assembly Header" extends "Posted Assembly Head
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total CO2e';
+            Editable = false;
             DataClassification = CustomerContent;
         }
     }

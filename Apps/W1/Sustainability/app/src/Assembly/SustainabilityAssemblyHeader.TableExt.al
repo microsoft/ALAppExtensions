@@ -26,7 +26,7 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
                 end else begin
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Sust. Account No."));
                     CopyFromSustainabilityAccount(Rec);
-                    UpdateCO2eInformation();
+                    UpdateCO2eInformation(Rec, 0, 0, false, false, false);
                 end;
             end;
         }
@@ -71,6 +71,7 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'CO2e per Unit';
+            Editable = false;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -86,6 +87,7 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total CO2e';
+            Editable = false;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -103,16 +105,6 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
             Caption = 'Posted Total CO2e';
             Editable = false;
             DataClassification = CustomerContent;
-        }
-
-        field(6217; "Expected Assembly Line Total CO2e"; Decimal)
-        {
-            AutoFormatType = 11;
-            CalcFormula = sum("Assembly Line"."Total CO2e" where("Document Type" = field("Document Type"),
-                                                                 "Document No." = field("No.")));
-            Caption = 'Expected Assembly Line Total CO2e';
-            Editable = false;
-            FieldClass = FlowField;
         }
     }
 
@@ -162,21 +154,27 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
         end;
     end;
 
-    local procedure UpdateCO2eInformation()
+    procedure UpdateCO2eInformation(var AssemblyHeader: Record "Assembly Header"; CurrAssemblyLineNo: Integer; NewTotalCO2e: Decimal; ApplyLineNoFilter: Boolean; ExistSustAccLines: Boolean; CallModify: Boolean)
     var
         Item: Record Item;
         CalcCO2ePerUnit: Decimal;
     begin
-        if not Item.Get(Rec."Item No.") then
+        if not Item.Get(AssemblyHeader."Item No.") then
             exit;
 
-        if ExistSustAssemblyLine(Rec) then begin
-            Rec.CalcFields("Expected Assembly Line Total CO2e");
-            CalcCO2ePerUnit := (Rec."Expected Assembly Line Total CO2e") / Rec.Quantity;
+        if AssemblyHeader."Sust. Account No." = '' then
+            exit;
 
-            Rec.Validate("CO2e per Unit", CalcCO2ePerUnit);
+        if (ExistSustAssemblyLine(AssemblyHeader)) or (ExistSustAccLines) then begin
+            if AssemblyHeader.Quantity <> 0 then
+                CalcCO2ePerUnit := (GetTotalCO2eFromSustAssemblyLine(AssemblyHeader, CurrAssemblyLineNo, ApplyLineNoFilter) + NewTotalCO2e) / AssemblyHeader.Quantity;
+
+            AssemblyHeader.Validate("CO2e per Unit", CalcCO2ePerUnit);
         end else
-            Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+            AssemblyHeader.Validate("CO2e per Unit", Item."CO2e per Unit");
+
+        if CallModify then
+            AssemblyHeader.Modify(true);
     end;
 
     local procedure CopyFromSustainabilityAccount(var AssemblyHeader: Record "Assembly Header")
@@ -202,6 +200,22 @@ tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
         AssemblyLine.SetFilter("Sust. Account No.", '<>%1', '');
 
         exit(not AssemblyLine.IsEmpty());
+    end;
+
+    local procedure GetTotalCO2eFromSustAssemblyLine(AssemblyHeader: Record "Assembly Header"; CurrAssemblyLineNo: Integer; ApplyLineNoFilter: Boolean): Decimal
+    var
+        AssemblyLine: Record "Assembly Line";
+    begin
+        AssemblyLine.SetLoadFields("Total CO2e");
+        AssemblyLine.SetRange("Document Type", AssemblyHeader."Document Type");
+        AssemblyLine.SetRange("Document No.", AssemblyHeader."No.");
+        if ApplyLineNoFilter then
+            AssemblyLine.SetFilter("Line No.", '<>%1', CurrAssemblyLineNo);
+
+        AssemblyLine.SetFilter("Sust. Account No.", '<>%1', '');
+        AssemblyLine.CalcSums("Total CO2e");
+
+        exit(AssemblyLine."Total CO2e");
     end;
 
     var
