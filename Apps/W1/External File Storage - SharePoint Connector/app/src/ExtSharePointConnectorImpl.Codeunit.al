@@ -27,7 +27,7 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
-    /// <param name="Files">A list with all files stored in the path.</param>
+    /// <param name="TempFileAccountContent">A list with all files stored in the path.</param>
     procedure ListFiles(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         SharePointFile: Record "SharePoint File";
@@ -173,7 +173,7 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
-    /// <param name="Files">A list with all directories stored in the path.</param>
+    /// <param name="TempFileAccountContent">A list with all directories stored in the path.</param>
     procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         SharePointFolder: Record "SharePoint Folder";
