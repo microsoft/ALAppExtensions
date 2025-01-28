@@ -6,6 +6,9 @@ codeunit 5691 "Create Contoso Tenant Data"
     Description = 'Populate App Database, only run in the gate after generating Contoso Demo Data.';
 
     trigger OnRun()
+    var
+        ApplicationAreaSetup: Record "Application Area Setup";
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
         CreateProfiles();
         Codeunit.Run(Codeunit::"Create Contoso Permissions");
@@ -19,6 +22,10 @@ codeunit 5691 "Create Contoso Tenant Data"
         SetExperienceTierToEssential();
 
         OnAfterCreateTenantData();
+        EnableNewFeatures();
+
+        if ApplicationAreaMgmtFacade.IsPremiumExperienceEnabled() then
+            ApplicationAreaSetup.DeleteAll(true);
     end;
 
     local procedure CreateProfiles()
@@ -84,6 +91,20 @@ codeunit 5691 "Create Contoso Tenant Data"
         ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
         ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(ExperienceTierSetup.FieldCaption(Essential));
+    end;
+
+    local procedure EnableNewFeatures()
+    var
+        FeatureKey: Record "Feature Key";
+    begin
+        // Virtual table does not support ModifyAll
+        FeatureKey.SetRange("Is One Way", false); // only enable features that can be disabled
+        FeatureKey.SetFilter(ID, '<>PowerAutomateCopilot&<>CalcOnlyVisibleFlowFields');
+        if FeatureKey.FindSet(true) then
+            repeat
+                FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
+                FeatureKey.Modify();
+            until FeatureKey.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Graph Mgt - General Tools", 'OnGetIsAPIEnabled', '', false, false)]

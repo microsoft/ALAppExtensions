@@ -106,7 +106,6 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                 SalesHeader."Ship-to Post Code" := CopyStr(OrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
                 SalesHeader."Ship-to County" := CopyStr(OrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
                 SalesHeader."Ship-to Contact" := OrderHeader."Ship-to Contact Name";
-                SalesHeader.Validate("Prices Including VAT", Shop."Prices Including VAT");
                 SalesHeader.Validate("Currency Code", Shop."Currency Code");
                 SalesHeader.Validate("Document Date", DT2Date(RefundHeader."Created At"));
                 if OrderMgt.FindTaxArea(OrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then

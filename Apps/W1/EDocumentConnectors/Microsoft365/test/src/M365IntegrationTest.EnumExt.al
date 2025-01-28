@@ -11,10 +11,14 @@ enumextension 148195 "M365 Integration Test" extends "Service Integration"
 {
     value(148195; "TestOneDrive")
     {
-        Implementation = IDocumentSender = "M365 Int. Test Impl.", IDocumentReceiver = "M365 Int. Test Impl.", IConsentManager = "M365 Int. Test Impl.";
+        Implementation = IDocumentSender = "Drive Int. Test Impl.", IDocumentReceiver = "Drive Int. Test Impl.";
     }
     value(148196; "TestSharepoint")
     {
-        Implementation = IDocumentSender = "M365 Int. Test Impl.", IDocumentReceiver = "M365 Int. Test Impl.", IConsentManager = "M365 Int. Test Impl.";
+        Implementation = IDocumentSender = "Drive Int. Test Impl.", IDocumentReceiver = "Drive Int. Test Impl.";
+    }
+    value(148197; "TestOutlook")
+    {
+        Implementation = IDocumentSender = "Outlook Int. Test Impl.", IDocumentReceiver = "Outlook Int. Test Impl.";
     }
 }

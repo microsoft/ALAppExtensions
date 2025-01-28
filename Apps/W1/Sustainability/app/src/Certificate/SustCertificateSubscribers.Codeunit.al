@@ -62,6 +62,9 @@ codeunit 6250 "Sust. Certificate Subscribers"
         if (Item."Default Sust. Account" = '') then
             exit;
 
+        if (Item."Default CH4 Emission" = 0) and (Item."Default CO2 Emission" = 0) and (Item."Default N2O Emission" = 0) then
+            exit;
+
         if Confirm(StrSubstNo(ConfirmationForClearEmissionInfoQst, Item."Replenishment System"), false) then begin
             Item.Validate("Default CH4 Emission", 0);
             Item.Validate("Default CO2 Emission", 0);

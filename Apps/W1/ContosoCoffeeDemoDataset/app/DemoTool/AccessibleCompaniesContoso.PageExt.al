@@ -21,7 +21,9 @@ pageextension 5279 "Accessible Companies Contoso" extends "Accessible Companies"
 
     begin
         if AssistedCompanySetupStatus.Get(Rec.Name) then
-            CompanyDemoData.Set(Rec.Name, AssistedCompanySetupStatus."Company Demo Data");
+            CompanyDemoData.Set(Rec.Name, AssistedCompanySetupStatus."Company Demo Data")
+        else
+            CompanyDemoData.Set(Rec.Name, Enum::"Company Demo Data Type"::"Create New - No Data");
     end;
 
     var

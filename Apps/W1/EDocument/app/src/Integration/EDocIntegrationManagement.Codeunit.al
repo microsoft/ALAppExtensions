@@ -149,7 +149,7 @@ codeunit 6134 "E-Doc. Integration Management"
             end;
 
             if not IsProcessed then
-                EDocImport.ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Create Journal Lines");
+                EDocImport.ProcessImportedDocument(EDocument, EDocService, TempBlob);
 
             if EDocErrorHelper.HasErrors(EDocument) then begin
                 EDocument2 := EDocument;

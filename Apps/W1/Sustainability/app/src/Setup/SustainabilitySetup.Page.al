@@ -36,7 +36,7 @@ page 6221 "Sustainability Setup"
                 }
                 field("Disch. Into Water Unit of Meas"; Rec."Disch. Into Water Unit of Meas")
                 {
-                    ToolTip = 'Specifies the value of the Disch. Into Water Unit of Measure Code field.';
+                    ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
                 }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
@@ -72,19 +72,19 @@ page 6221 "Sustainability Setup"
                 }
                 field("Item Emissions"; Rec."Item Emissions")
                 {
-                    ToolTip = 'Specifies the value of the Item Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item card.';
                 }
                 field("Item Charge Emissions"; Rec."Item Charge Emissions")
                 {
-                    ToolTip = 'Specifies the value of the Item Charge Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item Charge (currently not operating).';
                 }
                 field("Resource Emissions"; Rec."Resource Emissions")
                 {
-                    ToolTip = 'Specifies the value of the Resource Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Resource card.';
                 }
                 field("Work/Machine Center Emissions"; Rec."Work/Machine Center Emissions")
                 {
-                    ToolTip = 'Specifies the value of the Work/Machine Center Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Work Center and Machine Center cards.';
                 }
                 field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
                 {

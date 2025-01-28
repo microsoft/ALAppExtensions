@@ -16,8 +16,11 @@ codeunit 6255 "Sust. Assembly Subscriber"
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterCopyFromItem', '', false, false)]
     local procedure OnAfterCopyFromItem(var AssemblyLine: Record "Assembly Line"; Item: Record Item)
     begin
-        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then begin
+            AssemblyLine.SuspendUpdateCO2eInAssemblyHeader(true);
             AssemblyLine.Validate("Sust. Account No.", Item."Default Sust. Account");
+            AssemblyLine.SuspendUpdateCO2eInAssemblyHeader(false);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Header", 'OnAfterValidateEvent', "Item No.", false, false)]
@@ -30,28 +33,52 @@ codeunit 6255 "Sust. Assembly Subscriber"
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterCopyFromResource', '', false, false)]
     local procedure OnAfterCopyFromResource(var AssemblyLine: Record "Assembly Line"; Resource: Record Resource)
     begin
-        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then begin
+            AssemblyLine.SuspendUpdateCO2eInAssemblyHeader(true);
             AssemblyLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
+            AssemblyLine.SuspendUpdateCO2eInAssemblyHeader(false);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterValidateEvent', "No.", false, false)]
-    local procedure OnAfterValidateNoEvent(var Rec: Record "Assembly Line")
+    local procedure OnAfterValidateNoEvent(var Rec: Record "Assembly Line"; var xRec: Record "Assembly Line")
     begin
         if Rec."No." = '' then
-            if Rec."Sust. Account No." <> '' then
+            if (Rec."Sust. Account No." <> '') or (xRec."Sust. Account No." <> '') then
                 Rec.Validate("Sust. Account No.", '');
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Assembly Header", 'OnValiateQuantityOnAfterCalcBaseQty', '', false, false)]
-    local procedure OnValidateQuantityOnAfterCalcBaseQty(var AssemblyHeader: Record "Assembly Header")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly Line Management", 'OnAfterUpdateAssemblyLines', '', false, false)]
+    local procedure OnAfterUpdateAssemblyLines(var AsmHeader: Record "Assembly Header")
     begin
-        AssemblyHeader.UpdateSustainabilityEmission(AssemblyHeader);
+        AsmHeader.UpdateCO2eInformation(AsmHeader, 0, 0, false, false, false);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterInitQtyToConsume', '', false, false)]
-    local procedure OnAfterInitQtyToConsume(var AssemblyLine: Record "Assembly Line")
+    local procedure OnAfterInitQtyToConsume(var AssemblyLine: Record "Assembly Line"; CurrentFieldNo: Integer)
     begin
         AssemblyLine.UpdateSustainabilityEmission(AssemblyLine);
+        if CurrentFieldNo = AssemblyLine.FieldNo("Quantity per") then
+            AssemblyLine.UpdateCO2ePerUnitOnAssemblyHeader(AssemblyLine, AssemblyLine."Line No.", AssemblyLine."Total CO2e", true, (AssemblyLine."Sust. Account No." <> ''), true);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Assembly Line", 'OnAfterValidateEvent', "Total CO2e", false, false)]
+    local procedure OnAfterValidateEvent(var Rec: Record "Assembly Line"; var xRec: Record "Assembly Line")
+    begin
+        Rec.UpdateCO2ePerUnitOnAssemblyHeader(Rec, Rec."Line No.", Rec."Total CO2e", true, (Rec."Sust. Account No." <> ''), true);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Assembly Line", OnAfterDeleteEvent, '', false, false)]
+    local procedure OnAfterDeleteEvent(var Rec: Record "Assembly Line"; RunTrigger: Boolean)
+    begin
+        if not RunTrigger then
+            exit;
+
+        if Rec.IsTemporary() then
+            exit;
+
+        if not Rec.GetSuspendDeletionCheck() then
+            Rec.UpdateCO2ePerUnitOnAssemblyHeader(Rec, 0, 0, false, false, true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateItemJnlLineFromAssemblyHeader', '', false, false)]
@@ -63,6 +90,13 @@ codeunit 6255 "Sust. Assembly Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnBeforePostItemConsumption', '', false, false)]
     local procedure OnBeforePostItemConsumption(var ItemJournalLine: Record "Item Journal Line"; var AssemblyHeader: Record "Assembly Header"; var AssemblyLine: Record "Assembly Line")
+    begin
+        if (ItemJournalLine.Quantity <> 0) then
+            UpdateSustainabilityItemJournalLineForConsumption(ItemJournalLine, AssemblyLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateItemJnlLineFromAssemblyLine', '', false, false)]
+    local procedure OnAfterCreateItemJnlLineFromAssemblyLine(var ItemJournalLine: Record "Item Journal Line"; AssemblyLine: Record "Assembly Line")
     begin
         if (ItemJournalLine.Quantity <> 0) then
             UpdateSustainabilityItemJournalLineForConsumption(ItemJournalLine, AssemblyLine);
@@ -306,7 +340,7 @@ codeunit 6255 "Sust. Assembly Subscriber"
         if SustainAccountSubcategory.Get(AccountCategory, AccountSubCategory) then
             if not SustainAccountSubcategory."Renewable Energy" then
                 if (CO2eToPost = 0) then
-                    Error(EmissionMustNotBeZeroErr);
+                    Error(CO2eMustNotBeZeroErr);
 
         if (CO2eToPost <> 0) then
             exit(true);
@@ -314,6 +348,6 @@ codeunit 6255 "Sust. Assembly Subscriber"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
-        EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
+        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in Assembly document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

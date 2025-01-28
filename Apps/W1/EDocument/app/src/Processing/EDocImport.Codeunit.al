@@ -9,8 +9,9 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument.OrderMatch;
 using System.Utilities;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
 
-codeunit 6140 "E-Doc. Import"
+codeunit 6140 "E-Doc. Import" implements IImportProcess
 {
     Permissions =
         tabledata "E-Document" = im,
@@ -76,6 +77,7 @@ codeunit 6140 "E-Doc. Import"
     var
         EDocService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
+        IImportProcess: Interface "IImportProcess";
     begin
         if EDocument.Status = EDocument.Status::Processed then
             exit;
@@ -86,7 +88,18 @@ codeunit 6140 "E-Doc. Import"
         EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported);
 
-        ProcessImportedDocument(EDocument, EDocService, TempBlob, CreateJnlLine);
+        IImportProcess := EDocService."Import Process";
+        IImportProcess.Run(EDocument, EDocService);
+    end;
+
+    // Interface hook
+    procedure Run(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        TempBlob: Codeunit "Temp Blob";
+        EDocumentHelper: Codeunit "E-Document Helper";
+    begin
+        EDocumentHelper.GetEDocumentBlob(EDocument, EDocumentService, TempBlob);
+        ProcessImportedDocument(EDocument, EDocumentService, TempBlob);
     end;
 
     local procedure GetDocumentBasicInfo(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
@@ -328,7 +341,7 @@ codeunit 6140 "E-Doc. Import"
             until EDocumentServiceStatus.Next() = 0;
     end;
 
-    internal procedure ProcessImportedDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; CreateJnlLine: Boolean)
+    internal procedure ProcessImportedDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
     var
         EDocLog: Record "E-Document Log";
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
@@ -370,7 +383,7 @@ codeunit 6140 "E-Doc. Import"
             if ValidateEDocumentIsForPurchaseOrder(EDocument, Vendor) then
                 ReceiveEDocumentToPurchaseOrder(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Vendor, Window)
             else
-                ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, CreateJnlLine, Window)
+                ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Window)
         else
             EDocErrorHelper.LogErrorMessage(EDocument, Vendor, Vendor.FieldNo("No."), FailedToFindVendorErr);
 
@@ -483,13 +496,13 @@ codeunit 6140 "E-Doc. Import"
         end;
     end;
 
-    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; CreateJnlLine: Boolean; var WindowInstance: Dialog)
+    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; var WindowInstance: Dialog)
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseDocumentType: Enum "Purchase Document Type";
     begin
         PurchaseDocumentType := SourceDocumentHeader.Field(PurchaseHeader.FieldNo("Document Type")).Value();
-        if CreateJnlLine then begin
+        if EDocService."Create Journal Lines" then begin
             if GuiAllowed() then
                 WindowInstance.Update(1, JnlLineCreateMsg);
             CreateJournalLineFromImportedDocument(EDocument, EDocService, EDocServiceStatus);
@@ -709,5 +722,7 @@ codeunit 6140 "E-Doc. Import"
     local procedure OnBeforeInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
     begin
     end;
+
+
 #endif
 }

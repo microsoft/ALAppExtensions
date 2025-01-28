@@ -117,7 +117,7 @@ table 6217 "Sustainability Setup"
         }
         field(19; "Disch. Into Water Unit of Meas"; Code[10])
         {
-            Caption = 'Disch. Into Water Unit of Measure Code';
+            Caption = 'Discharged Into Water Unit of Measure Code';
             TableRelation = "Unit of Measure";
         }
         field(20; "G/L Account Emissions"; Boolean)
