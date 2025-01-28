@@ -4003,6 +4003,244 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportSetup.Modify(true);
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransactionTypeOnSalesDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ItemNo: Code[20];
+        CustomerNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transaction type on Sales Doc if Transaction Type mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transaction Type Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transaction Type Mandatory = true in Intrastat Setup, Sales Document for intrastat transaction created
+        CustomerNo := LibraryIntrastat.CreateCustomer();
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesHeader."Document Type"::Order, SalesLine.Type::Item, ItemNo, 1);
+        SalesHeader."Transaction Type" := '';
+        SalesHeader.Modify();
+        LibraryVariableStorage.Enqueue(SalesHeader.FieldCaption("Transaction Type"));
+        //[WHEN] Try to post
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        //[THEN] An error occurs
+
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransactionSpecOnSalesDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ItemNo: Code[20];
+        CustomerNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transaction specification on Sales Doc if Transaction Spec. mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transaction Spec. Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transaction Spec. Mandatory = true in Intrastat Setup, Sales Document for intrastat transaction created
+        CustomerNo := LibraryIntrastat.CreateCustomer();
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesHeader."Document Type"::Order, SalesLine.Type::Item, ItemNo, 1);
+        SalesHeader."Transaction Specification" := '';
+        SalesHeader.Modify();
+        LibraryVariableStorage.Enqueue(SalesHeader.FieldCaption("Transaction Specification"));
+        //[WHEN] Try to post
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryShipmentMethodOnSalesDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ItemNo: Code[20];
+        CustomerNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty shipment method on Sales Doc if Shipment Method mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Shipment Method Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Shipment Method Mandatory = true in Intrastat Setup, Sales Document for intrastat transaction created
+        CustomerNo := LibraryIntrastat.CreateCustomer();
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesHeader."Document Type"::Order, SalesLine.Type::Item, ItemNo, 1);
+        SalesHeader."Shipment Method Code" := '';
+        SalesHeader.Modify();
+        LibraryVariableStorage.Enqueue(SalesHeader.FieldCaption("Shipment Method Code"));
+        //[WHEN] Try to post
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransportMethodOnSalesDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ItemNo: Code[20];
+        CustomerNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transport method on Sales Doc if Transport Method Mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transport Method Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transport Method Mandatory = true in Intrastat Setup, Sales Document for intrastat transaction created
+        CustomerNo := LibraryIntrastat.CreateCustomer();
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesHeader."Document Type"::Order, SalesLine.Type::Item, ItemNo, 1);
+        SalesHeader."Transport Method" := '';
+        SalesHeader.Modify();
+        LibraryVariableStorage.Enqueue(SalesHeader.FieldCaption("Transport Method"));
+        //[WHEN] Try to post
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransactionTypeOnPurchDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transaction type on Purchase Doc if Transaction Type mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transaction Type Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transaction Type Mandatory = true in Intrastat Setup, Purchase Document for intrastat transaction created
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+        PurchaseHeader."Transaction Type" := '';
+        PurchaseHeader.Modify();
+        LibraryVariableStorage.Enqueue(PurchaseHeader.FieldCaption("Transaction Type"));
+        //[WHEN] Try to post
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        //[THEN] An error occurs
+
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransactionSpecOnPurchDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transaction specification on Purchase Doc if Transaction Spec. mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transaction Spec. Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transaction Spec. Mandatory = true in Intrastat Setup, Purchase Document for intrastat transaction created
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+        PurchaseHeader."Transaction Specification" := '';
+        PurchaseHeader.Modify();
+        LibraryVariableStorage.Enqueue(PurchaseHeader.FieldCaption("Transaction Specification"));
+        //[WHEN] Try to post
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryShipmentMethodOnPurchDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty shipment method on Purchase Doc if Shipment Method mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Shipment Method Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Shipment Method Mandatory = true in Intrastat Setup, Purchase Document for intrastat transaction created
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+        PurchaseHeader."Shipment Method Code" := '';
+        PurchaseHeader.Modify();
+        LibraryVariableStorage.Enqueue(PurchaseHeader.FieldCaption("Shipment Method Code"));
+        //[WHEN] Try to post
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,ErrorMessagePageHandler')]
+    procedure CheckMandatoryTransportMethodOnPurchDocument()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [FFEATURE] [Mandatory fields in Intrastat Setup]
+        // [SCENARIO 332149] Check if error occurs for empty transport method on Purchase Doc if Transport Method Mandatory is set to true on Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Transport Method Mandatory", true);
+        IntrastatReportSetup.Modify();
+        //[GIVEN] Transport Method Mandatory = true in Intrastat Setup, Purchase Document for intrastat transaction created
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, ItemNo);
+        PurchaseHeader."Transport Method" := '';
+        PurchaseHeader.Modify();
+        LibraryVariableStorage.Enqueue(PurchaseHeader.FieldCaption("Transport Method"));
+        //[WHEN] Try to post
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        //[THEN] An error occurs
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -4293,6 +4531,16 @@ codeunit 139550 "Intrastat Report Test"
     begin
         VendorLookup.FILTER.SetFilter("No.", LibraryVariableStorage.DequeueText());
         VendorLookup.OK().Invoke();
+    end;
+
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure ErrorMessagePageHandler(var ErrorMessages: Page "Error Messages")
+    var
+        ErrorMessage: Record "Error Message";
+    begin
+        ErrorMessages.GetRecord(ErrorMessage);
+        Assert.AreEqual(ErrorMessage.Message, StrSubstNo('%1 field cannot be empty.', LibraryVariableStorage.DequeueText()), 'Error');
     end;
 
     local procedure CreateIntrastatReportChecklist()
