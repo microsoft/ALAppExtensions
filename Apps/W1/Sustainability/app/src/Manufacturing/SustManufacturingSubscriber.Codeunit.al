@@ -388,7 +388,7 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
         if SustainAccountSubcategory.Get(AccountCategory, AccountSubCategory) then
             if not SustainAccountSubcategory."Renewable Energy" then
                 if (CO2eToPost = 0) then
-                    Error(EmissionMustNotBeZeroErr);
+                    Error(CO2eMustNotBeZeroErr);
 
         if (CO2eToPost <> 0) then
             exit(true);
@@ -396,6 +396,6 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
-        EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
+        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in Production document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

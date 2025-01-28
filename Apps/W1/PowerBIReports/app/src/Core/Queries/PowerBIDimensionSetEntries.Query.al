@@ -18,7 +18,7 @@ query 36950 "PowerBI Dimension Set Entries"
 
     elements
     {
-        dataitem(PBIDimensionSetEntries; "Dimension Set Entry")
+        dataitem(PBIDimensionSetEntries; "PowerBI Flat Dim. Set Entry")
         {
             column(id; SystemId)
             {

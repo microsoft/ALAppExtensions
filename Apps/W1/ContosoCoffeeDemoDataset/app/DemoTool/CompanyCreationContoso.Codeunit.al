@@ -22,15 +22,21 @@ codeunit 5382 "Company Creation Contoso"
         if not GLSetup.Get() then
             CODEUNIT.Run(CODEUNIT::"Company-Initialize");
 
+        IsSetup := AssistedCompanySetupStatus."Company Demo Data" = Enum::"Company Demo Data Type"::"Production - Setup Data Only";
+
         if Rec.IsEmpty() then begin
-            IsSetup := AssistedCompanySetupStatus."Company Demo Data" = Enum::"Company Demo Data Type"::"Production - Setup Data Only";
             ContosoDemoTool.GetRefreshedModules(TempContosoDemoDataModule);
             TempContosoDemoDataModule.ModifyAll(Install, true);
-            TempContosoDemoDataModule.ModifyAll("Is Setup Company", IsSetup);
+
+            Session.LogMessage('0000OL3', StrSubstNo(RunningAllContosoModulesLbl, CompanyName, IsSetup), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
+
             ContosoDemoTool.CreateNewCompanyDemoData(TempContosoDemoDataModule, IsSetup);
         end else begin
             ContosoDemoTool.RefreshModules();
-            ContosoDemoTool.CreateNewCompanyDemoData(Rec, Rec."Is Setup Company");
+
+            Session.LogMessage('0000OL4', StrSubstNo(RunningCustomContosoModulesLbl, CompanyName, IsSetup), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
+
+            ContosoDemoTool.CreateNewCompanyDemoData(Rec, IsSetup);
         end;
 
         // Set company setup status to completed
@@ -60,9 +66,9 @@ codeunit 5382 "Company Creation Contoso"
             Session.LogMessage('0000HUJ', StrSubstNo(CompanyEvaluationTxt, Company."Evaluation Company"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CompanyEvaluationCategoryTok);
         end;
 
-        ContosoDemoDataModuleTemp.ModifyAll("Is Setup Company", IsSetup);
-
         ScheduleRunningContosoDemoData(ContosoDemoDataModuleTemp, NewCompanyName, IsSetup);
+
+        Session.LogMessage('0000OL5', StrSubstNo(ScheduledDemoDataLbl, NewCompanyName, IsSetup), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
     end;
 
     local procedure ScheduleRunningContosoDemoData(var ContosoDemoDataModuleTemp: Record "Contoso Demo Data Module" temporary; NewCompanyName: Text[30]; IsSetup: Boolean)
@@ -94,4 +100,8 @@ codeunit 5382 "Company Creation Contoso"
     var
         CompanyEvaluationTxt: Label 'Company Evaluation:%1', Comment = '%1 = Company Evaluation', Locked = true;
         CompanyEvaluationCategoryTok: Label 'Company Evaluation', Locked = true;
+        ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
+        ScheduledDemoDataLbl: Label 'Scheduled demo data generation for company %1 with setup data %2', Comment = '%1 = Company Name, %2 = Is Setup Company', Locked = true;
+        RunningAllContosoModulesLbl: Label 'Running all Contoso modules for company %1 with setup data %2', Locked = true;
+        RunningCustomContosoModulesLbl: Label 'Running custom Contoso modules for company %1 with setup data %2', Locked = true;
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-CustomsRegimes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<CustomsRegime>
+		<Code>IMD</Code>
+		<Descripcion>Definitivo de importación.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>EXD</Code>
+		<Descripcion>Definitivo de exportación.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>ITR</Code>
+		<Descripcion>Temporales de importación para retomar al extranjero en el mismo estado.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>ITE</Code>
+		<Descripcion>Temporales de importación para elaboración, transformación o reparación para empresas con programa IMMEX.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>ETR</Code>
+		<Descripcion>Temporales de exportación para retornar al país en el mismo estado.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>ETE</Code>
+		<Descripcion>Temporales de exportación para elaboración, transformación o reparación.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>DFI</Code>
+		<Descripcion>Depósito Fiscal.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>RFE</Code>
+		<Descripcion>Elaboración, transformación o reparación en recinto fiscalizado.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>RFS</Code>
+		<Descripcion>Recinto fiscalizado estratégico.</Descripcion>
+	</CustomsRegime>
+	<CustomsRegime>
+		<Code>TRA</Code>
+		<Descripcion>Tránsitos.</Descripcion>
+	</CustomsRegime>
+</data-set-CustomsRegimes>

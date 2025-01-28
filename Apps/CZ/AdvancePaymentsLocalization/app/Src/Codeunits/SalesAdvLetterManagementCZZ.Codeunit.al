@@ -706,6 +706,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         SalesInvoiceLine."Responsibility Center" := SalesInvoiceHeader."Responsibility Center";
         SalesInvoiceLine.Type := SalesInvoiceLine.Type::"G/L Account";
         SalesInvoiceLine."No." := CustomerPostingGroup."Invoice Rounding Account";
+        SalesInvoiceLine."Qty. per Unit of Measure" := 1;
         SalesInvoiceLine.Description := CorrectLineDescriptionTxt;
         SalesInvoiceLine."VAT Bus. Posting Group" := VATEntry."VAT Bus. Posting Group";
         SalesInvoiceLine."VAT Prod. Posting Group" := VATEntry."VAT Prod. Posting Group";

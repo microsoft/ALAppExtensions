@@ -116,7 +116,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertTaxTotal(RootXMLNode, SalesInvLine, CurrencyCode, InvDiscountAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesInvLine, LineAmounts, CurrencyCode);
         InsertInvoiceLine(RootXMLNode, SalesInvLine, Currency, CurrencyCode);
-
+        OnCreateXMLOnBeforeSalesInvXmlDocumentWriteToFile(XMLDoc, SalesInvoiceHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
         Clear(XMLDoc);
@@ -157,7 +157,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertTaxTotal(RootXMLNode, SalesCrMemoLine, CurrencyCode, InvDiscountAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesCrMemoLine, LineAmounts, CurrencyCode);
         InsertCrMemoLine(RootXMLNode, SalesCrMemoLine, Currency, CurrencyCode);
-
+        OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(XMLDoc, SalesCrMemoHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
         Clear(XMLDoc);
@@ -202,6 +202,7 @@ codeunit 13916 "Export XRechnung Document"
         RootXMLNode.Add(XmlElement.Create('InvoiceTypeCode', XmlNamespaceCBC, '380'));
         RootXMLNode.Add(XmlElement.Create('DocumentCurrencyCode', XmlNamespaceCBC, CurrencyCode));
         InsertBuyerReference(RootXMLNode, SalesInvoiceHeader."Your Reference", SalesInvoiceHeader."Sell-to Customer No.");
+        OnAfterInsertSalesInvHeaderData(RootXMLNode, SalesInvoiceHeader);
     end;
 
     local procedure InsertHeaderData(var RootXMLNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; CurrencyCode: Code[10])
@@ -213,6 +214,7 @@ codeunit 13916 "Export XRechnung Document"
         RootXMLNode.Add(XmlElement.Create('CreditNoteTypeCode', XmlNamespaceCBC, '381'));
         RootXMLNode.Add(XmlElement.Create('DocumentCurrencyCode', XmlNamespaceCBC, CurrencyCode));
         InsertBuyerReference(RootXMLNode, SalesCrMemoHeader."Your Reference", SalesCrMemoHeader."Sell-to Customer No.");
+        OnAfterInsertSalesCrMemoHeaderData(RootXMLNode, SalesCrMemoHeader);
     end;
 
     local procedure InsertBuyerReference(var RootXMLNode: XmlElement; YourReference: Text[35]; SellToCustomerNo: Code[20])
@@ -775,6 +777,7 @@ codeunit 13916 "Export XRechnung Document"
         OrderReferenceElement := XmlElement.Create('OrderReference', XmlNamespaceCAC);
         OrderReferenceElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, SalesInvoiceHeader."External Document No."));
         OrderReferenceElement.Add(XmlElement.Create('SalesOrderID', XmlNamespaceCBC, SalesInvoiceHeader."Order No."));
+        OnInsertOrderReferenceOnBeforeInsertSalesInvoiceElement(SalesInvoiceHeader, OrderReferenceElement);
         RootElement.Add(OrderReferenceElement);
     end;
 
@@ -790,6 +793,7 @@ codeunit 13916 "Export XRechnung Document"
         OrderReferenceElement := XmlElement.Create('OrderReference', XmlNamespaceCAC);
         OrderReferenceElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, SalesCrMemoHeader."External Document No."));
         OrderReferenceElement.Add(XmlElement.Create('SalesOrderID', XmlNamespaceCBC, SalesCrMemoHeader."Return Order No."));
+        OnInsertOrderReferenceOnBeforeInsertSalesCrMemoElement(SalesCrMemoHeader, OrderReferenceElement);
         RootElement.Add(OrderReferenceElement);
     end;
 
@@ -928,6 +932,7 @@ codeunit 13916 "Export XRechnung Document"
             LineAmounts.Add(SalesInvLine.FieldName("Amount Including VAT"), SalesInvLine."Amount Including VAT");
         if not LineAmounts.ContainsKey(SalesInvLine.FieldName("Inv. Discount Amount")) then
             LineAmounts.Add(SalesInvLine.FieldName("Inv. Discount Amount"), SalesInvLine."Inv. Discount Amount");
+        OnAfterCalculateInvoiceLineAmounts(SalesInvoiceHeader, SalesInvLine, Currency, LineAmounts);
     end;
 
     local procedure CalculateLineAmounts(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
@@ -937,7 +942,7 @@ codeunit 13916 "Export XRechnung Document"
                 SalesCrMemoLine."Line Discount Amount" := Round(SalesCrMemoLine."Line Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
                 SalesCrMemoLine."Inv. Discount Amount" := Round(SalesCrMemoLine."Inv. Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
                 SalesCrMemoLine."Unit Price" := Round(SalesCrMemoLine."Unit Price" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                SalesCrMemoLine.Modify(true)
+                SalesCrMemoLine.Modify(true);
             until SalesCrMemoLine.Next() = 0;
 
         SalesCrMemoLine.CalcSums(Amount, "Amount Including VAT", "Inv. Discount Amount");
@@ -948,6 +953,7 @@ codeunit 13916 "Export XRechnung Document"
             LineAmounts.Add(SalesCrMemoLine.FieldName("Amount Including VAT"), SalesCrMemoLine."Amount Including VAT");
         if not LineAmounts.ContainsKey(SalesCrMemoLine.FieldName("Inv. Discount Amount")) then
             LineAmounts.Add(SalesCrMemoLine.FieldName("Inv. Discount Amount"), SalesCrMemoLine."Inv. Discount Amount");
+        OnAfterCalculateCrMemoLineAmounts(SalesCrMemoHeader, SalesCrMemoLine, Currency, LineAmounts);
     end;
 
     local procedure InsertVATAmounts(var SalesInvLine: Record "Sales Invoice Line"; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmount: Dictionary of [Decimal, Decimal])
@@ -994,15 +1000,16 @@ codeunit 13916 "Export XRechnung Document"
         exit(100 * SalesCrMemoLine."Inv. Discount Amount" / BaseAmount);
     end;
 
-    local procedure FindEDocumentService(ElDocumentFormat: Code[20])
+    local procedure FindEDocumentService(EDocumentFormat: Code[20])
     begin
-        if ElDocumentFormat = '' then
+        if EDocumentFormat = '' then
             exit;
 
-        if UpperCase(Format("E-Document Format"::XRechnung)) <> UpperCase(ElDocumentFormat) then
+        if UpperCase(Format("E-Document Format"::XRechnung)) <> UpperCase(EDocumentFormat) then
             exit;
         EDocumentService.SetRange("Document Format", EDocumentService."Document Format"::XRechnung);
         if EDocumentService.FindLast() then;
+        OnAfterFindEDocumentService(EDocumentService, EDocumentFormat);
     end;
     #region CommonFunctions
     procedure FormatDate(VarDate: Date): Text[20];
@@ -1089,9 +1096,10 @@ codeunit 13916 "Export XRechnung Document"
     local procedure DocumentLinesExist(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvLine: Record "Sales Invoice Line"): Boolean
     begin
         SalesInvLine.SetRange("Document No.", SalesInvoiceHeader."No.");
-        SalesInvLine.SetFilter(Type, '>%1', 0);
+        SalesInvLine.SetFilter(Type, '<>%1', SalesInvLine.Type::" ");
         SalesInvLine.SetFilter("No.", '<>%1', '');
         SalesInvLine.SetFilter(Quantity, '<>0');
+        OnDocumentLinesExistOnAfterFilterSalesInvLine(SalesInvoiceHeader, SalesInvLine);
         if SalesInvLine.FindSet() then
             exit(true);
         exit(false);
@@ -1100,9 +1108,10 @@ codeunit 13916 "Export XRechnung Document"
     local procedure DocumentLinesExist(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"): Boolean
     begin
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
-        SalesCrMemoLine.SetFilter(Type, '>%1', 0);
-        SalesCrMemoLine.SetFilter("No.", '<>%1', ' ');
+        SalesCrMemoLine.SetFilter(Type, '<>%1', SalesCrMemoLine.Type::" ");
+        SalesCrMemoLine.SetFilter("No.", '<>%1', '');
         SalesCrMemoLine.SetFilter(Quantity, '<>0');
+        OnDocumentLinesExistOnAfterFilterSalesCrMemoLine(SalesCrMemoHeader, SalesCrMemoLine);
         if SalesCrMemoLine.FindSet() then
             exit(true);
         exit(false);
@@ -1114,4 +1123,59 @@ codeunit 13916 "Export XRechnung Document"
         GeneralLedgerSetup.Get();
     end;
     #endregion
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeSalesInvXmlDocumentWriteToFile(var XMLDoc: XmlDocument; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(var XMLDoc: XmlDocument; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterFindEDocumentService(var EDocumentService: Record "E-Document Service"; EDocumentFormat: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertSalesInvHeaderData(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertSalesCrMemoHeaderData(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertOrderReferenceOnBeforeInsertSalesInvoiceElement(var SalesInvoiceHeader: Record "Sales Invoice Header"; var OrderReferenceElement: XmlElement)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertOrderReferenceOnBeforeInsertSalesCrMemoElement(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var OrderReferenceElement: XmlElement)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDocumentLinesExistOnAfterFilterSalesInvLine(var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvLine: Record "Sales Invoice Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDocumentLinesExistOnAfterFilterSalesCrMemoLine(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateInvoiceLineAmounts(var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateCrMemoLineAmounts(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    begin
+    end;
 }

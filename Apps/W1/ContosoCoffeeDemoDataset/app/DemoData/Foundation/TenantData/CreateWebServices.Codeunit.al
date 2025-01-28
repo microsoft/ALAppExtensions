@@ -44,6 +44,7 @@ codeunit 5690 "Create Web Services"
 
         WebServiceManagement.CreateWebService(WebService."Object Type"::Page, PAGE::"Acc. Sched. KPI WS Dimensions", PowerBIFinance(), true);
         WebServiceManagement.CreateWebService(WebService."Object Type"::Query, QUERY::"Dimension Sets", '', true);
+        WebServiceManagement.CreateWebService(WebService."Object Type"::Page, PAGE::"Sales Order", '', true);
     end;
 
     local procedure CreateSegmentWebService()

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-Incoterms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_Incoterm>
+		<Code>CFR</Code>
+		<Descripcion>COSTE Y FLETE (PUERTO DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>CIF</Code>
+		<Descripcion>COSTE, SEGURO Y FLETE (PUERTO DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>CPT</Code>
+		<Descripcion>TRANSPORTE PAGADO HASTA (EL LUGAR DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>CIP</Code>
+		<Descripcion>TRANSPORTE Y SEGURO PAGADOS HASTA (LUGAR DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DAF</Code>
+		<Descripcion>ENTREGADA EN FRONTERA (LUGAR CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DAP</Code>
+		<Descripcion>ENTREGADA EN LUGAR.</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DAT</Code>
+		<Descripcion>ENTREGADA EN TERMINAL.</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DES</Code>
+		<Descripcion>ENTREGADA SOBRE BUQUE (PUERTO DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DEQ</Code>
+		<Descripcion>ENTREGADA EN MUELLE (PUERTO DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DDU</Code>
+		<Descripcion>ENTREGADA DERECHOS NO PAGADOS (LUGAR DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DDP</Code>
+		<Descripcion>ENTREGADA DERECHOS PAGADOS (LUGAR DE DESTINO CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>DPU</Code>
+		<Descripcion>ENTREGADA Y DESCARGADA EN LUGAR ACORDADO.</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>EXW</Code>
+		<Descripcion>EN FABRICA (LUGAR CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>FCA</Code>
+		<Descripcion>FRANCO TRANSPORTISTA (LUGAR DESIGNADO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>FAS</Code>
+		<Descripcion>FRANCO AL COSTADO DEL BUQUE (PUERTO DE CARGA CONVENIDO).</Descripcion>
+	</c_Incoterm>
+	<c_Incoterm>
+		<Code>FOB</Code>
+		<Descripcion>FRANCO A BORDO (PUERTO DE CARGA CONVENIDO).</Descripcion>
+	</c_Incoterm>
+</data-set-Incoterms>

@@ -7,9 +7,20 @@ namespace Microsoft.eServices.EDocument;
 using Microsoft.Foundation.Reporting;
 using System.Environment.Configuration;
 using System.Automation;
+using System.Utilities;
 
 codeunit 6148 "E-Document Helper"
 {
+
+    procedure GetEDocumentBlob(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob");
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+    begin
+        if not EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported) then
+            Error(FailedToGetBlobErr);
+    end;
+
+
     /// <summary>
     /// Use it to check if the source document is an E-Document.
     /// </summary>
@@ -90,4 +101,8 @@ codeunit 6148 "E-Document Helper"
                 EdocumentService.Get(EDocServiceStatus."E-Document Service Code");
         end;
     end;
+
+
+    var
+        FailedToGetBlobErr: Label 'Failed to get E-Document Blob.', Locked = true;
 }
