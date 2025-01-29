@@ -55,6 +55,10 @@ page 4810 "Intrastat Report Setup"
                 field("Def. 3-Party Trade VAT No."; Rec."Def. 3-Party Trade VAT No.") { }
                 field("Def. VAT for Unknown State"; Rec."Def. VAT for Unknown State") { }
                 field("Def. Country/Region Code"; Rec."Def. Country/Region Code") { }
+                field("Transaction Type Mandatory"; Rec."Transaction Type Mandatory") { }
+                field("Transaction Spec. Mandatory"; Rec."Transaction Spec. Mandatory") { }
+                field("Transport Method Mandatory"; Rec."Transport Method Mandatory") { }
+                field("Shipment Method Mandatory"; Rec."Shipment Method Mandatory") { }
             }
             group(Reporting)
             {
