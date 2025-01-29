@@ -2763,6 +2763,126 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure PreviewEDocumentPurchaseInvoiceLines()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        DocumentAttachment: Record "Document Attachment";
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+        EDocumentPage: TestPage "E-Document";
+        EInvoiceLine: Record "E-Invoice Line";
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive single e-document with two attachments without linking to purchase order 
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive one single purchase order
+        CreateEDocServiceToReceivePurchaseOrder(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Incoming PEPPOL file
+        CreateIncomingPEPPOL(DocumentVendor);
+
+        // [WHEN] Running Receive
+        InvokeReceive(EDocService);
+        EDocumentPage.OpenView();
+        EDocumentPage.Last();
+
+        // [THEN] E-Invoice preview fast tab is visible and not editable
+        Assert.IsFalse(EDocumentPage.EInvoicePreview.Editable(), 'E-Invoice preview fast tab should not be editable');
+
+        // [THEN] E-Invoice lines are created
+        EDocument.FindLast();
+        EInvoiceLine.SetRange("E-Document Entry No.", EDocument."Entry No");
+        Assert.IsFalse(EInvoiceLine.IsEmpty(), 'E-Invoice lines not created.');
+    end;
+
+    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
+    begin
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
+        SetDefaultEDocServiceValues(EDocService);
+    end;
+
+    local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
+        DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
+        DocumentVendor.Modify(false);
+    end;
+
+    local procedure CreateItemWithReference(var Item: Record Item; var VATPostingSetup: Record "VAT Posting Setup")
+    var
+        ItemReference: Record "Item Reference";
+    begin
+        Item.FindFirst();
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item.Modify(false);
+        ItemReference.DeleteAll(false);
+        ItemReference."Item No." := Item."No.";
+        ItemReference."Reference No." := '1000';
+        ItemReference.Insert(false);
+    end;
+
+    local procedure CreateIncomingPEPPOL(var DocumentVendor: Record Vendor)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        Document: Text;
+        XMLInstream: InStream;
+    begin
+        TempXMLBuffer.LoadFromText(EDocReceiveFiles.GetDocument1());
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Value := DocumentVendor."VAT Registration No.";
+        TempXMLBuffer.Modify();
+
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Save(TempBlob);
+
+        TempBlob.CreateInStream(XMLInstream, TextEncoding::UTF8);
+        XMLInstream.Read(Document);
+
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue(Document);
+        LibraryVariableStorage.Enqueue(1);
+        EDocImplState.SetVariableStorage(LibraryVariableStorage);
+    end;
+
+    local procedure InvokeReceive(var EDocService: Record "E-Document Service")
+    var
+        EDocServicePage: TestPage "E-Document Service";
+    begin
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+    end;
+
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
+    begin
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify(false);
+    end;
+
 #endif
 #pragma warning restore AS0018
 
