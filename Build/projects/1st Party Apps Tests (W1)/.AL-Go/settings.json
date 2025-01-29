@@ -58,7 +58,10 @@
         "..\\..\\..\\Apps\\W1\\PowerBIReports\\test-library",
         "..\\..\\..\\Apps\\W1\\EDocumentConnectors\\Avalara\\test",
         "..\\..\\..\\Apps\\W1\\EDocumentConnectors\\Logiq\\test",
-        "..\\..\\..\\Apps\\W1\\EDocumentConnectors\\Microsoft365\\test"
+        "..\\..\\..\\Apps\\W1\\EDocumentConnectors\\Microsoft365\\test",
+        "..\\..\\..\\Apps\\W1\\External File Storage - Azure Blob Service Connector\\test",
+        "..\\..\\..\\Apps\\W1\\External File Storage - Azure File Service Connector\\test",
+        "..\\..\\..\\Apps\\W1\\External File Storage - SharePoint Connector\\test"
     ],
     "doNotRunTests": false
 }
