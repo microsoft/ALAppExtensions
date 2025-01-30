@@ -198,7 +198,34 @@ codeunit 6103 "E-Document Subscription"
     local procedure OnBeforeOnDeletePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
     begin
         if not IsNullGuid(PurchaseHeader."E-Document Link") then
-            Error(DeleteNotAllowedErr);
+            if GuiAllowed() then
+                if not Confirm(this.ConfirmDeleteQst) then
+                    Error('');
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure OnAfterDeletePurchaseHeader(var Rec: Record "Purchase Header"; RunTrigger: Boolean)
+    var
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        EDocServiceStatusDeleted: Enum "E-Document Service Status";
+    begin
+        if IsNullGuid(Rec."E-Document Link") then
+            exit;
+
+        EDocument.GetBySystemId(Rec."E-Document Link");
+
+        EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
+        EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
+        EDocument."Document No." := '';
+        if Rec."Document Type" = Rec."Document Type"::Order then
+            EDocument."Order No." := '';
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
@@ -270,6 +297,7 @@ codeunit 6103 "E-Document Subscription"
         EDocService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         EDocLogHelper: Codeunit "E-Document Log Helper";
+        EDocumentProcessing: Codeunit "E-Document Processing";
         PostedSourceDocumentHeader: RecordRef;
     begin
         PostedSourceDocumentHeader.GetTable(PostedRecord);
@@ -281,6 +309,7 @@ codeunit 6103 "E-Document Subscription"
 
         EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocLogHelper.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported Document Created");
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported Document Created");
     end;
 
     local procedure CreateEDocumentFromPosedDocument(PostedRecord: Variant)
@@ -308,5 +337,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
-        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        ConfirmDeleteQst: Label 'This purchase document is created from E-Document. Do you want to proceed with deletion?';
 }

@@ -265,6 +265,21 @@ codeunit 6108 "E-Document Processing"
         exit(GetPostedRecord(EDocument, RelatedRecord));
     end;
 
+    /// <summary>
+    /// Deletes related record if it is not posted.
+    /// </summary>
+    /// <param name="EDocument">E-Document record</param>
+    procedure DeleteRelatedRecord(EDocument: Record "E-Document")
+    var
+        RecRef: RecordRef;
+    begin
+        if this.GetRelatedRecord(EDocument, RecRef) then
+            if RecRef.Number = Database::"Purchase Header" then
+                RecRef.Delete(true)
+            else
+                Error(this.CannotDeletePostedRecordErr);
+    end;
+
     procedure GetTelemetryDimensions(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var Dimensions: Dictionary of [Text, Text])
     var
         EDocument2: Record "E-Document";
@@ -444,4 +459,5 @@ codeunit 6108 "E-Document Processing"
         EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
         EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
         EDocTok: Label 'W1 E-Document', Locked = true;
+        CannotDeletePostedRecordErr: Label 'Cannot delete related record because it is already posted.';
 }

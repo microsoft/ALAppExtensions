@@ -1342,6 +1342,59 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure RecreateReceivedPurchaseInvoice()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServicePage: TestPage "E-Document Service";
+        EDocumentPage: TestPage "E-Document";
+        CreatedInvoiceNo: Text[20];
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Delete and recreate purchase invoice from E-Document page
+        Initialize();
+
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
+        BindSubscription(this.EDocImplState);
+
+        SetDefaultEDocServiceValues(EDocService);
+
+        // [GIVEN] Purchase invoice
+        CreatePurchaseInvoiceWithLines(this.PurchaseHeader, this.PurchaseLine, this.Vendor);
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(this.PurchaseHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Purchase invoice is created with corresponding values
+        EDocumentPage.OpenView();
+        EDocumentPage.Last();
+        CreatedInvoiceNo := EDocumentPage."Document No.".Value;
+
+        CheckPurchaseInvoiceCreatedWithCorrectValues(this.PurchaseHeader, this.CreatedPurchaseHeader, this.PurchaseLine, this.CreatedPurchaseLine, CreatedInvoiceNo);
+
+        // [WHEN] Delete created purchase invoice from E-Document page
+        EDocumentPage.DeleteRelatedDocument.Invoke();
+
+        // [THEN] Check that purchase invoice is deleted
+        this.Assert.AreEqual('', EDocumentPage."Document No.".Value, '');
+        CheckPurchaseInvoiceDeleted(this.CreatedPurchaseHeader, CreatedInvoiceNo);
+
+        // [WHEN] Recreate purchase invoice
+        EDocumentPage.CreateDocument.Invoke();
+
+        // [THEN] Check that purchase invoice is created again with corresponding values
+        CheckPurchaseInvoiceCreatedWithCorrectValues(this.PurchaseHeader, this.CreatedPurchaseHeader, this.PurchaseLine, this.CreatedPurchaseLine, EDocumentPage."Document No.".Value);
+
+        DeletePurchaseHeaders(this.PurchaseHeader, this.CreatedPurchaseHeader);
+    end;
+
     [ModalPageHandler]
     procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
     var
@@ -1399,6 +1452,36 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocument.DeleteAll();
     end;
 
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
+    begin
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify(false);
+    end;
+
+    local procedure CreatePurchaseInvoiceWithLines(var PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; var Vendor: Record Vendor)
+    var
+        i: Integer;
+    begin
+        this.LibraryPurchase.CreateVendorWithAddress(this.Vendor);
+        this.Vendor."Receive E-Document To" := this.Vendor."Receive E-Document To"::"Purchase Invoice";
+        this.Vendor.Modify(false);
+        this.LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, this.Vendor."No.");
+
+        for i := 1 to 3 do begin
+            this.LibraryPurchase.CreatePurchaseLine(PurchLine, PurchHeader, PurchLine.Type::Item, this.LibraryInventory.CreateItemNo(), this.LibraryRandom.RandInt(100));
+            PurchLine.Validate("Direct Unit Cost", this.LibraryRandom.RandDecInRange(1, 100, 2));
+            PurchLine.Modify(true);
+        end;
+    end;
+
     local procedure CheckPurchaseHeadersAreEqual(var PurchHeader1: Record "Purchase Header"; var PurchHeader2: Record "Purchase Header")
     begin
         Assert.AreEqual(PurchHeader1."Pay-to Vendor No.", PurchHeader2."Pay-to Vendor No.", '');
@@ -1435,6 +1518,46 @@ codeunit 139628 "E-Doc. Receive Test"
 
         PurchHeader.CalcFields("Amount Including VAT");
         Assert.AreEqual(PurchHeader."Amount Including VAT", Abs(GenJnlLine.Amount), '');
+    end;
+
+    local procedure CheckPurchaseInvoiceCreatedWithCorrectValues(PurchHeader: Record "Purchase Header"; var CreatedPurchHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line"; CreatedPurchLine: Record "Purchase Line"; DocumentNo: Code[20])
+    begin
+        CreatedPurchHeader.Reset();
+        CreatedPurchHeader.SetRange("Document Type", CreatedPurchHeader."Document Type"::Invoice);
+        CreatedPurchHeader.SetRange("No.", DocumentNo);
+        CreatedPurchHeader.FindFirst();
+
+        CheckPurchaseHeadersAreEqual(PurchHeader, CreatedPurchHeader);
+
+        CreatedPurchLine.SetRange("Document Type", CreatedPurchHeader."Document Type");
+        CreatedPurchLine.SetRange("Document No.", CreatedPurchHeader."No.");
+        if CreatedPurchLine.FindSet() then
+            repeat
+                PurchLine.SetRange("Document Type", PurchHeader."Document Type");
+                PurchLine.SetRange("Document No.", PurchHeader."No.");
+                PurchLine.SetRange("Line No.", CreatedPurchLine."Line No.");
+                PurchLine.FindFirst();
+                CheckPurchaseLinesAreEqual(PurchLine, CreatedPurchLine);
+            until CreatedPurchLine.Next() = 0;
+    end;
+
+    local procedure CheckPurchaseInvoiceDeleted(var CreatedPurchHeader: Record "Purchase Header"; DocumentNo: Code[20])
+    begin
+        CreatedPurchHeader.Reset();
+        CreatedPurchHeader.SetRange("Document Type", CreatedPurchHeader."Document Type"::Invoice);
+        CreatedPurchHeader.SetRange("No.", DocumentNo);
+        Assert.RecordIsEmpty(CreatedPurchHeader);
+    end;
+
+    local procedure DeletePurchaseHeaders(var PurchHeader: Record "Purchase Header"; var CreatedPurchHeader: Record "Purchase Header")
+    begin
+        PurchHeader.SetHideValidationDialog(true);
+        PurchHeader."E-Document Link" := NullGuid;
+        PurchHeader.Delete(true);
+
+        CreatedPurchHeader.SetHideValidationDialog(true);
+        CreatedPurchHeader."E-Document Link" := NullGuid;
+        CreatedPurchHeader.Delete(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Create Purch. Doc.", 'OnBeforeProcessHeaderFieldsAssignment', '', false, false)]
@@ -2765,5 +2888,4 @@ codeunit 139628 "E-Doc. Receive Test"
 
 #endif
 #pragma warning restore AS0018
-
 }
