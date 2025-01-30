@@ -109,14 +109,17 @@ codeunit 6105 "E Document Email"
         case SourceReference.Number() of
             Database::"Sales Invoice Header":
                 if GetEDocumentForSalesInvoice(DocNo, EDocument) then
-                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName)
+                else
+                    exit(false);
             Database::"Sales Cr.Memo Header":
                 if GetEDocumentForSalesCrMemo(DocNo, EDocument) then
-                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName);
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName)
+                else
+                    exit(false);
             else
                 exit(false);
         end;
-
         exit(true);
     end;
 

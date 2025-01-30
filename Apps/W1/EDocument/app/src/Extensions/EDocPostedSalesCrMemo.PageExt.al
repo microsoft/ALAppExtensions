@@ -2,9 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.Sales.History;
+namespace Microsoft.eServices.EDocument;
 
-using Microsoft.eServices.EDocument;
+using Microsoft.Sales.History;
+
 
 pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit Memo"
 {
@@ -72,7 +73,7 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
     var
         EDocument: Record "E-Document";
     begin
-        EDocument.SetRange("Document Record ID", Rec.RecordId);
+        EDocument.SetRange("Document Record ID", Rec.RecordId());
         EDocumentExists := not EDocument.IsEmpty();
     end;
 
