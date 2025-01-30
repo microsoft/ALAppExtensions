@@ -152,6 +152,13 @@ page 6121 "E-Document"
                     ToolTip = 'Specifies the receiving company address.';
                 }
             }
+            part(EInvoicePreview; "E-Invoice Lines")
+            {
+                Caption = 'E-Invoice Lines';
+                SubPageLink = "E-Document Entry No." = field("Entry No");
+                ShowFilter = false;
+                Visible = IsIncomingDoc and ShowPreview;
+            }
             part(EdocoumentServiceStatus; "E-Document Service Status")
             {
                 Caption = 'Service Status';
@@ -493,6 +500,7 @@ page 6121 "E-Document"
     begin
         IsProcessed := Rec.Status = Rec.Status::Processed;
         IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
+        ShowPreview := (Rec."Document Type" = Rec."Document Type"::"Purchase Invoice") or (Rec."Document Type" = Rec."Document Type"::"Purchase Credit Memo");
 
         RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
         HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
@@ -597,7 +605,7 @@ page 6121 "E-Document"
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible, ShowPreview : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
 
