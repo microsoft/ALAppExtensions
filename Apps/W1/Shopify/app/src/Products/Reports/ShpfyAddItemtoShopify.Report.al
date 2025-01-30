@@ -57,18 +57,24 @@ report 30106 "Shpfy Add Item to Shopify"
             var
                 SkippedRecord: Codeunit "Shpfy Skipped Record";
             begin
-                if Item.Blocked or Item."Sales Blocked" then
-                    SkippedRecord.LogSkippedRecord(Item.RecordId, ItemIsBlockedLbl, ShopifyShop)
-                else begin
-                    if GuiAllowed then begin
-                        CurrItemNo := Item."No.";
-                        ProcessDialog.Update();
-                    end;
-
-                    ShopifyCreateProduct.Run(Item);
-
-                    ProductFilter += Format(ShopifyCreateProduct.GetProductId()) + '|';
+                if Item.Blocked or Item."Sales Blocked" then begin
+                    SkippedRecord.LogSkippedRecord(Item.RecordId, ItemIsBlockedLbl, ShopifyShop);
+                    exit;
                 end;
+
+                if Item.Description = '' then begin
+                    SkippedRecord.LogSkippedRecord(Item.RecordId, ItemDescriptionIsEmptyLbl, ShopifyShop);
+                    exit;
+                end;
+
+                if GuiAllowed then begin
+                    CurrItemNo := Item."No.";
+                    ProcessDialog.Update();
+                end;
+
+                ShopifyCreateProduct.Run(Item);
+
+                ProductFilter += Format(ShopifyCreateProduct.GetProductId()) + '|';
             end;
 
             trigger OnPostDataItem()
@@ -190,6 +196,7 @@ report 30106 "Shpfy Add Item to Shopify"
         ChangeDefaultLocationLbl: Label 'Change default location';
         ChangeSKUMappingLbl: Label 'Change SKU mapping';
         ItemIsBlockedLbl: Label 'Item is blocked or sales blocked.';
+        ItemDescriptionIsEmptyLbl: Label 'Item description is empty.';
 
     /// <summary> 
     /// Set Shop.

@@ -39,8 +39,9 @@ codeunit 11113 "DE Contoso Localization"
                     Codeunit.Run(Codeunit::"Create DE No. Series");
                     Codeunit.Run(Codeunit::"Create DE Post Code");
                     Codeunit.Run(Codeunit::"Create DE Receiver/Dispatcher");
-                    Codeunit.Run(Codeunit::"Create DE Company Information");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create DE Company Information");
         end;
     end;
 
@@ -76,16 +77,13 @@ codeunit 11113 "DE Contoso Localization"
                     Codeunit.Run(Codeunit::"Create DE VAT Posting Groups");
                     Codeunit.Run(Codeunit::"Create DE Currency");
                     Codeunit.Run(Codeunit::"Create DE General Ledger Setup");
-                end;
-
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
                     Codeunit.Run(Codeunit::"Create DE VAT Statement");
                     Codeunit.Run(Codeunit::"Create DE Data Export");
                     Codeunit.Run(Codeunit::"Create DE Data Exp. Rec. Type");
                     Codeunit.Run(Codeunit::"Create DE Data Export Record");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
         end;
     end;
 

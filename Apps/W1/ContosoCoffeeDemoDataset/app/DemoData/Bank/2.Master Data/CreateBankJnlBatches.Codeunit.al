@@ -8,10 +8,9 @@ codeunit 5665 "Create Bank Jnl. Batches"
         ContosoGeneralLedger: Codeunit "Contoso General Ledger";
         CreateGenJournalTemplate: Codeunit "Create Gen. Journal Template";
         CreateNoSeries: Codeunit "Create No. Series";
-        CreateBankAccount: Codeunit "Create Bank Account";
     begin
-        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.General(), Daily(), DailyLbl, Enum::"Gen. Journal Account Type"::"Bank Account", CreateBankAccount.Checking(), '', false);
-        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.PaymentJournal(), PaymentReconciliation(), PaymentReconciliationLbl, Enum::"Gen. Journal Account Type"::"Bank Account", CreateBankAccount.Checking(), CreateNoSeries.PaymentJournal(), true);
+        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.General(), Daily(), DailyLbl, Enum::"Gen. Journal Account Type"::"Bank Account", '', CreateNoSeries.GeneralJournal(), false);
+        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.PaymentJournal(), PaymentReconciliation(), PaymentReconciliationLbl, Enum::"Gen. Journal Account Type"::"Bank Account", '', CreateNoSeries.PaymentJournal(), true);
     end;
 
     procedure Daily(): Code[10]

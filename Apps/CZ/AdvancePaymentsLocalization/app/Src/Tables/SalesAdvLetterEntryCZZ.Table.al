@@ -34,6 +34,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         field(5; "Sales Adv. Letter No."; Code[20])
         {
             Caption = 'Sales Adv. Letter No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = "Sales Adv. Letter Header CZZ";
         }
@@ -45,6 +46,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         field(13; "Document No."; Code[20])
         {
             Caption = 'Document No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(15; "VAT Bus. Posting Group"; Code[20])
@@ -451,6 +453,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     begin
         RemainingAmountLCY := SalesAdvLetterManagementCZZ.GetRemAmtLCYSalAdvPayment(Rec, BalanceAtDate);
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
+    end;
+
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.Get("Cust. Ledger Entry No.");
+        exit(CustLedgerEntry."Adjusted Currency Factor");
     end;
 
     [IntegrationEvent(false, false)]

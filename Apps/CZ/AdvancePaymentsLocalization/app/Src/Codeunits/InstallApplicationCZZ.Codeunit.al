@@ -78,7 +78,6 @@ codeunit 31087 "Install Application CZZ"
     begin
         CopyCustomerLedgerEntries();
         CopyVendorLedgerEntries();
-        CopyAccScheduleExtension();
         MoveIncomingDocument();
         ModifyReportSelections();
     end;
@@ -165,16 +164,6 @@ codeunit 31087 "Install Application CZZ"
                 ReportSelections.Validate("Report ID", Report::"Sales - Invoice with Adv. CZZ");
                 ReportSelections.Modify();
             until ReportSelections.Next() = 0;
-    end;
-
-    local procedure CopyAccScheduleExtension()
-    var
-        AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
-        AccScheduleExtensionCZLDataTransfer: DataTransfer;
-    begin
-        AccScheduleExtensionCZLDataTransfer.SetTables(Database::"Acc. Schedule Extension CZL", Database::"Acc. Schedule Extension CZL");
-        AccScheduleExtensionCZLDataTransfer.AddFieldValue(AccScheduleExtensionCZL.FieldNo(Prepayment), AccScheduleExtensionCZL.FieldNo("Advance Payments CZZ"));
-        AccScheduleExtensionCZLDataTransfer.CopyFields();
     end;
 
     local procedure MoveIncomingDocument()

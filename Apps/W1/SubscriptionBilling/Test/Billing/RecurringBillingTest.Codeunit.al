@@ -21,6 +21,7 @@ codeunit 139688 "Recurring Billing Test"
         BillingTemplate2: Record "Billing Template";
         ServiceCommitment: Record "Service Commitment";
         Item: Record Item;
+        GLSetup: Record "General Ledger Setup";
         ServiceObject: Record "Service Object";
         ServiceObject2: Record "Service Object";
         ServiceCommitmentTemplate: Record "Service Commitment Template";
@@ -611,6 +612,61 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     [Test]
+    procedure BillCompletePeriodWhenServiceStartDateIsLastDayOfMonth()
+    var
+        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
+        StartDate: Date;
+        EndDate: Date;
+    begin
+        // [SCENARIO] When Customer Contract has Service Start Date at the end of the month, the proposed billing lines should conver the whole period including the last day of the contract
+        Initialize();
+
+        StartDate := CalcDate('<-CM-5M-1D>', Today()); // Last day of the month, e.g. 31.03.2023
+        EndDate := CalcDate('<-CM-4M-1D>', Today()); // Last day of the next month, e.g. 30.04.2023
+
+        // [GIVEN] Service Commitment Item
+        ContractTestLibrary.CreateServiceObjectItem(Item, false, Enum::"Item Service Commitment Type"::"Service Commitment Item", "Item Type"::"Non-Inventory");
+
+        // [GIVEN] Service Commitment Package with assigned Item
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommitmentPackageLine, '<2M>', 100, '<1M>', '', "Service Partner"::Customer, '');
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+        ServiceCommitmentPackage.SetRecFilter();
+
+        // [GIVEN] Customer and Customer Contract
+        LibrarySales.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+        CustomerContract.SetRecFilter();
+
+        // [GIVEN] Service Object assigned to Customer Contract
+        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(true);
+        ServiceObject.SetRecFilter();
+        ServiceObject.InsertServiceCommitmentsFromServCommPackage(StartDate, EndDate, ServiceCommitmentPackage, false);
+        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false);
+
+        // [GIVEN] Billing Template for Customer Contract for complete period - last day of the month following to the next one
+        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<CM+2M>', '<CM+2M>', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
+        BillingTemplate.SetRecFilter();
+
+        // [WHEN] Create Billing Proposal for Customer Contract
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+
+        // [THEN] Billing Lines are created for Customer Contract for complete period
+        BillingLine.Reset();
+        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.SetRange("Billing from", StartDate);
+        AssertThat.RecordIsNotEmpty(BillingLine);
+        // There could be multiple lines
+        BillingLine.SetRange("Billing from");
+        BillingLine.SetRange("Billing to", EndDate);
+        AssertThat.RecordIsNotEmpty(BillingLine);
+    end;
+
+    [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckRecurringBillingPageGroupingLines()
     begin
@@ -1045,7 +1101,7 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     [Test]
-    internal procedure GetSalesDocumentTypeFromBillingLineForContractNo()
+    procedure GetSalesDocumentTypeFromBillingLineForContractNo()
     var
         ContractNo: Code[20];
     begin
@@ -1067,7 +1123,7 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     [Test]
-    internal procedure GetPurchaseDocumentTypeFromBillingLineForContractNo()
+    procedure GetPurchaseDocumentTypeFromBillingLineForContractNo()
     var
         ContractNo: Code[20];
     begin
@@ -1089,7 +1145,7 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     [Test]
-    internal procedure GetSalesDocumentTypeFromBillingLineForCustomerNo()
+    procedure GetSalesDocumentTypeFromBillingLineForCustomerNo()
     var
         PartnerNo: Code[20];
     begin
@@ -1112,7 +1168,7 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     [Test]
-    internal procedure GetPurchaseDocumentTypeFromBillingLineForVendorNo()
+    procedure GetPurchaseDocumentTypeFromBillingLineForVendorNo()
     var
         PartnerNo: Code[20];
     begin
@@ -1353,12 +1409,8 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     local procedure CreateBillingProposalForCustomerContractUsingTempTemplate(PeriodCalculation: Enum "Period Calculation"; BillingPeriod: Text; BillingBasePeriod: Text; BillFromDate: Date; BillToDate: Date)
-    var
-        GLSetup: Record "General Ledger Setup";
     begin
-        GLSetup.Get();
-        GLSetup."Unit-Amount Rounding Precision" := 0.001;
-        GLSetup.Modify(false);
+        SetGLSetupUnitAmountRoundingPrecision();
         CreateCustomerContract(PeriodCalculation, BillingPeriod, BillingBasePeriod, BillFromDate, 200, 100);
         BillingProposal.CreateBillingProposalForContract("Service Partner"::Customer, CustomerContract."No.", '', CustomerContract.GetFilter("Billing Rhythm Filter"), BillToDate, BillToDate);
         Currency.InitRoundingPrecision();
@@ -1384,12 +1436,8 @@ codeunit 139688 "Recurring Billing Test"
     end;
 
     local procedure CreateBillingProposalForVendorContractUsingRealTemplate()
-    var
-        GLSetup: Record "General Ledger Setup";
     begin
-        GLSetup.Get();
-        GLSetup."Unit-Amount Rounding Precision" := 0.001;
-        GLSetup.Modify(false);
+        SetGLSetupUnitAmountRoundingPrecision();
         CreateVendorContract('<1M>', '<12M>');
         CreateRecurringBillingTemplateSetupForVendorContract('<2M-CM>', '<8M+CM>', VendorContract.GetView());
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
@@ -1620,6 +1668,13 @@ codeunit 139688 "Recurring Billing Test"
         BillingLine."Discount %" := NewDiscountPerc;
         BillingLine."Service Obj. Quantity Decimal" := NewServiceObjQuantity;
         BillingLine.Insert(false);
+    end;
+
+    local procedure SetGLSetupUnitAmountRoundingPrecision()
+    begin
+        GLSetup.Get();
+        GLSetup."Unit-Amount Rounding Precision" := 0.001;
+        GLSetup.Modify(false);
     end;
 
     [ModalPageHandler]

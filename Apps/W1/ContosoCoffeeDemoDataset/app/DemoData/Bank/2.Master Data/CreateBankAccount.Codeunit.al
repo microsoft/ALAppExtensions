@@ -10,11 +10,27 @@ codeunit 5457 "Create Bank Account"
         CreateBankExImportSetup: Codeunit "Create Bank Ex/Import Setup";
         CreateNoSeries: Codeunit "Create No. Series";
         SalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreateGenJournalTemplate: Codeunit "Create Gen. Journal Template";
+        CreateBankJnlBaches: Codeunit "Create Bank Jnl. Batches";
     begin
         ContosoCoffeeDemoDataSetup.Get();
 
         ContosoBank.InsertBankAccount(Checking(), BankAccountDescriptionLbl, BankaccountAddressLbl, BankAccountCityLbl, BankAccountContactLbl, CheckingBankAccountNoLbl, -934400, CheckingTok, SalespersonPurchaser.OtisFalls(), ContosoCoffeeDemoDataSetup."Country/Region Code", '23', CreateNoSeries.PaymentReconciliationJournals(), PostCodeLbl, '199', BankBranchNoLbl, CreateBankExImportSetup.SEPACAMT());
         ContosoBank.InsertBankAccount(Savings(), BankAccountDescriptionLbl, BankaccountAddressLbl, BankAccountCityLbl, BankAccountContactLbl, SavingBankAccountNoLbl, 0, SavingTok, SalespersonPurchaser.OtisFalls(), ContosoCoffeeDemoDataSetup."Country/Region Code", '', '', PostCodeLbl, '', BankBranchNoLbl, '');
+
+        UpdateBankJnlBatches(CreateGenJournalTemplate.General(), CreateBankJnlBaches.Daily(), Checking(), '');
+        UpdateBankJnlBatches(CreateGenJournalTemplate.PaymentJournal(), CreateBankJnlBaches.PaymentReconciliation(), Checking(), CreateNoSeries.PaymentJournal());
+    end;
+
+    local procedure UpdateBankJnlBatches(JournalTemplateName: Code[10]; JournalBatchName: Code[10]; BankAccounNo: Code[20]; NoSeries: Code[20])
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        GenJournalBatch.Get(JournalTemplateName, JournalBatchName);
+
+        GenJournalBatch.Validate("Bal. Account No.", BankAccounNo);
+        GenJournalBatch.Validate("No. Series", NoSeries);
+        GenJournalBatch.Modify(true);
     end;
 
     procedure Checking(): Code[20]

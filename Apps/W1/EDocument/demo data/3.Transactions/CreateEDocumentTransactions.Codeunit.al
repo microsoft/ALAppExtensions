@@ -22,12 +22,13 @@ codeunit 5376 "Create E-Document Transactions"
         PurchaseHeader: Record "Purchase Header";
         EDocumentModuleSetup: Record "E-Document Module Setup";
         ContosoPurchase: Codeunit "Contoso Purchase";
+        CreateWhseItem: Codeunit "Create Whse Item";
         CommonUoM: Codeunit "Create Common Unit Of Measure";
     begin
-        if EDocumentModuleSetup.Get() then;
+        EDocumentModuleSetup.Get();
         PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1000', 50, CommonUoM.Piece(), 100);
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1001', 50, CommonUoM.Piece(), 100);
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item1(), 50, CommonUoM.Piece(), 100);
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item2(), 50, CommonUoM.Piece(), 100);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1003', 50, CommonUoM.Piece(), 120);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
@@ -42,13 +43,13 @@ codeunit 5376 "Create E-Document Transactions"
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 10, CommonUoM.Piece(), 219);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 2");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1000', 15, CommonUoM.Piece(), 124);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 5, CommonUoM.Piece(), 235);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 2");
-        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1001', 150, CommonUoM.Piece(), 125, 20);
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item2(), 150, CommonUoM.Piece(), 125, 20);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1003', 25, CommonUoM.Piece(), 170, 10);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1004', 50, CommonUoM.Piece(), 120);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1005', 50, CommonUoM.Piece(), 140);
@@ -56,14 +57,14 @@ codeunit 5376 "Create E-Document Transactions"
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1007', 15, CommonUoM.Piece(), 119);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 3");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1004', 60, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1005', 60, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1004', 40, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1005', 40, CommonUoM.Piece(), 110);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 3");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 20, CommonUoM.Piece(), 289);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
     end;
@@ -496,9 +497,12 @@ codeunit 5376 "Create E-Document Transactions"
 
     local procedure CreateOrder(VendorNo: Code[20]): Record "Purchase Header";
     var
+        Vendor: Record Vendor;
         ContosoPurchase: Codeunit "Contoso Purchase";
     begin
-        exit(ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, VendorNo, '', 20240301D, ''));
+        Vendor.Get(VendorNo);
+
+        exit(ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, VendorNo, '', 20240301D, 20240301D, 0D, Vendor."Payment Terms Code", '', '', '', 20240301D, Vendor."Payment Method Code"));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post (Yes/No)", OnBeforeConfirmPost, '', false, false)]

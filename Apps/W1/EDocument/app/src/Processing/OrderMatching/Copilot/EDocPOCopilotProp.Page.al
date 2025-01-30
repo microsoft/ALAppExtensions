@@ -158,6 +158,7 @@ page 6166 "E-Doc. PO Copilot Prop"
         AllLinesMatchedTxt: label 'All lines (100%) are matched. Review match proposals.';
         SubsetOfLinesMatchedTxt: label '%1% of lines are matched. Review match proposals.', Comment = '%1 - a decimal between 0 and 100';
         MultipleMatchTxt: Label 'Matched to multiple entries. Drill down to see more.';
+        FullMatchAlreadyErr: Label 'E-Document line selection is already fully matched.';
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
@@ -201,6 +202,9 @@ page 6166 "E-Doc. PO Copilot Prop"
     internal procedure SetData(InputEDocument: Record "E-Document"; var InputEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var InputPurchaseOrderLine: Record "Purchase Line" temporary)
     begin
         InputEDocumentImportedLine.SetRange("Fully Matched", false);
+        if InputEDocumentImportedLine.IsEmpty() then
+            Error(FullMatchAlreadyErr);
+
         if InputEDocumentImportedLine.FindSet() then
             repeat
                 TempEDocumentImportedLine.Copy(InputEDocumentImportedLine);
@@ -237,7 +241,7 @@ page 6166 "E-Doc. PO Copilot Prop"
                 RoundPrecision := EDocumentImportHelper.GetCurrencyRoundingPrecision(EDocument."Currency Code");
                 Discount := Round((EDocOrderMatches."E-Document Direct Unit Cost" * EDocOrderMatches."Line Discount %") / 100, RoundPrecision);
                 DiscountedUnitCost := EDocOrderMatches."E-Document Direct Unit Cost" - Discount;
-                Sum += EDocOrderMatches.Quantity * DiscountedUnitCost;
+                Sum += EDocOrderMatches."Precise Quantity" * DiscountedUnitCost;
             until EDocOrderMatches.Next() = 0;
     end;
 
@@ -246,7 +250,7 @@ page 6166 "E-Doc. PO Copilot Prop"
         TempAIProposalBuffer2: Record "E-Doc. PO Match Prop. Buffer" temporary;
         EDocLineNos: List of [Integer];
         EDocLineNo: Integer;
-        Sum: Integer;
+        Sum: Decimal;
     begin
         if TempAIProposalBuffer.FindSet() then
             repeat

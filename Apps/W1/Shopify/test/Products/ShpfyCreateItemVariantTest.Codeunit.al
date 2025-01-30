@@ -18,7 +18,8 @@ codeunit 139632 "Shpfy Create Item Variant Test"
     [Test]
     procedure UnitTestCreateVariantFromItem()
     var
-        Item: Record "Item";
+        Item: Record Item;
+        ParentItem: Record "Item";
         ShpfyVariant: Record "Shpfy Variant";
         ShpfyProduct: Record "Shpfy Product";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
@@ -30,10 +31,12 @@ codeunit 139632 "Shpfy Create Item Variant Test"
         // [SCENARIO] Create a variant from a given item
         Initialize();
 
+        // [GIVEN] Parent Item
+        ParentItem := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ParentProductId := CreateShopifyProduct(ParentItem.SystemId);
         // [GIVEN] Item
         Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
-        // [GIVEN] Shopify product
-        ParentProductId := CreateShopifyProduct(Item.SystemId);
 
         // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
         BindSubscription(CreateItemAsVariantSub);
@@ -135,39 +138,33 @@ codeunit 139632 "Shpfy Create Item Variant Test"
     end;
 
     [Test]
-    procedure UnitTestRemoveDefaultVariantTest()
+    procedure UnitTestCreateVariantFromSameItem()
     var
-        Item: Record Item;
+        Item: Record "Item";
         ShpfyVariant: Record "Shpfy Variant";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
         CreateItemAsVariant: Codeunit "Shpfy Create Item As Variant";
         CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
-        ProductId, VariantId : BigInteger;
+        ParentProductId: BigInteger;
+        VariantId: BigInteger;
     begin
-        // [SCENARIO] Remove default variant
+        // [SCENARIO] Create a variant from a given item for the same item
         Initialize();
 
         // [GIVEN] Item
         Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
         // [GIVEN] Shopify product
-        ProductId := CreateShopifyProduct(Item.SystemId);
-        // [GIVEN] Shopify variant
-        VariantId := CreateShopifyVariant(ProductId);
-        // [GIVEN] Default variant exists in Shopify
-        CreateItemAsVariantSub.SetDefaultVariantId(VariantId);
+        ParentProductId := CreateShopifyProduct(Item.SystemId);
 
-        // [WHEN] Invoke CreateItemAsVariant.RemoveDefaultVariant
+        // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
         BindSubscription(CreateItemAsVariantSub);
-        CreateItemAsVariant.SetParentProduct(ProductId);
-        CreateItemAsVariant.FindDefaultVariantId();
+        CreateItemAsVariant.SetParentProduct(ParentProductId);
         CreateItemAsVariant.CreateVariantFromItem(Item);
-        CreateItemAsVariant.RemoveDefaultVariant();
+        VariantId := CreateItemAsVariantSub.GetNewVariantId();
         UnbindSubscription(CreateItemAsVariantSub);
 
-        // [THEN] Default variant is removed
-        ShpfyVariant.SetRange(Id, VariantId);
-        LibraryAssert.IsTrue(ShpfyVariant.IsEmpty(), 'Default variant not removed');
-
+        // [THEN] Variant is not created
+        LibraryAssert.IsFalse(ShpfyVariant.Get(VariantId), 'Variant created');
     end;
 
     local procedure Initialize()
@@ -190,17 +187,5 @@ codeunit 139632 "Shpfy Create Item Variant Test"
         ShopifyProduct."Item SystemId" := SystemId;
         ShopifyProduct.Insert(true);
         exit(ShopifyProduct."Id");
-    end;
-
-    local procedure CreateShopifyVariant(ProductId: BigInteger): BigInteger
-    var
-        ShpfyVariant: Record "Shpfy Variant";
-    begin
-        ShpfyVariant.Init();
-        ShpfyVariant.Id := Any.IntegerInRange(10000, 99999);
-        ShpfyVariant."Shop Code" := Shop."Code";
-        ShpfyVariant."Product Id" := ProductId;
-        ShpfyVariant.Insert(false);
-        exit(ShpfyVariant."Id");
     end;
 }

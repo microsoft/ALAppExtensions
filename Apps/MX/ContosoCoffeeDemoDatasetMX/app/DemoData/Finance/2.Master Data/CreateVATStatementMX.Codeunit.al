@@ -152,7 +152,7 @@ codeunit 14105 "Create VAT Statement MX"
         Co2TaxLbl: Label 'CO2 Tax', MaxLength = 100;
         WaterTaxLbl: Label 'Water Tax', MaxLength = 100;
         TotalTaxesLbl: Label 'Total Taxes', MaxLength = 100;
-        BlankLbl: Label '--------------------------------------------------', MaxLength = 100;
+        BlankLbl: Label '--------------------------------------------------', Locked = true;
         TotalDeductionsLbl: Label 'Total Deductions', MaxLength = 100;
         VatPayableLbl: Label 'VAT Payable', MaxLength = 100;
         ValueOfEuPurchases16PercLbl: Label 'Value of EU Purchases 16 %', MaxLength = 100;

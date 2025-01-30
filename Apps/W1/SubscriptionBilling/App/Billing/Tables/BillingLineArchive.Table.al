@@ -1,12 +1,12 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Security.AccessControl;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using System.Security.User;
 
 table 8064 "Billing Line Archive"
 {
@@ -28,7 +28,7 @@ table 8064 "Billing Line Archive"
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
             Editable = false;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
         }
         field(10; "Partner No."; Code[20])
         {

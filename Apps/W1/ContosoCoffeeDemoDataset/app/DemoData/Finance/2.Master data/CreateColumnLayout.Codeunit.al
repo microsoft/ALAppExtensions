@@ -9,10 +9,6 @@ codeunit 5395 "Create Column Layout"
         ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
         ColumnLayoutName: Code[10];
     begin
-        ContosoAccountSchedule.InsertColumnLayout('', 10000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
-        ContosoAccountSchedule.InsertColumnLayout('', 20000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
-        ContosoAccountSchedule.InsertColumnLayout('', 30000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
-
         ColumnLayoutName := CreateColumnLayoutName.ActualBudgetComparison();
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, 'A', NetChangeLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, 'B', BudgetLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::"Budget Entries", '', false, Enum::"Column Layout Show"::Always, '', false);
@@ -40,11 +36,6 @@ codeunit 5395 "Create Column Layout"
 
         ColumnLayoutName := CreateColumnLayoutName.KeyCashFlowRatio();
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, 'S10', KeyFigureLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
-
-        ColumnLayoutName := CreateColumnLayoutName.PeriodsDefinition();
-        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '10', CurrentPeriodLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
-        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '10', CurrentPeriodMinus1Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-1P', false);
-        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '10', CurrentPeriodMinus2Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-2P', false);
 
         ColumnLayoutName := CreateColumnLayoutName.BeginningBalanceDebitsCreditsEndingBalance();
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '1', BeginningBalanceLbl, Enum::"Column Layout Type"::"Beginning Balance", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'P', false);
@@ -142,6 +133,22 @@ codeunit 5395 "Create Column Layout"
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 110000, 'A', NovemberLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[11]', false);
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 120000, 'A', DecemberLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[12]', false);
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 130000, '', TotalLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, 'A', false, Enum::"Column Layout Show"::Always, '', false);
+    end;
+
+    internal procedure CreateSetupColumnLayout()
+    var
+        CreateColumnLayoutName: Codeunit "Create Column Layout Name";
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+        ColumnLayoutName: Code[10];
+    begin
+        ContosoAccountSchedule.InsertColumnLayout('', 10000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
+        ContosoAccountSchedule.InsertColumnLayout('', 20000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
+        ContosoAccountSchedule.InsertColumnLayout('', 30000, '', '', Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
+
+        ColumnLayoutName := CreateColumnLayoutName.PeriodsDefinition();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '10', CurrentPeriodLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '10', CurrentPeriodMinus1Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-1P', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '10', CurrentPeriodMinus2Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-2P', false);
     end;
 
     var

@@ -20,10 +20,6 @@ pageextension 12217 "Service Decl. Subform IT" extends "Service Declaration Subf
         {
             Visible = false;
         }
-        modify("Service Transaction Code")
-        {
-            Visible = false;
-        }
         modify("VAT Reg. No.")
         {
             Visible = true;

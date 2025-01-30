@@ -33,6 +33,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(5; "Purch. Adv. Letter No."; Code[20])
         {
             Caption = 'Purch. Adv. Letter No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = "Purch. Adv. Letter Header CZZ";
         }
@@ -44,6 +45,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(13; "Document No."; Code[20])
         {
             Caption = 'Document No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(15; "VAT Bus. Posting Group"; Code[20])
@@ -447,6 +449,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     begin
         VATPostingSetup.CheckNonDeductibleVATAllowed(
             "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+    end;
+
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.Get("Vendor Ledger Entry No.");
+        exit(VendorLedgerEntry."Adjusted Currency Factor");
     end;
 
     [IntegrationEvent(false, false)]

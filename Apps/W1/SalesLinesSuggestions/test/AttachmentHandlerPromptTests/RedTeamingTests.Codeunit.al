@@ -1,7 +1,7 @@
 namespace Microsoft.Sales.Document.Test;
 using System.TestTools.AITestToolkit;
 
-codeunit 149824 "Red Teaming Tests"
+codeunit 133524 "Red Teaming Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;

@@ -524,8 +524,6 @@ codeunit 1070 "MS - PayPal Standard Mgt."
     begin
         MSPayPalStandardAccount.HideAllDialogs();
 
-        Account := LowerCase(Account);
-
         if not MSPayPalStandardAccount.FindFirst() then begin
             RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
             GetTemplate(MSPayPalStandardTemplate);

@@ -23,6 +23,12 @@
       "name": "Fixed Asset Localization for Czech",
       "publisher": "Microsoft",
       "version": "26.0.0.0"
+    },
+    {
+      "id": "267b59d3-7302-44c5-ba77-c87000380514",
+      "name": "Core Localization Pack for Czech",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
     }
   ],
   "screenshots": [],

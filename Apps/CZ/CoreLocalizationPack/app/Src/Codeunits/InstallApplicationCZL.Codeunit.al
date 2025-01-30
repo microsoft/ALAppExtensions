@@ -236,11 +236,9 @@ codeunit 11748 "Install Application CZL"
         CopyServiceHeader();
         CopyServiceInvoiceHeader();
         CopyServiceCrMemoHeader();
-        CopyIssuedReminderHeader();
         CopyVATStatementTemplate();
         CopyVATStatementLine();
         CopyAccScheduleLine();
-        CopySourceCodeSetup();
         InitUnreliablePayerServiceSetup();
         InitVATCtrlReportSections();
         InitStatutoryReportingSetup();
@@ -417,25 +415,6 @@ codeunit 11748 "Install Application CZL"
         ServiceCrMemoHeaderDataTransfer.CopyFields();
     end;
 
-    local procedure CopyIssuedReminderHeader();
-    var
-        IssuedReminderHeader: Record "Issued Reminder Header";
-        IssuedReminderHeaderDataTransfer: DataTransfer;
-    begin
-        IssuedReminderHeaderDataTransfer.SetTables(Database::"Issued Reminder Header", Database::"Issued Reminder Header");
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Specific Symbol"), IssuedReminderHeader.FieldNo("Specific Symbol CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Variable Symbol"), IssuedReminderHeader.FieldNo("Variable Symbol CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Constant Symbol"), IssuedReminderHeader.FieldNo("Constant Symbol CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank No."), IssuedReminderHeader.FieldNo("Bank Account Code CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Account No."), IssuedReminderHeader.FieldNo("Bank Account No. CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Branch No."), IssuedReminderHeader.FieldNo("Bank Branch No. CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Bank Name"), IssuedReminderHeader.FieldNo("Bank Name CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("Transit No."), IssuedReminderHeader.FieldNo("Transit No. CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo(IBAN), IssuedReminderHeader.FieldNo("IBAN CZL"));
-        IssuedReminderHeaderDataTransfer.AddFieldValue(IssuedReminderHeader.FieldNo("SWIFT Code"), IssuedReminderHeader.FieldNo("SWIFT Code CZL"));
-        IssuedReminderHeaderDataTransfer.CopyFields();
-    end;
-
     local procedure CopyVATStatementTemplate();
     var
         VATStatementTemplate: Record "VAT Statement Template";
@@ -485,62 +464,6 @@ codeunit 11748 "Install Application CZL"
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Custom CZL";
         if AccScheduleLine."Totaling Type" = 15 then //15 = AccScheduleLine.Type::Constant
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
-    end;
-
-    local procedure CopySourceCodeSetup();
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-    begin
-        SourceCodeSetup.SetLoadFields("Sales VAT Delay", "Purchase VAT Delay");
-        if SourceCodeSetup.Get() then begin
-            SourceCodeSetup."Sales VAT Delay CZL" := SourceCodeSetup."Sales VAT Delay";
-            SourceCodeSetup."Purchase VAT Delay CZL" := SourceCodeSetup."Purchase VAT Delay";
-            SourceCodeSetup.Modify(false);
-        end;
-
-    end;
-
-    local procedure CreateTemplateHeader(var ConfigTemplateHeader: Record "Config. Template Header"; "Code": Code[10]; Description: Text[100]; TableID: Integer)
-    begin
-        ConfigTemplateHeader.Init();
-        ConfigTemplateHeader.Code := Code;
-        ConfigTemplateHeader.Description := Description;
-        ConfigTemplateHeader."Table ID" := TableID;
-        ConfigTemplateHeader.Enabled := true;
-        ConfigTemplateHeader.Insert();
-    end;
-
-    local procedure CreateTemplateLine(var ConfigTemplateHeader: Record "Config. Template Header"; FieldID: Integer; Value: Text[50])
-    var
-        ConfigTemplateLine: Record "Config. Template Line";
-        NextLineNo: Integer;
-    begin
-        NextLineNo := 10000;
-        ConfigTemplateLine.SetRange("Data Template Code", ConfigTemplateHeader.Code);
-        if ConfigTemplateLine.FindLast() then
-            NextLineNo := ConfigTemplateLine."Line No." + 10000;
-
-        ConfigTemplateLine.Init();
-        ConfigTemplateLine.Validate("Data Template Code", ConfigTemplateHeader.Code);
-        ConfigTemplateLine.Validate("Line No.", NextLineNo);
-        ConfigTemplateLine.Validate(Type, ConfigTemplateLine.Type::Field);
-        ConfigTemplateLine.Validate("Table ID", ConfigTemplateHeader."Table ID");
-        ConfigTemplateLine.Validate("Field ID", FieldID);
-        ConfigTemplateLine."Default Value" := Value;
-        ConfigTemplateLine.Insert(true);
-    end;
-
-    local procedure GetNextDataTemplateAvailableCode(): Code[10]
-    var
-        ConfigTemplateHeader: Record "Config. Template Header";
-        StockkeepingUnitConfigTemplCode: Code[10];
-        StockkeepingUnitConfigTemplCodeTxt: Label 'SKU0000000', MaxLength = 10;
-    begin
-        StockkeepingUnitConfigTemplCode := StockkeepingUnitConfigTemplCodeTxt;
-        repeat
-            StockkeepingUnitConfigTemplCode := CopyStr(IncStr(StockkeepingUnitConfigTemplCode), 1, MaxStrLen(ConfigTemplateHeader.Code));
-        until not ConfigTemplateHeader.Get(StockkeepingUnitConfigTemplCode);
-        exit(StockkeepingUnitConfigTemplCode);
     end;
 
     local procedure ModifyGenJournalTemplate()

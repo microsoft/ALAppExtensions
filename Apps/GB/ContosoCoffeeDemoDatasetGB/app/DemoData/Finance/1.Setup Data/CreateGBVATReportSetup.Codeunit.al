@@ -1,4 +1,4 @@
-codeunit 10525 "Create GB VAT Report Setup"
+codeunit 10542 "Create GB VAT Report Setup"
 {
     SingleInstance = true;
     EventSubscriberInstance = Manual;

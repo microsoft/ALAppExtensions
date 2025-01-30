@@ -1,4 +1,4 @@
-codeunit 10879 "Create Item FR"
+codeunit 10900 "Create Item FR"
 {
     SingleInstance = true;
     EventSubscriberInstance = Manual;

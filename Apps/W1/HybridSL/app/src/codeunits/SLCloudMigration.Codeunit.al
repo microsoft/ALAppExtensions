@@ -109,6 +109,7 @@ codeunit 47001 "SL Cloud Migration"
         SLMigrationConfig: Record "SL Migration Config";
         DataMigrationFacade: Codeunit "Data Migration Facade";
         SLDimensions: Codeunit "SL Dimensions";
+        SLFiscalPeriods: Codeunit "SL Fiscal Periods";
         SLHelperFunctions: Codeunit "SL Helper Functions";
         SLPopulateAccounts: Codeunit "SL Populate Accounts";
         SLPopulateAccountHistory: Codeunit "SL Populate Account History";
@@ -121,7 +122,8 @@ codeunit 47001 "SL Cloud Migration"
         SelectLatestVersion();
         SLHelperFunctions.SetProcessesRunning(true);
 
-        SLPopulateFiscalPeriods.CreateFiscalPeriodsFromGLSetup();
+        SLPopulateFiscalPeriods.CreateSLFiscalPeriodsFromGLSetup();
+        SLFiscalPeriods.MoveStagingData();
         SLDimensions.InsertSLSegmentsForDimensionSets();
         SLDimensions.CreateSLCodes();
         SLPopulateAccounts.PopulateSLAccounts();

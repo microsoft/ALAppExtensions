@@ -112,5 +112,5 @@ codeunit 5374 "Create E-Document Setup"
 
     var
         EDocCategoryTxt: Label 'EDOC', Locked = true;
-        ServiceCodeLbl: Label 'E-DOCUMENTS';
+        ServiceCodeLbl: Label 'E-DOCUMENTS', MaxLength = 20;
 }

@@ -11,7 +11,7 @@ codeunit 5246 "Create Gen. Journal Batch"
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.General(), Monthly(), MonthlyLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), CreateNoSeries.GeneralJournal(), false);
-        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.General(), Default(), DefaultLbl, Enum::"Gen. Journal Account Type"::"G/L Account", '', '', false);
+        ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.General(), Default(), DefaultLbl, Enum::"Gen. Journal Account Type"::"G/L Account", '', CreateNoSeries.GeneralJournal(), false);
 
         ContosoGeneralLedger.InsertGeneralJournalBatch(CreateGenJournalTemplate.CashReceipts(), General(), GeneralLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), CreateNoSeries.CashReceiptsJournal(), false);
 

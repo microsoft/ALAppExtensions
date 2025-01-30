@@ -10,8 +10,6 @@ codeunit 10669 "NO Contoso Localization"
             FoundationModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::Bank then
-            BankModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Inventory then
             InventoryModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Sales then
@@ -26,10 +24,11 @@ codeunit 10669 "NO Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Post Code NO");
-                    Codeunit.Run(Codeunit::"Create Company Information NO");
                     Codeunit.Run(Codeunit::"Create Vat Posting Groups NO");
                     Codeunit.Run(Codeunit::"Create Posting Groups NO");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information NO");
         end;
     end;
 
@@ -40,22 +39,14 @@ codeunit 10669 "NO Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create General Ledger Setup NO");
-            Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create General Ledger Setup NO");
                     CreateVatPostingGroupsNO.InsertVATPostingSetup();
                     CreatePostingGroupsNO.UpdateGenPostingSetup();
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate NO");
                     Codeunit.Run(Codeunit::"Create VAT Setup Post Grp. NO");
                 end;
-        end;
-    end;
-
-    local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line NO");
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate NO");
         end;
     end;
 
@@ -86,7 +77,6 @@ codeunit 10669 "NO Contoso Localization"
         CreateCurrencyExchRateNO: Codeunit "Create Currency Ex. Rate NO";
         CreatePurchDimValueNO: Codeunit "Create Purch. Dim. Value NO";
         CreateSalesDimValueNO: Codeunit "Create Sales Dim Value NO";
-        CreateGenJournalLineNO: Codeunit "Create Gen. Journal Line NO";
         CreateLocationNO: Codeunit "Create Location NO";
         CreateResourceNO: Codeunit "Create Resource NO";
         CreateCustomerNO: Codeunit "Create Customer NO";
@@ -133,10 +123,7 @@ codeunit 10669 "NO Contoso Localization"
                     BindSubscription(CreateCustomerTemplateNO);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    BindSubscription(CreateBankAccountNO);
-                    BindSubscription(CreateGenJournalLineNO);
-                end;
+                BindSubscription(CreateBankAccountNO);
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 BindSubscription(CreateFADepreciationBookNO);
         end;
@@ -149,7 +136,6 @@ codeunit 10669 "NO Contoso Localization"
         CreateCurrencyExchRateNO: Codeunit "Create Currency Ex. Rate NO";
         CreatePurchDimValueNO: Codeunit "Create Purch. Dim. Value NO";
         CreateSalesDimValueNO: Codeunit "Create Sales Dim Value NO";
-        CreateGenJournalLineNO: Codeunit "Create Gen. Journal Line NO";
         CreateLocationNO: Codeunit "Create Location NO";
         CreateResourceNO: Codeunit "Create Resource NO";
         CreateCustomerNO: Codeunit "Create Customer NO";
@@ -196,10 +182,7 @@ codeunit 10669 "NO Contoso Localization"
                     UnbindSubscription(CreateCustomerTemplateNO);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    UnbindSubscription(CreateBankAccountNO);
-                    UnbindSubscription(CreateGenJournalLineNO);
-                end;
+                UnbindSubscription(CreateBankAccountNO);
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 UnbindSubscription(CreateFADepreciationBookNO);
         end;

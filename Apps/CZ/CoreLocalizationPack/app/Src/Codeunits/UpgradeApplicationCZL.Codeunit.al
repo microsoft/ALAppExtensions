@@ -406,9 +406,6 @@ codeunit 31017 "Upgrade Application CZL"
         Customer: Record Customer;
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-        ServiceMgtSetup: Record "Service Mgt. Setup";
         Vendor: Record Vendor;
         CustomerDataTransfer: DataTransfer;
         DetCustLedgEntryDataTransfer: DataTransfer;
@@ -417,21 +414,6 @@ codeunit 31017 "Upgrade Application CZL"
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag()) then
             exit;
-
-        if PurchasesPayablesSetup.Get() then begin
-            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
-            PurchasesPayablesSetup.Modify();
-        end;
-
-        if SalesReceivablesSetup.Get() then begin
-            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
-            SalesReceivablesSetup.Modify();
-        end;
-
-        if ServiceMgtSetup.Get() then begin
-            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
-            ServiceMgtSetup.Modify();
-        end;
 
         VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
         VendorDataTransfer.AddConstantValue(true, Vendor.FieldNo("Allow Multiple Posting Groups"));

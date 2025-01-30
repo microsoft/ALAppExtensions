@@ -51,6 +51,7 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
     local procedure ApplyGLEntryCZA(var GenJournalLine: Record "Gen. Journal Line"; AccNo: Code[20]; AccBalance: Boolean)
     var
         GLEntry: Record "G/L Entry";
+        TempGLEntry: Record "G/L Entry" temporary;
         ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
         PreviousAppliesToID: Code[50];
         EntrySelected: Boolean;
@@ -86,25 +87,23 @@ codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
         ApplyGenLedgerEntriesCZA.SetGenJournalLine(GenJournalLine);
         ApplyGenLedgerEntriesCZA.LookupMode(true);
         EntrySelected := ApplyGenLedgerEntriesCZA.RunModal() = Action::LookupOK;
-        Clear(ApplyGenLedgerEntriesCZA);
         if not EntrySelected then begin
             GenJournalLine."Applies-to ID" := PreviousAppliesToID;
             exit;
         end;
+        ApplyGenLedgerEntriesCZA.CopyEntry(TempGLEntry);
 
-        GLEntry.Reset();
-        GLEntry.SetCurrentKey("G/L Account No.", "Applies-to ID CZA");
-        GLEntry.SetRange("G/L Account No.", AccNo);
-        GLEntry.SetRange("Closed CZA", false);
-        GLEntry.SetRange("Applies-to ID CZA", GenJournalLine."Applies-to ID");
-        if GLEntry.FindSet() then begin
+        TempGLEntry.Reset();
+        TempGLEntry.SetRange("Closed CZA", false);
+        TempGLEntry.SetRange("Applies-to ID CZA", GenJournalLine."Applies-to ID");
+        if TempGLEntry.FindSet() then begin
             if GenJournalLine.Amount = 0 then begin
                 repeat
-                    if Abs(GLEntry."Amount to Apply CZA") >= Abs(GLEntry.RemainingAmountCZA()) then
-                        GenJournalLine.Amount := GenJournalLine.Amount - GLEntry.RemainingAmountCZA()
+                    if Abs(TempGLEntry."Amount to Apply CZA") >= Abs(TempGLEntry.RemainingAmountCZA()) then
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry.RemainingAmountCZA()
                     else
-                        GenJournalLine.Amount := GenJournalLine.Amount - GLEntry."Amount to Apply CZA";
-                until GLEntry.Next() = 0;
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry."Amount to Apply CZA";
+                until TempGLEntry.Next() = 0;
                 if GenJournalLine."Account Type" <> GenJournalLine."Bal. Account Type"::"G/L Account" then
                     GenJournalLine.Amount := -GenJournalLine.Amount;
                 GenJournalLine.Validate(Amount);

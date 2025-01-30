@@ -26,6 +26,7 @@ codeunit 148158 "Link Subscription To SO Test"
         ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"Existing Service Commitments");
         FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
         UsageBasedBillingMgmt.ConnectSubscriptionsToServiceObjects(UsageDataSubscription);
+        FindUsageDataGenericImportUpdated();
 
         FilterServiceCommOnServiceObjectAndPartner(ServiceObject."No.", "Service Partner"::Customer);
         ServiceCommitment.SetRange("Supplier Reference Entry No.", 0);
@@ -63,6 +64,7 @@ codeunit 148158 "Link Subscription To SO Test"
 
         ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
         UsageBasedBillingMgmt.ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription);
+        FindUsageDataGenericImportUpdated();
 
         Assert.AreEqual(PreviousNoOfContractLines, GetNumberOfCustomerContractLines(true), 'Contract Lines were not closed properly.');
         Assert.AreEqual(PreviousNoOfStandardContractLines, GetNumberOfCustomerContractLines(false), 'Contract Lines were not extended properly.');
@@ -202,6 +204,8 @@ codeunit 148158 "Link Subscription To SO Test"
     end;
 
     procedure SetupUsageDataForProcessingToGenericImport()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
     begin
         UsageBasedBTestLibrary.ResetUsageBasedRecords();
         UsageBasedBTestLibrary.CreateUsageDataSupplier(UsageDataSupplier, Enum::"Usage Data Supplier Type"::Generic, true, Enum::"Vendor Invoice Per"::Import);
@@ -301,6 +305,16 @@ codeunit 148158 "Link Subscription To SO Test"
         SourceUsageDataSubscription.SetRange("Supplier No.", SupplierNo);
     end;
 
+    local procedure FindUsageDataGenericImportUpdated()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+    begin
+        UsageDataGenericImport.SetRange("Subscription ID", UsageDataSubscription."Supplier Reference");
+        UsageDataGenericImport.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
+        UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
+        UsageDataGenericImport.FindFirst();
+    end;
+
     local procedure TestUsageDataSubscriptionProcessingStatus(SupplierNo: Code[20]; NewProcessingStatus: Enum "Processing Status")
     begin
         FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, SupplierNo);
@@ -394,7 +408,6 @@ codeunit 148158 "Link Subscription To SO Test"
         GenericImportSettings: Record "Generic Import Settings";
         UsageDataImport: Record "Usage Data Import";
         UsageDataBlob: Record "Usage Data Blob";
-        UsageDataGenericImport: Record "Usage Data Generic Import";
         ServiceObject: Record "Service Object";
         ServiceCommitment: Record "Service Commitment";
         Item: Record Item;

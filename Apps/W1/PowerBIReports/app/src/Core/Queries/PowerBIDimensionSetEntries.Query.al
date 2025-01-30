@@ -1,0 +1,82 @@
+namespace Microsoft.PowerBIReports;
+
+#pragma warning disable AS0125
+#pragma warning disable AS0030
+query 36950 "PowerBI Dimension Set Entries"
+#pragma warning restore AS0030
+#pragma warning restore AS0125
+{
+    Access = Internal;
+    Caption = 'Power BI Dimension Set Entries';
+    QueryType = API;
+    APIPublisher = 'microsoft';
+    APIGroup = 'analytics';
+    APIVersion = 'v0.5';
+    EntityName = 'dimensionSetEntry';
+    EntitySetName = 'dimensionSetEntries';
+    DataAccessIntent = ReadOnly;
+
+    elements
+    {
+        dataitem(PBIDimensionSetEntries; "PowerBI Flat Dim. Set Entry")
+        {
+            column(id; SystemId)
+            {
+            }
+            column(dimensionSetID; "Dimension Set ID")
+            {
+            }
+            column(valueCount; "Value Count")
+            {
+            }
+            column(dimension1ValueCode; "Dimension 1 Value Code")
+            {
+            }
+            column(dimension1ValueName; "Dimension 1 Value Name")
+            {
+            }
+            column(dimension2ValueCode; "Dimension 2 Value Code")
+            {
+            }
+            column(dimension2ValueName; "Dimension 2 Value Name")
+            {
+            }
+            column(dimension3ValueCode; "Dimension 3 Value Code")
+            {
+            }
+            column(dimension3ValueName; "Dimension 3 Value Name")
+            {
+            }
+            column(dimension4ValueCode; "Dimension 4 Value Code")
+            {
+            }
+            column(dimension4ValueName; "Dimension 4 Value Name")
+            {
+            }
+            column(dimension5ValueCode; "Dimension 5 Value Code")
+            {
+            }
+            column(dimension5ValueName; "Dimension 5 Value Name")
+            {
+            }
+            column(dimension6ValueCode; "Dimension 6 Value Code")
+            {
+            }
+            column(dimension6ValueName; "Dimension 6 Value Name")
+            {
+            }
+            column(dimension7ValueCode; "Dimension 7 Value Code")
+            {
+            }
+            column(dimension7ValueName; "Dimension 7 Value Name")
+            {
+            }
+            column(dimension8ValueCode; "Dimension 8 Value Code")
+            {
+            }
+            column(dimension8ValueName; "Dimension 8 Value Name")
+            {
+            }
+        }
+    }
+}

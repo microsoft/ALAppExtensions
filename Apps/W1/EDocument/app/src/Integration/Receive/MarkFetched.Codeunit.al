@@ -33,17 +33,11 @@ codeunit 6181 "Mark Fetched"
         this.ReceiveContext := ReceiveContext;
     end;
 
-    procedure SetParameters(var EDoc: Record "E-Document"; var EDocService: Record "E-Document Service"; var DocBlob: Codeunit "Temp Blob")
+    procedure SetParameters(var EDoc: Record "E-Document"; var EDocService: Record "E-Document Service"; TempBlob: Codeunit "Temp Blob")
     begin
         this.EDocument.Copy(EDoc);
         this.EDocumentService.Copy(EDocService);
-        this.DownloadedBlob := DocBlob;
-    end;
-
-    procedure GetParameters(var EDoc: Record "E-Document"; var EDocService: Record "E-Document Service")
-    begin
-        EDoc.Copy(this.EDocument);
-        EDocService.Copy(this.EDocumentService);
+        this.DownloadedBlob := TempBlob;
     end;
 
     var

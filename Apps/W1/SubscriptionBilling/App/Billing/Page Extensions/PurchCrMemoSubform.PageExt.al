@@ -29,26 +29,28 @@ pageextension 8072 "Purch Cr. Memo Subform" extends "Purch. Cr. Memo Subform"
                 Image = DataEntry;
                 Scope = Repeater;
                 ToolTip = 'Shows the related usage data.';
+                Enabled = UsageDataEnabled;
 
                 trigger OnAction()
                 var
                     UsageDataBilling: Record "Usage Data Billing";
-                    UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
                 begin
-                    UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(Rec."Document Type"), Rec."Document No.");
-                    UsageDataBilling.SetRange("Document Line No.", Rec."Line No.");
-                    Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
+                    UsageDataBilling.ShowForPurchaseDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
                 end;
             }
         }
     }
 
     trigger OnAfterGetCurrRecord()
+    var
+        UsageDataBilling: Record "Usage Data Billing";
     begin
         IsConnectedToBillingLine := Rec.IsLineAttachedToBillingLine();
+        UsageDataEnabled := UsageDataBilling.ExistForPurchaseDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
     end;
 
     var
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         IsConnectedToBillingLine: Boolean;
+        UsageDataEnabled: Boolean;
 }

@@ -24,23 +24,27 @@ codeunit 6372 "Integration Impl." implements IDocumentSender, IDocumentResponseH
         exit(this.AvalaraProcessing.GetDocumentStatus(EDocument, SendContext));
     end;
 
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; ReceivedEDocuments: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        this.AvalaraProcessing.ReceiveDocuments(EDocumentService, ReceivedEDocuments, ReceiveContext);
+        this.AvalaraProcessing.ReceiveDocuments(EDocumentService, DocumentsMetadata, ReceiveContext);
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        this.AvalaraProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, ReceiveContext);
+        this.AvalaraProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadata, ReceiveContext);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        ConnectionSetupCard: Page "Connection Setup Card";
     begin
-        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Avalara then
-            SetupPage := Page::"Connection Setup Card";
-    end;
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Avalara then
+            exit;
 
+        ConnectionSetupCard.RunModal();
+        IsServiceIntegrationSetupRun := true;
+    end;
 
     var
         AvalaraProcessing: Codeunit Processing;

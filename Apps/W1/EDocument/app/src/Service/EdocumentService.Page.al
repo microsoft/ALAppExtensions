@@ -6,9 +6,6 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using Microsoft.eServices.EDocument.IO.Peppol;
-#if not CLEAN26
-using Microsoft.eServices.EDocument.Integration.Interfaces;
-#endif
 using Microsoft.eServices.EDocument.Integration.Receive;
 page 6133 "E-Document Service"
 {
@@ -36,11 +33,6 @@ page 6133 "E-Document Service"
                 field("Export Format"; Rec."Document Format")
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
-
-                    trigger OnValidate()
-                    begin
-                        CurrPage.Update(false);
-                    end;
                 }
 #if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
@@ -180,6 +172,15 @@ page 6133 "E-Document Service"
                     }
                 }
             }
+            group(Export)
+            {
+                field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
+                {
+                }
+                field("Buyer Reference"; Rec."Buyer Reference")
+                {
+                }
+            }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {
                 ApplicationArea = All;
@@ -205,8 +206,8 @@ page 6133 "E-Document Service"
         {
             action("SetupServiceIntegration")
             {
-                Caption = 'Setup Service Integration';
-                ToolTip = 'Setup Service Integration';
+                Caption = 'Set up service integration';
+                ToolTip = 'Set up service integration';
                 Image = Setup;
 
                 trigger OnAction()
@@ -216,8 +217,8 @@ page 6133 "E-Document Service"
             }
             action(SupportedDocTypes)
             {
-                Caption = 'Supported Document Types';
-                ToolTip = 'Setup Supported Document Types';
+                Caption = 'Supported document types';
+                ToolTip = 'Set up supported document types';
                 Image = Documents;
                 RunObject = Page "E-Doc Service Supported Types";
                 RunPageLink = "E-Document Service Code" = field(Code);
@@ -256,41 +257,34 @@ page 6133 "E-Document Service"
         CurrPage.EDocumentImportFormatMapping.Page.SaveAsImport(true);
     end;
 
-    trigger OnClosePage()
-    var
-        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
-    begin
-        EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
-        EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
-    end;
-
 #if not CLEAN26
     local procedure RunSetupServiceIntegration()
     var
         EDocumentIntegration: Interface "E-Document Integration";
         SetupPage, SetupTable : Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then begin
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then begin
             EDocumentIntegration := Rec."Service Integration";
             EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
+            if SetupPage <> 0 then begin
+                PageOpened := true;
+                Page.Run(SetupPage);
+            end;
         end;
 
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #else
     local procedure RunSetupServiceIntegration()
     var
-        SetupPage: Integer;
+        PageOpened: Boolean;
     begin
-        OnBeforeOpenServiceIntegrationSetupPage(Rec, SetupPage);
-        if SetupPage = 0 then
-            Message(ServiceIntegrationSetupMsg)
-        else
-            Page.Run(SetupPage);
+        OnBeforeOpenServiceIntegrationSetupPage(Rec, PageOpened);
+        if not PageOpened then
+            Message(ServiceIntegrationSetupMsg);
     end;
 #endif
 
@@ -303,8 +297,7 @@ page 6133 "E-Document Service"
         ReceiveContext: Codeunit ReceiveContext;
         EDocIntegration: Interface "E-Document Integration";
     begin
-        EDocIntegration := Rec."Service Integration";
-        if EDocIntegration is IDocumentReceiver then begin
+        if Rec."Service Integration V2" <> Rec."Service Integration V2"::"No Integration" then begin
             EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
             EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
 
@@ -314,6 +307,7 @@ page 6133 "E-Document Service"
             exit;
         end;
 
+        EDocIntegration := Rec."Service Integration";
         EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
     end;
 #else
@@ -336,7 +330,7 @@ page 6133 "E-Document Service"
 
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var SetupPage: Integer)
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     begin
     end;
 

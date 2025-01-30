@@ -40,10 +40,11 @@ codeunit 11157 "Contoso AT Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information AT");
                     Codeunit.Run(Codeunit::"Create No. Series AT");
                     Codeunit.Run(Codeunit::"Create Post Code AT");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information AT");
         end;
     end;
 
@@ -51,19 +52,22 @@ codeunit 11157 "Contoso AT Localization"
     var
         CreateVatPostingGroupAT: Codeunit "Create VAT Posting Group AT";
         CreatePostingGroupsAT: Codeunit "Create Posting Groups AT";
+        CreateATGLAccount: Codeunit "Create AT GL Account";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create VAT Posting Group AT");
-                    Codeunit.Run(Codeunit::"Create Posting Groups AT");
                     Codeunit.Run(Codeunit::"Create AT GL Account");
                     CreateVatPostingGroupAT.CreateVATPostingSetup();
+                    CreateVatPostingGroupAT.UpdateGeneralProdPostingGroup();
+                    CreateATGLAccount.UpdateVATProdPostGrpInGLAccounts();
                     CreatePostingGroupsAT.UpdateGenPostingSetup();
                     Codeunit.Run(Codeunit::"Create Currency AT");
                     Codeunit.Run(Codeunit::"Create General Ledger Setup AT");
                     Codeunit.Run(Codeunit::"Create Vat Report Setup AT");
                     Codeunit.Run(Codeunit::"Create Vat Setup Post Grp AT");
+                    Codeunit.Run(Codeunit::"Create VAT Statement Name AT");
+                    Codeunit.Run(Codeunit::"Create VAT Statement Line AT");
                 end;
 
             Enum::"Contoso Demo Data Level"::"Master Data":
@@ -71,8 +75,6 @@ codeunit 11157 "Contoso AT Localization"
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate AT");
                     Codeunit.Run(Codeunit::"Create Resource AT");
                     Codeunit.Run(Codeunit::"Create VAT Template AT");
-                    Codeunit.Run(Codeunit::"Create VAT Statement NameAT");
-                    Codeunit.Run(Codeunit::"Create VAT Statement Line AT");
                 end;
         end;
     end;
@@ -82,8 +84,6 @@ codeunit 11157 "Contoso AT Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create Bank ExpImport Setup AT");
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Bank Acc. Reco. AT");
         end;
     end;
 
@@ -107,14 +107,13 @@ codeunit 11157 "Contoso AT Localization"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateResourceAT: Codeunit "Create Resource AT";
         CreateCurrencyExcRate: Codeunit "Create Currency Ex. Rate AT";
         CreateAccScheduleLineAT: Codeunit "Create Acc. Schedule Line AT";
         CreateBankAccPostingGrpAT: Codeunit "Create Bank Acc Posting Grp AT";
         CreateBankAccountAT: Codeunit "Create Bank Account AT";
-        CreateBankAccRecoAT: Codeunit "Create Bank Acc. Reco. AT";
         CreateFAPostingGrpAT: Codeunit "Create FA Posting Grp. AT";
         CreateInvPostingSetupAT: Codeunit "Create Inv. Posting Setup AT";
         CreateItemAT: Codeunit "Create Item AT";
@@ -123,7 +122,6 @@ codeunit 11157 "Contoso AT Localization"
         CreateVendorPostingGrpAT: Codeunit "Create Vendor Posting Grp AT";
         CreatePurchDimValueAT: Codeunit "Create Purch. Dim. Value AT";
         CreateVendorAT: Codeunit "Create Vendor AT";
-        CreateVendorTemplateAT: Codeunit "Create Vendor Template AT";
         CreateCustPostingGrpAT: Codeunit "Create Cust. Posting Grp AT";
         CreateReminderLevelAT: Codeunit "Create Reminder Level AT";
         CreateCustomerAT: Codeunit "Create Customer AT";
@@ -132,19 +130,18 @@ codeunit 11157 "Contoso AT Localization"
         CreateShiptoAddressAT: Codeunit "Create Ship-to Address AT";
         CreatePaymentTermAT: Codeunit "Create Payment Term AT";
         CreateEmployeeAT: Codeunit "Create Employee AT";
-        CreateNoSeriesAT: Codeunit "Create No. Series AT";
         CreateVATTemplateAT: Codeunit "Create VAT Template AT";
         CreateEmployeeTemplateAT: Codeunit "CreateEmployee Template AT";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
-                begin
-                    BindSubscription(CreatePaymentTermAT);
-                    BindSubscription(CreateNoSeriesAT);
-                end;
-
+                BindSubscription(CreatePaymentTermAT);
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        Codeunit.Run(Codeunit::"Create VAT Posting Group AT");
+                        Codeunit.Run(Codeunit::"Create Posting Groups AT");
+                    end;
                     BindSubscription(CreateResourceAT);
                     BindSubscription(CreateCurrencyExcRate);
                     BindSubscription(CreateAccScheduleLineAT);
@@ -154,7 +151,6 @@ codeunit 11157 "Contoso AT Localization"
                 begin
                     BindSubscription(CreateBankAccPostingGrpAT);
                     BindSubscription(CreateBankAccountAT);
-                    BindSubscription(CreateBankAccRecoAT);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 BindSubscription(CreateFAPostingGrpAT);
@@ -170,7 +166,6 @@ codeunit 11157 "Contoso AT Localization"
                     BindSubscription(CreateVendorPostingGrpAT);
                     BindSubscription(CreatePurchDimValueAT);
                     BindSubscription(CreateVendorAT);
-                    BindSubscription(CreateVendorTemplateAT);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:
                 begin
@@ -197,7 +192,6 @@ codeunit 11157 "Contoso AT Localization"
         CreateAccScheduleLineAT: Codeunit "Create Acc. Schedule Line AT";
         CreateBankAccPostingGrpAT: Codeunit "Create Bank Acc Posting Grp AT";
         CreateBankAccountAT: Codeunit "Create Bank Account AT";
-        CreateBankAccRecoAT: Codeunit "Create Bank Acc. Reco. AT";
         CreateFAPostingGrpAT: Codeunit "Create FA Posting Grp. AT";
         CreateInvPostingSetupAT: Codeunit "Create Inv. Posting Setup AT";
         CreateItemAT: Codeunit "Create Item AT";
@@ -206,7 +200,6 @@ codeunit 11157 "Contoso AT Localization"
         CreateVendorPostingGrpAT: Codeunit "Create Vendor Posting Grp AT";
         CreatePurchDimValueAT: Codeunit "Create Purch. Dim. Value AT";
         CreateVendorAT: Codeunit "Create Vendor AT";
-        CreateVendorTemplateAT: Codeunit "Create Vendor Template AT";
         CreateCustPostingGrpAT: Codeunit "Create Cust. Posting Grp AT";
         CreateReminderLevelAT: Codeunit "Create Reminder Level AT";
         CreateCustomerAT: Codeunit "Create Customer AT";
@@ -215,16 +208,12 @@ codeunit 11157 "Contoso AT Localization"
         CreateShiptoAddressAT: Codeunit "Create Ship-to Address AT";
         CreatePaymentTermAT: Codeunit "Create Payment Term AT";
         CreateEmployeeAT: Codeunit "Create Employee AT";
-        CreateNoSeriesAT: Codeunit "Create No. Series AT";
         CreateVATTemplateAT: Codeunit "Create VAT Template AT";
         CreateEmployeeTemplateAT: Codeunit "CreateEmployee Template AT";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
-                begin
-                    UnbindSubscription(CreatePaymentTermAT);
-                    UnbindSubscription(CreateNoSeriesAT);
-                end;
+                UnbindSubscription(CreatePaymentTermAT);
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
                     UnbindSubscription(CreateResourceAT);
@@ -236,7 +225,6 @@ codeunit 11157 "Contoso AT Localization"
                 begin
                     UnbindSubscription(CreateBankAccPostingGrpAT);
                     UnbindSubscription(CreateBankAccountAT);
-                    UnbindSubscription(CreateBankAccRecoAT);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 UnbindSubscription(CreateFAPostingGrpAT);
@@ -252,7 +240,6 @@ codeunit 11157 "Contoso AT Localization"
                     UnbindSubscription(CreateVendorPostingGrpAT);
                     UnbindSubscription(CreatePurchDimValueAT);
                     UnbindSubscription(CreateVendorAT);
-                    UnbindSubscription(CreateVendorTemplateAT);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:
                 begin

@@ -64,11 +64,13 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
         Any: Codeunit Any;
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
         Any.SetDefaultSeed();
         NewVariantId := Any.IntegerInRange(100000, 999999);
-        BodyTxt := StrSubstNo('{ "data": { "productVariantCreate": { "legacyResourceId": %1 } } }', NewVariantId);
-        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        NavApp.GetResource('Products/CreatedVariantResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(BodyTxt, NewVariantId));
         exit(HttpResponseMessage);
     end;
 
@@ -76,8 +78,10 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
     var
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
-        BodyTxt := '{"data": {"product": {"id": "gid://shopify/Product/123456", "title": "Product 1", "options": [{"id": "gid://shopify/ProductOption/1", "name": "Option 1"}]}}}';
+        NavApp.GetResource('Products/ProductOptionsResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
         exit(HttpResponseMessage);
     end;
@@ -96,8 +100,10 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
     var
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
-        BodyTxt := '{"data": {"product": {"id": "gid://shopify/Product/123456", "title": "Product 1", "options": [{"id": "gid://shopify/ProductOption/1", "name": "Option 1"}, {"id": "gid://shopify/ProductOption/2", "name": "Option 2"}]}}}';
+        NavApp.GetResource('Products/ProductMultipleOptionsResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
         exit(HttpResponseMessage);
     end;
@@ -106,9 +112,11 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
     var
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
+        ResInStream: InStream;
     begin
-        BodyTxt := StrSubstNo('{ "data" : { "product" : { "variants" : { "edges" : [ { "node" : { "legacyResourceId" : %1 } } ] } } } }', DefaultVariantId);
-        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        NavApp.GetResource('Products/DefaultVariantResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(BodyTxt);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(BodyTxt, DefaultVariantId));
         exit(HttpResponseMessage);
     end;
 

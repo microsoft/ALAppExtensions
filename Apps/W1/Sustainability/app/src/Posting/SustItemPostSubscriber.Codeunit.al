@@ -14,8 +14,24 @@ codeunit 6256 "Sust. Item Post Subscriber"
             PostSustainabilityValueEntry(ItemJournalLine, ValueEntry, ItemLedgerEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertCapValueEntry', '', false, false)]
+    local procedure OnAfterInsertCapValueEntry(ItemJnlLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry")
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        if CanCreateSustValueEntry(ItemJnlLine, ValueEntry) then
+            PostSustainabilityValueEntry(ItemJnlLine, ValueEntry, ItemLedgerEntry);
+    end;
+
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
+        if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then
+            if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Shipment") and (ValueEntry."Valued Quantity" > 0) then
+                exit(false)
+            else
+                if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Receipt") and (ValueEntry."Valued Quantity" < 0) then
+                    exit(false);
+
         exit((ItemJournalLine."Sust. Account No." <> '') and (ValueEntry."Entry Type" = ValueEntry."Entry Type"::"Direct Cost"));
     end;
 
@@ -23,7 +39,14 @@ codeunit 6256 "Sust. Item Post Subscriber"
     var
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        GHGCredit: Boolean;
+        Sign: Integer;
     begin
+        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then begin
+            GHGCredit := ItemJournalLine.IsGHGCreditLine();
+            Sign := ItemJournalLine.GetPostingSign(GHGCredit);
+        end;
+
         SustainabilityJnlLine.Init();
         SustainabilityJnlLine.Validate("Posting Date", ItemJournalLine."Posting Date");
         SustainabilityJnlLine.Validate("Document No.", ValueEntry."Document No.");
@@ -33,6 +56,12 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Dimension Set ID" := ItemJournalLine."Dimension Set ID";
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
+
+        If ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
+            SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
+        else
+            SustainabilityJnlLine.Validate("CO2e Emission", ItemJournalLine."Total CO2e");
+
         SustainabilityJnlLine.Validate("Emission CO2", ItemJournalLine."Emission CO2");
         SustainabilityJnlLine.Validate("Emission CH4", ItemJournalLine."Emission CH4");
         SustainabilityJnlLine.Validate("Emission N2O", ItemJournalLine."Emission N2O");

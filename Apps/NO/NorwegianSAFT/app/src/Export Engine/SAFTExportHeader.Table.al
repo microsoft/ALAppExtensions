@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -119,16 +119,6 @@ table 10682 "SAF-T Export Header"
             Caption = 'Execution End Date/Time';
             Editable = false;
         }
-#if not CLEANSCHEMA24
-        field(20; "SAF-T File"; Blob)
-        {
-            DataClassification = CustomerContent;
-            Caption = 'SAF-T File';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Replaced with the SAF-T Export File table';
-            ObsoleteTag = '24.0';
-        }
-#endif
         field(30; "Latest Data Check Date/Time"; DateTime)
         {
             DataClassification = CustomerContent;

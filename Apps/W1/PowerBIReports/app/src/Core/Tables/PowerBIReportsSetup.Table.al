@@ -4,7 +4,6 @@ using System.DateTime;
 
 table 36951 "PowerBI Reports Setup"
 {
-    Access = Internal;
     Caption = 'Setup for Power BI Connector';
 
     fields
@@ -32,7 +31,7 @@ table 36951 "PowerBI Reports Setup"
         }
         field(4; "ISO Country Holidays"; Option)
         {
-            Caption = 'Iso Country Holidays';
+            Caption = 'ISO Country Holidays';
             OptionMembers = AT,AU,BE,CA,DE,ES,FR,GB,IT,NL,NO,PT,SE,US;
             OptionCaption = 'AT,AU,BE,CA,DE,ES,FR,GB,IT,NL,NO,PT,SE,US';
             DataClassification = CustomerContent;

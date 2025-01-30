@@ -87,15 +87,6 @@ codeunit 47012 "SL Hybrid Wizard"
         Enabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", CanRunDiagnostic, '', false, false)]
-    local procedure OnCanRunDiagnostic(var CanRun: Boolean)
-    begin
-        if not (GetSLMigrationEnabled()) then
-            exit;
-
-        CanRun := true;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnCanSetupAdlMigration, '', false, false)]
     local procedure OnCanSetupAdlMigration(var CanSetup: Boolean)
     begin
@@ -271,6 +262,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL Site", 'Site');
         // Misc
         UpdateOrInsertRecord(Database::"SL FlexDef", 'FlexDef');
+        UpdateOrInsertRecord(Database::"SL SalesTax", 'SalesTax');
         UpdateOrInsertRecord(Database::"SL SegDef", 'SegDef');
         UpdateOrInsertRecord(Database::"SL Terms", 'Terms');
     end;

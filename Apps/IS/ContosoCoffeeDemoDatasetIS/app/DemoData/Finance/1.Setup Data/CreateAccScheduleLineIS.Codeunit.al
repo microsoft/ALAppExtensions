@@ -62,10 +62,7 @@ codeunit 14629 "Create Acc. Schedule Line IS"
         if Rec."Schedule Name" = CreateAccountScheduleName.ReducedTrialBalance() then
             case Rec."Line No." of
                 10000:
-                    begin
-                        ValidateRecordFields(Rec, CreateGLAccount.TotalRevenue(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
-                        Rec.Validate(Description, TotalRevenueLbl);
-                    end;
+                    ValidateRecordFields(Rec, CreateGLAccount.TotalRevenue(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
                 20000:
                     ValidateRecordFields(Rec, CreateGLAccount.TotalCost(), Enum::"Acc. Schedule Line Totaling Type"::"Total Accounts", false);
                 40000:
@@ -88,7 +85,4 @@ codeunit 14629 "Create Acc. Schedule Line IS"
         if HideCurrencySymbol then
             AccScheduleLine.Validate("Hide Currency Symbol", HideCurrencySymbol);
     end;
-
-    var
-        TotalRevenueLbl: Label 'Total Revenue', MaxLength = 100;
 }

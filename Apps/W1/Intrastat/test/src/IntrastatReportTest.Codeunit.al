@@ -17,6 +17,7 @@ codeunit 139550 "Intrastat Report Test"
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryPatterns: Codeunit "Library - Patterns";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
@@ -1835,42 +1836,75 @@ codeunit 139550 "Intrastat Report Test"
         BillToCustomer: Record Customer;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        IntrastatReportHeader: Record "Intrastat Report Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        DocumentNo: Code[20];
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
         IntrastatReportNo: Code[20];
     begin
-        // [FEATURE] [Sales] [Shipment]
-        // [SCENARIO 422720] Partner VAT ID is taken as VAT Registration No from Sell-to Customer No. of Sales Invoice
+        // [FEATURE] [Sales] [Invoice]
+        // [SCENARIO 422720] Partner VAT ID of Sales Invoice is taken according to Intrastat Setup
         Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
 
-        // [GIVEN] G/L Setup "Bill-to/Sell-to VAT Calc." = "Bill-to/Pay-to No."
         // [GIVEN] Shipment on Sales Invoice = false
         LibraryIntrastat.UpdateShipmentOnInvoiceSalesSetup(false);
 
-        // [GIVEN] Sell-to Customer with VAT Registration No = 'AT0123456'
-        // [GIVEN] Bill-to Customer with VAT Registration No = 'DE1234567'
-        // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers, and different VAT Registration No
         SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
         BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
-        LibraryIntrastat.CreateSalesDocument(
-            SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice,
-            SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice, SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
         SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        SalesHeader.Validate("VAT Registration No.", DocumentVATNo);
         SalesHeader.Modify(true);
 
         // [GIVEN] Post the invoice
-        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
         // [WHEN] Suggest Intrastat Report Lines
         CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
-
-        // [THEN] Posted Sales Invoice has VAT Registration No. = 'DE1234567'
-        // [THEN] Partner VAT ID  = 'AT0123456' in Intrastat Report Line
-        SalesInvoiceHeader.Get(DocumentNo);
-        SalesInvoiceHeader.TestField("VAT Registration No.", BillToCustomer."VAT Registration No.");
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
         VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted sales invoices
+        SalesInvoiceHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
     end;
 
     [Test]
@@ -1882,143 +1916,1057 @@ codeunit 139550 "Intrastat Report Test"
         BillToCustomer: Record Customer;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        IntrastatReportHeader: Record "Intrastat Report Header";
         SalesShipmentHeader: Record "Sales Shipment Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
         IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
     begin
         // [FEATURE] [Sales] [Shipment]
-        // [SCENARIO 422720] Partner VAT ID is taken as VAT Registration No from Sell-to Customer No. of Sales Shipment
+        // [SCENARIO 422720] Partner VAT ID of Sales Shipment is taken according to Intrastat Setup
         Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
 
-        // [GIVEN] G/L Setup "Bill-to/Sell-to VAT Calc." = "Bill-to/Pay-to No."
         // [GIVEN] Shipment on Sales Invoice = true
         LibraryIntrastat.UpdateShipmentOnInvoiceSalesSetup(true);
 
-        // [GIVEN] Sell-to Customer with VAT Registration No = 'AT0123456'
-        // [GIVEN] Bill-to Customer with VAT Registration No = 'DE1234567'
-        // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers and different VAT Registration No
         SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
         BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
-        LibraryIntrastat.CreateSalesDocument(
-             SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice,
-             SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice, SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
         SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        SalesHeader.Validate("VAT Registration No.", DocumentVATNo);
         SalesHeader.Modify(true);
 
         // [GIVEN] Post the invoice
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
         // [WHEN] Suggest Intrastat Report Lines
         CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
-
-        // [THEN] Posted Sales Shipment has VAT Registration No. = 'DE1234567'
-        // [THEN] Partner VAT ID  = 'AT0123456' in Intrastat Report Line
-        SalesShipmentHeader.SetRange("Bill-to Customer No.", BillToCustomer."No.");
-        SalesShipmentHeader.FindFirst();
-        SalesShipmentHeader.TestField("VAT Registration No.", BillToCustomer."VAT Registration No.");
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
         VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
-    end;
+        IntrastatReportHeader.Delete(true);
 
-    [Test]
-    [Scope('OnPrem')]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
-    procedure GetPartnerIDFromVATRegNoOfPurchaseCrMemo()
-    var
-        Vendor: Record Vendor;
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        IntrastatReportHeader: Record "Intrastat Report Header";
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
-        IntrastatReportNo: Code[20];
-    begin
-        // [FEATURE] [Purchase] [Return Shipment]
-        // [SCENARIO 373278] Partner VAT ID is taken as VAT Registration No from Pay-to Vendor No. of Purchase Credit Memo
-        Initialize();
-
-        // [GIVEN] Return Shipment on Credit Memo = false
-        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(false);
-
-        // [GIVEN] Pay-to Vendor with VAT Registration No = 'AT0123456'
-        Vendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
-        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
-        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
-        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-
-        // [WHEN] Intrastat Report Line is created
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
         CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
 
-        // [THEN] Partner VAT ID  = 'AT0123456' in Intrastat Report Line
-        PurchCrMemoHdr.SetRange("Pay-to Vendor No.", Vendor."No.");
-        PurchCrMemoHdr.FindFirst();
-        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", Vendor."VAT Registration No.");
-        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PurchCrMemoHdr."VAT Registration No.");
-    end;
-
-    [Test]
-    [Scope('OnPrem')]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
-    procedure GetPartnerIDFromVATRegNoOfPurchaseReturnOrder()
-    var
-        Vendor: Record Vendor;
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        IntrastatReportHeader: Record "Intrastat Report Header";
-        ReturnShipmentHeader: Record "Return Shipment Header";
-        IntrastatReportNo: Code[20];
-    begin
-        // [FEATURE] [Purchase] [Return Shipment]
-        // [SCENARIO 373278] Partner VAT ID is taken as VAT Registration No from Pay-to Vendor No. of Purchase Return Order
-        Initialize();
-
-        // [GIVEN] Return Shipment on Credit Memo = true
-        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(true);
-
-        // [GIVEN] Pay-to Vendor with VAT Registration No = 'AT0123456'
-        Vendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
-        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), Vendor."No.");
-        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
-        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-
-        // [WHEN] Intrastat Report Line is created
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
         CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
 
-        // [THEN] Partner VAT ID  = 'AT0123456' in Intrastat Report Line
-        ReturnShipmentHeader.SetRange("Buy-from Vendor No.", Vendor."No.");
-        ReturnShipmentHeader.FindFirst();
-        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", Vendor."VAT Registration No.");
-        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", ReturnShipmentHeader."VAT Registration No.");
+        // Delete all posted sales shipments
+        SalesShipmentHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
     end;
 
     [Test]
     [Scope('OnPrem')]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfSalesCrMemo()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Sales] [Cr.. Memo]
+        // [SCENARIO 422720] Partner VAT ID of Sales Cr. Memo is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Return Receipt on Cr. Memo  = false
+        LibraryIntrastat.UpdateRetReceiptOnCrMemoSalesSetup(false);
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Sales Cr. Memo with different Sell-to and Bill-To customers, and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::"Credit Memo", SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        SalesHeader.Validate("VAT Registration No.", DocumentVATNo);
+        SalesHeader.Modify(true);
+
+        // [GIVEN] Post the Cr. Memo
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted sales credit memos
+        SalesCrMemoHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfSalesReturnReceipt()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ReturnReceiptHeader: Record "Return Receipt Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+    begin
+        // [FEATURE] [Sales] [Return Receipt]
+        // [SCENARIO 422720] Partner VAT ID of Sales Return Receipt is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Return Receipt on Cr. Memo  = false
+        LibraryIntrastat.UpdateRetReceiptOnCrMemoSalesSetup(true);
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Sales Return Receipt with different Sell-to and Bill-To customers and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::"Credit Memo", SalesLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        SalesHeader.Validate("VAT Registration No.", DocumentVATNo);
+        SalesHeader.Modify(true);
+
+        // [GIVEN] Post the Cr. Memo
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted sales return receipts
+        ReturnReceiptHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfServiceInvoice()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Service] [Invoice]
+        // [SCENARIO 422720] Partner VAT ID of Service Invoice is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Shipment on Service Invoice = false
+        LibraryIntrastat.UpdateShipmentOnInvoiceServiceSetup(false);
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Service Invoice with different Sell-to and Bill-To customers, and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateServiceDocument(ServiceHeader, ServiceLine, SellToCustomer."No.", WorkDate(), ServiceLine."Document Type"::Invoice, ServiceLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        ServiceHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        ServiceHeader.Validate("VAT Registration No.", DocumentVATNo);
+        ServiceHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
+        LibraryService.PostServiceOrder(ServiceHeader, false, false, false);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted service invoices
+        ServiceInvoiceHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfServiceShipment()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceShipmentHeader: Record "Service Shipment Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Service] [Shipment]
+        // [SCENARIO 422720] Partner VAT ID of Service Shipment is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Shipment on Service Invoice = true
+        LibraryIntrastat.UpdateShipmentOnInvoiceServiceSetup(true);
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Service Shipment with different Sell-to and Bill-To customers, and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateServiceDocument(ServiceHeader, ServiceLine, SellToCustomer."No.", WorkDate(), ServiceLine."Document Type"::Invoice, ServiceLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        ServiceHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        ServiceHeader.Validate("VAT Registration No.", DocumentVATNo);
+        ServiceHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
+        LibraryService.PostServiceOrder(ServiceHeader, false, false, false);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted service shipments
+        ServiceShipmentHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfServiceCrMemo()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Service] [Cr. Memo]
+        // [SCENARIO 422720] Partner VAT ID of Service Cr. Memo is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Service Cr. Memo with different Sell-to and Bill-To customers, and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateServiceDocument(ServiceHeader, ServiceLine, SellToCustomer."No.", WorkDate(), ServiceLine."Document Type"::"Credit Memo", ServiceLine.Type::Item, LibraryIntrastat.CreateItem(), 1);
+        ServiceHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        ServiceHeader.Validate("VAT Registration No.", DocumentVATNo);
+        ServiceHeader.Modify(true);
+
+        // [GIVEN] Post the cr. memo
+        LibraryService.PostServiceOrder(ServiceHeader, false, false, false);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted service credit memos
+        ServiceCrMemoHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, ServiceLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfPurchaseInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        BuyFromVendor, PayToVendor : Record Vendor;
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Invoice]
+        // [SCENARIO 422720] Partner VAT ID of Purchase Invoice is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Receipt on Invoice = false
+        LibraryIntrastat.UpdateReceiptOnInvoicePurchSetup(false);
+
+        // [GIVEN] Buy-from Vendor with VAT Registration No = 1
+        // [GIVEN] Pay-to Vendor with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Purchase Invoice with different Buy-from and Pay-To vendors, and different VAT Registration No
+        BuyFromVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        PayToVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, WorkDate(), BuyFromVendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
+        PurchaseHeader.Validate("Pay-to Vendor No.", PayToVendor."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(BuyFromVendor."Country/Region Code");
+        PurchaseHeader.Validate("VAT Registration No.", DocumentVATNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // Buy-from VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Pay-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Pay-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PayToVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted purchase invoices
+        PurchInvHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
     procedure GetPartnerIDFromVATRegNoOfPurchaseReceipt()
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
+        PurchRcptHeader: Record "Purch. Rcpt. Header";
         IntrastatReportHeader: Record "Intrastat Report Header";
-        VendorNo: Code[20];
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        BuyFromVendor, PayToVendor : Record Vendor;
         IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
     begin
         // [FEATURE] [Purchase] [Receipt]
-        // [SCENARIO 389253] Partner VAT ID is blank for Purchase Receipt
+        // [SCENARIO 422720] Partner VAT ID of Purchase Receipt is taken according to Intrastat Setup
         Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
 
-        // [GIVEN] Posted purchase order with Pay-to Vendor with VAT Registration No = 'AT0123456'
-        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
-        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        // [GIVEN] Receipt on Invoice = true
+        LibraryIntrastat.UpdateReceiptOnInvoicePurchSetup(true);
+
+        // [GIVEN] Buy-from Vendor with VAT Registration No = 1
+        // [GIVEN] Pay-to Vendor with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Purchase Receipt with different Buy-from and Pay-To vendors, and different VAT Registration No
+        BuyFromVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        PayToVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, WorkDate(), BuyFromVendor."No.");
         LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
+        PurchaseHeader.Validate("Pay-to Vendor No.", PayToVendor."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(BuyFromVendor."Country/Region Code");
+        PurchaseHeader.Validate("VAT Registration No.", DocumentVATNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
 
-        // [WHEN] Intrastat Report Line is created
+        // Buy-from VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
         CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
 
-        // [THEN] Partner VAT ID  = '' in Intrastat Report Line
-        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", '');
+        // Pay-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Pay-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PayToVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted purchase receipts
+        PurchRcptHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfPurchaseCrMemo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        BuyFromVendor, PayToVendor : record Vendor;
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Cr Memo]
+        // [SCENARIO 422720] Partner VAT ID of Purchase Cr Memo is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Return Shipment on Credit Memo = false
+        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(false);
+
+        // [GIVEN] Buy-from Vendor with VAT Registration No = 1
+        // [GIVEN] Pay-to Vendor with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Purchase Cr. Memo with different Buy-from and Pay-To vendors, and different VAT Registration No
+        BuyFromVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        PayToVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), BuyFromVendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
+        PurchaseHeader.Validate("Pay-to Vendor No.", PayToVendor."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(BuyFromVendor."Country/Region Code");
+        PurchaseHeader.Validate("VAT Registration No.", DocumentVATNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post the cr. memo
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // Buy-from VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Pay-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Pay-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PayToVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted purchase credit memos
+        PurchCrMemoHdr.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfPurchaseRetShpmt()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ReturnShipmentHeader: Record "Return Shipment Header";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        BuyFromVendor, PayToVendor : record Vendor;
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Return Shipment]
+        // [SCENARIO 422720] Partner VAT ID of Purchase Return Shipment is taken according to Intrastat Setup
+        Initialize();
+
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Return Shipment on Credit Memo = true
+        LibraryIntrastat.UpdateRetShpmtOnCrMemoPurchSetup(true);
+
+        // [GIVEN] Buy-from Vendor with VAT Registration No = 1
+        // [GIVEN] Pay-to Vendor with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Purchase Receipt with different Buy-from and Pay-To vendors, and different VAT Registration No
+        BuyFromVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        PayToVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", WorkDate(), BuyFromVendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, LibraryIntrastat.CreateItem());
+        PurchaseHeader.Validate("Pay-to Vendor No.", PayToVendor."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(BuyFromVendor."Country/Region Code");
+        PurchaseHeader.Validate("VAT Registration No.", DocumentVATNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post the cr. memo
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // Buy-from VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Pay-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Pay-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PayToVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+
+        // Delete all posted purchase return shipments
+        ReturnShipmentHeader.DeleteAll(false);
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfTransferReceipt()
+    var
+        FromCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        ItemNo: Code[20];
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+        WD: Date;
+    begin
+        // [SCENARIO 465378] Verify receipt transaction in Intrastat Journal when transferring items from EU country to company country
+        Initialize();
+
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Source Location and Country with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        LibraryIntrastat.CreateCountryRegion(FromCountryRegion, true);
+        FromLocation."Country/Region Code" := FromCountryRegion.Code;
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        WD := WorkDate();
+        WorkDate(CalcDate('<-1M>', WD));
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+        WorkDate(WD);
+
+        // [GIVEN] Detination Location and Country, set in Company Information, with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        ToLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        ToLocation.Modify();
+
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, InTransitLocation.Code);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(FromLocation.Code);
+        TransferHeader.Validate("Partner VAT ID", DocumentVATNo);
+        TransferHeader.Modify(true);
+
+        // [GIVEN] Post Transfer Order
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  is taken from transfer receipt header
+        VerifyPartnerID(IntrastatReportHeader, TransferLine."Item No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfTransferShipment()
+    var
+        ToCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        ItemNo: Code[20];
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+        WD: Date;
+    begin
+        // [SCENARIO 465378] Verify shipment transaction in Intrastat Journal when transferring items from company country to EU country
+        Initialize();
+
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Source Location and Country, set in Company Information, with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        FromLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        WD := WorkDate();
+        WorkDate(CalcDate('<-1M>', WD));
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+        WorkDate(WD);
+
+        // [GIVEN] Destination Location and Country with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        LibraryIntrastat.CreateCountryRegion(ToCountryRegion, true);
+        ToLocation."Country/Region Code" := ToCountryRegion.Code;
+        ToLocation.Modify();
+
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, InTransitLocation.Code);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(FromLocation.Code);
+        TransferHeader.Validate("Partner VAT ID", DocumentVATNo);
+        TransferHeader.Modify(true);
+
+        // [GIVEN] Post Transfer Order
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID is taken from transfer shipment header
+        VerifyPartnerID(IntrastatReportHeader, TransferLine."Item No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfFixedAssetPurchase()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        BuyFromVendor, PayToVendor : record Vendor;
+        IntrastatReportNo: Code[20];
+        DocumentVATNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Invoice]
+        // [SCENARIO 422720] Partner VAT ID of Purchase Invoice is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Receipt;
+        IntrastatReportSetup.Modify();
+
+        // [GIVEN] Receipt on Invoice = false
+        LibraryIntrastat.UpdateReceiptOnInvoicePurchSetup(false);
+
+        // [GIVEN] Buy-from Vendor with VAT Registration No = 1
+        // [GIVEN] Pay-to Vendor with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Purchase Invoice with different Buy-from and Pay-To vendors, and different VAT Registration No
+        BuyFromVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        PayToVendor.Get(LibraryIntrastat.CreateVendorWithVATRegNo(true));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, WorkDate(), BuyFromVendor."No.");
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"Fixed Asset", LibraryIntrastat.CreateFixedAsset());
+        PurchaseHeader.Validate("Pay-to Vendor No.", PayToVendor."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(BuyFromVendor."Country/Region Code");
+        PurchaseHeader.Validate("VAT Registration No.", DocumentVATNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // Buy-from VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", BuyFromVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Pay-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Pay-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", PayToVendor."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, PurchaseLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    procedure GetPartnerIDFromVATRegNoOfFixedAssetSale()
+    var
+        SellToCustomer: Record Customer;
+        BillToCustomer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        DocumentVATNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Sales] [Invoice]
+        // [SCENARIO 422720] Partner VAT ID of Sales Invoice is taken according to Intrastat Setup
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Get Partner VAT For" := IntrastatReportSetup."Get Partner VAT For"::Shipment;
+        IntrastatReportSetup.Modify();
+
+        LibraryIntrastat.CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, CalcDate('<-1M>', WorkDate()));
+        // [GIVEN] Shipment on Sales Invoice = false
+        LibraryIntrastat.UpdateShipmentOnInvoiceSalesSetup(false);
+
+        // [GIVEN] Sell-to Customer with VAT Registration No = 1
+        // [GIVEN] Bill-to Customer with VAT Registration No = 2
+        // [GIVEN] Document VAT Registration No = 3
+        // [GIVEN] Sales Invoice with different Sell-to and Bill-To customers, and different VAT Registration No
+        SellToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        BillToCustomer.Get(LibraryIntrastat.CreateCustomerWithVATRegNo(true));
+        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, SellToCustomer."No.", WorkDate(), SalesLine."Document Type"::Invoice, SalesLine.Type::"Fixed Asset", PurchaseLine."No.", 1);
+        SalesHeader.Validate("Bill-to Customer No.", BillToCustomer."No.");
+        DocumentVATNo := LibraryERM.GenerateVATRegistrationNo(SellToCustomer."Country/Region Code");
+        SalesHeader.Validate("VAT Registration No.", DocumentVATNo);
+        SalesHeader.Modify(true);
+
+        // [GIVEN] Post the invoice
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // Sell-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Bill-to VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
+        IntrastatReportHeader.Delete(true);
+
+        // Document VAT No. is taken as Partner VAT ID
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup.Modify();
+        // [WHEN] Suggest Intrastat Report Lines
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+        // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
+        VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
+        IntrastatReportHeader.Delete(true);
     end;
 
     [Test]

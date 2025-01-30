@@ -7,8 +7,8 @@ using Microsoft.Inventory.Ledger;
 using System.Text;
 using Microsoft.Inventory.Item;
 using Microsoft.PowerBIReports;
-using Microsoft.Sales.PowerBIReports;
 using System.TestLibraries.Security.AccessControl;
+using Microsoft.PowerBIReports.Test;
 
 codeunit 139881 "PowerBI Sales Test"
 {
@@ -25,6 +25,9 @@ codeunit 139881 "PowerBI Sales Test"
         UriBuilder: Codeunit "Uri Builder";
         PermissionsMock: Codeunit "Permissions Mock";
         PowerBICoreTest: Codeunit "PowerBI Core Test";
+        PowerBIAPIRequests: Codeunit "PowerBI API Requests";
+        PowerBIAPIEndpoints: Enum "PowerBI API Endpoints";
+        PowerBIFilterScenarios: Enum "PowerBI Filter Scenarios";
         IsInitialized: Boolean;
         ResponseEmptyErr: Label 'Response should not be empty.';
 
@@ -52,7 +55,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for item budget name is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Names", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Item Budget Names");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'budgetName eq ''' + Format(ItemBudgetName.Name) + '''');
         UriBuilder.GetUri(Uri);
@@ -93,7 +96,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for outstanding sales order line is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Line - Item Outstanding", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Line - Item Outstanding");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'salesOrderNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -154,7 +157,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for outstanding sales order line is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Budget Entries - Sales", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Item Budget Entries - Sales");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'entryNo eq ' + Format(ItemBudgetEntry."Entry No.") + '');
         UriBuilder.GetUri(Uri);
@@ -203,7 +206,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for sales value entry is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Value Entries - Sales", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Value Entries - Sales");
         LibGraphMgt.GetFromWebService(Response, TargetURL);
 
         // [THEN] The response contains the sales value entry information
@@ -254,7 +257,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for shipped not invoiced sales order is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Sales Line - Item Shipped", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Line - Item Shipped");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'salesOrderNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -297,7 +300,6 @@ codeunit 139881 "PowerBI Sales Test"
     procedure TestGenerateItemSalesReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Sales Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -316,7 +318,7 @@ codeunit 139881 "PowerBI Sales Test"
         ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Sales Date");
 
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -326,7 +328,6 @@ codeunit 139881 "PowerBI Sales Test"
     procedure TestGenerateItemSalesReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Sales Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -344,7 +345,7 @@ codeunit 139881 "PowerBI Sales Test"
         ExpectedFilterTxt := '' + Format(CalcDate(PBISetup."Item Sales Date Formula")) + '..';
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Sales Date");
 
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -354,7 +355,6 @@ codeunit 139881 "PowerBI Sales Test"
     procedure TestGenerateItemSalesReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Sales Filter Helper";
         ActualFilterTxt: Text;
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
@@ -366,7 +366,7 @@ codeunit 139881 "PowerBI Sales Test"
         PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Sales Date");
 
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');

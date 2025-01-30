@@ -31,10 +31,20 @@ table 6164 "E-Doc. Order Match"
             Caption = 'E-Document Imported Line No.';
             TableRelation = "E-Doc. Imported Line"."Line No." where("E-Document Entry No." = field("E-Document Entry No."));
         }
+#if not CLEANSCHEMA29
         field(5; Quantity; Integer)
         {
             Caption = 'Quantity';
+            ObsoleteReason = 'This field has been replaced by the Precise Quantity field.';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif
         }
+#endif
 #pragma warning disable AS0005, AS0125
         field(6; "E-Document Direct Unit Cost"; Decimal)
         {
@@ -65,6 +75,10 @@ table 6164 "E-Doc. Order Match"
             Caption = 'Fully Matched';
         }
 #pragma warning restore AS0005, AS0125
+        field(13; "Precise Quantity"; Decimal)
+        {
+            Caption = 'Quantity';
+        }
     }
 
     keys
@@ -75,7 +89,7 @@ table 6164 "E-Doc. Order Match"
         }
         key(Key2; "E-Document Entry No.", "E-Document Line No.", "Document Order No.")
         {
-            SumIndexFields = Quantity;
+            SumIndexFields = "Precise Quantity";
         }
     }
 
@@ -96,7 +110,7 @@ table 6164 "E-Doc. Order Match"
         TempEDocMatches.Validate("Document Line No.", TempAIProposalBuffer."Document Line No.");
         TempEDocMatches.Validate("E-Document Entry No.", TempAIProposalBuffer."E-Document Entry No.");
         TempEDocMatches.Validate("E-Document Line No.", TempAIProposalBuffer."E-Document Line No.");
-        TempEDocMatches.Validate(Quantity, TempAIProposalBuffer."Matched Quantity");
+        TempEDocMatches.Validate("Precise Quantity", TempAIProposalBuffer."Matched Quantity");
         TempEDocMatches.Validate("E-Document Direct Unit Cost", TempAIProposalBuffer."E-Document Direct Unit Cost");
         TempEDocMatches.Validate("Line Discount %", TempAIProposalBuffer."E-Document Line Discount");
         TempEDocMatches.Validate("PO Direct Unit Cost", TempAIProposalBuffer."PO Direct Unit Cost");

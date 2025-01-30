@@ -1,0 +1,73 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
+
+using System.Email;
+using System.Utilities;
+using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Send;
+
+codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
+{
+    Permissions = tabledata "E-Document" = r,
+                  tabledata "E-Document Log" = r,
+                  tabledata "E-Doc. Data Storage" = r,
+                  tabledata "Email Inbox" = r,
+                  tabledata "Outlook Setup" = r;
+    InherentPermissions = X;
+    InherentEntitlements = X;
+
+    procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
+    begin
+        Error(SendNotSupportedErr);
+    end;
+
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        OutlookProcessing.ReceiveDocuments(EDocumentService, Documents, ReceiveContext);
+    end;
+
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        OutlookProcessing.DownloadDocument(EDocument, EDocumentService, DocumentMetadataBlob, ReceiveContext);
+    end;
+
+    procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        OutlookProcessing.MarkMessageAsRead(EDocument, EDocumentService);
+    end;
+
+    internal procedure SetConditionalVisibilityFlag(var VisibilityFlag: Boolean)
+    var
+        OutlookSetup: Record "Outlook Setup";
+    begin
+        if OutlookSetup.Get() then
+            if OutlookSetup.Enabled then
+                VisibilityFlag := true;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        OutlookSetup: Page "Outlook Setup";
+    begin
+        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Outlook then begin
+            OutlookSetup.RunModal();
+            IsServiceIntegrationSetupRun := true;
+        end;
+    end;
+
+    internal procedure SecurityAuditLogSetupStatusDescription(Action: Text; SetupTableName: Text): Text
+    begin
+        exit(Action + ' ' + SetupTableName + ConnectorTelemetrySnippetTxt);
+    end;
+
+    var
+        OutlookProcessing: Codeunit "Outlook Processing";
+        SendNotSupportedErr: label 'Sending document is not supported in this context.';
+        ConnectorTelemetrySnippetTxt: label ' for Microsoft 365 E-Document connector.', Locked = true;
+}

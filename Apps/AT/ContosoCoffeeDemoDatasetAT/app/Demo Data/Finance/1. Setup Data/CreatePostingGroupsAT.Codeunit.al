@@ -4,7 +4,6 @@ codeunit 11149 "Create Posting Groups AT"
     InherentPermissions = X;
 
     trigger OnRun()
-    var
     begin
         InsertGenProdPostingGroup();
     end;
@@ -13,27 +12,10 @@ codeunit 11149 "Create Posting Groups AT"
     var
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
         CreateVATPostingGroupAT: codeunit "Create VAT Posting Group AT";
-        CreatePostingGroup: Codeunit "Create Posting Groups";
     begin
         ContosoPostingGroup.SetOverwriteData(true);
-        ContosoPostingGroup.InsertGenProductPostingGroup(ManufactPostingGroup(), CapacitiesLbl, '');
         ContosoPostingGroup.InsertGenProductPostingGroup(NoVATPostingGroup(), MiscDescriptionLbl, CreateVATPostingGroupAT.NOVAT());
-        UpdateGenProdPostingGrp(CreatePostingGroup.FreightPostingGroup(), CreateVATPostingGroupAT.VAT20());
-        UpdateGenProdPostingGrp(CreatePostingGroup.RawMatPostingGroup(), CreateVATPostingGroupAT.VAT20());
-        UpdateGenProdPostingGrp(CreatePostingGroup.RetailPostingGroup(), CreateVATPostingGroupAT.VAT20());
-        UpdateGenProdPostingGrp(CreatePostingGroup.MiscPostingGroup(), CreateVATPostingGroupAT.VAT20());
-        UpdateGenProdPostingGrp(CreatePostingGroup.ServicesPostingGroup(), CreateVATPostingGroupAT.VAT10());
         ContosoPostingGroup.SetOverwriteData(false);
-    end;
-
-    local procedure UpdateGenProdPostingGrp(ProdPostingGroup: COde[20]; DefaultVATProdPostingGroup: Code[20])
-    var
-        GenProdPostingGroup: Record "Gen. Product Posting Group";
-    begin
-        if GenProdPostingGroup.Get(ProdPostingGroup) then begin
-            GenProdPostingGroup.Validate("Def. VAT Prod. Posting Group", DefaultVATProdPostingGroup);
-            GenProdPostingGroup.Modify(true);
-        end;
     end;
 
     procedure UpdateGenPostingSetup()
@@ -63,14 +45,7 @@ codeunit 11149 "Create Posting Groups AT"
         exit(NoVATTok);
     end;
 
-    procedure ManufactPostingGroup(): Code[20]
-    begin
-        exit(ManufactTok);
-    end;
-
     var
-        CapacitiesLbl: Label 'Capacities', MaxLength = 100;
         MiscDescriptionLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         NoVATTok: Label 'NO VAT', MaxLength = 20;
-        ManufactTok: Label 'MANUFACT', MaxLength = 20;
 }

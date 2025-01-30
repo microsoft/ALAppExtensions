@@ -22,7 +22,7 @@ page 37028 "Scheduled Receipt"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37028 "Scheduled Receipt"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection5aaca347e8eb867da682', Locked = true;
+        ReportPageLbl: Label 'ReportSection5aaca347e8eb867da682', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

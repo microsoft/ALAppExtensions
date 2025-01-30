@@ -546,48 +546,6 @@ table 30102 "Shpfy Shop"
                     CheckGLAccount(GLAccount);
             end;
         }
-#if not CLEANSCHEMA24
-        field(100; "Collection Last Export Version"; BigInteger)
-        {
-            Caption = 'Collection Last Export Version';
-            DataClassification = SystemMetadata;
-            Editable = false;
-            Access = Internal;
-            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-            ObsoleteTag = '24.0';
-            ObsoleteState = Removed;
-        }
-        field(101; "Collection Last Import Version"; BigInteger)
-        {
-            Caption = 'Collection Last Import Version';
-            DataClassification = SystemMetadata;
-            Editable = false;
-            Access = Internal;
-            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-            ObsoleteTag = '24.0';
-            ObsoleteState = Removed;
-        }
-        field(102; "Product Last Export Version"; BigInteger)
-        {
-            Caption = 'Product Last Export Version';
-            DataClassification = SystemMetadata;
-            Editable = false;
-            Access = Internal;
-            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-            ObsoleteTag = '24.0';
-            ObsoleteState = Removed;
-        }
-        field(103; "Product Last Import Version"; BigInteger)
-        {
-            Caption = 'Product Last Import Version';
-            DataClassification = SystemMetadata;
-            Editable = false;
-            Access = Internal;
-            ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-            ObsoleteTag = '24.0';
-            ObsoleteState = Removed;
-        }
-#endif
 #pragma warning disable AS0004
         field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
 #pragma warning restore AS0004
@@ -792,6 +750,30 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Weight Unit';
             DataClassification = CustomerContent;
+        }
+        field(130; "Product Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Product/Variant Metafields to Shopify';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(131; "Customer Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Customer Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(132; "Company Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Company Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(133; "Order Attributes To Shopify"; Boolean)
+        {
+            Caption = 'Sync Business Central Doc. No. as Attribute';
+            DataClassification = SystemMetadata;
+            InitValue = true;
         }
         field(200; "Shop Id"; Integer)
         {

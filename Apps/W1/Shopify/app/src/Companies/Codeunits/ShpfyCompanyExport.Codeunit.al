@@ -105,6 +105,7 @@ codeunit 30284 "Shpfy Company Export"
         CompanyLocation."Address 2" := Customer."Address 2";
         CompanyLocation.Zip := Customer."Post Code";
         CompanyLocation.City := Customer.City;
+        CompanyLocation.Recipient := Customer.Name;
 
         if Customer.County <> '' then
             case Shop."County Source" of
@@ -203,7 +204,8 @@ codeunit 30284 "Shpfy Company Export"
             CompanyLocation.Modify();
         end;
 
-        UpdateMetafields(ShopifyCompany.Id);
+        if Shop."Company Metafields To Shopify" then
+            UpdateMetafields(ShopifyCompany.Id);
     end;
 
     local procedure UpdateMetafields(ComppanyId: BigInteger)

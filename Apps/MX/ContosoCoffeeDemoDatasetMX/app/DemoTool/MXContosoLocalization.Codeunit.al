@@ -25,12 +25,13 @@ codeunit 14108 "MX Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information MX");
                     Codeunit.Run(Codeunit::"Create Post Code MX");
                     Codeunit.Run(Codeunit::"Create VAT Posting Groups MX");
                     Codeunit.Run(Codeunit::"Create Posting Groups MX");
                     Codeunit.Run(Codeunit::"Create Data Exchange Def MX");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information MX");
         end;
     end;
 
@@ -39,8 +40,6 @@ codeunit 14108 "MX Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create Bank Ex/Import SetupMX");
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create Gen. Journal Line MX");
         end;
     end;
 
@@ -57,16 +56,17 @@ codeunit 14108 "MX Contoso Localization"
                     Codeunit.Run(Codeunit::"Create General Ledger Setup MX");
                     Codeunit.Run(Codeunit::"Create VATSetupPostingGrp. MX");
                     Codeunit.Run(Codeunit::"Create Column Layout Name MX");
-                end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Column Layout MX");
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate MX");
                     Codeunit.Run(Codeunit::"Create VAT Statement MX");
                     CreateMXGLAccounts.AddCategoriesToGLAccounts();
                     CreateMXGLAccounts.UpdateDebitCreditOnGL();
                     CreateMXGLAccounts.UpdateVATProdPostingGroupOnGL();
                     CreatePostingGroupsMX.CreateGenPostingSetup();
+                    Codeunit.Run(Codeunit::"Create Currency MX");
+                end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                begin
+                    Codeunit.Run(Codeunit::"Create Column Layout MX");
+                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate MX");
                 end;
         end;
     end;
@@ -108,7 +108,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
-        CreateGenJournalLineMX: Codeunit "Create Gen. Journal Line MX";
         CreateSalesDimValueMX: Codeunit "Create Sales Dim Value MX";
         CreatePurchDimValueMX: Codeunit "Create Purch. Dim. Value MX";
         CreateInvPostingSetupMX: Codeunit "Create Inv. Posting Setup MX";
@@ -117,10 +116,7 @@ codeunit 14108 "MX Contoso Localization"
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    BindSubscription(CreateBankAccountMX);
-                    BindSubscription(CreateGenJournalLineMX);
-                end;
+                BindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateItemChargeMX);
@@ -167,7 +163,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
-        CreateGenJournalLineMX: Codeunit "Create Gen. Journal Line MX";
         CreateSalesDimValueMX: Codeunit "Create Sales Dim Value MX";
         CreatePurchDimValueMX: Codeunit "Create Purch. Dim. Value MX";
         CreateInvPostingSetupMX: Codeunit "Create Inv. Posting Setup MX";
@@ -177,10 +172,7 @@ codeunit 14108 "MX Contoso Localization"
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Bank:
-                begin
-                    UnbindSubscription(CreateBankAccountMX);
-                    UnbindSubscription(CreateGenJournalLineMX);
-                end;
+                UnbindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateItemChargeMX);

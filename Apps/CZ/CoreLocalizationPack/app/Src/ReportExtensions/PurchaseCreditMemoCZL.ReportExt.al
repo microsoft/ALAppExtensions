@@ -101,9 +101,14 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
                     end else
                         if ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 0) and ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 1) then begin
                             VALSpecHeaderCZL := VATAmountSpecificationTxt + Format(GeneralLedgerSetup."Additional Reporting Currency");
-                            CurrencyExchangeRate.FindCurrency("Purch. Cr. Memo Hdr."."Posting Date", GeneralLedgerSetup."Additional Reporting Currency", 1);
-                            CalculatedExchRate := Round(1 / "Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                            VALExchRateCZL := StrSubstNo(ExchangeRateTxt, CalculatedExchRate, CurrencyExchangeRate."Exchange Rate Amount");
+                            if CalculatedExchRate <> 1 then begin
+                                CurrencyExchangeRate.FindCurrency("Purch. Cr. Memo Hdr."."Posting Date", "Purch. Cr. Memo Hdr."."Currency Code", 1);
+                                CalculatedExchRate := Round(((1 / "Purch. Cr. Memo Hdr."."Currency Factor") / (1 / "Purch. Cr. Memo Hdr."."Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                            end else begin
+                                CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                                CalculatedExchRate := Round("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                            end;
+                            VALExchRateCZL := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Cr. Memo Hdr."."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                         end;
                 end;
             }
@@ -138,4 +143,5 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
         VATAmountSpecificationTxt: Label 'VAT Amount Specification in ';
         LocalCurrencyTxt: Label 'Local Currency';
         ExchangeRateTxt: Label 'Exchange rate: %1/%2', Comment = '%1 = Calculated Exchange Rate, %2 = Exchnage Rate Amount';
+        ExchRateAdditionalLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = Currency Code, %3 = Exchange Rate, %4 = "Additional Reporting Currency"';
 }

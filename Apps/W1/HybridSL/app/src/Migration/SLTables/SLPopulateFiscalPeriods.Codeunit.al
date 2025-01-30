@@ -11,10 +11,10 @@ codeunit 47003 "SL Populate Fiscal Periods"
 
     var
         SLGLSetup: Record "SL GLSetup";
-        NumPeriods: Integer;
+        NumberOfPeriods: Integer;
         BeginFiscalYear: Integer;
 
-    internal procedure CreateFiscalPeriodsFromGLSetup()
+    internal procedure CreateSLFiscalPeriodsFromGLSetup()
     var
         SLFiscalPeriods: Record "SL Fiscal Periods";
         SLAcctHist: Record "SL AcctHist";
@@ -25,6 +25,7 @@ codeunit 47003 "SL Populate Fiscal Periods"
         FirstFiscalYear: Integer;
         Index: Integer;
         IndexYear: Integer;
+        YearLength: Integer;
         FiscalPerEnd00: Text[4];
         FiscalPerEnd01: Text[4];
         FiscalPerEnd02: Text[4];
@@ -38,20 +39,16 @@ codeunit 47003 "SL Populate Fiscal Periods"
         FiscalPerEnd10: Text[4];
         FiscalPerEnd11: Text[4];
         FiscalPerEnd12: Text[4];
-        YearPeriod: Text[6];
+        FiscalPeriod: Text[6];
     begin
-        // initialize variables
-        NumPeriods := 0;
-        CurFiscalYear := 1999;
-        FirstFiscalYear := 1999;
-        IndexYear := 0;
+        YearLength := 4;
 
         SLGLSetup.Reset();
         if SLGLSetup.FindFirst() then begin
-            Evaluate(CurFiscalYear, SLGLSetup.PerNbr.Substring(1, 4));
-            Evaluate(PrevFiscalYear, SLGLSetup.PerNbr.Substring(1, 4));
+            Evaluate(CurFiscalYear, CopyStr(SLGLSetup.PerNbr, 1, YearLength));
+            Evaluate(PrevFiscalYear, CopyStr(SLGLSetup.PerNbr, 1, YearLength));
             PrevFiscalYear := PrevFiscalYear - 1;
-            NumPeriods := SLGLSetup.NbrPer;
+            NumberOfPeriods := SLGLSetup.NbrPer;
             BeginFiscalYear := SLGLSetup.BegFiscalYr;
             FiscalPerEnd00 := SLGLSetup.FiscalPerEnd00;
             FiscalPerEnd01 := SLGLSetup.FiscalPerEnd01;
@@ -83,13 +80,13 @@ codeunit 47003 "SL Populate Fiscal Periods"
         Commit();
         while IndexYear <= CurFiscalYear do begin
             Index := 1;
-            while Index <= NumPeriods do begin
+            while Index <= NumberOfPeriods do begin
                 case Index of
                     1:
                         begin
-                            YearPeriod := Format(IndexYear) + '01';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '01';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 01;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -98,9 +95,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     2:
                         begin
-                            YearPeriod := Format(IndexYear) + '02';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '02';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 02;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -109,9 +106,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     3:
                         begin
-                            YearPeriod := Format(IndexYear) + '03';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '03';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 03;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -120,9 +117,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     4:
                         begin
-                            YearPeriod := Format(IndexYear) + '04';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '04';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 04;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -131,9 +128,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     5:
                         begin
-                            YearPeriod := Format(IndexYear) + '05';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '05';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 05;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -142,9 +139,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     6:
                         begin
-                            YearPeriod := Format(IndexYear) + '06';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '06';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 06;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -153,9 +150,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     7:
                         begin
-                            YearPeriod := Format(IndexYear) + '07';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '07';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 07;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -164,9 +161,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     8:
                         begin
-                            YearPeriod := Format(IndexYear) + '08';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '08';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 08;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -175,9 +172,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     9:
                         begin
-                            YearPeriod := Format(IndexYear) + '09';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '09';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 09;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -186,9 +183,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     10:
                         begin
-                            YearPeriod := Format(IndexYear) + '10';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '10';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 10;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -197,9 +194,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     11:
                         begin
-                            YearPeriod := Format(IndexYear) + '11';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '11';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 11;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -208,9 +205,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     12:
                         begin
-                            YearPeriod := Format(IndexYear) + '12';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '12';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 12;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -219,9 +216,9 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         end;
                     13:
                         begin
-                            YearPeriod := Format(IndexYear) + '13';
-                            FPDateBeg := GetCalendarBegDateOfGLPeriod(YearPeriod);
-                            FPDateEnd := GetCalendarEndDateOfGLPeriod(YearPeriod);
+                            FiscalPeriod := Format(IndexYear) + '13';
+                            FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscalPeriod);
+                            FPDateBeg := GetCalendarBegDateOfGLPeriod(FiscalPeriod);
                             SLFiscalPeriods.PeriodID := 13;
                             SLFiscalPeriods.Year1 := IndexYear;
                             SLFiscalPeriods.PeriodDT := FPDateBeg;
@@ -236,124 +233,136 @@ codeunit 47003 "SL Populate Fiscal Periods"
         end;
     end;
 
+    internal procedure GetPeriodStartDateFromEndDate(EndDate: Date): Date
+    var
+        StartDate: Date;
+        DateExpression: Text[30];
+    begin
+        DateExpression := '<-1M+1D>';
+        StartDate := CalcDate(DateExpression, EndDate);
+        Message(DateExpression, EndDate, StartDate);
+        exit(StartDate)
+    end;
+
     internal procedure GetCalendarBegDateOfGLPeriod(GLPeriod: Text[6]): Date
     var
-        FPDateEnd: Date;
-        CurYear: Integer;
-        PrevYear: Integer;
-        PrevMonthVal: Integer;
-        CurMonth: Integer;
-        CurMonthStr: Text[2];
-        FiscPerStr: Text[6];
-        NumPeriodsTxt: Text[2];
-        PrevMonthStr: Text[2];
+        CurrentPeriodBeginDate: Date;
+        PreviousPeriodEndDate: Date;
+        CurrentPeriodYear: Integer;
+        PreviousFiscalYear: Integer;
+        PreviousMonth: Integer;
+        CurrentMonth: Integer;
+        CurrentFiscalMonthTxt: Text[2];
+        NumberOfPeriodsTxt: Text[2];
+        PreviousFiscalMonthTxt: Text[2];
+        PreviousFiscalPeriod: Text[6];
+        DateExpression: Text[30];
     begin
-        Evaluate(CurYear, GLPeriod.Substring(1, 4));
-        PrevYear := CurYear - 1;
-        CurMonthStr := GLPeriod.Substring(5, 2);
-        NumPeriodsTxt := Format(NumPeriods);
-        PrevMonthVal := 0;
+        Evaluate(CurrentPeriodYear, GLPeriod.Substring(1, 4));
+        PreviousFiscalYear := CurrentPeriodYear - 1;
+        CurrentFiscalMonthTxt := GLPeriod.Substring(5, 2);
+        NumberOfPeriodsTxt := Format(NumberOfPeriods);
+        DateExpression := '<+1D>';
 
-        if CurMonthStr = '01' then begin
-            if StrLen(NumPeriodsTxt.Trim()) = 1 then
-                PrevMonthStr := '0' + NumPeriodsTxt.Trim()
+        if CurrentFiscalMonthTxt = '01' then begin
+            if NumberOfPeriods <= 9 then
+                PreviousFiscalMonthTxt := '0' + Format(NumberOfPeriods)
             else
-                PrevMonthStr := NumPeriodsTxt;
-            FiscPerStr := Format(PrevYear) + PrevMonthStr;
+                PreviousFiscalMonthTxt := Format(NumberOfPeriods);
+            PreviousFiscalPeriod := Format(PreviousFiscalYear) + PreviousFiscalMonthTxt;
         end else begin
-            Evaluate(CurMonth, CurMonthStr);
-            PrevMonthVal := CurMonth - 1;
-            PrevMonthStr := Format(PrevMonthVal);
-
-            if StrLen(PrevMonthStr.Trim()) = 1 then
-                PrevMonthStr := '0' + PrevMonthStr.Trim();
-            FiscPerStr := Format(CurYear) + PrevMonthStr;
+            Evaluate(CurrentMonth, CurrentFiscalMonthTxt);
+            PreviousMonth := CurrentMonth - 1;
+            if PreviousMonth <= 9 then
+                PreviousFiscalMonthTxt := '0' + Format(PreviousMonth)
+            else
+                PreviousFiscalMonthTxt := Format(PreviousMonth);
+            PreviousFiscalPeriod := Format(CurrentPeriodYear) + PreviousFiscalMonthTxt;
         end;
 
-        FPDateEnd := GetCalendarEndDateOfGLPeriod(FiscPerStr);
-        exit(FPDateEnd);
+        PreviousPeriodEndDate := GetCalendarEndDateOfGLPeriod(PreviousFiscalPeriod);
+        CurrentPeriodBeginDate := CalcDate(DateExpression, PreviousPeriodEndDate);
+        exit(CurrentPeriodBeginDate);
     end;
 
     internal procedure GetCalendarEndDateOfGLPeriod(GLPeriod: Text[6]): Date
     var
-        PeriodList: Record SLPeriodListWrkTbl;
+        SLPeriodListWorkTable: Record "SL Period List Work Table";
         FPDateEnd: Date;
-        I: Integer;
-        LocYear: Integer;
+        PeriodCounter: Integer;
+        FiscalYear: Integer;
         PeriodOfMaxMD: Integer;
         MaxMonthDay: Text[4];
         ReturnDate: Text[10];
     begin
-        I := 1;
-        LocYear := 1999;
-        FPDateEnd := 19990101D;
-        if not PeriodList.FindFirst() then
-            while I <= NumPeriods do begin
-                PeriodList.period := I;
-                case I of
+        PeriodCounter := 1;
+        if not SLPeriodListWorkTable.FindFirst() then
+            while PeriodCounter <= NumberOfPeriods do begin
+                SLPeriodListWorkTable.Period := PeriodCounter;
+                case PeriodCounter of
                     1:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd00;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd00;
                     2:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd01;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd01;
                     3:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd02;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd02;
                     4:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd03;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd03;
                     5:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd04;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd04;
                     6:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd05;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd05;
                     7:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd06;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd06;
                     8:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd07;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd07;
                     9:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd08;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd08;
                     10:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd09;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd09;
                     11:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd10;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd10;
                     12:
-                        PeriodList.md := SLGLSetup.FiscalPerEnd11;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd11;
                     else
-                        PeriodList.md := SLGLSetup.FiscalPerEnd12;
+                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd12;
                 end;
 
-                PeriodList.Insert();
+                SLPeriodListWorkTable.Insert();
                 Commit();
-                I += 1;
+                PeriodCounter += 1;
             end;
 
-        Evaluate(LocYear, GLPeriod.Substring(1, 4));
+        Evaluate(FiscalYear, GLPeriod.Substring(1, 4));
 
-        PeriodList.Reset();
-        PeriodList.SetCurrentKey(md);
-        if PeriodList.Find('+') then begin
-            MaxMonthDay := PeriodList.md;
-            PeriodOfMaxMD := PeriodList.period;
+        SLPeriodListWorkTable.Reset();
+        SLPeriodListWorkTable.SetCurrentKey(MonthDay);
+        if SLPeriodListWorkTable.Find('+') then begin
+            MaxMonthDay := SLPeriodListWorkTable.MonthDay;
+            PeriodOfMaxMD := SLPeriodListWorkTable.Period;
         end;
 
-        PeriodList.Reset();
-        if PeriodList.FindSet() then
+        SLPeriodListWorkTable.Reset();
+        if SLPeriodListWorkTable.FindSet() then
             repeat
-                if PeriodList.period <= PeriodOfMaxMD then begin
+                if SLPeriodListWorkTable.Period <= PeriodOfMaxMD then begin
                     if BeginFiscalYear = 1 then
-                        PeriodList.year := Format(LocYear)
+                        SLPeriodListWorkTable.year := Format(FiscalYear)
                     else
-                        PeriodList.year := Format(LocYear - 1);
+                        SLPeriodListWorkTable.year := Format(FiscalYear - 1);
                 end else
                     if BeginFiscalYear = 1 then
-                        PeriodList.year := Format(LocYear + 1)
+                        SLPeriodListWorkTable.year := Format(FiscalYear + 1)
                     else
-                        PeriodList.year := Format(LocYear);
-                PeriodList.Modify();
+                        SLPeriodListWorkTable.year := Format(FiscalYear);
+                SLPeriodListWorkTable.Modify();
                 Commit();
-            until PeriodList.Next() = 0;
+            until SLPeriodListWorkTable.Next() = 0;
 
-        PeriodList.Reset();
-        PeriodList.SetFilter(period, GLPeriod.Substring(5, 2));
-        if PeriodList.FindFirst() then begin
-            ReturnDate := PeriodList.year + '-' + PeriodList.md.Substring(1, 2) + '-' + PeriodList.md.Substring(3, 2);
+        SLPeriodListWorkTable.Reset();
+        SLPeriodListWorkTable.SetFilter(Period, GLPeriod.Substring(5, 2));
+        if SLPeriodListWorkTable.FindFirst() then begin
+            ReturnDate := SLPeriodListWorkTable.year + '-' + SLPeriodListWorkTable.MonthDay.Substring(1, 2) + '-' + SLPeriodListWorkTable.MonthDay.Substring(3, 2);
             Evaluate(FPDateEnd, ReturnDate);
         end;
         exit(FPDateEnd);

@@ -10,7 +10,7 @@ codeunit 13447 "Create VAT Statement FI"
     var
         CreateVATStatement: Codeunit "Create VAT Statement";
     begin
-        if (Rec."Statement Template Name" = CreateVATStatement.VATTemplateName()) and (Rec."Statement Name" = StatementNameLbl) then
+        if (Rec."Statement Template Name" = CreateVATStatement.VATTemplateName()) and (Rec."Statement Name" = CreateVATStatement.VATStatementName()) then
             case Rec."Line No." of
                 200000:
                     Rec.Validate(Description, SalesStandardLbl);
@@ -104,7 +104,6 @@ codeunit 13447 "Create VAT Statement FI"
     end;
 
     var
-        StatementNameLbl: Label 'DEFAULT', MaxLength = 10;
         SalesStandardLbl: Label 'Sales 24 % ', MaxLength = 100;
         SalesStandardFullLbl: Label 'Sales 24 % FULL', MaxLength = 100;
         SalesStandardTotalLbl: Label 'Sales 24 % total', MaxLength = 100;

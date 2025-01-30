@@ -31,48 +31,6 @@
       "version": "26.0.0.0"
     }
   ],
-  "internalsVisibleTo": [
-    {
-      "id": "018ff6a2-4cf8-4945-b60f-2b40878ef5c4",
-      "name": "Subscription & Recurring Billing Plus Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "41bf6cc7-7891-4a8c-827c-fe23266c5a98",
-      "name": "DYCE Essentials Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "eb59fb9f-b1b0-47ba-963d-80f38ad130b4",
-      "name": "DYCE Subscription & Recurring Billing Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "d8d8a26c-5f2b-41a0-9e06-2b351aee1767",
-      "name": "DYCE Usage Based Billing Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "ab5fc040-94a7-4428-9280-66342c6ab703",
-      "name": "DYCE Easy Bundle Seller Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "e953ddb9-6c2f-46ce-9c93-e4004244ca28",
-      "name": "DYCE Managed Service Providers Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "945dc7a5-c8e5-4206-b82a-16da146c026e",
-      "name": "DYCE Recurring Prepaid Services Test",
-      "publisher": "Singhammer IT Consulting AG"
-    },
-    {
-      "id": "6f4cbb6d-236a-4715-a95c-f04e167a85e6",
-      "name": "DYCE Happy Texts Test",
-      "publisher": "Singhammer IT Consulting AG"
-    }
-  ],
   "screenshots": [],
   "platform": "26.0.0.0",
   "application": "26.0.0.0",

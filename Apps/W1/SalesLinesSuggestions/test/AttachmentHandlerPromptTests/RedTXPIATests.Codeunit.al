@@ -1,7 +1,7 @@
 namespace Microsoft.Sales.Document.Test;
 using System.TestTools.AITestToolkit;
 
-codeunit 149825 "RedT XPIA Tests"
+codeunit 133525 "RedT XPIA Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;

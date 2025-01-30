@@ -37,7 +37,7 @@ codeunit 6133 "E-Document Background Jobs"
         ScheduleEDocumentJob(Codeunit::"E-Document Get Response", BlankRecord, 300000);
     end;
 
-    procedure ScheduleRecurrentBatchJob(EDocumentService: Record "E-Document Service")
+    procedure ScheduleRecurrentBatchJob(var EDocumentService: Record "E-Document Service")
     var
         JobQueueEntry: Record "Job Queue Entry";
         Telemetry: Codeunit Telemetry;
@@ -69,7 +69,7 @@ codeunit 6133 "E-Document Background Jobs"
         Telemetry.LogMessage('0000LC4', EDocumentJobTelemetryLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
-    procedure ScheduleRecurrentImportJob(EDocumentService: Record "E-Document Service")
+    procedure ScheduleRecurrentImportJob(var EDocumentService: Record "E-Document Service")
     var
         JobQueueEntry: Record "Job Queue Entry";
         Telemetry: Codeunit Telemetry;
@@ -104,18 +104,17 @@ codeunit 6133 "E-Document Background Jobs"
         Telemetry.LogMessage('0000LC5', EDocumentJobTelemetryLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
-    procedure HandleRecurrentBatchJob(EDocumentService: Record "E-Document Service")
+    procedure HandleRecurrentBatchJob(var EDocumentService: Record "E-Document Service")
     begin
-        if EDocumentService."Use Batch Processing" then
-            if EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent then begin
-                EDocumentService.TestField("Batch Start Time");
-                EDocumentService.TestField("Batch Minutes between runs");
-                ScheduleRecurrentBatchJob(EDocumentService);
-            end else
-                RemoveJob(EDocumentService."Batch Recurrent Job Id");
+        if (EDocumentService."Use Batch Processing") and (EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent) then begin
+            EDocumentService.TestField("Batch Start Time");
+            EDocumentService.TestField("Batch Minutes between runs");
+            ScheduleRecurrentBatchJob(EDocumentService);
+        end else
+            RemoveJob(EDocumentService."Batch Recurrent Job Id");
     end;
 
-    procedure HandleRecurrentImportJob(EDocumentService: Record "E-Document Service")
+    procedure HandleRecurrentImportJob(var EDocumentService: Record "E-Document Service")
     begin
         if EDocumentService."Auto Import" then begin
             EDocumentService.TestField("Import Start Time");

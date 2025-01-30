@@ -55,6 +55,38 @@ page 30087 "APIV2 - G/L Setup"
             {
                 Caption = 'Allow Query From Consolidation';
             }
+            field(shortcutDimension1Code; Rec."Shortcut Dimension 1 Code")
+            {
+                Caption = 'Shortcut Dimension 1 Code';
+            }
+            field(shortcutDimension2Code; Rec."Shortcut Dimension 2 Code")
+            {
+                Caption = 'Shortcut Dimension 2 Code';
+            }
+            field(shortcutDimension3Code; Rec."Shortcut Dimension 3 Code")
+            {
+                Caption = 'Shortcut Dimension 3 Code';
+            }
+            field(shortcutDimension4Code; Rec."Shortcut Dimension 4 Code")
+            {
+                Caption = 'Shortcut Dimension 4 Code';
+            }
+            field(shortcutDimension5Code; Rec."Shortcut Dimension 5 Code")
+            {
+                Caption = 'Shortcut Dimension 5 Code';
+            }
+            field(shortcutDimension6Code; Rec."Shortcut Dimension 6 Code")
+            {
+                Caption = 'Shortcut Dimension 6 Code';
+            }
+            field(shortcutDimension7Code; Rec."Shortcut Dimension 7 Code")
+            {
+                Caption = 'Shortcut Dimension 7 Code';
+            }
+            field(shortcutDimension8Code; Rec."Shortcut Dimension 8 Code")
+            {
+                Caption = 'Shortcut Dimension 8 Code';
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ page 36987 "Budget Comparison"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 36987 "Budget Comparison"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection64d670dfa9da1a5b7033', Locked = true;
+        ReportPageLbl: Label 'ReportSection64d670dfa9da1a5b7033', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

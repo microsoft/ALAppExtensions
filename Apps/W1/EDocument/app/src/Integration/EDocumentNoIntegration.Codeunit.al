@@ -12,9 +12,9 @@ using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Utilities;
 
 #if not CLEAN26
-codeunit 6128 "E-Document No Integration" implements "E-Document Integration", IDocumentSender, IDocumentReceiver, ISentDocumentActions
+codeunit 6128 "E-Document No Integration" implements "E-Document Integration", IDocumentSender, IDocumentReceiver, ISentDocumentActions, IConsentManager
 #else
-codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentReceiver, ISentDocumentActions
+codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentReceiver, ISentDocumentActions, IConsentManager
 #endif
 {
 
@@ -74,12 +74,12 @@ codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentR
 
     #region IDocumentReceiver
 
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     begin
 
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
 
     end;
@@ -94,6 +94,15 @@ codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentR
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
     begin
+    end;
+
+    #endregion
+
+    #region IConsentManager
+
+    procedure ObtainPrivacyConsent(): Boolean
+    begin
+        exit(true);
     end;
 
     #endregion

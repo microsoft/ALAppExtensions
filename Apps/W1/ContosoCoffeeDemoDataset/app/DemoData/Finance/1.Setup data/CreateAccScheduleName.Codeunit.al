@@ -11,16 +11,22 @@ codeunit 5223 "Create Acc. Schedule Name"
         ContosoAccountSchedule.InsertAccScheduleName(AccountCategoriesOverview(), AccountCategoriesOverviewLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(CapitalStructure(), CapitalStructureLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(CashFlowCalculation(), CashFlowCalculationLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashCycle(), CashCycleDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashFlow(), CashFlowDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeExpense(), IncomeExpenseDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(ReducedTrialBalance(), ReducedTrialBalanceDataLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(Revenues(), RevenuesLbl, CreateAnalysisView.SalesRevenue());
         ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetDetailed(), BalanceSheetDetailedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetSummarized(), BalanceSheetSummarizedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementDetailed(), IncomeStatementDetailedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementSummarized(), IncomeStatementSummarizedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(TrialBalance(), TrialBalanceLbl, '');
+    end;
+
+    internal procedure CreateSetupAccScheduleName()
+    var
+        ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
+    begin
+        ContosoAccountSchedule.InsertAccScheduleName(CashCycle(), CashCycleDataLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(CashFlow(), CashFlowDataLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(IncomeExpense(), IncomeExpenseDataLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(ReducedTrialBalance(), ReducedTrialBalanceDataLbl, '');
     end;
 
     procedure AccountCategoriesOverview(): Code[10]

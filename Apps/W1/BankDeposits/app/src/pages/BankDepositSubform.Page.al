@@ -432,7 +432,8 @@ page 1693 "Bank Deposit Subform"
         Rec."Currency Factor" := BankDepositHeader."Currency Factor";
         Rec."Document Date" := BankDepositHeader."Document Date";
         Rec."Posting Date" := BankDepositHeader."Posting Date";
-        Rec."Document No." := BankDepositHeader."No.";
+        if BankDepositHeader."Post as Lump Sum" or (Rec."Document No." = '') then
+            Rec."Document No." := BankDepositHeader."No.";
         Rec."External Document No." := '';
         Rec."Reason Code" := BankDepositHeader."Reason Code";
     end;

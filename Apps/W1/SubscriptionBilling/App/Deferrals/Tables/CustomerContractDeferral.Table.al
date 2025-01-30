@@ -1,10 +1,11 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Security.AccessControl;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.Dimension;
+using System.Security.User;
 
 table 8066 "Customer Contract Deferral"
 {
@@ -13,6 +14,9 @@ table 8066 "Customer Contract Deferral"
     DrillDownPageId = "Customer Contract Deferrals";
     LookupPageId = "Customer Contract Deferrals";
     Access = Internal;
+    Permissions =
+        tabledata "Sales Invoice Line" = r,
+        tabledata "Sales Cr.Memo Line" = r;
 
     fields
     {
@@ -61,7 +65,7 @@ table 8066 "Customer Contract Deferral"
         {
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
             ValidateTableRelation = false;
         }
         field(13; "Discount Amount"; Decimal)
@@ -182,5 +186,27 @@ table 8066 "Customer Contract Deferral"
     begin
         Rec.SetRange("Document Type", RecurringBillingDocumentType);
         Rec.SetRange("Document No.", DocumentNo);
+    end;
+
+    internal procedure GetDocumentPostingGroups(var GenBusPostingGroup: Code[20]; var GenProdPostingGroup: Code[20]): Boolean
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+    begin
+        case "Document Type" of
+            "Rec. Billing Document Type"::Invoice:
+                if SalesInvoiceLine.Get("Document No.", "Document Line No.") then begin
+                    GenBusPostingGroup := SalesInvoiceLine."Gen. Bus. Posting Group";
+                    GenProdPostingGroup := SalesInvoiceLine."Gen. Prod. Posting Group";
+                    exit(true);
+                end;
+            "Rec. Billing Document Type"::"Credit Memo":
+                if SalesCrMemoLine.Get("Document No.", "Document Line No.") then begin
+                    GenBusPostingGroup := SalesCrMemoLine."Gen. Bus. Posting Group";
+                    GenProdPostingGroup := SalesCrMemoLine."Gen. Prod. Posting Group";
+                    exit(true);
+                end;
+        end;
+        exit(false);
     end;
 }

@@ -1,4 +1,4 @@
-codeunit 10880 "Create Vendor Posting Grp FR"
+codeunit 10901 "Create Vendor Posting Grp FR"
 {
     SingleInstance = true;
     EventSubscriberInstance = Manual;
