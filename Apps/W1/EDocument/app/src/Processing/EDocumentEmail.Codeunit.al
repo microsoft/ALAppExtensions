@@ -144,11 +144,9 @@ codeunit 6105 "E Document Email"
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
         SalesInvoiceHeader.Get(PostedDocNo);
-        if SalesInvoiceHeader."Send E-Document via Email" then begin
-            EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
-            if EDocument.FindFirst() then
-                exit(true);
-        end;
+        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
+        if EDocument.FindFirst() then
+            exit(true);
     end;
 
     local procedure GetEDocumentForSalesCrMemo(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
@@ -156,11 +154,9 @@ codeunit 6105 "E Document Email"
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
     begin
         SalesCrMemoHeader.Get(PostedDocNo);
-        if SalesCrMemoHeader."Send E-Document via Email" then begin
-            EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
-            if EDocument.FindFirst() then
-                exit(true);
-        end;
+        EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
+        if EDocument.FindFirst() then
+            exit(true);
     end;
 
     local procedure GetBlobAttachmentFromEDocument(
