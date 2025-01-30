@@ -1408,11 +1408,11 @@ codeunit 139624 "E-Doc E2E Test"
         this.LibraryLowerPermission.SetTeamMember();
         this.LibraryEDoc.PostInvoice(this.Customer);
 
-        // [GIVEN] Get EDocument and run job queue to export it
+        // [WHEN] Get EDocument and run job queue to export it
         EDocument.FindLast();
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
 
-        // [WHEN] Get xml file for this document
+        // [THEN] Get xml file for this document
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Exported);
 
         // [THEN] Check that PDF is embedded to XML

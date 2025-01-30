@@ -251,7 +251,6 @@ page 6133 "E-Document Service"
     var
         ServiceIntegrationSetupMsg: Label 'There is no configuration setup for this service integration.';
         DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
-        IsPeppolFormat: Boolean;
 
     trigger OnOpenPage()
     var
@@ -261,11 +260,6 @@ page 6133 "E-Document Service"
         FeatureTelemetry.LogUptake('0000KZ6', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Discovered);
         CurrPage.EDocumentExportFormatMapping.Page.SaveAsImport(false);
         CurrPage.EDocumentImportFormatMapping.Page.SaveAsImport(true);
-    end;
-
-    trigger OnAfterGetRecord()
-    begin
-        this.IsPeppolFormat := Rec."Document Format" = Rec."Document Format"::"PEPPOL BIS 3.0";
     end;
 
 #if not CLEAN26
