@@ -251,6 +251,12 @@ table 6103 "E-Document Service"
             ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
             DataClassification = SystemMetadata;
         }
+        field(40; "Embed Invoice PDF to XML"; Boolean)
+        {
+            Caption = 'Embed Invoice PDF to XML';
+            ToolTip = 'Specifies if invoice PDF should be generated and embedded to XML during the export.';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
