@@ -61,16 +61,6 @@ codeunit 6139 "E-Document Workflow Setup"
         exit('EDOCSENT')
     end;
 
-    // procedure EDocExport(): Code[128];
-    // begin
-    //     exit('EDOCEXPORT');
-    // end;
-
-    // procedure EDocExported(): Code[128];
-    // begin
-    //     exit('EDOCEXPORTED');
-    // end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Event Handling", 'OnAddWorkflowEventsToLibrary', '', true, true)]
     local procedure AddEDocWorkflowEventsToLibrary()
     var
@@ -79,7 +69,6 @@ codeunit 6139 "E-Document Workflow Setup"
         WorkflowEventHandling.AddEventToLibrary(EDocCreated(), Database::"E-Document", 'E-Document Created', 0, false);
         WorkflowEventHandling.AddEventToLibrary(EDocStatusChanged(), Database::"E-Document Service Status", 'E-Document has changed', 0, false);
         WorkflowEventHandling.AddEventToLibrary(EDocReceived(), Database::"E-Document", 'E-Document Imported', 0, false);
-        // WorkflowEventHandling.AddEventToLibrary(EDocExported(), Database::"E-Document", 'E-Document Exported', 0, false);
     end;
 
 
@@ -90,7 +79,6 @@ codeunit 6139 "E-Document Workflow Setup"
     begin
         WorkflowResponseHandling.AddResponseToLibrary(EDocSendEDocResponseCode(), Database::"E-Document", 'Send E-Document using setup: %1', 'GROUP 50100');
         WorkflowResponseHandling.AddResponseToLibrary(EDocImport(), Database::"E-Document", 'Import E-Document using setup: %1', 'GROUP 50100');
-        // WorkflowResponseHandling.AddResponseToLibrary(EDocExport(), Database::"E-Document", 'Export E-Document using setup: %1', 'GROUP 50100');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAfterGetDescription', '', false, false)]
@@ -99,7 +87,6 @@ codeunit 6139 "E-Document Workflow Setup"
         case WorkflowResponse."Function Name" of
             EDocSendEDocResponseCode(),
             EDocImport():
-                // EDocExport():
                 Result := (CopyStr(StrSubstNo(WorkflowResponse.Description, WorkflowStepArgument."E-Document Service"), 1, 250));
         end;
     end;
@@ -114,7 +101,6 @@ codeunit 6139 "E-Document Workflow Setup"
                 begin
                     WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocCreated());
                     WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocStatusChanged());
-                    // WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocExported());
                 end;
         end;
     end;
@@ -132,11 +118,6 @@ codeunit 6139 "E-Document Workflow Setup"
                     EDocWorkflowProcessing.SendEDocument(Variant, ResponseWorkflowStepInstance);
                     ResponseExecuted := true;
                 end;
-        // EDocExport():
-        //     begin
-        //         EDocWorkflowProcessing.ExportEDocument(Variant, ResponseWorkflowStepInstance);
-        //         ResponseExecuted := true;
-        //     end;
         end;
     end;
 

@@ -87,13 +87,13 @@ codeunit 6102 "E-Doc. Export"
             OnAfterCreateEDocument(EDocument, SourceDocumentHeader);
 
             EDocumentLog.InsertLog(EDocument, Enum::"E-Document Service Status"::Created);
-            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
 
-            // if EDocumentService.FindSet() then
-            //     repeat
-            //         EDocExport.ExportEDocument(EDocument, EDocumentService);
-            //     until EDocumentService.Next() = 0;
+            if EDocumentService.FindSet() then
+                repeat
+                    EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
+                    EDocExport.ExportEDocument(EDocument, EDocumentService);
+                until EDocumentService.Next() = 0;
 
             EDocumentBackgroundJobs.StartEdocumentCreatedFlow(EDocument);
         end;
