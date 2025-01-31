@@ -14,16 +14,16 @@ codeunit 6104 "E-Document Exported Flow"
 
     trigger OnRun()
     begin
-        Code(Rec);
+        // Code(Rec);
     end;
 
-    procedure Code(JobQueueEntry: Record "Job Queue Entry")
-    var
-        EDocument: Record "E-Document";
-        WorkflowManagement: Codeunit "Workflow Management";
-        EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
-    begin
-        EDocument.Get(JobQueueEntry."Record ID to Process");
-        WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocExported(), EDocument);
-    end;
+    // procedure Code(JobQueueEntry: Record "Job Queue Entry")
+    // var
+    //     EDocument: Record "E-Document";
+    //     WorkflowManagement: Codeunit "Workflow Management";
+    //     EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
+    // begin
+    //     EDocument.Get(JobQueueEntry."Record ID to Process");
+    //     WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocExported(), EDocument);
+    // end;
 }

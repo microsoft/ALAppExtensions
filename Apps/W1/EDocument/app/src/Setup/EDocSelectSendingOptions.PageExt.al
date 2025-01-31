@@ -30,7 +30,6 @@ pageextension 6102 "E Doc. Select Sending Options" extends "Select Sending Optio
         ElectronicDocumentVisible: Boolean;
         ElectronicDocumentFormatEmailVisible: Boolean;
 
-
     trigger OnOpenPage()
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";

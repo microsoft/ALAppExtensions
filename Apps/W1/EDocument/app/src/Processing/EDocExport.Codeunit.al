@@ -62,7 +62,9 @@ codeunit 6102 "E-Doc. Export"
         EDocumentLog: Codeunit "E-Document Log";
         EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
         WorkflowManagement: Codeunit "Workflow Management";
+        EDocExport: Codeunit "E-Doc. Export";
         EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         IsDocumentTypeSupported: Boolean;
     begin
         EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
@@ -88,7 +90,12 @@ codeunit 6102 "E-Doc. Export"
             EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
 
-            WorkflowManagement.HandleEvent(EDocumentWorkflowSetup.EDocCreated(), EDocument)
+            // if EDocumentService.FindSet() then
+            //     repeat
+            //         EDocExport.ExportEDocument(EDocument, EDocumentService);
+            //     until EDocumentService.Next() = 0;
+
+            EDocumentBackgroundJobs.StartEdocumentCreatedFlow(EDocument);
         end;
     end;
 
