@@ -28,6 +28,7 @@ codeunit 6105 "E Document Email"
         TypeHelper: Codeunit "Type Helper";
         DataCompression: Codeunit "Data Compression";
         TempBlob: Codeunit "Temp Blob";
+        TempBlobList: Codeunit "Temp Blob List";
         SourceReference: RecordRef;
         SourceTableIDs: List of [Integer];
         SourceIDs: List of [Guid];
@@ -35,22 +36,33 @@ codeunit 6105 "E Document Email"
         ServerEmailBodyFilePath: Text[250];
         SendToEmailAddress: Text[250];
         AttachmentFileName: Text[250];
+        AttachmentFileExtension: Text[4];
     begin
         case DocumentSendingProfile."E-Mail Attachment" of
             Enum::"Document Sending Profile Attachment Type"::"E-Document":
                 begin
                     TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
 
-                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlob) then
+                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlobList) then
                         exit;
 
                     CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
 
                     ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
 
+                    if TempBlobList.Count() = 1 then begin
+                        TempBlobList.Get(1, TempBlob);
+                        AttachmentFileExtension := XMLFileTypeTok;
+                    end else begin
+                        CreateZipArchiveWithEDocAttachments(DataCompression, TempBlobList, AttachmentFileName);
+                        DataCompression.SaveZipArchive(TempBlob);
+                        DataCompression.CloseZipArchive();
+                        AttachmentFileExtension := ZipFileTypeTok;
+                    end;
+
                     DocumentMailing.EmailFile(
                         TempBlob.CreateInStream(),
-                        AttachmentFileName + XMLFileTypeTok,
+                        AttachmentFileName + AttachmentFileExtension,
                         ServerEmailBodyFilePath,
                         DocNo,
                         SendToEmailAddress,
@@ -66,13 +78,19 @@ codeunit 6105 "E Document Email"
                 begin
                     TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
 
-                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlob) then
+                    if not GetAttachment(DocNo, DocName, SourceReference, AttachmentFileName, TempBlobList) then
                         exit;
 
                     CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
 
-                    DataCompression.CreateZipArchive();
-                    DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName + XMLFileTypeTok);
+                    if TempBlobList.Count() = 1 then begin
+                        TempBlobList.Get(1, TempBlob);
+                        AttachmentFileExtension := XMLFileTypeTok;
+                        DataCompression.CreateZipArchive();
+                        DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName + XMLFileTypeTok);
+                    end else
+                        CreateZipArchiveWithEDocAttachments(DataCompression, TempBlobList, AttachmentFileName);
+
                     ReportSelections.GetPdfReportForCust(TempBlob, ReportUsage, RecordVariant, ToCust);
                     DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName + PDFFileTypeTok);
                     DataCompression.SaveZipArchive(TempBlob);
@@ -102,19 +120,19 @@ codeunit 6105 "E Document Email"
         DocName: Text[150];
         var SourceReference: RecordRef;
         var AttachmentFileName: Text[250];
-        var TempBlob: Codeunit "Temp Blob"): Boolean
+        var TempBlobList: Codeunit "Temp Blob List"): Boolean
     var
         EDocument: Record "E-Document";
     begin
         case SourceReference.Number() of
             Database::"Sales Invoice Header":
                 if GetEDocumentForSalesInvoice(DocNo, EDocument) then
-                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName)
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlobList, AttachmentFileName)
                 else
                     exit(false);
             Database::"Sales Cr.Memo Header":
                 if GetEDocumentForSalesCrMemo(DocNo, EDocument) then
-                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlob, AttachmentFileName)
+                    GetBlobAttachmentFromEDocument(EDocument, DocNo, DocName, TempBlobList, AttachmentFileName)
                 else
                     exit(false);
             else
@@ -166,15 +184,38 @@ codeunit 6105 "E Document Email"
         EDocument: Record "E-Document";
         PostedDocNo: Code[20];
         EmailDocName: Text[250];
-        var TempBlob: Codeunit "Temp Blob";
+        var TempBlobList: Codeunit "Temp Blob List";
         var EDocumentAttchmentName: Text[250])
     var
         EDocumentService: Record "E-Document Service";
+        DocumentSendingProfile: Record "Document Sending Profile";
         EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        EDocumentWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
     begin
-        EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
-        EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+        DocumentSendingProfile.Get(EDocument."Document Sending Profile");
+        EDocumentWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, DocumentSendingProfile."Electronic Service Flow");
+        if EDocumentService.FindSet() then
+            repeat
+                Clear(TempBlob);
+                EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+                TempBlobList.Add(TempBlob);
+            until EDocumentService.Next() = 0;
         EDocumentAttchmentName := StrSubstNo(EDocumentAttchmentNameTok, EmailDocName, PostedDocNo);
+    end;
+
+    local procedure CreateZipArchiveWithEDocAttachments(var DataCompression: Codeunit "Data Compression"; var TempBlobList: Codeunit "Temp Blob List"; AttachmentFileName: Text[250])
+    var
+        TempBlob: Codeunit "Temp Blob";
+        FileNo: Text[3];
+        i: Integer;
+    begin
+        DataCompression.CreateZipArchive();
+        for i := 1 to TempBlobList.Count() do begin
+            TempBlobList.Get(i, TempBlob);
+            FileNo := StrSubstNo(FileNoTok, i);
+            DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName + FileNo + XMLFileTypeTok);
+        end;
     end;
 
     var
@@ -182,4 +223,5 @@ codeunit 6105 "E Document Email"
         XMLFileTypeTok: Label '.xml', Locked = true;
         PDFFileTypeTok: Label '.pdf', Locked = true;
         ZipFileTypeTok: Label '.zip', Locked = true;
+        FileNoTok: Label '_%1', Locked = true;
 }
