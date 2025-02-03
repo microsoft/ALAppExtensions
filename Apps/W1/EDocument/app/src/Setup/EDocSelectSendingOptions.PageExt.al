@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 
-pageextension 6102 "E Doc. Select Sending Options" extends "Select Sending Options"
+pageextension 6102 "E-Doc. Select Sending Options" extends "Select Sending Options"
 {
     layout
     {
@@ -24,6 +24,14 @@ pageextension 6102 "E Doc. Select Sending Options" extends "Select Sending Optio
         {
             Visible = ElectronicDocumentFormatEmailVisible;
         }
+
+        modify("E-Mail Attachment")
+        {
+            trigger OnAfterValidate()
+            begin
+                SetEmailElectronicDocumentVisibility();
+            end;
+        }
     }
 
     var
@@ -39,11 +47,6 @@ pageextension 6102 "E Doc. Select Sending Options" extends "Select Sending Optio
     end;
 
     trigger OnAfterGetRecord()
-    begin
-        SetEmailElectronicDocumentVisibility();
-    end;
-
-    trigger OnModifyRecord(): Boolean
     begin
         SetEmailElectronicDocumentVisibility();
     end;

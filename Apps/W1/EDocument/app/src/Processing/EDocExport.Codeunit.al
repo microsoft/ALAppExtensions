@@ -486,7 +486,7 @@ codeunit 6102 "E-Doc. Export"
         exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
     end;
 
-    internal procedure CreateEDocumentForPostedDocument(SourceDocumentHeader: RecordRef)
+    internal procedure CheckAndCreateEDocument(SourceDocumentHeader: RecordRef)
     begin
         this.CheckEDocument(SourceDocumentHeader, "E-Document Processing Phase"::Create);
         this.CreateEDocument(SourceDocumentHeader);

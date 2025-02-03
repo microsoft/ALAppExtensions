@@ -19,7 +19,13 @@ tableextension 6100 "E-Document Sending Profile" extends "Document Sending Profi
         }
     }
 
-    internal procedure TrySendToEMailWithEDocument(ReportUsage: Integer; RecordVariant: Variant; DocumentNoFieldNo: Integer; DocName: Text[150]; CustomerFieldNo: Integer; ShowDialog: Boolean)
+    internal procedure TrySendToEMailWithEDocument(
+        ReportUsage: Integer;
+        RecordVariant: Variant;
+        DocumentNoFieldNo: Integer;
+        DocName: Text[150];
+        CustomerFieldNo: Integer;
+        ShowDialog: Boolean)
     var
         IsCustomer: Boolean;
     begin
@@ -33,6 +39,11 @@ tableextension 6100 "E-Document Sending Profile" extends "Document Sending Profi
         "E-Mail Attachment" := "E-Mail Attachment"::"E-Document";
 
         TrySendToEMailGroupedMultipleSelection(
-            "Report Selection Usage".FromInteger(ReportUsage), RecordVariant, DocumentNoFieldNo, DocName, CustomerFieldNo, IsCustomer);
+            "Report Selection Usage".FromInteger(ReportUsage),
+            RecordVariant,
+            DocumentNoFieldNo,
+            DocName,
+            CustomerFieldNo,
+            IsCustomer);
     end;
 }

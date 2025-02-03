@@ -331,6 +331,8 @@ codeunit 6103 "E-Document Subscription"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforeValidateElectronicFormats, '', false, false)]
     local procedure OnBeforeValidateElectronicFormats(DocumentSendingProfile: Record "Document Sending Profile"; var IsHandled: Boolean)
     begin
+        // If the document sending profile is set to use the extended e-document service flow,  
+        // then legacy electonic documents does not need to be set up for email sending.
         if DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow" then
             IsHandled := true;
     end;
@@ -352,7 +354,14 @@ codeunit 6103 "E-Document Subscription"
             [Enum::"Document Sending Profile Attachment Type"::"E-Document",
             Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document"]
         then
-            EDocumentEmail.SendEDocumentEmail(DocumentSendingProfile, ReportUsage, RecordVariant, DocNo, DocName, ToCust, ShowDialog);
+            EDocumentEmail.SendEDocumentEmail(
+                DocumentSendingProfile,
+                ReportUsage,
+                RecordVariant,
+                DocNo,
+                DocName,
+                ToCust,
+                ShowDialog);
     end;
 
     var

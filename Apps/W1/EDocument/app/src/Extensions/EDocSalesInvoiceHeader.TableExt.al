@@ -23,7 +23,7 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         SalesInvoiceRecordRef: RecordRef;
     begin
         SalesInvoiceRecordRef.GetTable(Rec);
-        EDocExport.CreateEDocumentForPostedDocument(SalesInvoiceRecordRef);
+        EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef);
     end;
 
     internal procedure CreateAndEmailEDocument()
@@ -46,7 +46,11 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         SalesInvoiceHeader.SetRecFilter();
 
         DocumentSendingProfile.TrySendToEMailWithEDocument(
-          Enum::"Report Selection Usage"::"S.Invoice".AsInteger(), SalesInvoiceHeader, Rec.FieldNo("No."), DocumentTypeTxt,
-          Rec.FieldNo("Bill-to Customer No."), ShowDialog);
+          Enum::"Report Selection Usage"::"S.Invoice".AsInteger(),
+          SalesInvoiceHeader,
+          Rec.FieldNo("No."),
+          DocumentTypeTxt,
+          Rec.FieldNo("Bill-to Customer No."),
+           ShowDialog);
     end;
 }

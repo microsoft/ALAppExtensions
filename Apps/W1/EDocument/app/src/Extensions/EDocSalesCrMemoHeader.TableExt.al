@@ -27,7 +27,7 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         SalesCrMemoRecordRef: RecordRef;
     begin
         SalesCrMemoRecordRef.GetTable(Rec);
-        EDocExport.CreateEDocumentForPostedDocument(SalesCrMemoRecordRef);
+        EDocExport.CheckAndCreateEDocument(SalesCrMemoRecordRef);
     end;
 
     internal procedure CreateAndEmailEDocument()
@@ -50,7 +50,11 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         SalesCreditMemoHeader.SetRecFilter();
 
         DocumentSendingProfile.TrySendToEMailWithEDocument(
-            Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger(), Rec, Rec.FieldNo("No."), DocumentTypeTxt,
-            Rec.FieldNo("Bill-to Customer No."), ShowDialog);
+            Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger(),
+            Rec,
+            Rec.FieldNo("No."),
+            DocumentTypeTxt,
+            Rec.FieldNo("Bill-to Customer No."),
+            ShowDialog);
     end;
 }
