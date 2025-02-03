@@ -2,9 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.eServices.EDocument;
+namespace Microsoft.Sales.History;
 
-using Microsoft.Sales.History;
+using Microsoft.eServices.EDocument;
 
 
 pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit Memo"
