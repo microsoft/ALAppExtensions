@@ -15,6 +15,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
         }
     }
 
