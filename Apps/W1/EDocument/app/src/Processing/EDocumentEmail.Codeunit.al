@@ -17,9 +17,9 @@ codeunit 6105 "E-Document Email"
     Access = Internal;
 
     internal procedure SendEDocumentEmail(
-        var DocumentSendingProfile: Record "Document Sending Profile";
-        var ReportUsage: Enum "Report Selection Usage";
-        var RecordVariant: Variant;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ReportUsage: Enum "Report Selection Usage";
+        RecordVariant: Variant;
         DocNo: Code[20];
         DocName: Text[150];
         ToCust: Code[20];
@@ -144,10 +144,11 @@ codeunit 6105 "E-Document Email"
     end;
 
     local procedure CreateSourceLists(
-        ToCust: Code[20]; var SourceReference: RecordRef;
-        var SourceTableIDs: List of [Integer];
-        var SourceIDs: List of [Guid];
-        var SourceRelationTypes: List of [Integer])
+        ToCust: Code[20];
+        var SourceReference: RecordRef;
+        SourceTableIDs: List of [Integer];
+        SourceIDs: List of [Guid];
+        SourceRelationTypes: List of [Integer])
     var
         Customer: Record Customer;
     begin
@@ -168,8 +169,7 @@ codeunit 6105 "E-Document Email"
     begin
         SalesInvoiceHeader.Get(PostedDocNo);
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
-        if EDocument.FindFirst() then
-            exit(true);
+        exit(EDocument.FindFirst());
     end;
 
     local procedure GetEDocumentForSalesCrMemo(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
@@ -178,8 +178,7 @@ codeunit 6105 "E-Document Email"
     begin
         SalesCrMemoHeader.Get(PostedDocNo);
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
-        if EDocument.FindFirst() then
-            exit(true);
+        exit(EDocument.FindFirst());
     end;
 
     local procedure GetBlobAttachmentFromEDocument(

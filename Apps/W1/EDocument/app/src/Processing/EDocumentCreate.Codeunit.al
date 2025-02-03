@@ -11,11 +11,8 @@ codeunit 6141 "E-Document Create"
     Access = Internal;
     trigger OnRun()
     begin
-        if EDocService."Use Batch Processing" then
-            if CreateSingleDocument then
-                Create()
-            else
-                CreateBatch()
+        if (EDocService."Use Batch Processing") and not CreateSingleDocument then
+            CreateBatch()
         else
             Create();
     end;
