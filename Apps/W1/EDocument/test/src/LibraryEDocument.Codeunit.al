@@ -192,8 +192,7 @@ codeunit 139629 "Library - E-Document"
         WorkflowStepArgument: Record "Workflow Step Argument";
         EDocWorkflowSetup: Codeunit "E-Document Workflow Setup";
         EventConditions: Text;
-        EDocCreatedEventID, EDocExportEventID : Integer;
-        EDocExportedEventID, SendEDocResponseEventID : Integer;
+        EDocCreatedEventID, SendEDocResponseEventID : Integer;
     begin
         // Create a simple workflow
         // Send to Service 'ServiceCode' when using Document Sending Profile 'DocSendingProfile' 
@@ -201,23 +200,13 @@ codeunit 139629 "Library - E-Document"
         EventConditions := CreateWorkflowEventConditionDocSendingProfileFilter(DocSendingProfileCode);
         EDocCreatedEventID := LibraryWorkflow.InsertEntryPointEventStep(Workflow, EDocWorkflowSetup.EDocCreated());
         LibraryWorkflow.InsertEventArgument(EDocCreatedEventID, EventConditions);
-        EDocExportEventID := LibraryWorkflow.InsertResponseStep(Workflow, EDocWorkflowSetup.EDocExport(), EDocCreatedEventID);
-
-        WorkflowStepResponse.Get(Workflow.Code, EDocExportEventID);
-        WorkflowStepArgument.Get(WorkflowStepResponse.Argument);
-
-        WorkflowStepArgument."E-Document Service" := ServiceCode;
-        WorkflowStepArgument.Modify();
-
-        EDocExportedEventID := LibraryWorkflow.InsertEventStep(Workflow, EDocWorkflowSetup.EDocExported(), EDocExportEventID);
-        LibraryWorkflow.InsertEventArgument(EDocExportedEventID, EventConditions);
-        SendEDocResponseEventID := LibraryWorkflow.InsertResponseStep(Workflow, EDocWorkflowSetup.EDocSendEDocResponseCode(), EDocExportedEventID);
+        SendEDocResponseEventID := LibraryWorkflow.InsertResponseStep(Workflow, EDocWorkflowSetup.EDocSendEDocResponseCode(), EDocCreatedEventID);
 
         WorkflowStepResponse.Get(Workflow.Code, SendEDocResponseEventID);
         WorkflowStepArgument.Get(WorkflowStepResponse.Argument);
 
         WorkflowStepArgument."E-Document Service" := ServiceCode;
-        WorkflowStepArgument.Modify(false);
+        WorkflowStepArgument.Modify();
 
         LibraryWorkflow.EnableWorkflow(Workflow);
         exit(Workflow.Code);
