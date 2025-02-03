@@ -1454,7 +1454,6 @@ codeunit 139628 "E-Doc. Receive Test"
 
     local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
     begin
-        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
         EDocService."Lookup Item Reference" := false;
