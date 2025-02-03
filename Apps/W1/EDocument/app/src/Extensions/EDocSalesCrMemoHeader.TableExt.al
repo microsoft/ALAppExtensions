@@ -40,7 +40,6 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
     internal procedure EmailEDocument(ShowDialog: Boolean)
     var
         DocumentSendingProfile: Record "Document Sending Profile";
-        DummyReportSelections: Record "Report Selections";
         SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
         ReportDistributionMgt: Codeunit "Report Distribution Management";
         DocumentTypeTxt: Text[50];
@@ -48,10 +47,10 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         DocumentTypeTxt := ReportDistributionMgt.GetFullDocumentTypeText(Rec);
 
         SalesCreditMemoHeader := Rec;
-        SalesCreditMemoHeader.SetRange("No.", Rec."No.");
+        SalesCreditMemoHeader.SetRecFilter();
 
         DocumentSendingProfile.TrySendToEMailWithEDocument(
-            DummyReportSelections.Usage::"S.Cr.Memo".AsInteger(), Rec, this.FieldNo("No."), DocumentTypeTxt,
-            this.FieldNo("Bill-to Customer No."), ShowDialog);
+            Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger(), Rec, Rec.FieldNo("No."), DocumentTypeTxt,
+            Rec.FieldNo("Bill-to Customer No."), ShowDialog);
     end;
 }

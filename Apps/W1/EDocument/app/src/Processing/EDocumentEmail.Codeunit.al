@@ -12,8 +12,10 @@ using System.Utilities;
 using System.IO;
 using System.Reflection;
 
-codeunit 6105 "E Document Email"
+codeunit 6105 "E-Document Email"
 {
+    Access = Internal;
+
     internal procedure SendEDocumentEmail(
         var DocumentSendingProfile: Record "Document Sending Profile";
         var ReportUsage: Enum "Report Selection Usage";

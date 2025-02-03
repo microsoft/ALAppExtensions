@@ -17,25 +17,6 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
             DataClassification = SystemMetadata;
         }
     }
-
-    internal procedure EmailEDocument(ShowDialog: Boolean)
-    var
-        DocumentSendingProfile: Record "Document Sending Profile";
-        DummyReportSelections: Record "Report Selections";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        ReportDistributionMgt: Codeunit "Report Distribution Management";
-        DocumentTypeTxt: Text[50];
-    begin
-        DocumentTypeTxt := ReportDistributionMgt.GetFullDocumentTypeText(Rec);
-
-        SalesInvoiceHeader := Rec;
-        SalesInvoiceHeader.SetRange("No.", Rec."No.");
-
-        DocumentSendingProfile.TrySendToEMailWithEDocument(
-          DummyReportSelections.Usage::"S.Invoice".AsInteger(), SalesInvoiceHeader, this.FieldNo("No."), DocumentTypeTxt,
-          this.FieldNo("Bill-to Customer No."), ShowDialog);
-    end;
-
     internal procedure CreateEDocument()
     var
         EDocExport: Codeunit "E-Doc. Export";
@@ -50,5 +31,22 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         Rec."Send E-Document via Email" := true;
         Rec.CreateEDocument();
         Rec.EmailEDocument(true);
+    end;
+
+    internal procedure EmailEDocument(ShowDialog: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ReportDistributionMgt: Codeunit "Report Distribution Management";
+        DocumentTypeTxt: Text[50];
+    begin
+        DocumentTypeTxt := ReportDistributionMgt.GetFullDocumentTypeText(Rec);
+
+        SalesInvoiceHeader := Rec;
+        SalesInvoiceHeader.SetRecFilter();
+
+        DocumentSendingProfile.TrySendToEMailWithEDocument(
+          Enum::"Report Selection Usage"::"S.Invoice".AsInteger(), SalesInvoiceHeader, Rec.FieldNo("No."), DocumentTypeTxt,
+          Rec.FieldNo("Bill-to Customer No."), ShowDialog);
     end;
 }

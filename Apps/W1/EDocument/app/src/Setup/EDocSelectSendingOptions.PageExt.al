@@ -33,9 +33,9 @@ pageextension 6102 "E Doc. Select Sending Options" extends "Select Sending Optio
     trigger OnOpenPage()
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
-        EDocumentFormat: Record "E-Document Service";
+        EDocumentService: Record "E-Document Service";
     begin
-        ElectronicDocumentVisible := not ElectronicDocumentFormat.IsEmpty() or not EDocumentFormat.IsEmpty();
+        ElectronicDocumentVisible := not ElectronicDocumentFormat.IsEmpty() or not EDocumentService.IsEmpty();
     end;
 
     trigger OnAfterGetRecord()

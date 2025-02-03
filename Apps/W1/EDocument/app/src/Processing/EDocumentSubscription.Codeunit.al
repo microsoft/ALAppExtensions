@@ -346,7 +346,7 @@ codeunit 6103 "E-Document Subscription"
         DocNoFieldNo: Integer;
         ShowDialog: Boolean)
     var
-        EDocumentEmail: Codeunit "E Document Email";
+        EDocumentEmail: Codeunit "E-Document Email";
     begin
         if DocumentSendingProfile."E-Mail Attachment" in
             [Enum::"Document Sending Profile Attachment Type"::"E-Document",

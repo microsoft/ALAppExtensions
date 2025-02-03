@@ -21,12 +21,6 @@ codeunit 6133 "E-Document Background Jobs"
         EDocument.Modify();
     end;
 
-    internal procedure StartEdocumentExportedFlow(EDocument: Record "E-Document")
-    begin
-        EDocument."Job Queue Entry ID" := ScheduleEDocumentJob(Codeunit::"E-Document Exported Flow", EDocument.RecordId(), 0);
-        EDocument.Modify(false);
-    end;
-
     procedure ScheduleGetResponseJob()
     begin
         ScheduleGetResponseJob(true);
