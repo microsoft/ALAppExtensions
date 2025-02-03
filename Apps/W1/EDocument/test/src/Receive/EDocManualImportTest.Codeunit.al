@@ -59,7 +59,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         TempBlob: Codeunit "Temp Blob";
         DocumentInStream: InStream;
         DocumentInStream2: InStream;
-        ErrorMessage: Text;
     begin
         // [FEATURE] [E-Document] [Import] [Manual] [Duplicate]
         // [SCENARIO] Manually create e-document from stream twice should throw error for duplicate document
@@ -161,7 +160,7 @@ codeunit 139501 "E-Doc. Manual Import Test"
         PurchaseHeader.DeleteAll(false);
         DocumentAttachment.DeleteAll(false);
 
-        EDocument.DeleteAll();
+        EDocument.DeleteAll(false);
     end;
 
     local procedure GetLastServiceStatus(EDocument: Record "E-Document"): Enum "E-Document Service Status"
