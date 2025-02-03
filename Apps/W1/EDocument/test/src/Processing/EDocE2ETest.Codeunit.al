@@ -600,6 +600,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.FindLast();
+        EDocument.Get(EDocument."Entry No");
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
@@ -652,6 +653,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.FindLast();
+        EDocument.Get(EDocument."Entry No");
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
@@ -1453,173 +1455,6 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Delete();
     end;
 
-    [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,PostAndSendStrMenuHandler,EmailEditorHandler,ConfirmHandler')]
-    procedure PostAndSendSalesOrder()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        DocSendingProfile: Record "Document Sending Profile";
-        EDocument: Record "E-Document";
-        ReportDistributionManagement: Codeunit "Report Distribution Management";
-    begin
-        // [FEATURE] [E-Document] [Processing]
-        // [SCENARIO] Post and send sales order so the email gets created with e-document attached
-        Initialize(Enum::"Service Integration"::"Mock");
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] Document sending profile with email and email attachement set to e-document
-        DocSendingProfile.Get(Customer."Document Sending Profile");
-        DocSendingProfile."E-Mail" := DocSendingProfile."E-Mail"::"Yes (Prompt for Settings)";
-        DocSendingProfile."E-Mail Attachment" := DocSendingProfile."E-Mail Attachment"::"E-Document";
-        DocSendingProfile.Modify(false);
-        // [GIVEN] Sales order
-        LibraryLowerPermission.SetTeamMember();
-        LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, SalesHeader."Document Type"::Order);
-
-        // [WHEN] Post and send
-        Codeunit.Run(Codeunit::"Sales-Post and Send", SalesHeader);
-
-        // [THEN] Email is created with attachment
-        SalesInvoiceHeader.Get(SalesHeader."Last Posting No.");
-        Assert.AreEqual(
-            AttachmentName,
-            StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
-            'Attachment name is incorrect or attachment is not existing.');
-
-        // [THEN] E-Document status is processed
-        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
-        EDocument.FindFirst();
-        Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
-
-        UnbindSubscription(EDocImplState);
-    end;
-
-    [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,PostAndSendStrMenuHandler,EmailEditorHandler')]
-    procedure PostAndSendSalesCreditMemo()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        DocSendingProfile: Record "Document Sending Profile";
-        EDocument: Record "E-Document";
-        ReportDistributionManagement: Codeunit "Report Distribution Management";
-    begin
-        // [FEATURE] [E-Document] [Processing]
-        // [SCENARIO] Post and send sales credit memo so the email gets created with e-document attached
-        Initialize(Enum::"Service Integration"::"Mock");
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] Document sending profile with email and email attachement set to e-document
-        DocSendingProfile.Get(Customer."Document Sending Profile");
-        DocSendingProfile."E-Mail" := DocSendingProfile."E-Mail"::"Yes (Prompt for Settings)";
-        DocSendingProfile."E-Mail Attachment" := DocSendingProfile."E-Mail Attachment"::"E-Document";
-        DocSendingProfile.Modify(false);
-        // [GIVEN] Sales credit memo
-        LibraryLowerPermission.SetTeamMember();
-        LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, SalesHeader."Document Type"::"Credit Memo");
-
-        // [WHEN] Post and send
-        Codeunit.Run(Codeunit::"Sales-Post and Send", SalesHeader);
-
-        // [THEN] Email is created with attachment
-        SalesCrMemoHeader.Get(SalesHeader."Last Posting No.");
-        Assert.AreEqual(
-            AttachmentName,
-            StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
-            'Attachment name is incorrect or attachment is not existing.');
-
-        // [THEN] E-Document status is processed
-        EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
-        EDocument.FindFirst();
-        Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
-
-        UnbindSubscription(EDocImplState);
-    end;
-
-    [Test]
-    [HandlerFunctions('EmailEditorHandler,EmailEditorStrMenuHandler')]
-    procedure CreateEDocumentForPostedSalesInvoice()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        EDocument: Record "E-Document";
-        CustomerWithoutDocSendingProfile: Record "Customer";
-        ReportDistributionManagement: Codeunit "Report Distribution Management";
-    begin
-        // [FEATURE] [E-Document] [Processing]
-        // [SCENARIO] Create e-document for posted sales invoice
-        Initialize(Enum::"Service Integration"::"Mock");
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] Customer without sending profile specified
-        LibraryEDoc.CreateCustomerForSalesScenario(CustomerWithoutDocSendingProfile, '');
-        // [GIVEN] Posted sales invoice
-        LibraryLowerPermission.SetTeamMember();
-        SalesInvoiceHeader := LibraryEDoc.PostInvoice(CustomerWithoutDocSendingProfile);
-
-        // [WHEN] Set up cusotmer document sending profile with e-document extended flow
-        CustomerWithoutDocSendingProfile."Document Sending Profile" := Customer."Document Sending Profile";
-        CustomerWithoutDocSendingProfile.Modify(False);
-        // [WHEN] Invoke Create and Email E-Document for posted sales invoice
-        SalesInvoiceHeader.CreateAndEmailEDocument();
-
-        // [THEN] Email is created with attachment
-        Assert.AreEqual(
-            StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
-            AttachmentName,
-            'Attachment name is incorrect or attachment is not existing.');
-
-        // [THEN] E-Document status is processed
-        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
-        EDocument.FindFirst();
-        Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
-        UnbindSubscription(EDocImplState);
-    end;
-
-    [Test]
-    [HandlerFunctions('EmailEditorHandler,EmailEditorStrMenuHandler')]
-    procedure CreateEDocumentForPostedSalesCreditMemo()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        EDocument: Record "E-Document";
-        CustomerWithoutDocSendingProfile: Record "Customer";
-        LibrarySales: Codeunit "Library - Sales";
-        ReportDistributionManagement: Codeunit "Report Distribution Management";
-    begin
-        // [FEATURE] [E-Document] [Processing]
-        // [SCENARIO] Create e-document for posted sales credit memo
-        Initialize(Enum::"Service Integration"::"Mock");
-        BindSubscription(EDocImplState);
-
-        // [GIVEN] Customer without sending profile specified
-        LibraryEDoc.CreateCustomerForSalesScenario(CustomerWithoutDocSendingProfile, '');
-        // [GIVEN] Sales credit memo
-        LibraryLowerPermission.SetTeamMember();
-        LibraryEDoc.CreateSalesHeaderWithItem(CustomerWithoutDocSendingProfile, SalesHeader, SalesHeader."Document Type"::"Credit Memo");
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
-
-        // [WHEN] Set up cusotmer document sending profile with e-document extended flow
-        CustomerWithoutDocSendingProfile."Document Sending Profile" := Customer."Document Sending Profile";
-        CustomerWithoutDocSendingProfile.Modify(False);
-        // [WHEN] Invoke Create and Email E-Document for posted sales credit memo
-        SalesCrMemoHeader.Get(SalesHeader."Last Posting No.");
-        SalesCrMemoHeader.CreateAndEmailEDocument();
-
-        // [THEN] Email is created with attachment
-        Assert.AreEqual(
-            StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
-            AttachmentName,
-            'Attachment name is incorrect or attachment is not existing.');
-
-        // [THEN] E-Document status is processed
-        EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
-        EDocument.FindFirst();
-        Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
-        UnbindSubscription(EDocImplState);
-    end;
-
     [ModalPageHandler]
     internal procedure EDocServicesPageHandler(var EDocServicesPage: TestPage "E-Document Services")
     var
@@ -1630,35 +1465,6 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentService2 := Variant;
         EDocServicesPage.GoToRecord(EDocumentService2);
         EDocServicesPage.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure PostAndSendConfirmationYesModalPageHandler(var PostandSendConfirmation: TestPage "Post and Send Confirmation")
-    begin
-        PostandSendConfirmation.Yes().Invoke();
-    end;
-
-    [StrMenuHandler]
-    procedure PostAndSendStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 3; //Ship and Invoice
-    end;
-
-    [ModalPageHandler]
-    procedure EmailEditorHandler(var EmailDialog: TestPage "Email Editor")
-    begin
-        AttachmentName := EmailDialog.Attachments.FileName.Value();
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
-    begin
-    end;
-
-    [StrMenuHandler]
-    procedure EmailEditorStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 2; //Discard
     end;
 
     local procedure Initialize(Integration: Enum "Service Integration")

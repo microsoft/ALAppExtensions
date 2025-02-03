@@ -215,7 +215,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         Sent, IsAsync : Boolean;
     begin
         Sent := false;
-        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Pending") then
+        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Exported) then
             Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then

@@ -61,9 +61,7 @@ codeunit 6102 "E-Doc. Export"
         EDocumentService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
-        WorkflowManagement: Codeunit "Workflow Management";
         EDocExport: Codeunit "E-Doc. Export";
-        EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         IsDocumentTypeSupported: Boolean;
     begin
@@ -92,7 +90,8 @@ codeunit 6102 "E-Doc. Export"
             if EDocumentService.FindSet() then
                 repeat
                     EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
-                    EDocExport.ExportEDocument(EDocument, EDocumentService);
+                    if (not EDocumentService."Use Batch Processing") or (EDocument."Send E-Document via Email") then
+                        EDocExport.ExportEDocument(EDocument, EDocumentService);
                 until EDocumentService.Next() = 0;
 
             EDocumentBackgroundJobs.StartEdocumentCreatedFlow(EDocument);
@@ -485,21 +484,6 @@ codeunit 6102 "E-Doc. Export"
         end;
 
         exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
-    end;
-
-    local procedure SourceDocumentRequiresSendingEmail(var SourceDocumentHeader: RecordRef): Boolean
-    var
-        SalesInvHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-    begin
-        case SourceDocumentHeader.Number of
-            Database::"Sales Invoice Header":
-                if SalesInvHeader.GetBySystemId(SourceDocumentHeader.Field(SalesInvHeader.FieldNo(SystemId)).Value()) then
-                    exit(SalesInvHeader."Send E-Document via Email");
-            Database::"Sales Cr.Memo Header":
-                if SalesCrMemoHeader.GetBySystemId(SourceDocumentHeader.Field(SalesCrMemoHeader.FieldNo(SystemId)).Value()) then
-                    exit(SalesCrMemoHeader."Send E-Document via Email");
-        end;
     end;
 
     internal procedure CreateEDocumentForPostedDocument(SourceDocumentHeader: RecordRef)
