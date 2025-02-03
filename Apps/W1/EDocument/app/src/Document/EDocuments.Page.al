@@ -92,7 +92,7 @@ page 6122 "E-Documents"
                 begin
                     if EDocImport.ChooseEDocumentService(EDocumentService) then begin
                         EDocImport.UploadDocuments(Files, EDocumentService);
-                        CurrPage.Update(true);
+                        CurrPage.Update(false);
                     end;
                 end;
             }
