@@ -188,7 +188,7 @@ codeunit 6105 "E-Document Email"
 
     local procedure CreateAttachmentName(PostedDocNo: Code[20]; EmailDocName: Text[250]): Text[250]
     begin
-        exit(StrSubstNo(EDocumentAttchmentNameTok, EmailDocName, PostedDocNo));
+        exit(StrSubstNo(EDocumentAttachmentNameTok, EmailDocName, PostedDocNo));
     end;
 
     local procedure AddPdfAttachmentToZipArchive(
@@ -206,7 +206,7 @@ codeunit 6105 "E-Document Email"
     end;
 
     var
-        EDocumentAttchmentNameTok: Label '%1 %2', Locked = true;
+        EDocumentAttachmentNameTok: Label '%1 %2', Locked = true;
         XMLFileTypeTok: Label '.xml', Locked = true;
         PDFFileTypeTok: Label '.pdf', Locked = true;
         ZipFileTypeTok: Label '.zip', Locked = true;

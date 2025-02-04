@@ -52,6 +52,14 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
         {
             Visible = ElectronicDocumentFormatEmailVisible;
         }
+
+        modify("E-Mail Attachment")
+        {
+            trigger OnAfterValidate()
+            begin
+                SetEmailElectronicDocumentVisibility();
+            end;
+        }
     }
     var
         ElectronicDocumentVisible: Boolean;
@@ -66,11 +74,6 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
     end;
 
     trigger OnAfterGetRecord()
-    begin
-        SetEmailElectronicDocumentVisibility();
-    end;
-
-    trigger OnModifyRecord(): Boolean
     begin
         SetEmailElectronicDocumentVisibility();
     end;

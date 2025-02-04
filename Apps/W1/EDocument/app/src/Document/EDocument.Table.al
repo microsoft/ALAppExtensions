@@ -186,6 +186,9 @@ table 6121 "E-Document"
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
         }
 
     }

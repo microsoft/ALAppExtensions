@@ -6,7 +6,6 @@ namespace Microsoft.Sales.History;
 
 using Microsoft.eServices.EDocument;
 
-
 pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit Memo"
 {
     actions
