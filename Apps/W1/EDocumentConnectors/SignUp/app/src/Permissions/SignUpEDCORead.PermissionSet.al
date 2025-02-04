@@ -3,14 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
-using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enumextension 6380 IntegrationEnumExt extends "Service Integration"
+using Microsoft.eServices.EDocument;
+
+permissionset 6381 SignUpEDCORead
 {
-    value(6380; "ExFlow E-Invoicing")
-    {
-        Caption = 'ExFlow E-Invoicing';
-        Implementation = IDocumentSender = IntegrationImpl, IDocumentReceiver = IntegrationImpl;
-    }
+    Access = Internal;
+    Assignable = false;
+    Caption = 'SignUp E-Doc. Connector - Read', MaxLength = 30;
+    IncludedPermissionSets = SignUpEDCOObjects;
+    Permissions = tabledata ConnectionSetup = R,
+                  tabledata MetadataProfile = R,
+                  tabledata "E-Document Integration Log" = rim;
+
+
 }

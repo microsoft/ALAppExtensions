@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Telemetry;
+using Microsoft.Foundation.Company;
 using System.Environment;
 
 page 6380 ConnectionSetupCard
@@ -30,7 +31,7 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the client ID token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -44,21 +45,22 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the client secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        this.SaveSecret(Rec."Client Secret", this.ClientSecret)
+                        this.SaveSecret(Rec."Client Secret", this.ClientSecret);
                     end;
                 }
                 field(ClientTenant; this.ClientTenant)
                 {
-                    Caption = 'Client Tenant ID';
-                    ToolTip = 'Specifies the client tenant id token.';
+                    Caption = 'Client Tenant';
+                    ToolTip = 'Specifies the client tenant.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
@@ -71,7 +73,7 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the root app id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
@@ -84,7 +86,7 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the root secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
@@ -97,38 +99,28 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the root tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
                         this.Authentication.StorageSet(Rec."Root Tenant", this.RootTenant);
                     end;
                 }
-                field(RootUrl; this.RootUrl)
+                field(RootUrl; Rec."Root Market URL")
                 {
-                    Caption = 'Root Url';
+                    Caption = 'Root URL';
                     ToolTip = 'Specifies the root url token.';
                     ApplicationArea = Basic, Suite;
-                    ExtendedDatatype = Masked;
-                    Visible = not this.IsSaaSInfrastructure;
+                    Visible = this.FieldsVisible;
 
-                    trigger OnValidate()
-                    begin
-                        this.Authentication.StorageSet(Rec."Root Market URL", this.RootUrl);
-                    end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
                 }
-                field(ServiceURL; Rec.ServiceURL)
+                field(ServiceURL; Rec."Service URL")
                 {
                     ApplicationArea = Basic, Suite;
-                }
-                field("Company Id"; Rec."Company Id")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ShowMandatory = true;
                 }
                 field("Environment Type"; Rec."Environment Type")
                 {
@@ -151,7 +143,6 @@ page 6380 ConnectionSetupCard
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                Visible = this.IsSaaSInfrastructure;
                 ToolTip = 'Create client credentials and open the onboarding process in a web browser.';
 
                 trigger OnAction()
@@ -170,7 +161,7 @@ page 6380 ConnectionSetupCard
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        this.IsSaaSInfrastructure := EnvironmentInformation.IsSaaSInfrastructure();
+        this.FieldsVisible := not EnvironmentInformation.IsSaaSInfrastructure();
         this.Authentication.InitConnectionSetup();
         if Rec.Get() then
             ;
@@ -192,11 +183,9 @@ page 6380 ConnectionSetupCard
             this.RootSecret := this.MaskTxt;
         if not IsNullGuid(Rec."Root Tenant") then
             this.RootTenant := this.MaskTxt;
-        if not IsNullGuid(Rec."Root Market URL") then
-            this.RootUrl := this.MaskTxt;
     end;
 
-        [NonDebuggable]
+    [NonDebuggable]
     local procedure SaveSecret(var TokenKey: Guid; Value: SecretText)
     begin
         this.Authentication.StorageSet(TokenKey, Value);
@@ -206,8 +195,8 @@ page 6380 ConnectionSetupCard
         Authentication: Codeunit Authentication;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
-        ClientID, ClientSecret, ClientTenant, ClientUrl, RootID, RootSecret, RootTenant, RootUrl : Text;
-        IsSaaSInfrastructure: Boolean;
+        ClientID, ClientSecret, ClientTenant, RootID, RootSecret, RootTenant : Text;
+        FieldsVisible: Boolean;
         ExternalServiceTok: Label 'E-Document - SignUp', Locked = true;
         MaskTxt: Label '*', Locked = true;
 }

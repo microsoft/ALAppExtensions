@@ -17,57 +17,64 @@ table 6381 ConnectionSetup
             Caption = 'PK', Locked = true;
             ToolTip = 'PK', Locked = true;
         }
-        field(4; "Authentication URL"; Text[250])
+        field(2; "Authentication URL"; Text[2048])
         {
             Caption = 'Authentication URL';
             ToolTip = 'Specifies the URL to connect Microsoft Entra.';
         }
-        field(9; "Company Id"; Text[100])
-        {
-            Caption = 'Company ID';
-            ToolTip = 'Specifies the company ID.';
-        }
-        field(10; "Client ID"; Guid)
+        field(3; "Client ID"; Guid)
         {
             Caption = 'Client ID';
             ToolTip = 'Specifies the client ID.';
         }
-        field(11; "Client Secret"; Guid)
+        field(4; "Client Secret"; Guid)
         {
             Caption = 'Client Secret';
             ToolTip = 'Specifies the client secret.';
         }
-        field(12; "Environment Type"; Enum EnvironmentType)
+        field(5; "Environment Type"; Enum EnvironmentType)
         {
             Caption = 'Environment Type';
             ToolTip = 'Specifies the environment type.';
         }
-        field(13; ServiceURL; Text[250])
+        field(6; "Service URL"; Text[2048])
         {
             Caption = 'Service URL';
             ToolTip = 'Specifies the service URL.';
+
+            trigger OnValidate()
+            begin
+                if Rec."Service URL" <> '' then
+                    Rec."Service URL" := CopyStr(Rec."Service URL".TrimEnd('/'), 1, MaxStrLen(Rec."Service URL"));
+            end;
         }
-        field(20; "Root App ID"; Guid)
+        field(7; "Root App ID"; Guid)
         {
             Caption = 'Root App ID';
             ToolTip = 'Specifies the root app ID.';
         }
-        field(21; "Root Secret"; Guid)
+        field(8; "Root Secret"; Guid)
         {
             Caption = 'Root App Secret';
             ToolTip = 'Specifies the root application secret.';
         }
-        field(22; "Root Tenant"; Guid)
+        field(9; "Root Tenant"; Guid)
         {
             Caption = 'Root App Tenant';
             ToolTip = 'Specifies the root application tenant.';
         }
-        field(23; "Root Market URL"; Guid)
+        field(10; "Root Market URL"; Text[2048])
         {
             Caption = 'Root Market URL';
             ToolTip = 'Specifies the root market URL.';
+
+            trigger OnValidate()
+            begin
+                if Rec."Root Market URL" <> '' then
+                    Rec."Root Market URL" := CopyStr(Rec."Root Market URL".TrimEnd('/'), 1, MaxStrLen("Root Market URL"));
+            end;
         }
-        field(24; "Client Tenant"; Guid)
+        field(11; "Client Tenant"; Guid)
         {
             Caption = 'Client App Tenant';
             ToolTip = 'Specifies the client application tenant.';

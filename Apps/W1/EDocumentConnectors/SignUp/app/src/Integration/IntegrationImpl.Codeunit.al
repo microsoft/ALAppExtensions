@@ -5,57 +5,64 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Utilities;
-using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.eServices.EDocument.Integration.Send;
+using Microsoft.eServices.EDocument.Integration.Receive;
 
-codeunit 6386 IntegrationImpl implements "E-Document Integration"
+
+codeunit 6386 IntegrationImpl implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
 {
     Access = Internal;
 
     var
         Processing: Codeunit Processing;
-        BatchSendNotSupportedErr: Label 'Batch sending is not supported in this version';
-        CancelNotSupportedErr: Label 'Cancel is not supported in this version';
 
-    procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    #region IDocumentSender
+    procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext);
     var
     begin
-        this.Processing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequestMessage, HttpResponseMessage);
+        this.Processing.Send(EDocument, EDocumentService, SendContext);
+    end;
+    #endregion
+
+    #region IDocumentResponseHandler
+    procedure GetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext): Boolean;
+    begin
+        exit(this.Processing.GetResponse(EDocument, EDocumentService, SendContext));
+    end;
+    #endregion
+
+    #region IDocumentReceiver
+    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadataTempBlobList: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    begin
+        this.Processing.ReceiveDocuments(EDocumentService, DocumentsMetadataTempBlobList, ReceiveContext);
     end;
 
-    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataTempBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        IsAsync := false;
-        Error(this.BatchSendNotSupportedErr);
+        this.Processing.DownloadDocument(EDocument, EDocumentService, DocumentMetadataTempBlob, ReceiveContext);
     end;
+    #endregion
 
-    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+
+    #region IReceivedDocumentMarker
+    procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentTempBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     begin
-        exit(this.Processing.GetDocumentResponse(EDocument, HttpRequestMessage, HttpResponseMessage));
+        this.Processing.MarkFetched(EDocument, EDocumentService, DocumentTempBlob, ReceiveContext);
     end;
+    #endregion
 
-    procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    begin
-        exit(this.Processing.GetDocumentApproval(EDocument, HttpRequestMessage, HttpResponseMessage));
-    end;
 
-    procedure Cancel(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
+    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    var
+        ConnectionSetupCard: Page ConnectionSetupCard;
     begin
-        Error(this.CancelNotSupportedErr);
-    end;
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::"ExFlow E-Invoicing" then
+            exit;
 
-    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
-    begin
-        this.Processing.ReceiveDocument(TempBlob, HttpRequestMessage, HttpResponseMessage);
-    end;
-
-    procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
-    begin
-        exit(this.Processing.GetDocumentCountInBatch(TempBlob));
-    end;
-
-    procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
-    begin
-        SetupPage := Page::ConnectionSetupCard;
-        SetupTable := Database::ConnectionSetup;
+        ConnectionSetupCard.RunModal();
+        IsServiceIntegrationSetupRun := true;
     end;
 }

@@ -1,0 +1,62 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocumentConnector.SignUp;
+
+table 6382 MetadataProfile
+{
+    Caption = 'MetadataProfile';
+    Access = Internal;
+    DataClassification = CustomerContent;
+    LookupPageId = 6381;
+
+    fields
+    {
+        field(1; "Profile ID"; Integer)
+        {
+            Caption = 'Profile ID';
+            Tooltip = 'The unique identifier for the metadata profile.';
+        }
+        field(2; "Profile Name"; Text[250])
+        {
+            Caption = 'Profile Name';
+            Tooltip = 'The common name of the metadata profile.';
+        }
+        field(3; "Process Identifier Scheme"; Text[250])
+        {
+            Caption = 'Process Identifier Scheme';
+            Tooltip = 'The scheme of the process identifier.';
+        }
+        field(4; "Process Identifier Value"; Text[2048])
+        {
+            Caption = 'Process Identifier Value';
+            Tooltip = 'The value of the process identifier.';
+        }
+        field(5; "Document Identifier Scheme"; Text[250])
+        {
+            Caption = 'Document Identifier Scheme';
+            Tooltip = 'The scheme of the document identifier.';
+        }
+        field(6; "Document Identifier Value"; Text[2048])
+        {
+            Caption = 'Document Identifier Value';
+            Tooltip = 'The value of the document identifier.';
+        }
+    }
+
+    keys
+    {
+        key(PK; "Profile ID")
+        {
+            Clustered = true;
+        }
+    }
+
+    fieldgroups
+    {
+        fieldgroup(DropDown; "Profile Id", "Profile Name")
+        {
+        }
+    }
+}

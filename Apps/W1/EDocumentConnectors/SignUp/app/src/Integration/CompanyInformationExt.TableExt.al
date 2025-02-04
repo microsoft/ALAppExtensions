@@ -3,14 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
-using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.Foundation.Company;
 
-enumextension 6380 IntegrationEnumExt extends "Service Integration"
+tableextension 6381 CompanyInformationExt extends "Company Information"
 {
-    value(6380; "ExFlow E-Invoicing")
+    fields
     {
-        Caption = 'ExFlow E-Invoicing';
-        Implementation = IDocumentSender = IntegrationImpl, IDocumentReceiver = IntegrationImpl;
+        field(6381; "SignUp Service Participant Id"; Text[100])
+        {
+            Caption = 'Service Participant Id';
+            ToolTip = 'ExFlow E-Invoicing Service Participant Id.';
+        }
     }
+
 }
