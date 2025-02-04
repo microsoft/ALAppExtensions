@@ -223,9 +223,6 @@ codeunit 6134 "E-Doc. Integration Management"
                 exit(false);
         end;
 
-        if HasDuplicate(EDocument, EDocumentContent, EDocumentService."Document Format") then
-            exit(false);
-
         // Only after sucecssfully downloading and (optionally) marking as fetched, the document is considered imported
         // Insert logs for downloading document
         InsertLogAndEDocumentStatus(EDocument, EDocumentService, ReceiveContext.GetTempBlob(), ReceiveContext.Status().GetStatus());
@@ -238,25 +235,6 @@ codeunit 6134 "E-Doc. Integration Management"
         exit(true);
     end;
 
-
-    internal procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
-    var
-        EDocument: Record "E-Document";
-        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
-    begin
-        // Commit before getting basic info with error handling (if Codeunit.Run then)
-        Commit();
-        EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
-        if not EDocGetBasicInfo.Run() then
-            exit(false);
-        EDocGetBasicInfo.GetValues(IEDocument, IncomingEDocument, EDocumentContent);
-
-        EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
-        EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
-        EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
-        EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
-        exit(not EDocument.IsEmpty());
-    end;
     #endregion
 
     #region Actions

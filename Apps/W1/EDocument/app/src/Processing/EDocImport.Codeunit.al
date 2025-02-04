@@ -672,7 +672,7 @@ codeunit 6140 "E-Doc. Import"
             Clear(TempBlob);
             Document.CreateInStream(DocumentInstream);
             CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
-            if HasDuplciate(EDocument, TempBlob, EDocumentService."Document Format") then
+            if HasDuplicate(EDocument, TempBlob, EDocumentService."Document Format") then
                 NotProcessedDocuments += 1
             else
                 CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
@@ -689,7 +689,7 @@ codeunit 6140 "E-Doc. Import"
         TempBlob: Codeunit "Temp Blob";
     begin
         CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
-        if HasDuplciate(EDocument, TempBlob, EDocumentService."Document Format") then
+        if HasDuplicate(EDocument, TempBlob, EDocumentService."Document Format") then
             Error(
                 EDocumentAlreadyExistErr,
                 EDocument.FieldCaption("Incoming E-Document No."),
@@ -706,11 +706,23 @@ codeunit 6140 "E-Doc. Import"
                 Page.Run(Page::"E-Document", EDocument);
     end;
 
-    local procedure HasDuplciate(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
+    local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
     var
-        IntegrationManagement: Codeunit "E-Doc. Integration Management";
+        EDocument: Record "E-Document";
+        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
     begin
-        exit(IntegrationManagement.HasDuplicate(EDocument, TempBlob, IEDocument));
+        // Commit before getting basic info with error handling (if Codeunit.Run then)
+        Commit();
+        EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
+        if not EDocGetBasicInfo.Run() then
+            exit(false);
+        EDocGetBasicInfo.GetValues(IEDocument, IncomingEDocument, EDocumentContent);
+
+        EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
+        EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
+        exit(not EDocument.IsEmpty());
     end;
 
     internal procedure CreateEDocumentFromStream(
