@@ -11,6 +11,9 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
 {
     fields
     {
+        /// <summary>
+        /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
+        /// </summary>
         field(6100; "Send E-Document via Email"; Boolean)
         {
             Caption = 'Send E-Document via Email';
@@ -20,6 +23,10 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
             Access = Internal;
         }
     }
+
+    /// <summary>
+    /// Creates an E-document for the posted sales invoice.
+    /// </summary>
     internal procedure CreateEDocument()
     var
         EDocExport: Codeunit "E-Doc. Export";
@@ -29,6 +36,9 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef);
     end;
 
+    /// <summary>
+    /// Creates and emails an E-document for the posted sales invoice.
+    /// </summary>
     internal procedure CreateAndEmailEDocument()
     begin
         Rec."Send E-Document via Email" := true;
@@ -36,6 +46,9 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         Rec.EmailEDocument(true);
     end;
 
+    /// <summary>
+    /// Emails an E-document for the posted sales invoice with existing E-document.
+    /// </summary>
     internal procedure EmailEDocument(ShowDialog: Boolean)
     var
         DocumentSendingProfile: Record "Document Sending Profile";

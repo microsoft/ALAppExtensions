@@ -11,6 +11,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
 {
     fields
     {
+        /// <summary>
+        /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
+        /// </summary>
         field(6100; "Send E-Document via Email"; Boolean)
         {
             Caption = 'Send E-Document via Email';
@@ -21,6 +24,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         }
     }
 
+    /// <summary>
+    /// Creates an E-document for the posted sales credit memo.
+    /// </summary>
     internal procedure CreateEDocument()
     var
         EDocExport: Codeunit "E-Doc. Export";
@@ -30,6 +36,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         EDocExport.CheckAndCreateEDocument(SalesCrMemoRecordRef);
     end;
 
+    /// <summary>
+    /// Creates and emails an E-document for the posted sales credit memo.
+    /// </summary>
     internal procedure CreateAndEmailEDocument()
     begin
         Rec."Send E-Document via Email" := true;
@@ -37,6 +46,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
         Rec.EmailEDocument(true);
     end;
 
+    /// <summary>
+    /// Emails an E-document for the posted sales credit memo with existing E-document.
+    /// </summary>
     internal procedure EmailEDocument(ShowDialog: Boolean)
     var
         DocumentSendingProfile: Record "Document Sending Profile";

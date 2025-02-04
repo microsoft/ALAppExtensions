@@ -39,9 +39,7 @@ codeunit 6105 "E-Document Email"
         EDocument: Record "E-Document";
         DocumentMailing: Codeunit "Document-Mailing";
         TypeHelper: Codeunit "Type Helper";
-        DataCompression: Codeunit "Data Compression";
         TempBlob: Codeunit "Temp Blob";
-        TempBlobList: Codeunit "Temp Blob List";
         SourceReference: RecordRef;
         SourceTableIDs: List of [Integer];
         SourceIDs: List of [Guid];
@@ -56,31 +54,19 @@ codeunit 6105 "E-Document Email"
         if not FindEDocument(DocNo, SourceReference, EDocument) then
             exit;
 
-        GetAttachment(EDocument, TempBlobList);
-        AttachmentFileName := CreateAttachmentName(DocNo, DocName);
         CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
         ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
 
-        if (TempBlobList.Count() = 1) and
-            (DocumentSendingProfile."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document")
-        then begin
-            TempBlobList.Get(1, TempBlob);
-            AttachmentFileExtension := XMLFileTypeTok;
-        end else begin
-            CreateZipArchiveWithEDocAttachments(DataCompression, TempBlobList, AttachmentFileName);
-
-            if DocumentSendingProfile."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document" then
-                AddPdfAttachmentToZipArchive(
-                    DataCompression,
-                    ReportUsage,
-                    RecordVariant,
-                    ToCust,
-                    AttachmentFileName);
-
-            DataCompression.SaveZipArchive(TempBlob);
-            DataCompression.CloseZipArchive();
-            AttachmentFileExtension := ZipFileTypeTok;
-        end;
+        TempBlob := GetAttachmentsBlob(
+            DocumentSendingProfile,
+            ReportUsage,
+            RecordVariant,
+            DocNo,
+            DocName,
+            ToCust,
+            EDocument,
+            AttachmentFileName,
+            AttachmentFileExtension);
 
         DocumentMailing.EmailFile(
             TempBlob.CreateInStream(),
@@ -203,6 +189,46 @@ codeunit 6105 "E-Document Email"
     begin
         ReportSelections.GetPdfReportForCust(TempBlob, ReportUsage, RecordVariant, ToCust);
         DataCompression.AddEntry(TempBlob.CreateInStream(), AttachmentFileName + PDFFileTypeTok);
+    end;
+
+    local procedure GetAttachmentsBlob(
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ReportUsage: Enum "Report Selection Usage";
+        RecordVariant: Variant;
+        DocNo: Code[20];
+        DocName: Text[150];
+        ToCust: Code[20];
+        EDocument: Record "E-Document";
+        var AttachmentFileName: Text[250];
+        var AttachmentFileExtension: Text[4]): Codeunit "Temp Blob"
+    var
+        DataCompression: Codeunit "Data Compression";
+        TempBlobList: Codeunit "Temp Blob List";
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        GetAttachment(EDocument, TempBlobList);
+        AttachmentFileName := CreateAttachmentName(DocNo, DocName);
+        if (TempBlobList.Count() = 1) and
+            (DocumentSendingProfile."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document")
+        then begin
+            TempBlobList.Get(1, TempBlob);
+            AttachmentFileExtension := XMLFileTypeTok;
+        end else begin
+            CreateZipArchiveWithEDocAttachments(DataCompression, TempBlobList, AttachmentFileName);
+
+            if DocumentSendingProfile."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document" then
+                AddPdfAttachmentToZipArchive(
+                    DataCompression,
+                    ReportUsage,
+                    RecordVariant,
+                    ToCust,
+                    AttachmentFileName);
+
+            DataCompression.SaveZipArchive(TempBlob);
+            DataCompression.CloseZipArchive();
+            AttachmentFileExtension := ZipFileTypeTok;
+        end;
+        exit(TempBlob);
     end;
 
     var

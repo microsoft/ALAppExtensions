@@ -44,7 +44,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         Assert.AreEqual(
             AttachmentName,
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
-            'Attachment name is incorrect or attachment is not existing.');
+            'Attachment name is incorrect or attachment does not exist.');
 
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
@@ -80,7 +80,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         Assert.AreEqual(
             AttachmentName,
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
-            'Attachment name is incorrect or attachment is not existing.');
+            'Attachment name is incorrect or attachment does not exist.');
 
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
@@ -120,7 +120,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         Assert.AreEqual(
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
             AttachmentName,
-            'Attachment name is incorrect or attachment is not existing.');
+            'Attachment name is incorrect or attachment does not exist.');
 
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
@@ -163,7 +163,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         Assert.AreEqual(
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
             AttachmentName,
-            'Attachment name is incorrect or attachment is not existing.');
+            'Attachment name is incorrect or attachment does not exist.');
 
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
@@ -172,34 +172,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         UnbindSubscription(EDocImplState);
     end;
 
-    [ModalPageHandler]
-    procedure PostAndSendConfirmationYesModalPageHandler(var PostandSendConfirmation: TestPage "Post and Send Confirmation")
-    begin
-        PostandSendConfirmation.Yes().Invoke();
-    end;
-
-    [StrMenuHandler]
-    procedure PostAndSendStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 3; //Ship and Invoice
-    end;
-
-    [ModalPageHandler]
-    procedure EmailEditorHandler(var EmailDialog: TestPage "Email Editor")
-    begin
-        AttachmentName := EmailDialog.Attachments.FileName.Value();
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
-    begin
-    end;
-
-    [StrMenuHandler]
-    procedure EmailEditorStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 2; //Discard
-    end;
 
     local procedure Initialize(Integration: Enum "Service Integration")
     var
@@ -233,4 +205,32 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         IsInitialized := true;
     end;
 
+    [ModalPageHandler]
+    procedure PostAndSendConfirmationYesModalPageHandler(var PostandSendConfirmation: TestPage "Post and Send Confirmation")
+    begin
+        PostandSendConfirmation.Yes().Invoke();
+    end;
+
+    [StrMenuHandler]
+    procedure PostAndSendStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 3; //Ship and Invoice
+    end;
+
+    [ModalPageHandler]
+    procedure EmailEditorHandler(var EmailDialog: TestPage "Email Editor")
+    begin
+        AttachmentName := EmailDialog.Attachments.FileName.Value();
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
+    begin
+    end;
+
+    [StrMenuHandler]
+    procedure EmailEditorStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := 2; //Discard
+    end;
 }

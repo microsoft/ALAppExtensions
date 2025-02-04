@@ -10,6 +10,9 @@ tableextension 6101 "E-Doc. Sales Header" extends "Sales Header"
 {
     fields
     {
+        /// <summary>
+        /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
+        /// </summary>
         field(6100; "Send E-Document via Email"; Boolean)
         {
             Caption = 'Send E-Document via Email';
