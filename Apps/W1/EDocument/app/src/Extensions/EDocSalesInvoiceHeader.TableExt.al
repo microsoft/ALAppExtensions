@@ -15,6 +15,9 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
         }
     }
     internal procedure CreateEDocument()

@@ -45,6 +45,10 @@ codeunit 6141 "E-Document Create"
         EDocument2.Copy(EDocument);
     end;
 
+    /// <summary>
+    /// Forces the codeunit to create a single document even if service is set to batch processing.
+    /// </summary>
+    /// <param name="NewCreateSingleDocument">Indicates if single document has to be created.</param>
     internal procedure SetCreateSingleDocument(NewCreateSingleDocument: Boolean)
     begin
         CreateSingleDocument := NewCreateSingleDocument;

@@ -14,6 +14,9 @@ tableextension 6101 "E-Doc. Sales Header" extends "Sales Header"
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
         }
     }
 }
