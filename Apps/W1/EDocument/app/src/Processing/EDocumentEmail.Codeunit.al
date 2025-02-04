@@ -162,7 +162,6 @@ codeunit 6105 "E-Document Email"
         TempBlob: Codeunit "Temp Blob";
         EDocumentWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
     begin
-        DocumentSendingProfile.Get(EDocument."Document Sending Profile");
         EDocumentWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, DocumentSendingProfile."Electronic Service Flow");
         if EDocumentService.FindSet() then
             repeat
