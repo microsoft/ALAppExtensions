@@ -198,6 +198,7 @@ codeunit 6134 "E-Doc. Integration Management"
     local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; IDocumentReceiver: Interface IDocumentReceiver): Boolean
     var
         ReceiveContext, FetchContextImpl : Codeunit ReceiveContext;
+        EDocumentContent: Codeunit "Temp Blob";
         ErrorCount: Integer;
         Success, IsFetchableType : Boolean;
     begin
@@ -209,7 +210,8 @@ codeunit 6134 "E-Doc. Integration Management"
         if not Success then
             exit(false);
 
-        if not ReceiveContext.GetTempBlob().HasValue() then
+        EDocumentContent := ReceiveContext.GetTempBlob();
+        if not EDocumentContent.HasValue() then
             exit(false);
 
         IsFetchableType := IDocumentReceiver is IReceivedDocumentMarker;
@@ -217,7 +219,6 @@ codeunit 6134 "E-Doc. Integration Management"
             ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
             RunMarkFetched(EDocument, EDocumentService, ReceiveContext.GetTempBlob(), IDocumentReceiver, FetchContextImpl);
             Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-
             if not Success then
                 exit(false);
         end;
@@ -233,7 +234,6 @@ codeunit 6134 "E-Doc. Integration Management"
 
         exit(true);
     end;
-
 
     #endregion
 
@@ -568,7 +568,6 @@ codeunit 6134 "E-Doc. Integration Management"
 
         exit(true);
     end;
-
 
     #endregion
 

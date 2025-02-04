@@ -17,36 +17,30 @@ codeunit 6140 "E-Doc. Import" implements IImportProcess
         tabledata "E-Document" = im,
         tabledata "E-Doc. Imported Line" = imd;
 
-    internal procedure UploadDocument(var EDocument: Record "E-Document")
+    internal procedure UploadDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
-        EDocumentService: Record "E-Document Service";
-        TempBlob: Codeunit "Temp Blob";
-        OutStr: OutStream;
         InStr: InStream;
         FileName: Text;
     begin
-        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
-            exit;
-
         if not UploadIntoStream('', '', '', FileName, InStr) then
             exit;
 
-        TempBlob.CreateOutStream(OutStr);
-        CopyStream(OutStr, InStr);
+        this.HandleSingleDocumentUpload(InStr, EDocument, EDocumentService);
+    end;
 
-        EDocument.Direction := EDocument.Direction::Incoming;
-        EDocument."Document Type" := Enum::"E-Document Type"::None;
+    internal procedure UploadDocuments(Documents: List of [FileUpload]; EDocumentService: Record "E-Document Service")
+    var
+        EDocument: Record "E-Document";
+        DocumentInStream: InStream;
+    begin
+        if Documents.Count() = 0 then
+            exit;
 
-        if EDocument."Entry No" = 0 then begin
-            EDocument.Insert(true);
-            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
-        end else begin
-            EDocument.Modify(true);
-            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
-        end;
-
-        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
+        if Documents.Count() = 1 then begin
+            Documents.Get(1).CreateInStream(DocumentInStream);
+            this.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocumentService)
+        end else
+            this.HandleMultipleDocumentUpload(Documents, EDocument, EDocumentService);
     end;
 
     internal procedure GetBasicInfo(var EDocument: Record "E-Document")
@@ -633,6 +627,32 @@ codeunit 6140 "E-Doc. Import" implements IImportProcess
             until TempEDocImportedLine.Next() = 0;
     end;
 
+    internal procedure ChooseEDocumentService(var EDocumentService: Record "E-Document Service"): Boolean
+    begin
+        exit(Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK);
+    end;
+
+    local procedure ImportEDocumentFromStream(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var InStr: InStream)
+    var
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        CopyStream(TempBlob.CreateOutStream(), InStr);
+
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument."Document Type" := Enum::"E-Document Type"::None;
+
+        if EDocument."Entry No" = 0 then begin
+            EDocument.Insert(true);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
+        end else begin
+            EDocument.Modify(true);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
+        end;
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
+    end;
+
     internal procedure SetHideDialogs(Hide: Boolean)
     begin
         HideDialogs := Hide;
@@ -650,6 +670,84 @@ codeunit 6140 "E-Doc. Import" implements IImportProcess
     end;
 #endif
 
+    local procedure HandleMultipleDocumentUpload(var Documents: List of [FileUpload]; var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        TempBlob: Codeunit "Temp Blob";
+        Document: FileUpload;
+        DocumentInstream: InStream;
+        NotProcessedDocuments: Integer;
+    begin
+        this.SetHideDialogs(true);
+
+        foreach Document in Documents do begin
+            Clear(EDocument);
+            Clear(DocumentInstream);
+            Clear(TempBlob);
+            Document.CreateInStream(DocumentInstream);
+            CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
+            if HasDuplicate(EDocument, TempBlob, EDocumentService."Document Format") then
+                NotProcessedDocuments += 1
+            else
+                CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
+        end;
+
+        if NotProcessedDocuments > 0 then
+            Message(StrSubstNo(DuplicatesMsg, NotProcessedDocuments, Documents.Count()))
+        else
+            Message(DocsImportedMsg);
+    end;
+
+    internal procedure HandleSingleDocumentUpload(DocumentInstream: InStream; var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        CopyStream(TempBlob.CreateOutStream(), DocumentInstream);
+        if HasDuplicate(EDocument, TempBlob, EDocumentService."Document Format") then
+            Error(
+                EDocumentAlreadyExistErr,
+                EDocument.FieldCaption("Incoming E-Document No."),
+                EDocument."Incoming E-Document No.",
+                EDocument.FieldCaption("Bill-to/Pay-to No."),
+                EDocument."Bill-to/Pay-to No.",
+                EDocument.FieldCaption("Document Date"),
+                EDocument."Document Date")
+        else
+            CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
+
+        if not this.HideDialogs and EDocErrorHelper.HasErrors(EDocument) then
+            if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
+                Page.Run(Page::"E-Document", EDocument);
+    end;
+
+    local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
+    var
+        EDocument: Record "E-Document";
+        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
+    begin
+        // Commit before getting basic info with error handling (if Codeunit.Run then)
+        Commit();
+        EDocGetBasicInfo.SetValues(IEDocument, IncomingEDocument, EDocumentContent);
+        if not EDocGetBasicInfo.Run() then
+            exit(false);
+        EDocGetBasicInfo.GetValues(IEDocument, IncomingEDocument, EDocumentContent);
+
+        EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
+        EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
+        exit(not EDocument.IsEmpty());
+    end;
+
+    internal procedure CreateEDocumentFromStream(
+        var EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        var DocumentInstream: InStream)
+    begin
+        DocumentInstream.ResetPosition();
+        this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
+        this.ProcessDocument(EDocument, false);
+    end;
+
     var
         EDocumentLog: Codeunit "E-Document Log";
         EDocImportHelper: Codeunit "E-Document Import Helper";
@@ -664,6 +762,10 @@ codeunit 6140 "E-Doc. Import" implements IImportProcess
         DocTypeIsNotSupportedErr: Label 'Document type %1 is not supported.', Comment = '%1 - Document Type';
         FailedToFindVendorErr: Label 'No vendor is set for Edocument';
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
+        DocNotCreatedQst: Label 'Failed to create new %1 from E-Document. Do you want to open E-Document and see the reported errors?', Comment = '%1 - E-Document Document Type';
+        EDocumentAlreadyExistErr: Label 'E-Document with %1 %2, %3 %4 and %5 %6 already exists.', Comment = '%1 - Incoming E-Document No. field caption, %2 - Incoming E-Document No. value, %3 - Bill-to/Pay-to No. field caption, %4 - Bill-to/Pay-to No. value, %5 - Document Date field caption, %6 - Document Date value.';
+        DuplicatesMsg: Label '%1 of %2 uploaded documents were not imported because they already exist in the system.', Comment = '%1 - Not processed documents, %2 - Total documents';
+        DocsImportedMsg: Label 'Document(s) imported successfully.';
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterProcessImportedDocument(var EDocument: Record "E-Document"; var DocumentHeader: RecordRef)
