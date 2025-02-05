@@ -2,13 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.EServices.EDocumentConnector;
+namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-permissionset 6361 "EDocConnector - Edit"
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+using Microsoft.eServices.EDocument.Integration.Action;
+
+enumextension 6391 "Sent Document Actions" extends "Sent Document Actions"
 {
-    Access = Public;
-    Assignable = true;
-    IncludedPermissionSets = "EDocConnector - Read";
-
-    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM;
+    value(6390; Continia)
+    {
+        Implementation = ISentDocumentActions = "Integration Impl.";
+    }
 }

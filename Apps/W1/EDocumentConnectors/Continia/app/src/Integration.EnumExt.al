@@ -2,14 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.EServices.EDocumentConnector;
+namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enumextension 6363 "E-Doc. Ext. Integration" extends "E-Document Integration"
+enumextension 6390 Integration extends "Service Integration"
 {
-    value(6361; "Pagero")
+    value(6390; Continia)
     {
-        Implementation = "E-Document Integration" = "Pagero Integration Impl.";
+        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.";
     }
 }
