@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
+
 permissionset 6363 "EDoc. Connector Objects"
 {
     Access = Public;
