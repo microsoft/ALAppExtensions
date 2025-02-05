@@ -39,12 +39,12 @@ codeunit 6105 "E-Document Email"
         EDocument: Record "E-Document";
         DocumentMailing: Codeunit "Document-Mailing";
         TypeHelper: Codeunit "Type Helper";
-        TempBlob: Codeunit "Temp Blob";
+        AttachmentsTempBlob: Codeunit "Temp Blob";
+        EmailBodyTempBlob: Codeunit "Temp Blob";
         SourceReference: RecordRef;
         SourceTableIDs: List of [Integer];
         SourceIDs: List of [Guid];
         SourceRelationTypes: List of [Integer];
-        ServerEmailBodyFilePath: Text[250];
         SendToEmailAddress: Text[250];
         AttachmentFileName: Text[250];
         AttachmentFileExtension: Text[4];
@@ -55,9 +55,9 @@ codeunit 6105 "E-Document Email"
             exit;
 
         CreateSourceLists(ToCust, SourceReference, SourceTableIDs, SourceIDs, SourceRelationTypes);
-        ReportSelections.GetEmailBodyForCust(ServerEmailBodyFilePath, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
+        ReportSelections.GetEmailBodyForCust(EmailBodyTempBlob, ReportUsage, RecordVariant, ToCust, SendToEmailAddress);
 
-        TempBlob := GetAttachmentsBlob(
+        AttachmentsTempBlob := GetAttachmentsBlob(
             DocumentSendingProfile,
             ReportUsage,
             RecordVariant,
@@ -69,9 +69,9 @@ codeunit 6105 "E-Document Email"
             AttachmentFileExtension);
 
         DocumentMailing.EmailFile(
-            TempBlob.CreateInStream(),
+            AttachmentsTempBlob.CreateInStream(),
             AttachmentFileName + AttachmentFileExtension,
-            ServerEmailBodyFilePath,
+            EmailBodyTempBlob.CreateInStream(),
             DocNo,
             SendToEmailAddress,
             DocName,
@@ -154,10 +154,12 @@ codeunit 6105 "E-Document Email"
             end;
     end;
 
-    local procedure GetAttachment(EDocument: Record "E-Document"; TempBlobList: Codeunit "Temp Blob List")
+    local procedure GetAttachment(
+        EDocument: Record "E-Document";
+        TempBlobList: Codeunit "Temp Blob List";
+        DocumentSendingProfile: Record "Document Sending Profile")
     var
         EDocumentService: Record "E-Document Service";
-        DocumentSendingProfile: Record "Document Sending Profile";
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocumentWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
@@ -205,7 +207,7 @@ codeunit 6105 "E-Document Email"
         TempBlobList: Codeunit "Temp Blob List";
         TempBlob: Codeunit "Temp Blob";
     begin
-        GetAttachment(EDocument, TempBlobList);
+        GetAttachment(EDocument, TempBlobList, DocumentSendingProfile);
         AttachmentFileName := CreateAttachmentName(DocNo, DocName);
         if (TempBlobList.Count() = 1) and
             (DocumentSendingProfile."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document")
