@@ -6,8 +6,9 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 table 6393 "Network Identifier"
 {
-    DataClassification = SystemMetadata;
+    Access = Internal;
     Caption = 'Network Identifier';
+    DataClassification = SystemMetadata;
     DrillDownPageId = "Network Id. List";
 
     fields

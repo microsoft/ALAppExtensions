@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 codeunit 6396 "Session Manager"
 {
+    Access = Internal;
     SingleInstance = true;
 
     var

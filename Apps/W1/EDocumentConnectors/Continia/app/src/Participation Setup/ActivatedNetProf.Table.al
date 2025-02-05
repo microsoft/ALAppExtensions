@@ -8,6 +8,7 @@ using Microsoft.eServices.EDocument;
 
 table 6392 "Activated Net. Prof."
 {
+    Access = Internal;
     Caption = 'Activated Network Profile';
     DataClassification = CustomerContent;
 
@@ -59,10 +60,10 @@ table 6392 "Activated Net. Prof."
         }
         field(10; "Network Profile Description"; Text[250])
         {
-            Caption = 'Profile Description';
-            FieldClass = FlowField;
             CalcFormula = lookup("Network Profile".Description where(Id = field("Network Profile Id")));
+            Caption = 'Profile Description';
             Editable = false;
+            FieldClass = FlowField;
             ToolTip = 'Specifies the description of the profile.';
         }
         field(11; "E-Document Service Code"; Code[20])

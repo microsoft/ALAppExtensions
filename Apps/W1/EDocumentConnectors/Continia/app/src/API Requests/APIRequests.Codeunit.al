@@ -18,12 +18,11 @@ codeunit 6393 "Api Requests"
 
     Permissions = tabledata "Network Profile" = rimd,
                   tabledata "Network Identifier" = rimd,
-                  tabledata "Participation" = rimd,
+                  tabledata Participation = rimd,
                   tabledata "Activated Net. Prof." = rimd,
                   tabledata "E-Document" = m;
 
     #region Get Network Profiles from Continia Delivery Network Api
-
     internal procedure GetNetworkProfiles(Network: Enum "E-Delivery Network")
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
@@ -104,11 +103,9 @@ codeunit 6393 "Api Requests"
             end;
         end;
     end;
-
     #endregion
 
     #region Get Network Id Types from Continia Delivery Network Api
-
     internal procedure GetNetworkIdTypes(Network: Enum "E-Delivery Network")
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
@@ -202,11 +199,10 @@ codeunit 6393 "Api Requests"
             end;
         end;
     end;
-
     #endregion
 
     #region Participation endpoints in Continia Delivery Network
-    internal procedure GetParticipation(var Participation: Record "Participation")
+    internal procedure GetParticipation(var Participation: Record Participation)
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponse: HttpResponseMessage;
@@ -215,9 +211,9 @@ codeunit 6393 "Api Requests"
             HandleParticipationResponse(HttpResponse, Participation);
     end;
 
-    internal procedure PostParticipation(var TempParticipation: Record "Participation" temporary) ParticipationGuid: Guid;
+    internal procedure PostParticipation(var TempParticipation: Record Participation temporary) ParticipationGuid: Guid;
     var
-        Participation: Record "Participation";
+        Participation: Record Participation;
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
@@ -232,9 +228,9 @@ codeunit 6393 "Api Requests"
         end;
     end;
 
-    internal procedure PatchParticipation(var TempParticipation: Record "Participation" temporary)
+    internal procedure PatchParticipation(var TempParticipation: Record Participation temporary)
     var
-        Participation: Record "Participation";
+        Participation: Record Participation;
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
@@ -247,7 +243,7 @@ codeunit 6393 "Api Requests"
         end;
     end;
 
-    internal procedure DeleteParticipation(var Participation: Record "Participation")
+    internal procedure DeleteParticipation(var Participation: Record Participation)
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponse: HttpResponseMessage;
@@ -264,7 +260,7 @@ codeunit 6393 "Api Requests"
             end;
     end;
 
-    local procedure GetParticipationRequest(Participation: Record "Participation"; IncludeTimestamp: Boolean) RequestBody: Text
+    local procedure GetParticipationRequest(Participation: Record Participation; IncludeTimestamp: Boolean) RequestBody: Text
     var
         CredentialManagement: Codeunit "Credential Management";
         AddressNode: XmlElement;
@@ -367,7 +363,7 @@ codeunit 6393 "Api Requests"
         RootNode.WriteTo(RequestBody);
     end;
 
-    local procedure HandleParticipationResponse(var HttpResponse: HttpResponseMessage; var Participation: Record "Participation")
+    local procedure HandleParticipationResponse(var HttpResponse: HttpResponseMessage; var Participation: Record Participation)
     var
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
@@ -452,7 +448,6 @@ codeunit 6393 "Api Requests"
     #endregion
 
     #region Participation Profiles endpoints in Continia Delivery Network
-
     internal procedure PostParticipationProfile(var TempActivatedNetworkProfile: Record "Activated Net. Prof." temporary; ParticipationGuid: Guid) ActivatedNetworkProfileGuid: Guid
     var
         ActivatedNetProf: Record "Activated Net. Prof.";
@@ -496,7 +491,7 @@ codeunit 6393 "Api Requests"
         end;
     end;
 
-    internal procedure GetAllParticipationProfiles(Participation: Record "Participation")
+    internal procedure GetAllParticipationProfiles(Participation: Record Participation)
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         IsLastPage: Boolean;
@@ -516,7 +511,7 @@ codeunit 6393 "Api Requests"
         until IsLastPage;
     end;
 
-    local procedure ReadParticipationProfilesResponse(var HttpResponse: HttpResponseMessage; Participation: Record "Participation"; PageSize: Integer) IsLastPage: Boolean
+    local procedure ReadParticipationProfilesResponse(var HttpResponse: HttpResponseMessage; Participation: Record Participation; PageSize: Integer) IsLastPage: Boolean
     var
         i: Integer;
         NodeCount: Integer;
@@ -563,7 +558,7 @@ codeunit 6393 "Api Requests"
         ParticipationProfileNode.WriteTo(RequestBody);
     end;
 
-    local procedure CreateOrUpdateParticipProfiles(Participation: Record "Participation"; ProfilesNode: XmlNode)
+    local procedure CreateOrUpdateParticipProfiles(Participation: Record Participation; ProfilesNode: XmlNode)
     var
         ActivatedNetworkProfile: Record "Activated Net. Prof.";
         ProfileGuid: Guid;
@@ -639,12 +634,10 @@ codeunit 6393 "Api Requests"
 
         ActivatedNetworkProfile.Modify();
     end;
-
     #endregion
 
     #region Participation Profiles Lookup endpoints in Continia Delivery Network
-
-    internal procedure CheckProfilesNotRegistered(var TempParticipation: Record "Participation" temporary)
+    internal procedure CheckProfilesNotRegistered(var TempParticipation: Record Participation temporary)
     var
         NetworkIdentifier: Record "Network Identifier";
         ApiUrlMgt: Codeunit "Api Url Mgt.";
@@ -656,7 +649,7 @@ codeunit 6393 "Api Requests"
             HandleProfilesLookupResponse(HttpResponse, TempParticipation);
     end;
 
-    local procedure HandleProfilesLookupResponse(var HttpResponse: HttpResponseMessage; var TempParticipation: Record "Participation" temporary)
+    local procedure HandleProfilesLookupResponse(var HttpResponse: HttpResponseMessage; var TempParticipation: Record Participation temporary)
     var
         ErrorInfo: ErrorInfo;
         ProfileGuid: Guid;
@@ -714,11 +707,9 @@ codeunit 6393 "Api Requests"
             Error(ErrorInfo);
         end
     end;
-
     #endregion
 
     #region Get Documents for current company
-
     internal procedure GetDocumentsForCompany(ReceiveContext: Codeunit ReceiveContext): Boolean
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
@@ -737,11 +728,9 @@ codeunit 6393 "Api Requests"
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
         exit(Success);
     end;
-
     #endregion
 
     #region Send Documents
-
     internal procedure SendDocument(EDocument: Record "E-Document"; SendContext: Codeunit SendContext): Boolean
     var
         ConnectionSetup: Record "Connection Setup";
@@ -868,7 +857,6 @@ codeunit 6393 "Api Requests"
             exit(false);
         end;
     end;
-
     #endregion;
 
     #region Get Document Business Responses
@@ -884,11 +872,9 @@ codeunit 6393 "Api Requests"
         ActionContext.Http().SetHttpResponseMessage(HttpResponse);
         exit(Success);
     end;
-
     #endregion
 
     #region Perform actions on document
-
     // Cancel document
     internal procedure CancelDocument(DocumentGuid: Guid; ActionContext: Codeunit ActionContext): Boolean
     var
@@ -1002,7 +988,6 @@ codeunit 6393 "Api Requests"
         exit(ExecuteRequest(Method, Url, HttpContentData, HttpRequest, HttpResponse));
     end;
 
-
     local procedure ExecuteRequest(Method: Text; Url: Text; HttpContentData: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
         SessionManager: Codeunit "Session Manager";
@@ -1085,7 +1070,6 @@ codeunit 6393 "Api Requests"
         Error(ErrorMsg);
     end;
 
-
     local procedure GetCurrentCountryCode(): Code[10]
     var
         CompanyInformation: Record "Company Information";
@@ -1108,7 +1092,6 @@ codeunit 6393 "Api Requests"
     begin
         SuppressError := NewSuppressError;
     end;
-
     #endregion
 
     var

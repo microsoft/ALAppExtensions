@@ -6,9 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 table 6390 "Connection Setup"
 {
-    DataPerCompany = false;
+    Access = Internal;
     DataClassification = CustomerContent;
-    
+    DataPerCompany = false;
+    Extensible = false;
+
     fields
     {
         field(1; PK; Code[10])
@@ -50,11 +52,11 @@ table 6390 "Connection Setup"
         }
         field(10; "No. Of Participations"; Integer)
         {
+            CalcFormula = count(Participation);
             Caption = 'No. Of Participations';
-            FieldClass = FlowField;
-            CalcFormula = count("Participation");
-            ToolTip = 'Specifies the number of participations in the Continia Delivery Network.';
             Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Specifies the number of participations in the Continia Delivery Network.';
         }
     }
 

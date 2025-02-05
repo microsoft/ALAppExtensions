@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 enum 6392 "Wizard Scenario"
 {
+    Access = Internal;
     Extensible = false;
 
     value(0; General)

@@ -47,7 +47,7 @@ codeunit 6390 "Integration Impl." implements IDocumentSender, IDocumentResponseH
         EDocumentProcessing.ReceiveDocuments(EDocumentService, DocumentsMetadata, ReceiveContext);
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         EDocumentProcessing: Codeunit "EDocument Processing";
     begin
@@ -84,7 +84,6 @@ codeunit 6390 "Integration Impl." implements IDocumentSender, IDocumentResponseH
     end;
 
     #endregion
-
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
     local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)

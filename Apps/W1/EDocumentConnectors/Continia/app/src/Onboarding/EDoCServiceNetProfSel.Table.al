@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 table 6395 "E-Doc. Service Net Prof. Sel."
 {
+    Access = Internal;
     Caption = 'E-Document Service Network Profile Selection';
     DataClassification = CustomerContent;
     TableType = Temporary;
@@ -20,8 +21,8 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         field(2; "Identifier Type Id"; Guid)
         {
             Caption = 'Identifier Type Id';
-            ToolTip = 'Specifies ID of E-Document Identifier Type.';
             TableRelation = "Network Identifier".Id where(Network = field(Network));
+            ToolTip = 'Specifies ID of E-Document Identifier Type.';
         }
         field(3; "Identifier Value"; Code[50])
         {

@@ -9,11 +9,12 @@ using Microsoft.Foundation.Address;
 
 page 6393 "Onboarding Wizard"
 {
-    PageType = NavigatePage;
     ApplicationArea = All;
     Caption = 'Continia Delivery Network Onboarding';
     DeleteAllowed = false;
+    Extensible = false;
     InsertAllowed = false;
+    PageType = NavigatePage;
 
     layout
     {
@@ -29,13 +30,13 @@ page 6393 "Onboarding Wizard"
                     Visible = FirstStepVisible;
                     group(Start1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Continia Delivery Network integrates seamlessly with various electronic data exchange networks, such as the PEPPOL eDelivery Network. This allows you to send and receive documents directly from Business Central if your vendors and customers are also connected to these networks.';
+                        ShowCaption = false;
                     }
                     group(Start2)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'This guide will help you register your company as a participant in the Continia Delivery Network.';
+                        ShowCaption = false;
                     }
                 }
                 group(IntroductionGroup2)
@@ -58,8 +59,8 @@ page 6393 "Onboarding Wizard"
                     Visible = PartnerDetailsStepVisible;
                     group(PartnerDetails1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'To continue, you will need the assistance of your partner. Please have your partner enter their Continia PartnerZone credentials:';
+                        ShowCaption = false;
                     }
                 }
                 field(PartnerUserName; PartnerUserName)
@@ -120,8 +121,8 @@ page 6393 "Onboarding Wizard"
                     Visible = LegalCompanyInformationStepVisible;
                     group(LegalCompanyInformation1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Please provide the legal information of the company you want to register in the network.';
+                        ShowCaption = false;
                         field("Company Name"; TempParticipation."Company Name")
                         {
                             ShowMandatory = true;
@@ -203,13 +204,13 @@ page 6393 "Onboarding Wizard"
                     }
                     group(LegalCompanyInformation2)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Please verify that all the company details you provided are accurate. This information is essential for Continia to meet its legal obligations, perform its KYC processes and data processing requirements. Inaccurate or insufficient information can delay our verification processes or result in account suspension. If any details change, update the information promptly to avoid service disruptions.';
+                        ShowCaption = false;
                     }
                     group(LegalCompanyInformation3)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'By continuing, you confirm the accuracy of the above information and accept Continia Software License Terms and Terms of Service.';
+                        ShowCaption = false;
 
                         field(LicenseTerms; LicenseTermsAccepted)
                         {
@@ -234,8 +235,8 @@ page 6393 "Onboarding Wizard"
                     Visible = CompanyContactInformationStepVisible;
                     group(CompanyContactInformation1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Please provide the company contact information.';
+                        ShowCaption = false;
                         field(CompanyContactName; TempCompanyContact."Company Name")
                         {
                             ShowMandatory = true;
@@ -349,8 +350,8 @@ page 6393 "Onboarding Wizard"
                     Visible = NetworkDetailsStepVisible;
                     group(NetworkDetails1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Specify the network you want to be registered as a participant in.';
+                        ShowCaption = false;
                     }
                     field(Network; TempParticipation.Network)
                     {
@@ -361,14 +362,14 @@ page 6393 "Onboarding Wizard"
                     }
                     group(NetworkDetails2)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Specify how the company should be identified in the network.';
+                        ShowCaption = false;
                     }
                     field(IdentifierTypeDesc; IdentifierTypeDesc)
                     {
                         Caption = 'Identifier Type';
-                        ToolTip = 'Specifies the type of identifier used to identify the company in the network.';
                         ShowMandatory = true;
+                        ToolTip = 'Specifies the type of identifier used to identify the company in the network.';
 
                         trigger OnValidate()
                         begin
@@ -392,9 +393,9 @@ page 6393 "Onboarding Wizard"
                 }
                 group(NextDocumentTypes)
                 {
+                    InstructionalText = 'Choose Next to set up the document types you would like to exchange within the network.';
                     ShowCaption = false;
                     Visible = NetworkDetailsStepVisible;
-                    InstructionalText = 'Choose Next to set up the document types you would like to exchange within the network.';
                 }
             }
             group(DocumentTypesPage)
@@ -466,34 +467,34 @@ page 6393 "Onboarding Wizard"
                     Visible = AdvancedSetupStepVisible;
                     group(AdvancedSetup1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Use the list below to configure the network profiles you want to register.';
+                        ShowCaption = false;
                     }
                     part(SelectProfilesPeppol; "Profile Selection") { }
                 }
             }
             group(FinalPage)
             {
-                Visible = FinalStepVisible;
                 Caption = '';
+                Visible = FinalStepVisible;
                 group("That's it!")
                 {
                     Caption = 'That''s it!';
                     Visible = FinalStepVisible and (RunScenario = RunScenario::General);
                     group(FinalPage1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Choose Finish to submit your registration to join the Continia Delivery Network.';
+                        ShowCaption = false;
                     }
                     group(FinalPage2)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Continia will validate the information you have provided and notify you once your registration has been approved. Please note that this is a manual process, which may take 1–2 working days to complete.';
+                        ShowCaption = false;
                     }
                     group(FinalPage3)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'You can always check the status of your registration on the E-Document External Connection Setup page.';
+                        ShowCaption = false;
                     }
                 }
                 group(ThatsItEdit)
@@ -502,13 +503,13 @@ page 6393 "Onboarding Wizard"
                     Visible = FinalStepVisible and (RunScenario = RunScenario::EditParticipation);
                     group(EditFinalPage1)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'Choose Finish to send the new registration information to Continia Delivery Network.';
+                        ShowCaption = false;
                     }
                     group(EditFinalPage2)
                     {
-                        ShowCaption = false;
                         InstructionalText = 'You can always check the status of your registration on the E-Document External Connection Setup page.';
+                        ShowCaption = false;
                     }
                 }
             }
@@ -523,10 +524,10 @@ page 6393 "Onboarding Wizard"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Back';
-                ToolTip = 'Go back to the previous page.';
                 Enabled = BackActionEnabled;
                 Image = PreviousRecord;
                 InFooterBar = true;
+                ToolTip = 'Go back to the previous page.';
                 Visible = BackActionVisible;
 
                 trigger OnAction()
@@ -538,10 +539,10 @@ page 6393 "Onboarding Wizard"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next';
-                ToolTip = 'Go to the next page.';
                 Enabled = NextActionEnabled;
                 Image = NextRecord;
                 InFooterBar = true;
+                ToolTip = 'Go to the next page.';
                 Visible = NextActionVisible;
 
                 trigger OnAction()
@@ -553,11 +554,11 @@ page 6393 "Onboarding Wizard"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Advanced Setup';
-                ToolTip = 'Open the list of network profiles to register.';
                 Enabled = AdvancedSetupActionEnabled;
-                Visible = AdvancedSetupActionEnabled;
                 Image = NextRecord;
                 InFooterBar = true;
+                ToolTip = 'Open the list of network profiles to register.';
+                Visible = AdvancedSetupActionEnabled;
 
                 trigger OnAction()
                 begin
@@ -568,10 +569,10 @@ page 6393 "Onboarding Wizard"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
-                ToolTip = 'Complete the onboarding.';
                 Enabled = FinishActionEnabled;
                 Image = Approve;
                 InFooterBar = true;
+                ToolTip = 'Complete the onboarding.';
 
                 trigger OnAction()
                 begin
@@ -995,12 +996,12 @@ page 6393 "Onboarding Wizard"
         ApiRequests.CheckProfilesNotRegistered(TempParticipation);
     end;
 
-    procedure SetRunScenario(ParamRunScenario: Enum "Wizard Scenario")
+    internal procedure SetRunScenario(ParamRunScenario: Enum "Wizard Scenario")
     begin
         RunScenario := ParamRunScenario;
     end;
 
-    procedure SetParticipation(ParamParticipation: Record "Participation")
+    internal procedure SetParticipation(ParamParticipation: Record Participation)
     begin
         TempParticipation := ParamParticipation;
         if TempParticipation."Registration Status" in [TempParticipation."Registration Status"::Disabled, TempParticipation."Registration Status"::Rejected, TempParticipation."Registration Status"::Draft] then
@@ -1039,9 +1040,9 @@ page 6393 "Onboarding Wizard"
 
         if SendInvoiceResponse or ReceiveInvoiceResponse then begin
             case TempParticipation.Network of
-                TempParticipation.Network::peppol:
+                TempParticipation.Network::Peppol:
                     ProfileDirection := GetNetworkProfileDirection(SendInvoiceResponse, ReceiveInvoiceResponse);
-                TempParticipation.Network::nemhandel:
+                TempParticipation.Network::Nemhandel:
                     ProfileDirection := GetNetworkProfileDirection(SendInvoiceCreditMemo, ReceiveInvoiceCreditMemo);
             end;
             OnboardingHelper.AddInvoiceResponseProfiles(TempParticipation, ProfileDirection, ActivatedProfiles);
@@ -1073,8 +1074,8 @@ page 6393 "Onboarding Wizard"
     end;
 
     var
-        TempCompanyContact: Record "Participation" temporary;
-        TempParticipation: Record "Participation" temporary;
+        TempCompanyContact: Record Participation temporary;
+        TempParticipation: Record Participation temporary;
         OnboardingHelper: Codeunit "Onboarding Helper";
         AdvancedSetupActionEnabled, BackActionEnabled, FinishActionEnabled, NextActionEnabled : Boolean;
         AdvancedSetupStepVisible, BackActionVisible, CompanyContactInformationStepVisible, DocumentTypesStepVisible, FinalStepVisible, FirstStepVisible, LegalCompanyInformationStepVisible, NetworkDetailsStepVisible, NextActionVisible, PartnerDetailsStepVisible : Boolean;

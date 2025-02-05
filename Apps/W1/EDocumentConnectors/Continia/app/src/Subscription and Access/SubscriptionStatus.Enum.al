@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 enum 6395 "Subscription Status"
 {
+    Access = Internal;
     Extensible = false;
 
     value(0; NotSubscribed)

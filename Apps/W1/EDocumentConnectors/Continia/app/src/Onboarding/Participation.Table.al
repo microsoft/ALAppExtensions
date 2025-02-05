@@ -8,11 +8,12 @@ using System.Email;
 using Microsoft.Finance.VAT.Registration;
 using Microsoft.Foundation.Address;
 
-table 6391 "Participation"
+table 6391 Participation
 {
+    Access = Internal;
     Caption = 'Participation';
     DataClassification = CustomerContent;
-    LookupPageId = "Participations";
+    LookupPageId = Participations;
     Permissions = tabledata "Activated Net. Prof." = rimd;
 
     fields
@@ -49,7 +50,7 @@ table 6391 "Participation"
                 "VAT Registration No." := UpperCase("VAT Registration No.");
                 if "VAT Registration No." = xRec."VAT Registration No." then
                     exit;
-                if not VATRegNoFormat.Test("VAT Registration No.", "Country/Region Code", '', Database::"Participation") then
+                if not VATRegNoFormat.Test("VAT Registration No.", "Country/Region Code", '', Database::Participation) then
                     exit;
             end;
         }
@@ -83,8 +84,8 @@ table 6391 "Participation"
         }
         field(15; County; Text[30])
         {
-            CaptionClass = '5,1,' + "Country/Region Code";
             Caption = 'County';
+            CaptionClass = '5,1,' + "Country/Region Code";
             ToolTip = 'Specifies the legal county of the company that you want to join to the network.';
         }
         field(16; "Your Name"; Text[100])
@@ -182,16 +183,17 @@ table 6391 "Participation"
         }
         field(40; "Identifier Scheme Id"; Text[50])
         {
-            Caption = 'Identifier Type';
-            FieldClass = FlowField;
             CalcFormula = lookup("Network Identifier"."Scheme Id" where(Id = field("Identifier Type Id")));
+            Caption = 'Identifier Type';
             Editable = false;
+            FieldClass = FlowField;
             ToolTip = 'Specifies the type of identifier used for the participation.';
         }
         field(50; "Partner Id"; Code[20])
         {
             Caption = 'Partner Id';
             Editable = false;
+            ExtendedDatatype = Masked;
         }
     }
 

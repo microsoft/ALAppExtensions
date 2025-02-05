@@ -14,6 +14,8 @@ using System.Security.User;
 
 codeunit 6397 "Subscription Mgt."
 {
+    Access = Internal;
+
     var
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         ClientCredentialsMissingErr: Label 'Client credentials missing.';
@@ -229,7 +231,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure GetClientInfoApp(var ClientInfo: Record "Participation" temporary; ShowError: Boolean) Success: Boolean
+    internal procedure GetClientInfoApp(var ClientInfo: Record Participation temporary; ShowError: Boolean) Success: Boolean
     var
         CredentialMgt: Codeunit "Credential Management";
         ContactPerson: XmlNode;
@@ -349,7 +351,7 @@ codeunit 6397 "Subscription Mgt."
     internal procedure Unsubscribe(ShowError: Boolean) Success: Boolean
     var
         ConnectionSetup: Record "Connection Setup";
-        TempCompanyInfo: Record "Participation" temporary;
+        TempCompanyInfo: Record Participation temporary;
         SubscriptionStatus: Enum "Subscription Status";
     begin
         SubscriptionStatus := SubscriptionStatus::Unsubscribed;
@@ -364,7 +366,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure UpdateSubscription(SubscriptionState: Enum "Subscription Status"; var ClientInfo: Record "Participation" temporary; ShowError: Boolean) Success: Boolean
+    internal procedure UpdateSubscription(SubscriptionState: Enum "Subscription Status"; var ClientInfo: Record Participation temporary; ShowError: Boolean) Success: Boolean
     var
         AzureADTenant: Codeunit "Azure AD Tenant";
         CredentialManagement: Codeunit "Credential Management";
@@ -446,7 +448,7 @@ codeunit 6397 "Subscription Mgt."
 
 
     [NonDebuggable]
-    local procedure GetUpdateSubscriptionBody(SubscriptionState: Enum "Subscription Status"; var ClientInfo: Record "Participation" temporary) RequestBody: Text
+    local procedure GetUpdateSubscriptionBody(SubscriptionState: Enum "Subscription Status"; var ClientInfo: Record Participation temporary) RequestBody: Text
     var
         AppMgt: Codeunit "Application System Constants";
         CredentialMgt: Codeunit "Credential Management";
@@ -552,7 +554,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure UpdateClientInformation(var ClientInfo: Record "Participation" temporary): Boolean
+    internal procedure UpdateClientInformation(var ClientInfo: Record Participation temporary): Boolean
     var
         CredentialManagement: Codeunit "Credential Management";
         SessionManager: Codeunit "Session Manager";
@@ -599,7 +601,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    local procedure GetClientInfoUpdateRequest(var ClientInfo: Record "Participation" temporary) RequestBody: Text
+    local procedure GetClientInfoUpdateRequest(var ClientInfo: Record Participation temporary) RequestBody: Text
     var
         CompanyInfoRequest: XmlElement;
         CompanyInfo: XmlElement;

@@ -8,6 +8,8 @@ using System.Environment;
 
 codeunit 6395 "Credential Management"
 {
+    Access = Internal;
+
     internal procedure IsClientCredentialsValid(): Boolean
     var
         ConnectionSetup: Record "Connection Setup";

@@ -6,17 +6,17 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 page 6396 "Network Profile List"
 {
-
+    ApplicationArea = All;
     Caption = 'Network Profiles';
     DeleteAllowed = false;
     Editable = false;
+    Extensible = false;
     InsertAllowed = false;
     LinksAllowed = false;
     ModifyAllowed = false;
     PageType = List;
-    UsageCategory = None;
     SourceTable = "Network Profile";
-    ApplicationArea = All;
+    UsageCategory = None;
 
     layout
     {
@@ -39,15 +39,15 @@ page 6396 "Network Profile List"
             action(GetNetworkProfiles)
             {
                 Caption = 'Import Network Profiles';
-                ToolTip = 'Imports all the Network Profiles from Continia API.';
                 Image = Import;
+                ToolTip = 'Imports all the Network Profiles from Continia API.';
 
                 trigger OnAction()
                 var
                     ApiRequests: Codeunit "Api Requests";
                 begin
-                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::peppol);
-                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::nemhandel);
+                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::Peppol);
+                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::Nemhandel);
                 end;
             }
         }

@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 table 6394 "Network Profile"
 {
+    Access = Internal;
     Caption = 'Network Profile';
     DataClassification = SystemMetadata;
     DrillDownPageId = "Network Profile List";

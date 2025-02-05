@@ -97,7 +97,7 @@ codeunit 148204 "Registration Integration Tests"
         // [When] fill mandatory information
         OnboardingWizard.CompanyContactName.SetValue('Company Contact Name');
         OnboardingWizard.CompanyContactVAT.SetValue('123456789');
-        OnboardingWizard.CompanyContactAdress.SetValue('CompanyContact Address');
+        OnboardingWizard.CompanyContactAddress.SetValue('CompanyContact Address');
         OnboardingWizard.CompanyContactPostCode.SetValue('111222');
         OnboardingWizard.CompanyContactCounty.SetValue('Company Contact County');
         OnboardingWizard.CompanyContactCountryRegion.SetValue(CompanyInformation."Country/Region Code");
@@ -237,7 +237,7 @@ codeunit 148204 "Registration Integration Tests"
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('202'); // Response code 202 means it was disabled
         Participations.DeleteParticipation.Invoke();
 
-        // [Then] Partipation status is Disabled
+        // [Then] Participation status is Disabled
         Participations.First();
         Assert.AreEqual(Format(Enum::"Registration Status"::Disabled), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
@@ -295,7 +295,7 @@ codeunit 148204 "Registration Integration Tests"
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200'); // Response code 200 means it was deleted
         Participations.DeleteParticipation.Invoke();
 
-        // [Then] Partipation must be deleted
+        // [Then] Participation must be deleted
         Assert.AreEqual(false, Participations.First(), 'Participation must not be found');
 
         Participations.Close();

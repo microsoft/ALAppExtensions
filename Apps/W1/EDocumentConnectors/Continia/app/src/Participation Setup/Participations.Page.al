@@ -4,14 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-page 6391 "Participations"
+page 6391 Participations
 {
-    PageType = List;
-    SourceTable = "Participation";
     ApplicationArea = Basic, Suite;
-    UsageCategory = None;
     Caption = 'Continia Participations';
     Editable = false;
+    Extensible = false;
+    PageType = List;
+    SourceTable = Participation;
+    UsageCategory = None;
 
     layout
     {
@@ -50,9 +51,9 @@ page 6391 "Participations"
             action(RegisterNewParticipation)
             {
                 Caption = 'Register';
-                ToolTip = 'Register a new participation in the Continia Delivery Network.';
-                Image = New;
                 Enabled = CanEditParticipation;
+                Image = New;
+                ToolTip = 'Register a new participation in the Continia Delivery Network.';
 
                 trigger OnAction()
                 var
@@ -64,9 +65,9 @@ page 6391 "Participations"
             action(EditParticipation)
             {
                 Caption = 'Edit';
-                ToolTip = 'Edit the participation in the Continia Delivery Network.';
-                Image = Edit;
                 Enabled = ActionsEnabled and CanEditParticipation;
+                Image = Edit;
+                ToolTip = 'Edit the participation in the Continia Delivery Network.';
 
                 trigger OnAction()
                 var
@@ -83,9 +84,9 @@ page 6391 "Participations"
             action(DeleteParticipation)
             {
                 Caption = 'Unregister';
-                ToolTip = 'Unregister the participation in the Continia Delivery Network.';
-                Image = Delete;
                 Enabled = ActionsEnabled and CanEditParticipation;
+                Image = Delete;
+                ToolTip = 'Unregister the participation in the Continia Delivery Network.';
 
                 trigger OnAction()
                 var

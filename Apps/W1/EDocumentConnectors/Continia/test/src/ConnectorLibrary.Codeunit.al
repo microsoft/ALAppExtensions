@@ -112,7 +112,7 @@ codeunit 148202 "Connector Library"
 
         // Create a participation without profile
         Participation.Init();
-        Participation.Network := Participation.Network::peppol;
+        Participation.Network := Participation.Network::Peppol;
         Participation."Identifier Type Id" := IdentifierTypeIdLbl;
         Participation."Identifier Value" := IdentifierValueLbl;
         if Participation.IsTemporary then begin
@@ -186,19 +186,19 @@ codeunit 148202 "Connector Library"
     [TryFunction]
     internal procedure GetParticipation(var Participation: Record Participation)
     begin
-        Participation.Get(Participation.Network::peppol, IdentifierTypeIdLbl, IdentifierValueLbl);
+        Participation.Get(Participation.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl);
     end;
 
     [TryFunction]
     internal procedure GetActivatedNetworkProfile(var ActivatedNetProf: Record "Activated Net. Prof.")
     begin
-        ActivatedNetProf.Get(ActivatedNetProf.Network::peppol, IdentifierTypeIdLbl, IdentifierValueLbl, DefaultNetworkProfileIdLbl);
+        ActivatedNetProf.Get(ActivatedNetProf.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl, DefaultNetworkProfileIdLbl);
     end;
 
     [TryFunction]
     internal procedure GetActivatedNetworkProfile(NetworkProfileId: Guid; var ActivatedNetProf: Record "Activated Net. Prof.")
     begin
-        ActivatedNetProf.Get(ActivatedNetProf.Network::peppol, IdentifierTypeIdLbl, IdentifierValueLbl, NetworkProfileId);
+        ActivatedNetProf.Get(ActivatedNetProf.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl, NetworkProfileId);
     end;
 
     internal procedure CleanParticipations()

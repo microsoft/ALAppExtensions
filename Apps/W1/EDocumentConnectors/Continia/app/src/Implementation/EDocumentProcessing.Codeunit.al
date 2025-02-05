@@ -13,13 +13,14 @@ using System.Utilities;
 codeunit 6391 "EDocument Processing"
 {
     Access = Internal;
+
     internal procedure SendEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         ApiRequests: Codeunit "Api Requests";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
 
         case EDocumentServiceStatus.Status of
             EDocumentServiceStatus.Status::Exported:
@@ -170,7 +171,7 @@ codeunit 6391 "EDocument Processing"
         DocumentResponse: XmlDocument;
         DocumentNodeList: XmlNodeList;
         DocumentNode: XmlNode;
-        i: integer;
+        i: Integer;
     begin
         if not ApiRequests.GetDocumentsForCompany(ReceiveContext) then
             exit;
@@ -213,7 +214,7 @@ codeunit 6391 "EDocument Processing"
             exit(true);
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         ApiRequests: Codeunit "Api Requests";
         XMLFileToken: Text;

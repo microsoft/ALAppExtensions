@@ -8,11 +8,11 @@ permissionset 6392 ContEDocConnEdit
 {
     Access = Public;
     Assignable = true;
-    IncludedPermissionSets = ContEDocConnRead;
     Caption = 'Continia E-Document Connector - Edit';
+    IncludedPermissionSets = ContEDocConnRead;
 
     Permissions = tabledata "Connection Setup" = IM,
-                  tabledata "Participation" = imd,
+                  tabledata Participation = imd,
                   tabledata "Activated Net. Prof." = imd,
                   tabledata "Network Identifier" = imd,
                   tabledata "Network Profile" = imd,

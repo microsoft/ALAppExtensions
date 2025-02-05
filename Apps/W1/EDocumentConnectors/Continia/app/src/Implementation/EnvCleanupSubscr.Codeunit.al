@@ -15,7 +15,7 @@ codeunit 6398 "Env. Cleanup Subscr."
     local procedure CleanupCompanyConfiguration(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
     var
         ConnectionSetup: Record "Connection Setup";
-        Participation: Record "Participation";
+        Participation: Record Participation;
         ParticipationProfiles: Record "Activated Net. Prof.";
         EnvironmentInformation: Codeunit "Environment Information";
     begin

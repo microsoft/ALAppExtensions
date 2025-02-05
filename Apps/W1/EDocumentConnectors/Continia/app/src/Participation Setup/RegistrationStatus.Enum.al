@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 enum 6394 "Registration Status"
 {
+    Access = Internal;
     Extensible = false;
 
     value(0; Draft)

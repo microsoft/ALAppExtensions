@@ -6,11 +6,12 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 page 6392 "Active Profiles"
 {
+    ApplicationArea = All;
     Caption = 'Active Network Profile';
+    Extensible = false;
     PageType = ListPart;
     SourceTable = "Activated Net. Prof.";
     SourceTableView = where(Disabled = filter(0DT));
-    ApplicationArea = All;
 
     layout
     {

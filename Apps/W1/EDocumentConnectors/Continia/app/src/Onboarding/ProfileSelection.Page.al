@@ -6,12 +6,12 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 page 6394 "Profile Selection"
 {
+    ApplicationArea = All;
     Caption = 'Network Profile Selection';
     DelayedInsert = true;
     PageType = ListPart;
     SourceTable = "Activated Net. Prof.";
     SourceTableTemporary = true;
-    ApplicationArea = All;
 
     layout
     {
@@ -22,9 +22,9 @@ page 6394 "Profile Selection"
                 field("Profile Name"; ProfileName)
                 {
                     Caption = 'Profile Name';
+                    Lookup = true;
                     ToolTip = 'Specifies the name of the profile.';
                     Width = 20;
-                    Lookup = true;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var

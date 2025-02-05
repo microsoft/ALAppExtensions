@@ -6,13 +6,14 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 enum 6390 "E-Delivery Network"
 {
+    Access = Internal;
     Extensible = false;
 
-    value(0; peppol)
+    value(0; Peppol)
     {
         Caption = 'Peppol';
     }
-    value(1; nemhandel)
+    value(1; Nemhandel)
     {
         Caption = 'NemHandel';
     }

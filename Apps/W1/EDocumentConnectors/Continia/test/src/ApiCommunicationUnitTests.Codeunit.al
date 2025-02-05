@@ -121,7 +121,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation200()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -146,7 +146,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation201()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -171,7 +171,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation400()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -193,7 +193,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation401()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -215,7 +215,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation404()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -237,7 +237,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation422()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -259,7 +259,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation500()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -281,7 +281,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation200()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -307,7 +307,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation400()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -331,7 +331,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation401()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -355,7 +355,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation404()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -379,7 +379,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation409()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -403,7 +403,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation422()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -427,7 +427,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation500()
     var
-        TempParticipation: Record "Participation" temporary;
+        TempParticipation: Record Participation temporary;
         Participation: Record Participation;
         ApiRequests: Codeunit "Api Requests";
     begin

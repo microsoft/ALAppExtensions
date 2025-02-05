@@ -50,11 +50,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -65,9 +65,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
     end;
 
@@ -104,7 +104,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Sending Error" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Sending Error");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Error, Enum::"E-Document Service Status"::"Sending Error", EDocLogList, 'Error', 'The Continia Delivery Network API returned the following system error: Error Code Internal Server - Unhandled system error');
     end;
@@ -145,7 +145,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
@@ -161,7 +161,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
@@ -178,7 +178,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
@@ -220,7 +220,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
@@ -236,7 +236,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
@@ -253,7 +253,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
@@ -298,7 +298,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
@@ -314,7 +314,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Sending Error" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Sending Error");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Error, Enum::"E-Document Service Status"::"Sending Error", EDocLogList, 'Error', 'ReceiverNotRegistered - The recipient of the document is not registered to receive this type of document.');
@@ -338,7 +338,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Sending Error");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
@@ -356,7 +356,7 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Sending Error");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
@@ -401,11 +401,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -416,9 +416,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
 
@@ -438,9 +438,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
     end;
 
@@ -482,11 +482,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -497,9 +497,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
 
@@ -519,9 +519,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
     end;
 
@@ -561,11 +561,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -576,9 +576,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
 
@@ -598,10 +598,10 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Approved and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Approved");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
+        EDocLogList.Add(Enum::"E-Document Service Status"::Approved);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Approved, EDocLogList, '', '');
     end;
 
@@ -641,11 +641,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -656,9 +656,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
 
@@ -678,10 +678,10 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status is Processed and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Rejected");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
+        EDocLogList.Add(Enum::"E-Document Service Status"::Rejected);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Rejected, EDocLogList, 'Warning', 'Reason: PRI - Prices incorrect');
     end;
 
@@ -721,11 +721,11 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has "Pending Response" and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [WHEN] Executing Get Response succesfully
+        // [WHEN] Executing Get Response successfully
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -736,9 +736,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
 
@@ -758,9 +758,9 @@ codeunit 148203 "Document Integration Tests"
 
         // [Then] eDocument Service Status has Sent and has correct logs
         Clear(EDocLogList);
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Exported);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
-        EDocLogList.Add(Enum::"E-Document Service Status"::"Sent");
+        EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
     end;
 

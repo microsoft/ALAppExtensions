@@ -6,13 +6,14 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 page 6398 "E-Doc. Service Net. Prof. Sel."
 {
-    PageType = List;
     ApplicationArea = All;
-    UsageCategory = None;
-    SourceTable = "E-Doc. Service Net Prof. Sel.";
-    SourceTableTemporary = true;
     Caption = 'E-Document Service Network Profile Selection';
     Editable = false;
+    Extensible = false;
+    PageType = List;
+    SourceTable = "E-Doc. Service Net Prof. Sel.";
+    SourceTableTemporary = true;
+    UsageCategory = None;
 
     layout
     {
@@ -20,8 +21,8 @@ page 6398 "E-Doc. Service Net. Prof. Sel."
         {
             repeater(Group)
             {
-                ShowAsTree = true;
                 IndentationColumn = Rec.Indent;
+                ShowAsTree = true;
 
                 field(Network; Rec."Network Name") { }
                 field("Participation Description"; Rec."Participation Description") { }

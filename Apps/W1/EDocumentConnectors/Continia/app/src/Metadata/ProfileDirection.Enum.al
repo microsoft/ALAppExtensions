@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 enum 6391 "Profile Direction"
 {
+    Access = Internal;
     Extensible = false;
 
     value(0; Outbound)

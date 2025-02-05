@@ -6,19 +6,19 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 page 6395 "Network Id. List"
 {
-
+    ApplicationArea = All;
     Caption = 'Network Identifier List';
     DeleteAllowed = false;
     Editable = false;
+    Extensible = false;
     InsertAllowed = false;
     LinksAllowed = false;
     ModifyAllowed = false;
     PageType = List;
-    UsageCategory = None;
     ShowFilter = false;
     SourceTable = "Network Identifier";
     SourceTableView = sorting("Scheme Id") order(ascending);
-    ApplicationArea = All;
+    UsageCategory = None;
 
     layout
     {
@@ -41,15 +41,15 @@ page 6395 "Network Id. List"
             action(GetContiniaNetworkIdTypes)
             {
                 Caption = 'Import Network ID Types';
-                ToolTip = 'Imports all the Network ID Types from Continia API.';
                 Image = Import;
+                ToolTip = 'Imports all the Network ID Types from Continia API.';
 
                 trigger OnAction()
                 var
                     ApiRequests: Codeunit "Api Requests";
                 begin
-                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::peppol);
-                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::nemhandel);
+                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::Peppol);
+                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::Nemhandel);
                 end;
             }
         }

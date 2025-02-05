@@ -206,7 +206,7 @@ codeunit 6392 "Api Url Mgt."
 
     internal procedure GetNetworkNameAsText(NetworkName: Enum "E-Delivery Network"): Text
     begin
-        exit(NetworkName.Names.Get(NetworkName.Ordinals.IndexOf(NetworkName.AsInteger())));
+        exit(NetworkName.Names.Get(NetworkName.Ordinals.IndexOf(NetworkName.AsInteger())).ToLower());
     end;
 
     internal procedure GetGuidAsText(Value: Guid): Text[36]

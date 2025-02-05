@@ -12,10 +12,10 @@ tableextension 6390 "E-Document Service" extends "E-Document Service"
     {
         field(6390; "No. Of Network Profiles"; Integer)
         {
-            Caption = 'No. Of Network Profiles';
-            FieldClass = FlowField;
             CalcFormula = count("Activated Net. Prof." where("E-Document Service Code" = field(Code)));
+            Caption = 'No. Of Network Profiles';
             Editable = false;
+            FieldClass = FlowField;
         }
     }
 }

@@ -8,13 +8,14 @@ using System.Utilities;
 
 page 6397 "E-Doc. Service Net. Profiles"
 {
-    PageType = List;
     ApplicationArea = All;
-    SourceTable = "Activated Net. Prof.";
-    UsageCategory = None;
     Caption = 'E-Document Service Network Profiles';
     Editable = false;
+    Extensible = false;
+    PageType = List;
     Permissions = tabledata "Activated Net. Prof." = RIMD;
+    SourceTable = "Activated Net. Prof.";
+    UsageCategory = None;
 
     layout
     {
@@ -50,9 +51,9 @@ page 6397 "E-Doc. Service Net. Profiles"
             action(Add)
             {
                 Caption = 'Add';
-                ToolTip = 'Adds network profiles to the E-Document Service.';
                 Image = Add;
                 Scope = Repeater;
+                ToolTip = 'Adds network profiles to the E-Document Service.';
 
                 trigger OnAction()
                 begin
@@ -65,9 +66,9 @@ page 6397 "E-Doc. Service Net. Profiles"
             action(Remove)
             {
                 Caption = 'Remove';
-                ToolTip = 'Removes selected network profiles from E-Document Service.';
                 Image = Delete;
                 Scope = Repeater;
+                ToolTip = 'Removes selected network profiles from E-Document Service.';
 
                 trigger OnAction()
                 begin

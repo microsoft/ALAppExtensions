@@ -8,15 +8,16 @@ using System.Environment;
 
 page 6390 "Ext. Connection Setup"
 {
-    PageType = Card;
     ApplicationArea = Basic, Suite;
+    Caption = 'E-Document External Connection Setup';
+    DeleteAllowed = false;
+    Editable = false;
+    Extensible = false;
+    InsertAllowed = false;
+    ModifyAllowed = false;
+    PageType = Card;
     SourceTable = "Connection Setup";
     UsageCategory = None;
-    Caption = 'E-Document External Connection Setup';
-    Editable = false;
-    InsertAllowed = false;
-    DeleteAllowed = false;
-    ModifyAllowed = false;
 
     layout
     {
@@ -35,9 +36,9 @@ page 6390 "Ext. Connection Setup"
 
                     trigger OnDrillDown()
                     var
-                        Participation: Record "Participation";
+                        Participation: Record Participation;
                         ApiRequests: Codeunit "Api Requests";
-                        Participations: Page "Participations";
+                        Participations: Page Participations;
                         ProgressWindow: Dialog;
                     begin
                         ProgressWindow.Open(ProcessingWindowMsg);
@@ -72,9 +73,9 @@ page 6390 "Ext. Connection Setup"
             action(RegisterNewParticipation)
             {
                 Caption = 'Register new participation';
-                ToolTip = 'Register a new participation in the Continia Delivery Network.';
-                Image = New;
                 Enabled = CanEditParticipation;
+                Image = New;
+                ToolTip = 'Register a new participation in the Continia Delivery Network.';
 
                 trigger OnAction()
                 var
@@ -87,9 +88,9 @@ page 6390 "Ext. Connection Setup"
             action(EditCompanyInformation)
             {
                 Caption = 'Edit Company Information';
-                ToolTip = 'Edit the company information for the Continia subscription.';
-                Image = Company;
                 Enabled = ActionsEnabled and CanEditParticipation;
+                Image = Company;
+                ToolTip = 'Edit the company information for the Continia subscription.';
 
                 trigger OnAction()
                 var
@@ -108,13 +109,13 @@ page 6390 "Ext. Connection Setup"
             action(CancelSubscription)
             {
                 Caption = 'Cancel Subscription';
-                ToolTip = 'Cancels the Continia subscription. You will not be able to send or receive e-documents using the Continia Delivery Network anymore.';
-                Image = Cancel;
                 Enabled = ActionsEnabled and CanEditParticipation;
+                Image = Cancel;
+                ToolTip = 'Cancels the Continia subscription. You will not be able to send or receive e-documents using the Continia Delivery Network anymore.';
 
                 trigger OnAction()
                 var
-                    Participation: Record "Participation";
+                    Participation: Record Participation;
                     ApiRequests: Codeunit "Api Requests";
                     ActivationMgt: Codeunit "Subscription Mgt.";
                 begin
@@ -137,7 +138,7 @@ page 6390 "Ext. Connection Setup"
         OnboardingHelper: Codeunit "Onboarding Helper";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IF NOT EnvironmentInformation.IsSaaSInfrastructure() THEN
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
             Error(NotSupportedOnPremisesErr);
 
         CanEditParticipation := OnboardingHelper.HasModifyPermissionOnParticipation();
