@@ -48,14 +48,6 @@ table 4002 "Hybrid Replication Detail"
             OptionCaption = 'Failed,In Progress,Successful,Warning,Not Started';
             DataClassification = SystemMetadata;
         }
-        field(10; "Errors"; Blob)
-        {
-            Description = 'Any errors that occured during the replication.';
-            DataClassification = SystemMetadata;
-            ObsoleteReason = 'Moved to the "Error Message" text field.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '16.0';
-        }
         field(11; "Error Code"; Text[10])
         {
             Description = 'The error code for any errors that occured during the replication.';

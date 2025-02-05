@@ -1597,6 +1597,7 @@ table 8063 "Vendor Contract"
         VendorContract.Get(ServiceCommitment."Contract No.");
         ServiceCommitment.GetCombinedDimensionSetID(ServiceCommitment."Dimension Set ID", VendorContract."Dimension Set ID");
         if "Currency Code" <> ServiceCommitment."Currency Code" then begin
+            CalculateCurrencyFactor(ServiceCommitment."Service Start Date", VendorContract."Currency Code");
             ServiceCommitment.SetCurrencyData(CurrencyFactor, CurrencyFactorDate, VendorContract."Currency Code");
             ServiceCommitment.RecalculateAmountsFromCurrencyData();
         end;
@@ -1672,6 +1673,23 @@ table 8063 "Vendor Contract"
         BillingProposal: Codeunit "Billing Proposal";
     begin
         BillingProposal.CreateBillingProposalFromContract(Rec."No.", Rec.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+    end;
+
+    local procedure CalculateCurrencyFactor(ProvisionStartDate: Date; CurrencyCode: Code[10])
+    var
+        CurrExchRage: Record "Currency Exchange Rate";
+    begin
+        if CurrencyCode = '' then
+            exit;
+        if CurrencyFactor <> 0 then
+            exit;
+        if CurrencyFactorDate <> 0D then
+            exit;
+        if ProvisionStartDate = 0D then
+            exit;
+
+        CurrencyFactorDate := ProvisionStartDate;
+        CurrencyFactor := CurrExchRage.ExchangeRate(ProvisionStartDate, CurrencyCode)
     end;
 
     [InternalEvent(false, false)]

@@ -57,6 +57,8 @@ codeunit 40043 "GP Collect All Modifications"
     end;
 
     local procedure ShouldLogTable(TableId: Integer): Boolean
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
         if TableId in [
             Database::"Hybrid Company",
@@ -75,7 +77,7 @@ codeunit 40043 "GP Collect All Modifications"
             Database::"GP Hist. Source Progress"] then
             exit(false);
 
-        exit(true);
+        exit(HybridGPWizard.GetGPMigrationEnabled());
     end;
 
     var

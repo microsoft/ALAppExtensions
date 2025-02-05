@@ -109,18 +109,6 @@ table 2751 "Universal Printer Settings"
         }
 
         /// <summary>
-        /// The output bin to use when printing the document.
-        /// </summary>
-        field(12; outputBin; Text[2048])
-        {
-            Caption = 'Output Bin';
-            ObsoleteState = Removed;
-            ObsoleteTag = '24.0';
-            ObsoleteReason = 'Replaced with Paper Tray';
-            DataClassification = CustomerContent;
-        }
-
-        /// <summary>
         /// The output paper tray to use when printing the document.
         /// </summary>
         field(13; "Paper Tray"; Text[2048])

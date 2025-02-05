@@ -193,6 +193,9 @@ codeunit 148101 "SAF-T Wizard Tests"
         // [SCENARIO 309923] Stan can open VAT Posting Setup mapping page from the wizard and see the number of VAT combinations mapped
 
         Initialize();
+        VATPostingSetup.ModifyAll("Sale VAT Reporting Code", '');
+        VATPostingSetup.ModifyAll("Purch. VAT Reporting Code", '');
+        Commit();
         LibraryPermissions.SetTestabilitySoftwareAsAService(true);
         SAFTSetupWizard.OpenEdit();
         SAFTSetupWizard.ActionNext.Invoke();

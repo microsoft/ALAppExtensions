@@ -948,7 +948,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
                 '<qualifier>%1</qualifier><payload>%2</payload>',
                 VATReturnQualifierLbl, StrSubstNo(OverdueVATReturnPeriodTxt, HeadlineMgt.Emphasize(Format(DueDate)), DaysCount)),
             GetHeadlineText(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn),
-            'Expected message to contain "VAT return is overdue since"');
+            'Expected message to contain "Tax return is overdue since"');
 
         EssentialBusinessHeadline.DeleteAll();
         RCHeadlinesUserData.DeleteAll();

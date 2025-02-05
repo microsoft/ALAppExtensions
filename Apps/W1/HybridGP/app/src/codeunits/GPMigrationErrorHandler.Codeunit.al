@@ -18,7 +18,11 @@ codeunit 40112 "GP Migration Error Handler"
     local procedure UpdateErrorOverviewOnDelete(RunTrigger: Boolean; var Rec: Record "Data Migration Error")
     var
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         ErrorOccured := true;
         if GPMigrationErrorOverview.Get(Rec.Id, CompanyName()) then begin
             GPMigrationErrorOverview."Error Dismissed" := true;
@@ -29,8 +33,11 @@ codeunit 40112 "GP Migration Error Handler"
     local procedure UpdateErrorOverview(var DataMigrationError: Record "Data Migration Error")
     var
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
         Exists: Boolean;
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
         ErrorOccured := true;
         GPMigrationErrorOverview.ReadIsolation := IsolationLevel::ReadUncommitted;
         Exists := GPMigrationErrorOverview.Get(DataMigrationError.Id, CompanyName());

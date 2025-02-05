@@ -1,0 +1,1 @@
+{"data":{"catalogs":{"pageInfo":{"hasNextPage":false},"edges":[{"cursor":"eyJsYXN0X2lkIjoyNTMyNjcxNTExMCwibGFzdF92YWx1ZSI6MjUzMjY3MTUxMTB9","node":{"id":"gid://shopify/CompanyLocationCatalog/25326715110","title":"Test"}}]}},"extensions":{"cost":{"requestedQueryCost":27,"actualQueryCost":3,"throttleStatus":{"maximumAvailable":1000.0,"currentlyAvailable":997,"restoreRate":50.0}}}}

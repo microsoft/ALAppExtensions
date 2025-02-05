@@ -11,30 +11,30 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
             field("Service Commitments"; Rec."Service Commitments")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments for the sales line.';
+                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the sales line.';
             }
         }
     }
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitments)
             {
                 ApplicationArea = All;
                 Caption = 'Service Commitments';
                 Image = AllLines;
-                RunObject = Page "Sales Service Commitments";
+                RunObject = page "Sales Service Commitments";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
                 ToolTip = 'Shows the service commitments for the sales line.';
             }
         }
-        addlast("&Line")
+        addlast("F&unctions")
         {
             action(AddSalesServiceCommitment)
             {
                 ApplicationArea = All;
-                Caption = 'Add Service';
+                Caption = 'Add Service Commitments';
                 Image = ExpandDepositLine;
                 ToolTip = 'Shows all service commitments for the item. Service commitments can be added, changed or removed.';
 

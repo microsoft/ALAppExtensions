@@ -25,6 +25,7 @@ codeunit 30174 "Shpfy Create Product"
         Events: Codeunit "Shpfy Product Events";
         Getlocations: Boolean;
         ProductId: BigInteger;
+        ItemVariantIsBlockedLbl: Label 'Item variant is blocked or sales blocked.';
 
     trigger OnRun()
     var
@@ -56,13 +57,16 @@ codeunit 30174 "Shpfy Create Product"
             ProductId := ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant, TempShopifyTag)
         else
             ProductId := TempShopifyProduct.Id;
-        ProductExport.UpdateProductTranslations(ProductId, Item);
+
+        if ProductId <> 0 then
+            ProductExport.UpdateProductTranslations(ProductId, Item);
     end;
 
     internal procedure CreateTempProduct(Item: Record Item; var TempShopifyProduct: Record "Shpfy Product" temporary; var TempShopifyVariant: Record "Shpfy Variant" temporary; var TempShopifyTag: Record "Shpfy Tag" temporary)
     var
         ItemUnitofMeasure: Record "Item Unit of Measure";
         ItemVariant: Record "Item Variant";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         Id: Integer;
         ICreateProductStatus: Interface "Shpfy ICreateProductStatusValue";
     begin
@@ -73,56 +77,58 @@ codeunit 30174 "Shpfy Create Product"
         ICreateProductStatus := Shop."Status for Created Products";
         TempShopifyProduct.Status := ICreateProductStatus.GetStatus(Item);
         ItemVariant.SetRange("Item No.", Item."No.");
-        ItemVariant.SetRange(Blocked, false);
-        ItemVariant.SetRange("Sales Blocked", false);
         if ItemVariant.FindSet(false) then
             repeat
-                TempShopifyProduct."Has Variants" := true;
-                if Shop."UoM as Variant" then begin
-                    ItemUnitofMeasure.SetRange("Item No.", Item."No.");
-                    if ItemUnitofMeasure.FindSet(false) then
-                        repeat
-                            Id += 1;
-                            Clear(TempShopifyVariant);
-                            TempShopifyVariant.Id := Id;
-                            TempShopifyVariant."Available For Sales" := true;
-                            TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(TempShopifyVariant.Barcode));
-                            ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
-                            TempShopifyVariant.Title := ItemVariant.Description;
-                            TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                            TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", ItemVariant.Code, Item."Vendor Item No.");
-                            TempShopifyVariant."Tax Code" := Item."Tax Group Code";
-                            TempShopifyVariant.Taxable := true;
-                            TempShopifyVariant.Weight := Item."Gross Weight";
-                            TempShopifyVariant."Option 1 Name" := 'Variant';
-                            TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
-                            TempShopifyVariant."Option 2 Name" := Shop."Option Name for UoM";
-                            TempShopifyVariant."Option 2 Value" := ItemUnitofMeasure.Code;
-                            TempShopifyVariant."Shop Code" := Shop.Code;
-                            TempShopifyVariant."Item SystemId" := Item.SystemId;
-                            TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
-                            TempShopifyVariant."UoM Option Id" := 2;
-                            TempShopifyVariant.Insert(false);
-                        until ItemUnitofMeasure.Next() = 0;
-                end else begin
-                    Id += 1;
-                    Clear(TempShopifyVariant);
-                    TempShopifyVariant.Id := Id;
-                    TempShopifyVariant."Available For Sales" := true;
-                    TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.Barcode));
-                    ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
-                    TempShopifyVariant.Title := ItemVariant.Description;
-                    TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                    TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", ItemVariant.Code, GetVendorItemNo(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"));
-                    TempShopifyVariant."Tax Code" := Item."Tax Group Code";
-                    TempShopifyVariant.Taxable := true;
-                    TempShopifyVariant.Weight := Item."Gross Weight";
-                    TempShopifyVariant."Option 1 Name" := 'Variant';
-                    TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
-                    TempShopifyVariant."Shop Code" := Shop.Code;
-                    TempShopifyVariant."Item SystemId" := Item.SystemId;
-                    TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
-                    TempShopifyVariant.Insert(false);
+                if ItemVariant.Blocked or ItemVariant."Sales Blocked" then
+                    SkippedRecord.LogSkippedRecord(ItemVariant.RecordId, ItemVariantIsBlockedLbl, Shop)
+                else begin
+                    TempShopifyProduct."Has Variants" := true;
+                    if Shop."UoM as Variant" then begin
+                        ItemUnitofMeasure.SetRange("Item No.", Item."No.");
+                        if ItemUnitofMeasure.FindSet(false) then
+                            repeat
+                                Id += 1;
+                                Clear(TempShopifyVariant);
+                                TempShopifyVariant.Id := Id;
+                                TempShopifyVariant."Available For Sales" := true;
+                                TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(TempShopifyVariant.Barcode));
+                                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
+                                TempShopifyVariant.Title := ItemVariant.Description;
+                                TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                                TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", ItemVariant.Code, Item."Vendor Item No.");
+                                TempShopifyVariant."Tax Code" := Item."Tax Group Code";
+                                TempShopifyVariant.Taxable := true;
+                                TempShopifyVariant.Weight := Item."Gross Weight";
+                                TempShopifyVariant."Option 1 Name" := 'Variant';
+                                TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
+                                TempShopifyVariant."Option 2 Name" := Shop."Option Name for UoM";
+                                TempShopifyVariant."Option 2 Value" := ItemUnitofMeasure.Code;
+                                TempShopifyVariant."Shop Code" := Shop.Code;
+                                TempShopifyVariant."Item SystemId" := Item.SystemId;
+                                TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+                                TempShopifyVariant."UoM Option Id" := 2;
+                                TempShopifyVariant.Insert(false);
+                            until ItemUnitofMeasure.Next() = 0;
+                    end else begin
+                        Id += 1;
+                        Clear(TempShopifyVariant);
+                        TempShopifyVariant.Id := Id;
+                        TempShopifyVariant."Available For Sales" := true;
+                        TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.Barcode));
+                        ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
+                        TempShopifyVariant.Title := ItemVariant.Description;
+                        TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+                        TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", ItemVariant.Code, GetVendorItemNo(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"));
+                        TempShopifyVariant."Tax Code" := Item."Tax Group Code";
+                        TempShopifyVariant.Taxable := true;
+                        TempShopifyVariant.Weight := Item."Gross Weight";
+                        TempShopifyVariant."Option 1 Name" := 'Variant';
+                        TempShopifyVariant."Option 1 Value" := ItemVariant.Code;
+                        TempShopifyVariant."Shop Code" := Shop.Code;
+                        TempShopifyVariant."Item SystemId" := Item.SystemId;
+                        TempShopifyVariant."Item Variant SystemId" := ItemVariant.SystemId;
+                        TempShopifyVariant.Insert(false);
+                    end;
                 end;
             until ItemVariant.Next() = 0
         else

@@ -122,7 +122,7 @@ codeunit 6164 "E-Doc. Line Matching"
         UpdateMatchedQty(TempEDocumentImportedLine, -TempEDocumentImportedLine."Matched Quantity");
     end;
 
-    procedure UpdateMatchedQty(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; Quantity: Integer)
+    procedure UpdateMatchedQty(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; Quantity: Decimal)
     begin
         TempEDocumentImportedLine.Validate("Matched Quantity", TempEDocumentImportedLine."Matched Quantity" + Quantity);
         TempEDocumentImportedLine.Modify(true);
@@ -133,7 +133,7 @@ codeunit 6164 "E-Doc. Line Matching"
         UpdateQtyToInvoice(TempPurchaseLine, -TempPurchaseLine."Qty. to Invoice");
     end;
 
-    procedure UpdateQtyToInvoice(var TempPurchaseLine: Record "Purchase Line" temporary; Quantity: Integer)
+    procedure UpdateQtyToInvoice(var TempPurchaseLine: Record "Purchase Line" temporary; Quantity: Decimal)
     begin
         TempPurchaseLine.Validate("Qty. to Invoice", TempPurchaseLine."Qty. to Invoice" + Quantity);
         TempPurchaseLine.Modify(true);
@@ -150,11 +150,11 @@ codeunit 6164 "E-Doc. Line Matching"
             repeat
                 EDocOrderMatch.Copy(TempEDocMatchesThatWasMatched);
                 PurchaseLine := EDocOrderMatch.GetPurchaseLine();
-                PurchaseLine.Validate("Qty. to Invoice", PurchaseLine."Qty. to Invoice" + EDocOrderMatch.Quantity);
+                PurchaseLine.Validate("Qty. to Invoice", PurchaseLine."Qty. to Invoice" + EDocOrderMatch."Precise Quantity");
                 PurchaseLine.Modify(true);
 
                 EDocImportedLine := EDocOrderMatch.GetImportedLine();
-                EDocImportedLine.Validate("Matched Quantity", EDocImportedLine."Matched Quantity" + EDocOrderMatch.Quantity);
+                EDocImportedLine.Validate("Matched Quantity", EDocImportedLine."Matched Quantity" + EDocOrderMatch."Precise Quantity");
                 EDocImportedLine.Modify(true);
 
                 if RemoveMatch then
@@ -175,8 +175,8 @@ codeunit 6164 "E-Doc. Line Matching"
             repeat
                 EDocOrderMatch.SetRange("Document Order No.", TempPurchaseLine."Document No.");
                 EDocOrderMatch.SetRange("Document Line No.", TempPurchaseLine."Line No.");
-                EDocOrderMatch.CalcSums(Quantity);
-                TempPurchaseLine.Validate("Qty. to Invoice", EDocOrderMatch.Quantity);
+                EDocOrderMatch.CalcSums("Precise Quantity");
+                TempPurchaseLine.Validate("Qty. to Invoice", EDocOrderMatch."Precise Quantity");
                 TempPurchaseLine.Modify();
             until TempPurchaseLine.Next() = 0;
     end;
@@ -220,7 +220,7 @@ codeunit 6164 "E-Doc. Line Matching"
                 if EDocOrderMatch.FindSet() then
                     repeat
                         TempEDocMatchesThatWasRemoved := EDocOrderMatch;
-                        TempEDocMatchesThatWasRemoved.Quantity *= -1;
+                        TempEDocMatchesThatWasRemoved."Precise Quantity" *= -1;
                         TempEDocMatchesThatWasRemoved.Insert();
                     until EDocOrderMatch.Next() = 0;
             until TempPurchaseLine.Next() = 0;
@@ -368,7 +368,7 @@ codeunit 6164 "E-Doc. Line Matching"
         TempEDocumentImportedLine.Reset();
     end;
 
-    procedure InsertOrderMatch(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary; var TempEDocMatchesThatWasMatched: Record "E-Doc. Order Match" temporary; Quantity: Integer; FullMatch: Boolean)
+    procedure InsertOrderMatch(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary; var TempEDocMatchesThatWasMatched: Record "E-Doc. Order Match" temporary; Quantity: Decimal; FullMatch: Boolean)
     begin
         TempEDocMatchesThatWasMatched.SetRange("Document Order No.", TempPurchaseLine."Document No.");
         TempEDocMatchesThatWasMatched.SetRange("Document Line No.", TempPurchaseLine."Line No.");
@@ -382,7 +382,7 @@ codeunit 6164 "E-Doc. Line Matching"
         TempEDocMatchesThatWasMatched.Validate("Document Line No.", TempPurchaseLine."Line No.");
         TempEDocMatchesThatWasMatched.Validate("E-Document Entry No.", TempEDocumentImportedLine."E-Document Entry No.");
         TempEDocMatchesThatWasMatched.Validate("E-Document Line No.", TempEDocumentImportedLine."Line No.");
-        TempEDocMatchesThatWasMatched.Validate(Quantity, Quantity);
+        TempEDocMatchesThatWasMatched.Validate("Precise Quantity", Quantity);
         TempEDocMatchesThatWasMatched.Validate("E-Document Direct Unit Cost", TempEDocumentImportedLine."Direct Unit Cost");
         TempEDocMatchesThatWasMatched.Validate("PO Direct Unit Cost", TempPurchaseLine."Direct Unit Cost");
         TempEDocMatchesThatWasMatched.Validate("Line Discount %", TempEDocumentImportedLine."Line Discount %");
@@ -395,7 +395,7 @@ codeunit 6164 "E-Doc. Line Matching"
 
     procedure MatchOneToOne(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary; var TempEDocMatchesThatWasMatched: Record "E-Doc. Order Match" temporary)
     var
-        RemaningQuantityToMatch, TotalThatCanBeInvoiced : Integer;
+        RemaningQuantityToMatch, TotalThatCanBeInvoiced : Decimal;
         FullMatch: Boolean;
     begin
         // Calculate the quantity that is available to match for purchase order line
@@ -439,7 +439,7 @@ codeunit 6164 "E-Doc. Line Matching"
 
     procedure FilterOutFullyMatchedLines(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary)
     var
-        TotalThatCanBeInvoiced: Integer;
+        TotalThatCanBeInvoiced: Decimal;
     begin
         TempEDocumentImportedLine.SetRange("Fully Matched", false);
 

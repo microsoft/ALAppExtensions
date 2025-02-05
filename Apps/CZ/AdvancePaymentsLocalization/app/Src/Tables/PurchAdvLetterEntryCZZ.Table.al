@@ -33,6 +33,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(5; "Purch. Adv. Letter No."; Code[20])
         {
             Caption = 'Purch. Adv. Letter No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = "Purch. Adv. Letter Header CZZ";
         }
@@ -44,6 +45,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(13; "Document No."; Code[20])
         {
             Caption = 'Document No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(15; "VAT Bus. Posting Group"; Code[20])
@@ -263,6 +265,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     procedure CalcUsageVATAmountLines(var PurchInvHeader: Record "Purch. Inv. Header"; var VATAmountLine: Record "VAT Amount Line")
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        VatEntry: Record "VAT Entry";
     begin
         PurchAdvLetterEntryCZZ.SetRange("Document No.", PurchInvHeader."No.");
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
@@ -279,6 +282,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
                 VATAmountLine."Amount Including VAT" := PurchAdvLetterEntryCZZ.Amount;
                 VATAmountLine."VAT Base (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Base Amount (LCY)";
                 VATAmountLine."VAT Amount (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Amount (LCY)";
+                if PurchAdvLetterEntryCZZ."VAT Entry No." <> 0 then
+                    if VATEntry.Get(PurchAdvLetterEntryCZZ."VAT Entry No.") then begin
+                        VATAmountLine."Additional-Currency Base CZL" := VATEntry."Additional-Currency Base";
+                        VATAmountLine."Additional-Currency Amount CZL" := VATEntry."Additional-Currency Amount";
+                    end;
                 if PurchInvHeader."Prices Including VAT" then
                     VATAmountLine."Line Amount" := VATAmountLine."Amount Including VAT"
                 else
@@ -441,6 +449,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     begin
         VATPostingSetup.CheckNonDeductibleVATAllowed(
             "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+    end;
+
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.Get("Vendor Ledger Entry No.");
+        exit(VendorLedgerEntry."Adjusted Currency Factor");
     end;
 
     [IntegrationEvent(false, false)]

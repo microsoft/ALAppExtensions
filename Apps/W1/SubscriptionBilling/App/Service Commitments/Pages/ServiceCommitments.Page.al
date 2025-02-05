@@ -275,7 +275,7 @@ page 8064 "Service Commitments"
                     Caption = 'Dimensions';
                     Image = Dimensions;
                     Scope = Repeater;
-                    ShortCutKey = 'Shift+Ctrl+D';
+                    ShortcutKey = 'Shift+Ctrl+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                     trigger OnAction()
@@ -305,15 +305,13 @@ page 8064 "Service Commitments"
                     Image = DataEntry;
                     Scope = Repeater;
                     ToolTip = 'Shows the related usage data.';
+                    Enabled = UsageDataEnabled;
 
                     trigger OnAction()
                     var
                         UsageDataBilling: Record "Usage Data Billing";
                     begin
-                        UsageDataBilling.SetRange(Partner, Rec.Partner);
-                        UsageDataBilling.SetRange("Service Object No.", Rec."Service Object No.");
-                        UsageDataBilling.SetRange("Service Commitment Entry No.", Rec."Entry No.");
-                        Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
+                        UsageDataBilling.ShowForServiceCommitments(Rec.Partner, Rec."Service Object No.", Rec."Entry No.");
                     end;
                 }
             }
@@ -325,7 +323,15 @@ page 8064 "Service Commitments"
         PricingUnitCostSurchargeEditable := Rec."Usage Based Pricing" = Enum::"Usage Based Pricing"::"Unit Cost Surcharge";
     end;
 
+    trigger OnAfterGetCurrRecord()
+    var
+        UsageDataBilling: Record "Usage Data Billing";
+    begin
+        UsageDataEnabled := UsageDataBilling.ExistForServiceCommitments(Rec.Partner, Rec."Service Object No.", Rec."Entry No.");
+    end;
+
     var
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         PricingUnitCostSurchargeEditable: Boolean;
+        UsageDataEnabled: Boolean;
 }

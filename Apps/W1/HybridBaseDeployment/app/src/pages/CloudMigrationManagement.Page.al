@@ -148,10 +148,10 @@ page 40063 "Cloud Migration Management"
 
                                 trigger OnDrillDown()
                                 var
-                                    HybridReplicaitonStatistics: Codeunit "Hybrid Replication Statistics";
+                                    HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
                                 begin
                                     Page.RunModal(Page::"Hybrid Companies Management");
-                                    CompaniesStatusText := HybridReplicaitonStatistics.GetCompaniesOverviewText();
+                                    CompaniesStatusText := HybridReplicationStatistics.GetCompaniesOverviewText();
                                 end;
                             }
                         }
@@ -278,15 +278,18 @@ page 40063 "Cloud Migration Management"
                     WarnAboutNonInitializedCompanies();
                 end;
             }
-
+#if not CLEAN26
             action(ResetAllCloudData)
             {
                 Enabled = IsSuper and IsSetupComplete;
-                Visible = not IsOnPrem;
+                Visible = false;
                 ApplicationArea = All;
                 Caption = 'Reset cloud data';
                 ToolTip = 'Resets migration enabled data in the cloud tenant.';
                 Image = Restore;
+                ObsoleteReason = 'This action is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
 
                 trigger OnAction()
                 var
@@ -299,7 +302,7 @@ page 40063 "Cloud Migration Management"
                     Message(ResetCompletedTxt);
                 end;
             }
-
+#endif
             action(PrepareTables)
             {
                 Enabled = IsSuper and IsSetupComplete;
@@ -588,7 +591,7 @@ page 40063 "Cloud Migration Management"
                 Visible = not IsOnPrem;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Manage API Upgrade';
-                ToolTip = 'Allows to skip the API upgrade and run it later after the cloud migraiton is completed.';
+                ToolTip = 'Allows to skip the API upgrade and run it later after the cloud migration is completed.';
                 Image = ChangeLog;
                 RunObject = page "API Data Upgrade Companies";
             }
@@ -696,17 +699,17 @@ page 40063 "Cloud Migration Management"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         TempHybridReplicationDetail: Record "Hybrid Replication Detail" temporary;
-        HybridReplicaitonStatistics: Codeunit "Hybrid Replication Statistics";
+        HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         PageCaptionTxt := CurrPage.Caption();
 
-        CompaniesStatusText := HybridReplicaitonStatistics.GetCompaniesOverviewText();
+        CompaniesStatusText := HybridReplicationStatistics.GetCompaniesOverviewText();
 
-        HybridReplicaitonStatistics.GetTotalFailedTables(HybridReplicationDetail);
+        HybridReplicationStatistics.GetTotalFailedTables(HybridReplicationDetail);
         TotalTablesFailedCount := HybridReplicationDetail.Count();
 
-        HybridReplicaitonStatistics.GetTotalSuccessfulTables(TempHybridReplicationDetail);
+        HybridReplicationStatistics.GetTotalSuccessfulTables(TempHybridReplicationDetail);
         TotalSuccessfulTablesCount := TempHybridReplicationDetail.Count();
 
         HybridCloudManagement.GetLastReplicationSummary(HybridReplicationSummary);
@@ -876,8 +879,10 @@ page 40063 "Cloud Migration Management"
         RunReplicationTxt: Label 'Data replication has been successfully started. You can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
-        ResetCloudDataConfirmQst: Label 'If you choose to reset cloud data, all migrated data will be deleted for all companies in the next migration run. Are you sure you want to reset cloud data?';
+#if not CLEAN26
+        ResetCloudDataConfirmQst: Label 'Reset cloud data is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.\\If you choose to reset cloud data, all migrated data will be deleted for all companies in the next migration run. Are you sure you want to reset cloud data?';
         ResetCompletedTxt: Label 'Reset has been successfully run. All migration enabled data will be reset in the next migration run.';
+#endif
         TablesReadyForReplicationMsg: Label 'All tables have been successfully prepared for migration.';
         NonInitializedCompaniesMsg: Label 'One or more companies have been successfully migrated but are not yet initialized. Manage the companies in the Hybrid Companies List page.';
         OpenPageMsg: Label 'Start setup';

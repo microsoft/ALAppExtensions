@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37039 "Project Invd. Sales by Cust."
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Project Invoiced Sales by Customer';
     AboutTitle = 'About Project Invoiced Sales by Customer';
     AboutText = 'The Project Invoiced Sales by Customer report details invoiced sales for a project, broken down by customer. It includes key KPIs such as % Invoiced, Billable Invoiced Price, and Billable Total Price, offering a clear view of project invoicing by customer. ';
@@ -20,7 +22,7 @@ page 37039 "Project Invd. Sales by Cust."
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37039 "Project Invd. Sales by Cust."
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectioncd82c6e10e816900e80b', Locked = true;
+        ReportPageLbl: Label 'ReportSectioncd82c6e10e816900e80b', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

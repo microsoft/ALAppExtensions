@@ -294,7 +294,7 @@ codeunit 5171 "Contoso Human Resources"
             HumanResourceUOM.Insert(true);
     end;
 
-    internal procedure UpdateEmployeeDetails(No: Code[20]; BirthDate: Date; EmploymentDate: Date; Address: Text[100]; PostCode: Code[20]; InternalPhoneNo: Text[30]; MobilePhoneNo: Text[30]; PhoneNo: Text[30]; Email: Text[80]; SocialSecurityNo: Text[30]; UnitNo: Text[30])
+    procedure UpdateEmployeeDetails(No: Code[20]; BirthDate: Date; EmploymentDate: Date; Address: Text[100]; PostCode: Code[20]; InternalPhoneNo: Text[30]; MobilePhoneNo: Text[30]; PhoneNo: Text[30]; Email: Text[80]; SocialSecurityNo: Text[30]; UnitNo: Text[30])
     var
         Employee: Record Employee;
     begin

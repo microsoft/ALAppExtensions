@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37046 "Consumption Variance"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Consumption Variance';
     AboutTitle = 'About Consumption Variance';
     AboutText = 'View your consumption cost variance % viewed over a timeline you can define to see trends. Analyze by each production order and filter by Work Centre to see the detail behind the overall percentages.';
@@ -20,7 +22,7 @@ page 37046 "Consumption Variance"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37046 "Consumption Variance"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiona9060ee37f667a3d554d', Locked = true;
+        ReportPageLbl: Label 'ReportSectiona9060ee37f667a3d554d', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

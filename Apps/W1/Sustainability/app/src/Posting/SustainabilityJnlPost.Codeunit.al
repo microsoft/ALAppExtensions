@@ -13,9 +13,13 @@ codeunit 6213 "Sustainability Jnl.-Post"
         ConfirmManagement: Codeunit "Confirm Management";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         Window: Dialog;
+        ShowConfirmDialog: Boolean;
     begin
-        if not ConfirmManagement.GetResponseOrDefault(SustainabilityPostMgt.GetPostConfirmMessage(), true) then
-            exit;
+        ShowConfirmDialog := true;
+        OnBeforeConfirmDialog(ShowConfirmDialog);
+        if ShowConfirmDialog then
+            if not ConfirmManagement.GetResponseOrDefault(SustainabilityPostMgt.GetPostConfirmMessage(), true) then
+                exit;
 
         Rec.LockTable();
 
@@ -75,9 +79,16 @@ codeunit 6213 "Sustainability Jnl.-Post"
 
                 PreviousDocumentNo := SustainabilityJnlLine."Document No.";
 
+                SustainabilityJnlLine.UpdateSustainabilityJnlLineWithPostingSign(SustainabilityJnlLine, SustainabilityJnlLine.GetPostingSign(SustainabilityJnlLine));
+
                 SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
             until SustainabilityJnlLine.Next() = 0;
 
         NoSeriesBatch.SaveState();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeConfirmDialog(var ShowConfirmDialog: Boolean)
+    begin
     end;
 }

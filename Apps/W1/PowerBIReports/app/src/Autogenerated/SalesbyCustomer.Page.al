@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37005 "Sales by Customer"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales by Customer';
     AboutTitle = 'About Sales by Customer';
     AboutText = 'The Sales by Customer report breaks down sales performance highlighting key metrics such as Sales Amount, Cost Amount, Gross Profit and Gross Profit Margin by customer. This report provides detailed insights into which customer and items driving revenue and profitability.';
@@ -20,7 +22,7 @@ page 37005 "Sales by Customer"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37005 "Sales by Customer"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection48bbd51044e094b7a9a2', Locked = true;
+        ReportPageLbl: Label 'ReportSection48bbd51044e094b7a9a2', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

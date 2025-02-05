@@ -6,7 +6,7 @@ query 36993 "Job Planning Lines"
 {
     Access = Internal;
     QueryType = API;
-    Caption = 'Power BI Job Planning Line';
+    Caption = 'Power BI Project Planning Line';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
     APIVersion = 'v0.5';

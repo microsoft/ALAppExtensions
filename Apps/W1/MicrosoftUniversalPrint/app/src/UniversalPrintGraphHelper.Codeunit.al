@@ -244,6 +244,7 @@ codeunit 2752 "Universal Print Graph Helper"
         ResponseErrorMessage: Text;
         ResponseErrorDetails: Text;
         RequestId: Text;
+        TraceId: Text;
     begin
         if HttpWebRequestMgt.SendRequestAndReadTextResponse(ResponseContent, ResponseErrorMessage, ResponseErrorDetails, StatusCode, ResponseHeaders) then
             exit(true);
@@ -251,7 +252,10 @@ codeunit 2752 "Universal Print Graph Helper"
         if not this.TryGetRequestIdfromHeaders(ResponseHeaders, RequestId) then
             RequestId := this.NotFoundTelemetryTxt;
 
-        Session.LogMessage('0000EG1', StrSubstNo(this.InvokeWebRequestFailedTelemetryTxt, StatusCode, ResponseErrorMessage, RequestId),
+        if not this.TryGetTraceIdfromHeaders(ResponseHeaders, TraceId) then
+            TraceId := this.NotFoundTelemetryTxt;
+
+        Session.LogMessage('0000EG1', StrSubstNo(this.InvokeWebRequestFailedTelemetryTxt, StatusCode, ResponseErrorMessage, RequestId, TraceId),
         Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintTelemetryCategoryTxt);
 
         Clear(ErrorMessage);
@@ -274,6 +278,12 @@ codeunit 2752 "Universal Print Graph Helper"
     local procedure TryGetRequestIdfromHeaders(ResponseHeaders: DotNet NameValueCollection; var RequestId: Text)
     begin
         RequestId := ResponseHeaders.Get('Request-Id');
+    end;
+
+    [TryFunction]
+    local procedure TryGetTraceIdfromHeaders(ResponseHeaders: DotNet NameValueCollection; var RequestId: Text)
+    begin
+        RequestId := ResponseHeaders.Get('X-MSEdge-Ref');
     end;
 
     internal procedure GetPaperSizeFromUniversalPrintMediaSize(textValue: Text): Enum "Printer Paper Kind"
@@ -425,7 +435,7 @@ codeunit 2752 "Universal Print Graph Helper"
         UniversalPrintTelemetryCategoryTxt: Label 'Universal Print AL', Locked = true;
         UniversalPrintFeatureTelemetryNameTxt: Label 'Universal Print', Locked = true;
         NoTokenTelemetryTxt: Label 'Access token could not be retrieved.', Locked = true;
-        InvokeWebRequestFailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, RequestId %3', Locked = true;
+        InvokeWebRequestFailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, RequestId %3, TraceId %4', Locked = true;
         NotFoundTelemetryTxt: Label 'Not Found.', Locked = true;
         UniversalPrintPortalUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2153618', Locked = true;
         JPNHagakiSizeTxt: Label 'JPN Hagaki', Locked = true;

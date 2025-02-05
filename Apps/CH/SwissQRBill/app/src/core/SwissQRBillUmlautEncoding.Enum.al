@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEANSCHEMA26
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -29,3 +30,4 @@ enum 11513 "Swiss QR-Bill Umlaut Encoding"
         Caption = 'Western European ISO-8859-1';
     }
 }
+#endif

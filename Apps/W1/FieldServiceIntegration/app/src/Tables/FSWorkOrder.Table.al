@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6617 "FS Work Order"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_workorder';
     TableType = CRM;
@@ -17,7 +21,7 @@ table 6617 "FS Work Order"
     {
         field(1; WorkOrderId; GUID)
         {
-            ExternalName = 'msdyn_workorderId';
+            ExternalName = 'msdyn_workorderid';
             ExternalType = 'Uniqueidentifier';
             ExternalAccess = Insert;
             Description = 'Shows the entity instances.';

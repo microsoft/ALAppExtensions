@@ -25,6 +25,7 @@ permissionset 10032 "IRS Forms - Objects"
                   table "IRS 1099 Vend. Form Box Buffer" = X,
                   table "IRS Forms Setup" = X,
                   table "IRS Reporting Period" = X,
+                  page "IRS 1099 Email Content Setup" = X,
                   page "IRS 1099 Form Boxes" = X,
                   page "IRS 1099 Form Documents" = X,
                   page "IRS 1099 Form Document" = X,
@@ -46,6 +47,7 @@ permissionset 10032 "IRS Forms - Objects"
                   codeunit "IRS Forms Facade" = X,
                   codeunit "IRS Reporting Period" = X,
                   report "IRS 1099 Create Form Docs" = X,
+                  report "IRS 1099 FIRE" = X,
                   report "IRS 1099 Print" = X,
                   report "IRS 1099 Send Email" = X;
 }

@@ -14,6 +14,7 @@ codeunit 30286 "Shpfy Company API"
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     internal procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location"; ShopifyCustomer: Record "Shpfy Customer"): Boolean
     var
@@ -27,17 +28,18 @@ codeunit 30286 "Shpfy Company API"
         GraphQuery := CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
         if JResponse.SelectToken('$.data.companyCreate.company', JItem) then
-            if JItem.IsObject then
+            if JItem.IsObject then begin
                 ShopifyCompany.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
-        if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.locations.edges') then
-            if JLocations.Count = 1 then
-                if JLocations.Get(0, JItem) then begin
-                    ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
-                    CompanyLocation.Id := ShopifyCompany."Location Id";
-                end;
-        if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.contactRoles.edges') then
-            foreach JItem in JLocations do
-                CompanyContactRoles.Add(JsonHelper.GetValueAsText(JItem, 'node.name'), CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id')));
+                if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.locations.edges') then
+                    if JLocations.Count = 1 then
+                        if JLocations.Get(0, JItem) then begin
+                            ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+                            CompanyLocation.Id := ShopifyCompany."Location Id";
+                        end;
+                if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.contactRoles.edges') then
+                    foreach JItem in JLocations do
+                        CompanyContactRoles.Add(JsonHelper.GetValueAsText(JItem, 'node.name'), CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id')));
+            end;
         if ShopifyCompany.Id > 0 then begin
             CompanyContactId := AssignCompanyMainContact(ShopifyCompany.Id, ShopifyCustomer.Id, ShopifyCompany."Location Id", CompanyContactRoles);
             ShopifyCompany."Main Contact Id" := CompanyContactId;
@@ -74,6 +76,7 @@ codeunit 30286 "Shpfy Company API"
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant): Boolean
@@ -122,6 +125,8 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation.Recipient <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
         exit(GraphQuery.ToText());
@@ -208,6 +213,8 @@ codeunit 30286 "Shpfy Company API"
             HasChange := AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> xCompanyLocation."Province Code" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation.Recipient <> xCompanyLocation.Recipient then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
 
         if HasChange then begin
@@ -295,6 +302,7 @@ codeunit 30286 "Shpfy Company API"
         CompanyLocation: Record "Shpfy Company Location";
         UpdatedAt: DateTime;
         JLocations: JsonArray;
+        JMetafields: JsonArray;
         JItem: JsonToken;
         OutStream: OutStream;
         PhoneNo: Text;
@@ -341,7 +349,10 @@ codeunit 30286 "Shpfy Company API"
                     PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
+                    CompanyLocation.Recipient := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.recipient', MaxStrLen(CompanyLocation.Recipient)), 1, MaxStrLen(CompanyLocation.Recipient));
                     CompanyLocation.Modify();
                 end;
+        if JsonHelper.GetJsonArray(JCompany, JMetafields, 'metafields.edges') then
+            MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Company", ShopifyCompany.Id);
     end;
 }

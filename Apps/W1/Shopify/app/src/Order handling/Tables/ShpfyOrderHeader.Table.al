@@ -66,6 +66,7 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             ExtendedDatatype = PhoneNo;
         }
+#if not CLEANSCHEMA25
         field(12; Token; Text[50])
         {
             Caption = 'Token';
@@ -75,6 +76,7 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Not available in GraphQL data.';
         }
+#endif
         field(13; Gateway; Text[50])
         {
             Caption = 'Gateway';
@@ -91,6 +93,7 @@ table 30118 "Shpfy Order Header"
             Caption = 'Sell-to Last Name';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(16; Currency; Code[10])
         {
             Caption = 'Currency';
@@ -127,20 +130,23 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Not available in GraphQL data.';
         }
+#endif
+#if not CLEANSCHEMA28
         field(21; "Risk Level"; Enum "Shpfy Risk Level")
         {
             Caption = 'Risk Level';
             DataClassification = SystemMetadata;
             Editable = false;
-            ObsoleteReason = 'This field is not imported.';
+            ObsoleteReason = 'This field is not imported. Use field "High Risk" field.';
 #if not CLEAN25
             ObsoleteState = Pending;
             ObsoleteTag = '25.0';
 #else
-                    ObsoleteState = Removed;
-                    ObsoleteTag = '28.0';
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(22; "Fully Paid"; Boolean)
         {
             Caption = 'Fully Paid';
@@ -159,6 +165,7 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA25
         field(25; "Contact Email"; Text[100])
         {
             Caption = 'Contact Email';
@@ -168,12 +175,14 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Not available in GraphQL data.';
         }
+#endif
         field(26; "Total Tip Received"; Decimal)
         {
             Caption = 'Total Tip Received';
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA25
         field(27; "Session Hash"; Text[50])
         {
             Caption = 'Session Hash';
@@ -183,6 +192,7 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Not available in GraphQL data.';
         }
+#endif
         field(48; "Ship-to First Name"; Text[50])
         {
             Caption = 'Ship-to First Name';
@@ -337,6 +347,7 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA25
         field(79; "Buyer Accepts Marketing"; Boolean)
         {
             Caption = 'Buyer Accepts Marketing';
@@ -345,6 +356,7 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Not available in GraphQL data.';
         }
+#endif
         field(80; "Cancelled At"; DateTime)
         {
             Caption = 'Cancelled At';
@@ -446,6 +458,7 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA28
         field(101; "Location Id"; BigInteger)
         {
             Caption = 'Location Id';
@@ -460,6 +473,7 @@ table 30118 "Shpfy Order Header"
             ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(102; "Channel Name"; Text[100])
         {
             Caption = 'Channel Name';
@@ -591,12 +605,24 @@ table 30118 "Shpfy Order Header"
             Caption = 'Company Location Id';
             DataClassification = SystemMetadata;
         }
+        field(128; "High Risk"; Boolean)
+        {
+            Caption = 'High Risk';
+            FieldClass = FlowField;
+            CalcFormula = exist("Shpfy Order Risk" where("Order Id" = field("Shopify Order Id"), Level = const(High)));
+        }
+        field(129; "Due Date"; Date)
+        {
+            Caption = 'Due Date';
+            DataClassification = CustomerContent;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
             DataClassification = SystemMetadata;
             TableRelation = "Shpfy Shop";
         }
+#if not CLEANSCHEMA25
         field(501; "Customer Template Code"; Code[10])
         {
             Caption = 'Customer Template Code';
@@ -606,6 +632,7 @@ table 30118 "Shpfy Order Header"
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
         }
+#endif
         field(502; "Customer Templ. Code"; Code[20])
         {
             Caption = 'Customer Template Code';

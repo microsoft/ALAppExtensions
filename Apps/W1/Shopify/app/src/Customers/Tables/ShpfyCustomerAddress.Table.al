@@ -90,15 +90,6 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Default';
             DataClassification = CustomerContent;
         }
-        field(101; "Ship-To Address SystemId"; Guid)
-        {
-            Access = Internal;
-            Caption = 'Ship-To Address SystemId';
-            DataClassification = SystemMetadata;
-            ObsoleteReason = 'Not used.';
-            ObsoleteTag = '24.0';
-            ObsoleteState = Removed;
-        }
         field(102; CustomerSystemId; Guid)
         {
             Caption = 'Customer System Id';

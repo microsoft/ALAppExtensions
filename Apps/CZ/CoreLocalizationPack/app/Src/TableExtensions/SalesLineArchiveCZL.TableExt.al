@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEANSCHEMA25
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -18,3 +19,4 @@ tableextension 31016 "Sales Line Archive CZL" extends "Sales Line Archive"
         }
     }
 }
+#endif

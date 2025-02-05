@@ -18,7 +18,6 @@ using Microsoft.CRM.Outlook;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Currency;
 using Microsoft.Bank.BankAccount;
-using System.Security.AccessControl;
 
 table 8052 "Customer Contract"
 {
@@ -610,7 +609,6 @@ table 8052 "Customer Contract"
                 PostCode.LookupPostCode(ShipToCity, "Ship-to Post Code", ShipToCounty, "Ship-to Country/Region Code");
                 "Ship-to City" := CopyStr(ShipToCity, 1, MaxStrLen("Ship-to City"));
                 "Ship-to County" := CopyStr(ShipToCounty, 1, MaxStrLen("Ship-to County"));
-
             end;
 
             trigger OnValidate()
@@ -675,7 +673,6 @@ table 8052 "Customer Contract"
                 DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
-
         field(5052; "Sell-to Contact No."; Code[20])
         {
             Caption = 'Sell-to Contact No.';
@@ -807,7 +804,7 @@ table 8052 "Customer Contract"
         {
             Caption = 'Assigned User ID';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup"."User ID";
         }
         field(9500; Active; Boolean)
         {
@@ -819,7 +816,7 @@ table 8052 "Customer Contract"
             TableRelation = "Contract Type";
             Caption = 'Contract Type';
 
-            trigger onValidate()
+            trigger OnValidate()
             begin
                 ClearHarmonizedBillingFields(Rec."Contract Type", xRec."Contract Type");
                 SetDefaultWithoutContractDeferralsFromContractType();
@@ -997,6 +994,8 @@ table 8052 "Customer Contract"
         ModifySellToCustomerAddressNotificationDescriptionTxt: Label 'Warn if the sell-to address on customer contract is different from the customer''s existing address.';
         ModifyBillToCustomerAddressNotificationNameTxt: Label 'Update Bill-to Customer Address';
         ModifyBillToCustomerAddressNotificationDescriptionTxt: Label 'Warn if the bill-to address on customer contract is different from the customer''s existing address.';
+        NotifySalesLineDiscountNotTransferredNotificationNameTxt: Label 'Sales Line Discount to Sales Service Commitment';
+        NotifySalesLineDiscountNotTransferredDescriptionTxt: Label 'Warn if a Sales Line Discount is not transferred to a Sales Service Commitment.';
         UpdateDimensionsOnLinesQst: Label 'You may have changed a dimension.\\Do you want to update the lines?';
         AssignServicePricesMustBeRecalculatedMsg: Label 'You added services to a contract in which a different currency is stored than in the services. The prices for the services must therefore be recalculated.';
         CurrCodeChangePricesMustBeRecalculatedMsg: Label 'If you change the currency code, the prices for existing services must be recalculated.';
@@ -1092,7 +1091,6 @@ table 8052 "Customer Contract"
         CustomerContractLine.SetRange("Contract No.", Rec."No.");
         exit(not CustomerContractLine.IsEmpty());
     end;
-
 
     internal procedure NotReleasedCustomerContractDeferralsExists(): Boolean
     begin
@@ -1819,6 +1817,11 @@ table 8052 "Customer Contract"
         exit('9CF909A0-8C02-4153-89FD-8E30CD413E17');
     end;
 
+    internal procedure GetNotificationIdDiscountIsNotTransferredFromSalesLine(): Guid
+    begin
+        exit('c4ede62f-7719-41af-a061-c1148cc18cfc');
+    end;
+
     internal procedure DontNotifyCurrentUserAgain(NotificationID: Guid)
     var
         MyNotifications: Record "My Notifications";
@@ -1831,6 +1834,12 @@ table 8052 "Customer Contract"
                 GetModifyBillToCustomerAddressNotificationId():
                     MyNotifications.InsertDefault(NotificationID, ModifyBillToCustomerAddressNotificationNameTxt,
                       ModifyBillToCustomerAddressNotificationDescriptionTxt, false);
+                GetNotificationIdDiscountIsNotTransferredFromSalesLine():
+                    MyNotifications.InsertDefault(
+                        NotificationID,
+                        NotifySalesLineDiscountNotTransferredNotificationNameTxt,
+                        NotifySalesLineDiscountNotTransferredDescriptionTxt,
+                        false);
             end;
     end;
 
@@ -1970,6 +1979,7 @@ table 8052 "Customer Contract"
 
         ServiceCommitment.GetCombinedDimensionSetID(ServiceCommitment."Dimension Set ID", CustomerContract."Dimension Set ID");
         if "Currency Code" <> ServiceCommitment."Currency Code" then begin
+            CalculateCurrencyFactor(ServiceCommitment."Service Start Date", CustomerContract."Currency Code");
             ServiceCommitment.SetCurrencyData(CurrencyFactor, CurrencyFactorDate, CustomerContract."Currency Code");
             ServiceCommitment.RecalculateAmountsFromCurrencyData();
         end;
@@ -2015,6 +2025,7 @@ table 8052 "Customer Contract"
             "Default Billing Rhythm" := ServiceCommitment."Billing Rhythm";
         end;
         CalculateNextBillingDates();
+        OnAfterUpdateHarmonizedBillingFields(Rec);
     end;
 
     internal procedure CalculateNextBillingDates()
@@ -2122,11 +2133,8 @@ table 8052 "Customer Contract"
         ServiceCommitment.SetAscending("Next Billing Date", true);
         ServiceCommitment.SetRange("Contract No.", Rec."No.");
         ServiceCommitment.SetFilter("Contract Line No.", '<>%1', DeletedCustContractLineNo);
-        if ServiceCommitment.FindFirst() then
-            repeat
-                if not ServiceCommitment.IsClosed() then
-                    ServiceCommitmentFound := true;
-            until (ServiceCommitmentFound = true) or (ServiceCommitment.Next() = 0);
+        ServiceCommitment.SetRange(Closed, false);
+        ServiceCommitmentFound := ServiceCommitment.FindFirst();
     end;
 
     internal procedure IsContractEmpty(): Boolean
@@ -2199,6 +2207,23 @@ table 8052 "Customer Contract"
         AppendDifferentShipToAddressNotification(ServiceObject."No.");
     end;
 
+    local procedure CalculateCurrencyFactor(ProvisionStartDate: Date; CurrencyCode: Code[10])
+    var
+        CurrExchRage: Record "Currency Exchange Rate";
+    begin
+        if CurrencyCode = '' then
+            exit;
+        if CurrencyFactor <> 0 then
+            exit;
+        if CurrencyFactorDate <> 0D then
+            exit;
+        if ProvisionStartDate = 0D then
+            exit;
+
+        CurrencyFactorDate := ProvisionStartDate;
+        CurrencyFactor := CurrExchRage.ExchangeRate(ProvisionStartDate, CurrencyCode)
+    end;
+
     [InternalEvent(false, false)]
     local procedure OnAfterIsShipToAddressEqualToSellToAddress(SellToCustomerContract: Record "Customer Contract"; ShipToCustomerContract: Record "Customer Contract"; var Result: Boolean)
     begin
@@ -2269,7 +2294,6 @@ table 8052 "Customer Contract"
     begin
     end;
 
-
     [InternalEvent(false, false)]
     local procedure OnBeforeCopyShipToCustomerAddressFieldsFromCustomer(var CustomerContract: Record "Customer Contract"; Customer: Record Customer; var IsHandled: Boolean)
     begin
@@ -2329,7 +2353,6 @@ table 8052 "Customer Contract"
     local procedure OnInitFromContactOnAfterInitNoSeries(var CustomerContract: Record "Customer Contract"; var xCustomerContract: Record "Customer Contract")
     begin
     end;
-
 
     [InternalEvent(false, false)]
     local procedure OnValidateSellToCustomerNoAfterInit(var CustomerContract: Record "Customer Contract"; var xCustomerContract: Record "Customer Contract")
@@ -2423,6 +2446,11 @@ table 8052 "Customer Contract"
 
     [InternalEvent(false, false)]
     local procedure OnAfterCreateDimDimSource(Rec: Record "Customer Contract"; CurrFieldNo: Integer; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterUpdateHarmonizedBillingFields(var CustomerContract: Record "Customer Contract")
     begin
     end;
 }

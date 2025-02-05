@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Certificate;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6222 "Sust. Item Card" extends "Item Card"
 {
@@ -11,6 +12,8 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
             group("Sustainability")
             {
                 Caption = 'Sustainability';
+                Visible = SustainabilityVisible;
+
                 field("GHG Credit"; Rec."GHG Credit")
                 {
                     ApplicationArea = Basic, Suite;
@@ -20,19 +23,97 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 {
                     ApplicationArea = Basic, Suite;
                     Enabled = Rec."GHG Credit";
-                    ToolTip = 'Specifies the Carbon Credit Per UOM of Item';
+                    ToolTip = 'Specifies the Carbon Credit Per UOM of the Item.';
                 }
                 field("Sust. Cert. No."; Rec."Sust. Cert. No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Sust. Cert. No. of Item';
+                    ToolTip = 'Specifies the Sustainability Certificate Number of the Item.';
                 }
                 field("Sust. Cert. Name"; Rec."Sust. Cert. Name")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Sust. Cert. Name of Item';
+                    ToolTip = 'Specifies the Sustainability Certificate Name of the Item.';
+                }
+                field("Default Sust. Account"; Rec."Default Sust. Account")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Default Sust. Account field.';
+                }
+                field("Default CO2 Emission"; Rec."Default CO2 Emission")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
+                    ToolTip = 'Specifies the value of the Default CO2 Emission field.';
+                }
+                field("Default CH4 Emission"; Rec."Default CH4 Emission")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
+                    ToolTip = 'Specifies the value of the Default CH4 Emission field.';
+                }
+                field("Default N2O Emission"; Rec."Default N2O Emission")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
+                    ToolTip = 'Specifies the value of the Default N2O Emission field.';
+                }
+                field("CO2e per Unit"; Rec."CO2e per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the value of the CO2e per Unit field.';
                 }
             }
         }
     }
+
+    actions
+    {
+        addafter(PrintLabel)
+        {
+            action("Calculate CO2e")
+            {
+                Caption = 'Calculate CO2e';
+                ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
+            }
+        }
+    }
+
+    trigger OnOpenPage()
+    begin
+        VisibleSustainabilityControls();
+    end;
+
+    local procedure VisibleSustainabilityControls()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+
+        SustainabilityVisible := SustainabilitySetup."Item Emissions";
+    end;
+
+    local procedure RunCalculateCO2e()
+    var
+        Item: Record Item;
+        CalculateCO2e: Report "Sust. Item Calculate CO2e";
+    begin
+        Item.SetFilter("No.", Rec."No.");
+        CalculateCO2e.SetTableView(Item);
+        CalculateCO2e.Run();
+    end;
+
+    var
+        SustainabilityVisible: Boolean;
 }

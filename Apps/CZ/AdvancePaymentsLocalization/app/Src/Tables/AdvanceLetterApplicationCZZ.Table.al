@@ -211,8 +211,10 @@ table 31007 "Advance Letter Application CZZ"
                 NewAdvanceLetterApplicationCZZ."Amount (LCY)" -= AdvanceLetterApplicationCZZ."Amount (LCY)";
                 NewAdvanceLetterApplicationCZZ."Document Type" := NewFromAdvLetterUsageDocTypeCZZ;
                 NewAdvanceLetterApplicationCZZ."Document No." := NewFromDocumentNo;
-                if NewAdvanceLetterApplicationCZZ.Amount > 0 then
+                if NewAdvanceLetterApplicationCZZ.Amount > 0 then begin
+                    OnGetPossibleSalesAdvanceOnBeforeInsertNewAdvanceLetterApplication(NewAdvanceLetterApplicationCZZ, AdvanceLetterApplicationCZZ);
                     NewAdvanceLetterApplicationCZZ.Insert();
+                end;
             until SalesAdvLetterHeaderCZZ.Next() = 0;
     end;
 
@@ -503,6 +505,11 @@ table 31007 "Advance Letter Application CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnGetPossiblePurchAdvanceOnBeforeInsertNewAdvanceLetterApplication(var NewAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetPossibleSalesAdvanceOnBeforeInsertNewAdvanceLetterApplication(var NewAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
     begin
     end;
 

@@ -26,13 +26,13 @@ codeunit 4783 "Manufacturing Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Mfg Location");
         Codeunit.Run(Codeunit::"Create Mfg Posting Group");
         Codeunit.Run(Codeunit::"Create Mfg Posting Setup");
-        Codeunit.Run(Codeunit::"Create Mfg Availability Setup");
         Codeunit.Run(Codeunit::"Create Mfg Order Promising");
         Codeunit.Run(Codeunit::"Create Mfg Stop Scrap");
     end;
 
     procedure CreateMasterData()
     begin
+        Codeunit.Run(Codeunit::"Create Mfg Availability Setup");
         Codeunit.Run(Codeunit::"Create Mfg Vendor");
         Codeunit.Run(Codeunit::"Create Mfg Item");
         Codeunit.Run(Codeunit::"Create Mfg Capacity");

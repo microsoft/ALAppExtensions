@@ -87,6 +87,18 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     column(LCYCode_GeneralLedgerSetup; "LCY Code")
                     {
                     }
+                    column(VATCurrencyCode; VATCurrencyCode)
+                    {
+                    }
+                    trigger OnAfterGetRecord()
+                    begin
+                        UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+
+                        if UseFunctionalCurrency then
+                            VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                        else
+                            VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                    end;
                 }
             }
 
@@ -295,7 +307,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(PrepaymentAmt_SalesInvoiceHeader; PrepaymentAmt)
             {
             }
-            column(TotalAfterPrepayed_SalesInvoiceHeader; TotalAfterPrepayed)
+            column(TotalAfterPrepayed_SalesInvoiceHeader; Format(TotalAfterPrepayed, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Invoice Header"."Currency Code")))
             {
             }
             column(CalculatedExchRate; CalculatedExchRate)
@@ -429,6 +441,12 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     column(InvDiscountAmount_SalesInvoiceLine; "Inv. Discount Amount")
                     {
                     }
+
+                    trigger OnAfterGetRecord()
+                    begin
+                        if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Sales Invoice Line", FieldNo(Quantity)) then
+                            CurrReport.Skip();
+                    end;
                 }
                 dataitem(SalesAdvanceUsage; "Sales Adv. Letter Entry CZZ")
                 {
@@ -513,6 +531,10 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     trigger OnAfterGetRecord()
                     begin
                         TempVATAmountLine.GetLine(Number);
+                        if UseFunctionalCurrency then begin
+                            TempVATAmountLine."VAT Base (LCY) CZL" := TempVATAmountLine."Additional-Currency Base CZL";
+                            TempVATAmountLine."VAT Amount (LCY) CZL" := TempVATAmountLine."Additional-Currency Amount CZL";
+                        end;
                     end;
 
                     trigger OnPreDataItem()
@@ -633,6 +655,19 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                 end else
                     CalculatedExchRate := 1;
 
+                if UseFunctionalCurrency then
+                    if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
+                        if CalculatedExchRate <> 1 then begin
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                            CalculatedExchRate := Round(((1 / "VAT Currency Factor CZL") / (1 / "Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                        end else begin
+                            CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                            CalculatedExchRate := Round("Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        end;
+                        ExchRateText :=
+                          StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
+                          CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                    end;
                 SalesInvLine.SetRange("Document No.", "No.");
                 SalesInvLine.CalcSums(Amount, "Amount Including VAT");
                 Amount := SalesInvLine.Amount;
@@ -696,6 +731,12 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Show Additional Fee Note';
                         ToolTip = 'Specifies when the additional fee note is to be show';
+                    }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
                     }
                 }
             }
@@ -790,6 +831,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         ReasonCode: Record "Reason Code";
         ShipmentMethod: Record "Shipment Method";
         TempVATAmountLine: Record "VAT Amount Line" temporary;
+        AutoFormat: Codeunit "Auto Format";
         CompanyAddr: array[8] of Text[100];
         CustAddr: array[8] of Text[100];
         ShipToAddr: array[8] of Text[100];
@@ -805,6 +847,9 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         LogInteract: Boolean;
         QRPaymentCode: Text;
         DisplayAddFeeNote: Boolean;
+        UseFunctionalCurrency: Boolean;
+        VATCurrencyCode: Code[10];
+        HideLinesWithZeroQuantity: Boolean;
 
     procedure InitLogInteraction()
     begin

@@ -112,6 +112,11 @@ page 18003 "GST Posting Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies state-wise GST TDS receivable account  for each component. ';
                 }
+                field("GST TDS Payable Account"; Rec."GST TDS Payable Account")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies state-wise GST TDS payable account for each component. ';
+                }
                 field("GST TCS Receivable Account"; Rec."GST TCS Receivable Account")
                 {
                     ApplicationArea = Basic, Suite;

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37018 "Purchases by Vendor"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases by Vendor';
     AboutTitle = 'About Purchases by Vendor';
     AboutText = 'The Purchases by Vendor report shows purchase amounts and quantities by vendor. Featuring a Treemap for item spending contributions and a bar chart for purchase amounts by item category, offering a clear view of vendor performance and spending patterns.';
@@ -20,7 +22,7 @@ page 37018 "Purchases by Vendor"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37018 "Purchases by Vendor"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiond03ece9eb5ac094617e2', Locked = true;
+        ReportPageLbl: Label 'ReportSectiond03ece9eb5ac094617e2', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37045 "Finished Prod. Order Breakdown"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Finished Prod. Order Breakdown';
     AboutTitle = 'About Finished Prod. Order Breakdown';
     AboutText = 'View Expected Quantities and Cost vs Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';
@@ -20,7 +22,7 @@ page 37045 "Finished Prod. Order Breakdown"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37045 "Finished Prod. Order Breakdown"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionb4e9630e25c77fccda8a', Locked = true;
+        ReportPageLbl: Label 'ReportSectionb4e9630e25c77fccda8a', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

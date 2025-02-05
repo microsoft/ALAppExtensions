@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA25
 namespace Microsoft.Integration.Shopify;
 
 table 30140 "Shpfy Templates Warnings"
@@ -34,3 +35,4 @@ table 30140 "Shpfy Templates Warnings"
         }
     }
 }
+#endif

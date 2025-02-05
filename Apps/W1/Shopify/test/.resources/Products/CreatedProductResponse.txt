@@ -1,0 +1,1 @@
+{ "data": { "productCreate": { "product": { "legacyResourceId": "1234567890"} }}}

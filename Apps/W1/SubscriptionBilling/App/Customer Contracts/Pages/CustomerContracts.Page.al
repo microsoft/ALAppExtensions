@@ -8,7 +8,7 @@ page 8053 "Customer Contracts"
 {
     ApplicationArea = All;
     Caption = 'Customer Contracts';
-    CardPageID = "Customer Contract";
+    CardPageId = "Customer Contract";
     DataCaptionFields = "Sell-to Customer No.";
     Editable = false;
     PageType = List;
@@ -185,7 +185,7 @@ page 8053 "Customer Contracts"
                     ApplicationArea = Dimensions;
                     Caption = 'Dimensions';
                     Image = Dimensions;
-                    ShortCutKey = 'Alt+D';
+                    ShortcutKey = 'Alt+D';
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                     trigger OnAction()
@@ -200,7 +200,7 @@ page 8053 "Customer Contracts"
                     ToolTip = 'Customer Contract Deferrals.';
                     Image = LedgerEntries;
                     ShortcutKey = 'Ctrl+F7';
-                    RunObject = Page "Customer Contract Deferrals";
+                    RunObject = page "Customer Contract Deferrals";
                     RunPageView = sorting("Contract No.");
                     RunPageLink = "Contract No." = field("No.");
 

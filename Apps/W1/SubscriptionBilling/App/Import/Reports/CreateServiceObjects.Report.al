@@ -2,8 +2,8 @@ namespace Microsoft.SubscriptionBilling;
 
 report 8001 "Create Service Objects"
 {
-    UsageCategory = Administration;
     ApplicationArea = All;
+    UsageCategory = None;
     ProcessingOnly = true;
     Caption = 'Create Service Objects';
 

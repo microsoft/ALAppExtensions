@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37011 "Daily Purchases"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Daily Purchases';
     AboutTitle = 'About Daily Purchases';
     AboutText = 'The Daily Purchases report offers a detailed analysis of purchase amounts by weekday. The tabular report highlights purchasing trends by using conditional formatting to display purchase figures in a gradient from low to high.';
@@ -20,7 +22,7 @@ page 37011 "Daily Purchases"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37011 "Daily Purchases"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection02de1de9adad5ee196e0', Locked = true;
+        ReportPageLbl: Label 'ReportSection02de1de9adad5ee196e0', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36999 "Daily Sales"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Daily Sales';
     AboutTitle = 'About Daily Sales';
     AboutText = 'The Daily Sales report offers a detailed analysis of sales amounts by weekday. The tabular report highlights trends by using conditional formatting to display figures in a gradient from low to high.';
@@ -20,7 +22,7 @@ page 36999 "Daily Sales"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 36999 "Daily Sales"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionb3680fa80c9685297c06', Locked = true;
+        ReportPageLbl: Label 'ReportSectionb3680fa80c9685297c06', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

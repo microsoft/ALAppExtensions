@@ -6,7 +6,7 @@ using System.TestTools.TestRunner;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 
-codeunit 149828 "Search Items With Filters Test"
+codeunit 133512 "Search Items With Filters Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

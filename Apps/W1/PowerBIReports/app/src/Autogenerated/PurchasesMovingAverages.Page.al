@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37012 "Purchases Moving Averages"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Moving Averages';
     AboutTitle = 'About Purchases Moving Averages';
     AboutText = 'The Purchases Moving Average report visualizes the 30-day moving average of purchase amounts over time. This helps identify trends by smoothing out fluctuations and highlighting overall patterns.';
@@ -20,7 +22,7 @@ page 37012 "Purchases Moving Averages"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37012 "Purchases Moving Averages"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionc4bf0b0750800ca6b0c6', Locked = true;
+        ReportPageLbl: Label 'ReportSectionc4bf0b0750800ca6b0c6', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

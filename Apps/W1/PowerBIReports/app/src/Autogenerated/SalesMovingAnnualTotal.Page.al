@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37001 "Sales Moving Annual Total"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Moving Annual Total';
     AboutTitle = 'About Sales Moving Annual Total';
     AboutText = 'The Sales Moving Annual Total report provides a rolling 12-month view of sales figures, tracking the current year to the previous year''s performance. ';
@@ -20,7 +22,7 @@ page 37001 "Sales Moving Annual Total"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37001 "Sales Moving Annual Total"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection713e48d18640066bc508', Locked = true;
+        ReportPageLbl: Label 'ReportSection713e48d18640066bc508', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

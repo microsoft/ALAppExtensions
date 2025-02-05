@@ -51,36 +51,19 @@ table 5375 "E-Document Module Setup"
 
     procedure InitEDocumentModuleSetup()
     var
-        CreateContosoCustomerVendor: Codeunit "Create Common Customer/Vendor";
+        CreateVendor: Codeunit "Create Vendor";
     begin
         Rec.InitRecord();
 
         if Rec."Vendor No. 1" = '' then
-            if IsDomesticVendor() then
-                Rec.Validate("Vendor No. 1", CreateContosoCustomerVendor.DomesticVendor1())
-            else
-                Rec.Validate("Vendor No. 1", CreateContosoCustomerVendor.DomesticVendor2());
+            Rec.Validate("Vendor No. 1", CreateVendor.DomesticFirstUp());
+
         if Rec."Vendor No. 2" = '' then
-            Rec.Validate("Vendor No. 2", CreateContosoCustomerVendor.DomesticVendor2());
+            Rec.Validate("Vendor No. 2", CreateVendor.DomesticWorldImporter());
+
         if Rec."Vendor No. 3" = '' then
-            if IsDomesticVendor() then
-                Rec.Validate("Vendor No. 3", CreateContosoCustomerVendor.DomesticVendor3())
-            else
-                Rec.Validate("Vendor No. 3", CreateContosoCustomerVendor.DomesticVendor2());
+            Rec.Validate("Vendor No. 3", CreateVendor.DomesticNodPublisher());
 
         Rec.Modify();
-    end;
-
-    local procedure IsDomesticVendor(): Boolean
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-        ApplicationFamily: Text;
-    begin
-        // Temporary address incorrect local vendors in these countries.
-        ApplicationFamily := EnvironmentInformation.GetApplicationFamily();
-        if ApplicationFamily in ['NL', 'FR', 'BE'] then
-            exit(false);
-
-        exit(true);
     end;
 }

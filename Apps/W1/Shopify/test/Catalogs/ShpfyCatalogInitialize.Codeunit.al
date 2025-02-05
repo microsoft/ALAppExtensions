@@ -37,18 +37,24 @@ codeunit 139639 "Shpfy Catalog Initialize"
     internal procedure CatalogResponse(): JsonObject
     var
         JResult: JsonObject;
-        ResultLbl: Label '{"data":{"catalogs":{"pageInfo":{"hasNextPage":false},"edges":[{"cursor":"eyJsYXN0X2lkIjoyNTMyNjcxNTExMCwibGFzdF92YWx1ZSI6MjUzMjY3MTUxMTB9","node":{"id":"gid://shopify/CompanyLocationCatalog/25326715110","title":"Test"}}]}},"extensions":{"cost":{"requestedQueryCost":27,"actualQueryCost":3,"throttleStatus":{"maximumAvailable":1000.0,"currentlyAvailable":997,"restoreRate":50.0}}}}';
+        ResultTxt: Text;
+        ResInStream: InStream;
     begin
-        JResult.ReadFrom(ResultLbl);
+        NavApp.GetResource('Catalogs/CatalogResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(ResultTxt);
+        JResult.ReadFrom(ResultTxt);
         exit(JResult);
     end;
 
     internal procedure CatalogPriceResponse(ProductId: Integer): JsonObject
     var
         JResult: JsonObject;
-        ResultLbl: Label '{"data":{"catalog":{"id":"gid://shopify/CompanyLocationCatalog/25217368294","priceList":{"id":"gid://shopify/PriceList/20079640806","prices":{"edges":[{"cursor":"eyJsYXN0X2lkIjo0NDA2OTAzMTMxMzYzOCwibGFzdF92YWx1ZSI6IjQ0MDY5MDMxMzEzNjM4In0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44069031313638","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"4500.0"},"compareAtPrice":null}},{"cursor":"eyJsYXN0X2lkIjo0NDA3NDAwMzc1OTMzNCwibGFzdF92YWx1ZSI6IjQ0MDc0MDAzNzU5MzM0In0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44074003759334","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"900.0"},"compareAtPrice":null}},{"cursor":"eyJsYXN0X2lkIjo0NDA3NDAwMzc5MjEwMiwibGFzdF92YWx1ZSI6IjQ0MDc0MDAzNzkyMTAyIn0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44074003792102","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"1000.0"},"compareAtPrice":null}},{"cursor":"eyJsYXN0X2lkIjo0NDA3NDEzMjYzNTg3OCwibGFzdF92YWx1ZSI6IjQ0MDc0MTMyNjM1ODc4In0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44074132635878","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"0.0"},"compareAtPrice":null}},{"cursor":"eyJsYXN0X2lkIjo0NDA3NDEzMzU4NjE1MCwibGFzdF92YWx1ZSI6IjQ0MDc0MTMzNTg2MTUwIn0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44074133586150","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"0.0"},"compareAtPrice":null}},{"cursor":"eyJsYXN0X2lkIjo0NDA3NDEzMzYxODkxOCwibGFzdF92YWx1ZSI6IjQ0MDc0MTMzNjE4OTE4In0=","node":{"variant":{"id":"gid://shopify/ProductVariant/44074133618918","product":{"id":"gid://shopify/Product/{{ProductId}}"}},"price":{"amount":"0.0"},"compareAtPrice":null}}],"pageInfo":{"hasNextPage":false}}}}},"extensions":{"cost":{"requestedQueryCost":204,"actualQueryCost":16,"throttleStatus":{"maximumAvailable":1000.0,"currentlyAvailable":984,"restoreRate":50.0}}}}';
+        ResultTxt: Text;
+        ResInStream: InStream;
     begin
-        JResult.ReadFrom(Format(ResultLbl).Replace('{{ProductId}}', Format(ProductId)));
+        NavApp.GetResource('Catalogs/CatalogPriceResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(ResultTxt);
+        JResult.ReadFrom(Format(ResultTxt).Replace('{{ProductId}}', Format(ProductId)));
         exit(JResult);
     end;
 }

@@ -19,7 +19,7 @@ page 8089 "Closed Vend. Cont. Line Subp."
                 field(Closed; Rec.Closed)
                 {
                     StyleExpr = LineFormatStyleExpression;
-                    ToolTip = 'Indicates that the associated service has ended.';
+                    ToolTip = 'Specifies that the associated service has ended.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();

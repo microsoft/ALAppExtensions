@@ -25,6 +25,8 @@ using Microsoft.Foundation.Enums;
 using Microsoft.HumanResources.Employee;
 using Microsoft.HumanResources.Payables;
 using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Planning;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
@@ -591,6 +593,41 @@ table 11733 "Cash Document Line CZP"
             TableRelation = "Reason Code";
             DataClassification = CustomerContent;
         }
+        field(45; "Project No."; Code[20])
+        {
+            Caption = 'Project No.';
+            TableRelation = Job;
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                Job: Record Job;
+                IsHandled: Boolean;
+            begin
+                IsHandled := false;
+                OnValidateProjectNo(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
+                if "Project No." = xRec."Project No." then
+                    exit;
+
+                if "Project No." = '' then begin
+                    Validate("Project Task No.", '');
+                    CreateDimFromDefaultDim(FieldNo("Project No."));
+                    exit;
+                end;
+
+                if "Project No." <> xRec."Project No." then
+                    Validate("Project Task No.", '');
+
+                Job.Get("Project No.");
+                Job.TestBlocked();
+
+                CheckAccountTypeOnProjectValidation();
+                CreateDimFromDefaultDim(FieldNo("Project No."));
+            end;
+        }
         field(51; "VAT Base Amount"; Decimal)
         {
             AutoFormatExpression = "Currency Code";
@@ -781,6 +818,7 @@ table 11733 "Cash Document Line CZP"
             Editable = false;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA28
         field(62; "VAT Difference (LCY)"; Decimal)
         {
             Caption = 'VAT Difference (LCY)';
@@ -794,6 +832,7 @@ table 11733 "Cash Document Line CZP"
             ObsoleteTag = '18.0';
 #endif
         }
+#endif
         field(63; "System-Created Entry"; Boolean)
         {
             Caption = 'System-Created Entry';
@@ -1002,6 +1041,116 @@ table 11733 "Cash Document Line CZP"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(1001; "Project Task No."; Code[20])
+        {
+            Caption = 'Project Task No.';
+            TableRelation = "Job Task"."Job Task No." where("Job No." = field("Project No."));
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                JobTask: Record "Job Task";
+                IsHandled: Boolean;
+            begin
+                IsHandled := false;
+                OnBeforeValidateProjectTaskNo(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
+                if "Project Task No." <> xRec."Project Task No." then
+                    Validate("Project Planning Line No.", 0);
+                if "Project Task No." = '' then begin
+                    ClearJobRelatedAmounts();
+                    exit;
+                end;
+
+                TestField("Project No.");
+                JobTask.Get("Project No.", "Project Task No.");
+                JobTask.TestField("Job Task Type", JobTask."Job Task Type"::Posting);
+            end;
+        }
+        field(1004; "Project Quantity"; Decimal)
+        {
+            AccessByPermission = TableData Job = R;
+            Caption = 'Project Quantity';
+            DecimalPlaces = 0 : 5;
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if ProjectTaskIsSet() then
+                    if "Project Planning Line No." <> 0 then
+                        Validate("Project Planning Line No.");
+            end;
+        }
+        field(1009; "Project Line Type"; Enum "Job Line Type")
+        {
+            AccessByPermission = TableData Job = R;
+            Caption = 'Project Line Type';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                ChangeProjectLineTypeErr: Label '%1 cannot be changed when %2 is set.', Comment = '%1 = FieldCaption("Project Line Type"), %2 = FieldCaption("Project Planning Line No.")';
+            begin
+                if "Project Planning Line No." <> 0 then
+                    Error(ChangeProjectLineTypeErr, FieldCaption("Project Line Type"), FieldCaption("Project Planning Line No."));
+            end;
+        }
+        field(1010; "Project Unit Price"; Decimal)
+        {
+            AccessByPermission = TableData Job = R;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 2;
+            Caption = 'Project Unit Price';
+            DataClassification = CustomerContent;
+
+        }
+        field(1020; "Project Planning Line No."; Integer)
+        {
+            AccessByPermission = TableData Job = R;
+            BlankZero = true;
+            Caption = 'Project Planning Line No.';
+            DataClassification = CustomerContent;
+
+            trigger OnLookup()
+            var
+                JobPlanningLine: Record "Job Planning Line";
+            begin
+                JobPlanningLine.SetRange("Job No.", "Project No.");
+                JobPlanningLine.SetRange("Job Task No.", "Project Task No.");
+                JobPlanningLine.SetRange(Type, JobPlanningLine.Type::"G/L Account");
+                JobPlanningLine.SetRange("No.", "Account No.");
+                JobPlanningLine.SetRange("Usage Link", true);
+                JobPlanningLine.SetRange("System-Created Entry", false);
+                OnLookupProjectPlanningLineNoOnAfterJobPlanningLineSetFilter(JobPlanningLine, Rec);
+
+                if Page.RunModal(0, JobPlanningLine) = Action::LookupOK then
+                    Validate("Project Planning Line No.", JobPlanningLine."Line No.");
+            end;
+
+            trigger OnValidate()
+            var
+                JobPlanningLine: Record "Job Planning Line";
+                IsHandled: Boolean;
+            begin
+                IsHandled := false;
+                OnBeforeValidateProjectPlanningLineNo(Rec, IsHandled);
+                if IsHandled then
+                    exit;
+
+                if "Project Planning Line No." <> 0 then begin
+                    JobPlanningLine.Get("Project No.", "Project Task No.", "Project Planning Line No.");
+                    JobPlanningLine.TestField("Job No.", "Project No.");
+                    JobPlanningLine.TestField("Job Task No.", "Project Task No.");
+                    JobPlanningLine.TestField(Type, JobPlanningLine.Type::"G/L Account");
+                    JobPlanningLine.TestField("No.", "Account No.");
+                    JobPlanningLine.TestField("Usage Link", true);
+                    JobPlanningLine.TestField("System-Created Entry", false);
+                    "Project Line Type" := JobPlanningLine.ConvertToJobLineType();
+                end;
+            end;
+        }
         field(2675; "Selected Alloc. Account No."; Code[20])
         {
             Caption = 'Allocation Account No.';
@@ -1019,19 +1168,6 @@ table 11733 "Cash Document Line CZP"
             Caption = 'Posting Allocation Account No.';
             DataClassification = CustomerContent;
             TableRelation = "Allocation Account";
-        }
-        field(31001; "Advance Letter Link Code"; Code[30])
-        {
-            Caption = 'Advance Letter Link Code';
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-
-            trigger OnValidate()
-            begin
-                UpdateEETTransaction();
-            end;
         }
     }
 
@@ -1117,6 +1253,7 @@ table 11733 "Cash Document Line CZP"
     local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
         DimensionManagement.AddDimSource(DefaultDimSource, TypeToTableID("Account Type".AsInteger()), Rec."Account No.", FieldNo = Rec.FieldNo("Account No."));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Job, Rec."Project No.", FieldNo = Rec.FieldNo("Project No."));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salespers./Purch. Code", FieldNo = Rec.FieldNo("Salespers./Purch. Code"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk Event CZP", Rec."Cash Desk Event", FieldNo = Rec.FieldNo("Cash Desk Event"));
@@ -1926,6 +2063,43 @@ table 11733 "Cash Document Line CZP"
         end;
     end;
 
+    local procedure ClearJobRelatedAmounts()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeClearProjectRelatedAmounts(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        "Project Quantity" := 0;
+        "Project Unit Price" := 0;
+    end;
+
+    procedure ProjectTaskIsSet() Result: Boolean
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeProjectTaskIsSet(Rec, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
+        exit(("Project No." <> '') and ("Project Task No." <> '') and ("Account Type" = "Account Type"::"G/L Account"));
+    end;
+
+    local procedure CheckAccountTypeOnProjectValidation()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCheckAccountTypeOnProjectValidation(IsHandled, Rec);
+        if IsHandled then
+            exit;
+
+        TestField("Account Type", "Account Type"::"G/L Account");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -2040,6 +2214,41 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeShowDimensions(var CashDocumentLineCZP: Record "Cash Document Line CZP"; xCashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateProjectNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; xCashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateProjectTaskNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; xCashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeClearProjectRelatedAmounts(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeProjectTaskIsSet(CashDocumentLineCZP: Record "Cash Document Line CZP"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLookupProjectPlanningLineNoOnAfterJobPlanningLineSetFilter(var JobPlanningLine: Record "Job Planning Line"; var CashDocumentLineCZP: Record "Cash Document Line CZP");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateProjectPlanningLineNo(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCheckAccountTypeOnProjectValidation(var IsHandled: Boolean; var CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
 }

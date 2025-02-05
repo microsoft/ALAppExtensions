@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36996 "Detailed Vendor Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Detailed Vendor Ledger Entries';
     AboutTitle = 'About Detailed Vendor Ledger Entries';
     AboutText = 'The Detailed Vendor Ledger Entries report provides granular detail about the entries posted to Vendor Ledger and Detailed Vendor Ledger.';
@@ -20,7 +22,7 @@ page 36996 "Detailed Vendor Ledger Entries"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 36996 "Detailed Vendor Ledger Entries"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectione72966404f743d39d212', Locked = true;
+        ReportPageLbl: Label 'ReportSectione72966404f743d39d212', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -25,7 +25,6 @@ codeunit 139561 "Shpfy Initialize Test"
 
     internal procedure CreateShop(): Record "Shpfy Shop"
     var
-        GLAccount: Record "G/L Account";
         RefundGLAccount: Record "G/L Account";
         Shop: Record "Shpfy Shop";
         VATPostingSetup: Record "VAT Posting Setup";
@@ -43,8 +42,6 @@ codeunit 139561 "Shpfy Initialize Test"
                 exit(Shop);
 
         Code := Any.AlphabeticText(MaxStrLen(Code));
-        GLAccount.SetRange("Direct Posting", true);
-        GLAccount.FindLast();
 
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup,
            VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
@@ -65,7 +62,7 @@ codeunit 139561 "Shpfy Initialize Test"
         CreateVATPostingSetup(PostingGroupCode, PostingGroupCode);
         CreateVATPostingSetup(PostingGroupCode, '');
         CreateVATPostingSetup(PostingGroupCode, RefundGLAccount."VAT Prod. Posting Group");
-        Shop."Shipping Charges Account" := GLAccount."No.";
+        Shop."Shipping Charges Account" := CreateShippingChargesGLAcc(VATPostingSetup, GenPostingType, PostingGroupCode);
         Shop."Customer Posting Group" := PostingGroupCode;
         Shop."Gen. Bus. Posting Group" := PostingGroupCode;
         Shop."VAT Bus. Posting Group" := PostingGroupCode;
@@ -353,7 +350,7 @@ codeunit 139561 "Shpfy Initialize Test"
         LibraryAssert.IsTrue(Values[1] = ShopifyAccessToken, 'invalid access token');
     end;
 
-    local procedure CreateVATPostingSetup(BusinessPostingGroup: Code[20]; ProductPostingGroup: Code[20])
+    internal procedure CreateVATPostingSetup(BusinessPostingGroup: Code[20]; ProductPostingGroup: Code[20])
     var
         GeneralPostingSetup: Record "General Posting Setup";
         VatPostingSetup: Record "VAT Posting Setup";
@@ -376,4 +373,14 @@ codeunit 139561 "Shpfy Initialize Test"
         end;
     end;
 
+    local procedure CreateShippingChargesGLAcc(var VATPostingSetup: Record "VAT Posting Setup"; GenPostingType: Enum "General Posting Type"; PostingGroupCode: Code[20]): Code[20]
+    var
+        ShippingChargesGLAccount: Record "G/L Account";
+    begin
+        ShippingChargesGLAccount.Get(LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GenPostingType::Sale));
+        ShippingChargesGLAccount."Direct Posting" := true;
+        ShippingChargesGLAccount.Modify(false);
+        CreateVATPostingSetup(PostingGroupCode, ShippingChargesGLAccount."VAT Prod. Posting Group");
+        exit(ShippingChargesGLAccount."No.");
+    end;
 }

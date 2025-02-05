@@ -79,22 +79,22 @@ codeunit 4775 "Create Mfg Capacity"
     begin
         ContosoManufacturing.InsertWorkCenterGroup(WorkCenterGroup1(), ProductionDepartmentTok);
 
-        ContosoManufacturing.InsertWorkCenter(WorkCenter100(), AssemblyDepartmentTok, WorkCenterGroup1(), 1.2, MfgCapUnitOfMeasure.Minutes(), 3, ShopCalendarOneShift(), 0, MfgPostingGroup.Manufacturing(), '');
+        ContosoManufacturing.InsertWorkCenter(WorkCenter100(), AssemblyDepartmentTok, WorkCenterGroup1(), ContosoUtilities.AdjustPrice(1.2), MfgCapUnitOfMeasure.Minutes(), 3, ShopCalendarOneShift(), 0, MfgPostingGroup.Manufacturing(), '');
         ContosoManufacturing.InsertMachineCenter(MachineCenter110(), FlushManualTok, WorkCenter100(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('120', FlushBackTok, WorkCenter100(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Backward);
         ContosoManufacturing.InsertMachineCenter(MachineCenter130(), FlushForwardTok, WorkCenter100(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Forward);
 
-        ContosoManufacturing.InsertWorkCenter(WorkCenter200(), PackingDepartmentTok, WorkCenterGroup1(), 1.5, MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarOneShift(), 0, MfgPostingGroup.Manufacturing(), '');
+        ContosoManufacturing.InsertWorkCenter(WorkCenter200(), PackingDepartmentTok, WorkCenterGroup1(), ContosoUtilities.AdjustPrice(1.5), MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarOneShift(), 0, MfgPostingGroup.Manufacturing(), '');
         ContosoManufacturing.InsertMachineCenter(MachineCenter210(), PackingTable1Tok, WorkCenter200(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('220', PackingTable2Tok, WorkCenter200(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter(MachineCenter230(), PackingMachineTok, WorkCenter200(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Backward);
 
-        ContosoManufacturing.InsertWorkCenter(WorkCenter300(), PaintingDepartmentTok, WorkCenterGroup1(), 1.7, MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarTwoShifts(), 0, MfgPostingGroup.Manufacturing(), '');
+        ContosoManufacturing.InsertWorkCenter(WorkCenter300(), PaintingDepartmentTok, WorkCenterGroup1(), ContosoUtilities.AdjustPrice(1.7), MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarTwoShifts(), 0, MfgPostingGroup.Manufacturing(), '');
         ContosoManufacturing.InsertMachineCenter('310', PaintingCabinTok, WorkCenter300(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('330', DryingCabinTok, WorkCenter300(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('340', PaintingInspectionTok, WorkCenter300(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
 
-        ContosoManufacturing.InsertWorkCenter(WorkCenter400(), MachineDepartmentTok, WorkCenterGroup1(), 2.5, MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarTwoShifts(), 0, MfgPostingGroup.Manufacturing(), '');
+        ContosoManufacturing.InsertWorkCenter(WorkCenter400(), MachineDepartmentTok, WorkCenterGroup1(), ContosoUtilities.AdjustPrice(2.5), MfgCapUnitOfMeasure.Minutes(), 1, ShopCalendarTwoShifts(), 0, MfgPostingGroup.Manufacturing(), '');
         ContosoManufacturing.InsertMachineCenter('410', DrillingMachineTok, WorkCenter400(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('420', CNCMachineTok, WorkCenter400(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
         ContosoManufacturing.InsertMachineCenter('430', MachineDeburrTok, WorkCenter400(), 1, MfgPostingGroup.Manufacturing(), Enum::"Flushing Method Routing"::Manual);
@@ -102,7 +102,7 @@ codeunit 4775 "Create Mfg Capacity"
         ContosoManufacturing.InsertCapacityConstrainedResource('420', 1, 90, 5);
 
         ContosoManufacturing.InsertWorkCenterGroup(WorkCenterGroup5(), SubcontractorsTok);
-        ContosoManufacturing.InsertWorkCenter(WorkCenter500(), SubcontractorTok, WorkCenterGroup5(), 0, MfgCapUnitOfMeasure.Minutes(), 100, ShopCalendarOneShift(), 1, CommonPostingGroup.Retail(), MfgVendor.SubcontractorVendor());
+        ContosoManufacturing.InsertWorkCenter(WorkCenter500(), SubcontractorTok, WorkCenterGroup5(), 0, MfgCapUnitOfMeasure.Minutes(), 100, ShopCalendarOneShift(), 1, CommonPostingGroup.Retail(), MfgVendor.SubcontractorVendor(), true);
 
 
         CalcMachineCenterCalendar.InitializeRequest(ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19031231D));

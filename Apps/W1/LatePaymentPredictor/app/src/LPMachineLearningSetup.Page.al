@@ -22,7 +22,7 @@ page 1950 "LP Machine Learning Setup"
             group(General)
             {
                 Caption = 'General';
-                field(Enabled; "Make Predictions")
+                field(Enabled; Rec."Make Predictions")
                 {
                     Caption = 'Enable Predictions';
                     ApplicationArea = Basic, Suite;
@@ -36,7 +36,7 @@ page 1950 "LP Machine Learning Setup"
                     end;
                 }
 
-                field(SelectedModel; "Selected Model")
+                field(SelectedModel; Rec."Selected Model")
                 {
                     Enabled = CustomModelExists;
                     ApplicationArea = Basic, Suite;
@@ -44,12 +44,12 @@ page 1950 "LP Machine Learning Setup"
 
                     trigger OnValidate();
                     begin
-                        ModelQualityVal := GetModelQuality();
+                        ModelQualityVal := Rec.GetModelQuality();
                         CurrPage.Update();
                     end;
                 }
 
-                field(ThresholdModelQuality; "Model Quality Threshold")
+                field(ThresholdModelQuality; Rec."Model Quality Threshold")
                 {
                     ToolTip = 'Specifies the minimum model quality you require. The value is a percentage between zero and one, and indicates how accurate predictions will be. Typically, this field is useful when you create a custom model. If the quality of a model is below this threshold, it will not be used.';
                     ApplicationArea = Basic, Suite;
@@ -71,27 +71,27 @@ page 1950 "LP Machine Learning Setup"
                 {
                     Enabled = false;
                     Caption = 'Remaining Compute Time';
-                    ToolTip = 'The number of seconds of compute time that you have not yet used.';
+                    ToolTip = 'Specifies the number of seconds of compute time that you have not yet used.';
                     ApplicationArea = Basic, Suite;
                 }
                 field(Original; AzureAIUsage.GetResourceLimit(AzureAIService))
                 {
                     Enabled = false;
                     Caption = 'Original Compute Time';
-                    ToolTip = 'The number of seconds of compute time that was originally available for the standard model, or the model for your custom experiment.';
+                    ToolTip = 'Specifies the number of seconds of compute time that was originally available for the standard model, or the model for your custom experiment.';
                     ApplicationArea = Basic, Suite;
                 }
                 field(LastDateTimeUpdated; AzureAIUsage.GetLastTimeUpdated(AzureAIService))
                 {
                     Enabled = false;
                     Caption = 'Date of Last Compute';
-                    ToolTip = 'The date on which you last used Azure compute time.';
+                    ToolTip = 'Specifies the date on which you last used Azure compute time.';
                     ApplicationArea = Basic, Suite;
                 }
-                field(UseMyCredentials; "Use My Model Credentials")
+                field(UseMyCredentials; Rec."Use My Model Credentials")
                 {
                     Caption = 'Use My Azure Subscription';
-                    ToolTip = 'Use a model that you created, rather than the standard model that we provide. To use your model, you must provide your API URI and API Key. You must also choose My Model in the Selected Model field in the Late Payment Prediction Setup window.';
+                    ToolTip = 'Specifies that you use a model that you created, rather than the standard model that we provide. To use your model, you must provide your API URI and API Key. You must also choose My Model in the Selected Model field in the Late Payment Prediction Setup window.';
                     ApplicationArea = Basic, Suite;
                 }
             }
@@ -99,11 +99,11 @@ page 1950 "LP Machine Learning Setup"
             group("My Model Credentials")
             {
                 Caption = 'Use My Azure Subscription';
-                Visible = "Use My Model Credentials";
+                Visible = Rec."Use My Model Credentials";
                 field(ApiURI; ApiURIText)
                 {
                     Caption = 'API URI';
-                    ToolTip = 'Use your own Azure Machine Learning subscription, rather than the subscription you get through Business Central. For example, this is useful when you need more computing time. To use your subscription, provide your API URI and API key. You must also choose My Model in the Selected Model field on the Late Payment Prediction Setup page.';
+                    ToolTip = 'Specifies that you use your own Azure Machine Learning subscription, rather than the subscription you get through Business Central. For example, this is useful when you need more computing time. To use your subscription, provide your API URI and API key. You must also choose My Model in the Selected Model field on the Late Payment Prediction Setup page.';
                     ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
 
@@ -240,21 +240,26 @@ page 1950 "LP Machine Learning Setup"
                     LPModelManagement.InvokeShowModelFromUi();
                 end;
             }
-
+#if not CLEAN26
             action("Open Azure AI Gallery")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open Azure AI Gallery';
                 Gesture = None;
                 Image = LinkWeb;
+                ObsoleteReason = 'Webpage does not exist';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
                 Promoted = true;
                 ToolTip = 'Explore models for Azure Machine Learning, and use Azure Machine Learning Studio to build, test, and deploy the Prediction Model for Microsoft Dynamics 365.';
+                Visible = false;
 
                 trigger OnAction()
                 begin
                     Hyperlink('https://go.microsoft.com/fwlink/?linkid=2034407');
                 end;
             }
+#endif
         }
     }
 

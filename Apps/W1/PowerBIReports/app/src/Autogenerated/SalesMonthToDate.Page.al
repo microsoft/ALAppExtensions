@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37003 "Sales Month-To-Date"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Month-To-Date';
     AboutTitle = 'About Sales Month-To-Date';
     AboutText = 'The Sales Month-to-Date report tracks the accumulation of sales amounts throughout the current month, providing insights into progress and performance up to the present date.';
@@ -20,7 +22,7 @@ page 37003 "Sales Month-To-Date"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37003 "Sales Month-To-Date"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection7d903e33b708c20e3be1', Locked = true;
+        ReportPageLbl: Label 'ReportSection7d903e33b708c20e3be1', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

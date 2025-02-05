@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37055 "Production Scrap"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Production Scrap';
     AboutTitle = 'About Production Scrap';
     AboutText = 'View your scrap quantities over a timeline you can define to see trends. Analyze further by Scrap Code, Location, Item Categories and by filtering for specific items.';
@@ -20,7 +22,7 @@ page 37055 "Production Scrap"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37055 "Production Scrap"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionc790f50d90d7b6a6836a', Locked = true;
+        ReportPageLbl: Label 'ReportSectionc790f50d90d7b6a6836a', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

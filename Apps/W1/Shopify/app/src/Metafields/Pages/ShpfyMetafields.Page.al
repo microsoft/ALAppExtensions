@@ -42,6 +42,9 @@ page 30163 "Shpfy Metafields"
                     var
                         IMetafieldType: Interface "Shpfy IMetafield Type";
                     begin
+                        if not IsPageEditable then
+                            exit;
+
                         IMetafieldType := Rec.Type;
 
                         if IMetafieldType.HasAssistEdit() then
@@ -49,6 +52,36 @@ page 30163 "Shpfy Metafields"
                                 Rec.Validate(Value);
                     end;
                 }
+            }
+        }
+    }
+
+    actions
+    {
+        area(Processing)
+        {
+            action(GetMetafieldDefinitions)
+            {
+                ApplicationArea = All;
+                Caption = 'Get Metafield Definitions';
+                Image = Import;
+                ToolTip = 'Retrieve metafield definitions from Shopify.';
+                Visible = IsPageEditable;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+
+                trigger OnAction()
+                var
+                    MetafieldAPI: Codeunit "Shpfy Metafield API";
+                    ParentTableNo: Integer;
+                    OwnerId: BigInteger;
+                begin
+                    Evaluate(ParentTableNo, Rec.GetFilter("Parent Table No."));
+                    Evaluate(OwnerId, Rec.GetFilter("Owner Id"));
+                    MetafieldAPI.SetShop(Shop);
+                    MetafieldAPI.GetMetafieldDefinitions(ParentTableNo, OwnerId);
+                end;
             }
         }
     }
@@ -78,6 +111,13 @@ page 30163 "Shpfy Metafields"
         Rec.Id := SendMetafieldToShopify();
     end;
 
+    trigger OnModifyRecord(): Boolean
+    begin
+        if Rec.Id < 0 then
+            if xRec.Value <> Rec.Value then
+                Rec.Rename(SendMetafieldToShopify());
+    end;
+
     var
         Shop: Record "Shpfy Shop";
         IsPageEditable: Boolean;
@@ -91,9 +131,12 @@ page 30163 "Shpfy Metafields"
     internal procedure RunForResource(ParentTableId: Integer; OwnerId: BigInteger; ShopCode: Code[20])
     var
         Metafield: Record "Shpfy Metafield";
+        IMetafieldOwnerType: Interface "Shpfy IMetafield Owner Type";
     begin
         Shop.Get(ShopCode);
-        IsPageEditable := (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products");
+
+        IMetafieldOwnerType := Metafield.GetOwnerType(ParentTableId);
+        IsPageEditable := IMetafieldOwnerType.CanEditMetafields(Shop);
 
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);
@@ -106,7 +149,6 @@ page 30163 "Shpfy Metafields"
     var
         JsonHelper: Codeunit "Shpfy Json Helper";
         MetafieldAPI: Codeunit "Shpfy Metafield API";
-        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         UserErrorOnShopifyErr: Label 'Something went wrong while sending the metafield to Shopify. Check Shopify Log Entries for more details.';
         GraphQuery: TextBuilder;
         JResponse: JsonToken;
@@ -114,8 +156,7 @@ page 30163 "Shpfy Metafields"
         JUserErrors: JsonArray;
         JItem: JsonToken;
     begin
-        ShpfyCommunicationMgt.SetShop(Shop);
-
+        MetafieldAPI.SetShop(Shop);
         MetafieldAPI.CreateMetafieldQuery(Rec, GraphQuery);
         JResponse := MetafieldAPI.UpdateMetafields(GraphQuery.ToText());
 

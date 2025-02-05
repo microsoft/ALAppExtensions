@@ -17,7 +17,11 @@ using Microsoft.Projects.Resources.Resource;
 using Microsoft.Projects.Project.Journal;
 using System.Environment.Configuration;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 codeunit 6611 "FS Setup Defaults"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     var
         CRMProductName: Codeunit "CRM Product Name";
@@ -432,8 +436,6 @@ codeunit 6611 "FS Setup Defaults"
 
         IntegrationTableMapping.SetTableFilter(
           GetTableFilterFromView(Database::Location, Location.TableCaption(), Location.GetView()));
-        IntegrationTableMapping."Synch. After Bulk Coupling" := true;
-        IntegrationTableMapping."Create New in Case of No Match" := true;
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -449,11 +451,6 @@ codeunit 6611 "FS Setup Defaults"
           FSWarehouse.FieldNo(Description),
           IntegrationFieldMapping.Direction::ToIntegrationTable,
           '', true, false);
-
-        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMappingName);
-        IntegrationFieldMapping.FindFirst();
-        IntegrationFieldMapping."Use For Match-Based Coupling" := true;
-        IntegrationFieldMapping.Modify();
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
     end;

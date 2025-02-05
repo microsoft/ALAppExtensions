@@ -84,14 +84,14 @@ codeunit 4793 "Create Whse Item"
         ContosoItem: Codeunit "Contoso Item";
         CommonUnitOfMeasure: Codeunit "Create Common Unit Of Measure";
     begin
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 1 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 1 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 1 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 1 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
 
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 2 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 2 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 2 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 2 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
 
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 3 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
-        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 3 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()));
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 3 No.", '', CommonUnitOfMeasure.Piece(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
+        ContosoItem.InsertItemReference(WarehouseModuleSetup."Item 3 No.", '', CommonUnitOfMeasure.Bag(), "Item Reference Type"::"Bar Code", '', Format(ContosoUtilities.RandBarcodeInt()), '');
     end;
 
     procedure Item1(): Code[20]

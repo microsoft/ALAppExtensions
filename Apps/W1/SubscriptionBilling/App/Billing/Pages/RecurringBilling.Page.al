@@ -149,7 +149,7 @@ page 8067 "Recurring Billing"
                 }
                 field("Update Required"; Rec."Update Required")
                 {
-                    ToolTip = 'Indicates whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
+                    ToolTip = 'Specifies whether the associated service has been changed. The "Create Billing Proposal" function must be called up again before the billing document is created.';
                     StyleExpr = LineStyleExpr;
                 }
                 field("Document Type"; Rec."Document Type")
@@ -253,6 +253,21 @@ page 8067 "Recurring Billing"
                     InitTempTable();
                 end;
             }
+            action(UsageData)
+            {
+                ApplicationArea = All;
+                Caption = 'Usage Data';
+                Image = DataEntry;
+                Scope = Repeater;
+                ToolTip = 'Shows the related usage data.';
+                Enabled = UsageDataEnabled;
+                trigger OnAction()
+                var
+                    UsageDataBilling: Record "Usage Data Billing";
+                begin
+                    UsageDataBilling.ShowForRecurringBilling(Rec."Service Object No.", Rec."Service Commitment Entry No.", Rec."Document Type", Rec."Document No.");
+                end;
+            }
             action(ClearBillingProposalAction)
             {
                 Caption = 'Clear Billing Proposal';
@@ -323,7 +338,7 @@ page 8067 "Recurring Billing"
                 Image = Refresh;
                 Scope = Page;
                 ToolTip = 'Refreshes the current view.';
-                ShortCutKey = 'F5';
+                ShortcutKey = 'F5';
 
                 trigger OnAction()
                 begin
@@ -373,22 +388,6 @@ page 8067 "Recurring Billing"
                     InitTempTable();
                 end;
             }
-            action(UsageData)
-            {
-                ApplicationArea = All;
-                Caption = 'Usage Data';
-                Image = DataEntry;
-                Scope = Repeater;
-                ToolTip = 'Shows the related usage data.';
-
-                trigger OnAction()
-                var
-                    UsageDataBilling: Record "Usage Data Billing";
-                begin
-                    UsageDataBilling.SetRange("Billing Line Entry No.", Rec."Entry No.");
-                    Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
-                end;
-            }
             action(Dimensions)
             {
                 AccessByPermission = tabledata Dimension = R;
@@ -396,7 +395,7 @@ page 8067 "Recurring Billing"
                 Caption = 'Contract Line Dimensions';
                 Image = Dimensions;
                 Scope = Repeater;
-                ShortCutKey = 'Shift+Ctrl+D';
+                ShortcutKey = 'Shift+Ctrl+D';
                 ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
 
                 trigger OnAction()
@@ -410,6 +409,7 @@ page 8067 "Recurring Billing"
         {
             actionref(CreateBillingProposalAction_Promoted; CreateBillingProposalAction) { }
             actionref(CreateDocuments_Promoted; CreateDocuments) { }
+            actionref("UsageData_Promoted"; UsageData) { }
             actionref(ClearBillingProposalAction_Promoted; ClearBillingProposalAction) { }
             actionref(DeleteDocuments_Promoted; DeleteDocuments) { }
             actionref(ChangeBillingToAction_Promoted; ChangeBillingToAction) { }
@@ -420,7 +420,6 @@ page 8067 "Recurring Billing"
             {
                 Caption = 'Navigate';
 
-                actionref("UsageData_Promoted"; UsageData) { }
                 actionref(OpenPartnerAction_Promoted; OpenPartnerAction) { }
                 actionref(OpenContractAction_Promoted; OpenContractAction) { }
                 actionref(OpenServiceObjectAction_Promoted; OpenServiceObjectAction) { }
@@ -441,6 +440,13 @@ page 8067 "Recurring Billing"
         SetLineStyleExpr();
     end;
 
+    trigger OnAfterGetCurrRecord()
+    var
+        UsageDataBilling: Record "Usage Data Billing";
+    begin
+        UsageDataEnabled := UsageDataBilling.ExistForRecurringBilling(Rec."Service Object No.", Rec."Service Commitment Entry No.", Rec."Document Type", Rec."Document No.");
+    end;
+
     var
         BillingTemplate: Record "Billing Template";
         ServiceObject: Record "Service Object";
@@ -449,6 +455,7 @@ page 8067 "Recurring Billing"
         ContractDescriptionTxt: Text;
         PartnerNameTxt: Text;
         GroupBy: Enum "Contract Billing Grouping";
+        UsageDataEnabled: Boolean;
 
     protected var
         BillingDate: Date;

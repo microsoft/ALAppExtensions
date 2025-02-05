@@ -26,6 +26,18 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the unit of measure code that is used to register emission.';
                 }
+                field("Waste Unit of Measure Code"; Rec."Waste Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Waste Unit of Measure Code field.';
+                }
+                field("Water Unit of Measure Code"; Rec."Water Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Water Unit of Measure Code field.';
+                }
+                field("Disch. Into Water Unit of Meas"; Rec."Disch. Into Water Unit of Meas")
+                {
+                    ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
+                }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
                     ToolTip = 'Specifies the number of decimal places that are shown for emission amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
@@ -52,7 +64,31 @@ page 6221 "Sustainability Setup"
                 Caption = 'Procurement';
                 field("Use Emissions In Purch. Doc."; Rec."Use Emissions In Purch. Doc.")
                 {
-                    ToolTip = 'Specifies the value of the Use Emissions In Purchase Documents field.';
+                    ToolTip = 'Specifies that you want to enable sustainability features in purchase documents. Until this field is selected, sustainability fields will not be displayed in the purchase lines. Select this field only if you intend to post your GHG emissions using purchase documents or to post purchasing carbon credits.';
+                }
+                field("G/L Account Emissions"; Rec."G/L Account Emissions")
+                {
+                    ToolTip = 'Specifies the value of the G/L Account Emissions field.';
+                }
+                field("Item Emissions"; Rec."Item Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item card.';
+                }
+                field("Item Charge Emissions"; Rec."Item Charge Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item Charge (currently not operating).';
+                }
+                field("Resource Emissions"; Rec."Resource Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Resource card.';
+                }
+                field("Work/Machine Center Emissions"; Rec."Work/Machine Center Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Work Center and Machine Center cards.';
+                }
+                field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
+                {
+                    ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
                 }
             }
             group(Calculations)
@@ -136,7 +172,7 @@ page 6221 "Sustainability Setup"
                 Caption = 'Emission Fees';
                 Image = CostBudget;
                 RunObject = Page "Emission Fees";
-                ToolTip = 'View or add Emission Fees.';
+                ToolTip = 'Set up internal carbon fees and CO2 equivalent.';
             }
         }
         area(Promoted)

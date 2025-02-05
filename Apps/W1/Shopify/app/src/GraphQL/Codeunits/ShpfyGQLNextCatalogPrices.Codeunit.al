@@ -10,7 +10,7 @@ codeunit 30297 "Shpfy GQL NextCatalogPrices" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "query { catalog(id: \"gid://shopify/Catalog/{{CatalogId}}\") { id priceList {id prices(first:100, after:\"{{After}}\") {edges {cursor node {variant {id} price {amount} compareAtPrice {amount}}} pageInfo {hasNextPage}}}}}"}');
+        exit('{"query": "query { catalog(id: \"gid://shopify/Catalog/{{CatalogId}}\") { id priceList {id currency prices(first:100, after:\"{{After}}\") {edges {cursor node {variant {id product {id}} price {amount} compareAtPrice {amount}}} pageInfo {hasNextPage}}}}}"}');
     end;
 
     /// <summary>

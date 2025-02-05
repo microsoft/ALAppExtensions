@@ -29,7 +29,7 @@ codeunit 6132 "E-Document Log"
         exit(InsertLog(EDocument, EDocumentService, 0, EDocumentServiceStatus));
     end;
 
-    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
+    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
     begin
         exit(InsertLog(EDocument, EDocumentService, InsertDataStorage(TempBlob), EDocumentServiceStatus));
     end;
@@ -40,7 +40,10 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.Validate("Document No.", EDocument."Document No.");
         EDocumentLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentLog.Validate(Status, EDocumentServiceStatus);
+#if not CLEAN26
         EDocumentLog.Validate("Service Integration", EDocumentService."Service Integration");
+#endif
+        EDocumentLog.Validate("Service Integration V2", EDocumentService."Service Integration V2");
         EDocumentLog.Validate("Service Code", EDocumentService.Code);
         EDocumentLog.Validate("Document Format", EDocumentService."Document Format");
         EDocumentLog.Validate("E-Doc. Data Storage Entry No.", EDocDataStorageEntryNo);
@@ -53,8 +56,11 @@ codeunit 6132 "E-Document Log"
         EDocumentIntegrationLogRecRef: RecordRef;
         RequestTxt: Text;
     begin
-        if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
+#if not CLEAN26
+        if (EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration") and
+        (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::"No Integration") then
             exit;
+#endif
 
         EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
@@ -99,7 +105,7 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.Modify();
     end;
 
-    internal procedure InsertDataStorage(var TempBlob: Codeunit "Temp Blob"): Integer
+    internal procedure InsertDataStorage(TempBlob: Codeunit "Temp Blob"): Integer
     var
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocRecRef: RecordRef;
@@ -144,7 +150,10 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.SetLoadFields("E-Doc. Entry No", Status);
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         EDocumentLog.SetRange("Service Code", EDocumentService.Code);
+#if not CLEAN26
         EDocumentLog.SetRange("Service Integration", EDocumentService."Service Integration");
+#endif
+        EDocumentLog.SetRange("Service Integration V2", EDocumentService."Service Integration V2");
         EDocumentLog.SetRange("Document Format", EDocumentService."Document Format");
         EDocumentLog.SetRange(Status, EDocumentServiceStatus);
         if not EDocumentLog.FindLast() then begin

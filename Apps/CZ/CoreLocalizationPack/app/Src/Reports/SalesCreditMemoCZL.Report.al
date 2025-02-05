@@ -81,7 +81,19 @@ report 31190 "Sales Credit Memo CZL"
                     column(LCYCode_GeneralLedgerSetup; "LCY Code")
                     {
                     }
+                    column(VATCurrencyCode; VATCurrencyCode)
+                    {
+                    }
                 }
+
+                trigger OnAfterGetRecord()
+                begin
+                    UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+                    if UseFunctionalCurrency then
+                        VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                    else
+                        VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                end;
             }
             trigger OnAfterGetRecord()
             begin
@@ -410,6 +422,9 @@ report 31190 "Sales Credit Memo CZL"
                         UnitPriceExclVAT := "Unit Price";
                         if "Sales Cr.Memo Header"."Prices Including VAT" then
                             UnitPriceExclVAT := Round("Unit Price" / (1 + "VAT %" / 100), Currency."Amount Rounding Precision");
+
+                        if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Sales Cr.Memo Line", FieldNo(Quantity)) then
+                            CurrReport.Skip();
                     end;
                 }
                 dataitem(VATCounter; "Integer")
@@ -445,6 +460,10 @@ report 31190 "Sales Credit Memo CZL"
                     trigger OnAfterGetRecord()
                     begin
                         TempVATAmountLine.GetLine(Number);
+                        if UseFunctionalCurrency then begin
+                            TempVATAmountLine."VAT Base (LCY) CZL" := TempVATAmountLine."Additional-Currency Base CZL";
+                            TempVATAmountLine."VAT Amount (LCY) CZL" := TempVATAmountLine."Additional-Currency Amount CZL";
+                        end;
                     end;
 
                     trigger OnPreDataItem()
@@ -554,6 +573,20 @@ report 31190 "Sales Credit Memo CZL"
                 end else
                     CalculatedExchRate := 1;
 
+                if UseFunctionalCurrency then
+                    if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
+                        if CalculatedExchRate <> 1 then begin
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
+                            CalculatedExchRate := Round(((1 / "VAT Currency Factor CZL") / (1 / "Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                        end else begin
+                            CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                            CalculatedExchRate := Round("Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                        end;
+                        ExchRateText :=
+                          StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
+                          CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                    end;
+
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then
                         SegManagement.LogDocument(
@@ -592,6 +625,12 @@ report 31190 "Sales Credit Memo CZL"
                         Caption = 'Log Interaction';
                         Enabled = LogInteractionEnable;
                         ToolTip = 'Specifies if you want the program to record the sales credit memo you print as Interactions and add them to the Interaction Log Entry table.';
+                    }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
                     }
                 }
             }
@@ -695,6 +734,9 @@ report 31190 "Sales Credit Memo CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
+        UseFunctionalCurrency: Boolean;
+        VATCurrencyCode: Code[10];
+        HideLinesWithZeroQuantity: Boolean;
 
     procedure InitLogInteraction()
     begin

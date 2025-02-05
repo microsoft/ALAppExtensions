@@ -13,6 +13,13 @@ pageextension 36962 "Warehouse Manager Role Center" extends "Warehouse Manager R
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for inventory';
+                action("Inventory Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Report";
+                }
                 action("Inventory Overview (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;
@@ -81,7 +88,7 @@ pageextension 36962 "Warehouse Manager Role Center" extends "Warehouse Manager R
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bin Contents (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "Bin Contents";
+                    RunObject = page "PowerBI Bin Contents";
                 }
                 action("Bin Contents by Item Tracking (Power BI)")
                 {

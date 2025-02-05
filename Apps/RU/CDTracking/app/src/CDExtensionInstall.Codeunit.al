@@ -42,9 +42,6 @@ codeunit 14109 "CD Extension Install"
         MoveCDNoFormats();
         MoveCDNoHeaders();
         MoveCDTrackingSetup();
-
-        UpdateItemTrackingCodes();
-        UpdatePackageNoInformation();
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
@@ -68,29 +65,6 @@ codeunit 14109 "CD Extension Install"
         DataClassificationMgt.SetFieldToNormal(Database::"Package No. Information", PackageNoInformation.FieldNo("Temporary CD Number"));
     end;
 
-    local procedure UpdateItemTrackingCodes();
-    var
-        ItemTrackingCode: Record "Item Tracking Code";
-    begin
-        if ItemTrackingCode.FindSet() then
-            repeat
-                ItemTrackingCode.Validate("Package Specific Tracking", ItemTrackingCode."CD Specific Tracking");
-                ItemTrackingCode.Validate("Package Warehouse Tracking", ItemTrackingCode."CD Warehouse Tracking");
-                ItemTrackingCode.Modify();
-            until ItemTrackingCode.Next() = 0;
-    end;
-
-    local procedure UpdatePackageNoInformation();
-    var
-        PackageNoInformation: Record "Package No. Information";
-    begin
-        if PackageNoInformation.FindSet() then
-            repeat
-                PackageNoInformation."CD Header Number" := PackageNoInformation."CD Header No.";
-                PackageNoInformation.Modify();
-            until PackageNoInformation.Next() = 0;
-    end;
-
     local procedure UpdateInventorySetup()
     var
         InventorySetup: Record "Inventory Setup";
@@ -100,7 +74,6 @@ codeunit 14109 "CD Extension Install"
         InventorySetup.TestField("Package Caption", '');
         InventorySetup."Package Caption" :=
             CopyStr(CDItemTrackingMgt.CDCaption(), 1, MaxStrLen(InventorySetup."Package Caption"));
-        InventorySetup."Check CD Number Format" := InventorySetup."Check CD No. Format";
         InventorySetup.Modify();
     end;
 

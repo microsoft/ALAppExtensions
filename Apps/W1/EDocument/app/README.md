@@ -16,7 +16,7 @@
 
 In order to implement your localization on top of EDocument core application, you should undertake the following steps.
 
-### 1. Create and setup new extension
+# 1. Create and setup new extension
 
 Create a new extension and add dependency to "EDocument Core" application
 In your app.json file, add dependency on "EDocument" extension:
@@ -32,7 +32,7 @@ In your app.json file, add dependency on "EDocument" extension:
 ]
 ```
 
-### 2. Implement the document Interface.
+# 2. Implement the document Interface.
 
 The E-Document interface comprises a collection of methods designed to streamline the export of Business Central documents (such as Sales Invoices) into E-Document blobs based on predefined format specifications. Furthermore, it facilitates the reverse process by enabling the import of documents from blobs back into Business Central.
 
@@ -175,503 +175,384 @@ procedure PrepareDocument(var EDocument: Record "E-Document"; var CreatedDocumen
     end;
 ```
 
-### 3. Implement the integration interface.
+# 3. Implement the integration interface.
+
+
 
 The E-Document integration interface comprises a collection of methods designed to streamline the process of integrating with endpoints for submitting electronic documents.
 
 First, you will need to extend the enum and associate it with your implementation codeunit:
 
 ```
-enumextension 50101 "EDocument Integration Ext" extends "E-Document Integration"
+enumextension 50100 Integration extends "Service Integration"
 {
-    value(50100; "Example Service")
+    value(50100; "Avalara")
     {
-        Implementation = "E-Document Integration" = "Example Integration SVC";
+        Implementation = IDocumentSender = "Integration Impl.", IDocumentReceiver = "Integration Impl.";
     }
 }
 ```
 
-Here's an example of how you could implement each of the methods within the interface:
+## Sending
 
-- Send: use it to send an E-Document to external service.
+Here's an example of how you could implement each of the methods within the IDocumentSender interface:
 
-```
-    procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-        Payload: Text;
-    begin
-        ExampleIntegration.Get();
-        Payload := EDocumentHelper.TempBlobToTxt(TempBlob);
+The `IDocumentSender` interface defines methods for sending E-Documents to an external service. By implementing this interface, you enable integration between an application and external E-Document services. This interface is part of the `Microsoft.eServices.EDocument.Integration.Interfaces` namespace and facilitates asynchronous and batch operations while ensuring proper logging of communication details.
 
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Content.WriteFrom(Payload);
-        HttpRequest.Method := 'POST';
-        HttpRequest.SetRequestUri(ExampleIntegration."Sending Endpoint");
+### Key Features
+- **Async Sending:** Supports asynchronous sending of E-Documents.
+- **Batch Processing:** Enables sending multiple E-Documents using filters.
+- **Automatic Logging:** Automatically logs HTTP request content and headers when provided in `SendContext`.
 
-        HttpClient.Send(HttpRequest, HttpResponse);
+### How to Implement
+To implement the `IDocumentSender` interface, you need to provide logic for the `Send` procedure, which handles sending E-Documents. Below is a detailed guide and example implementations.
 
-        // Parse the response if needed.
-    end;
-```
+### `Send` Method
+The `Send` method is responsible for sending an E-Document to an external service. It takes three parameters:
 
-- SendBatch: use it to send a batch of E-Documents to external service.
+- `EDocument`: The record representing the E-Document to be sent.
+- `EDocumentService`: The record containing service configuration details such as the URL and access tokens.
+- `SendContext`: A codeunit that provides context and resources for the send operation.
 
-```
-    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-        Payload: Text;
-    begin
-        ExampleIntegration.Get();
-        Payload := EDocumentHelper.TempBlobToTxt(TempBlob);
+#### Example Implementation
+Here is an example implementation of the `Send` method:
 
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Content.WriteFrom(Payload);
-        HttpRequest.Method := 'POST';
-        HttpRequest.SetRequestUri(ExampleIntegration."Sending Endpoint");
+```al
+procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
+var
+    MyServiceSetup: Record MyServiceSetup;
+    TempBlob: Codeunit "Temp Blob";
+    HttpClient: HttpClient;
+    HttpRequest: HttpRequestMessage;
+    HttpResponse: HttpResponseMessage;
+begin
+    // Retrieve the TempBlob from SendContext
+    SendContext.GetTempBlob(TempBlob);
 
-        HttpClient.Send(HttpRequest, HttpResponse);
+    // Prepare the HTTP request using the TempBlob content
+    HttpRequest := SendContext.Http().GetHttpRequestMessage();
+    HttpRequest.Method := 'POST';
+    HttpRequest.SetRequestUri(MyServiceSetup."Service URL");
+    SetContent(HttpRequest, TempBlob); // Some method to do that
 
-        // Parse the response if needed.
-    end;
-```
+    // Add authorization headers
+    HttpRequest.Headers.Add('Authorization', 'Bearer ' + MyServiceSetup."Access Token");
 
-- GetResponse: use it to get response of async send request.
+    // Send the request and capture the response
+    HttpClient.Send(HttpRequest, HttpResponse);
 
-```
-    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-    begin
-        ExampleIntegration.Get();
-
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Method := 'GET';
-        HttpRequest.SetRequestUri(ExampleIntegration."Get Response Endpoint");
-
-        HttpClient.Send(HttpRequest, HttpResponse);
-
-        // Parse the response if needed.
-    end;
+    // Handle the response
+    if HttpResponse.IsSuccessStatusCode() then
+        Message('E-Document sent successfully.');
+    else
+        Error('Failed to send E-Document: %1', HttpResponse.ReasonPhrase);
+end;
 ```
 
-- GetApproval: use it to check if document is approved or rejected.
+### Notes for Implementation
+1. **Asynchronous Sending:** To support asynchronous sending, ensure that the implementation also includes the `IDocumentResponseHandler` interface. This enables the processing of responses for async requests.
+2. **Batch Support:** When handling multiple E-Documents in batch operations, the `EDocument` record is populated using filters.
+3. **Error Handling:** Properly handle HTTP response errors and log necessary details for debugging and monitoring.
+4. **Logging:** Utilize the `SendContext` to log HTTP request details for traceability.
 
-```
-    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-    begin
-        ExampleIntegration.Get();
+## Sending Async
 
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Method := 'GET';
-        HttpRequest.SetRequestUri(ExampleIntegration."Get Response Endpoint");
+The IDocumentResponseHandler interface provides a standardized method for retrieving responses from external E-Document services for asynchronously sent E-Documents. If the service is handling documents async, implement this interface on the same codeunit that implements IDocumentSender.
 
-        HttpClient.Send(HttpRequest, HttpResponse);
+The primary purpose of the `IDocumentResponseHandler` is to retrieve the status of a previously sent E-Document from the external service and appropriately update the E-Document Service Status based on the response. It also logs relevant HTTP response details automatically for better traceability.
 
-        // Parse the response if needed.
+### Key Features
+- **Asynchronous Response Handling:** Supports retrieving responses for asynchronously sent E-Documents.
+- **Status Updates:** Automatically updates the E-Document status based on the external service's response.
+- **Error Management:** Handles errors gracefully, including logging error details.
+- **Automatic Logging:** Automatically logs HTTP request and response details when using `SendContext`.
+
+### How to Implement
+To implement the `IDocumentResponseHandler` interface, you need to provide logic for the `GetResponse` procedure, which handles retrieving the status of an E-Document. Below is a detailed guide and example implementation.
+
+### `GetResponse` Method
+The `GetResponse` method retrieves the response from the external service for an asynchronously sent E-Document. It takes three parameters:
+
+- **`EDocument`**: The record representing the E-Document for which the response is being retrieved.
+- **`EDocumentService`**: The record containing service configuration details such as the URL and access tokens.
+- **`SendContext`**: A codeunit that provides context and resources for the get-response operation.
+
+#### Example Implementation
+Here is an example implementation of the `GetResponse` method:
+
+```al
+procedure GetResponse(
+    var EDocument: Record "E-Document"; 
+    var EDocumentService: Record "E-Document Service"; 
+    SendContext: Codeunit SendContext
+): Boolean
+var
+    MyServiceSetup: Record MyServiceSetup;
+    HttpClient: HttpClient;
+    HttpRequest: HttpRequestMessage;
+    HttpResponse: HttpResponseMessage;
+begin
+    // Prepare the HTTP request to check the status of the E-Document
+    HttpRequest := SendContext.Http().GetHttpRequestMessage();
+    HttpRequest.Method := 'GET';
+    HttpRequest.SetRequestUri(MyServiceSetup."Service URL" + '/status/' + EDocument."Document ID");
+    HttpRequest.Headers.Add('Authorization', 'Bearer ' + MyServiceSetup."Access Token");
+
+    // Send the HTTP request
+    HttpClient.Send(HttpRequest, HttpResponse);
+
+    // Set the response in SendContext for automatic logging
+    SendContext.Http().SetHttpResponseMessage(HttpResponse);
+
+    // Handle the response based on the HTTP status code
+    if HttpResponse.IsSuccessStatusCode() then
+        exit(true); // The document was successfully processed
+    else if HttpResponse.HttpStatusCode() = 202 then
+        exit(false); // The document is still being processed
+    else begin
+        // Log the error and set the status to "Sending Error"
+        EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Error retrieving response: ' + Format(HttpResponse.HttpStatusCode()));
+        exit(false);
     end;
-```
-
-- GetApproval: Use it to check if document is approved or rejected.
-
-```
-    procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-    begin
-        ExampleIntegration.Get();
-
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Method := 'GET';
-        HttpRequest.SetRequestUri(ExampleIntegration."Get Approval Endpoint");
-
-        HttpClient.Send(HttpRequest, HttpResponse);
-
-        // Parse the response if needed.
-    end;
-```
-
-- Cancel: use it to send a cancel request for an E-Document.
-
-```
-    procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-    begin
-        ExampleIntegration.Get();
-
-        // Manipulate the payload and set the headers if needed
-        HttpRequest.Method := 'Delete';
-        HttpRequest.SetRequestUri(ExampleIntegration."Cancel Endpoint");
-
-        HttpClient.Send(HttpRequest, HttpResponse);
-
-        // Parse the response if needed.
-    end;
-```
-
-- ReceiveDocument: use it to receive E-Document from external service.
-
-```
-   procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
-    var
-        // Record that hold integration setup
-        ExampleIntegration: Record "Example - Test Integration";
-        HttpClient: HttpClient;
-        Result: Text;
-    begin
-        ExampleIntegration.Get();
-
-        HttpRequest.Method := 'GET';
-        HttpRequest.SetRequestUri(ExampleIntegration."Receiving Endpoint");
-
-        HttpClient.Send(HttpRequest, HttpResponse);
-
-        HttpResponse.Content.ReadAs(Result);
-        WriteToTempBlob(TempBlob, Result);
-    end;
+end;
 ```
 
-- GetDocumentCountInBatch: use it to define how many received documents in batch import.
+## Receiving
 
-```
-    procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
-    begin
-        // Parse the TempBlob to find how many documents in the batch.
-        exit(1);
+The `IDocumentReceiver` interface provides a standardized method for receiving and downloading electronic documents (E-Documents) from external API services. If your system requires integration with an E-Document service, implement this interface to handle document retrieval and data download operations efficiently.
+
+### Key Features
+- **Document Retrieval**: Fetch one or more E-Documents from an external API and store their metadata in temporary blobs for processing.
+- **Content Download**: Download the specific content (e.g., XML, PDF) of a document using its metadata.
+- **Error Handling**: Log and handle errors gracefully during the retrieval and download processes.
+- **Context Management**: Utilize `ReceiveContext` for managing HTTP requests and responses.
+
+### How to Implement
+To implement the `IDocumentReceiver` interface, you need to provide logic for the `ReceiveDocuments` and `DownloadDocument` methods. Below are detailed explanations and example implementations.
+
+### `ReceiveDocuments` Method
+The `ReceiveDocuments` method retrieves one or more documents from the external API and stores their metadata in temporary blobs for further processing.
+
+#### Parameters
+- **`EDocumentService`**: Record representing the E-Document Service configuration, including the API endpoint.
+- **`DocumentsMetadata`**: Temporary blob list for storing retrieved document metadata.
+- **`ReceiveContext`**: A codeunit providing context and resources for the receive operation.
+
+#### Example Implementation
+```al
+procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+var
+    HttpRequest: HttpRequestMessage;
+    JsonResponse: JsonArray;
+    DocumentBlob: Codeunit "Temp Blob";
+    JsonObject: JsonObject;
+    OutStream: OutStream;
+begin
+    // Prepare the HTTP request
+    HttpRequest := ReceiveContext.Http().GetHttpRequestMessage();
+    HttpRequest.Method := 'GET';
+    HttpRequest.SetRequestUri(EDocumentService."Service URL" + '/documents');
+
+    // Send the HTTP request
+    HttpClient.Send(HttpRequest, ReceiveContext.Http().GetHttpResponseMessage());
+
+    // Parse the JSON response
+    JsonResponse.ReadFrom(HttpResponse.ContentAsText());
+
+    // Iterate over each object in the JSON array and add a temp blob to the DocumentsMetadata list
+    foreach JsonObject in JsonResponse do begin
+        DocumentBlob.CreateOutStream(OutStream);
+        JsonObject.WriteTo(OutStream);
+        DocumentsMetadata.Add(DocumentBlob);
     end;
-
-```
-
-- GetIntegrationSetup: use it to define the integration setup of a service
-
-```
-    procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
-    begin
-        SetupPage := page::"Example - Test Integration";
-        SetupTable := Database::"Example - Test Integration";
-    end;
-```
-
-### 4. Implement Setup Wizard
-
-Create a setup wizard that directs customers through the process of configuring E-Documents, gathering all necessary details for seamless integration with the service.
-
-1. Create Wizard Page
-2. First page should show an introduction about the feature
-3. Integration Setup information: this can be url endpoints, username/passwords, certificates and schema uris
-4. Setup Sending profiles
-5. If your service will submit documents to the endpoint, get consent from the user and enable HTTP outgoing calls for document core extension and your localization
-
-Here is an example Wizard
-
-```
-page 6138 "Edocument Setup Wizard"
-{
-    PageType = NavigatePage;
-    ApplicationArea = All;
-    Caption = 'E-Document setup wizard';
-
-    layout
-    {
-        area(Content)
-        {
-            group(MediaStandard)
-            {
-                Caption = '';
-                Editable = false;
-                Visible = TopBannerVisible;
-                field("MediaResourcesStandard Media Reference"; MediaResourcesStandard."Media Reference")
-                {
-                    ApplicationArea = All;
-                    Editable = false;
-                    ShowCaption = false;
-                }
-            }
-            group(FirstPage)
-            {
-
-                Caption = '';
-                Visible = FirstStepVisible;
-                group("IntroductionGroup")
-                {
-                    Caption = 'Welcome to Edocument service';
-                    Visible = FirstStepVisible;
-
-                    group(LearnMoreLinkGroup)
-                    {
-                        Caption = '';
-
-                        field(CanLearnMore; YouCanLearnMoreTxt)
-                        {
-                            ApplicationArea = Basic, Suite;
-                            ShowCaption = false;
-                            Editable = false;
-                            MultiLine = true;
-                        }
-                    }
-                }
-            }
-
-            group(SetupService)
-            {
-                Caption = '';
-                Visible = SetupServiceStepVisible;
-
-                field("Service Name"; EdocFormat.Code)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Service Name';
-                }
-                field(Description; EdocFormat.Description)
-                {
-                    ApplicationArea = Basic, Suite;
-                }
-                field("Document Format"; EdocFormat."Document Format")
-                {
-                    ApplicationArea = Basic, Suite;
-                }
-                field("Service Integration"; EdocFormat."Service Integration")
-                {
-                    ApplicationArea = Basic, Suite;
-                }
-
-            }
-
-            group(SetupSendingProfiles)
-            {
-                Caption = '';
-                Visible = SetupSendingProfilesStepVisible;
-
-                field(UseWithDefaultDocSendingProfile; UseWithDefaultDocSendingProfile)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Use with default Sending Profile';
-                }
-            }
-            group(FinalPage)
-            {
-                Visible = FinalStepVisible;
-                group("That's it!")
-                {
-                    Caption = 'That''s it!';
-
-                    group(ChooseFinishGroup)
-                    {
-                        Caption = '';
-                        Visible = true;
-                        field(ChooseFinish; ChooseFinishTxt)
-                        {
-                            ApplicationArea = Basic, Suite;
-                            ShowCaption = false;
-                            Editable = false;
-                            MultiLine = true;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(ActionBack)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Back';
-                Enabled = BackActionEnabled;
-                Visible = BackActionEnabled;
-                Image = PreviousRecord;
-                InFooterBar = true;
-
-                trigger OnAction()
-                begin
-                    NextStep(true);
-                end;
-            }
-            action(ActionNext)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Next';
-                Enabled = NextActionEnabled;
-                Image = NextRecord;
-                InFooterBar = true;
-
-                trigger OnAction()
-                begin
-                    NextStep(false);
-                end;
-            }
-
-            action(ActionFinishAndEnable)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Finish';
-                Enabled = FinishActionEnabled;
-                Image = Approve;
-                InFooterBar = true;
-
-                trigger OnAction()
-                begin
-                    FinishAndEnableAction();
-                end;
-            }
-        }
-    }
-
-    trigger OnInit()
-    begin
-        LoadTopBanners();
-    end;
-
-    trigger OnOpenPage()
-    begin
-        Step := Step::Start;
-        EnableControls();
-
-
-    end;
-
-    local procedure FinishAndEnableAction()
-    var
-        EDocumentHelper: codeunit "E-Document Helper";
-    begin
-        // Insert E-Document Services
-
-        // Insert Document Sending Profile
-
-        // Insert WorkFlows
-        // You can find detailed examples in codeunit "E-Document Workflow Setup"
-
-        // Enable EDocument Core extension to send http calls after getting user's consent
-        EDocumentHelper.AllowEDocumentCoreHttpCalls();
-
-        // Setup retention policy if needed
-    end;
-
-    local procedure LoadTopBanners()
-    begin
-        if MediaRepositoryStandard.Get('AssistedSetup-NoText-400px.png', Format(ClientTypeManagement.GetCurrentClientType())) and
-           MediaRepositoryDone.Get('AssistedSetupDone-NoText-400px.png', Format(ClientTypeManagement.GetCurrentClientType()))
-        then
-            if MediaResourcesStandard.Get(MediaRepositoryStandard."Media Resources Ref") and
-               MediaResourcesDone.Get(MediaRepositoryDone."Media Resources Ref")
-            then
-                TopBannerVisible := MediaResourcesDone."Media Reference".HasValue;
-    end;
-
-    local procedure NextStep(Backwards: Boolean)
-    begin
-
-        if Backwards then
-            Step -= 1
-        else
-            Step += 1;
-
-        EnableControls();
-    end;
-
-    local procedure EnableControls()
-    begin
-        ResetControls();
-
-        case Step of
-            Step::Start:
-                ShowStartStep();
-            Step::SetupService:
-                ShowSetupServiceStep();
-            Step::SetupSendingProfiles:
-                ShowSetupSendingProfilesStep();
-            Step::Finish:
-                ShowFinalStep();
-        END;
-    end;
-
-    local procedure ShowStartStep()
-    begin
-        FirstStepVisible := true;
-        BackActionEnabled := false;
-    end;
-
-    local procedure ShowSetupServiceStep()
-    begin
-        FirstStepVisible := false;
-        SetupServiceStepVisible := true;
-        SetupSendingProfilesStepVisible := false;
-        FinalStepVisible := false;
-
-        BackActionEnabled := true;
-    end;
-
-    local procedure ShowSetupSendingProfilesStep()
-    begin
-        FirstStepVisible := false;
-        SetupServiceStepVisible := false;
-        SetupSendingProfilesStepVisible := true;
-        FinalStepVisible := false;
-
-        BackActionEnabled := true;
-    end;
-
-    local procedure ShowFinalStep()
-    begin
-        FirstStepVisible := false;
-        SetupServiceStepVisible := false;
-        SetupSendingProfilesStepVisible := false;
-        FinalStepVisible := true;
-
-        FinishActionEnabled := true;
-        NextActionEnabled := false;
-        BackActionEnabled := true;
-    end;
-
-    local procedure ResetControls()
-    begin
-        BackActionEnabled := true;
-        NextActionEnabled := true;
-
-        FirstStepVisible := false;
-        SetupServiceStepVisible := false;
-        SetupSendingProfilesStepVisible := false;
-        FinalStepVisible := false;
-    end;
-
-    var
-        MediaRepositoryStandard: Record "Media Repository";
-        MediaRepositoryDone: Record "Media Repository";
-        MediaResourcesStandard: Record "Media Resources";
-        MediaResourcesDone: Record "Media Resources";
-        EdocFormat: Record "E-Document Service" temporary;
-        ClientTypeManagement: Codeunit "Client Type Management";
-
-        Step: Option Start,SetupService,SetupSendingProfiles,Finish;
-        TopBannerVisible: Boolean;
-        BackActionEnabled, NextActionEnabled, FinishActionEnabled : Boolean;
-        FirstStepVisible, SetupServiceStepVisible, SetupSendingProfilesStepVisible, FinalStepVisible : Boolean;
-        UseWithDefaultDocSendingProfile: Boolean;
-        YouCanLearnMoreTxt: Label 'This wizard helps you to setup a connection to an electronic invoicing setup.';
-        ChooseFinishTxt: Label 'Click ''Finish'' to insert the service connection. \You will still have to setup the settings for the endpoint and import/export mapping.';
-}
+end;
 ```
 
-#### Helper Procedures
+---
+
+### `DownloadDocument` Method
+The `DownloadDocument` method downloads the content of a specific document (e.g., XML, PDF) using the document metadata.
+
+#### Parameters
+- **`EDocument`**: Record representing the specific E-Document.
+- **`EDocumentService`**: Record containing service configuration details such as the URL and authentication tokens.
+- **`DocumentMetadata`**: Temporary blob containing the metadata for the document.
+- **`ReceiveContext`**: A codeunit providing context and resources for the download operation.
+
+#### Example Implementation
+```al
+procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+var
+    Request: Codeunit Requests;
+    HttpExecutor: Codeunit "Http Executor";
+    ResponseContent: Text;
+    InStream: InStream;
+    DocumentId: Text;
+    OutStream: OutStream;
+begin
+    // Read the document ID from the DocumentMetadata
+    DocumentMetadata.CreateInStream(InStream, TextEncoding::UTF8);
+    InStream.ReadText(DocumentId);
+
+    if DocumentId = '' then begin
+        EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);
+        exit;
+    end;
+
+    // Update the document record with the document ID
+    EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
+    EDocument.Modify();
+
+    // Prepare the HTTP request
+    Request.Init();
+    Request.Authenticate().CreateDownloadRequest(DocumentId);
+    ReceiveContext.Http().SetHttpRequestMessage(Request.GetRequest());
+
+    // Execute the HTTP request
+    ResponseContent := HttpExecutor.ExecuteHttpRequest(Request, ReceiveContext.Http().GetHttpResponseMessage());
+
+    // Store the response in the ReceiveContext
+    ReceiveContext.GetTempBlob().CreateOutStream(OutStream, TextEncoding::UTF8);
+    OutStream.WriteText(ResponseContent);
+end;
+```
+
+## Sent Document Actions
+
+The `ISentDocumentActions` interface provides a set of default actions for managing outgoing E-Documents through integration with external APIs. This interface simplifies the process of communicating with external services to manage document statuses effectively. Developers can use the provided methods to handle approval and cancellation processes seamlessly, ensuring accurate status updates within the system.
+
+### Key Features
+
+These actions allow you to:
+
+- **Check Approval Status**: Verify whether a sent E-Document has been approved by the external service.
+- **Check Cancellation Status**: Determine whether a sent E-Document has been successfully canceled by the external service.
+- **Streamline Integration**: Standardize HTTP request handling for approval and cancellation workflows.
+
+### How to Implement
+
+To use the `ISentDocumentActions` interface, you need to implement the `GetApprovalStatus` and `GetCancellationStatus` methods. Each method interacts with the external API to manage the status of E-Documents.
+
+### `GetApprovalStatus` Method
+
+#### Parameters
+- `EDocument`: Record of type "E-Document" representing the document to be approved.
+- `EDocumentService`: Record of type "E-Document Service" for interacting with the external API.
+- `ActionContext`: Codeunit `ActionContext` for managing HTTP requests and responses.
+
+#### Example Implementation
+```al
+procedure GetApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+var
+    Request: Codeunit Requests;
+    HttpExecutor: Codeunit "Http Executor";
+    ResponseContent: Text;
+begin
+    // Prepare the HTTP request
+    Request.Init();
+    Request.Authenticate().CreateApprovalRequest(EDocument."Document ID");
+    ActionContext.Http().SetHttpRequestMessage(Request.GetRequest());
+
+    // Execute the HTTP request
+    ResponseContent := HttpExecutor.ExecuteHttpRequest(Request, ActionContext.Http().GetHttpResponseMessage());
+
+    // Process the response to determine the approval status
+    if ResponseContent.Contains('approved') then begin
+        ActionContext.SetStatus(ActionContext.GetStatus()."Approved");
+        exit(true);
+    end else if ResponseContent.Contains('rejected') then begin
+        ActionContext.SetStatus(ActionContext.GetStatus()."Rejected");
+        exit(true);
+    end;
+
+    exit(false);
+end;
+```
+
+### `GetCancellationStatus` Method
+
+#### Parameters
+- `EDocument`: Record of type "E-Document" representing the document to be canceled.
+- `EDocumentService`: Record of type "E-Document Service" for interacting with the external API.
+- `ActionContext`: Codeunit `ActionContext` for managing HTTP requests and responses.
+
+#### Example Implementation
+```al
+procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+var
+    Request: Codeunit Requests;
+    HttpExecutor: Codeunit "Http Executor";
+    ResponseContent: Text;
+begin
+    // Prepare the HTTP request
+    Request.Init();
+    Request.Authenticate().CreateCancellationRequest(EDocument."Document ID");
+    ActionContext.Http().SetHttpRequestMessage(Request.GetRequest());
+
+    // Execute the HTTP request
+    ResponseContent := HttpExecutor.ExecuteHttpRequest(Request, ActionContext.Http().GetHttpResponseMessage());
+
+    // Process the response to determine the cancellation status
+    if ResponseContent.Contains('canceled') then begin
+        ActionContext.SetStatus(ActionContext.GetStatus()."Canceled");
+        exit(true);
+    end;
+
+    exit(false);
+end;
+```
+
+## Document Action
+
+### Key Features
+
+The `IDocumentAction` interface defines a general-purpose method for performing various actions on E-Documents. It allows developers to:
+
+- **Perform Custom Actions**: Execute specified actions, such as resetting or updating the status of an E-Document.
+- **Flexibly Integrate**: Use this interface to handle API requests and responses tailored to the specific action type.
+- **Streamline Workflows**: Centralize action execution logic for consistent and maintainable integration. 
+- **Handles Logging and Error Handling**: When using an action using the interface, you get all the logging and error handling for free. All build directly in the framework.
+
+### How to Implement
+
+To use the `IDocumentAction` interface, implement the `InvokeAction` method. This method executes a specified action by interacting with the external API and updates the E-Document status accordingly. Then extend the actions enum and call the `procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionType: Enum "Integration Action Type"; ActionContext: Codeunit ActionContext)` in the Integration Management codeunit to run the action. You can call this from your own action.
+
+### `InvokeAction` Method
+
+#### Parameters
+
+- `EDocument`: Record of type "E-Document" representing the document on which the action is performed.
+- `EDocumentService`: Record of type "E-Document Service" for interacting with the external API.
+- `ActionContext`: Codeunit `ActionContext` for managing HTTP requests and responses.
+
+#### Example Implementation
+
+```al
+procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+var
+    HttpClient: HttpClient;
+    HttpRequestMessage: HttpRequestMessage;
+    HttpResponseMessage: HttpResponseMessage;
+begin
+    // Initialize the HTTP request
+    HttpRequestMessage.Method := 'POST';
+    HttpRequestMessage.SetRequestUri('https://api.example.com/documents/reset');
+    HttpRequestMessage.Content.WriteFromText('{"documentId": "' + EDocument."Document ID" + '"}');
+
+    // Send the HTTP request and receive the response
+    HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
+
+    // Process the response and set status
+    if HttpResponseMessage.IsSuccessStatusCode() then begin
+        ActionContext.SetStatus(Enum::"E-Document Service Status"::"MyStatus");
+        exit(true);
+    end;
+
+    exit(false);
+end;
+```
+
+## Helper Procedures
 
 There is a set of EDocument Helper codeunit that consists of collection of utility methods that are highly recommended for building your localization app. These methods can assist you in various tasks, such as effortlessly logging any encountered error messages.
 
@@ -701,6 +582,6 @@ procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: R
     end;
 ```
 
-### Missing a feature
+## Missing a feature
 
 If you believe there are any essential features that could enhance the ease of developing an e-document solution, kindly get in touch by generating an issue in this repository titled "E-document: < details >", and we will get back to you.

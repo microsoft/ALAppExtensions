@@ -5,6 +5,7 @@ table 4769 "Contoso GL Account"
     DataClassification = CustomerContent;
     InherentEntitlements = RIMD;
     InherentPermissions = RIMD;
+    ReplicateData = false;
 
     fields
     {

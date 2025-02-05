@@ -1,5 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.Inventory.Item;
+
 table 8007 "Overdue Service Commitments"
 {
     DataClassification = CustomerContent;
@@ -24,6 +26,8 @@ table 8007 "Overdue Service Commitments"
         field(4; "Contract No."; Code[20])
         {
             Caption = 'Contract No.';
+            TableRelation = if (Partner = const(Customer)) "Customer Contract" else
+            if (Partner = const(Vendor)) "Vendor Contract";
         }
         field(5; "Contract Description"; Text[100])
         {
@@ -49,10 +53,12 @@ table 8007 "Overdue Service Commitments"
         field(11; "Item No."; Code[20])
         {
             Caption = 'Item No.';
+            TableRelation = Item;
         }
         field(12; "Contract Type"; Code[10])
         {
             Caption = 'Contract Type';
+            TableRelation = "Contract Type";
         }
         field(13; "Billing Rhythm"; DateFormula)
         {
@@ -93,18 +99,18 @@ table 8007 "Overdue Service Commitments"
         }
     }
 
-    procedure FillAndCountOverdueServiceCommitments(): Integer
+    procedure CountOverdueServiceCommitments(): Integer
     var
+        ServiceCommitment: Record "Service Commitment";
         OverdueDate: Date;
     begin
-        Rec.DeleteAll(false);
         OverdueDate := CalcOverdueDate();
         if OverdueDate = 0D then
             exit(0);
 
-        FillOverdueCustomerServiceCommitments(OverdueDate);
-        FillOverdueVendorServiceCommitments(OverdueDate);
-        exit(Rec.Count());
+        ServiceCommitment.SetFilter("Next Billing Date", '<%1', OverdueDate);
+        ServiceCommitment.SetRange(Closed, false);
+        exit(ServiceCommitment.Count());
     end;
 
     local procedure CalcOverdueDate(): Date
@@ -119,71 +125,67 @@ table 8007 "Overdue Service Commitments"
         exit(CalcDate(ServiceContractSetup."Overdue Date Formula", WorkDate()));
     end;
 
-    local procedure FillOverdueCustomerServiceCommitments(OverdueDate: Date)
+    procedure FillOverdueServiceCommitments()
     var
-        OverdueCustomerServComm: Query "Overdue Customer Serv. Comm.";
+        OverdueDate: Date;
     begin
-        Clear(OverdueCustomerServComm);
-        OverdueCustomerServComm.SetFilter(NextBillingDate, '<%1', OverdueDate);
-        OverdueCustomerServComm.SetRange(ContractLineClosed, false);
-        if OverdueCustomerServComm.Open() then begin
-            while OverdueCustomerServComm.Read() do begin
-                Rec.Init();
-                Rec."Line No." += 1;
-                Rec.Partner := OverdueCustomerServComm.Partner;
-                Rec."Partner Name" := OverdueCustomerServComm.PartnerName;
-                Rec."Contract No." := OverdueCustomerServComm.ContractNo;
-                Rec."Contract Description" := OverdueCustomerServComm.ContractDescription;
-                Rec."Service Commitment Description" := OverdueCustomerServComm.ServCommDescription;
-                Rec."Next Billing Date" := OverdueCustomerServComm.NextBillingDate;
-                Rec."Quantity Decimal" := OverdueCustomerServComm.Quantity;
-                Rec.Price := OverdueCustomerServComm.Price;
-                Rec."Service Amount" := OverdueCustomerServComm.ServiceAmount;
-                Rec."Item No." := OverdueCustomerServComm.ItemNo;
-                Rec."Contract Type" := OverdueCustomerServComm.ContractType;
-                Rec."Billing Rhythm" := OverdueCustomerServComm.BillingRhythm;
-                Rec."Service Start Date" := OverdueCustomerServComm.ServiceStartDate;
-                Rec."Service End Date" := OverdueCustomerServComm.ServiceEndDate;
-                Rec."Service Object No." := OverdueCustomerServComm.ServiceObjectNo;
-                Rec."Service Object Description" := OverdueCustomerServComm.ServiceObjectDescription;
-                Rec."Discount %" := OverdueCustomerServComm.Discount;
-                Rec.Insert(true);
-            end;
-            OverdueCustomerServComm.Close();
-        end;
+        DeleteAll(false);
+        OverdueDate := CalcOverdueDate();
+        if OverdueDate = 0D then
+            exit;
+
+        FillOverdueServiceCommitments(OverdueDate);
     end;
 
-    local procedure FillOverdueVendorServiceCommitments(OverdueDate: Date)
+    local procedure FillOverdueServiceCommitments(OverdueDate: Date)
     var
-        OverdueVendorServComm: Query "Overdue Vendor Serv. Comm.";
+        ServiceCommitment: Record "Service Commitment";
+        CustomerContract: Record "Customer Contract";
+        VendorContract: Record "Vendor Contract";
     begin
-        Clear(OverdueVendorServComm);
-        OverdueVendorServComm.SetFilter(NextBillingDate, '<%1', OverdueDate);
-        OverdueVendorServComm.SetRange(ContractLineClosed, false);
-        if OverdueVendorServComm.Open() then begin
-            while OverdueVendorServComm.Read() do begin
+        ServiceCommitment.SetFilter("Next Billing Date", '<%1', OverdueDate);
+        ServiceCommitment.SetRange(Closed, false);
+        ServiceCommitment.SetAutoCalcFields("Service Object Description", "Item No.", "Quantity Decimal");
+        if ServiceCommitment.FindSet() then
+            repeat
                 Rec.Init();
                 Rec."Line No." += 1;
-                Rec.Partner := OverdueVendorServComm.Partner;
-                Rec."Partner Name" := OverdueVendorServComm.PartnerName;
-                Rec."Contract No." := OverdueVendorServComm.ContractNo;
-                Rec."Contract Description" := OverdueVendorServComm.ContractDescription;
-                Rec."Service Commitment Description" := OverdueVendorServComm.ServCommDescription;
-                Rec."Next Billing Date" := OverdueVendorServComm.NextBillingDate;
-                Rec."Quantity Decimal" := OverdueVendorServComm.Quantity;
-                Rec.Price := OverdueVendorServComm.Price;
-                Rec."Service Amount" := OverdueVendorServComm.ServiceAmount;
-                Rec."Item No." := OverdueVendorServComm.ItemNo;
-                Rec."Contract Type" := OverdueVendorServComm.ContractType;
-                Rec."Billing Rhythm" := OverdueVendorServComm.BillingRhythm;
-                Rec."Service Start Date" := OverdueVendorServComm.ServiceStartDate;
-                Rec."Service End Date" := OverdueVendorServComm.ServiceEndDate;
-                Rec."Service Object No." := OverdueVendorServComm.ServiceObjectNo;
-                Rec."Service Object Description" := OverdueVendorServComm.ServiceObjectDescription;
-                Rec."Discount %" := OverdueVendorServComm.Discount;
-                Rec.Insert(true);
-            end;
-            OverdueVendorServComm.Close();
-        end;
+                Rec.Partner := ServiceCommitment.Partner;
+                Rec."Contract No." := ServiceCommitment."Contract No.";
+                case Rec.Partner of
+                    Rec.Partner::Customer:
+                        if CustomerContract.Get(Rec."Contract No.") then begin
+                            Rec."Partner Name" := CustomerContract."Ship-to Name";
+                            Rec."Contract Description" := CustomerContract."Description Preview";
+                            Rec."Contract Type" := CustomerContract."Contract Type";
+                        end;
+                    Rec.Partner::Vendor:
+                        if VendorContract.Get(Rec."Contract No.") then begin
+                            Rec."Partner Name" := VendorContract."Buy-from Vendor Name";
+                            Rec."Contract Description" := VendorContract."Description Preview";
+                            Rec."Contract Type" := VendorContract."Contract Type";
+                        end;
+                end;
+                Rec."Service Commitment Description" := ServiceCommitment.Description;
+                Rec."Next Billing Date" := ServiceCommitment."Next Billing Date";
+                Rec."Quantity Decimal" := ServiceCommitment."Quantity Decimal";
+                Rec.Price := ServiceCommitment.Price;
+                Rec."Service Amount" := ServiceCommitment."Service Amount";
+                Rec."Item No." := ServiceCommitment."Item No.";
+                Rec."Billing Rhythm" := ServiceCommitment."Billing Rhythm";
+                Rec."Service Start Date" := ServiceCommitment."Service Start Date";
+                Rec."Service End Date" := ServiceCommitment."Service End Date";
+                Rec."Service Object No." := ServiceCommitment."Service Object No.";
+                Rec."Service Object Description" := ServiceCommitment."Service Object Description";
+                Rec."Discount %" := ServiceCommitment."Discount %";
+                Rec.Insert(false);
+            until ServiceCommitment.Next() = 0;
+    end;
+
+    internal procedure OpenServiceObjectCard()
+    var
+        ServiceObject: Record "Service Object";
+    begin
+        ServiceObject.OpenServiceObjectCard("Service Object No.");
     end;
 }

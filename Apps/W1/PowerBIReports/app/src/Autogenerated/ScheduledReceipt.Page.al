@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37028 "Scheduled Receipt"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Scheduled Receipt';
     AboutTitle = 'About Scheduled Receipt';
     AboutText = 'The Scheduled Receipt report visualizes Scheduled Receipt against Projected Available Balance over time, offering a clear view of inventory supply. A table matrix breaks this down by item, showcasing key metrics like Scheduled Receipt Quantity, Projected Available Balance, and quantities from supply documents such as purchase orders, transfer receipts and manufacturing documents.';
@@ -20,7 +22,7 @@ page 37028 "Scheduled Receipt"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37028 "Scheduled Receipt"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection5aaca347e8eb867da682', Locked = true;
+        ReportPageLbl: Label 'ReportSection5aaca347e8eb867da682', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

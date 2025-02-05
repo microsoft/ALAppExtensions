@@ -46,7 +46,7 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
         JGraphQL: JsonObject;
         JSetPrices: JsonArray;
     begin
-        CatalogAPI.GetCatalogPrices(Catalog.Id, TempCatalogPrice);
+        CatalogAPI.GetCatalogPrices(Catalog, TempCatalogPrice);
         if TempCatalogPrice.FindSet() then begin
             CatalogAPI.UpdatePriceGraphQL(JGraphQL, JSetPrices);
             repeat

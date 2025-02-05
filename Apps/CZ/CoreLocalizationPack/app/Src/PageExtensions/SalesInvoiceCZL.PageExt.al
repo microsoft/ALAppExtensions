@@ -64,10 +64,10 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
 
                 trigger OnAssistEdit()
                 begin
+                    Clear(ChangeExchangeRate);
                     ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     if ChangeExchangeRate.RunModal() = Action::OK then
                         Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
-
                     Clear(ChangeExchangeRate);
                 end;
             }
@@ -79,6 +79,7 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
 
                 trigger OnAssistEdit()
                 begin
+                    Clear(ChangeExchangeRate);
                     if Rec."VAT Reporting Date" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
@@ -87,6 +88,7 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
+                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()

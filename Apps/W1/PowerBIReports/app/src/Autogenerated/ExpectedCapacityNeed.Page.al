@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37044 "Expected Capacity Need"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Expected Capacity Need';
     AboutTitle = 'About Expected Capacity Need';
     AboutText = 'View the total hours scheduled to be performed for each Work Centre Group and/or Work Centre broken down by production order status and production order to analyze your requirement on factory resources.';
@@ -20,7 +22,7 @@ page 37044 "Expected Capacity Need"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37044 "Expected Capacity Need"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiona2c7d37ca03217072470', Locked = true;
+        ReportPageLbl: Label 'ReportSectiona2c7d37ca03217072470', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -9,7 +9,6 @@ using Microsoft.Finance.TaxEngine.UseCaseBuilder;
 using Microsoft.RoleCenters;
 using System.Environment.Configuration;
 using System.Globalization;
-using System.IO;
 using System.Media;
 
 codeunit 20366 "Tax Engine Assisted Setup"
@@ -141,14 +140,14 @@ codeunit 20366 "Tax Engine Assisted Setup"
         GlobalLanguage(CurrentGlobalLanguage);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Import Config. Package Files", 'OnBeforeImportConfigurationFile', '', false, false)]
-    local procedure OnBeforeImportConfigurationFile()
-    var
-        TaxType: Record "Tax Type";
-    begin
-        if TaxType.IsEmpty() then
-            SetupTaxEngineWithUseCases();
-    end;
+    // [EventSubscriber(ObjectType::Codeunit, Codeunit::"Import Config. Package Files", 'OnBeforeImportConfigurationFile', '', false, false)]
+    // local procedure OnBeforeImportConfigurationFile()
+    // var
+    //     TaxType: Record "Tax Type";
+    // begin
+    //     if TaxType.IsEmpty() then
+    //         SetupTaxEngineWithUseCases();
+    // end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Role Center Notification Mgt.", 'OnBeforeShowNotifications', '', false, false)]
     local procedure OnBeforeShowNotifications()

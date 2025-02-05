@@ -25,12 +25,16 @@
   "idRanges": [
     {
       "from": 14095,
-      "to": 14099
+      "to": 14199
     }
+  ],
+  "resourceFolders": [
+    ".resources"
   ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
-  }
+  },
+  "target": "OnPrem"
 }

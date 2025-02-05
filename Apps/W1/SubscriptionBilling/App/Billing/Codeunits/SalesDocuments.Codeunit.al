@@ -5,11 +5,13 @@ using Microsoft.Sales.Posting;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using Microsoft.Purchases.Posting;
+using Microsoft.Inventory;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Warehouse.Activity;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Utilities;
 
 codeunit 8063 "Sales Documents"
 {
@@ -123,11 +125,7 @@ codeunit 8063 "Sales Documents"
 
     local procedure FilterBillingLinePerSalesLine(var BillingLine: Record "Billing Line"; SalesLine: Record "Sales Line")
     begin
-        BillingLine.SetRange("Document Type", BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"));
-        BillingLine.SetRange("Document No.", SalesLine."Document No.");
-        BillingLine.SetRange("Document Line No.", SalesLine."Line No.");
-        BillingLine.SetFilter("Billing from", '>=%1', SalesLine."Recurring Billing from");
-        BillingLine.SetFilter("Billing to", '<=%1', SalesLine."Recurring Billing to");
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
     end;
 
     local procedure ResetSalesDocumentFieldsForBillingLines(var BillingLine: Record "Billing Line")
@@ -212,7 +210,7 @@ codeunit 8063 "Sales Documents"
             SalesOrderLine.Validate(Quantity);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterValidateEvent, "Qty. To Invoice", false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterValidateEvent, "Qty. to Invoice", false, false)]
     local procedure ClearQtyToInvoiceForServiceCommitmentItemAfterValidateEventQtyToInvoice(var Rec: Record "Sales Line")
     begin
         ClearQtyToInvoiceOnForServiceCommitmentItem(Rec);
@@ -231,7 +229,7 @@ codeunit 8063 "Sales Documents"
         OnBeforeClearQtyToInvoiceOnForServiceCommitmentItem(IsHandled);
         if IsHandled then
             exit;
-        if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItemToInvoice(SalesLine) then
+        if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(SalesLine, false) then
             exit;
 
         SalesLine."Qty. to Invoice" := 0;
@@ -387,7 +385,7 @@ codeunit 8063 "Sales Documents"
         OnCheckResetValueForServiceCommitmentItems(TempSalesLine, ResetValueForServiceCommitmentItems, IsHandled);
         if IsHandled then
             exit(ResetValueForServiceCommitmentItems);
-        exit(SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItemToInvoice(TempSalesLine) or ContractRenewalMgt.IsContractRenewal(TempSalesLine));
+        exit(SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(TempSalesLine, true) or ContractRenewalMgt.IsContractRenewal(TempSalesLine));
     end;
 
     local procedure CreateServiceObjectFromSalesLine(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
@@ -439,12 +437,17 @@ codeunit 8063 "Sales Documents"
                 if SalesServiceCommitment.Discount then
                     ServiceCommitment.Validate("Calculation Base Amount", ServiceCommitment."Calculation Base Amount" * -1);
 
+                ServiceCommitment.UpdateNextPriceUpdate();
                 ServiceCommitment.CalculateInitialTermUntilDate();
                 ServiceCommitment.CalculateInitialServiceEndDate();
                 ServiceCommitment.CalculateInitialCancellationPossibleUntilDate();
                 ServiceCommitment.SetCurrencyData(SalesHeader."Currency Factor", SalesHeader."Posting Date", SalesHeader."Currency Code");
                 ServiceCommitment.SetLCYFields(ServiceCommitment.Price, ServiceCommitment."Service Amount", ServiceCommitment."Discount Amount", ServiceCommitment."Calculation Base Amount");
-                ServiceCommitment.SetDefaultDimensionFromItem(ServiceObject."Item No.");
+
+                if ServiceCommitment."Invoicing Item No." <> '' then
+                    ServiceCommitment.SetDefaultDimensionFromItem(ServiceCommitment."Invoicing Item No.", false)
+                else
+                    ServiceCommitment.SetDefaultDimensionFromItem(ServiceObject."Item No.", false);
                 ServiceCommitment.GetCombinedDimensionSetID(SalesLine."Dimension Set ID", ServiceCommitment."Dimension Set ID");
                 ServiceCommitment."Renewal Term" := ServiceCommitment."Initial Term";
                 OnCreateServiceObjectFromSalesLineBeforeInsertServiceCommitment(ServiceCommitment, SalesServiceCommitment, SalesLine);
@@ -493,6 +496,7 @@ codeunit 8063 "Sales Documents"
         ServiceObject."Ship-to Contact" := SalesHeader."Ship-to Contact";
         ServiceObject."Customer Price Group" := SalesHeader."Customer Price Group";
         ServiceObject."Customer Reference" := SalesHeader."Your Reference";
+        ServiceObject."Variant Code" := SalesLine."Variant Code";
         OnCreateServiceObjectFromSalesLineBeforeInsertServiceObject(ServiceObject, SalesHeader, SalesLine);
         ServiceObject.Insert(true);
         OnCreateServiceObjectFromSalesLineAfterInsertServiceObject(ServiceObject, SalesHeader, SalesLine);
@@ -618,10 +622,9 @@ codeunit 8063 "Sales Documents"
     var
         BillingLine: Record "Billing Line";
     begin
-        if not SalesLine.IsLineAttachedToBillingLine() then
-            exit;
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         SalesInvLine."Contract No." := BillingLine."Contract No.";
         SalesInvLine."Contract Line No." := BillingLine."Contract Line No.";
     end;
@@ -631,10 +634,9 @@ codeunit 8063 "Sales Documents"
     var
         BillingLine: Record "Billing Line";
     begin
-        if not SalesLine.IsLineAttachedToBillingLine() then
-            exit;
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         SalesCrMemoLine."Contract No." := BillingLine."Contract No.";
         SalesCrMemoLine."Contract Line No." := BillingLine."Contract Line No.";
     end;
@@ -660,6 +662,33 @@ codeunit 8063 "Sales Documents"
         if SalesHeader."Applies-to Doc. No." <> '' then
             exit(SalesHeader."Applies-to Doc. No.");
         exit(BillingLine.GetCorrectionDocumentNo("Service Partner"::Customer, SalesHeader."No."));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Undo Posting Management", OnUpdateSalesLineOnBeforeSalesLineModify, '', false, false)]
+    local procedure RevertInvoicedQuantityOnUpdateSalesLineOnBeforeSalesLineModify(var SalesLine: Record "Sales Line")
+    begin
+        if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItemToShip(SalesLine) then
+            exit;
+
+        SalesLine."Quantity Invoiced" := SalesLine."Quantity Shipped";
+        SalesLine."Qty. Invoiced (Base)" := SalesLine."Qty. Shipped (Base)";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnCopySalesDocLineOnBeforeCopyThisLine, '', false, false)]
+    local procedure ClearQtyToInvoiceInSalesLineForServiceCommitmentItem(ToSalesHeader: Record "Sales Header"; var ToSalesLine: Record "Sales Line"; FromSalesLine: Record "Sales Line"; FromSalesDocType: Enum "Sales Document Type From"; var RecalculateLines: Boolean; var CopyThisLine: Boolean; var LinesNotCopied: Integer; var Result: Boolean; var IsHandled: Boolean; var NextLineNo: Integer; DocLineNo: Integer; MoveNegLines: Boolean)
+    var
+        Item: Record Item;
+    begin
+        if ToSalesHeader."Recurring Billing" then
+            exit;
+        if ToSalesLine.Type <> ToSalesLine.Type::Item then
+            exit;
+        Item.Get(ToSalesLine."No.");
+        if not Item.IsServiceCommitmentItem() then
+            exit;
+
+        ToSalesLine."Qty. to Invoice" := 0;
+        ToSalesLine."Qty. to Invoice (Base)" := 0;
     end;
 
     [InternalEvent(false, false)]

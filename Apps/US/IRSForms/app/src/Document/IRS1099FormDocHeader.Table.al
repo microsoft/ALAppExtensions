@@ -96,6 +96,12 @@ table 10035 "IRS 1099 Form Doc. Header"
                         Rec."Vendor E-Mail" := xRec."Vendor E-Mail";
             end;
         }
+        field(100; "Vendor Name"; Text[100])
+        {
+            CalcFormula = lookup(Vendor.Name where("No." = field("Vendor No.")));
+            FieldClass = FlowField;
+            Editable = false;
+        }
     }
 
     keys
@@ -115,6 +121,7 @@ table 10035 "IRS 1099 Form Doc. Header"
         CannotCreateFormDocSamePeriodVendorFormErr: Label 'You cannot create multiple form documents with the same period, vendor and form.';
         EmailAddressChangeQst: Label 'The email address has been changed. Do you want to continue?';
         CannotMakeChangeWhenLineExistErr: Label 'You cannot make this change when one or more lines exist.';
+        UniquenessFilterModifiedErr: Label 'It is not allowed to modify the period, vendor or form uniqueness filter in the customization.';
 
     trigger OnDelete()
     var
@@ -154,7 +161,23 @@ table 10035 "IRS 1099 Form Doc. Header"
         IRS1099FormDocHeader.SetRange("Period No.", "Period No.");
         IRS1099FormDocHeader.SetRange("Vendor No.", "Vendor No.");
         IRS1099FormDocHeader.SetRange("Form No.", "Form No.");
+        AddPeriodFormVendUniquenessFilters(IRS1099FormDocHeader);
         if not IRS1099FormDocHeader.IsEmpty() then
             Error(CannotCreateFormDocSamePeriodVendorFormErr);
+    end;
+
+    local procedure AddPeriodFormVendUniquenessFilters(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    begin
+        OnAddPeriodFormVendUniquenessFilters(IRS1099FormDocHeader);
+        if (IRS1099FormDocHeader.GetFilter("Period No.") <> Rec."Period No.") or
+           (IRS1099FormDocHeader.GetFilter("Vendor No.") <> Rec."Vendor No.") or
+           (IRS1099FormDocHeader.GetFilter("Form No.") <> Rec."Form No.")
+        then
+            Error(UniquenessFilterModifiedErr);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAddPeriodFormVendUniquenessFilters(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    begin
     end;
 }
