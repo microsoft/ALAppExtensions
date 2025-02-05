@@ -593,10 +593,6 @@ codeunit 6369 "Pagero Processing"
         HttpContentResponse: HttpContent;
         Status, StatusDescription : Text;
     begin
-        // Pagero must check if the current E-Document Service is "Pagero"
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
-            exit;
-
         HttpContentResponse := HttpResponse.Content;
         if not ParseGetADocumentApprovalResponse(HttpContentResponse, Status, StatusDescription) then
             IsHandled := true;

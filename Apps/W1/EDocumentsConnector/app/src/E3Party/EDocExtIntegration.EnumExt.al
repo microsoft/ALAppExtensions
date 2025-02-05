@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using Microsoft.EServices.EDocumentConnector.Continia;
-
 using Microsoft.EServices.EDocument;
 
 enumextension 6363 "E-Doc. Ext. Integration" extends "E-Document Integration"
@@ -13,9 +11,5 @@ enumextension 6363 "E-Doc. Ext. Integration" extends "E-Document Integration"
     value(6361; "Pagero")
     {
         Implementation = "E-Document Integration" = "Pagero Integration Impl.";
-    }
-    value(6390; "Continia")
-    {
-        Implementation = "E-Document Integration" = "Integration Impl.";
     }
 }
