@@ -620,6 +620,32 @@ table 6611 "FS Bookable Resource Booking"
             ExternalType = 'String';
             ExternalAccess = Read;
         }
+        field(110; BookingStatus; Guid)
+        {
+            ExternalName = 'bookingstatus';
+            ExternalType = 'Lookup';
+            ExternalAccess = Read;
+            Description = 'Unique identifier of the booking status.';
+            Caption = 'Booking Status';
+            TableRelation = "FS Booking Status".BookingStatusId;
+            DataClassification = SystemMetadata;
+        }
+        field(120; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
+        field(121; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
