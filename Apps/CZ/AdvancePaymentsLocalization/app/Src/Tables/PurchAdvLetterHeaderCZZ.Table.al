@@ -50,6 +50,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -140,6 +141,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(11; "Pay-to Name"; Text[100])
         {
             Caption = 'Pay-to Name';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = Vendor.Name;
             ValidateTableRelation = false;
@@ -515,6 +517,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(50; "Vendor Adv. Letter No."; Code[35])
         {
             Caption = 'Vendor Advance Letter No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(53; "No. Series"; Code[20])
@@ -567,12 +570,14 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(58; "Specific Symbol"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             CharAllowed = '09';
         }
         field(59; "Variable Symbol"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             CharAllowed = '09';
 
@@ -584,6 +589,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(60; "Constant Symbol"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
@@ -1223,7 +1229,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             Modify();
 
         if OldDimSetID <> "Dimension Set ID" then
-            Modify();
+            if not IsNullGuid(Rec.SystemId) then
+                Modify();
 
         OnAfterValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
     end;
@@ -1623,6 +1630,20 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         PurchAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
     end;
 
+    procedure CopyDocument()
+    var
+        CopyAdvLetterDocumentCZZ: Report "Copy Adv. Letter Document CZZ";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCopyDocument(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        CopyAdvLetterDocumentCZZ.SetPurchAdvLetterHeader(Rec);
+        CopyAdvLetterDocumentCZZ.RunModal();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
     begin
@@ -1795,6 +1816,11 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateDocumentDateWithPostingDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CurrFieldNo: Integer; var IsHandled: Boolean; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyDocument(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
     begin
     end;
 }

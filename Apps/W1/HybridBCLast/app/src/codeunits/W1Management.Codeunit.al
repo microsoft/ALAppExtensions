@@ -475,7 +475,11 @@ codeunit 4026 "W1 Management"
     local procedure HandleOnSelectedProduct(ProductId: Text)
     var
         HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
     begin
+        if ProductId <> HybridBCLastWizard.ProductId() then
+            exit;
+
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
         if not HybridCompanyStatus.IsEmpty() then
             Error(CannotStartReplicationUpgradeCompletedErr);

@@ -914,6 +914,22 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "VAT Coeff. Correction CZL";
                     ToolTip = 'The report recalculate the value of non-deductible VAT according to settlement coeffiecient on VAT entries.';
                 }
+                action("VAT Return Period List")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Return Periods';
+                    Image = Period;
+                    RunObject = page "VAT Return Period List";
+                    Tooltip = 'Open the VAT return periods page.';
+                }
+                action("VAT Report List")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Returns';
+                    Image = VATStatement;
+                    RunObject = Page "VAT Report List";
+                    ToolTip = 'Prepare the VAT Return report so you can submit VAT amounts to a tax authority.';
+                }
             }
             group(History)
             {

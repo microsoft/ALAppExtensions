@@ -138,7 +138,17 @@ codeunit 31362 "Match Bank Payment CZB"
                     SearchRuleLineCZB."Search Scope"::Employee:
                         FillMatchBankPaymentBufferEmployee();
                 end;
+
                 OnAfterFillMatchBankPaymentBuffer(TempMatchBankPaymentBufferCZB, SearchRuleLineCZB, GenJournalLine, MinAmount, MaxAmount);
+
+                TempMatchBankPaymentBufferCZB.Reset();
+                if TempMatchBankPaymentBufferCZB.IsEmpty() then
+                    if SearchRuleLineCZB.IsPossibleToMatchWithPartnerBankAccount() then begin
+                        FillMatchBankPaymentBufferCustomerBankAccount();
+                        FillMatchBankPaymentBufferVendorBankAccount();
+                    end;
+
+                OnAfterExtraFillMatchBankPaymentBuffer(TempMatchBankPaymentBufferCZB, SearchRuleLineCZB, GenJournalLine, MinAmount, MaxAmount);
 
                 if TempMatchBankPaymentBufferCZB.Count() > 0 then begin
                     case SearchRuleLineCZB."Multiple Result" of
@@ -415,6 +425,44 @@ codeunit 31362 "Match Bank Payment CZB"
             until EmployeeLedgerEntry.Next() = 0;
     end;
 
+    local procedure FillMatchBankPaymentBufferCustomerBankAccount()
+    var
+        CustomerBankAccount: Record "Customer Bank Account";
+    begin
+        if (GenJournalLine."Bank Account No. CZL" = '') and
+           (GenJournalLine."IBAN CZL" = '')
+        then
+            exit;
+
+        if GenJournalLine."Bank Account No. CZL" <> '' then
+            CustomerBankAccount.SetRange("Bank Account No.", GenJournalLine."Bank Account No. CZL");
+        if GenJournalLine."IBAN CZL" <> '' then
+            CustomerBankAccount.SetRange(IBAN, GenJournalLine."IBAN CZL");
+        if CustomerBankAccount.FindSet() then
+            repeat
+                TempMatchBankPaymentBufferCZB.InsertFromCustomerBankAccount(CustomerBankAccount);
+            until CustomerBankAccount.Next() = 0;
+    end;
+
+    local procedure FillMatchBankPaymentBufferVendorBankAccount()
+    var
+        VendorBankAccount: Record "Vendor Bank Account";
+    begin
+        if (GenJournalLine."Bank Account No. CZL" = '') and
+           (GenJournalLine."IBAN CZL" = '')
+        then
+            exit;
+
+        if GenJournalLine."Bank Account No. CZL" <> '' then
+            VendorBankAccount.SetRange("Bank Account No.", GenJournalLine."Bank Account No. CZL");
+        if GenJournalLine."IBAN CZL" <> '' then
+            VendorBankAccount.SetRange(IBAN, GenJournalLine."IBAN CZL");
+        if VendorBankAccount.FindSet() then
+            repeat
+                TempMatchBankPaymentBufferCZB.InsertFromVendorBankAccount(VendorBankAccount);
+            until VendorBankAccount.Next() = 0;
+    end;
+
     procedure GetAmountRangeForTolerance(BankAccount: Record "Bank Account"; StatementAmount: Decimal; var MinAmount: Decimal; var MaxAmount: Decimal)
     var
         TempAmount: Decimal;
@@ -447,6 +495,11 @@ codeunit 31362 "Match Bank Payment CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterFillMatchBankPaymentBuffer(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var GenJournalLine: Record "Gen. Journal Line"; MinAmount: Decimal; MaxAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterExtraFillMatchBankPaymentBuffer(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; SearchRuleLineCZB: Record "Search Rule Line CZB"; GenJournalLine: Record "Gen. Journal Line"; MinAmount: Decimal; MaxAmount: Decimal)
     begin
     end;
 

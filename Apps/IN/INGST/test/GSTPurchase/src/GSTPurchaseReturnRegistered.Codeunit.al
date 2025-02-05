@@ -2426,6 +2426,37 @@ codeunit 18138 "GST Purchase Return Registered"
         LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::"Credit Memo", Storage.Get(ReverseDocumentNoLbl), 4);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,VendorLedgerEntries')]
+    procedure PostFromPurchCrMemoOfServicesFromRegVendorNonAvailmentForPOSAsVendor()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [In localization - POS as Vendor State is not working properly in Credit Memo in case of Non Availment]
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, false);
+        InitializeShareStep(false, false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Invoice with GST and Line Type as Service with Non availment with Pos As Vendor.
+        CreateAndPostPurchaseDocumentWithNonAvailmentPosAsVendor(
+            PurchaseHeader,
+            PurchaseLine,
+            LineType::"G/L Account",
+            DocumentType::Invoice);
+        CreateAndPostPurchaseReturnFromCopyDocumentWithPosAsVendor(
+            PurchaseHeader,
+            DocumentType::"Credit Memo");
+
+        // [THEN] GST ledger entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::"Credit Memo", Storage.Get(ReverseDocumentNoLbl), 4);
+    end;
+
     local procedure UpdateVendorSetupWithGST(
         VendorNo: Code[20];
         GSTVendorType: Enum "GST Vendor Type";
@@ -2806,6 +2837,30 @@ codeunit 18138 "GST Purchase Return Registered"
         UpdateReferenceInvoiceNoAndVerify(PurchaseHeader);
         ReverseDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
         Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
+    end;
+
+    local procedure CreateAndPostPurchaseDocumentWithNonAvailmentPosAsVendor(
+        var PurchaseHeader: Record "Purchase Header";
+        var PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        DocumentType: Enum "Purchase Document Type"): Code[20];
+    var
+        LibraryRandom: Codeunit "Library - Random";
+        VendorNo: Code[20];
+        LocationCode: Code[10];
+        DocumentNo: Code[20];
+        PurchaseInvoiceType: Enum "GST Invoice Type";
+    begin
+        VendorNo := Storage.Get(VendorNoLbl);
+        Evaluate(LocationCode, CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode)));
+        CreatePurchaseHeaderWithGST(PurchaseHeader, VendorNo, DocumentType, LocationCode, PurchaseInvoiceType::" ");
+        PurchaseHeader.Validate("POS as Vendor State", true);
+        CreatePurchaseLineWithGST(PurchaseHeader, PurchaseLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), false, StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+        if not (PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Quote) then begin
+            DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+            Storage.Set(PostedDocumentNoLbl, DocumentNo);
+            exit(DocumentNo);
+        end;
     end;
 
     [ModalPageHandler]

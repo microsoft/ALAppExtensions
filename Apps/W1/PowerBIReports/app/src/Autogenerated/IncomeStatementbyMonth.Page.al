@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36985 "Income Statement by Month"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Income Statement by Month';
     AboutTitle = 'About Income Statement by Month';
     AboutText = 'The Income Statement by Month report provides a month-to-month comparative view of the net change for income statement accounts.';
@@ -20,7 +22,7 @@ page 36985 "Income Statement by Month"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 36985 "Income Statement by Month"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionf72eb4d7e5e35db3b283', Locked = true;
+        ReportPageLbl: Label 'ReportSectionf72eb4d7e5e35db3b283', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

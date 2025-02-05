@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -6,6 +6,7 @@ namespace Microsoft.Bank.Payment;
 
 using System.Integration;
 using System.Privacy;
+using System.Telemetry;
 
 table 20101 "AMC Banking Setup"
 {
@@ -149,11 +150,13 @@ table 20101 "AMC Banking Setup"
 
     internal procedure GetPassword(): SecretText
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         Value: SecretText;
     begin
         if ("User Name" = GetDemoUserName()) then
             exit(GetDemoPass());
 
+        FeatureTelemetry.LogUptake('0000OFK', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::Used);
         if not IsolatedStorage.Get(CopyStr("Password Key", 1, 200), Datascope::Company, Value) then;
         exit(Value);
     end;

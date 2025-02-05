@@ -271,6 +271,9 @@ report 31191 "Sales Shipment CZL"
                     begin
                         if not ShowCorrectionLines and "Sales Shipment Line".Correction then
                             CurrReport.Skip();
+
+                        if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Sales Shipment Line", FieldNo(Quantity)) then
+                            CurrReport.Skip();
                     end;
                 }
                 dataitem(ItemTrackingLine; "Integer")
@@ -475,6 +478,12 @@ report 31191 "Sales Shipment CZL"
                         Caption = 'Show Serial/Lot Number Appendix';
                         ToolTip = 'Specifies when the show serial/lot number appendixis to be show';
                     }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
+                    }
                 }
             }
         }
@@ -545,6 +554,7 @@ report 31191 "Sales Shipment CZL"
         ShowLotSN: Boolean;
         ShowTotal: Boolean;
         TotalQty: Decimal;
+        HideLinesWithZeroQuantity: Boolean;
 
     procedure InitLogInteraction()
     begin

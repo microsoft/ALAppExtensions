@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37041 "Historical Utilization"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Historical Utilization';
     AboutTitle = 'About Historical Utilization';
     AboutText = 'View the historical Utilisation % by comparing Capacity Used vs Available Capacity in Hours viewed over a timeline you can define to see trends. View all or some Work Centres.';
@@ -20,7 +22,7 @@ page 37041 "Historical Utilization"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37041 "Historical Utilization"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionf9d212728e1d71a00044', Locked = true;
+        ReportPageLbl: Label 'ReportSectionf9d212728e1d71a00044', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

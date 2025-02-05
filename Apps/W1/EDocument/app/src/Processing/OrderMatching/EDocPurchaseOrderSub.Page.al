@@ -52,14 +52,12 @@ page 6168 "E-Doc. Purchase Order Sub"
                 field("Available Quantity"; Rec."Quantity Received" - Rec."Quantity Invoiced")
                 {
                     Caption = 'Available Quantity';
-                    DecimalPlaces = 0 : 0;
                     StyleExpr = StyleTxt;
                     Editable = false;
                     ToolTip = 'Specifies the quantity that can be matched to this line.';
                 }
                 field("Qty. to Invoice"; Rec."Qty. to Invoice")
                 {
-                    DecimalPlaces = 0 : 0;
                     StyleExpr = StyleTxt;
                     Editable = false;
                     ToolTip = 'Specifies the quantity that is matched to this line. Matching imported lines to this line will increase its value with the quantity of the imported line.';
@@ -115,9 +113,9 @@ page 6168 "E-Doc. Purchase Order Sub"
             repeat
                 EDocOrderMatch.SetRange("Document Order No.", TempPurchaseLine."Document No.");
                 EDocOrderMatch.SetRange("Document Line No.", TempPurchaseLine."Line No.");
-                EDocOrderMatch.CalcSums(Quantity);
+                EDocOrderMatch.CalcSums("Precise Quantity");
                 PurchaseLine.Copy(TempPurchaseLine);
-                PurchaseLine.Validate("Qty. to Invoice", EDocOrderMatch.Quantity);
+                PurchaseLine.Validate("Qty. to Invoice", EDocOrderMatch."Precise Quantity");
                 PurchaseLine.Modify();
             until TempPurchaseLine.Next() = 0;
     end;

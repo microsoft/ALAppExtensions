@@ -54,7 +54,7 @@ codeunit 31302 IntrastatReportManagementCZ
         IntrastatReportSetup."Data Exch. Def. Code - Receipt" := DefaultDataExchDefCodeLbl;
         IntrastatReportSetup."Data Exch. Def. Code - Shpt." := DefaultDataExchDefCodeLbl;
         IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Ship-to Country";
-        IntrastatReportSetup."VAT No. Based On" := IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT";
+        IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
         IntrastatReportSetup."Def. Private Person VAT No." := DefPrivatePersonVATNoLbl;
         IntrastatReportSetup."Def. 3-Party Trade VAT No." := Def3DPartyTradeVATNoLbl;
         IntrastatReportSetup."Def. VAT for Unknown State" := DefUnknowVATNoLbl;
@@ -1146,26 +1146,33 @@ codeunit 31302 IntrastatReportManagementCZ
 
     #region Helper functions
     internal procedure GetCustomerBasedOnSetup(SellTo: Code[20]; BillTo: Code[20]) Customer: Record Customer
-    begin
-        Customer.Get(GetPartnerNoBasedOnSetup(SellTo, BillTo));
-    end;
-
-    internal procedure GetVendorBasedOnSetup(SellTo: Code[20]; BillTo: Code[20]) Vendor: Record Vendor
-    begin
-        Vendor.Get(GetPartnerNoBasedOnSetup(SellTo, BillTo));
-    end;
-
-    internal procedure GetPartnerNoBasedOnSetup(SellTo: Code[20]; BillTo: Code[20]) PartnerNo: Code[20]
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
+        PartnerNo: Code[20];
     begin
         IntrastatReportSetup.Get();
-        case IntrastatReportSetup."VAT No. Based On" of
-            IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT":
+        case IntrastatReportSetup."Sales Intrastat Info Based On" of
+            IntrastatReportSetup."Sales Intrastat Info Based On"::"Sell-to Customer":
                 PartnerNo := SellTo;
-            IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT":
+            IntrastatReportSetup."Sales Intrastat Info Based On"::"Bill-to Customer":
                 PartnerNo := BillTo;
         end;
+        Customer.Get(PartnerNo);
+    end;
+
+    internal procedure GetVendorBasedOnSetup(BuyFrom: Code[20]; PayTo: Code[20]) Vendor: Record Vendor
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PartnerNo: Code[20];
+    begin
+        IntrastatReportSetup.Get();
+        case IntrastatReportSetup."Purch. Intrastat Info Based On" of
+            IntrastatReportSetup."Purch. Intrastat Info Based On"::"Buy-from Vendor":
+                PartnerNo := BuyFrom;
+            IntrastatReportSetup."Purch. Intrastat Info Based On"::"Pay-to Vendor":
+                PartnerNo := PayTo;
+        end;
+        Vendor.Get(PartnerNo);
     end;
 
     internal procedure GetDefaultTransactionType(ServiceHeader: Record "Service Header"): Code[10]

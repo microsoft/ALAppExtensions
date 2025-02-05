@@ -14,4 +14,22 @@ codeunit 6228 "Sust. Preview Posting Handler"
     begin
         SustPreviewPostInstance.InsertSustLedgEntry(Rec, RunTrigger);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sustainability Value Entry", 'OnAfterInsertEvent', '', false, false)]
+    local procedure OnInsertSustValueEntry(var Rec: Record "Sustainability Value Entry"; RunTrigger: Boolean)
+    var
+        SustPreviewPostInstance: Codeunit "Sust. Preview Post Instance";
+    begin
+        SustPreviewPostInstance.InsertSustValueEntry(Rec, RunTrigger);
+    end;
+
+    procedure TryBindPostingPreviewHandler(): Boolean
+    begin
+        exit(BindSubscription(this));
+    end;
+
+    procedure TryUnbindPostingPreviewHandler(): Boolean
+    begin
+        exit(UnbindSubscription(this));
+    end;
 }

@@ -4472,7 +4472,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -4513,7 +4513,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -4543,6 +4543,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                     </TablixCells>
@@ -5484,6 +5485,9 @@ End Function</Code>
         </Field>
         <Field Name="LCYCode_GeneralLedgerSetup">
           <DataField>LCYCode_GeneralLedgerSetup</DataField>
+        </Field>
+        <Field Name="VATCurrencyCode">
+          <DataField>VATCurrencyCode</DataField>
         </Field>
         <Field Name="DocumentLbl">
           <DataField>DocumentLbl</DataField>

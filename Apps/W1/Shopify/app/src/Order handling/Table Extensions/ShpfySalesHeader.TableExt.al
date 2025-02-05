@@ -23,6 +23,7 @@ tableextension 30101 "Shpfy Sales Header" extends "Sales Header"
             Editable = false;
         }
 
+#if not CLEANSCHEMA28
         field(30102; "Shpfy Risk Level"; Enum "Shpfy Risk Level")
         {
             Caption = 'Risk Level';
@@ -37,6 +38,7 @@ tableextension 30101 "Shpfy Sales Header" extends "Sales Header"
                             ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(30103; "Shpfy Refund Id"; BigInteger)
         {
             Caption = 'Shopify Refund Id';

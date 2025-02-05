@@ -3,6 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 using System.IO;
 using System.Globalization;
 using Microsoft.Finance.Currency;
+using Microsoft.Sales.Document;
 
 codeunit 139892 "Usage Based B. Test Library"
 {
@@ -241,13 +242,13 @@ codeunit 139892 "Usage Based B. Test Library"
         OutStr.WriteText(); //New line
     end;
 
-    internal procedure ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDefCode: Code[20]; var GenericImportSettings: Record "Generic Import Settings")
+    procedure ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDefCode: Code[20]; var GenericImportSettings: Record "Generic Import Settings")
     begin
         GenericImportSettings."Data Exchange Definition" := DataExchDefCode;
         GenericImportSettings.Modify(false);
     end;
 
-    internal procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
+    procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
     begin
         UsageDataGenericImport.Init();
         UsageDataGenericImport."Usage Data Import Entry No." := UsageDataImportEntryNo;
@@ -265,10 +266,102 @@ codeunit 139892 "Usage Based B. Test Library"
         UsageDataGenericImport.Insert(false);
     end;
 
+    procedure MockCustomerContractLine(var CustomerContractLine: Record "Customer Contract Line")
+    var
+        CustomerContract: Record "Customer Contract";
+    begin
+        CustomerContract.Init();
+        CustomerContract.Insert(true);
+        CustomerContractLine.Init();
+        CustomerContractLine."Contract No." := CustomerContract."No.";
+        CustomerContractLine."Contract Line Type" := CustomerContractLine."Contract Line Type"::"Service Commitment";
+        CustomerContractLine.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForContractLine(var UsageDataBilling: Record "Usage Data Billing"; ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLine: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := ServicePartner;
+        UsageDataBilling."Contract No." := ContractNo;
+        UsageDataBilling."Contract Line No." := ContractLine;
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForDocuments(var UsageDataBilling: Record "Usage Data Billing"; DocType: Enum "Sales Document Type"; DocNo: Code[20]; DocLineNo: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := UsageDataBilling.Partner::Customer;
+        UsageDataBilling."Document Type" := UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocType);
+        UsageDataBilling."Document No." := DocNo;
+        UsageDataBilling."Document Line No." := DocLineNo;
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockBillingLine(var BillingLine: Record "Billing Line")
+    begin
+        BillingLine.InitNewBillingLine();
+        BillingLine.Insert(false);
+    end;
+
+    procedure MockBillingLineWithServObjectNo(var BillingLine: Record "Billing Line")
+    begin
+        BillingLine.InitNewBillingLine();
+        BillingLine."Service Object No." := LibraryUtility.GenerateGUID();
+        BillingLine."Service Commitment Entry No." := LibraryRandom.RandInt(10000);
+        BillingLine.Insert(false);
+    end;
+
+    procedure CreateSalesInvoiceAndAssignToBillingLine(var BillingLine: Record "Billing Line")
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+        BillingLine."Document Type" := BillingLine."Document Type"::Invoice;
+        BillingLine."Document No." := SalesHeader."No.";
+    end;
+
+    procedure MockUsageDataForBillingLine(var UsageDataBilling: Record "Usage Data Billing"; BillingLine: Record "Billing Line")
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := UsageDataBilling.Partner::Customer;
+        UsageDataBilling."Service Object No." := BillingLine."Service Object No.";
+        UsageDataBilling."Service Commitment Entry No." := BillingLine."Service Commitment Entry No.";
+        UsageDataBilling."Document Type" := UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(BillingLine."Document Type");
+        UsageDataBilling."Document No." := BillingLine."Document No.";
+        UsageDataBilling."Billing Line Entry No." := BillingLine."Entry No.";
+        UsageDataBilling."Billing Line Entry No." := BillingLine."Entry No.";
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockServiceCommitmentLine(var ServiceCommitment: Record "Service Commitment")
+    var
+        ServiceObject: Record "Service Object";
+    begin
+        ServiceObject.Init();
+        ServiceObject.Insert(true);
+        ServiceCommitment.Init();
+        ServiceCommitment."Service Object No." := ServiceObject."No.";
+        ServiceCommitment."Entry No." := 0;
+        ServiceCommitment.Partner := ServiceCommitment.Partner::Customer;
+        ServiceCommitment.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForServiceCommitmentLine(var UsageDataBilling: Record "Usage Data Billing"; ServCommPartner: Enum "Service Partner"; ServCommServiceObjectNo: Code[20]; ServCommLineNo: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := ServCommPartner;
+        UsageDataBilling."Service Object No." := ServCommServiceObjectNo;
+        UsageDataBilling."Service Commitment Entry No." := ServCommLineNo;
+        UsageDataBilling.Insert(false);
+    end;
+
     var
         Currency: Record Currency;
         LibraryERM: Codeunit "Library - ERM";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
+        LibrarySales: Codeunit "Library - Sales";
         CultureInfo: Codeunit DotNet_CultureInfo;
+        UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
         i: Integer;
 }

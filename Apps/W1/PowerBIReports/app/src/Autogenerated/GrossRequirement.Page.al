@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37027 "Gross Requirement"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Gross Requirement';
     AboutTitle = 'About Gross Requirement';
     AboutText = 'The Gross Requirement report visualizes Gross Requirements against Projected Available Balance over time, offering a clear view of inventory demands. A table matrix breaks down this data by item, showcasing key metrics like Gross Requirement, Projected Available Balance, and quantities from demand documents (sales orders and purchase return orders). ';
@@ -20,7 +22,7 @@ page 37027 "Gross Requirement"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37027 "Gross Requirement"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection94c932a22e568b021aba', Locked = true;
+        ReportPageLbl: Label 'ReportSection94c932a22e568b021aba', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

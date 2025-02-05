@@ -78,10 +78,9 @@ codeunit 6108 "E-Document Processing"
             EDocumentServiceStatus.Status::"Export Error",
             EDocumentServiceStatus.Status::"Cancel Error",
             EDocumentServiceStatus.Status::"Imported Document Processing Error",
-            EDocumentServiceStatus.Status::Rejected);
+            EDocumentServiceStatus.Status::"Approval Error");
 
         if not EDocumentServiceStatus.IsEmpty() then begin
-            EDocument.Get(EDocument."Entry No");
             EDocument.Validate(Status, EDocument.Status::Error);
             EDocument.Modify(true);
             exit;
@@ -97,13 +96,13 @@ codeunit 6108 "E-Document Processing"
             EDocumentServiceStatus.Status::"Imported Document Created",
             EDocumentServiceStatus.Status::"Journal Line Created",
             EDocumentServiceStatus.Status::Approved,
+            EDocumentServiceStatus.Status::Rejected,
             EDocumentServiceStatus.Status::Canceled);
 
         // There can be service status for multiple services:
         // Example Service A and Service B
         // Service A -> Sent
         // Service B -> Exported
-        EDocument.Get(EDocument."Entry No");
         if EDocumentServiceStatus.Count() = EDocServiceCount then
             EDocument.Validate(Status, EDocument.Status::Processed)
         else
@@ -193,6 +192,7 @@ codeunit 6108 "E-Document Processing"
         PurchaseHeader: Record "Purchase Header";
         Guid: Guid;
     begin
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
         PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
         exit(PurchaseHeader.Count());
     end;

@@ -4,7 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 enum 6610 "FS Work Order Line Post Rule"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     AssignmentCompatibility = true;
     Extensible = true;

@@ -4,7 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6375 "Company"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     DataClassification = CustomerContent;
     TableType = Temporary;

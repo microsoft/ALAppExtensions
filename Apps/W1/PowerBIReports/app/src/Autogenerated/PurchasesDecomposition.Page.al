@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37010 "Purchases Decomposition"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Decomposition';
     AboutTitle = 'About Purchases Decomposition';
     AboutText = 'The Purchases Decomposition report visually breaks down Purchase Amount into its contributing factors, allowing users to explore and analyze data hierarchies in detail.';
@@ -20,7 +22,7 @@ page 37010 "Purchases Decomposition"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37010 "Purchases Decomposition"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectiond7fdf374ab65b2861937', Locked = true;
+        ReportPageLbl: Label 'ReportSectiond7fdf374ab65b2861937', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

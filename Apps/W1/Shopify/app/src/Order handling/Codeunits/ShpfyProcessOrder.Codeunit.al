@@ -57,12 +57,11 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         ShopifyTaxArea: Record "Shpfy Tax Area";
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         OrdersAPI: Codeunit "Shpfy Orders API";
-        ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
@@ -109,12 +108,14 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Ship-to Post Code" := CopyStr(ShopifyOrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
             SalesHeader."Ship-to County" := CopyStr(ShopifyOrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
             SalesHeader."Ship-to Contact" := ShopifyOrderHeader."Ship-to Contact Name";
-            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.DoPricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
+            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included");
             SalesHeader.Validate("Currency Code", ShopifyShop."Currency Code");
             SalesHeader."Shpfy Order Id" := ShopifyOrderHeader."Shopify Order Id";
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
             SalesHeader.Validate("Document Date", ShopifyOrderHeader."Document Date");
             SalesHeader.Validate("External Document No.", ShopifyOrderHeader."PO Number");
+            if ShopifyOrderHeader."Due Date" <> 0D then
+                SalesHeader.Validate("Due Date", ShopifyOrderHeader."Due Date");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
                 SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
             if ShopifyOrderHeader."Shipping Method Code" <> '' then
@@ -140,7 +141,8 @@ codeunit 30166 "Shpfy Process Order"
             if ShopifyOrderHeader."Work Description".HasValue then
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
-        OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
+        if ShopifyShop."Order Attributes To Shopify" then
+            OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
         DocLinkToBCDoc.Init();
         DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
         DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
@@ -184,7 +186,7 @@ codeunit 30166 "Shpfy Process Order"
     /// </summary>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    local procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
+    internal procedure CreateLinesFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
@@ -243,6 +245,8 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine."Shpfy Order Line Id" := ShopifyOrderLine."Line Id";
                     SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
+                    if (SalesLine."Document Type" = SalesLine."Document Type"::Order) and (SalesLine.Type = SalesLine.Type::Item) and (SalesLine.Reserve = SalesLine.Reserve::Always) then
+                        SalesLine.AutoReserve(false);
                 end;
                 OrderEvents.OnAfterCreateItemSalesLine(ShopifyOrderHeader, ShopifyOrderLine, SalesHeader, SalesLine);
             until ShopifyOrderLine.Next() = 0;
@@ -428,6 +432,11 @@ codeunit 30166 "Shpfy Process Order"
     begin
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
+    end;
+
+    internal procedure SetShopifyShop(Shop: Record "Shpfy Shop")
+    begin
+        ShopifyShop := Shop;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]

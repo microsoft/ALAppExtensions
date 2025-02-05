@@ -10,7 +10,7 @@ codeunit 5100 "Create FA Depreciation Book"
     begin
         FAModuleSetup.Get();
 
-        ContosoFixedAsset.InsertDepreciationBook(Company(), CompanyBookLbl, true, true, true, true, true, true, true, true, true, 10);
+        ContosoFixedAsset.InsertDepreciationBook(Company(), CompanyBookLbl, true, true, true, true, true, true, true, true, true, 0);
 
         if FAModuleSetup."Default Depreciation Book" = '' then
             FAModuleSetup.Validate("Default Depreciation Book", Company());

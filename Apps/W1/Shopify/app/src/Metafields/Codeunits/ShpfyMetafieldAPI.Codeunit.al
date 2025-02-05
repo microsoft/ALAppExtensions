@@ -5,7 +5,16 @@ codeunit 30316 "Shpfy Metafield API"
     Access = Internal;
 
     var
+        Shop: Record "Shpfy Shop";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+
+
+    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
+    begin
+        Shop := ShopifyShop;
+        CommunicationMgt.SetShop(Shop);
+    end;
 
     #region To Shopify
     /// <summary>
@@ -72,6 +81,8 @@ codeunit 30316 "Shpfy Metafield API"
     begin
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);
+        Metafield.SetFilter(Type, '<>%1&<>%2', Metafield.Type::string, Metafield.Type::integer);
+        Metafield.SetFilter(Value, '<>%1', '');
         if Metafield.FindSet() then
             repeat
                 if MetafieldIds.Get(Metafield.Id, UpdatedAt) then begin
@@ -92,7 +103,6 @@ codeunit 30316 "Shpfy Metafield API"
     /// <param name="MetafieldsQuery">GraphQL query for the metafields.</param>
     internal procedure UpdateMetafields(MetafieldsQuery: Text) JResponse: JsonToken
     var
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         Parameters: Dictionary of [Text, Text];
     begin
         Parameters.Add('Metafields', MetafieldsQuery);
@@ -156,7 +166,7 @@ codeunit 30316 "Shpfy Metafield API"
         MetafieldIds: List of [BigInteger];
         MetafieldId: BigInteger;
     begin
-        CollectMetafieldIds(OwnerId, MetafieldIds);
+        CollectMetafieldIds(ParentTableNo, OwnerId, MetafieldIds);
 
         foreach JItem in JMetafields do begin
             JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node');
@@ -165,6 +175,71 @@ codeunit 30316 "Shpfy Metafield API"
         end;
 
         DeleteUnusedMetafields(MetafieldIds);
+    end;
+
+    /// <summary>
+    /// Retrieves the metafield definitions from Shopify.
+    /// </summary>
+    /// <remarks>
+    /// First 50 definitions will be imported
+    /// Some metafield types are unsupported in Business Central (i.e. Rating).
+    ///</remarks>
+    /// <param name="ParentTableNo">Table id of the parent resource.</param>
+    /// <param name="OwnerId">Id of the parent resource.</param>
+    internal procedure GetMetafieldDefinitions(ParentTableNo: Integer; OwnerId: BigInteger)
+    var
+        Metafield: Record "Shpfy Metafield";
+        OwnerType: Enum "Shpfy Metafield Owner Type";
+        Parameters: Dictionary of [Text, Text];
+        JMetafields: JsonArray;
+        JMetafield: JsonToken;
+        JResponse: JsonToken;
+        JNode: JsonObject;
+    begin
+        OwnerType := Metafield.GetOwnerType(ParentTableNo);
+        Parameters.Add('OwnerType', UpperCase(OwnerType.Names().Get(OwnerType.Ordinals.IndexOf(OwnerType.AsInteger()))));
+        JResponse := CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::GetMetafieldDefinitions, Parameters);
+
+        if JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.metafieldDefinitions.edges') then
+            foreach JMetafield in JMetafields do begin
+                JsonHelper.GetJsonObject(JMetafield.AsObject(), JNode, 'node');
+                CreateMetafieldDefinition(ParentTableNo, OwnerId, JNode);
+            end;
+    end;
+
+    local procedure CreateMetafieldDefinition(ParentTableNo: Integer; OwnerId: BigInteger; JNode: JsonObject)
+    var
+        Metafield: Record "Shpfy Metafield";
+        Type: Enum "Shpfy Metafield Type";
+        Namespace: Text;
+        Name: Text;
+        TypeText: Text;
+    begin
+        Namespace := JsonHelper.GetValueAsText(JNode, 'namespace');
+        Name := JsonHelper.GetValueAsText(JNode, 'name');
+        TypeText := JsonHelper.GetValueAsText(JNode, 'type.name');
+
+        // Some metafield types are unsupported in Business Central (i.e. Rating)
+        if not ConvertToMetafieldType(TypeText, Type) then
+            exit;
+
+        Metafield.SetRange("Parent Table No.", ParentTableNo);
+        Metafield.SetRange("Owner Id", OwnerId);
+        Metafield.SetRange(Namespace, Namespace);
+        Metafield.SetRange(Name, Name);
+        Metafield.SetRange(Type, Type);
+        if not Metafield.IsEmpty() then
+            exit;
+
+        Metafield.Validate("Parent Table No.", ParentTableNo);
+        Metafield."Owner Id" := OwnerId;
+        Metafield.Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
+        Metafield.Type := Type;
+#pragma warning disable AA0139
+        Metafield."Namespace" := Namespace;
+        Metafield.Name := Name;
+#pragma warning restore AA0139
+        Metafield.Insert(true);
     end;
 
     local procedure UpdateMetadataField(ParentTableNo: Integer; OwnerId: BigInteger; JNode: JsonObject): BigInteger
@@ -182,7 +257,6 @@ codeunit 30316 "Shpfy Metafield API"
         // Some metafield types are unsupported in Business Central (i.e. Rating)
         if not ConvertToMetafieldType(JsonHelper.GetValueAsText(JNode, 'type'), Type) then
             exit(0);
-
 
         Metafield.Validate("Parent Table No.", ParentTableNo);
         Metafield."Owner Id" := OwnerId;
@@ -211,12 +285,12 @@ codeunit 30316 "Shpfy Metafield API"
         exit(true);
     end;
 
-    local procedure CollectMetafieldIds(ProductId: BigInteger; MetafieldIds: List of [BigInteger])
+    local procedure CollectMetafieldIds(ParentTableId: Integer; OwnerId: BigInteger; MetafieldIds: List of [BigInteger])
     var
         Metafield: Record "Shpfy Metafield";
     begin
-        MetaField.SetRange("Parent Table No.", Database::"Shpfy Product");
-        Metafield.SetRange("Owner Id", ProductId);
+        MetaField.SetRange("Parent Table No.", ParentTableId);
+        Metafield.SetRange("Owner Id", OwnerId);
         if Metafield.FindSet() then
             repeat
                 MetafieldIds.Add(Metafield.Id);

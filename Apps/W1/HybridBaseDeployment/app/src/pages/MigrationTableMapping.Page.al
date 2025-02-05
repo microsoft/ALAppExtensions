@@ -315,6 +315,17 @@ page 4009 "Migration Table Mapping"
         Clear(ExtensionName);
     end;
 
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    var
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+    begin
+        if Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension" then
+            Error(MustUseAddTableMappingsErr);
+
+        if IsBCCloudMigration then
+            CloudMigReplicateDataMgt.ShowAddTableMappingsNotification();
+    end;
+
     trigger OnAfterGetRecord()
     begin
         Rec.CalcFields("Extension Package ID");
@@ -334,4 +345,5 @@ page 4009 "Migration Table Mapping"
         SourceTableAppID: Text;
         NoTablesInExtensionMsg: Label 'No tables exist in the specified extension.';
         ResetToDefaultsQst: Label 'All current table mappings for Cloud Migration will be deleted and replaced with the default values.\\Do you want to continue?';
+        MustUseAddTableMappingsErr: Label 'You must use the "Add Table Mappings" action to add table mappings for Table Extensions. For more information see https://go.microsoft.com/fwlink/?linkid=2296587.';
 }

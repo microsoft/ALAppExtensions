@@ -101,7 +101,7 @@ codeunit 30228 "Shpfy Refunds API"
             exit(ReturnsAPI.GetReturnLocations(ReturnId));
     end;
 
-    local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroOrReturnRefund: Boolean; ReturnLocations: Dictionary of [BigInteger, BigInteger])
+    internal procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroOrReturnRefund: Boolean; ReturnLocations: Dictionary of [BigInteger, BigInteger])
     var
         DataCapture: Record "Shpfy Data Capture";
         RefundLine: Record "Shpfy Refund Line";

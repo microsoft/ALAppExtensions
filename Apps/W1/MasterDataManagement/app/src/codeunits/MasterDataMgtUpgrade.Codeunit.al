@@ -52,10 +52,8 @@ codeunit 7238 "Master Data Mgt. Upgrade"
                                     JobQueueEntry."No. of Minutes between Runs" := MasterDataMgtSetupDefault.DefaultNumberOfMinutesBetweenRuns();
                                 // we filtered for the default value of this one already
                                 JobQueueEntry."Inactivity Timeout Period" := MasterDataMgtSetupDefault.DefaultInactivityTimeoutPeriod();
-                                if not TryModify(JobQueueEntry) then begin
+                                if not JobQueueEntry.Modify() then
                                     NotAllJobQueueEntriesModified := true;
-                                    ClearLastError();
-                                end;
                             end;
                 until JobQueueEntry.Next() = 0;
         end;
@@ -64,12 +62,6 @@ codeunit 7238 "Master Data Mgt. Upgrade"
             Session.LogMessage('0000NJM', 'Decreasing frequency of all MDM job queue entries failed for at least one of them. Will retry with next upgrade.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'AL Master Data Management')
         else
             UpgradeTag.SetUpgradeTag(GetJobQueueFrequencyUpgradeTag());
-    end;
-
-    [TryFunction]
-    local procedure TryModify(var JobQueueEntry: Record "Job Queue Entry")
-    begin
-        JobQueueEntry.Modify();
     end;
 
     internal procedure UpgradeSynchTableCaptions()

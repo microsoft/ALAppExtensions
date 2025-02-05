@@ -118,6 +118,23 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 }
             }
         }
+        addafter("Additional Reporting Currency")
+        {
+            field("Functional Currency CZL"; Rec."Functional Currency CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies enables the Functional Currency. Functionality requiring the setting of Additional Reporting Currency, which is used to set the local currency for tax reporting (VAT). This ensures that the VAT specification on documents is printed in the local tax reporting currency (VAT).';
+
+                trigger OnValidate()
+                var
+                    FunctionalcurrencyErr: Label 'For the Functional Currency functionality to work correctly, the Additional Reporting Currency field must be set. The Additional Reporting Currency is used within the Functional Currency functionality to set the local currency for tax reporting (VAT).';
+                begin
+                    if Rec."Functional Currency CZL" then
+                        if Rec."Additional Reporting Currency" = '' then
+                            Error(FunctionalcurrencyErr);
+                end;
+            }
+        }
         addlast(Reporting)
         {
             field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")

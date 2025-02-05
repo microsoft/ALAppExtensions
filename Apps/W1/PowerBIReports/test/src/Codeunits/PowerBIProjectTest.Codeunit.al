@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using System.Utilities;
@@ -15,7 +9,7 @@ using Microsoft.Projects.Project.Ledger;
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Projects.PowerBIReports;
+using Microsoft.PowerBIReports.Test;
 
 codeunit 139879 "PowerBI Project Test"
 {
@@ -31,6 +25,8 @@ codeunit 139879 "PowerBI Project Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PowerBIRequests: Codeunit "PowerBI API Requests";
+        PowerBIEndpoints: Enum "PowerBI API Endpoints";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -55,9 +51,10 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for jobs is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Jobs, '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::Jobs);
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1'' or no eq ''%2''', Job."No.", Job2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'no eq ''' + Format(Job."No.") + ''' or no eq ''' + Format(Job2."No.") + '''');
+
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -75,7 +72,7 @@ codeunit 139879 "PowerBI Project Test"
         BoolText: Text;
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', Job."No.")), 'Job not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(Job."No.") + ''')]'), 'Job not found.');
         Assert.AreEqual(Job.Description, JsonMgt.GetValue('description'), 'Description did not match.');
         Assert.AreEqual(Job."Bill-to Customer No.", JsonMgt.GetValue('billToCustomerNo'), 'Bill-to customer no. did not match.');
         Assert.AreEqual(Format(Job."Creation Date", 0, 9), JsonMgt.GetValue('creationDate'), 'Creation date did not match.');
@@ -109,9 +106,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job tasks is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Tasks", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Tasks");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -128,7 +125,7 @@ codeunit 139879 "PowerBI Project Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.jobTaskNo == ''%1'')]', JobTask."Job Task No.")), 'Job task not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.jobTaskNo == ''' + Format(JobTask."Job Task No.") + ''')]'), 'Job task not found.');
         Assert.AreEqual(JobTask.Description, JsonMgt.GetValue('description'), 'Description did not match.');
         Assert.AreEqual(JobTask.Totaling, JsonMgt.GetValue('totaling'), 'Totaling did not match.');
         Assert.AreEqual(Format(JobTask."Job Task Type"), JsonMgt.GetValue('jobTaskType'), 'Job task type did not match.');
@@ -159,9 +156,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job planning lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Planning Lines");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -178,7 +175,7 @@ codeunit 139879 "PowerBI Project Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', JobPlanningLine."No.")), 'Job planning line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(JobPlanningLine."No.") + ''')]'), 'Job planning line not found.');
         Assert.AreEqual(JobPlanningLine."Job No.", JsonMgt.GetValue('jobNo'), 'Job no. did not match.');
         Assert.AreEqual(JobPlanningLine."Job Task No.", JsonMgt.GetValue('jobTaskNo'), 'Job task no. did not match.');
         Assert.AreEqual(Format(JobPlanningLine."Line No."), JsonMgt.GetValue('lineNo'), 'Line no. did not match.');
@@ -226,9 +223,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for job ledger entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Projects.PowerBIReports."Job Ledger Entries", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Job Ledger Entries");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -245,7 +242,7 @@ codeunit 139879 "PowerBI Project Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', JobLedgerEntry."No.")), 'Job ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(JobLedgerEntry."No.") + ''')]'), 'Job ledger entry not found.');
         Assert.AreEqual(JobLedgerEntry."Job No.", JsonMgt.GetValue('jobNo'), 'Job no. did not match.');
         Assert.AreEqual(JobLedgerEntry."Job Task No.", JsonMgt.GetValue('jobTaskNo'), 'Job task no. did not match.');
         Assert.AreEqual(Format(JobLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Posting date did not match.');
@@ -280,9 +277,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for outstanding PO lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Outstanding", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Outstanding");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -299,7 +296,7 @@ codeunit 139879 "PowerBI Project Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', PurchaseLine."No.")), 'Outstanding PO line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(PurchaseLine."No.") + ''')]'), 'Outstanding PO line not found.');
         Assert.AreEqual(Format(PurchaseLine."Document Type"), JsonMgt.GetValue('documentType'), 'Document type did not match.');
         Assert.AreEqual(PurchaseLine."Document No.", JsonMgt.GetValue('documentNo'), 'Document no. did not match.');
         Assert.AreEqual(PurchaseLine."No.", JsonMgt.GetValue('no'), 'No. did not match.');
@@ -355,9 +352,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for the purchase lines outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Outstanding", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Outstanding");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('documentNo eq ''%1'' OR documentNo eq ''%2''', PurchHeader."No.", PurchHeader2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'documentNo eq ''' + Format(PurchHeader."No.") + ''' OR documentNo eq ''' + Format(PurchHeader2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -395,9 +392,9 @@ codeunit 139879 "PowerBI Project Test"
         Commit();
 
         // [WHEN] Get request for received not invoiced PO lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Received", '');
+        TargetURL := PowerBIRequests.GetEndpointUrl(PowerBIEndpoints::"Purch. Lines - Job Received");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'jobNo eq ''' + Format(Job."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -414,7 +411,7 @@ codeunit 139879 "PowerBI Project Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', PurchaseLine."No.")), 'Received not invoiced PO line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(PurchaseLine."No.") + ''')]'), 'Received not invoiced PO line not found.');
         Assert.AreEqual(Format(PurchaseLine."Document Type"), JsonMgt.GetValue('documentType'), 'Document type did not match.');
         Assert.AreEqual(PurchaseLine."Document No.", JsonMgt.GetValue('documentNo'), 'Document no. did not match.');
         Assert.AreEqual(PurchaseLine."No.", JsonMgt.GetValue('no'), 'No. did not match.');
@@ -439,7 +436,7 @@ codeunit 139879 "PowerBI Project Test"
         LibPurch.CreateVendor(Vendor);
         LibPurch.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, Vendor."No.");
         PurchHeader.Validate("Vendor Cr. Memo No.", PurchHeader."No.");  // Input random Vendor Cr. Memo No.
-        PurchHeader.Validate("Document Date", CalcDate(StrSubstNo('<-%1D>', LibRandom.RandInt(10)), WorkDate()));
+        PurchHeader.Validate("Document Date", CalcDate('<-' + Format(LibRandom.RandInt(10)) + 'D>', WorkDate()));
         PurchHeader.Modify(true);
         LibPurch.CreatePurchaseLine(PurchLine, PurchHeader, PurchLine.Type::Item, LibInv.CreateItem(Item), LibRandom.RandDec(10, 2));
         PurchLine.Validate("Job No.", JobTask."Job No.");
@@ -469,9 +466,3 @@ codeunit 139879 "PowerBI Project Test"
     begin
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

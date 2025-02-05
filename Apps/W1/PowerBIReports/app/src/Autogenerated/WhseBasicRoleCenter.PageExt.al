@@ -13,6 +13,14 @@ pageextension 36956 "Whse. Basic Role Center" extends "Whse. Basic Role Center"
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for inventory';
+                action("Inventory Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Report';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all inventory report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Inventory Overview")
                 {
                     ApplicationArea = Basic, Suite;
@@ -90,7 +98,7 @@ pageextension 36956 "Whse. Basic Role Center" extends "Whse. Basic Role Center"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bin Contents';
                     Image = "PowerBI";
-                    RunObject = page "Bin Contents";
+                    RunObject = page "PowerBI Bin Contents";
                     Tooltip = 'Open a Power BI Report that provides a detailed view of item quantities by bin code and location. It includes additional information such as warehouse quantity, pick and put-away quantities, and both negative and positive adjustments, offering a comprehensive overview of bin movements and inventory management within the warehouse.';
                 }
                 action("Bin Contents by Item Tracking")

@@ -133,7 +133,6 @@ table 8057 "Service Object"
                     RecallModifyAddressNotification(GetModifyBillToCustomerAddressNotificationId());
             end;
         }
-
         field(5; "Bill-to Name"; Text[100])
         {
             Caption = 'Bill-to Name';
@@ -322,10 +321,11 @@ table 8057 "Service Object"
             trigger OnValidate()
             var
                 Item: Record Item;
+                ContractsItemManagement: Codeunit "Contracts Item Management";
             begin
                 if "Item No." <> '' then begin
                     Item.Get("Item No.");
-                    Description := Item.Description;
+                    Description := ContractsItemManagement.GetItemTranslation("Item No.", '', "End-User Customer No.");
                     Validate("Unit of Measure", Item."Sales Unit of Measure");
                     if "Serial No." <> '' then
                         Validate("Quantity Decimal", 1);
@@ -420,7 +420,6 @@ table 8057 "Service Object"
             Caption = 'Customer Name 2';
             DataClassification = EndUserIdentifiableInformation;
         }
-
         field(81; "End-User Address"; Text[100])
         {
             Caption = 'Address';
@@ -545,7 +544,6 @@ table 8057 "Service Object"
                 ModifyBillToCustomerAddress();
             end;
         }
-
         field(88; "End-User Post Code"; Code[20])
         {
             Caption = 'Post Code';
@@ -621,7 +619,6 @@ table 8057 "Service Object"
                 PostCode.LookupPostCode(ShipToCity, "Ship-to Post Code", ShipToCounty, "Ship-to Country/Region Code");
                 "Ship-to City" := CopyStr(ShipToCity, 1, MaxStrLen("Ship-to City"));
                 "Ship-to County" := CopyStr(ShipToCounty, 1, MaxStrLen("Ship-to County"));
-
             end;
 
             trigger OnValidate()
@@ -654,6 +651,18 @@ table 8057 "Service Object"
             FieldClass = FlowField;
             Editable = false;
             CalcFormula = exist("Service Commitment Archive" where("Service Object No." = field("No.")));
+        }
+        field(96; "Variant Code"; Code[10])
+        {
+            Caption = 'Variant Code';
+            TableRelation = "Item Variant".Code where("Item No." = field("Item No."));
+
+            trigger OnValidate()
+            begin
+                Rec.ArchiveServiceCommitments();
+                if Rec."Variant Code" <> xRec."Variant Code" then
+                    RecalculateServiceCommitments(FieldCaption("Variant Code"), false);
+            end;
         }
         field(107; "No. Series"; Code[20])
         {
@@ -886,7 +895,6 @@ table 8057 "Service Object"
         ContactIsNotRelatedToAnyCustomerErr: Label 'Contact %1 %2 is not related to a customer.';
         ConfirmEmptyEmailQst: Label 'Contact %1 has no email address specified. The value in the Email field for the End User, %2, will be deleted. Do you want to continue?', Comment = '%1 - Contact No., %2 - Email';
         ServiceCommitmentExistsErr: Label 'Cannot delete %1 while %2 exists.';
-        RecalculateLinesQst: Label 'If you change %1, the existing service commitments prices will be recalculated.\\Do you want to continue?', Comment = '%1: FieldCaption';
         ModifyEndUserCustomerAddressNotificationNameTxt: Label 'Update Sell-to Customer Address';
         ModifyEndUserCustomerAddressNotificationDescriptionTxt: Label 'Warn if the sell-to address on service object is different from the customer''s existing address.';
         ModifyBillToCustomerAddressNotificationNameTxt: Label 'Update Bill-to Customer Address';
@@ -1669,6 +1677,8 @@ table 8057 "Service Object"
                                     ServiceCommitment."Calculation Base Amount" := Item."Unit Cost";
                         end;
                         ServiceCommitment."Billing Base Period" := ServiceCommPackageLine."Billing Base Period";
+                        ServiceCommitment."Usage Based Billing" := ServiceCommPackageLine."Usage Based Billing";
+                        ServiceCommitment."Usage Based Pricing" := ServiceCommPackageLine."Usage Based Pricing";
                         ServiceCommitment.Validate("Price Binding Period", ServiceCommPackageLine."Price Binding Period");
                         ServiceCommitment.SetLCYFields(ServiceCommitment.Price, ServiceCommitment."Service Amount", ServiceCommitment."Discount Amount", ServiceCommitment."Calculation Base Amount");
                         ServiceCommitment.Validate("Calculation Base %", ServiceCommPackageLine."Calculation Base %");
@@ -1676,8 +1686,6 @@ table 8057 "Service Object"
                         ServiceCommitment.Validate(Discount, ServiceCommPackageLine.Discount);
                         ServiceCommitment."Period Calculation" := ServiceCommPackageLine."Period Calculation";
                         ServiceCommitment.SetDefaultDimensionFromItem(Rec."Item No.");
-                        ServiceCommitment."Usage Based Billing" := ServiceCommPackageLine."Usage Based Billing";
-                        ServiceCommitment."Usage Based Pricing" := ServiceCommPackageLine."Usage Based Pricing";
                         ServiceCommitment."Pricing Unit Cost Surcharge %" := ServiceCommPackageLine."Pricing Unit Cost Surcharge %";
                         OnBeforeInsertServiceCommitmentFromServiceCommitmentPackageLine(ServiceCommitment, ServiceCommPackageLine);
                         ServiceCommitment.Insert(false);
@@ -1725,7 +1733,7 @@ table 8057 "Service Object"
             if HideValidationDialog or not GuiAllowed() then
                 Confirmed := true
             else
-                Confirmed := ConfirmManagement.GetResponse(StrSubstNo(RecalculateLinesQst, ChangedFieldName), false);
+                Confirmed := ConfirmManagement.GetResponse(GetRecalculateLinesDialog(ChangedFieldName), false);
 
         if Confirmed then begin
             Modify();
@@ -1740,7 +1748,10 @@ table 8057 "Service Object"
                     ServiceCommitment.Modify(true);
                 until ServiceCommitment.Next() = 0;
         end else
-            Error('');
+            if (not Confirmed) and (FieldCaption("Variant Code") = ChangedFieldName) then
+                Modify()
+            else
+                Error('');
     end;
 
     internal procedure UpdateServicesDates()
@@ -1758,6 +1769,7 @@ table 8057 "Service Object"
                 if (ServiceCommitment."Service End Date" <> 0D) and (Today() > ServiceCommitment."Service End Date") and ServiceCommitment.IsFullyInvoiced() then begin
                     ServiceCommitment."Cancellation Possible Until" := 0D;
                     ServiceCommitment."Term Until" := 0D;
+                    ServiceCommitment.Closed := true;
                     ServiceCommitment.Modify(false);
                     case ServiceCommitment.Partner of
                         ServiceCommitment.Partner::Customer:
@@ -1791,8 +1803,8 @@ table 8057 "Service Object"
     begin
         CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
         CustomerContractLine.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
-        CustomerContractLine.SetRange("Closed", false);
-        CustomerContractLine.ModifyAll("Closed", true, true);
+        CustomerContractLine.SetRange(Closed, false);
+        CustomerContractLine.ModifyAll(Closed, true, true);
     end;
 
     local procedure CloseOpenVendorContractLines(ServiceCommitment: Record "Service Commitment")
@@ -1901,9 +1913,10 @@ table 8057 "Service Object"
         ServiceCommitment.SetFilter("Contract No.", '%1', '');
     end;
 
-    procedure InsertFromItemNoAndSelltoCustomerNo(var ServiceObject: Record "Service Object"; ItemNo: Code[20]; SourceQuantity: Decimal; SellToCustomerNo: Code[20]; ProvisionStartDate: Date)
+    procedure InsertFromItemNoAndCustomerContract(var ServiceObject: Record "Service Object"; ItemNo: Code[20]; SourceQuantity: Decimal; ProvisionStartDate: Date; CustomerContract: Record "Customer Contract")
     var
         Item: Record Item;
+        ContractsItemManagement: Codeunit "Contracts Item Management";
     begin
         if ItemNo = '' then
             exit;
@@ -1911,12 +1924,15 @@ table 8057 "Service Object"
         ServiceObject.Init();
         ServiceObject.SetHideValidationDialog(true);
         ServiceObject."Item No." := ItemNo;
-        ServiceObject.Description := Item.Description;
+        ServiceObject.Description := ContractsItemManagement.GetItemTranslation(ItemNo, '', CustomerContract."Sell-to Customer No.");
         ServiceObject."Unit of Measure" := Item."Base Unit of Measure";
         ServiceObject."Quantity Decimal" := SourceQuantity;
-        ServiceObject.Validate("End-User Customer No.", SellToCustomerNo);
+        ServiceObject.Validate("End-User Customer No.", CustomerContract."Sell-to Customer No.");
+        ServiceObject.Validate("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
+        ServiceObject.Validate("Ship-to Code", CustomerContract."Ship-to Code");
         ServiceObject.Validate("Provision Start Date", ProvisionStartDate);
         ServiceObject.Insert(true);
+        OnAfterInsertFromItemNoAndCustomerContract(ServiceObject, CustomerContract);
     end;
 
     internal procedure SetUnitPriceAndUnitCostFromExtendContract(NewUnitPrice: Decimal; NewUnitCost: Decimal)
@@ -1972,6 +1988,54 @@ table 8057 "Service Object"
     internal procedure SkipInsertServiceCommitmentsFromStandardServCommPackages(Skip: Boolean)
     begin
         SkipInsertServiceCommitments := Skip;
+    end;
+
+    local procedure GetRecalculateLinesDialog(ChangedFieldName: Text): Text
+    var
+        RecalculateLinesQst: Label 'If you change %1, the existing service commitments prices will be recalculated.\\Do you want to continue?', Comment = '%1: FieldCaption';
+        RecalculateLinesFromVariantCodeQst: Label 'The %1 has been changed.\\Do you want to update the price and description?';
+    begin
+        case ChangedFieldName of
+            Rec.FieldName(Rec."Variant Code"):
+                exit(StrSubstNo(RecalculateLinesFromVariantCodeQst, ChangedFieldName));
+            else
+                exit(StrSubstNo(RecalculateLinesQst, ChangedFieldName));
+        end;
+    end;
+
+    procedure SetPrimaryAttributeValueAndCaption(var PrimaryAttributeValue: Text[250]; var PrimaryAttributeValueCaption: Text)
+    var
+        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
+        TempItemAttributeValue: Record "Item Attribute Value" temporary;
+        ItemAttributeValue: Record "Item Attribute Value";
+    begin
+        PrimaryAttributeValue := '';
+        PrimaryAttributeValueCaption := PrimaryAttributeTxt;
+        if Rec."No." = '' then
+            exit;
+
+        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+        ItemAttributeValueMapping.SetRange("No.", Rec."No.");
+        if ItemAttributeValueMapping.FindSet() then
+            repeat
+                ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID");
+                TempItemAttributeValue.TransferFields(ItemAttributeValue);
+                TempItemAttributeValue.Primary := ItemAttributeValueMapping.Primary;
+                TempItemAttributeValue.Insert(false);
+            until ItemAttributeValueMapping.Next() = 0;
+        TempItemAttributeValue.SetRange(Primary, true);
+        if not TempItemAttributeValue.IsEmpty() then begin
+            TempItemAttributeValue.FindFirst();
+            PrimaryAttributeValue := TempItemAttributeValue.GetValueInCurrentLanguage();
+            PrimaryAttributeValueCaption := TempItemAttributeValue.GetAttributeNameInCurrentLanguage();
+        end;
+    end;
+
+    procedure GetPrimaryAttributeValue() PrimaryAttributeValue: Text[250]
+    var
+        PrimaryAttributeValueCaption: Text;
+    begin
+        Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
     end;
 
     [InternalEvent(false, false)]
@@ -2179,39 +2243,8 @@ table 8057 "Service Object"
     begin
     end;
 
-    internal procedure SetPrimaryAttributeValueAndCaption(var PrimaryAttributeValue: Text[250]; var PrimaryAttributeValueCaption: Text)
-    var
-        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
-        TempItemAttributeValue: Record "Item Attribute Value" temporary;
-        ItemAttributeValue: Record "Item Attribute Value";
+    [IntegrationEvent(false, false)]
+    procedure OnAfterInsertFromItemNoAndCustomerContract(var ServiceObject: Record "Service Object"; CustomerContract: Record "Customer Contract")
     begin
-        PrimaryAttributeValue := '';
-        PrimaryAttributeValueCaption := PrimaryAttributeTxt;
-        if Rec."No." = '' then
-            exit;
-
-        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
-        ItemAttributeValueMapping.SetRange("No.", Rec."No.");
-        if ItemAttributeValueMapping.FindSet() then
-            repeat
-                ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID");
-                TempItemAttributeValue.TransferFields(ItemAttributeValue);
-                TempItemAttributeValue.Primary := ItemAttributeValueMapping.Primary;
-                TempItemAttributeValue.Insert(false);
-            until ItemAttributeValueMapping.Next() = 0;
-        TempItemAttributeValue.SetRange(Primary, true);
-        if not TempItemAttributeValue.IsEmpty() then begin
-            TempItemAttributeValue.FindFirst();
-            PrimaryAttributeValue := TempItemAttributeValue.GetValueInCurrentLanguage();
-            PrimaryAttributeValueCaption := TempItemAttributeValue.GetAttributeNameInCurrentLanguage();
-        end;
     end;
-
-    internal procedure GetPrimaryAttributeValue() PrimaryAttributeValue: Text[250]
-    var
-        PrimaryAttributeValueCaption: Text;
-    begin
-        Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
-    end;
-
 }

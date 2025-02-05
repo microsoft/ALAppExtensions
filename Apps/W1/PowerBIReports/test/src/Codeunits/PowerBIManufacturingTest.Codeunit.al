@@ -1,9 +1,3 @@
-#pragma warning disable AA0247
-#pragma warning disable AA0137
-#pragma warning disable AA0217
-#pragma warning disable AA0205
-#pragma warning disable AA0210
-
 namespace Microsoft.Finance.PowerBIReports.Test;
 
 using System.Utilities;
@@ -15,18 +9,19 @@ using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Manufacturing.Journal;
 using Microsoft.PowerBIReports;
-using Microsoft.Manufacturing.PowerBIReports;
 using Microsoft.Inventory.Journal;
 using Microsoft.Manufacturing.ProductionBOM;
 using Microsoft.Manufacturing.Routing;
 using System.Text;
 using Microsoft.Inventory.Location;
 using System.TestLibraries.Security.AccessControl;
+using Microsoft.PowerBIReports.Test;
 
 codeunit 139878 "PowerBI Manufacturing Test"
 {
     Subtype = Test;
     Access = Internal;
+    TestPermissions = Disabled;
 
     var
         Assert: Codeunit Assert;
@@ -39,6 +34,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         UriBuilder: Codeunit "Uri Builder";
         PermissionsMock: Codeunit "Permissions Mock";
         PowerBICoreTest: Codeunit "PowerBI Core Test";
+        PowerBIAPIRequests: Codeunit "PowerBI API Requests";
+        PowerBIAPIEndpoints: Enum "PowerBI API Endpoints";
+        PowerBIFilterScenarios: Enum "PowerBI Filter Scenarios";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -57,19 +55,21 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for calendar entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Calendar Entries", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Calendar Entries");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1''', WorkCenter."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'no eq ''' + Format(WorkCenter."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the calendar entries information
         Assert.AreNotEqual('', Response, ResponseEmptyErr);
-        if CalendarEntry.FindSet() then
+        if CalendarEntry.FindSet() then begin
+            Index := 0;
             repeat
                 VerifyCalendarEntry(Response, CalendarEntry, Index);
                 Index += 1;
             until CalendarEntry.Next() = 0;
+        end;
     end;
 
     local procedure VerifyCalendarEntry(Response: Text; CalendarEntry: Record "Calendar Entry"; Index: Integer)
@@ -77,7 +77,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[%1]', Index)), 'Calendar entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[' + Format(Index) + ']'), 'Calendar entry not found.');
         Assert.AreEqual(Format(CalendarEntry."Capacity Type"), JsonMgt.GetValue('capacityType'), 'Calendar entry capacity type does not match.');
         Assert.AreEqual(CalendarEntry."No.", JsonMgt.GetValue('no'), 'Calendar no does not match.');
         Assert.AreEqual(CalendarEntry."Work Center Group Code", JsonMgt.GetValue('workCenterGroupCode'), 'Calendar entry work center group code does not match.');
@@ -102,9 +102,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for machine centers is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Machine Centers", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Machine Centers");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('workCenterNo eq ''%1''', WorkCenter."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'workCenterNo eq ''' + Format(WorkCenter."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -121,7 +121,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', MachineCenter."No.")), 'Machine center not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(MachineCenter."No.") + ''')]'), 'Machine center not found.');
         Assert.AreEqual(MachineCenter.Name, JsonMgt.GetValue('name'), 'Machine center name does not match.');
         Assert.AreEqual(MachineCenter."Work Center No.", JsonMgt.GetValue('workCenterNo'), 'Machine center work center no does not match.');
     end;
@@ -144,9 +144,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for work centers is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Work Centers", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Work Centers");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1'' OR no eq ''%2''', WorkCenter."No.", WorkCenter2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'no eq ''' + Format(WorkCenter."No.") + ''' or no eq ''' + Format(WorkCenter2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -164,7 +164,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.no == ''%1'')]', WorkCenter."No.")), 'Work center not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(WorkCenter."No.") + ''')]'), 'Work center not found.');
         Assert.AreEqual(WorkCenter.Name, JsonMgt.GetValue('name'), 'Work center name does not match.');
         Assert.AreEqual(WorkCenter."Work Center Group Code", JsonMgt.GetValue('workCenterGroupCode'), 'Work center work center group code does not match.');
         WorkCenterGroup.Get(WorkCenter."Work Center Group Code");
@@ -205,9 +205,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production order lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Manuf.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Prod. Order Lines - Manuf.");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -225,7 +225,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.prodOrderNo == ''%1'')]', ProdOrderLine."Prod. Order No.")), 'Production order line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.prodOrderNo == ''' + Format(ProdOrderLine."Prod. Order No.") + ''')]'), 'Production order line not found.');
         Assert.AreEqual(Format(ProdOrderLine.Status), JsonMgt.GetValue('prodOrderStatus'), 'Status did not match.');
         Assert.AreEqual(ProdOrderLine."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
         Assert.AreEqual(Format(ProdOrderLine."Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('quantityBase'), 'Quantity (base) did not match.');
@@ -277,9 +277,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production order component lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Manuf.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Prod. Order Comp. - Manuf.");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', ItemComp."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(ItemComp."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -296,7 +296,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.prodOrderNo == ''%1'')]', ProdOrderComp."Prod. Order No.")), 'Production order component not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.prodOrderNo == ''' + Format(ProdOrderComp."Prod. Order No.") + ''')]'), 'Production order component not found.');
         Assert.AreEqual(Format(ProdOrderComp.Status), JsonMgt.GetValue('prodOrderStatus'), 'Status did not match.');
         Assert.AreEqual(Format(ProdOrderComp."Prod. Order Line No."), JsonMgt.GetValue('prodOrderLineNo'), 'Production order line no. did not match.');
         Assert.AreEqual(ProdOrderComp."Item No.", JsonMgt.GetValue('itemNo'), 'Item no. did not match.');
@@ -342,9 +342,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production order routing lines is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Routing Lines", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Prod. Order Routing Lines");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1''', WorkCenter."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'no eq ''' + Format(WorkCenter."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -361,7 +361,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@prodOrderNo == ''%1'')]', ProdOrderRoutingLine."Prod. Order No.")), 'Production order routing line not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@prodOrderNo == ''' + Format(ProdOrderRoutingLine."Prod. Order No.") + ''')]'), 'Production order routing line not found.');
         Assert.AreEqual(Format(ProdOrderRoutingLine.Status), JsonMgt.GetValue('status'), 'Status did not match.');
         Assert.AreEqual(Format(ProdOrderRoutingLine."Type"), JsonMgt.GetValue('type'), 'Type did not match.');
         Assert.AreEqual(ProdOrderRoutingLine."No.", JsonMgt.GetValue('no'), 'No. did not match.');
@@ -421,9 +421,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production item ledger entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Ledger Entries - Prod.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Item Ledger Entries - Prod.");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('orderNo eq ''%1''', ProdOrder."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'orderNo eq ''' + Format(ProdOrder."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -440,7 +440,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.itemNo == ''%1'')]', ItemLedgerEntry."Item No.")), 'Item ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemNo == ''' + Format(ItemLedgerEntry."Item No.") + ''')]'), 'Item ledger entry not found.');
         Assert.AreEqual(Format(ItemLedgerEntry."Entry Type"), JsonMgt.GetValue('entryType'), 'Entry type did not match.');
         Assert.AreEqual(Format(ItemLedgerEntry."Order Type"), JsonMgt.GetValue('orderType'), 'Order type did not match.');
         Assert.AreEqual(ItemLedgerEntry."Order No.", JsonMgt.GetValue('orderNo'), 'Order no. did not match.');
@@ -484,9 +484,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for the item ledger entries outside of the query filter is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Ledger Entries - Prod.", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Item Ledger Entries - Prod.");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', ItemLedgerEntry."Item No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(ItemLedgerEntry."Item No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -533,9 +533,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production item ledger entries is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Capacity Ledger Entries", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Capacity Ledger Entries");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('orderNo eq ''%1''', ProdOrder."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'orderNo eq ''' + Format(ProdOrder."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -552,7 +552,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.orderNo == ''%1'')]', CapacityLedgerEntry."Order No.")), 'Capacity ledger entry not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.orderNo == ''' + Format(CapacityLedgerEntry."Order No.") + ''')]'), 'Capacity ledger entry not found.');
         Assert.AreEqual(Format(CapacityLedgerEntry."Order Type"), JsonMgt.GetValue('orderType'), 'Order type did not match.');
         Assert.AreEqual(CapacityLedgerEntry."Order No.", JsonMgt.GetValue('orderNo'), 'Order no. did not match.');
         Assert.AreEqual(Format(CapacityLedgerEntry."Order Line No."), JsonMgt.GetValue('orderLineNo'), 'Order line no. did not match.');
@@ -617,9 +617,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Commit();
 
         // [WHEN] Get request for production order capacity needed is made
-        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Capacity Needs", '');
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Prod. Order Capacity Needs");
         UriBuilder.Init(TargetURL);
-        UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('prodOrderNo eq ''%1'' OR prodOrderNo eq ''%2''', ProdOrder."No.", ProdOrder2."No."));
+        UriBuilder.AddODataQueryParameter('$filter', 'prodOrderNo eq ''' + Format(ProdOrder."No.") + ''' or prodOrderNo eq ''' + Format(ProdOrder2."No.") + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
@@ -637,7 +637,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         JsonMgt: Codeunit "JSON Management";
     begin
         JsonMgt.InitializeObject(Response);
-        Assert.IsTrue(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.prodOrderNo == ''%1'')]', ProdOrderRoutingLine."Prod. Order No.")), 'Production order capacity need not found.');
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.prodOrderNo == ''' + Format(ProdOrderRoutingLine."Prod. Order No.") + ''')]'), 'Production order capacity need not found.');
         Assert.AreEqual(Format(ProdOrderRoutingLine.Status), JsonMgt.GetValue('status'), 'Status did not match.');
         Assert.AreEqual(ProdOrderRoutingLine."Prod. Order No.", JsonMgt.GetValue('prodOrderNo'), 'Production order no. did not match.');
         Assert.AreEqual(ProdOrderRoutingLine."Routing No.", JsonMgt.GetValue('routingNo'), 'Routing no. did not match.');
@@ -718,7 +718,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -734,10 +733,10 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
+        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date");
 
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -747,7 +746,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -762,10 +760,10 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Manufacturing Date Formula"));
+        ExpectedFilterTxt := Format(CalcDate(PBISetup."Manufacturing Date Formula")) + '..';
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date");
 
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -775,7 +773,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ActualFilterTxt: Text;
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
@@ -787,7 +784,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date");
 
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -797,7 +794,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateTimeFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -813,10 +809,10 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..%2', Format(CreateDateTime(Today(), 0T)), Format(CreateDateTime(Today() + 10, 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(Today(), 0T)) + '..' + Format(CreateDateTime(Today() + 10, 0T));
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date Time");
 
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -826,7 +822,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateTimeFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
     begin
@@ -841,10 +836,10 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup.Modify();
         PermissionsMock.ClearAssignments();
 
-        ExpectedFilterTxt := StrSubstNo('%1..', Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)));
+        ExpectedFilterTxt := Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)) + '..';
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date Time");
 
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -854,7 +849,6 @@ codeunit 139878 "PowerBI Manufacturing Test"
     procedure TestGenerateManufacturingReportDateTimeFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIMgt: Codeunit "Manuf. Filter Helper";
         ActualFilterTxt: Text;
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
@@ -866,7 +860,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
-        ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();
+        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(PowerBIFilterScenarios::"Manufacturing Date Time");
 
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
@@ -882,9 +876,3 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup.Insert();
     end;
 }
-
-#pragma warning restore AA0247
-#pragma warning restore AA0137
-#pragma warning restore AA0217
-#pragma warning restore AA0205
-#pragma warning restore AA0210

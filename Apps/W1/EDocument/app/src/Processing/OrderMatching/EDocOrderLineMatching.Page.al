@@ -133,7 +133,6 @@ page 6167 "E-Doc. Order Line Matching"
                 trigger OnAction()
                 begin
                     EDocMatchOrderLines.RemoveAllMatches(Rec);
-                    if DiscountNotification.Recall() then;
                     if CostNotification.Recall() then;
                     SetUserInteractions();
                 end;
@@ -223,10 +222,9 @@ page 6167 "E-Doc. Order Line Matching"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocMatchOrderLines: Codeunit "E-Doc. Line Matching";
-        DiscountNotification, CostNotification : Notification;
+        CostNotification: Notification;
         CopilotActionVisible, AutoRunCopilot : Boolean;
-        LineDiscountVaryMatchMsg: Label 'Matched e-document lines (%1) has Line Discount % different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
-        LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has Direct Unit Cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
+        LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         NoMatchesFoundMsg: Label 'Copilot could not find any line matches. Please review manually';
         GlobalDataCaptionExpressionTxt: Label 'Purchase Order %1', Comment = '%1 - Purchase order number';
 
@@ -364,25 +362,23 @@ page 6167 "E-Doc. Order Line Matching"
     var
         EDocImportedLine: Record "E-Doc. Imported Line";
         PurchaseLine: Record "Purchase Line";
-        LineDiscountNos, DirectUnitCostNos : Text;
+        DiffCostNos: Text;
+        EDocLineAmount, PurchLineAmount : Decimal;
     begin
         if TempEDocMatches.FindSet() then
             repeat
                 EDocImportedLine := TempEDocMatches.GetImportedLine();
                 PurchaseLine := TempEDocMatches.GetPurchaseLine();
-                if EDocImportedLine."Line Discount %" <> PurchaseLine."Line Discount %" then
-                    LineDiscountNos += Format(EDocImportedLine."Line No.") + ',';
-                if EDocImportedLine."Direct Unit Cost" <> PurchaseLine."Direct Unit Cost" then
-                    DirectUnitCostNos += Format(EDocImportedLine."Line No.") + ',';
+                EDocLineAmount := ((100 - EDocImportedLine."Line Discount %") / 100) * EDocImportedLine."Direct Unit Cost";
+                PurchLineAmount := ((100 - PurchaseLine."Line Discount %") / 100) * PurchaseLine."Direct Unit Cost";
+
+                if EDocLineAmount <> PurchLineAmount then
+                    DiffCostNos += Format(EDocImportedLine."Line No.") + ','; // Add line number to the list
             until TempEDocMatches.Next() = 0;
 
-        if LineDiscountNos.EndsWith(',') then begin
-            LineDiscountNos := LineDiscountNos.Substring(1, StrLen(LineDiscountNos) - 1);
-            SendNotification(DiscountNotification, StrSubstNo(LineDiscountVaryMatchMsg, LineDiscountNos));
-        end;
-        if DirectUnitCostNos.EndsWith(',') then begin
-            DirectUnitCostNos := DirectUnitCostNos.Substring(1, StrLen(DirectUnitCostNos) - 1);
-            SendNotification(CostNotification, StrSubstNo(LineCostVaryMatchMsg, DirectUnitCostNos));
+        if DiffCostNos.EndsWith(',') then begin
+            DiffCostNos := DiffCostNos.Substring(1, StrLen(DiffCostNos) - 1);
+            SendNotification(CostNotification, StrSubstNo(LineCostVaryMatchMsg, DiffCostNos));
         end;
     end;
 

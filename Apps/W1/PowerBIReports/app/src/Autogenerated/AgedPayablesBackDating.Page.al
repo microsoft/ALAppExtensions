@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36994 "Aged Payables (Back Dating)"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Aged Payables (Back Dating)';
     AboutTitle = 'About Aged Payables (Back Dating)';
     AboutText = 'The Aged Payables Back Dating report categorizes vendor balances into aging buckets. It offers flexibility with filters for different payment terms, aging dates, and custom aging bucket sizes.';
@@ -20,7 +22,7 @@ page 36994 "Aged Payables (Back Dating)"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 36994 "Aged Payables (Back Dating)"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection904474b579cc92816425', Locked = true;
+        ReportPageLbl: Label 'ReportSection904474b579cc92816425', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

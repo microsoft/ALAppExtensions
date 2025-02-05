@@ -1,0 +1,12 @@
+[
+    {
+        "codeunitId": 139687,
+        "CodeunitName": "Recurring Billing Docs Test",
+        "Method": "ExpectErrorOnModifySalesLine"
+    },
+    {
+        "codeunitId": 139687,
+        "CodeunitName": "Recurring Billing Docs Test",
+        "Method": "ExpectErrorOnModifyPurchaseLine"
+    }
+]

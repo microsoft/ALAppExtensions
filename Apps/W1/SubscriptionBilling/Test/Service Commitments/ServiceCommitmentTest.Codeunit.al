@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
 
 codeunit 148156 "Service Commitment Test"
 {
@@ -19,6 +20,7 @@ codeunit 148156 "Service Commitment Test"
         CustomerContractLine: Record "Customer Contract Line";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
         Assert: Codeunit Assert;
 
     local procedure Setup()
@@ -377,7 +379,41 @@ codeunit 148156 "Service Commitment Test"
                 InsertServiceCommitment(ServiceCommitment.Partner::Vendor, InsertCounter);
         end;
 
-        Assert.AreEqual(InsertCounter, OverdueServiceCommitments.FillAndCountOverdueServiceCommitments(), 'Only service commitments that are open and within the correct date range should be counted.');
+        Assert.AreEqual(InsertCounter, OverdueServiceCommitments.CountOverdueServiceCommitments(), 'Only service commitments that are open and within the correct date range should be counted.');
+    end;
+
+    [Test]
+    procedure CopyServiceCommitmentItemLineFromSalesQuoteToSalesOrder()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        FromDocNo: Code[20];
+    begin
+        //[SCENARIO] When sales order is created from sales quote expect that qty to invoice is set to 0 in case of service commitment items
+        ContractTestLibrary.InitContractsApp();
+
+        //[GIVEN]  Create service commitment item
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+
+        //[GIVEN] Create sales quote
+        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, "Sales Document Type"::Quote, '', Item."No.", LibraryRandom.RandInt(10), '', LibraryRandom.RandDate(12));
+        FromDocNo := SalesHeader."No.";
+
+        //[GIVEN] Set sales header for the order
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, SalesHeader."Sell-to Customer No.");
+
+        //[WHEN] Copy lines from sales quote to sales order
+        LibrarySales.CopySalesDocument(SalesHeader, "Sales Document Type"::Quote, FromDocNo, false, true);
+
+        //[THEN] Qty to Invoice = 0 in sales order line
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange(Type, Enum::"Sales Line Type"::Item);
+        SalesLine.SetRange("No.", Item."No.");
+        SalesLine.FindFirst();
+        SalesLine.TestField("Document Type", "Sales Document Type"::Order);
+        SalesLine.TestField("Qty. to Invoice", 0);
     end;
 
     local procedure InsertServiceCommitment(ServicePartner: Enum "Service Partner"; var InsertCounter: Integer)

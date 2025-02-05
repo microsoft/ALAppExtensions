@@ -6,7 +6,7 @@ pageextension 8051 "Customer Card" extends "Customer Card"
 {
     actions
     {
-        addafter(NewSalesCreditMemo)
+        addlast(creation)
         {
             action(NewContract)
             {
@@ -14,7 +14,7 @@ pageextension 8051 "Customer Card" extends "Customer Card"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Contract';
                 Image = FileContract;
-                RunObject = Page "Customer Contract";
+                RunObject = page "Customer Contract";
                 RunPageLink = "Sell-to Customer No." = field("No.");
                 RunPageMode = Create;
                 ToolTip = 'Create a contract for the customer.';
@@ -23,6 +23,38 @@ pageextension 8051 "Customer Card" extends "Customer Card"
         addlast(Category_Category4)
         {
             actionref(NewContract_Promoted; NewContract)
+            {
+            }
+        }
+        addlast("&Customer")
+        {
+            action(Contracts)
+            {
+                AccessByPermission = tabledata "Customer Contract" = R;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Contracts';
+                Image = FileContract;
+                RunObject = page "Customer Contracts";
+                RunPageLink = "Sell-to Customer No." = field("No.");
+                ToolTip = 'View a list of ongoing customer contracts.';
+            }
+            action(ServiceObjects)
+            {
+                AccessByPermission = tabledata "Service Object" = R;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Service Objects';
+                Image = ServiceItem;
+                RunObject = page "Service Object";
+                RunPageLink = "End-User Customer No." = field("No.");
+                ToolTip = 'View a list of service objects for the customer.';
+            }
+        }
+        addlast(Category_Category9)
+        {
+            actionref(Contracts_Promoted; Contracts)
+            {
+            }
+            actionref(ServiceObjects_Promoted; ServiceObjects)
             {
             }
         }

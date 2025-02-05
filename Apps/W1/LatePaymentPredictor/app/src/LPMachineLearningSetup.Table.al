@@ -1,11 +1,11 @@
 namespace Microsoft.Finance.Latepayment;
 
 using System.AI;
-using System.Environment;
 using System.Utilities;
 using System.Privacy;
 table 1950 "LP Machine Learning Setup"
 {
+    DataClassification = CustomerContent;
     ReplicateData = false;
     Permissions = TableData "LP Machine Learning Setup" = I;
     fields
@@ -101,15 +101,6 @@ table 1950 "LP Machine Learning Setup"
                 AzureMLConnector.ValidateApiUrl("Custom API Key");
             end;
         }
-
-        field(11; "Exact Invoice No OnLastML"; Integer)
-        {
-            Editable = false;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Discontinued because of performance refactoring. Use the field Posting Date OnLastML instead.';
-            ObsoleteTag = '18.0';
-        }
-
         field(12; "OverestimatedInvNo OnLastReset"; Integer)
         {
             Editable = false;
@@ -167,16 +158,15 @@ table 1950 "LP Machine Learning Setup"
 
     procedure GetModelAsText(ForModel: Option) Content: Text
     var
-        MediaResources: Record "Media Resources";
         TempBlob: Codeunit "Temp Blob";
         InStream: InStream;
     begin
         case ForModel of
             "Selected Model"::Standard:
                 begin
-                    if not MediaResources.Get('LatePaymentStandardModel.txt') then
-                        exit;
-                    TempBlob.FromRecord(MediaResources, MediaResources.FieldNo(Blob));
+                    NavApp.GetResource('LatePaymentStandardModel.txt', InStream);
+                    InStream.Read(Content);
+                    exit;
                 end;
             "Selected Model"::My:
                 TempBlob.FromRecord(Rec, FieldNo("My Model"));

@@ -7,23 +7,11 @@ namespace Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.VAT.Ledger;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Service.Contract;
 using Microsoft.Service.Document;
 
 codeunit 11779 "VAT Curr. Factor Handler CZL"
 {
-    [EventSubscriber(ObjectType::Report, Report::"Copy - VAT Posting Setup", 'OnAfterCopyVATPostingSetup', '', false, false)]
-    local procedure CopyCZLfieldsOnAfterCopyVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup"; FromVATPostingSetup: Record "VAT Posting Setup"; Sales: Boolean; Purch: Boolean)
-    begin
-        if Sales then
-            VATPostingSetup."Sales VAT Curr. Exch. Acc CZL" := FromVATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
-        if Purch then
-            VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL" := FromVATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
-        VATPostingSetup."VIES Purchase CZL" := FromVATPostingSetup."VIES Purchase CZL";
-        VATPostingSetup."VIES Sales CZL" := FromVATPostingSetup."VIES Sales CZL";
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::ServContractManagement, 'OnBeforeServHeaderModify', '', false, false)]
     local procedure CurrencyFactorToVATCurrencyFactorOnBeforeServHeaderModify(var ServiceHeader: Record "Service Header")
     begin

@@ -6,8 +6,8 @@ table 8054 "Service Commitment Template"
 {
     Caption = 'Service Commitment Template';
     DataClassification = CustomerContent;
-    DrillDownPageID = "Service Commitment Templates";
-    LookupPageID = "Service Commitment Templates";
+    DrillDownPageId = "Service Commitment Templates";
+    LookupPageId = "Service Commitment Templates";
     Access = Internal;
 
     fields

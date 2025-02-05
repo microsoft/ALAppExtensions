@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36984 "Financial Overview"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Financial Overview';
     AboutTitle = 'About Financial Overview';
     AboutText = 'The Financial Overview provides a snapshot of the organization''s financial health and performance. This page displays key performance indicators that give stakeholders a clear view of revenue, profitability, and financial stability. ';
@@ -20,7 +22,7 @@ page 36984 "Financial Overview"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 36984 "Financial Overview"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label '04fa320747962435bf38', Locked = true;
+        ReportPageLbl: Label '04fa320747962435bf38', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

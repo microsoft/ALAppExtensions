@@ -36,13 +36,16 @@ codeunit 13624 "OIOUBL-Initialize"
         OIOUBLProfileIDTxt: Label 'Procurement-OrdSimR-BilSim-1.0', Locked = true;
 
     trigger OnInstallAppPerCompany()
+#if not CLEAN26
     var
         AppInfo: ModuleInfo;
+#endif
     begin
+#if not CLEAN26        
         NavApp.GetCurrentModuleInfo(AppInfo);
         if AppInfo.DataVersion() = Version.Create('0.0.0.0') then
             CODEUNIT.Run(CODEUNIT::"OIOUBL-MigrateToExtV2");
-
+#endif
         CompanyInitialize();
     end;
 

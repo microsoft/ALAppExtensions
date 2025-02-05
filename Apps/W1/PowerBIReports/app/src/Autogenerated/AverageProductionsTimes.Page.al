@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37048 "Average Productions Times"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Average Productions Times';
     AboutTitle = 'About Average Productions Times';
     AboutText = 'View the average time spent for Setup, Run and Stop times per unit for each manufactured Item. Expand to see the times for each production order to determine why fluctuations occurred.';
@@ -20,7 +22,7 @@ page 37048 "Average Productions Times"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37048 "Average Productions Times"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection13a328ff231fccdc12f7', Locked = true;
+        ReportPageLbl: Label 'ReportSection13a328ff231fccdc12f7', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

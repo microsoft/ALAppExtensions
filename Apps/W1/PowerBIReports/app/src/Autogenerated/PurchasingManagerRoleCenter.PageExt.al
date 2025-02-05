@@ -13,6 +13,13 @@ pageextension 36961 "Purchasing Manager Role Center" extends "Purchasing Manager
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for purchases';
+                action("Purchases Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchases Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Purchases Report";
+                }
                 action("Purchases Overview (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;

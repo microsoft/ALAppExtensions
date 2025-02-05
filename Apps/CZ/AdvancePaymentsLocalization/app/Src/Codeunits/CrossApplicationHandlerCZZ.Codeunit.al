@@ -25,6 +25,9 @@ codeunit 31418 "Cross Application Handler CZZ"
     [EventSubscriber(ObjectType::Table, Database::"Cash Document Line CZP", 'OnAfterCollectSuggestedApplication', '', false, false)]
     local procedure OnAfterCollectSuggestedApplicationCashDocumentLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     begin
+        if CashDocumentLineCZP."Account Type" <> CashDocumentLineCZP."Account Type"::Vendor then
+            exit;
+
         CollectSuggestedApplicationForPurchAdvLetter(
             CashDocumentLineCZP."Advance Letter No. CZZ", CashDocumentLineCZP, CrossApplicationBufferCZL);
     end;
@@ -32,6 +35,9 @@ codeunit 31418 "Cross Application Handler CZZ"
     [EventSubscriber(ObjectType::Table, Database::"Payment Order Line CZB", 'OnAfterCollectSuggestedApplication', '', false, false)]
     local procedure OnAfterCollectSuggestedApplicationPaymentOrderLine(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     begin
+        if PaymentOrderLineCZB.Type <> PaymentOrderLineCZB.Type::Vendor then
+            exit;
+
         CollectSuggestedApplicationForPurchAdvLetter(
             PaymentOrderLineCZB."Purch. Advance Letter No. CZZ", PaymentOrderLineCZB, CrossApplicationBufferCZL);
     end;

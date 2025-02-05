@@ -42,6 +42,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostingDate: Date;
         DocumentType: Enum "Gen. Journal Document Type";
         TotalAmountLCY: Decimal;
+        ShowDialog: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000IG4', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000IG5', 'Bank Deposit', 'Bank deposit posted');
@@ -137,9 +138,11 @@ codeunit 1690 "Bank Deposit-Post"
 
         UpdateAnalysisView.UpdateAll(0, true);
 
-        OnAfterBankDepositPost(Rec, PostedBankDepositHeader);
+        ShowDialog := true;
+        OnAfterBankDepositPost(Rec, PostedBankDepositHeader, ShowDialog);
 
-        Page.Run(Page::"Posted Bank Deposit", PostedBankDepositHeader);
+        if ShowDialog then
+            Page.Run(Page::"Posted Bank Deposit", PostedBankDepositHeader);
     end;
 
     local procedure InsertLumpSumGenJournalLine(BankDepositHeader: Record "Bank Deposit Header"; DocumentType: Enum "Gen. Journal Document Type"; DocumentDate: Date; TotalAmountLCY: Decimal)
@@ -219,7 +222,8 @@ codeunit 1690 "Bank Deposit-Post"
         GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
         GenJournalLine."Source No." := BankDepositHeader."Bank Account No.";
         GenJournalLine."Source Currency Code" := BankDepositHeader."Currency Code";
-        GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
+        if BankDepositHeader."Reason Code" <> '' then
+            GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
         GenJournalLine."Source Currency Amount" := SourceCurrencyAmount;
     end;
 
@@ -401,7 +405,13 @@ codeunit 1690 "Bank Deposit-Post"
         BankAccCommentLine: Record "Bank Acc. Comment Line";
         PostedBankDepositHeaderLocal: Record "Posted Bank Deposit Header";
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCleanPostedBankDepositHeaderAndLines(BankDepositNo, IsHandled);
+        if IsHandled then
+            exit;
+
         PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositNo);
         PostedBankDepositLine.DeleteAll();
         if not PostedBankDepositHeaderLocal.Get(BankDepositNo) then
@@ -463,6 +473,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositLine."Dimension Set ID" := PostingGenJournalLine."Dimension Set ID";
         PostedBankDepositLine."Posting Date" := CurrentBankDepositHeader."Posting Date";
         PostedBankDepositLine."External Document No." := PostingGenJournalLine."External Document No.";
+        PostedBankDepositLine."Reason Code" := PostingGenJournalLine."Reason Code";
         case PostingGenJournalLine."Account Type" of
             PostingGenJournalLine."Account Type"::"G/L Account",
             PostingGenJournalLine."Account Type"::"Bank Account":
@@ -495,7 +506,7 @@ codeunit 1690 "Bank Deposit-Post"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterBankDepositPost(BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositHeader: Record "Posted Bank Deposit Header")
+    local procedure OnAfterBankDepositPost(BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositHeader: Record "Posted Bank Deposit Header"; var ShowDialog: Boolean)
     begin
     end;
 
@@ -544,6 +555,11 @@ codeunit 1690 "Bank Deposit-Post"
 
     [IntegrationEvent(false, false)]
     local procedure OnRunOnBeforeGenJournalLineDeleteAll(var BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositLine: Record "Posted Bank Deposit Line"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCleanPostedBankDepositHeaderAndLines(var BankDepositNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

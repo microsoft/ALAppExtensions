@@ -18,6 +18,7 @@ tableextension 11725 "Return Receipt Header CZL" extends "Return Receipt Header"
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31068; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -34,6 +35,7 @@ tableextension 11725 "Return Receipt Header CZL" extends "Return Receipt Header"
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
         field(31112; "Original Doc. VAT Date CZL"; Date)
         {
             Caption = 'Original Document VAT Date';

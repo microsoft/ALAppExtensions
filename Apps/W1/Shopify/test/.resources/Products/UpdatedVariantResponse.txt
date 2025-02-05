@@ -1,0 +1,1 @@
+{ "data": { "productVariantUpdate": { "productVariant": { "legacyResourceId": "1234567890"} }}}

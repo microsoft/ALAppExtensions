@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37009 "Purchases Overview"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Overview';
     AboutTitle = 'About Purchases Overview';
     AboutText = 'The Purchase Overview provides high level insights into procurement performance, highlighting metrics such as Outstanding Quantities, Quantity Received not Invoiced and Invoice Quantity. ';
@@ -20,7 +22,7 @@ page 37009 "Purchases Overview"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37009 "Purchases Overview"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection8aee09682245793948c4', Locked = true;
+        ReportPageLbl: Label 'ReportSection8aee09682245793948c4', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

@@ -1,0 +1,1 @@
+{"data":{"catalog":null},"extensions":{"cost":{"requestedQueryCost":15,"actualQueryCost":1,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1999,"restoreRate":100.0}}}}

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +7,6 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.NoSeries;
-using System.Reflection;
 using System.Utilities;
 
 table 31003 "Advance Letter Template CZZ"
@@ -100,46 +99,6 @@ table 31003 "Advance Letter Template CZZ"
             Caption = 'VAT Bus. Posting Group';
             DataClassification = CustomerContent;
             TableRelation = "VAT Business Posting Group";
-        }
-        field(15; "Document Report ID"; Integer)
-        {
-            Caption = 'Document Report ID (Obsolete)';
-            DataClassification = CustomerContent;
-            BlankZero = true;
-            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteTag = '23.0';
-            ObsoleteState = Removed;
-        }
-        field(16; "Document Report Caption"; Text[249])
-        {
-            Caption = 'Document Report Caption (Obsolete)';
-            Editable = false;
-            FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Document Report ID")));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-        field(18; "Invoice/Cr. Memo Report ID"; Integer)
-        {
-            Caption = 'Invoice/Cr. Memo Report ID (Obsolete)';
-            DataClassification = CustomerContent;
-            BlankZero = true;
-            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-        field(19; "Invoice/Cr. Memo Rep. Caption"; Text[249])
-        {
-            Caption = 'Invoice/Cr. Memo Report Caption (Obsolete)';
-            FieldClass = FlowField;
-            Editable = false;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Invoice/Cr. Memo Report ID")));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
         }
         field(25; "Automatic Post VAT Document"; Boolean)
         {

@@ -34,6 +34,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         field(5; "Sales Adv. Letter No."; Code[20])
         {
             Caption = 'Sales Adv. Letter No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = "Sales Adv. Letter Header CZZ";
         }
@@ -45,6 +46,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         field(13; "Document No."; Code[20])
         {
             Caption = 'Document No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(15; "VAT Bus. Posting Group"; Code[20])
@@ -273,6 +275,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     procedure CalcUsageVATAmountLines(var SalesInvoiceHeader: Record "Sales Invoice Header"; var VATAmountLine: Record "VAT Amount Line")
     var
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+        VATEntry: Record "VAT Entry";
     begin
         SalesAdvLetterEntryCZZ.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
@@ -289,6 +292,12 @@ table 31006 "Sales Adv. Letter Entry CZZ"
                 VATAmountLine."Amount Including VAT" := -SalesAdvLetterEntryCZZ.Amount;
                 VATAmountLine."VAT Base (LCY) CZL" := -SalesAdvLetterEntryCZZ."VAT Base Amount (LCY)";
                 VATAmountLine."VAT Amount (LCY) CZL" := -SalesAdvLetterEntryCZZ."VAT Amount (LCY)";
+                if SalesAdvLetterEntryCZZ."VAT Entry No." <> 0 then
+                    if VATEntry.Get(SalesAdvLetterEntryCZZ."VAT Entry No.") then begin
+                        VATAmountLine."Additional-Currency Base CZL" := -VATEntry."Additional-Currency Base";
+                        VATAmountLine."Additional-Currency Amount CZL" := -VATEntry."Additional-Currency Amount";
+                    end;
+
                 if SalesInvoiceHeader."Prices Including VAT" then
                     VATAmountLine."Line Amount" := VATAmountLine."Amount Including VAT"
                 else
@@ -444,6 +453,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     begin
         RemainingAmountLCY := SalesAdvLetterManagementCZZ.GetRemAmtLCYSalAdvPayment(Rec, BalanceAtDate);
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
+    end;
+
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.Get("Cust. Ledger Entry No.");
+        exit(CustLedgerEntry."Adjusted Currency Factor");
     end;
 
     [IntegrationEvent(false, false)]

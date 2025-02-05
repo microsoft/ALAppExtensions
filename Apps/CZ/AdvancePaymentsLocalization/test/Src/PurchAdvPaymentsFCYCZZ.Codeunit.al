@@ -21,6 +21,7 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         isInitialized: Boolean;
+        ApplyAdvanceLetterQst: Label 'Apply Advance Letter?';
         CannotBeFoundErr: Label 'The field Advance Letter No. of table Gen. Journal Line contains a value (%1) that cannot be found in the related table (%2).', Comment = '%1 = advance letter no., %2 = table name';
         ExceededVATDifferenceErr: Label 'The VAT Differnce must not be more than %1.', Comment = '%1 = max VAT difference allowed';
         UnapplyAdvLetterQst: Label 'Unapply advance letter: %1\Continue?', Comment = '%1 = Advance Letters';
@@ -811,7 +812,7 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
 
         // [GIVEN] Second purchase advance letter in foreign currency has been created
         // [GIVEN] Purchase advance letter line with normal VAT has been created
-        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ2, PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ1."Pay-to Vendor No.");
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ2, PurchAdvLetterLineCZZ2, '', PurchAdvLetterHeaderCZZ1."Pay-to Vendor No.");
 
         // [GIVEN] Second purchase advance letter has been released
         LibraryPurchAdvancesCZZ.ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ2);
@@ -1076,6 +1077,97 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
         Assert.RecordIsNotEmpty(PurchAdvLetterEntryCZZ);
     end;
 
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler,RequestPageAdjustExchangeRatesHandler,MessageHandler,ConfirmHandler')]
+    procedure ReapplyAdvanceLetterInFCYAndAdjustedPayment()
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GLEntry: Record "G/L Entry";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        VendorPostingGroup: Record "Vendor Posting Group";
+        Vendor: Record Vendor;
+        CurrencyCode: Code[10];
+        PostedDocumentNo: Code[20];
+        FromEntryNo: Integer;
+    begin
+        // [SCENARIO] Apply the unapplied purchase advance letter in foreign currency and adjusted payment to the posted purchase invoice and check the zero balance of the advance letter g/l account and payables account
+        Initialize();
+
+        // [GIVEN] Foreign currency with random exchange rates has been created
+        CurrencyCode := LibraryERM.CreateCurrencyWithRandomExchRates();
+
+        // [GIVEN] Purchase advance letter in foreign currency has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ, CurrencyCode);
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        GLEntry.FindLast();
+        FromEntryNo := GLEntry."Entry No." + 1;
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ."Amount Including VAT", 0, WorkDate());
+
+        // [GIVEN] Payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] New currency exchange rate has been created
+        CurrencyExchangeRate.SetRange("Currency Code", CurrencyCode);
+        CurrencyExchangeRate.FindFirst();
+        LibraryERM.CreateExchangeRate(CurrencyCode, CalcDate('<-CY+1Y>', WorkDate()),
+            CurrencyExchangeRate."Exchange Rate Amount",
+            CurrencyExchangeRate."Adjustment Exch. Rate Amount" * LibraryRandom.RandDec(1, 2));
+
+        // [GIVEN] Adjust exchange rate has been ran
+        Commit();
+        SetExpectedMessage(CurrExchRateAdjustedMsg);
+        RunAdjustExchangeRates(
+            PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Currency Code",
+            CalcDate('<-CY+1Y>', WorkDate()), CalcDate('<CY+1Y>', WorkDate()), CalcDate('<-CY+1Y>', WorkDate()),
+            PurchAdvLetterHeaderCZZ."No.", false, true, false, true, false);
+
+        // [GIVEN] Purchase invoice in foreign currency has been created
+        // [GIVEN] Purchase invoice line has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", CalcDate('<-CY+1Y>', WorkDate()),
+            PurchAdvLetterLineCZZ."VAT Bus. Posting Group", PurchAdvLetterLineCZZ."VAT Prod. Posting Group",
+            PurchAdvLetterHeaderCZZ."Currency Code", 0, true, PurchAdvLetterLineCZZ."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterLineCZZ."Amount Including VAT", PurchAdvLetterLineCZZ."Amount Including VAT (LCY)");
+
+        // [GIVEN] Purchase invoice has been posted
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+        PurchInvHeader.Get(PostedDocumentNo);
+
+        // [GIVEN] Purchase advance letter from posted purchase invoice has been unlinked
+        SetExpectedConfirm(StrSubstNo(UnapplyAdvLetterQst, PurchAdvLetterHeaderCZZ."No."), true);
+        LibraryPurchAdvancesCZZ.UnapplyAdvanceLetter(PurchInvHeader);
+
+        // [WHEN] Link advance letter to posted purchase invoice again
+        SetExpectedConfirm(ApplyAdvanceLetterQst, true);
+        LibraryPurchAdvancesCZZ.ApplyPurchAdvanceLetter(PurchAdvLetterHeaderCZZ, PurchInvHeader);
+
+        // [THEN] The balance of advance letter g/l account will be zero
+        GLEntry.SetFilter("Entry No.", '%1..', FromEntryNo);
+        GLEntry.SetRange("G/L Account No.", AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
+        GLEntry.CalcSums(Amount);
+        Assert.AreEqual(0, GLEntry.Amount, 'The balance of advance letter g/l account must be zero.');
+
+        // [THEN] The balance of payables account will be zero
+        Vendor.Get(PurchAdvLetterHeaderCZZ."Pay-to Vendor No.");
+        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
+        GLEntry.SetRange("G/L Account No.", VendorPostingGroup."Payables Account");
+        GLEntry.CalcSums(Amount);
+        Assert.AreEqual(0, GLEntry.Amount, 'The balance of payables account must be zero.');
+    end;
+
     local procedure UpdateCurrency()
     var
         Currency: Record Currency;
@@ -1091,7 +1183,7 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
         LibraryERM.CreateExchangeRate(Currency.Code, CalcDate('<CY>', WorkDate()), 1 / 27, 1 / 27);
     end;
 
-    local procedure CreatePurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; VendorNo: Code[20])
+    local procedure CreatePurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; CurrencyCode: Code[10]; VendorNo: Code[20])
     var
         Currency: Record Currency;
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1106,14 +1198,22 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
             VendorNo := Vendor."No.";
         end;
 
-        FindForeignCurrency(Currency);
+        Currency.Code := CurrencyCode;
+        if Currency.Code = '' then
+            FindForeignCurrency(Currency);
+
         LibraryPurchAdvancesCZZ.CreatePurchAdvLetterHeader(PurchAdvLetterHeaderCZZ, AdvanceLetterTemplateCZZ.Code, VendorNo, Currency.Code);
         LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(PurchAdvLetterLineCZZ, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
     end;
 
     local procedure CreatePurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ")
     begin
-        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ, '');
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ, '', '');
+    end;
+
+    local procedure CreatePurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; CurrencyCode: Code[10])
+    begin
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ, CurrencyCode, '');
     end;
 
     local procedure CreateAndPostPaymentPurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; Amount: Decimal; ExchangeRate: Decimal; PostingDate: Date)
@@ -1140,11 +1240,6 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
     local procedure ReleasePurchAdvLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
         LibraryPurchAdvancesCZZ.ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
-    end;
-
-    local procedure PostGenJournalLine(var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        Codeunit.Run(Codeunit::"Gen. Jnl.-Post Line", GenJournalLine);
     end;
 
     local procedure PostPurchaseDocument(var PurchaseHeader: Record "Purchase Header"): Code[20]

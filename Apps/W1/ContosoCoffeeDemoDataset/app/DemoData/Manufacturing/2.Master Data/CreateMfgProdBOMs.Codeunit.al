@@ -50,7 +50,7 @@ codeunit 4771 "Create Mfg Prod. BOMs"
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1101(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM2000(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1102(), Enum::"Quantity Calculation Formula"::" ", 1, '');
-        ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 1, '');
+        ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 4, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1104(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1105(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1009(), '', 1, MfgItem.SPBOM1106(), Enum::"Quantity Calculation Formula"::" ", 1, '');
@@ -70,7 +70,7 @@ codeunit 4771 "Create Mfg Prod. BOMs"
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1201(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM2000(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1102(), Enum::"Quantity Calculation Formula"::" ", 1, '');
-        ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 1, '');
+        ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 4, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1104(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1107(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1011(), '', 1, MfgItem.SPBOM1108(), Enum::"Quantity Calculation Formula"::" ", 1, '');
@@ -91,9 +91,9 @@ codeunit 4771 "Create Mfg Prod. BOMs"
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM2000(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1305(), Enum::"Quantity Calculation Formula"::" ", 12, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1102(), Enum::"Quantity Calculation Formula"::" ", 1, '');
-        ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 1, '');
+        ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 4, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1302(), Enum::"Quantity Calculation Formula"::" ", 1, CreateMfgProdRouting.RoutingLink100());
-        ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1303(), Enum::"Quantity Calculation Formula"::" ", 1, CreateMfgProdRouting.RoutingLink100());
+        ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1303(), Enum::"Quantity Calculation Formula"::" ", 2, CreateMfgProdRouting.RoutingLink100());
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1107(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1108(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1004(), '', 1, MfgItem.SPBOM1304(), Enum::"Quantity Calculation Formula"::" ", 1, '');
@@ -110,7 +110,7 @@ codeunit 4771 "Create Mfg Prod. BOMs"
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1301(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM2000(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1102(), Enum::"Quantity Calculation Formula"::" ", 1, '');
-        ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 1, '');
+        ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1103(), Enum::"Quantity Calculation Formula"::" ", 4, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1105(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1107(), Enum::"Quantity Calculation Formula"::" ", 1, '');
         ContosoManufacturing.InsertProductionBOMLine(SPSCM1006BASE(), '', 1, MfgItem.SPBOM1108(), Enum::"Quantity Calculation Formula"::" ", 1, '');

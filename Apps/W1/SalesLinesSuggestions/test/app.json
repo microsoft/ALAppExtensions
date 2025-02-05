@@ -47,15 +47,18 @@
   "application": "26.0.0.0",
   "idRanges": [
     {
-      "from": 139780,
-      "to": 139789
+      "from": 139784,
+      "to": 139785
     },
     {
-      "from": 149800,
-      "to": 149999
+      "from": 133510,
+      "to": 133526
+    },
+    {
+      "from": 149827,
+      "to": 149827
     }
   ],
-  "runtime": "13.0",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206176",
   "resourceExposurePolicy": {
     "allowDebugging": true,
@@ -66,5 +69,8 @@
   "features": [
     "TranslationFile",
     "GenerateCaptions"
+  ],
+  "resourceFolders": [
+    ".resources"
   ]
 }

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37014 "Purchases Period-Over-Period"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Period-Over-Period';
     AboutTitle = 'About Purchases Period-Over-Period';
     AboutText = 'The Purchases Period Over Period report compares procurement performance across different periods, such as month-over-month or year-over-year. Completed up to here';
@@ -20,7 +22,7 @@ page 37014 "Purchases Period-Over-Period"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37014 "Purchases Period-Over-Period"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection2c5c763cbb0914a4201d', Locked = true;
+        ReportPageLbl: Label 'ReportSection2c5c763cbb0914a4201d', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

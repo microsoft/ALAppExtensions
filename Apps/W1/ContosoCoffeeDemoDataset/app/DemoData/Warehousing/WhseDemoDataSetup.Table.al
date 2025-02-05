@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 4763 "Whse Demo Data Setup"
 {
     DataClassification = CustomerContent;
@@ -6,6 +7,7 @@ table 4763 "Whse Demo Data Setup"
     InherentPermissions = rimdX;
     ObsoleteState = Removed;
     ObsoleteTag = '26.0';
+    ReplicateData = false;
 
     fields
     {
@@ -209,3 +211,4 @@ table 4763 "Whse Demo Data Setup"
         }
     }
 }
+#endif

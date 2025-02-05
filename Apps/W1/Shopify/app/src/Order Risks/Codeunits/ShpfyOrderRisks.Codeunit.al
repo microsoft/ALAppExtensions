@@ -85,7 +85,7 @@ codeunit 30170 "Shpfy Order Risks"
         end;
     end;
 
-    local procedure ConvertToRiskLevel(Value: Text): Enum "Shpfy Risk Level"
+    internal procedure ConvertToRiskLevel(Value: Text): Enum "Shpfy Risk Level"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         if Enum::"Shpfy Risk Level".Names().Contains(Value) then

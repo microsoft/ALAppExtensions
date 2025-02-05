@@ -78,10 +78,12 @@ codeunit 6202 "Transact. Storage Export Data"
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         NoOfRecordsToCollectTxt: Label 'Number of records to collect', Locked = true;
         NoOfCollectedRecordTxt: Label 'Number of collected records', Locked = true;
+        CollectedDocsCountTxt: Label 'Collected docs count', Locked = true;
         NoOfCollectedPartsTxt: Label 'Parts', Locked = true;
         DocumentNoFieldNameTxt: Label 'Document No.', Locked = true;
         NoPermissionsForTableErr: Label 'User does not have permissions to read the table %1', Comment = '%1 = table name', Locked = true;
         ExportRecCountExceedsLimitErr: Label 'The number of records to export exceeds the limit. See Custom Dimensions.', Locked = true;
+        FilterRecToDateTimeErr: Label 'FilterRecTo datetime is 0DT', Locked = true;
 
     procedure ExportData(TaskStartingDateTime: DateTime)
     var
@@ -101,7 +103,7 @@ codeunit 6202 "Transact. Storage Export Data"
         foreach TableID in TablesToExport do
             CollectDataFromTable(HandledIncomingDocs, TempFieldList, MasterData, FilterRecToDateTime, TableID);
         TransactStorageExport.CheckTaskTimedOut(TaskStartingDateTime);
-        LogNumberOfCollectedRecords(TablesToExport);
+        LogNumberOfCollectedRecords(TablesToExport, HandledIncomingDocs.Count());
         CollectMasterData(MasterData);
         if (not TransStorageExportData.IsEmpty()) or (HandledIncomingDocs.Count() <> 0) then
             TransactionStorageABS.ArchiveTransactionsToABS(HandledIncomingDocs);
@@ -241,6 +243,8 @@ codeunit 6202 "Transact. Storage Export Data"
             end;
             RecRef.Close();
         end;
+        if MinFilterRecTo = 0DT then
+            MinFilterRecTo := TaskStartingDateTime;
         exit(MinFilterRecTo);
     end;
 
@@ -248,14 +252,16 @@ codeunit 6202 "Transact. Storage Export Data"
     var
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         SystemModifiedAtFieldRef: FieldRef;
+        DocumentNoFieldRef: FieldRef;
         FilterRecFromDate: Date;
         FilterRecFromTime: Time;
         FilterRecFrom: DateTime;
         FilterRecToDate: Date;
         FilterRecToTime: Time;
-        MaxExportPeriodDays: Integer;
         RecordCount: Integer;
         MaxRecordCount: Integer;
+        MinRecordCount: Integer;
+        PeriodDelta: BigInteger;
         CustomDimensions: Dictionary of [Text, Text];
     begin
         TransactStorageExport.GetRecordExportData(TransactStorageTableEntry, RecRef);
@@ -270,33 +276,62 @@ codeunit 6202 "Transact. Storage Export Data"
 
         MaxRecordCount := GetMaxRecordCount();
         SystemModifiedAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
-        SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
-        if RecRef.CountApprox() < MaxRecordCount then
-            exit;
 
-        // limit the export period to 10 days
-        MaxExportPeriodDays := GetMaxExportPeriodDays();
-        if FilterRecToDate - FilterRecFromDate > MaxExportPeriodDays then begin
-            FilterRecToDate := FilterRecFromDate + MaxExportPeriodDays;
-            FilterRecToTime := 0T;
-        end;
-
-        // limit the number of records to export by reducing the export period up to 1 day
+        // limit the number of records to export by taking half days of the export period on each iteration, up to 1 day
         repeat
             FilterRecTo := CreateDateTime(FilterRecToDate, FilterRecToTime);
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
-            FilterRecToDate -= 1;
-        until (RecRef.CountApprox() < MaxRecordCount) or (FilterRecToDate - FilterRecFromDate < 1);
-        if RecRef.CountApprox() < MaxRecordCount then
+            FilterRecToDate := FilterRecFromDate + (FilterRecToDate - FilterRecFromDate) div 2;
+        until (RecRef.CountApprox() <= MaxRecordCount) or (FilterRecToDate - FilterRecFromDate < 1);
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            CustomDimensions.Add('FilterRecToDate', Format(FilterRecToDate));
+            TransactStorageExport.LogWarning('0000OHJ', FilterRecToDateTimeErr, CustomDimensions);
+        end;
+        if RecRef.CountApprox() <= MaxRecordCount then
             exit;
 
-        // limit the number of records to export using Entry No. field
-        CalcFilterRecToDateTimeByEntryNo(RecRef, FilterRecFrom, FilterRecTo);
+        // limit the number of records to export by reducing the export period from 1 day to up to 1 second
+        PeriodDelta := FilterRecTo - FilterRecFrom;
+        MinRecordCount := MaxRecordCount div 2;
+        SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
+        while (RecRef.CountApprox() > MaxRecordCount) and (FilterRecTo - FilterRecFrom > 1000) and (PeriodDelta > 1000) do begin
+            PeriodDelta := PeriodDelta div 2;
+            FilterRecTo -= PeriodDelta;
+            SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
+
+            while (RecRef.CountApprox() < MinRecordCount) and (PeriodDelta > 1000) do begin
+                PeriodDelta := PeriodDelta div 2;
+                FilterRecTo += PeriodDelta;
+                SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
+            end;
+        end;
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            CustomDimensions.Add('PeriodDelta', Format(PeriodDelta));
+            TransactStorageExport.LogWarning('0000OHK', FilterRecToDateTimeErr, CustomDimensions);
+        end;
+
+        // try to export all entries for the last document
+        if GetDocumentNoField(RecRef, DocumentNoFieldRef) then begin
+            SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
+            if RecRef.FindLast() then begin
+                RecRef.Reset();
+                DocumentNoFieldRef.SetRange(DocumentNoFieldRef.Value());
+                if RecRef.FindLast() then
+                    FilterRecTo := SystemModifiedAtFieldRef.Value();
+                RecRef.Reset();
+            end;
+        end;
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            TransactStorageExport.LogWarning('0000OHL', FilterRecToDateTimeErr, CustomDimensions);
+        end;
 
         // log warning if after all the limitations the number of records to export still exceeds the limit
+        SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
         RecordCount := RecRef.Count();
         if RecordCount > MaxRecordCount then begin
-            SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             CustomDimensions.Add('TableName', RecRef.Name);
             CustomDimensions.Add('RecordCount', Format(RecordCount));
             CustomDimensions.Add('MaxRecordCount', Format(MaxRecordCount));
@@ -306,42 +341,20 @@ codeunit 6202 "Transact. Storage Export Data"
         end;
     end;
 
-    local procedure CalcFilterRecToDateTimeByEntryNo(var RecRef: RecordRef; FilterRecFrom: DateTime; var FilterRecTo: DateTime)
+    local procedure GetCustomDimForZeroFilterRecToLog(TableID: Integer; FilterRecFrom: DateTime; TaskStartingDateTime: DateTime) CustomDimensions: Dictionary of [Text, Text]
     var
-        EntryNoFieldRef: FieldRef;
+        RecRef: RecordRef;
         SystemModifiedAtFieldRef: FieldRef;
-        DocumentNoFieldRef: FieldRef;
-        KeyRef: KeyRef;
-        StartEntryNo: Integer;
-        EndEntryNo: Integer;
     begin
-        // calculates the ending date/time of period by limiting then number of records to export
-        RecRef.Reset();
-        KeyRef := RecRef.KeyIndex(1);
-        if KeyRef.FieldCount() > 1 then
-            exit;
-        EntryNoFieldRef := KeyRef.FieldIndex(1);
-        if not (EntryNoFieldRef.Type = FieldType::Integer) then
-            exit;
+        RecRef.Open(TableID);
         SystemModifiedAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
-        SystemModifiedAtFieldRef.SetFilter('%1..', FilterRecFrom);
-        if not RecRef.FindFirst() then
-            exit;
-        StartEntryNo := EntryNoFieldRef.Value();
-        EndEntryNo := StartEntryNo + GetMaxRecordCount();
-        EntryNoFieldRef.SetRange(StartEntryNo, EndEntryNo);
-        if not RecRef.FindLast() then
-            exit;
-        FilterRecTo := SystemModifiedAtFieldRef.Value();
-
-        // try to export all entries for the last document
-        if GetDocumentNoField(RecRef, DocumentNoFieldRef) then begin
-            EntryNoFieldRef.SetRange();
-            DocumentNoFieldRef.SetRange(DocumentNoFieldRef.Value());
-            if RecRef.FindLast() then
-                FilterRecTo := SystemModifiedAtFieldRef.Value();
-        end;
-        RecRef.Reset();
+        SystemModifiedAtFieldRef.SetRange(FilterRecFrom, TaskStartingDateTime);
+        CustomDimensions.Add('TableName', RecRef.Name);
+        CustomDimensions.Add('RecordCountApprox', Format(RecRef.CountApprox()));
+        CustomDimensions.Add('MaxRecordCount', Format(GetMaxRecordCount()));
+        CustomDimensions.Add('FilterRecFrom', Format(FilterRecFrom));
+        CustomDimensions.Add('TaskStartingDateTime', Format(TaskStartingDateTime));
+        RecRef.Close();
     end;
 
     local procedure GetDocumentNoField(RecRef: RecordRef; var DocumentNoFieldRef: FieldRef): Boolean
@@ -420,7 +433,7 @@ codeunit 6202 "Transact. Storage Export Data"
 
             TableMetadata.Get(TableID);
             Clear(RecordLogJson);
-            RecordLogJson.Add('CountApprox', RecordCountApprox);
+            RecordLogJson.Add('CountExceedsLimit', Format(RecordCountApprox > GetMaxRecordCount()));
             RecordLogJson.Add('FilterFrom', FormatDateTimeForLog(FilterRecFrom));
             RecordLogJson.Add('FilterTo', FormatDateTimeForLog(FilterRecTo));
             RecordLogJson.WriteTo(RecordLogTxt);
@@ -434,7 +447,7 @@ codeunit 6202 "Transact. Storage Export Data"
         exit(Format(InputValue, 0, '<Year4>-<Month,2>-<Day,2> <Hours24,2>:<Minutes,2>:<Seconds,2>'));
     end;
 
-    local procedure LogNumberOfCollectedRecords(TablesToExport: List of [Integer])
+    local procedure LogNumberOfCollectedRecords(TablesToExport: List of [Integer]; IncomingDocsCount: Integer)
     var
         TransStorageExportData: Record "Trans. Storage Export Data";
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
@@ -451,7 +464,7 @@ codeunit 6202 "Transact. Storage Export Data"
             TransStorageExportData.CalcSums("Record Count");
 
             Clear(RecordLogJson);
-            RecordLogJson.Add('Count', Format(TransStorageExportData."Record Count"));
+            RecordLogJson.Add('CountExceedsLimit', Format(TransStorageExportData."Record Count" > GetMaxRecordCount()));
             if TransactStorageTableEntry.Get(TableID) then
                 RecordLogJson.Add('Filters', TransactStorageTableEntry."Record Filters");
             RecordLogJson.WriteTo(RecordLogTxt);
@@ -459,6 +472,7 @@ codeunit 6202 "Transact. Storage Export Data"
             RecordsCustomDimensions.Add(TableMetadata.Name, RecordLogTxt);
             PartsCustomDimensions.Add(TableMetadata.Name, Format(TransStorageExportData.Count()));
         end;
+        RecordsCustomDimensions.Add(CollectedDocsCountTxt, Format(IncomingDocsCount));
         FeatureTelemetry.LogUsage('0000LK7', TransactionStorageTok, NoOfCollectedRecordTxt, RecordsCustomDimensions);
         FeatureTelemetry.LogUsage('0000N1I', TransactionStorageTok, NoOfCollectedPartsTxt, PartsCustomDimensions);
     end;
@@ -537,6 +551,10 @@ codeunit 6202 "Transact. Storage Export Data"
         IssuedFinChargeMemoLine: Record "Issued Fin. Charge Memo Line";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
     begin
+        // SystemCreatedAt and SystemModifiedAt fields have the same FieldNo in all tables
+        FieldsToExport.Add(GLEntry.FieldNo(SystemCreatedAt));
+        FieldsToExport.Add(GLEntry.FieldNo(SystemModifiedAt));
+
         case TableID of
             Database::"G/L Account":
                 begin
@@ -1460,11 +1478,6 @@ codeunit 6202 "Transact. Storage Export Data"
     local procedure GetRecordChunkSize(): Integer
     begin
         exit(50050);
-    end;
-
-    local procedure GetMaxExportPeriodDays(): Integer
-    begin
-        exit(10);
     end;
 
     local procedure GetMaxRecordCount(): Integer

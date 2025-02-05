@@ -16,6 +16,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -23,6 +24,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -30,6 +32,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             Editable = false;
@@ -101,6 +104,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
             TableRelation = Currency;
             Editable = false;
         }
+#if not CLEANSCHEMA25
         field(11780; "VAT Date CZL"; Date)
         {
             Caption = 'VAT Date';
@@ -109,6 +113,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
+#endif
         field(11781; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
@@ -119,6 +124,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
             Caption = 'Tax Registration No.';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31068; "Physical Transfer CZL"; Boolean)
         {
             Caption = 'Physical Transfer';
@@ -135,11 +141,13 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
             ObsoleteTag = '25.0';
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
             Caption = 'EU 3-Party Intermediate Role';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(31073; "EU 3-Party Trade CZL"; Boolean)
         {
             Caption = 'EU 3-Party Trade';
@@ -153,6 +161,7 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
 #endif
             ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
         }
+#endif
         field(31112; "Original Doc. VAT Date CZL"; Date)
         {
             Caption = 'Original Document VAT Date';

@@ -13,6 +13,14 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for sales';
+                action("Sales Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales Report';
+                    Image = "PowerBI";
+                    RunObject = page "Sales Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all sales report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Sales Overview")
                 {
                     ApplicationArea = Basic, Suite;
@@ -100,6 +108,14 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                     Image = "PowerBI";
                     RunObject = page "Sales Actual vs. Budget Amt.";
                     Tooltip = 'Open a Power BI Report that provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
+                }
+                action("Sales by Location")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales by Location';
+                    Image = "PowerBI";
+                    RunObject = page "Sales by Location";
+                    Tooltip = 'Open a Power BI Report that breaks down sales performance by location, highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';
                 }
             }
         }

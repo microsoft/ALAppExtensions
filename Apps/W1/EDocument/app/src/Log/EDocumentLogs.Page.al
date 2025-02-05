@@ -35,8 +35,19 @@ page 6125 "E-Document Logs"
                     {
                         ToolTip = 'Specifies the document format for the document.';
                     }
+#if not CLEAN26
                     field("Service Integration"; Rec."Service Integration")
                     {
+                        ToolTip = 'Specifies the integration code for the document.';
+                        Visible = false;
+                        ObsoleteReason = 'Replaced by Service Integration V2 instead';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '26.0';
+                    }
+#endif  
+                    field("Service Integration V2"; Rec."Service Integration V2")
+                    {
+                        Caption = 'Service Integration';
                         ToolTip = 'Specifies the integration code for the document.';
                     }
                     field(Status; Rec.Status)

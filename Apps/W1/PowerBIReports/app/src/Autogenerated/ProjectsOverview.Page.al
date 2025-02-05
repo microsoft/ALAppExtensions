@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37033 "Projects Overview"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Projects Overview';
     AboutTitle = 'About Projects Overview';
     AboutText = 'The Projects Overview dashboard provides key insights into project performance with metrics like Percent Complete, Percent Invoiced, Realization Percent, Actual Profit, and Actual Profit Margin. It features visuals comparing Actual vs. Budgeted Costs, highlighting Profit per Project, and organizing projects by Project Manager for streamlined project management.';
@@ -20,7 +22,7 @@ page 37033 "Projects Overview"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37033 "Projects Overview"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSectionf22cc27c0600033d5e26', Locked = true;
+        ReportPageLbl: Label 'ReportSectionf22cc27c0600033d5e26', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

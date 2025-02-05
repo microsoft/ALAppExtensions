@@ -329,4 +329,18 @@ table 31251 "Search Rule Line CZB"
             DescriptionBuilder.AppendLine(FirstTxt);
         exit(CopyStr(DescriptionBuilder.ToText().Replace(TypeHelper.CRLFSeparator(), SeparatorTok).TrimEnd(SeparatorTok), 1, 100));
     end;
+
+    internal procedure IsPossibleToMatchWithPartnerBankAccount() IsPossible: Boolean
+    begin
+        IsPossible :=
+            "Bank Account No." and "Match Related Party Only" and
+            not ("Search Scope" = "Search Scope"::"Account Mapping") and
+            not ("Variable Symbol" or "Constant Symbol" or "Specific Symbol" or Amount);
+        OnAfterIsMatchingWithPartnerBankAccountEnabled(Rec, IsPossible);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsMatchingWithPartnerBankAccountEnabled(SearchRuleLineCZB: Record "Search Rule Line CZB"; var IsPossible: Boolean)
+    begin
+    end;
 }

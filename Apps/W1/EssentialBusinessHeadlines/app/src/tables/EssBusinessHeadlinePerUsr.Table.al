@@ -22,13 +22,6 @@ table 1436 "Ess. Business Headline Per Usr"
         {
             DataClassification = SystemMetadata;
         }
-        field(4; "Headline Computation Date"; DateTime)
-        {
-            DataClassification = SystemMetadata;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Replaced with the Last Computed field on the RC Headlines User Data table';
-            ObsoleteTag = '18.0';
-        }
         field(5; "Headline Computation WorkDate"; Date)
         {
             DataClassification = SystemMetadata;

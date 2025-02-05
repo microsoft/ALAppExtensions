@@ -13,6 +13,14 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for manufacturing';
+                action("Manufacturing Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Manufacturing Report';
+                    Image = "PowerBI";
+                    RunObject = page "Manufacturing Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all manufacturing report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Current Utilization")
                 {
                     ApplicationArea = Basic, Suite;
@@ -34,7 +42,7 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                     ApplicationArea = Basic, Suite;
                     Caption = 'Work Center Load';
                     Image = "PowerBI";
-                    RunObject = page "Work Center Load";
+                    RunObject = page "PowerBI Work Center Load";
                     Tooltip = 'Open a Power BI Report to view the percentage of production order time assigned vs Available Capacity for each Work Centre Group and/or Work Centre in a specified period. Allows you to determine if a Work Centre is overloaded and requires rescheduling.';
                 }
                 action("Allocated Hours")
@@ -90,7 +98,7 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                     ApplicationArea = Basic, Suite;
                     Caption = 'Released Production Orders';
                     Image = "PowerBI";
-                    RunObject = page "Released Production Orders";
+                    RunObject = page "PowerBI Released Prod. Orders";
                     Tooltip = 'Open a Power BI Report to view how your released production orders are tracking by comparing Expected Quantity vs Finished Quantity';
                 }
                 action("Production Scrap")

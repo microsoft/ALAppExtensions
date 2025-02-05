@@ -499,7 +499,7 @@ codeunit 148121 "Intrastat Report Management IT"
                             if SalesInvoiceLine.FindSet() then begin
                                 SalesInvoiceHeader.Get(ValueEntry."Document No.");
                                 repeat
-                                    TotalInvoicedQty -= SalesInvoiceLine.Quantity;
+                                    TotalInvoicedQty -= SalesInvoiceLine."Quantity (Base)";
                                     if SalesInvoiceHeader."Currency Factor" <> 0 then
                                         TotalAmt -= SalesInvoiceLine.Amount / SalesInvoiceHeader."Currency Factor"
                                     else
@@ -527,7 +527,7 @@ codeunit 148121 "Intrastat Report Management IT"
                                 if SalesCrMemoLine.FindSet() then begin
                                     SalesCrMemoHeader.Get(ValueEntry."Document No.");
                                     repeat
-                                        TotalInvoicedQty += SalesCrMemoLine.Quantity;
+                                        TotalInvoicedQty += SalesCrMemoLine."Quantity (Base)";
                                         if SalesCrMemoHeader."Currency Factor" <> 0 then
                                             TotalAmt += SalesCrMemoLine.Amount / SalesCrMemoHeader."Currency Factor"
                                         else

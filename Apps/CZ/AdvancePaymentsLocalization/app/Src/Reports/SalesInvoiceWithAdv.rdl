@@ -4488,7 +4488,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -4529,7 +4529,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -6144,6 +6144,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               </Style>
                             </Tablix>
                             <Textbox Name="QRCode">
+                              <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
@@ -6160,9 +6161,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Paragraph>
                               </Paragraphs>
                               <rd:DefaultName>QRCode</rd:DefaultName>
-                              <Top>16.48437cm</Top>
-                              <Left>14.30813cm</Left>
-                              <Height>3.3441cm</Height>
+                              <Top>16.13657cm</Top>
+                              <Left>14.30806cm</Left>
+                              <Height>3.6919cm</Height>
                               <Width>3.6919cm</Width>
                               <ZIndex>7</ZIndex>
                               <Visibility>
@@ -6670,6 +6671,9 @@ End Function</Code>
         </Field>
         <Field Name="LCYCode_GeneralLedgerSetup">
           <DataField>LCYCode_GeneralLedgerSetup</DataField>
+        </Field>
+        <Field Name="VATCurrencyCode">
+          <DataField>VATCurrencyCode</DataField>
         </Field>
         <Field Name="DocumentLbl">
           <DataField>DocumentLbl</DataField>

@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37016 "Purchases by Item"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases by Item';
     AboutTitle = 'About Purchases by Item';
     AboutText = 'The Purchases by Item report breaks down procurement performance by item, highlighting metrics such as Purchase Amount, Purchase Quantity. The Treemap visualizes the relative size and contribution of each item to the whole, making it easy to identify the largest or smallest purchases at a glance.';
@@ -20,7 +22,7 @@ page 37016 "Purchases by Item"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37016 "Purchases by Item"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection510c03a74548b078dc31', Locked = true;
+        ReportPageLbl: Label 'ReportSection510c03a74548b078dc31', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

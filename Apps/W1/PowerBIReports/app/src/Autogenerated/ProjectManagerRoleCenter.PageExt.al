@@ -13,6 +13,13 @@ pageextension 36963 "Project Manager Role Center" extends "Project Manager Role 
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for projects';
+                action("Projects Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Projects Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Projects Report";
+                }
                 action("Projects Overview (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;

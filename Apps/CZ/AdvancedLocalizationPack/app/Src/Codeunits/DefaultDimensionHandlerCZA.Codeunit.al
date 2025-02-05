@@ -6,6 +6,7 @@ namespace Microsoft.Finance.Dimension;
 
 using Microsoft.HumanResources.Employee;
 using Microsoft.Inventory.Item;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 
@@ -91,6 +92,33 @@ codeunit 31392 "Default Dimension Handler CZA"
             Database::Employee:
                 DimensionAutoUpdateMgtCZA.SetRequestRunEmployeeOnAfterInsertEvent(false);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Job, 'OnCopyDefaultDimensionsFromCustomerOnBeforeUpdateDefaultDim', '', false, false)]
+    local procedure JobOnCopyDefaultDimensionsFromCustomerOnBeforeUpdateDefaultDim(var Job: Record Job)
+    var
+        JobDefaultDimension: Record "Default Dimension";
+        AutoDefaultDimension: Record "Default Dimension";
+        NewDimensionValue: Record "Dimension Value";
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        AutoDefaultDimension.SetRange("Table ID", Database::Job);
+        AutoDefaultDimension.SetRange("No.", '');
+        AutoDefaultDimension.SetRange("Automatic Create CZA", true);
+        if AutoDefaultDimension.FindSet() then
+            repeat
+                if NewDimensionValue.Get(AutoDefaultDimension."Dimension Code", Job."No.") then
+                    if not JobDefaultDimension.Get(Database::Job, Job."No.", AutoDefaultDimension."Dimension Code") then begin
+                        JobDefaultDimension.Init();
+                        JobDefaultDimension."Table ID" := Database::Job;
+                        JobDefaultDimension."No." := Job."No.";
+                        JobDefaultDimension."Dimension Code" := AutoDefaultDimension."Dimension Code";
+                        JobDefaultDimension."Dimension Value Code" := NewDimensionValue.Code;
+                        JobDefaultDimension."Value Posting" := AutoDefaultDimension."Auto. Create Value Posting CZA";
+                        JobDefaultDimension.Insert();
+                        DimensionManagement.DefaultDimOnInsert(JobDefaultDimension);
+                    end;
+            until AutoDefaultDimension.Next() = 0;
     end;
 
     var

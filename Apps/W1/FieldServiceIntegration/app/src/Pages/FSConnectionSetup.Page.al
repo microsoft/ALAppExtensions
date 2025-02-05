@@ -13,7 +13,11 @@ using Microsoft.Integration.D365Sales;
 using Microsoft.Projects.Project.Journal;
 using System.Environment;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 page 6612 "FS Connection Setup"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     AccessByPermission = TableData "FS Connection Setup" = IM;
     ApplicationArea = Suite;
@@ -365,6 +369,7 @@ page 6612 "FS Connection Setup"
 
     trigger OnOpenPage()
     var
+        CDSConnectionSetup: Record "CDS Connection Setup";
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
@@ -402,8 +407,8 @@ page 6612 "FS Connection Setup"
         end;
 
         if EnvironmentInfo.IsSaaSInfrastructure() then begin
-            VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
-            Rec.SetupVirtualTables(VirtualTableAppInstalled);
+            CDSConnectionSetup.Get();
+            VirtualTableAppInstalled := CDSConnectionSetup."Business Events Enabled";
         end;
     end;
 

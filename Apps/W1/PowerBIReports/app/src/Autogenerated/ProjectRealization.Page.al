@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37036 "Project Realization"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Project Realization';
     AboutTitle = 'About Project Realization';
     AboutText = 'The Project Realization report features key metrics like Billable Invoice Price and Actual Total Price to support Realization percent per project. Enabling organizations to measure actual performance and achievements against planned or budgeted expectations.';
@@ -20,7 +22,7 @@ page 37036 "Project Realization"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37036 "Project Realization"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection1356fdbebe72ad7283d3', Locked = true;
+        ReportPageLbl: Label 'ReportSection1356fdbebe72ad7283d3', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

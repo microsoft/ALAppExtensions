@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-TipoPermiso xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_TipoPermisos>
+		<Code>TPAF01</Code>
+		<Descripcion>Autotransporte Federal de carga general.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF02</Code>
+		<Descripcion>Transporte privado de carga.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF03</Code>
+		<Descripcion>Autotransporte Federal de Carga Especializada de materiales y residuos peligrosos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF04</Code>
+		<Descripcion>Transporte de automóviles sin rodar en vehículo tipo góndola.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF05</Code>
+		<Descripcion>Transporte de carga de gran peso y/o volumen de hasta 90 toneladas.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF06</Code>
+		<Descripcion>Transporte de carga especializada de gran peso y/o volumen de más 90 toneladas.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF07</Code>
+		<Descripcion>Transporte Privado de materiales y residuos peligrosos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF08</Code>
+		<Descripcion>Autotransporte internacional de carga de largo recorrido.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF09</Code>
+		<Descripcion>Autotransporte internacional de carga especializada de materiales y residuos peligrosos de largo recorrido.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF10</Code>
+		<Descripcion>Autotransporte Federal de Carga General cuyo ámbito de aplicación comprende la franja fronteriza con Estados Unidos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF11</Code>
+		<Descripcion>Autotransporte Federal de Carga Especializada cuyo ámbito de aplicación comprende la franja fronteriza con Estados Unidos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF12</Code>
+		<Descripcion>Servicio auxiliar de arrastre en las vías generales de comunicación.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF13</Code>
+		<Descripcion>Servicio auxiliar de servicios de arrastre, arrastre y salvamento, y depósito de vehículos en las vías generales de comunicación.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF14</Code>
+		<Descripcion>Servicio de paquetería y mensajería en las vías generales de comunicación.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF15</Code>
+		<Descripcion>Transporte especial para el tránsito de grúas industriales con peso máximo de 90 toneladas.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF16</Code>
+		<Descripcion>Servicio federal para empresas arrendadoras servicio público federal.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF17</Code>
+		<Descripcion>Empresas trasladistas de vehículos nuevos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF18</Code>
+		<Descripcion>Empresas fabricantes o distribuidoras de vehículos nuevos.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPAF19</Code>
+		<Descripcion>Autorización expresa para circular en los caminos y puentes de jurisdicción federal con configuraciones de tractocamión doblemente articulado.</Descripcion>
+		<ClaveTransporte>01</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPTM01</Code>
+		<Descripcion>Permiso temporal para navegación de cabotaje</Descripcion>
+		<ClaveTransporte>02</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPTA01</Code>
+		<Descripcion>Concesión y/o autorización para el servicio regular nacional y/o internacional para empresas mexicanas</Descripcion>
+		<ClaveTransporte>03</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPTA02</Code>
+		<Descripcion>Permiso para el servicio aéreo regular de empresas extranjeras</Descripcion>
+		<ClaveTransporte>03</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPTA03</Code>
+		<Descripcion>Permiso para el servicio nacional e internacional no regular de fletamento</Descripcion>
+		<ClaveTransporte>03</ClaveTransporte>
+	</c_TipoPermisos>
+	<c_TipoPermisos>
+		<Code>TPTA04</Code>
+		<Descripcion>Permiso para el servicio nacional e internacional no regular de taxi aéreo</Descripcion>
+		<ClaveTransporte>03</ClaveTransporte>
+	</c_TipoPermisos>
+</data-set-TipoPermiso>

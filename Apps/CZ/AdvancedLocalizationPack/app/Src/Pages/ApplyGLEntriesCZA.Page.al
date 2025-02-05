@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN26
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -18,6 +19,9 @@ page 31284 "Apply G/L Entries CZA"
     PageType = Worksheet;
     Permissions = tabledata "G/L Entry" = m;
     SourceTable = "G/L Entry";
+    ObsoleteState = Pending;
+    ObsoleteTag = '26.0';
+    ObsoleteReason = 'Replaced by "Apply Gen. Ledger Entries CZA" page. The new page is optimized using temporary table.';
 
     layout
     {
@@ -422,11 +426,9 @@ page 31284 "Apply G/L Entries CZA"
         ApplyGLEntry: Record "G/L Entry";
     begin
         ShowAppliedEntries := false;
-        if not PostingDone then begin
-            ApplyGLEntry := TempGLEntry;
-            if ApplyGLEntry.FindFirst() then
+        if not PostingDone then
+            if ApplyGLEntry.Get(TempGLEntry."Entry No.") then
                 GLEntryPostApplicationCZA.SetApplyingGLEntry(ApplyGLEntry, false, '');
-        end;
     end;
 
     trigger OnOpenPage()
@@ -640,3 +642,4 @@ page 31284 "Apply G/L Entries CZA"
     begin
     end;
 }
+#endif

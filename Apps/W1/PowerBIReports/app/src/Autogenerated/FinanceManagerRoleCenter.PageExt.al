@@ -13,6 +13,13 @@ pageextension 36959 "Finance Manager Role Center" extends "Finance Manager Role 
                 Caption = 'Power BI Reports';
                 Image = AnalysisView;
                 ToolTip = 'Power BI reports for finance';
+                action("Finance Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Finance Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Finance Report";
+                }
                 action("Financial Overview (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;
@@ -95,7 +102,7 @@ pageextension 36959 "Finance Manager Role Center" extends "Finance Manager Role 
                     ApplicationArea = Basic, Suite;
                     Caption = 'General Ledger Entries (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "General Ledger Entries";
+                    RunObject = page "PowerBI General Ledg. Entries";
                 }
                 action("Detailed Vendor Ledger Entries (Power BI)")
                 {
@@ -110,6 +117,13 @@ pageextension 36959 "Finance Manager Role Center" extends "Finance Manager Role 
                     Caption = 'Detailed Cust. Ledger Entries (Power BI)';
                     Image = "PowerBI";
                     RunObject = page "Detailed Cust. Ledger Entries";
+                }
+                action("Inventory Valuation Report (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Valuation Report (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Valuation Report";
                 }
                 action("Inventory Valuation Overview (Power BI)")
                 {

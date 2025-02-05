@@ -12,7 +12,7 @@ pageextension 8054 "Item Card" extends "Item Card"
             field("Service Commitment Option"; Rec."Service Commitment Option")
             {
                 ApplicationArea = All;
-                ToolTip = 'Indicates whether a service commitment can be stored for an item or whether an item is used for Recurring Billing.';
+                ToolTip = 'Specifies whether or not service commitments can be linked to this item, or if the item is being used for recurring billing. This is only relevant if you are using Subscription Billing functionalities.';
 
                 trigger OnValidate()
                 begin
@@ -20,7 +20,7 @@ pageextension 8054 "Item Card" extends "Item Card"
                 end;
             }
         }
-        addbefore(ItemAttributesFactbox)
+        addbefore(Control1900383207)
         {
             part(ItemServCommitmentsFactbox; "Item Serv. Commitments Factbox")
             {
@@ -42,7 +42,7 @@ pageextension 8054 "Item Card" extends "Item Card"
             field(UsageDataSupplierRefExists; Rec."Usage Data Suppl. Ref. Exists")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies that at least one usage data supplier reference exists for the item.';
+                ToolTip = 'Specifies that at least one usage data supplier reference exists for the item. This is only relevant if you are using Subscription Billing functionalities.';
 
                 trigger OnDrillDown()
                 var
@@ -74,7 +74,7 @@ pageextension 8054 "Item Card" extends "Item Card"
                 end;
             }
         }
-        addfirst(Category_Category4)
+        addlast(Category_Category4)
         {
             actionref(ServiceCommitments_Promoted; ServiceCommitments)
             {

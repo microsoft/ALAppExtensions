@@ -8,21 +8,21 @@ pageextension 1958 "LPP Customer Ledger Entries" extends "Customer Ledger Entrie
     {
         addafter("Due Date")
         {
-            field("Payment Prediction"; "Payment Prediction")
+            field("Payment Prediction"; Rec."Payment Prediction")
             {
                 Caption = 'Payment Prediction';
                 ToolTip = 'Specifies that the payment for this invoice is predicted to be late.';
                 visible = IsLPPEnabled;
                 ApplicationArea = Basic, Suite;
             }
-            field("Prediction Confidence"; "Prediction Confidence")
+            field("Prediction Confidence"; Rec."Prediction Confidence")
             {
                 Caption = 'Prediction Confidence';
                 ToolTip = 'Specifies the reliability of the late payment prediction. High is above 90%, Medium is between 80% and 90%, and Low is less than 80%.';
                 visible = IsLPPEnabled;
                 ApplicationArea = Basic, Suite;
             }
-            field("Prediction Confidence %"; "Prediction Confidence %")
+            field("Prediction Confidence %"; Rec."Prediction Confidence %")
             {
                 Caption = 'Prediction Confidence %';
                 ToolTip = 'Specifies the percentage that the prediction confidence value is based on.';
@@ -37,7 +37,7 @@ pageextension 1958 "LPP Customer Ledger Entries" extends "Customer Ledger Entrie
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Late Payment Prediction';
-                SubPageLink = "Document No." = FIELD("Document No.");
+                SubPageLink = "Document No." = field("Document No.");
             }
         }
     }

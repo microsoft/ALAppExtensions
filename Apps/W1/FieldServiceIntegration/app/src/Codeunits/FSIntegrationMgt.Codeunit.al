@@ -79,7 +79,7 @@ codeunit 6615 "FS Integration Mgt."
 
         SolutionInstalled := CRMHelper.CheckSolutionPresence(MicrosoftDynamicsFSIntegrationTxt);
         if SolutionInstalled then
-            SolutionOutdated := CRMIntegrationManagement.IsSolutionOutdated(TempConnectionStringWithPlaceholders, MicrosoftDynamicsFSIntegrationTxt);
+            SolutionOutdated := CRMIntegrationManagement.IsSolutionOutdated(TempConnectionString, MicrosoftDynamicsFSIntegrationTxt);
 
         if ForceRedeploy then
             ImportSolution := (not SolutionInstalled) or SolutionOutdated

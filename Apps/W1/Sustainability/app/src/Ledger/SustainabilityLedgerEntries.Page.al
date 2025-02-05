@@ -59,6 +59,14 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ToolTip = 'Specifies the scope of the emission.';
                 }
+                field("Water/Waste Intensity Type"; Rec."Water/Waste Intensity Type")
+                {
+                    ToolTip = 'Specifies the Water/Waste Intensity Type of the entry.';
+                }
+                field("Water Type"; Rec."Water Type")
+                {
+                    ToolTip = 'Specifies the Water Type of the entry.';
+                }
                 field("Account Category"; Rec."Account Category")
                 {
                     ToolTip = 'Specifies the sustainability account category.';
@@ -132,6 +140,18 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies internal carbon fee that a company charges itself for each unit of CO2 equivalent that it emits.';
+                }
+                field("Water Intensity"; Rec."Water Intensity")
+                {
+                    ToolTip = 'Specifies the Water Intensity of the entry.';
+                }
+                field("Discharged Into Water"; Rec."Discharged Into Water")
+                {
+                    ToolTip = 'Specifies the Discharged Into Water of the entry.';
+                }
+                field("Waste Intensity"; Rec."Waste Intensity")
+                {
+                    ToolTip = 'Specifies the Waste Intensity of the entry.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {

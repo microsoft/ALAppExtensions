@@ -8,6 +8,8 @@ using Microsoft.Bank.Setup;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.HumanResources.Payables;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 
 table 31260 "Match Bank Payment Buffer CZB"
@@ -91,13 +93,6 @@ table 31260 "Match Bank Payment Buffer CZB"
         {
             Caption = 'Dimension Set ID';
             DataClassification = SystemMetadata;
-        }
-        field(45; "Letter No."; Code[20])
-        {
-            Caption = 'Letter No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
         }
     }
 
@@ -200,6 +195,24 @@ table 31260 "Match Bank Payment Buffer CZB"
         Insert(true);
     end;
 
+    procedure InsertFromCustomerBankAccount(CustomerBankAccount: Record "Customer Bank Account")
+    begin
+        Clear(Rec);
+        "Account Type" := "Account Type"::Customer;
+        "Account No." := CustomerBankAccount."Customer No.";
+        OnBeforeInsertFromCustomerBankAccount(Rec, CustomerBankAccount);
+        Insert(true);
+    end;
+
+    procedure InsertFromVendorBankAccount(VendorBankAccount: Record "Vendor Bank Account")
+    begin
+        Clear(Rec);
+        "Account Type" := "Account Type"::Vendor;
+        "Account No." := VendorBankAccount."Vendor No.";
+        OnBeforeInsertFromVendorBankAccount(Rec, VendorBankAccount);
+        Insert(true);
+    end;
+
     local procedure GetCustomerLedgerEntryDiscountDueDate(CustLedgerEntry: Record "Cust. Ledger Entry"): Date
     begin
         if CustLedgerEntry."Remaining Pmt. Disc. Possible" = 0 then
@@ -230,6 +243,16 @@ table 31260 "Match Bank Payment Buffer CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertFromEmployeeLedgerEntry(var MatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; EmployeeLedgerEntry: Record "Employee Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertFromCustomerBankAccount(var MatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; CustomerBankAccount: Record "Customer Bank Account")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertFromVendorBankAccount(var MatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; VendorBankAccount: Record "Vendor Bank Account")
     begin
     end;
 }

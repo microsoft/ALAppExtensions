@@ -13,6 +13,14 @@ pageextension 36955 "Purchasing Agent Role Center" extends "Purchasing Agent Rol
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for purchases';
+                action("Purchases Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchases Report';
+                    Image = "PowerBI";
+                    RunObject = page "Purchases Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all purchases report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Purchases Overview")
                 {
                     ApplicationArea = Basic, Suite;

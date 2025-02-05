@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37034 "Project Tasks"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Project Tasks';
     AboutTitle = 'About Project Tasks';
     AboutText = 'The Project Task report details tasks related to each project, with metrics for each task clearly outlined. It presents tasks in a table matrix in a hierarchical view, making it easy to navigate and analyze project task information.';
@@ -20,7 +22,7 @@ page 37034 "Project Tasks"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37034 "Project Tasks"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label '89b75bcf2e511c341a05', Locked = true;
+        ReportPageLbl: Label '89b75bcf2e511c341a05', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

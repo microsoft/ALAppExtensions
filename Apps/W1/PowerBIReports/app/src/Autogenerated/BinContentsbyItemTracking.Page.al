@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37032 "Bin Contents by Item Tracking"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Bin Contents by Item Tracking';
     AboutTitle = 'About Bin Contents by Item Tracking';
     AboutText = 'The Bin Contents by Item Tracking report provides a detailed view of warehouse quantities by Item, Location, Bin Code, Zone Code, Lot number or Serial number. ';
@@ -20,7 +22,7 @@ page 37032 "Bin Contents by Item Tracking"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -55,7 +57,7 @@ page 37032 "Bin Contents by Item Tracking"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection7359815290770dd2a490', Locked = true;
+        ReportPageLbl: Label 'ReportSection7359815290770dd2a490', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()
