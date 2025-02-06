@@ -214,12 +214,8 @@ codeunit 6397 "Subscription Mgt."
         ClientName := CompanyInfo.Name;
 
         OwnerAzureId := AzureADTenant.GetAadTenantId();
-        if OwnerAzureId = '' then
-            OwnerAzureId := 'Common';
 
         EnvironmentName := EnvironmentInformation.GetEnvironmentName();
-        if EnvironmentName = '' then
-            EnvironmentName := 'Production';
 
         InitializeCredentialsElement := XmlElement.Create('InitializeCredentialsV3');
         InitializeCredentialsElement.SetAttribute('AzureId', TenantSubscriptionId);
