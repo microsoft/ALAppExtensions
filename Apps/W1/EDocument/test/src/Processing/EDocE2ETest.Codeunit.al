@@ -1465,11 +1465,14 @@ codeunit 139624 "E-Doc E2E Test"
         CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
         CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
 
-        // [THEN] Get last E-Document
+        // [GIVEN] Get last E-Document
         EDocument.FindLast();
 
-        // [THEN] Delete ok
+        // [WHEN] Delete ok
         EDocument.Delete(true);
+
+        // [THEN] Check that E-Document no longer exists
+        CheckEDocumentDeleted(EDocument."Entry No");
     end;
 
     [Test]
@@ -1486,11 +1489,13 @@ codeunit 139624 "E-Doc E2E Test"
         VendorNo := this.LibraryPurchase.CreateVendorNo();
         CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
 
-        // [THEN] Get last E-Document
+        // [GIVEN] Get last E-Document
         EDocument.FindLast();
 
-        // [THEN] Delete not allowed
+        // [WHEN] Delete not allowed
         asserterror EDocument.Delete(true);
+
+        // [THEN] Check error message
         Assert.ExpectedError(this.DeleteUniqueNotAllowedErr);
     end;
 
@@ -1610,6 +1615,13 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocStatus, EDocument.Status, IncorrectValueErr);
     end;
 
+    local procedure CheckEDocumentDeleted(EDocNo: Integer)
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Entry No", EDocNo);
+        this.Assert.RecordIsEmpty(EDocument);
+    end;
 
 #pragma warning disable AS0018
 #if not CLEAN26
