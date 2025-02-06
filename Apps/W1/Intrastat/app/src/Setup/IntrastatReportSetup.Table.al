@@ -230,6 +230,26 @@ table 4810 "Intrastat Report Setup"
             Caption = 'Purchase Intrastat Info Based On';
             ToolTip = 'Specifies based on which vendor code Intrastat settings are added to the document.';
         }
+        field(38; "Transaction Type Mandatory"; Boolean)
+        {
+            Caption = 'Transaction Type Mandatory';
+            ToolTip = 'Specifies if the transaction type should be filled in on documents before posting';
+        }
+        field(39; "Transaction Spec. Mandatory"; Boolean)
+        {
+            Caption = 'Transaction Spec. Mandatory';
+            ToolTip = 'Specifies if the transaction specification should be filled in on documents before posting';
+        }
+        field(40; "Transport Method Mandatory"; Boolean)
+        {
+            Caption = 'Transport Method Mandatory';
+            ToolTip = 'Specifies if the transprot method should be filled in on documents before posting';
+        }
+        field(41; "Shipment Method Mandatory"; Boolean)
+        {
+            Caption = 'Shipment Method Mandatory';
+            ToolTip = 'Specifies if the shipment method should be filled in on documents before posting';
+        }
     }
 
     keys
