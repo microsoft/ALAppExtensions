@@ -125,7 +125,9 @@ page 6393 "Onboarding Wizard"
                         ShowCaption = false;
                         field("Company Name"; TempParticipation."Company Name")
                         {
+                            Caption = 'Company Name';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal name of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -134,7 +136,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field("VAT Registration No."; TempParticipation."VAT Registration No.")
                         {
+                            Caption = 'VAT Registration No.';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the VAT registration number of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -143,7 +147,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field(Address; TempParticipation.Address)
                         {
+                            Caption = 'Address';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal address of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -152,7 +158,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field("Post Code"; TempParticipation."Post Code")
                         {
+                            Caption = 'Post Code';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal post code of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -165,11 +173,16 @@ page 6393 "Onboarding Wizard"
                             Visible = CountyVisible;
                             field(County; TempParticipation.County)
                             {
+                                Caption = 'County';
+                                CaptionClass = '5,1,' + TempParticipation."Country/Region Code";
+                                ToolTip = 'Specifies the legal county of the company that you want to join to the network.';
                             }
                         }
                         field("Country/Region Code"; TempParticipation."Country/Region Code")
                         {
+                            Caption = 'Country/Region Code';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal country code of the company that you want to join to the network. Must be stated in the ISO 3166-1 format.';
 
                             trigger OnValidate()
                             var
@@ -184,7 +197,9 @@ page 6393 "Onboarding Wizard"
                             Caption = 'Company Signatory (e.g. CEO)';
                             field("Signatory Name"; TempParticipation."Signatory Name")
                             {
+                                Caption = 'Signatory Name';
                                 ShowMandatory = true;
+                                ToolTip = 'Specifies the name of the company signatory.';
 
                                 trigger OnValidate()
                                 begin
@@ -193,7 +208,9 @@ page 6393 "Onboarding Wizard"
                             }
                             field("Signatory Email"; TempParticipation."Signatory Email")
                             {
+                                Caption = 'Email Address';
                                 ShowMandatory = true;
+                                ToolTip = 'Specifies the email of the company signatory.';
 
                                 trigger OnValidate()
                                 begin
@@ -239,7 +256,9 @@ page 6393 "Onboarding Wizard"
                         ShowCaption = false;
                         field(CompanyContactName; TempCompanyContact."Company Name")
                         {
+                            Caption = 'Company Name';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal name of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -248,7 +267,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field(CompanyContactVAT; TempCompanyContact."VAT Registration No.")
                         {
+                            Caption = 'VAT Registration No.';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the VAT registration number of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -258,7 +279,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field(CompanyContactAddress; TempCompanyContact.Address)
                         {
+                            Caption = 'Address';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal address of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -267,7 +290,9 @@ page 6393 "Onboarding Wizard"
                         }
                         field(CompanyContactPostCode; TempCompanyContact."Post Code")
                         {
+                            Caption = 'Post Code';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal post code of the company that you want to join to the network.';
 
                             trigger OnValidate()
                             begin
@@ -280,11 +305,16 @@ page 6393 "Onboarding Wizard"
                             Visible = ContactCountyVisible;
                             field(CompanyContactCounty; TempCompanyContact.County)
                             {
+                                Caption = 'County';
+                                CaptionClass = '5,1,' + TempCompanyContact."Country/Region Code";
+                                ToolTip = 'Specifies the legal county of the company that you want to join to the network.';
                             }
                         }
                         field(CompanyContactCountryRegion; TempCompanyContact."Country/Region Code")
                         {
+                            Caption = 'Country/Region Code';
                             ShowMandatory = true;
+                            ToolTip = 'Specifies the legal country code of the company that you want to join to the network. Must be stated in the ISO 3166-1 format.';
 
                             trigger OnLookup(var Text: Text): Boolean
                             var
@@ -309,7 +339,9 @@ page 6393 "Onboarding Wizard"
                             Caption = 'Company Contact Person';
                             field(CompanyContactPersonName; TempCompanyContact."Contact Name")
                             {
+                                Caption = 'Name';
                                 ShowMandatory = true;
+                                ToolTip = 'Specifies the name of the contact person in the company.';
 
                                 trigger OnValidate()
                                 begin
@@ -318,7 +350,10 @@ page 6393 "Onboarding Wizard"
                             }
                             field(CompanyContactPersonEmail; TempCompanyContact."Contact Email")
                             {
+                                Caption = 'Email Address';
+                                ExtendedDatatype = EMail;
                                 ShowMandatory = true;
+                                ToolTip = 'Specifies the email address of the contact person in the company.';
 
                                 trigger OnValidate()
                                 begin
@@ -328,7 +363,10 @@ page 6393 "Onboarding Wizard"
                             }
                             field(CompanyContactPersonPhoneNo; TempCompanyContact."Contact Phone No.")
                             {
+                                Caption = 'Phone No.';
+                                ExtendedDatatype = PhoneNo;
                                 ShowMandatory = true;
+                                ToolTip = 'Specifies the telephone number of the contact person in the company.';
 
                                 trigger OnValidate()
                                 begin
@@ -355,6 +393,9 @@ page 6393 "Onboarding Wizard"
                     }
                     field(Network; TempParticipation.Network)
                     {
+                        Caption = 'Network';
+                        ToolTip = 'Specifies the network name where the participation is in.';
+
                         trigger OnValidate()
                         begin
                             OnboardingHelper.SetDefaultIdentifierData(TempParticipation, IdentifierTypeDesc);
@@ -383,7 +424,9 @@ page 6393 "Onboarding Wizard"
                     }
                     field(CompanyIdentifierValue; TempParticipation."Identifier Value")
                     {
+                        Caption = 'Identifier Value';
                         ShowMandatory = true;
+                        ToolTip = 'Specifies the value of the identifier used to identify the company in the network.';
 
                         trigger OnValidate()
                         begin
