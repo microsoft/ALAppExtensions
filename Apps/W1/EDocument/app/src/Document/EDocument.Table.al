@@ -195,6 +195,29 @@ table 6121 "E-Document"
         }
     }
 
+    trigger OnDelete()
+    begin
+        if (Rec.Status = Rec.Status::Processed) then
+            Error(this.DeleteProcessedNotAllowedErr);
+
+        if (Rec."Document No." <> '') then
+            Error(this.DeleteLinkedNotAllowedErr);
+
+        if (not this.IsDuplicate()) then
+            Error(this.DeleteUniqueNotAllowedErr);
+    end;
+
+    local procedure IsDuplicate(): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", Rec."Document Date");
+        EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
+        exit(not EDocument.IsEmpty());
+    end;
+
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
     var
         EDocument: Record "E-Document";
@@ -227,4 +250,7 @@ table 6121 "E-Document"
 
     var
         ToStringLbl: Label '%1,%2,%3,%4', Locked = true;
+        DeleteLinkedNotAllowedErr: Label 'The E-Document is linked to sales or purchase document and cannot be deleted.';
+        DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
+        DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted.';
 }
