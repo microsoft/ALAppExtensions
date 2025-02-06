@@ -224,17 +224,17 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Path">The directory path inside the file account.</param>
     /// <returns>Returns true if the directory exists</returns>
-    procedure DirectoryExists(AccountId: Guid; Path: Text): Boolean
+    procedure DirectoryExists(AccountId: Guid; Path: Text) Result: Boolean
     var
-        SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
     begin
         InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
-        if SharePointClient.GetSubFoldersByServerRelativeUrl(Path, SharePointFolder) then
-            exit;
 
-        ShowError(SharePointClient);
+        Result := SharePointClient.FolderExistsByServerRelativeUrl(Path);
+
+        if not SharePointClient.GetDiagnostics().IsSuccessStatusCode() then
+            ShowError(SharePointClient);
     end;
 
     /// <summary>
