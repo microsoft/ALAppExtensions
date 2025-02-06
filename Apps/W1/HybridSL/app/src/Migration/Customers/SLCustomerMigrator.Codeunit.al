@@ -232,6 +232,7 @@ codeunit 47018 "SL Customer Migrator"
     var
         CompanyInformation: Record "Company Information";
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLSalesTax: Record "SL SalesTax";
         SLSOAddress: Record "SL SOAddress";
         SLHelperFunctions: Codeunit "SL Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -240,6 +241,7 @@ codeunit 47018 "SL Customer Migrator"
         ShipViaID: Code[10];
         ContactAddressFormatToSet: Option First,"After Company Name",Last;
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
+        SLTaxTypeGroupTxt: Label 'G', Locked = true;
     begin
         if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
             exit;
@@ -306,6 +308,13 @@ codeunit 47018 "SL Customer Migrator"
         end;
 
         CustomerDataMigrationFacade.SetCreditLimitLCY(SLCustomer.CrLmt);
+
+        if (SLCustomer.TaxID00.TrimEnd() <> '') then
+            if SLSalesTax.Get(SLTaxTypeGroupTxt, SLCustomer.TaxID00) then begin
+                CustomerDataMigrationFacade.CreateTaxAreaIfNeeded(SLSalesTax.TaxId, SLSalesTax.Descr);
+                CustomerDataMigrationFacade.SetTaxAreaCode(SLSalesTax.TaxId);
+                CustomerDataMigrationFacade.SetTaxLiable(true);
+            end;
 
         CustomerDataMigrationFacade.ModifyCustomer(true);
     end;
