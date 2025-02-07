@@ -8,8 +8,11 @@ body:
         Thanks for taking the time to fill out this extensibility request form. 
 
         ⚠️⚠️ BEFORE WE GET STARTED ⚠️⚠️
-        Before you create a new issue, please check the following:
+        Before you create this request, please check the following:
+        🔎 [Link1](aka.ms/)
+        🔎 [Link2](aka.ms/)
         🔎 Search existing issues to avoid creating duplicates.
+
   - type: textarea
     id: describe-the-request
     attributes:
@@ -18,6 +21,7 @@ body:
       placeholder: Describe the extensibility request
     validations:
       required: true
+      
   - type: textarea
     id: additional-context
     attributes:
