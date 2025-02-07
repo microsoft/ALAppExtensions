@@ -102,6 +102,7 @@ page 6133 "E-Document Service"
 
                 field("Embed Invoice PDF to XML"; Rec."Embed Invoice PDF to XML")
                 {
+                    ToolTip = 'Specifies whether you want to automatically create a PDF invoice based on Report Selection - Sales, as a background process, and embed it into the E-Document XML file when posting the sales document.';
                 }
             }
             group(ImportParamenters)

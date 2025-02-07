@@ -254,7 +254,7 @@ table 6103 "E-Document Service"
         field(40; "Embed Invoice PDF to XML"; Boolean)
         {
             Caption = 'Embed Invoice PDF to XML';
-            ToolTip = 'Specifies if invoice PDF should be generated and embedded to XML during the export.';
+            ToolTip = 'Specifies whether you want to automatically create a PDF invoice based on Report Selection - Sales, as a background process, and embed it into the E-Document XML file when posting the sales document.';
             DataClassification = SystemMetadata;
         }
     }
