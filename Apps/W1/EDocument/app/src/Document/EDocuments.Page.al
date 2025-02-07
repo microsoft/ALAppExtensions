@@ -116,6 +116,11 @@ page 6122 "E-Documents"
         }
     }
 
+    trigger OnAfterGetRecord()
+    begin
+        CurrPage.DocumentListFactBox.Page.SetBlockUploadAction(true);
+    end;
+
     var
         DocNotCreatedQst: Label 'Failed to create new %1 from E-Document. Do you want to open E-Document and see the reported errors?', Comment = '%1 - E-Document Document Type';
 

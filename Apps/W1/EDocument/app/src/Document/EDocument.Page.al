@@ -529,6 +529,7 @@ page 6121 "E-Document"
         SetIncomingDocActions();
 
         EDocImport.ProcessEDocPendingOrderMatch(Rec);
+        CurrPage."Attached Documents List".Page.SetBlockUploadAction(true);
     end;
 
     local procedure SetStyle()
