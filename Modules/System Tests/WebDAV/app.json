@@ -1,0 +1,46 @@
+{
+    "id":  "ff0caa38-65a2-49c5-a7e2-6a0475cfc60e",
+    "name":  "SharePoint Test Library",
+    "publisher":  "Microsoft",
+    "version":  "21.4.0.0",
+    "brief":  "Test libraries for the SharePoint module",
+    "description":  "Provides a set of AL functionality and Helper libraries to make use of SharePoint REST API",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "199527d2-53dd-48e1-8732-8850d4f9e45b",
+                             "name":  "WebDAV",
+                             "publisher":  "Microsoft",
+                             "version":  "21.4.0.0"
+                         },
+                         {
+                            "id":  "ff0caa38-65a2-49c5-a7e2-6a0475cfc60e",
+                            "name":  "SharePoint Test Library",
+                            "publisher":  "Microsoft",
+                            "version":  "21.4.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "features":  [
+
+                 ],
+    "platform":  "21.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  135690,
+                         "to":  135699
+                     }
+                 ],
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  true,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               }
+}
