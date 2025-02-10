@@ -36,16 +36,18 @@ codeunit 30284 "Shpfy Company Export"
         Shop: Record "Shpfy Shop";
         CompanyAPI: Codeunit "Shpfy Company API";
         CatalogAPI: Codeunit "Shpfy Catalog API";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
+        EmptyEmailAddressLbl: Label 'Customer (Company) has no e-mail address.';
+        CompanyWithPhoneNoOrEmailExistsLbl: Label 'Company already exists with the same e-mail or phone.';
 
     local procedure CreateShopifyCompany(Customer: Record Customer)
     var
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
         CompanyLocation: Record "Shpfy Company Location";
-        EmptyEmailAddressLbl: Label 'Customer (Company) has no e-mail address.';
     begin
         if Customer."E-Mail" = '' then begin
             SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
@@ -94,7 +96,7 @@ codeunit 30284 "Shpfy Company Export"
         TempCompanyLocation: Record "Shpfy Company Location" temporary;
         TaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
         CountyCodeTooLongErr: Text;
-        ShpfyPaymentTermsId: BigInteger;
+        PaymentTermsId: BigInteger;
     begin
         TempShopifyCompany := ShopifyCompany;
         TempCompanyLocation := CompanyLocation;
@@ -106,6 +108,7 @@ codeunit 30284 "Shpfy Company Export"
         CompanyLocation."Address 2" := Customer."Address 2";
         CompanyLocation.Zip := Customer."Post Code";
         CompanyLocation.City := Customer.City;
+        CompanyLocation.Recipient := Customer.Name;
 
         if Customer.County <> '' then
             case Shop."County Source" of
@@ -152,8 +155,8 @@ codeunit 30284 "Shpfy Company Export"
         TaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
         CompanyLocation."Tax Registration Id" := TaxRegistrationIdMapping.GetTaxRegistrationId(Customer);
 
-        if GetShopifyPaymentTermsIdFromCustomer(Customer, ShpfyPaymentTermsId) then
-            CompanyLocation."Shpfy Payment Terms Id" := ShpfyPaymentTermsId;
+        if GetShopifyPaymentTermsIdFromCustomer(Customer, PaymentTermsId) then
+            CompanyLocation."Shpfy Payment Terms Id" := PaymentTermsId;
 
         if HasDiff(ShopifyCompany, TempShopifyCompany) or HasDiff(CompanyLocation, TempCompanyLocation) then begin
             ShopifyCompany."Last Updated by BC" := CurrentDateTime;
@@ -187,13 +190,13 @@ codeunit 30284 "Shpfy Company Export"
         Shop := ShopifyShop;
         CompanyAPI.SetShop(Shop);
         CatalogAPI.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     local procedure UpdateShopifyCompany(Customer: Record Customer; CompanyId: BigInteger)
     var
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
-        CompanyWithPhoneNoOrEmailExistsLbl: Label 'Company already exists with the same e-mail or phone.';
     begin
         ShopifyCompany.Get(CompanyId);
         if ShopifyCompany."Customer SystemId" <> Customer.SystemId then begin
@@ -209,6 +212,14 @@ codeunit 30284 "Shpfy Company Export"
             ShopifyCompany.Modify();
             CompanyLocation.Modify();
         end;
+
+        if Shop."Company Metafields To Shopify" then
+            UpdateMetafields(ShopifyCompany.Id);
+    end;
+
+    local procedure UpdateMetafields(ComppanyId: BigInteger)
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Company", ComppanyId);
     end;
 
     internal procedure SetCreateCompanies(NewCustomers: Boolean)
@@ -216,14 +227,14 @@ codeunit 30284 "Shpfy Company Export"
         CreateCustomers := NewCustomers;
     end;
 
-    local procedure GetShopifyPaymentTermsIdFromCustomer(Customer: Record Customer; var ShpfyPaymentTermsId: BigInteger): Boolean
+    local procedure GetShopifyPaymentTermsIdFromCustomer(Customer: Record Customer; var PaymentTermsId: BigInteger): Boolean
     var
         ShopifyPaymentTerms: Record "Shpfy Payment Terms";
     begin
         ShopifyPaymentTerms.SetRange("Shop Code", Shop.Code);
         ShopifyPaymentTerms.SetRange("Payment Terms Code", Customer."Payment Terms Code");
         if ShopifyPaymentTerms.FindFirst() then begin
-            ShpfyPaymentTermsId := ShopifyPaymentTerms.Id;
+            PaymentTermsId := ShopifyPaymentTerms.Id;
             exit(true);
         end;
     end;

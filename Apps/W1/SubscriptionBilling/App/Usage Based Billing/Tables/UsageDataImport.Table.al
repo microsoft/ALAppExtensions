@@ -190,7 +190,19 @@ table 8013 "Usage Data Import"
         TextManagement.ShowFieldText(RRef, FieldNo(Reason));
     end;
 
-    internal procedure ImportFile(var UsageDataImport: Record "Usage Data Import")
+    internal procedure NewDataImport()
+    var
+        SupplierNo: Code[20];
+    begin
+        SupplierNo := CopyStr(Rec.GetFilter("Supplier No."), 1, MaxStrLen(SupplierNo));
+        Rec.Init();
+        Rec."Entry No." := 0;
+        if SupplierNo <> '' then
+            Rec.Validate("Supplier No.", SupplierNo);
+        Rec.Insert(true);
+    end;
+
+    internal procedure ImportFile()
     var
         UsageDataBlob: Record "Usage Data Blob";
         FileName: Text;
@@ -201,12 +213,12 @@ table 8013 "Usage Data Import"
         if FileName = '' then
             exit;
 
-        if UsageDataImport."Entry No." <> 0 then begin
-            UsageDataBlob.InsertFromUsageDataImport(UsageDataImport);
+        if "Entry No." <> 0 then begin
+            UsageDataBlob.InsertFromUsageDataImport(Rec);
             UsageDataBlob.ImportFromFile(InStream, FileName);
 
-            UsageDataImport.Validate("Processing Status", UsageDataImport."Processing Status"::None);
-            UsageDataImport.Modify(false);
+            Rec.Validate("Processing Status", Rec."Processing Status"::None);
+            Rec.Modify(false);
             Clear(FileName);
         end;
     end;

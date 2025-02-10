@@ -2,7 +2,7 @@ namespace Microsoft.Sales.Document.Test;
 
 using Microsoft.Sales.Document.Attachment;
 
-codeunit 139788 "Save File Mapping Test"
+codeunit 133526 "Save File Mapping Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

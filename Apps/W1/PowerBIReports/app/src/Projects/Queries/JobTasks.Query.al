@@ -6,7 +6,7 @@ query 36994 "Job Tasks"
 {
     Access = Internal;
     QueryType = API;
-    Caption = 'Power BI Job Tasks';
+    Caption = 'Power BI Project Tasks';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
     APIVersion = 'v0.5';

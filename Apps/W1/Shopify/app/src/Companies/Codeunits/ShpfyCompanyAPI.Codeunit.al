@@ -14,6 +14,7 @@ codeunit 30286 "Shpfy Company API"
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
 
     internal procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location"; ShopifyCustomer: Record "Shpfy Customer"): Boolean
     var
@@ -79,6 +80,7 @@ codeunit 30286 "Shpfy Company API"
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant): Boolean
@@ -133,6 +135,8 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation.Recipient <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         if CompanyLocation."Shpfy Payment Terms Id" <> 0 then begin
             GraphQuery.Append('}, buyerExperienceConfiguration: {');
             AddFieldToGraphQuery(GraphQuery, 'paymentTermsTemplateId', StrSubstNo(PaymentTermsTemplateIdTxt, CompanyLocation."Shpfy Payment Terms Id"));
@@ -223,6 +227,8 @@ codeunit 30286 "Shpfy Company API"
             HasChange := AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> xCompanyLocation."Province Code" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation.Recipient <> xCompanyLocation.Recipient then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
 
         if HasChange then begin
@@ -338,6 +344,7 @@ codeunit 30286 "Shpfy Company API"
     internal procedure UpdateShopifyCompanyFields(var ShopifyCompany: Record "Shpfy Company"; JCompany: JsonObject) Result: Boolean
     var
         UpdatedAt: DateTime;
+        JMetafields: JsonArray;
         OutStream: OutStream;
     begin
         UpdatedAt := JsonHelper.GetValueAsDateTime(JCompany, 'updatedAt');
@@ -357,6 +364,9 @@ codeunit 30286 "Shpfy Company API"
         end else
             Clear(ShopifyCompany.Note);
         ShopifyCompany.Modify();
+
+        if JsonHelper.GetJsonArray(JCompany, JMetafields, 'metafields.edges') then
+            MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Company", ShopifyCompany.Id);
     end;
 
     internal procedure UpdateShopifyCompanyLocation(var ShopifyCompany: Record "Shpfy Company")
@@ -421,6 +431,7 @@ codeunit 30286 "Shpfy Company API"
 #pragma warning disable AA0139
                 CompanyLocation."Tax Registration Id" := JsonHelper.GetValueAsText(JLocation, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id"));
 #pragma warning restore AA0139
+                CompanyLocation.Recipient := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.recipient', MaxStrLen(CompanyLocation.Recipient)), 1, MaxStrLen(CompanyLocation.Recipient));
                 CompanyLocation."Shpfy Payment Terms Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLocation, 'node.buyerExperienceConfiguration.paymentTermsTemplate.id'));
                 if IsDefaultCompanyLocation then begin
                     CompanyLocation.Default := IsDefaultCompanyLocation;

@@ -361,6 +361,12 @@ table 6214 "Sustainability Jnl. Line"
             Caption = 'Reason Code';
             TableRelation = "Reason Code";
         }
+        field(32; "CO2e Emission"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'CO2e Emission';
+            DecimalPlaces = 2 : 5;
+        }
     }
 
     keys
@@ -437,6 +443,28 @@ table 6214 "Sustainability Jnl. Line"
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
         "Dimension Set ID" := DimMgt.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+    end;
+
+    procedure GetPostingSign(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Integer
+    var
+        Sign: Integer;
+    begin
+        Sign := 1;
+
+        if SustainabilityJnlLine."Document Type" in [SustainabilityJnlLine."Document Type"::"Credit Memo", SustainabilityJnlLine."Document Type"::"GHG Credit"] then
+            Sign := -1;
+
+        exit(Sign);
+    end;
+
+    procedure UpdateSustainabilityJnlLineWithPostingSign(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SignFactor: Integer)
+    begin
+        SustainabilityJnlLine.Validate("Emission CO2", SignFactor * SustainabilityJnlLine."Emission CO2");
+        SustainabilityJnlLine.Validate("Emission CH4", SignFactor * SustainabilityJnlLine."Emission CH4");
+        SustainabilityJnlLine.Validate("Emission N2O", SignFactor * SustainabilityJnlLine."Emission N2O");
+        SustainabilityJnlLine.Validate("Water Intensity", SignFactor * SustainabilityJnlLine."Water Intensity");
+        SustainabilityJnlLine.Validate("Waste Intensity", SignFactor * SustainabilityJnlLine."Waste Intensity");
+        SustainabilityJnlLine.Validate("Discharged Into Water", SignFactor * SustainabilityJnlLine."Discharged Into Water");
     end;
 
     internal procedure ShowDimensions() IsChanged: Boolean

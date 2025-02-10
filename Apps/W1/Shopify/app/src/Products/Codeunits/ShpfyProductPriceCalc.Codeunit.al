@@ -127,13 +127,6 @@ codeunit 30182 "Shpfy Product Price Calc."
         TempSalesHeader.Insert(false);
     end;
 
-    internal procedure DoPricesIncludingVAT(ShopCode: Code[20]): Boolean
-    begin
-        if Shop.Code <> ShopCode then
-            Shop.Get(ShopCode);
-        exit(Shop."Prices Including VAT");
-    end;
-
     internal procedure GetCurrencyCode(): Code[10]
     begin
         exit(Shop."Currency Code");

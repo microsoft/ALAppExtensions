@@ -32,8 +32,6 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShipmentLine: Record "Sales Shipment Line";
                 Shop: Record "Shpfy Shop";
                 SkippedRecord: Codeunit "Shpfy Skipped Record";
-                NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
-                ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
             begin
                 ShipmentLine.SetRange("Document No.", "No.");
                 ShipmentLine.SetRange(Type, ShipmentLine.Type::"Item");
@@ -56,4 +54,6 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
     var
         ExportShipments: Codeunit "Shpfy Export Shipments";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+        NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
+        ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
 }

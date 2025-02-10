@@ -113,34 +113,6 @@ table 1450 "MS - Yodlee Bank Service Setup"
         {
             TableRelation = "Bank Export/Import Setup".Code where(Direction = const(Import));
         }
-#if not CLEANSCHEMA18
-        field(40; "Cobrand Session Token"; BLOB)
-        {
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(41; "Cob. Token Last Date Updated"; DateTime)
-        {
-            Editable = false;
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(42; "Consumer Session Token"; BLOB)
-        {
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(43; "Cons. Token Last Date Updated"; DateTime)
-        {
-            Editable = false;
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-#endif
         field(50; "Accept Terms of Use"; Boolean)
         {
         }
@@ -637,4 +609,3 @@ table 1450 "MS - Yodlee Bank Service Setup"
         exit(DELCHR("Service URL", '>', ' '));
     end;
 }
-

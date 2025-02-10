@@ -3,7 +3,7 @@ namespace Microsoft.Sales.Document.Test;
 using Microsoft.Sales.Document.Attachment;
 using System.Utilities;
 
-codeunit 139789 "Attachment Data Size Test"
+codeunit 133517 "Attachment Data Size Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

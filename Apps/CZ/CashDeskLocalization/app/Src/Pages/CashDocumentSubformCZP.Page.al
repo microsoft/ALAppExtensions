@@ -319,6 +319,53 @@ page 31161 "Cash Document Subform CZP"
                     ToolTip = 'Specifies the reason code on the entry.';
                     Visible = false;
                 }
+                field("Project No."; Rec."Project No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project.';
+                    Visible = false;
+
+                    trigger OnValidate()
+                    begin
+                        Rec.ShowShortcutDimCode(ShortcutDimCode);
+                    end;
+                }
+                field("Project Task No."; Rec."Project Task No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project task.';
+                    Visible = false;
+
+                    trigger OnValidate()
+                    begin
+                        if Rec.ProjectTaskIsSet() then
+                            Rec.ShowShortcutDimCode(ShortcutDimCode);
+                    end;
+                }
+                field("Project Planning Line No."; Rec."Project Planning Line No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the project planning line number that the usage should be linked to when the project journal is posted. You can only link to project planning lines that have the Apply Usage Link option enabled.';
+                    Visible = false;
+                }
+                field("Project Line Type"; Rec."Project Line Type")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the type of planning line to create when a project ledger entry is posted. If the field is empty, no planning lines are created.';
+                    Visible = false;
+                }
+                field("Project Quantity"; Rec."Project Quantity")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the quantity of the project line.';
+                    Visible = false;
+                }
+                field("Project Unit Price"; Rec."Project Unit Price")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the unit price of the project line.';
+                    Visible = false;
+                }
             }
             group(Control2)
             {
@@ -352,7 +399,7 @@ page 31161 "Cash Document Subform CZP"
                     Caption = 'Total Amount Incl. VAT';
                     Editable = false;
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     ToolTip = 'Specifies the total amout incl. VAT.';
                 }
             }

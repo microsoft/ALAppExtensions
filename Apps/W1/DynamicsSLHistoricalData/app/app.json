@@ -1,0 +1,43 @@
+{
+  "id": "4f3fe3fd-bdc4-4371-8579-d53820b93575",
+  "name": "Dynamics SL Historical Data",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "This extension adds the necessary components to retain historical Dynamics SL data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
+  "description": "This extension adds the necessary components to retain historical Dynamics SL data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2009037",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2285106",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
+      "publisher": "Microsoft",
+      "name": "Intelligent Cloud Base",
+      "version": "26.0.0.0"
+    }
+  ],
+  "idRanges": [
+     {
+      "from": 42800,
+      "to": 42999
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud",
+  "features": [
+    "TranslationFile",
+    "NoImplicitWith"
+  ],  
+  "runtime": "14.0"
+}

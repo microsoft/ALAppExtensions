@@ -177,6 +177,12 @@ table 6121 "E-Document"
         {
             DataClassification = SystemMetadata;
         }
+        field(31; "Receiving Company Id"; Text[250])
+        {
+            Caption = 'Receiving Company Id';
+            ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
+        }
+
     }
     keys
     {

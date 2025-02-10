@@ -1,0 +1,1 @@
+{"data":{"order":{"fulfillmentOrders":{"nodes":[{"id":"gid://shopify/FulfillmentOrder/7478691168318"}]}}},"extensions":{"cost":{"requestedQueryCost":7,"actualQueryCost":4,"throttleStatus":{"maximumAvailable":2000.0,"currentlyAvailable":1996,"restoreRate":100.0}}}}

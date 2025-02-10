@@ -2,7 +2,6 @@ namespace Microsoft.Finance.Latepayment;
 
 using Microsoft.Foundation.Company;
 using System.Environment;
-using System.Upgrade;
 using System.Privacy;
 
 codeunit 1955 "Late Payment Install"
@@ -10,27 +9,8 @@ codeunit 1955 "Late Payment Install"
     Subtype = install;
 
     trigger OnInstallAppPerCompany()
-    var
-        EnvironmentInfo: Codeunit "Environment Information";
-        AppInfo: ModuleInfo;
     begin
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        if EnvironmentInfo.VersionInstalled(AppInfo.Id()) = 0 then
-            SetAllUpgradeTags();
-
         CompanyInitialize();
-    end;
-
-    local procedure SetAllUpgradeTags()
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-        LatePaymentUpgrade: Codeunit "Late Payment Upgrade";
-    begin
-        if not UpgradeTag.HasUpgradeTag(LatePaymentUpgrade.GetLatePaymentPredictionSecretsToISUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(LatePaymentUpgrade.GetLatePaymentPredictionSecretsToISUpgradeTag());
-
-        if not UpgradeTag.HasUpgradeTag(LatePaymentUpgrade.GetLatePaymentPredictionSecretsToISValidationTag()) then
-            UpgradeTag.SetUpgradeTag(LatePaymentUpgrade.GetLatePaymentPredictionSecretsToISValidationTag());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

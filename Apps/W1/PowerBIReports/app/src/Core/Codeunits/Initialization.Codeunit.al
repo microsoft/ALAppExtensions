@@ -106,7 +106,7 @@ codeunit 36951 Initialization
     procedure InitDimSetEntryLastUpdated()
     var
         PBISetup: Record "PowerBI Reports Setup";
-        PBIDimSetEntry: Record "Dimension Set Entry";
+        PBIDimSetEntry: Record "PowerBI Flat Dim. Set Entry";
     begin
         if PBIDimSetEntry.IsEmpty() then
             exit;

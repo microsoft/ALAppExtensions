@@ -263,7 +263,8 @@ table 8059 "Service Commitment"
         field(27; "Contract Line No."; Integer)
         {
             Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
+            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(29; "Shortcut Dimension 1 Code"; Code[20])
         {
@@ -383,6 +384,10 @@ table 8059 "Service Commitment"
         {
             Caption = 'Period Calculation';
         }
+        field(107; "Closed"; Boolean)
+        {
+            Caption = 'Closed';
+        }
         field(200; "Planned Serv. Comm. exists"; Boolean)
         {
             Caption = 'Planned Service Commitment exists';
@@ -402,6 +407,14 @@ table 8059 "Service Commitment"
                     Rec.TestField("Service End Date");
                 DateFormulaManagement.ErrorIfDateFormulaNegative("Renewal Term");
             end;
+        }
+        field(210; Selected; Boolean)
+        {
+            Caption = 'Selected';
+        }
+        field(211; Indent; Integer)
+        {
+            Caption = 'Indent';
         }
         field(480; "Dimension Set ID"; Integer)
         {
@@ -502,6 +515,7 @@ table 8059 "Service Commitment"
         CalendarManagement: Codeunit "Calendar Management";
         DateFormulaManagement: Codeunit "Date Formula Management";
         DimMgt: Codeunit DimensionManagement;
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
         SkipArchiving: Boolean;
         SkipTestPackageCode: Boolean;
@@ -635,15 +649,15 @@ table 8059 "Service Commitment"
             (("Term Until" = 0D) and ("Service Start Date" = 0D))) then
             exit(false);
         if "Term Until" <> 0D then begin
-            if IsDateLastDayOfMonth("Term Until") then begin
+            if DateTimeManagement.IsLastDayOfMonth("Term until") then begin
                 "Term Until" := CalcDate("Extension Term", "Term Until");
-                MoveDateToLastDayOfMonth("Term Until");
+                DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
             end else
                 "Term Until" := CalcDate("Extension Term", "Term Until");
         end else begin
             "Term Until" := CalcDate("Extension Term", "Service Start Date");
-            if IsDateLastDayOfMonth("Service Start Date") then
-                MoveDateToLastDayOfMonth("Term Until");
+            if DateTimeManagement.IsLastDayOfMonth("Service Start Date") then
+                DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
         end;
         exit(true);
     end;
@@ -656,8 +670,8 @@ table 8059 "Service Commitment"
             exit;
         "Term Until" := CalcDate("Notice Period", "Cancellation Possible Until");
 
-        if IsDateLastDayOfMonth("Cancellation Possible Until") then
-            MoveDateToLastDayOfMonth("Term Until");
+        if DateTimeManagement.IsLastDayOfMonth("Cancellation possible until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth("Term until");
     end;
 
     internal procedure UpdateCancellationPossibleUntil(): Boolean
@@ -666,8 +680,8 @@ table 8059 "Service Commitment"
             exit(false);
         CalendarManagement.ReverseDateFormula(NegativeDateFormula, "Notice Period");
         "Cancellation Possible Until" := CalcDate(NegativeDateFormula, "Term Until");
-        if IsDateLastDayOfMonth("Term Until") then
-            MoveDateToLastDayOfMonth("Cancellation Possible Until");
+        if DateTimeManagement.IsLastDayOfMonth("Term until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth("Cancellation possible until");
 
         exit(true);
     end;
@@ -691,6 +705,8 @@ table 8059 "Service Commitment"
         if not "Usage Based Billing" then
             MaxServiceAmount := Round(MaxServiceAmount, Currency."Amount Rounding Precision");
         if CalledByFieldNo = FieldNo("Service Amount") then begin
+            if not "Usage Based Billing" then
+                "Service Amount" := Round("Service Amount", Currency."Amount Rounding Precision");
             if "Service Amount" > MaxServiceAmount then
                 Error(CannotBeGreaterThanErr, FieldCaption("Service Amount"), Format(MaxServiceAmount));
             if "Service Amount" < 0 then
@@ -755,13 +771,14 @@ table 8059 "Service Commitment"
     end;
 
     internal procedure RecalculateAmountsFromCurrencyData()
+    var
+        Currency: Record Currency;
     begin
         if ((Rec."Currency Factor" = 0) and (Rec."Currency Code" = '')) then
             exit;
-        Rec.Price := CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Price (LCY)", "Currency Factor");
-        Rec."Service Amount" := CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Service Amount (LCY)", "Currency Factor");
-        Rec."Discount Amount" := CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Discount Amount (LCY)", "Currency Factor");
-        Rec."Calculation Base Amount" := CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor");
+        Currency.Initialize("Currency Code");
+        Currency.Initialize("Currency Code");
+        Rec.Validate("Calculation Base Amount", Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor"), Currency."Unit-Amount Rounding Precision"));
     end;
 
     internal procedure ResetAmountsAndCurrencyFromLCY()
@@ -798,7 +815,7 @@ table 8059 "Service Commitment"
         exit(Format("Extension Term") = '');
     end;
 
-    local procedure IsNoticePeriodEmpty(): Boolean
+    internal procedure IsNoticePeriodEmpty(): Boolean
     begin
         exit(Format("Notice Period") = '');
     end;
@@ -1022,16 +1039,6 @@ table 8059 "Service Commitment"
         end;
     end;
 
-    local procedure IsDateLastDayOfMonth(ReferenceDate: Date): Boolean
-    begin
-        exit(ReferenceDate = CalcDate('<CM>', ReferenceDate));
-    end;
-
-    local procedure MoveDateToLastDayOfMonth(var ReferenceDate: Date)
-    begin
-        ReferenceDate := CalcDate('<CM>', ReferenceDate);
-    end;
-
     local procedure RecalculateHarmonizedBillingFieldsOnCustomerContract()
     var
         CustomerContract: Record "Customer Contract";
@@ -1123,29 +1130,6 @@ table 8059 "Service Commitment"
         Rec."Currency Code" := CurrencyCode;
     end;
 
-    internal procedure IsClosed(): Boolean
-    var
-        CustomerContractLine: Record "Customer Contract Line";
-        VendorContractLine: Record "Vendor Contract Line";
-    begin
-        if Rec."Contract No." = '' then
-            exit;
-        if Rec."Contract Line No." = 0 then
-            exit;
-        case Partner of
-            Enum::"Service Partner"::Customer:
-                begin
-                    CustomerContractLine.Get(Rec."Contract No.", Rec."Contract Line No.");
-                    exit(CustomerContractLine.Closed);
-                end;
-            Enum::"Service Partner"::Vendor:
-                begin
-                    VendorContractLine.Get(Rec."Contract No.", Rec."Contract Line No.");
-                    exit(VendorContractLine.Closed);
-                end;
-        end;
-    end;
-
     internal procedure ErrorIfBillingLineForServiceCommitmentExist()
     begin
         if BillingLineExists() then
@@ -1211,7 +1195,8 @@ table 8059 "Service Commitment"
         ServiceCommitmentArchive: Record "Service Commitment Archive";
     begin
         if (xServiceObject."Quantity Decimal" <> ServiceObject."Quantity Decimal") or
-           (xServiceObject."Serial No." <> ServiceObject."Serial No.")
+           (xServiceObject."Serial No." <> ServiceObject."Serial No.") or
+           (xServiceObject."Variant Code" <> ServiceObject."Variant Code")
         then begin
             CreateServiceCommitmentArchive(ServiceCommitmentArchive, Rec, 0D, "Type Of Price Update"::None);
             ServiceCommitmentArchive."Quantity Decimal (Service Ob.)" := xServiceObject."Quantity Decimal";
@@ -1244,28 +1229,6 @@ table 8059 "Service Commitment"
         exit(ServiceCommitmentArchive.FindLast());
     end;
 
-    internal procedure GetTotalServiceAmountFromVendContractLines(var VendorContractLine: Record "Vendor Contract Line") TotalServiceAmount: Decimal
-    var
-        ServiceCommitment: Record "Service Commitment";
-    begin
-        if VendorContractLine.FindSet() then
-            repeat
-                VendorContractLine.GetServiceCommitment(ServiceCommitment);
-                TotalServiceAmount += ServiceCommitment."Service Amount";
-            until VendorContractLine.Next() = 0;
-    end;
-
-    internal procedure GetTotalServiceAmountFromCustContractLines(var CustomerContractLine: Record "Customer Contract Line") TotalServiceAmount: Decimal
-    var
-        ServiceCommitment: Record "Service Commitment";
-    begin
-        if CustomerContractLine.FindSet() then
-            repeat
-                CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-                TotalServiceAmount += ServiceCommitment."Service Amount";
-            until CustomerContractLine.Next() = 0;
-    end;
-
     internal procedure IsPartnerCustomer(): Boolean
     begin
         exit(Rec.Partner = Rec.Partner::Customer);
@@ -1288,7 +1251,7 @@ table 8059 "Service Commitment"
             "Service Partner"::Customer:
                 begin
                     ContractsItemManagement.CreateTempSalesHeader(TempSalesHeader, TempSalesHeader."Document Type"::Order, ServiceObject."End-User Customer No.", ServiceObject."Bill-to Customer No.", Rec."Service Start Date", Rec."Currency Code");
-                    ContractsItemManagement.CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObject."Item No.", ServiceObject."Quantity Decimal", Rec."Service Start Date");
+                    ContractsItemManagement.CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObject."Item No.", ServiceObject."Quantity Decimal", Rec."Service Start Date", ServiceObject."Variant Code");
                     Rec."Calculation Base Amount" := ContractsItemManagement.CalculateUnitPrice(TempSalesHeader, TempSalesLine);
                 end;
             "Service Partner"::Vendor:
@@ -1345,7 +1308,7 @@ table 8059 "Service Commitment"
             until BillingLineArchive.Next() = 0;
     end;
 
-    local procedure UpdateNextPriceUpdate()
+    internal procedure UpdateNextPriceUpdate()
     begin
         if Format(Rec."Price Binding Period") = '' then
             exit;
@@ -1380,19 +1343,6 @@ table 8059 "Service Commitment"
             exit(ChangeExcludeFromPriceUpdateToYesQst);
     end;
 
-    internal procedure MarkOpenServiceCommitments()
-    begin
-        if Rec.FindSet() then begin
-            repeat
-                if Rec.IsClosed() then
-                    Rec.Mark(false)
-                else
-                    Rec.Mark(true)
-            until Rec.Next() = 0;
-            Rec.MarkedOnly(true);
-        end;
-    end;
-
     internal procedure DeleteContractPriceUpdateLines()
     var
         ContractPriceUpdateLine: Record "Contract Price Update Line";
@@ -1412,6 +1362,7 @@ table 8059 "Service Commitment"
         Rec.Validate("Calculation Base Amount", ContractPriceUpdateLine."New Calculation Base");
         Rec.Validate(Price, ContractPriceUpdateLine."New Price");
         Rec.Validate("Service Amount", ContractPriceUpdateLine."New Service Amount");
+        Rec.Validate("Discount %", ContractPriceUpdateLine."Discount %");
         Rec."Next Price Update" := ContractPriceUpdateLine."Next Price Update";
         if PriceUpdateTemplate.Get(ContractPriceUpdateLine."Price Update Template Code") then
             Rec."Price Binding Period" := PriceUpdateTemplate."Price Binding Period";
@@ -1447,6 +1398,7 @@ table 8059 "Service Commitment"
         Rec."Service Amount (LCY)" := ServiceCommitmentArchive."Service Amount (LCY)";
         Rec."Discount Amount (LCY)" := ServiceCommitmentArchive."Discount Amount (LCY)";
         Rec."Next Price Update" := ServiceCommitmentArchive."Next Price Update";
+        Rec.Closed := ServiceCommitmentArchive.Closed;
         Rec.Modify(false);
     end;
 

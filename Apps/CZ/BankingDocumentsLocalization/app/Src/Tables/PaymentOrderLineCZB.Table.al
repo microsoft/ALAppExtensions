@@ -754,33 +754,6 @@ table 31257 "Payment Order Line CZB"
             Editable = false;
             DataClassification = CustomerContent;
         }
-#if not CLEANSCHEMA22
-#pragma warning disable AL0432         
-        field(150; "Letter Type"; Option)
-        {
-            Caption = 'Letter Type';
-            OptionCaption = ' ,,Purchase';
-            OptionMembers = " ",,Purchase;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(151; "Letter No."; Code[20])
-        {
-            Caption = 'Letter No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(152; "Letter Line No."; Integer)
-        {
-            Caption = 'Letter Line No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-#pragma warning restore AL0432 
-#endif
         field(190; "VAT Unreliable Payer"; Boolean)
         {
             Caption = 'VAT Unreliable Payer';
@@ -897,12 +870,13 @@ table 31257 "Payment Order Line CZB"
                 PaymentOrderCurrency.Testfield("Amount Rounding Precision");
             end;
     end;
-
+#if not CLEAN25
     [Obsolete('Replaced by CreateDescription function with PlaceholderValues parameter.', '25.0')]
     procedure CreateDescription(DocType: Text[30]; DocNo: Text[20]; PartnerNo: Text[20]; PartnerName: Text[100]; ExtNo: Text[35]): Text[50]
     begin
         exit(CopyStr(StrSubstNo(BankAccount."Payment Order Line Descr. CZB", DocType, DocNo, PartnerNo, PartnerName, ExtNo), 1, 50));
     end;
+#endif
 
     procedure CreateDescription(PlaceholderValues: List of [Text[100]]) Description: Text[100]
     var
@@ -1410,4 +1384,3 @@ table 31257 "Payment Order Line CZB"
     begin
     end;
 }
-

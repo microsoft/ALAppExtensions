@@ -28,6 +28,11 @@ page 10686 "SAF-T Exports"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the mapping range code that represents the SAF-T reporting period.';
                 }
+                field(Version; Rec.Version)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the version of the SAF-T file to be generated.';
+                }
                 field(StartingDate; "Starting Date")
                 {
                     ApplicationArea = Basic, Suite;

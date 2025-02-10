@@ -10,6 +10,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using System.Threading;
+using Microsoft.eServices.EDocument.Integration;
 codeunit 148191 "Integration Tests"
 {
 
@@ -154,6 +155,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         EDocumentPage.Close();
+
 
         // [WHEN] Executing Get Response succesfully
         SetAvalaraConnectionBaseUrl('/avalara/response-pending');
@@ -473,9 +475,16 @@ codeunit 148191 "Integration Tests"
         EDocServicePage.Close();
 
         // Manually fire job queue job to import
+        if EDocument.FindLast() then
+            EDocument.SetFilter("Entry No", '>%1', EDocument."Entry No");
+
         LibraryEDocument.RunImportJob();
 
         // Assert that we have Purchase Invoice created
+#pragma warning disable AA0210
+        EDocument.SetRange("Document Type", EDocument."Document Type"::"Purchase Invoice");
+        EDocument.SetRange("Bill-to/Pay-to No.", Vendor."No.");
+#pragma warning restore AA0210
         EDocument.FindLast();
         PurchaseHeader.Get(EDocument."Document Record ID");
         Assert.AreEqual(Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
@@ -537,11 +546,11 @@ codeunit 148191 "Integration Tests"
             exit;
 
         LibraryEDocument.SetupStandardVAT();
-        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"E-Document Integration"::Avalara);
+        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Avalara);
         EDocumentService."Avalara Mandate" := 'GB-Test-Mandate';
 
-        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"E-Document Integration"::Avalara);
-        EDocumentService."Auto Import" := true;
+        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Avalara);
+        EDocumentService.Validate("Auto Import", true);
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
         EDocumentService.Modify();

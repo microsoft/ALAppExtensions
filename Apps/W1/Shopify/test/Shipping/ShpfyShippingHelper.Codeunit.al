@@ -1,4 +1,4 @@
-codeunit 139614 "Shpfy Shipping Helper"
+codeunit 139559 "Shpfy Shipping Helper"
 {
     internal procedure CreateRandomShopifyOrder(LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var

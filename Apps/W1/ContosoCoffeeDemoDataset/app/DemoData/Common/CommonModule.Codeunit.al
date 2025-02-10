@@ -11,14 +11,12 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"];
     begin
-        exit;
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Sales);
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Purchase);
     end;
 
     procedure CreateSetupData()
-    var
-        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        ContosoCoffeeDemoDataSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Common CountryOrRegion");
         Codeunit.Run(Codeunit::"Create Common Unit Of Measure");
         Codeunit.Run(Codeunit::"Create Common No Series");

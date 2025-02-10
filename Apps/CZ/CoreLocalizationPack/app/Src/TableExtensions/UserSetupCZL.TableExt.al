@@ -54,6 +54,7 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
             Caption = 'Allow Posting to Closed Period';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(11778; "Allow VAT Posting From CZL"; Date)
         {
             Caption = 'Allow VAT Posting From';
@@ -100,6 +101,7 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
             end;
 #endif
         }
+#endif
         field(11780; "Allow Complete Job CZL"; Boolean)
         {
             Caption = 'Allow Complete Job';

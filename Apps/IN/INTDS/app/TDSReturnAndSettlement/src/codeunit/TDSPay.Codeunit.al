@@ -171,6 +171,7 @@ codeunit 18746 "TDS Pay"
                 NewTDSEntry."Remaining TDS Amount" := -NewTDSEntry."Remaining TDS Amount";
                 NewTDSEntry."Remaining Surcharge Amount" := -NewTDSEntry."Remaining Surcharge Amount";
                 NewTDSEntry."TDS Line Amount" := -NewTDSEntry."TDS Line Amount";
+                NewTDSEntry."Payment Amount" := -NewTDSEntry."Payment Amount";
                 NewTDSEntry."Transaction No." := GenJnlPostLine.GetNextTransactionNo();
                 NewTDSEntry."Source Code" := NewTDSEntry."Source Code";
                 NewTDSEntry."User ID" := CopyStr(UserId, 1, 50);

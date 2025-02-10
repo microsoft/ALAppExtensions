@@ -368,7 +368,7 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Service Commitment cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Service Commitment.';
     begin
         TestIfSalesOrderIsReleased();
-        if Rec.IsLastContractRenewalLineToBeDeleted() then
+        if Rec.IsOnlyRemainingLineForContractRenewalInDocument() then
             Error(SalesServiceCommitmentCannotBeDeletedErr);
     end;
 
@@ -413,6 +413,7 @@ table 8068 "Sales Service Commitment"
 
         MaxServiceAmount := Round((Price * SalesLine.Quantity), Currency."Amount Rounding Precision");
         if CalledByFieldNo = FieldNo("Service Amount") then begin
+            "Service Amount" := Round("Service Amount", Currency."Amount Rounding Precision");
             if "Service Amount" > MaxServiceAmount then
                 Error(ServiceAmountIncreaseErr, FieldCaption("Service Amount"), Format(MaxServiceAmount));
             "Discount Amount" := Round(MaxServiceAmount - "Service Amount", Currency."Amount Rounding Precision");
@@ -430,8 +431,14 @@ table 8068 "Sales Service Commitment"
     end;
 
     procedure CalculateCalculationBaseAmount()
+    var
+        IsHandled: Boolean;
     begin
         SalesLine.Get("Document Type", "Document No.", "Document Line No.");
+        OnBeforeCalculateCalculationBaseAmount(SalesLine, Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if SalesLine.Type <> Enum::"Sales Line Type"::Item then
             exit;
         case Partner of
@@ -440,6 +447,7 @@ table 8068 "Sales Service Commitment"
             Partner::Vendor:
                 CalculateCalculationBaseAmountVendor();
         end;
+        OnAfterCalculateCalculationBaseAmount(SalesLine, Rec);
     end;
 
     local procedure CalculateCalculationBaseAmountCustomer()
@@ -561,7 +569,7 @@ table 8068 "Sales Service Commitment"
         SalesServiceCommitment.SetRange("Document No.", SalesHeader."No.");
         SalesServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         SalesServiceCommitment.SetRange("Invoicing via", SalesServiceCommitment."Invoicing via"::Contract);
-        if SalesServiceCommitment.Find('-') then
+        if SalesServiceCommitment.FindSet() then
             repeat
                 CreateTempSalesServiceCommitmentBuffForSalesServiceCommitment(SalesServiceCommitment, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary, BasePeriodCount, RhythmPeriodCount);
             until SalesServiceCommitment.Next() = 0;
@@ -702,10 +710,13 @@ table 8068 "Sales Service Commitment"
         end;
     end;
 
-    internal procedure IsLastContractRenewalLineToBeDeleted(): Boolean
+    internal procedure IsOnlyRemainingLineForContractRenewalInDocument(): Boolean
     var
         SalesServiceCommitment: Record "Sales Service Commitment";
     begin
+        if Process <> Process::"Contract Renewal" then
+            exit(false);
+
         SalesServiceCommitment.SetRange("Document Type", Rec."Document Type");
         SalesServiceCommitment.SetRange("Document No.", Rec."Document No.");
         SalesServiceCommitment.SetRange(Process, Process::"Contract Renewal");
@@ -734,6 +745,16 @@ table 8068 "Sales Service Commitment"
 
     [InternalEvent(false, false)]
     local procedure OnBeforeCreateVATAmountLineForSalesServiceCommitment(SalesServiceCommitment: Record "Sales Service Commitment"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalculateCalculationBaseAmount(var SalesLine: Record "Sales Line"; var SalesServiceCommitment: Record "Sales Service Commitment"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateCalculationBaseAmount(var SalesLine: Record "Sales Line"; var SalesServiceCommitment: Record "Sales Service Commitment")
     begin
     end;
 

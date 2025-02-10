@@ -10,6 +10,11 @@ pageextension 11780 "VAT Statement Names CZL" extends "VAT Statement Names"
     {
         addlast(Control1)
         {
+            field("XML Format CZL"; Rec."XML Format CZL")
+            {
+                ApplicationArea = VAT;
+                ToolTip = 'Specifies the XML format for VAT statement reporting.';
+            }
             field("Comments CZL"; Rec."Comments CZL")
             {
                 ApplicationArea = VAT;

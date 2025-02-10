@@ -36,7 +36,7 @@ page 6221 "Sustainability Setup"
                 }
                 field("Disch. Into Water Unit of Meas"; Rec."Disch. Into Water Unit of Meas")
                 {
-                    ToolTip = 'Specifies the value of the Disch. Into Water Unit of Measure Code field.';
+                    ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
                 }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
@@ -65,6 +65,30 @@ page 6221 "Sustainability Setup"
                 field("Use Emissions In Purch. Doc."; Rec."Use Emissions In Purch. Doc.")
                 {
                     ToolTip = 'Specifies that you want to enable sustainability features in purchase documents. Until this field is selected, sustainability fields will not be displayed in the purchase lines. Select this field only if you intend to post your GHG emissions using purchase documents or to post purchasing carbon credits.';
+                }
+                field("G/L Account Emissions"; Rec."G/L Account Emissions")
+                {
+                    ToolTip = 'Specifies the value of the G/L Account Emissions field.';
+                }
+                field("Item Emissions"; Rec."Item Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item card.';
+                }
+                field("Item Charge Emissions"; Rec."Item Charge Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item Charge (currently not operating).';
+                }
+                field("Resource Emissions"; Rec."Resource Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Resource card.';
+                }
+                field("Work/Machine Center Emissions"; Rec."Work/Machine Center Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Work Center and Machine Center cards.';
+                }
+                field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
+                {
+                    ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
                 }
             }
             group(Calculations)

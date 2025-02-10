@@ -20,7 +20,6 @@ page 30166 "Shpfy Skipped Records"
         {
             repeater(General)
             {
-                field("Shopify Id"; Rec."Shopify Id") { }
                 field("Table ID"; Rec."Table ID") { }
                 field("Table Name"; Rec."Table Name") { }
                 field(Description; Rec.Description)
@@ -31,6 +30,7 @@ page 30166 "Shpfy Skipped Records"
                     end;
                 }
                 field("Skipped Reason"; Rec."Skipped Reason") { }
+                field("Shopify Id"; Rec."Shopify Id") { }
             }
         }
     }
@@ -57,7 +57,7 @@ page 30166 "Shpfy Skipped Records"
             action(Show)
             {
                 ApplicationArea = All;
-                Caption = 'Show record';
+                Caption = 'Show Record';
                 Image = View;
                 ToolTip = 'Show the details of the selected record.';
 

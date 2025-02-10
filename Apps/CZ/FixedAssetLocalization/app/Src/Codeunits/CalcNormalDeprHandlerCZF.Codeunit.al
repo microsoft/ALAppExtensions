@@ -353,7 +353,7 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     #endregion Use FA Ledger Check
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Depreciation Calculation", 'OnBeforeCalcRounding', '', false, false)]
-    local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; var DeprAmount: Decimal; var IsHandled: Boolean)
+    local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; OrigDeprAmount: Decimal; var DeprAmount: Decimal; var IsHandled: Boolean)
     begin
         if DeprBook."Use Rounding in Periodic Depr." then begin
             DeprAmount := Round(DeprAmount, 1, '>');

@@ -14,7 +14,9 @@ codeunit 30290 "Shpfy Catalog API"
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         ShopifyCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
+        CatalogNotFoundLbl: Label 'Catalog is not found.';
 
     internal procedure CreateCatalog(ShopifyCompany: Record "Shpfy Company"; Customer: Record Customer)
     var
@@ -89,7 +91,7 @@ codeunit 30290 "Shpfy Catalog API"
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
     end;
 
-    internal procedure GetCatalogPrices(CatalogId: BigInteger; var TempCatalogPrice: Record "Shpfy Catalog Price" temporary)
+    internal procedure GetCatalogPrices(Catalog: Record "Shpfy Catalog"; var TempCatalogPrice: Record "Shpfy Catalog Price" temporary)
     var
         GraphQLType: Enum "Shpfy GraphQL Type";
         Cursor: Text;
@@ -97,9 +99,12 @@ codeunit 30290 "Shpfy Catalog API"
         ProductList: List of [BigInteger];
         Parameters: Dictionary of [Text, Text];
     begin
-        GetIncludedProductsInCatalog(CatalogId, ProductList);
+        GetIncludedProductsInCatalog(Catalog, ProductList);
+        if ProductList.Count() = 0 then
+            exit;
+
         GraphQLType := "Shpfy GraphQL Type"::GetCatalogPrices;
-        Parameters.Add('CatalogId', Format(CatalogId));
+        Parameters.Add('CatalogId', Format(Catalog.Id));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
@@ -223,7 +228,7 @@ codeunit 30290 "Shpfy Catalog API"
         end;
     end;
 
-    internal procedure GetIncludedProductsInCatalog(CatalogId: BigInteger; var ProductList: List of [BigInteger])
+    internal procedure GetIncludedProductsInCatalog(Catalog: Record "Shpfy Catalog"; var ProductList: List of [BigInteger])
     var
         GraphQLType: Enum "Shpfy GraphQL Type";
         Cursor: Text;
@@ -231,11 +236,11 @@ codeunit 30290 "Shpfy Catalog API"
         Parameters: Dictionary of [Text, Text];
     begin
         GraphQLType := "Shpfy GraphQL Type"::GetCatalogProducts;
-        Parameters.Add('CatalogId', Format(CatalogId));
+        Parameters.Add('CatalogId', Format(Catalog.Id));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
-                if ExtractShopifyCatalogProducts(ProductList, JResponse.AsObject(), Cursor) then begin
+                if ExtractShopifyCatalogProducts(ProductList, JResponse.AsObject(), Catalog, Cursor) then begin
                     if Parameters.ContainsKey('After') then
                         Parameters.Set('After', Cursor)
                     else
@@ -246,14 +251,20 @@ codeunit 30290 "Shpfy Catalog API"
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.publication.products.pageInfo.hasNextPage');
     end;
 
-    internal procedure ExtractShopifyCatalogProducts(var ProductList: List of [BigInteger]; JResponse: JsonObject; var Cursor: Text): Boolean
+    internal procedure ExtractShopifyCatalogProducts(var ProductList: List of [BigInteger]; JResponse: JsonObject; Catalog: Record "Shpfy Catalog"; var Cursor: Text): Boolean
     var
         JCatalogProducts: JsonArray;
         JEdge: JsonToken;
+        JCatalog: JsonObject;
         JNode: JsonObject;
         ProductId: BigInteger;
     begin
-        if JsonHelper.GetJsonArray(JResponse, JCatalogProducts, 'data.catalog.publication.products.edges') then begin
+        if not JsonHelper.GetJsonObject(JResponse, JCatalog, 'data.catalog') then begin
+            SkippedRecord.LogSkippedRecord(Catalog.Id, Catalog.RecordId, CatalogNotFoundLbl, Shop);
+            exit(false);
+        end;
+
+        if JsonHelper.GetJsonArray(JCatalog, JCatalogProducts, 'publication.products.edges') then begin
             foreach JEdge in JCatalogProducts do begin
                 Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
                 if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin

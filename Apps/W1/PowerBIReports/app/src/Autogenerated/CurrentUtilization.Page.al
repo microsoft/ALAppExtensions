@@ -22,7 +22,7 @@ page 37040 "Current Utilization"
 
                 trigger ControlAddInReady()
                 begin
-                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageTok);
+                    SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
@@ -57,7 +57,7 @@ page 37040 "Current Utilization"
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
 #pragma warning disable AA0240
-        ReportPageTok: Label 'ReportSection1cb4eb25650060b6dbd0', Locked = true;
+        ReportPageLbl: Label 'ReportSection1cb4eb25650060b6dbd0', Locked = true;
 #pragma warning restore AA0240
 
     trigger OnOpenPage()

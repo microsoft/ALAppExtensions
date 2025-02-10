@@ -148,12 +148,22 @@ codeunit 148182 "Library - Sustainability"
         EmissionFee.Insert();
     end;
 
+    procedure UpdateValueChainTrackingInSustainabilitySetup(EnableValueChainTracking: Boolean)
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Enable Value Chain Tracking", EnableValueChainTracking);
+        SustainabilitySetup.Modify();
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
         SustainabilityAccount: Record "Sustainability Account";
         SustainabilityAccountCategory: Record "Sustain. Account Category";
         SustainabilityAccountSubcategory: Record "Sustain. Account Subcategory";
@@ -165,6 +175,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityJnlBatch.DeleteAll();
         SustainabilityJnlLine.DeleteAll();
         SustainabilityLedgerEntry.DeleteAll();
+        SustainabilityValueEntry.DeleteAll();
         SustainabilityAccount.DeleteAll();
         SustainabilityAccountCategory.DeleteAll();
         SustainabilityAccountSubcategory.DeleteAll();

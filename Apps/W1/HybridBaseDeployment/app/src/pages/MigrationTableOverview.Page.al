@@ -183,7 +183,7 @@ page 40034 "Migration Table Overview"
 
     var
         AllObj: Record AllObj;
-        CouldNotReadTargetTableCountLbl: Label 'Could not get the target table count.';
+        CouldNotReadTargetTableCountLbl: Label 'The total of records in the target table is unavailable since the table is protected, so it isn''t possible to calculate if there is a difference to the source table. Instead, check the number of records that were migrated in the last run.';
         CompanyFilterDisplayName: Text;
         TableNameFilter: Text;
         StatusExpr: Text;

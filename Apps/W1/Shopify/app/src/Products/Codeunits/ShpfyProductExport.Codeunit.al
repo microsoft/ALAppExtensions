@@ -59,6 +59,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductEvents: Codeunit "Shpfy Product Events";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         OnlyUpdatePrice: Boolean;
         RecordCount: Integer;
@@ -66,6 +67,10 @@ codeunit 30178 "Shpfy Product Export"
         BulkOperationInput: TextBuilder;
         GraphQueryList: List of [TextBuilder];
         VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the item is blocked or sales blocked.';
+        ItemIsBlockedLbl: Label 'Item is blocked.';
+        ItemIsDraftLbl: Label 'Shopify product is in draft status.';
+        ItemIsArchivedLbl: Label 'Shopify product is archived.';
+        ItemVariantIsBlockedLbl: Label 'Item variant is blocked or sales blocked.';
 
     /// <summary> 
     /// Creates html body for a product from extended text, marketing text and attributes.
@@ -230,6 +235,11 @@ codeunit 30178 "Shpfy Product Export"
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
+        if ItemVariant.Blocked or ItemVariant."Sales Blocked" then begin
+            SkippedRecord.LogSkippedRecord(ItemVariant.RecordId, ItemVariantIsBlockedLbl, Shop);
+            exit;
+        end;
+
         if OnlyUpdatePrice then
             exit;
         Clear(TempShopifyVariant);
@@ -249,6 +259,11 @@ codeunit 30178 "Shpfy Product Export"
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
+        if ItemVariant.Blocked or ItemVariant."Sales Blocked" then begin
+            SkippedRecord.LogSkippedRecord(ItemVariant.RecordId, ItemVariantIsBlockedLbl, Shop);
+            exit;
+        end;
+
         Clear(TempShopifyVariant);
         TempShopifyVariant."Product Id" := ProductId;
         FillInProductVariantData(TempShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
@@ -535,6 +550,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductApi.SetShop(Shop);
         VariantApi.SetShop(Shop);
         ProductPriceCalc.SetShop(Shop);
+        MetafieldAPI.SetShop(Shop);
     end;
 
     /// <summary> 
@@ -552,9 +568,6 @@ codeunit 30178 "Shpfy Product Export"
         RecordRef1: RecordRef;
         RecordRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
-        ItemIsBlockedLbl: Label 'Item is blocked.';
-        ItemIsDraftLbl: Label 'Shopify product is in draft status.';
-        ItemIsArchivedLbl: Label 'Shopify product is archived.';
     begin
         if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
             case Shop."Action for Removed Products" of
@@ -711,7 +724,8 @@ codeunit 30178 "Shpfy Product Export"
                         until ItemUnitofMeasure.Next() = 0;
             end;
 
-            UpdateMetafields(ShopifyProduct.Id);
+            if Shop."Product Metafields To Shopify" then
+                UpdateMetafields(ShopifyProduct.Id);
             UpdateProductTranslations(ShopifyProduct.Id, Item)
         end;
     end;
@@ -719,8 +733,10 @@ codeunit 30178 "Shpfy Product Export"
     local procedure UpdateMetafields(ProductId: BigInteger)
     var
         ShpfyVariant: Record "Shpfy Variant";
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
     begin
+        if OnlyUpdatePrice then
+            exit;
+
         MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Product", ProductId);
 
         ShpfyVariant.SetRange("Product Id", ProductId);
@@ -811,10 +827,13 @@ codeunit 30178 "Shpfy Product Export"
         TranslationAPI: Codeunit "Shpfy Translation API";
         Digests: Dictionary of [Text, Text];
     begin
-        Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
-
         ShopifyLanguage.SetRange("Shop Code", Shop.Code);
         ShopifyLanguage.SetRange("Sync Translations", true);
+        if ShopifyLanguage.IsEmpty() then
+            exit;
+
+        Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
+
         if ShopifyLanguage.FindSet() then
             repeat
                 ICreateTranslation.CreateTranslation(RecVariant, ShopifyLanguage, TempTranslation, Digests);

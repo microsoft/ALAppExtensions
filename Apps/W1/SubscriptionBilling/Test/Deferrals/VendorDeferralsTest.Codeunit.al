@@ -59,10 +59,10 @@ codeunit 139913 "Vendor Deferrals Test"
 
     local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean)
     begin
-        CreateVendorContractWithDeferrals(BillingDateFormula, IsVendorContractLCY, 1);
+        CreateVendorContractWithDeferrals(BillingDateFormula, IsVendorContractLCY, 1, false);
     end;
 
-    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean; ServiceCommimentCount: Integer)
+    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean; ServiceCommimentCount: Integer; Discount: Boolean)
     var
         ContractsTestSubscriber: Codeunit "Contracts Test Subscriber";
         i: Integer;
@@ -77,11 +77,14 @@ codeunit 139913 "Vendor Deferrals Test"
         ContractsTestSubscriber.SetCallerName('VendorDeferralsTest - CreatePurchaseDocumentsFromVendorContractWithDeferrals');
         BindSubscription(ContractsTestSubscriber);
 
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        if Discount then
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item")
+        else
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
         UnbindSubscription(ContractsTestSubscriber);
 
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
         ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
         for i := 1 to ServiceCommimentCount do begin
             ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);
@@ -103,8 +106,11 @@ codeunit 139913 "Vendor Deferrals Test"
         BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine); //CreateVendorBillingDocsContractPageHandler, MessageHandler
         BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Get(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.");
+        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
+            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID())
+        else
+            PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
         PurchaseHeader.Modify(false);
     end;
 
@@ -161,7 +167,7 @@ codeunit 139913 "Vendor Deferrals Test"
         // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
 
         // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
-        CreateVendorContractWithDeferrals('<2M-CM>', true, 2);
+        CreateVendorContractWithDeferrals('<2M-CM>', true, 2, false);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
@@ -286,6 +292,34 @@ codeunit 139913 "Vendor Deferrals Test"
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the contract invoice
+        PostPurchDocumentAndFetchDeferrals();
+
+        // [THEN] Releasing each defferal entry should be correct
+        repeat
+            PostingDate := VendorContractDeferral."Posting Date";
+            ContractDeferralsRelease.Run();
+            VendorContractDeferral.Get(VendorContractDeferral."Entry No.");
+            GLEntry.Get(VendorContractDeferral."G/L Entry No.");
+            GLEntry.TestField("Sub. Contract No.", VendorContractDeferral."Contract No.");
+            FetchAndTestUpdatedVendorContractDeferral();
+        until VendorContractDeferral.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
+    procedure TestReleasingVendorContractDeferralsForCreditMemoAsDiscount()
+    var
+        GLEntry: Record "G/L Entry";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+    begin
+        // [SCENARIO] Making sure that Deferrals are properly realeased when Credit Memo is created from a Serv. Comm Package Line marked as Discount
+
+        // [GIVEN] Contract has been created and the billing proposal with unposted contract credit memo
+        SetPostingAllowTo(0D);
+        CreateVendorContractWithDeferrals('<2M-CM>', true, 1, true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract credit memo
         PostPurchDocumentAndFetchDeferrals();
 
         // [THEN] Releasing each defferal entry should be correct

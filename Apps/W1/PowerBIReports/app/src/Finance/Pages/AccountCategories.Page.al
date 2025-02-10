@@ -1,6 +1,7 @@
 namespace Microsoft.Finance.PowerBIReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
+using System.Utilities;
 
 page 36961 "Account Categories"
 {
@@ -45,7 +46,8 @@ page 36961 "Account Categories"
 
                             Rec."G/L Acc. Category Entry No." := GLAccountCategory."Entry No.";
                             Rec."Parent Acc. Category Entry No." := GLAccountCategory."Parent Entry No.";
-                            AccountCategoryDesc := GLAccountCategory.Description;
+                            Text := GLAccountCategory.Description;
+                            exit(true);
                         end;
                     end;
 
@@ -70,9 +72,40 @@ page 36961 "Account Categories"
         }
     }
 
+    actions
+    {
+        area(Processing)
+        {
+            action(RestoreDefault)
+            {
+                ApplicationArea = All;
+                Caption = 'Restore Default G/L Account Categories';
+                ToolTip = 'Restores the default G/L Account Category for each Power BI Account Category.';
+                Image = Default;
+
+                trigger OnAction()
+                var
+                    FinanceInstallationHandler: Codeunit "Finance Installation Handler";
+                    ConfirmMgt: Codeunit "Confirm Management";
+                begin
+                    if ConfirmMgt.GetResponseOrDefault(ConfirmRestoreDefaultQst, false) then
+                        FinanceInstallationHandler.RestorePowerBIAccountCategories();
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(RestoreDefault_Promoted; RestoreDefault) { }
+            }
+        }
+    }
+
     var
         AccountCategoryDesc: Text;
         AccountCategoryDescEditable: Boolean;
+        ConfirmRestoreDefaultQst: Label 'Are you sure you want to restore the default G/L Account Categories for each Power BI Account Category? This will overwrite any changes you have made.';
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin

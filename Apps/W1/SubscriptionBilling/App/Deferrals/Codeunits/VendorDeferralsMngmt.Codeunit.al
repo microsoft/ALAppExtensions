@@ -15,6 +15,8 @@ codeunit 8068 "Vendor Deferrals Mngmt."
 {
     SingleInstance = true;
     Access = Internal;
+    Permissions =
+        tabledata "Purch. Inv. Line" = r;
 
     var
         TempVendorContractDeferral: Record "Vendor Contract Deferral" temporary;
@@ -37,9 +39,7 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         GeneralPostingSetup: Record "General Posting Setup";
         BillingLine: Record "Billing Line";
     begin
-        BillingLine.SetRange("Document Type", BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"));
-        BillingLine.SetRange("Document No.", PurchLine."Document No.");
-        BillingLine.SetRange("Document Line No.", PurchLine."Line No.");
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         BillingLine.SetFilter("Billing from", '>=%1', PurchLine."Recurring Billing from");
         BillingLine.SetFilter("Billing to", '<=%1', PurchLine."Recurring Billing to");
         if not BillingLine.FindFirst() then
@@ -79,8 +79,20 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnPostPurchLineOnBeforeInsertCrMemoLine, '', false, false)]
+    local procedure InsertVendorDeferralsFromPurchaseInvoiceOnPostPurchLineOnBeforeInsertCrMemoLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean; var PurchCrMemoLine: Record "Purch. Cr. Memo Line"; xPurchaseLine: Record "Purchase Line");
+    begin
+        if (PurchaseLine.Quantity >= 0) or (PurchaseLine."Direct Unit Cost" >= 0) then
+            exit;
+
+        if GetAppliesToDocNo(PurchaseHeader) <> '' then
+            exit;
+
+        InsertContractDeferrals(PurchaseHeader, PurchaseLine, PurchaseHeader."Posting No.");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnPostPurchLineOnBeforeInsertInvoiceLine, '', false, false)]
-    local procedure InsertVendorDeferralsFromPurchaseInvoice(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
+    local procedure InsertVendorDeferralsFromPurchaseInvoiceOnPostPurchLineOnBeforeInsertInvoiceLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
     begin
         InsertContractDeferrals(PurchaseHeader, PurchaseLine, PurchaseHeader."Posting No.");
     end;
@@ -97,15 +109,14 @@ codeunit 8068 "Vendor Deferrals Mngmt."
             exit;
         if PurchaseLine.Quantity = 0 then
             exit;
-        if not PurchaseLine.IsLineAttachedToBillingLine() then
-            exit;
         if PurchaseLine."Recurring Billing from" > PurchaseLine."Recurring Billing to" then
             exit;
         if not (PurchaseLine."Document Type" in [Enum::"Purchase Document Type"::Invoice, Enum::"Purchase Document Type"::"Credit Memo"]) then
             exit;
 
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type"), PurchaseLine."Document No.", PurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         VendContractHeader.Get(BillingLine."Contract No.");
         if VendContractHeader."Without Contract Deferrals" then
             exit;
@@ -299,6 +310,7 @@ codeunit 8068 "Vendor Deferrals Mngmt."
                 CreditMemoVendorContractDeferral := InvoiceVendorContractDeferral;
                 CreditMemoVendorContractDeferral."Document Type" := Enum::"Rec. Billing Document Type"::"Credit Memo";
                 CreditMemoVendorContractDeferral."Document No." := PurchCrMemoLine."Document No.";
+                CreditMemoVendorContractDeferral."Document Line No." := PurchCrMemoLine."Line No.";
                 CreditMemoVendorContractDeferral."Posting Date" := InvoiceVendorContractDeferral."Posting Date";
                 CreditMemoVendorContractDeferral."Document Posting Date" := PurchCrMemoLine."Posting Date";
                 CreditMemoVendorContractDeferral."Deferral Base Amount" := InvoiceVendorContractDeferral."Deferral Base Amount" * -1;
@@ -313,11 +325,11 @@ codeunit 8068 "Vendor Deferrals Mngmt."
                 PurchInvLine.Get(InvoiceVendorContractDeferral."Document No.", InvoiceVendorContractDeferral."Document Line No.");
                 if not InvoiceVendorContractDeferral.Released then begin
                     ContractDeferralRelease.SetRequestPageParameters(InvoiceVendorContractDeferral."Posting Date", PurchCrMemoLine."Posting Date");
-                    ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(InvoiceVendorContractDeferral, PurchInvLine."Gen. Bus. Posting Group", PurchInvLine."Gen. Prod. Posting Group");
+                    ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(InvoiceVendorContractDeferral);
                     ContractDeferralRelease.PostTempGenJnlLineBufferForVendorDeferrals();
                 end;
                 ContractDeferralRelease.SetRequestPageParameters(CreditMemoVendorContractDeferral."Posting Date", PurchCrMemoLine."Posting Date");
-                ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(CreditMemoVendorContractDeferral, PurchInvLine."Gen. Bus. Posting Group", PurchInvLine."Gen. Prod. Posting Group");
+                ContractDeferralRelease.ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(CreditMemoVendorContractDeferral);
                 ContractDeferralRelease.PostTempGenJnlLineBufferForVendorDeferrals();
 
                 TempVendorContractDeferral := CreditMemoVendorContractDeferral;
@@ -331,11 +343,9 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         VendorContractHeader: Record "Vendor Contract";
         BillingLine: Record "Billing Line";
     begin
-        if not PurchaseLine.IsLineAttachedToBillingLine() then
-            exit;
-
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type"), PurchaseLine."Document No.", PurchaseLine."Line No.");
-        BillingLine.FindFirst();
+        if not BillingLine.FindFirst() then
+            exit;
         VendorContractHeader.Get(BillingLine."Contract No.");
         exit(not VendorContractHeader."Without Contract Deferrals");
     end;
@@ -355,19 +365,16 @@ codeunit 8068 "Vendor Deferrals Mngmt."
             Page.Run(Page::"Vendor Contract Deferrals", TempVendorContractDeferral);
     end;
 
-#if not CLEAN25
     [EventSubscriber(ObjectType::Page, Page::Navigate, OnAfterNavigateFindRecords, '', false, false)]
     local procedure OnAfterFindEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
         VendorContractDeferral: Record "Vendor Contract Deferral";
-        Navigate: Page Navigate;
     begin
         VendorContractDeferral.SetRange("Document No.", DocNoFilter);
-        Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Vendor Contract Deferral", VendorContractDeferral."Document Type", VendorContractDeferral.TableCaption, VendorContractDeferral.Count);
+        DocumentEntry.InsertIntoDocEntry(Database::"Vendor Contract Deferral", VendorContractDeferral."Document Type", VendorContractDeferral.TableCaption, VendorContractDeferral.Count);
     end;
-#endif
-#if not CLEAN25
-    [EventSubscriber(ObjectType::Page, Page::Navigate, OnBeforeNavigateShowRecords, '', false, false)]
+
+    [EventSubscriber(ObjectType::Page, Page::Navigate, OnBeforeShowRecords, '', false, false)]
     local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
         VendorContractDeferral: Record "Vendor Contract Deferral";
@@ -378,7 +385,7 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         VendorContractDeferral.SetRange("Document No.", DocNoFilter);
         Page.Run(Page::"Vendor Contract Deferrals", VendorContractDeferral);
     end;
-#endif
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforePostGenJnlLine, '', false, false)]
     local procedure SetContractNo(var GenJournalLine: Record "Gen. Journal Line"; Balancing: Boolean)
     var

@@ -1,6 +1,5 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Security.AccessControl;
 using Microsoft.Utilities;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
@@ -9,6 +8,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Finance.Currency;
+using System.Security.User;
 
 table 8061 "Billing Line"
 {
@@ -30,7 +30,7 @@ table 8061 "Billing Line"
             Caption = 'User ID';
             DataClassification = EndUserIdentifiableInformation;
             Editable = false;
-            TableRelation = User."User Name";
+            TableRelation = "User Setup";
         }
         field(10; "Partner No."; Code[20])
         {
@@ -356,6 +356,16 @@ table 8061 "Billing Line"
             PurchaseDocumentType::Invoice:
                 RecurringBillingDocumentType := RecurringBillingDocumentType::Invoice;
             PurchaseDocumentType::"Credit Memo":
+                RecurringBillingDocumentType := RecurringBillingDocumentType::"Credit Memo";
+        end;
+    end;
+
+    internal procedure GetBillingDocumentTypeFromTextDocumentType(DocumentType: Text) RecurringBillingDocumentType: Enum "Rec. Billing Document Type"
+    begin
+        case DocumentType of
+            Format(RecurringBillingDocumentType::Invoice):
+                RecurringBillingDocumentType := RecurringBillingDocumentType::Invoice;
+            Format(RecurringBillingDocumentType::"Credit Memo"):
                 RecurringBillingDocumentType := RecurringBillingDocumentType::"Credit Memo";
         end;
     end;

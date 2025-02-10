@@ -38,7 +38,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -69,7 +69,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -101,7 +101,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -126,7 +126,7 @@ codeunit 139617 "E-Doc. Mapping Test"
         LibraryPermission.SetOutsideO365Scope();
         EDocMapping.DeleteAll();
         EDocMapping.Reset();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
         LibraryPermission.SetTeamMember();
 
         LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
@@ -155,7 +155,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -190,7 +190,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -224,7 +224,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -277,7 +277,7 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
 
         LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
@@ -285,7 +285,7 @@ codeunit 139617 "E-Doc. Mapping Test"
         TransformationRule.Get(TransformationRule.GetFourthToSixthSubstringCode());
 
         // [WHEN] A transformation mapping is setup
-        EDocService.Get(LibraryEDoc.CreateService());
+        EDocService.Get(LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock"));
         LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
         EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();

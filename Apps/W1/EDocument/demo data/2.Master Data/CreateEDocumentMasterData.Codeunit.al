@@ -11,11 +11,13 @@ codeunit 5375 "Create E-Document Master Data"
 
     local procedure SetVendorsToUseEDocOrder()
     var
-        CreateCommonCustomerVendor: Codeunit "Create Common Customer/Vendor";
+        EDocumentModuleSetup: Record "E-Document Module Setup";
     begin
-        UpdateVendor(CreateCommonCustomerVendor.DomesticVendor1());
-        UpdateVendor(CreateCommonCustomerVendor.DomesticVendor2());
-        UpdateVendor(CreateCommonCustomerVendor.DomesticVendor3());
+        EDocumentModuleSetup.Get();
+
+        UpdateVendor(EDocumentModuleSetup."Vendor No. 1");
+        UpdateVendor(EDocumentModuleSetup."Vendor No. 2");
+        UpdateVendor(EDocumentModuleSetup."Vendor No. 3");
     end;
 
     local procedure UpdateVendor(VendorNo: Code[20])
@@ -83,6 +85,6 @@ codeunit 5375 "Create E-Document Master Data"
 
     var
         ContosoUtilities: Codeunit "Contoso Utilities";
-        BEANSTok: Label 'BEANS', MaxLength = 10;
-        BeansLbl: Label 'Beans', MaxLength = 10;
+        BEANSTok: Label 'BEANS', MaxLength = 20;
+        BeansLbl: Label 'Beans', MaxLength = 100;
 }

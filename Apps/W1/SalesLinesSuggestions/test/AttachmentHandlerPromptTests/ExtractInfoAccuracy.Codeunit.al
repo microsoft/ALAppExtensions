@@ -1,7 +1,7 @@
 namespace Microsoft.Sales.Document.Test;
 using System.TestTools.AITestToolkit;
 
-codeunit 149826 "Extract Info. Accuracy"
+codeunit 133518 "Extract Info. Accuracy"
 {
     Subtype = Test;
     TestPermissions = Disabled;

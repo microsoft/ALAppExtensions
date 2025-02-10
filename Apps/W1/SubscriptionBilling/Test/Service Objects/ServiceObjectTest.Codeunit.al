@@ -2,13 +2,15 @@ namespace Microsoft.SubscriptionBilling;
 
 
 using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Calendar;
+using Microsoft.Finance.Currency;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Attribute;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Pricing;
 using Microsoft.CRM.Contact;
-using Microsoft.Finance.Currency;
+using Microsoft.Pricing.Calculation;
 using Microsoft.Pricing.Source;
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.PriceList;
@@ -43,6 +45,7 @@ codeunit 148157 "Service Object Test"
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryInventory: Codeunit "Library - Inventory";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         AssertThat: Codeunit Assert;
@@ -234,6 +237,8 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.TestField("Currency Factor", 0);
         ServiceCommitment.TestField("Currency Factor Date", 0D);
         ServiceCommitment.TestField(Discount, false);
+        ServiceCommitment.TestField("Price Binding Period", ServiceCommPackageLine."Price Binding Period");
+        ServiceCommitment.TestField("Next Price Update", CalcDate(ServiceCommPackageLine."Price Binding Period", ServiceCommitment."Service Start Date"));
     end;
 
     [Test]
@@ -644,6 +649,7 @@ codeunit 148157 "Service Object Test"
     [Test]
     procedure CheckUpdatingTerminationDatesOnManualValidation()
     var
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
         ServiceAndCalculationStartDate: Date;
         DateFormulaLbl: Label '-%1', Locked = true;
@@ -667,7 +673,10 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.Validate("Cancellation Possible Until", CalcDate('<+5D>', ServiceCommitment."Cancellation Possible Until"));
         AssertThat.AreEqual(CalcDate(ServiceCommitment."Notice Period", ServiceCommitment."Cancellation Possible Until"), ServiceCommitment."Term Until", '"Term Until" Date is not calculated correctly.');
 
-        ServiceCommitment.Validate("Term Until", CalcDate('<-7D>', ServiceCommitment."Term Until"));
+        if DateTimeManagement.IsLastDayOfMonth(CalcDate('<-7D>', ServiceCommitment."Term Until")) then
+            ServiceCommitment.Validate("Term Until", CalcDate('<-8D>', ServiceCommitment."Term Until"))
+        else
+            ServiceCommitment.Validate("Term Until", CalcDate('<-7D>', ServiceCommitment."Term Until"));
         Evaluate(NegativeDateFormula, StrSubstNo(DateFormulaLbl, ServiceCommitment."Notice Period"));
         AssertThat.AreEqual(CalcDate(NegativeDateFormula, ServiceCommitment."Term Until"), ServiceCommitment."Cancellation Possible Until", '"Cancellation Possible Until" Date is not calculated correctly.');
     end;
@@ -791,6 +800,85 @@ codeunit 148157 "Service Object Test"
         TestCalculationBaseAmount(1, FutureReferenceDate, CustomerPrice[3]);
         // test - price used in future + discounted price for Qty = 10
         TestCalculationBaseAmount(10, FutureReferenceDate, CustomerPrice[4]);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure TestRecalculateServiceCommitmentsOnChangeVariantCode()
+    var
+        ItemVariant: array[2] of Record "Item Variant";
+        CustomerPrice: array[2] of Decimal;
+    begin
+        // [SCENARIO]: Create Service Object with the Service Commitment, Create Item Variants and create Sales Prices
+        // [SCENARIO]: Change the Variant Code in Service Object and check the value of Calculation Base Amount in Service Commitment
+        // [SCENARIO]: Calculation Base Amount should be recalculated based on value of Variant Code that has been set in Sales Price
+
+        // [GIVEN] New pricing enabled
+        LibraryPriceCalculation.EnableExtendedPriceCalculation();
+        LibraryPriceCalculation.SetupDefaultHandler("Price Calculation Handler"::"Business Central (Version 16.0)");
+        // [GIVEN]: Setup
+        ClearAll();
+        SetupServiceObjectWithServiceCommitment(true, true);
+        ConfirmOption := true;
+        LibrarySales.CreateCustomer(Customer);
+        ServiceObject.Validate("End-User Customer No.", Customer."No."); //ConfirmHandler
+        ServiceObject.Modify(true);
+        CustomerPrice[1] := LibraryRandom.RandDec(100, 2);
+        CustomerPrice[2] := LibraryRandom.RandDec(100, 2);
+        LibraryInventory.CreateItemVariant(ItemVariant[1], Item."No.");
+        LibraryInventory.CreateItemVariant(ItemVariant[2], Item."No.");
+        CreateCustomerSalesPriceWithVariantCode(Item, Customer, WorkDate(), 0, CustomerPrice[1], (CalcDate('<1M>', WorkDate())), ItemVariant[1].Code);
+        CreateCustomerSalesPriceWithVariantCode(Item, Customer, WorkDate(), 0, CustomerPrice[2], (CalcDate('<1M>', WorkDate())), ItemVariant[2].Code);
+
+        // [WHEN]: Change the Variant Code on Service Object
+        ServiceObject.Validate("Variant Code", ItemVariant[1].Code); //ConfirmHandler
+        ServiceObject.Modify(false);
+        FindServiceCommitment(ServiceCommitment, ServiceObject."No.");
+
+        // [THEN]: Calculation Base Amount on Service Commitment should be recalculated based on value related to changed Variant Code
+        AssertThat.AreEqual(CustomerPrice[1], ServiceCommitment."Calculation Base Amount", 'Calculation Base Amount should be taken from Sales Price based on Variant Code');
+
+        // [WHEN]: Change the Variant Code on Service Object
+        ServiceObject.Validate("Variant Code", ItemVariant[2].Code); //ConfirmHandler
+        ServiceObject.Modify(false);
+        FindServiceCommitment(ServiceCommitment, ServiceObject."No.");
+
+        // [THEN]: Calculation Base Amount on Service Commitment should be recalculated based on value related to changed Variant Code
+        AssertThat.AreEqual(CustomerPrice[2], ServiceCommitment."Calculation Base Amount", 'Calculation Base Amount should be taken from Sales Price based on Variant Code');
+    end;
+
+    local procedure FindServiceCommitment(var ServiceCommitmentLine: Record "Service Commitment"; ServiceObjectNo: Code[20])
+    begin
+        ServiceCommitmentLine.SetRange(ServiceCommitmentLine."Service Object No.", ServiceObjectNo);
+        ServiceCommitmentLine.FindFirst();
+    end;
+
+    local procedure CreateCustomerSalesPriceWithVariantCode(SourceItem: Record Item; SourceCustomer: Record Customer; StartingDate: Date; Quantity: Decimal; CustomerPrice: Decimal; EndingDate: Date; VariantCode: Code[10])
+    begin
+        CreateCustomerSalesPriceWithVariantCode(SourceItem, SourceCustomer, StartingDate, EndingDate, Quantity, CustomerPrice, VariantCode);
+    end;
+
+    local procedure CreateCustomerSalesPriceWithVariantCode(SourceItem: Record Item; SourceCustomer: Record Customer; StartingDate: Date; EndingDate: Date; Quantity: Decimal; CustomerPrice: Decimal; VariantCode: Code[10])
+    begin
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Sale, "Price Source Type"::Customer, SourceCustomer."No.");
+        PriceListHeader.Status := "Price Status"::Active;
+        PriceListHeader."Allow Updating Defaults" := true;
+        PriceListHeader."Currency Code" := '';
+        PriceListHeader.Modify(true);
+
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader, "Price Amount Type"::Price, "Price Asset Type"::Item, SourceItem."No.");
+        PriceListLine.Validate("Starting Date", StartingDate);
+        PriceListLine.Validate("Ending Date", EndingDate);
+
+        PriceListLine."Asset Type" := PriceListLine."Asset Type"::Item;
+        PriceListLine."Product No." := SourceItem."No.";
+
+        PriceListLine."Currency Code" := '';
+        PriceListLine.Validate("Variant Code", VariantCode);
+        PriceListLine.Validate("Unit Price", CustomerPrice);
+        PriceListLine.Validate("Minimum Quantity", Quantity);
+        PriceListLine.Status := "Price Status"::Active;
+        PriceListLine.Modify(true);
     end;
 
     [Test]
@@ -979,6 +1067,40 @@ codeunit 148157 "Service Object Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure CheckArchivedServCommVariantCode()
+    var
+        ServiceCommitmentArchive: Record "Service Commitment Archive";
+        ItemVariant: Record "Item Variant";
+        PreviousVariantCode: Code[10];
+    begin
+        // [SCENARIO]: Create Service Object with the Service Commitment, create Item Variant and create Sales Price
+        // [SCENARIO]: Change the Variant Code in Service Object and check the value in Service Commitment Archive
+        // [SCENARIO]: Variant Code in Service Commitment Archive should be the value of the Service Object before the Variant Code change
+
+        // [GIVEN]: Setup
+        ClearAll();
+        SetupServiceObjectWithServiceCommitment(true, true);
+        ConfirmOption := true;
+        LibrarySales.CreateCustomer(Customer);
+        LibraryInventory.CreateItemVariant(ItemVariant, Item."No.");
+        ServiceObject.Validate("End-User Customer No.", Customer."No."); //ConfirmHandler
+        ServiceObject.Validate("Variant Code", ItemVariant.Code); // ConfirmHandler
+        ServiceObject.Modify(true);
+
+        // [WHEN]: Change the Variant Code to create entries in Service Commitment Archive
+        PreviousVariantCode := ServiceObject."Variant Code";
+        LibraryInventory.CreateItemVariant(ItemVariant, Item."No.");
+        ServiceObject.Validate("Variant Code", ItemVariant.Code); // ConfirmHandler
+        ServiceObject.Modify(false);
+
+        // Check if archive has saved the correct (old) Variant Code
+        ServiceCommitmentArchive.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitmentArchive.SetRange("Variant Code (Service Object)", PreviousVariantCode);
+        AssertThat.RecordIsNotEmpty(ServiceCommitmentArchive);
+    end;
+
+    [Test]
     procedure CheckChangeServiceObjectSN()
     var
         ServCommArchive: Record "Service Commitment Archive";
@@ -1140,6 +1262,7 @@ codeunit 148157 "Service Object Test"
         Evaluate(ServiceCommPackageLine."Initial Term", '<1M>');
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Vendor;
         Evaluate(ServiceCommPackageLine."Billing Rhythm", '<12M>');
+        Evaluate(ServiceCommPackageLine."Price Binding Period", '<1M>');
         ServiceCommPackageLine.Modify(false);
 
         ServiceObjectPage.OpenEdit();
@@ -1240,6 +1363,56 @@ codeunit 148157 "Service Object Test"
 
         ServiceObject.Delete(true);
         AssertThat.AreEqual(0, DocumentAttachment.Count(), 'Document Attachment(s) should be deleted.');
+    end;
+
+    [Test]
+    procedure UT_ExpectItemDescriptionWhenCreateServiceObjectWithoutEndUser()
+    var
+        ItemTranslation: Record "Item Translation";
+    begin
+        // [SCENARIO] When Create Service Object Without End User and add Item with translation, Item Description in Service Object should not be translated
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+
+        // [WHEN] Create Service Object without End User
+        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+
+        // [THEN] Item Description should not be translated in Service Object
+        AssertThat.AreEqual(Item.Description, ServiceObject.Description, 'Item description should not be translated in Service Object');
+    end;
+
+    [Test]
+    procedure UT_ExpectTranslatedItemDescriptionBasedOnCustomerLanguageCodeWhenCreateServiceObjectWithEndUser()
+    var
+        ItemTranslation: Record "Item Translation";
+    begin
+        // [SCENARIO] When Create Service Object With End User and add Item with translation defined that match Customer Language Code, Item Description in Service Object should be translated
+
+        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Service Object with End User
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
+        LibrarySales.CreateCustomer(Customer);
+        Customer."Language Code" := ItemTranslation."Language Code";
+        Customer.Modify(false);
+        MockServiceObjectWithEndUserCustomerNo();
+
+        // [WHEN] add Item in Service Object
+        ServiceObject.Validate("Item No.", Item."No.");
+        ServiceObject.Modify(false);
+
+        // [THEN] Item Description should be translated in Service Object
+        AssertThat.AreEqual(ItemTranslation.Description, ServiceObject.Description, 'Item description should be translated in Service Object');
+    end;
+
+    local procedure MockServiceObjectWithEndUserCustomerNo()
+    begin
+        ServiceObject.Init();
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Insert(true);
     end;
 
     local procedure Initialize()
@@ -1406,13 +1579,16 @@ codeunit 148157 "Service Object Test"
 
     local procedure GetUpdatedCancellationPossibleUntilDate(CalculationStartDate: Date; SourceServiceCommitment: Record "Service Commitment") CancellationPossibleUntil: Date
     var
+        CalendarManagement: Codeunit "Calendar Management";
+        DateTimeManagement: Codeunit "Date Time Management";
         NegativeDateFormula: DateFormula;
-        DateFormulaLbl: Label '-%1', Locked = true;
     begin
-        if Format(SourceServiceCommitment."Notice Period") = '' then
+        if SourceServiceCommitment.IsNoticePeriodEmpty() then
             exit(0D);
-        Evaluate(NegativeDateFormula, StrSubstNo(DateFormulaLbl, SourceServiceCommitment."Notice Period"));
+        CalendarManagement.ReverseDateFormula(NegativeDateFormula, SourceServiceCommitment."Notice Period");
         CancellationPossibleUntil := CalcDate(NegativeDateFormula, CalculationStartDate);
+        if DateTimeManagement.IsLastDayOfMonth(SourceServiceCommitment."Term until") then
+            DateTimeManagement.MoveDateToLastDayOfMonth(CancellationPossibleUntil);
     end;
 
     local procedure ValidateServiceDateCombination(StartDate: Date; EndDate: Date; NextCalcDate: Date)

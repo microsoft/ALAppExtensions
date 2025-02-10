@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
 using System.Environment;
@@ -120,7 +119,6 @@ codeunit 10681 "Electronic VAT Installation"
     local procedure ApplyEvaluationClassificationsForPrivacy()
     var
         Company: Record Company;
-        VATCode: Record "VAT Code";
         OAuth20Setup: Record "OAuth 2.0 Setup";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
@@ -129,8 +127,6 @@ codeunit 10681 "Electronic VAT Installation"
             exit;
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Elec. VAT Setup");
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Code", VATCode.FieldNo("VAT Rate For Reporting"));
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Code", VATCode.FieldNo("Report VAT Rate"));
         DataClassificationMgt.SetFieldToNormal(Database::"OAuth 2.0 Setup", OAuth20Setup.FieldNo("Altinn Token"));
     end;
 

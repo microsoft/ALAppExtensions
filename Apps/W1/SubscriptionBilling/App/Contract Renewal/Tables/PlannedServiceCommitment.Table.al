@@ -110,7 +110,6 @@ table 8002 "Planned Service Commitment"
 
             trigger OnValidate()
             begin
-                Validate("Discount %");
                 if "Currency Code" = '' then
                     "Price (LCY)" := Price;
             end;
@@ -223,7 +222,8 @@ table 8002 "Planned Service Commitment"
         field(27; "Contract Line No."; Integer)
         {
             Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
+            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
         }
         field(42; "Customer Price Group"; Code[10])
         {

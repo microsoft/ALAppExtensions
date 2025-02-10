@@ -33,15 +33,6 @@ table 4511 "SMTP Account"
             DataClassification = CustomerContent;
         }
 
-#if not CLEANSCHEMA23
-        field(4; Authentication; Enum "SMTP Authentication")
-        {
-            DataClassification = CustomerContent;
-            ObsoleteReason = 'Replaced by "Authentication Types" as the enum is moving to SMTP API app.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-#endif
         field(5; "User Name"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -103,15 +94,6 @@ table 4511 "SMTP Account"
         {
             DataClassification = CustomerContent;
         }
-#if not CLEANSCHEMA20
-        field(12; "Created By"; Text[50])
-        {
-            DataClassification = EndUserIdentifiableInformation;
-            ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '20.0';
-        }
-#endif
         field(13; "Authentication Type"; Enum "SMTP Authentication Types")
         {
             DataClassification = CustomerContent;

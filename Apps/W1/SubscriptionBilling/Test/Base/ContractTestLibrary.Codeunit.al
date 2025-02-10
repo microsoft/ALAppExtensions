@@ -2,9 +2,11 @@ namespace Microsoft.SubscriptionBilling;
 
 using System.Reflection;
 using System.Environment.Configuration;
+using System.Globalization;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Inventory.BOM;
 using Microsoft.CRM.Team;
 using Microsoft.CRM.Contact;
 using Microsoft.Sales.Setup;
@@ -32,8 +34,9 @@ codeunit 139685 "Contract Test Library"
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryManufacturing: Codeunit "Library - Manufacturing";
         ContractsAppInitialized: Boolean;
-        PrefixLbl: Label 'ZZZ', Locked = true;
+        PrefixTok: Label 'ZZZ', Locked = true;
         CustContractDimensionCodeLbl: Label 'CUSTOMERCONTRACT', Locked = true;
         CustContractDimensionDescriptionLbl: Label 'Customer Contract Dimension', Locked = true;
 
@@ -157,6 +160,23 @@ codeunit 139685 "Contract Test Library"
     begin
         CreateServiceObjectItem(NewItem, false, ItemServiceCommitmentType, Enum::"Item Type"::"Non-Inventory");
     end;
+
+    procedure CreateItemTranslation(var ItemTranslation: Record "Item Translation"; ItemNo: Code[20]; LanguageCode: Code[10])
+    var
+        Language: Record Language;
+    begin
+        if LanguageCode = '' then begin
+            Language.Code := LibraryUtility.GenerateGUID();
+            Language.Insert(true);
+            LanguageCode := Language.Code;
+        end;
+
+        ItemTranslation.Init();
+        ItemTranslation."Item No." := ItemNo;
+        ItemTranslation."Language Code" := LanguageCode;
+        ItemTranslation.Description := 'Translated Description';
+        ItemTranslation.Insert(true);
+    end;
     #EndRegion Item
 
     #Region Customer
@@ -220,7 +240,7 @@ codeunit 139685 "Contract Test Library"
     var
         CustomerContractNo: Code[20];
     begin
-        CustomerContractNo := PrefixLbl + 'CUC000000';
+        CustomerContractNo := PrefixTok + 'CUC000000';
         repeat
             CustomerContractNo := IncStr(CustomerContractNo);
         until not CustomerContract.Get(CustomerContractNo);
@@ -239,7 +259,7 @@ codeunit 139685 "Contract Test Library"
     var
         VendorContractNo: Code[20];
     begin
-        VendorContractNo := PrefixLbl + 'VEC000000';
+        VendorContractNo := PrefixTok + 'VEC000000';
         repeat
             VendorContractNo := IncStr(VendorContractNo);
         until not VendorContract.Get(VendorContractNo);
@@ -388,7 +408,7 @@ codeunit 139685 "Contract Test Library"
     #EndRegion Contracts
 
     #Region Service Commitment Template & Package
-    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type")
+    procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template"; BillingBasePeriod: Text; CalcBasePercent: Decimal; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; Discount: Boolean)
     var
         ServiceCommitmentTemplateCode: Code[20];
     begin
@@ -405,6 +425,8 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentTemplate."Calculation Base %" := CalcBasePercent;
         ServiceCommitmentTemplate."Invoicing via" := InvoicingVia;
         ServiceCommitmentTemplate."Calculation Base Type" := CalculationBaseType;
+        if Discount then
+            ServiceCommitmentTemplate.Discount := true;
 
         OnCreateServiceCommitmentTemplateOnBeforeInsert(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate.Insert(true)
@@ -413,7 +435,13 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommitmentTemplate(var ServiceCommitmentTemplate: Record "Service Commitment Template")
     begin
         ServiceCommitmentTemplate.Init();
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", false);
+    end;
+
+    procedure CreateServiceCommitmentTemplateWithDiscount(var ServiceCommitmentTemplate: Record "Service Commitment Template")
+    begin
+        ServiceCommitmentTemplate.Init();
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', ServiceCommitmentTemplate."Calculation Base %", ServiceCommitmentTemplate."Invoicing via", ServiceCommitmentTemplate."Calculation Base Type", true);
     end;
 
     procedure CreateServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Service Commitment Package")
@@ -449,16 +477,12 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommitmentPackageLine(ServiceCommitmentPackageCode: Code[20]; ServiceCommitmentTemplateCode: Code[20]; var ServiceCommPackageLine: Record "Service Comm. Package Line";
     BillingBasePeriodText: Text; BillingRhythmText: Text; ServicePartner: Enum "Service Partner"; PriceBindingPeriod: Text)
     var
-        ServiceCommPackageLine2: Record "Service Comm. Package Line";
-        NextLineNo: Integer;
+        RecRef: RecordRef;
     begin
-        ServiceCommPackageLine2.SetRange("Package Code", ServiceCommitmentPackageCode);
-        if ServiceCommPackageLine2.FindLast() then
-            NextLineNo := ServiceCommPackageLine2."Line No.";
-        NextLineNo += 10000;
         ServiceCommPackageLine.Init();
         ServiceCommPackageLine."Package Code" := ServiceCommitmentPackageCode;
-        ServiceCommPackageLine."Line No." := NextLineNo;
+        RecRef.GetTable(ServiceCommPackageLine);
+        ServiceCommPackageLine."Line No." := LibraryUtility.GetNewLineNo(RecRef, ServiceCommPackageLine.FieldNo("Line No."));
         if ServiceCommitmentTemplateCode <> '' then
             ServiceCommPackageLine.Validate(Template, ServiceCommitmentTemplateCode);
         Evaluate(ServiceCommPackageLine."Billing Base Period", BillingBasePeriodText);
@@ -480,7 +504,7 @@ codeunit 139685 "Contract Test Library"
         UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, BillingBasePeriod, CalculationBase, ExtensionTerm, ServicePartner, ItemNo, "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', BillingRhytm, false);
     end;
 
-    internal procedure UpdateServiceCommitmentPackageLine(var ServiceCommPackageLine: Record "Service Comm. Package Line"; BillingBasePeriod: Text; CalculationBase: Decimal; ExtensionTerm: Text; ServicePartner: Enum "Service Partner"; ItemNo: Code[20]; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; PriceBindingPeriod: Text; CalculationRhythmDateFormulaTxt: Text; CreateDiscountLine: Boolean)
+    procedure UpdateServiceCommitmentPackageLine(var ServiceCommPackageLine: Record "Service Comm. Package Line"; BillingBasePeriod: Text; CalculationBase: Decimal; ExtensionTerm: Text; ServicePartner: Enum "Service Partner"; ItemNo: Code[20]; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; PriceBindingPeriod: Text; CalculationRhythmDateFormulaTxt: Text; CreateDiscountLine: Boolean)
     begin
         ServiceCommPackageLine."Invoicing Item No." := ItemNo;
         ServiceCommPackageLine.Partner := ServicePartner;
@@ -499,13 +523,14 @@ codeunit 139685 "Contract Test Library"
         ServiceCommPackageLine.Modify(false);
     end;
 
-    internal procedure InitServiceCommitmentPackageLineFields(var NewServiceCommPackageLine: Record "Service Comm. Package Line")
+    procedure InitServiceCommitmentPackageLineFields(var NewServiceCommPackageLine: Record "Service Comm. Package Line")
     begin
         Evaluate(NewServiceCommPackageLine."Billing Rhythm", '<1M>');
         Evaluate(NewServiceCommPackageLine."Service Comm. Start Formula", '<CY>');
         Evaluate(NewServiceCommPackageLine."Initial Term", '<12M>');
         Evaluate(NewServiceCommPackageLine."Extension Term", '<12M>');
         Evaluate(NewServiceCommPackageLine."Notice Period", '<1M>');
+        Evaluate(NewServiceCommPackageLine."Price Binding Period", '<1M>');
         NewServiceCommPackageLine.Modify(false);
     end;
     #EndRegion Service Commitment Template & Package
@@ -527,7 +552,7 @@ codeunit 139685 "Contract Test Library"
     var
         ServiceObjectNo: Code[20];
     begin
-        ServiceObjectNo := PrefixLbl + 'SOBJ000000';
+        ServiceObjectNo := Prefixtok + 'SOBJ000000';
         repeat
             ServiceObjectNo := IncStr(ServiceObjectNo);
         until not ServiceObject.Get(ServiceObjectNo);
@@ -570,7 +595,7 @@ codeunit 139685 "Contract Test Library"
     begin
         CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
 
-        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price");
+        CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '', LibraryRandom.RandDec(100, 2), NewInvocingVia, Enum::"Calculation Base Type"::"Item Price", false);
 
         if ServiceCommitmentTemplate."Invoicing via" = ServiceCommitmentTemplate."Invoicing via"::Contract then begin
             CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Invoicing Item");
@@ -695,6 +720,13 @@ codeunit 139685 "Contract Test Library"
         if RefBillingToDate <> 0D then
             BillingToDate := CalcDate(BillingTemplate."Billing to Date Formula", RefBillingToDate);
         BillingProposalCreateBillingProposal(BillingProposal, BillingTemplate.Code, BillingDate, BillingToDate);
+    end;
+
+    procedure CreateBOMComponentForItem(ParentItemNo: Code[20]; ComponentItemNo: Code[20]; QuantityPer: Decimal; UnitOfMeasureCode: Code[10])
+    var
+        BOMComponent: Record "BOM Component";
+    begin
+        LibraryManufacturing.CreateBOMComponent(BOMComponent, ParentItemNo, "BOM Component Type"::Item, ComponentItemNo, QuantityPer, UnitOfMeasureCode);
     end;
 
     procedure FillTempServiceCommitment(var TempServiceCommitment: Record "Service Commitment" temporary; ServiceObject: Record "Service Object"; CustomerContract: Record "Customer Contract")
@@ -837,7 +869,7 @@ codeunit 139685 "Contract Test Library"
         Dimension.Insert(true);
     end;
 
-    internal procedure FilterBillingLineArchiveOnContractLine(var FilteredBillingLineArchive: Record "Billing Line Archive"; ContractNo: Code[20]; ContractLineNo: Integer; ServicePartner: Enum "Service Partner")
+    procedure FilterBillingLineArchiveOnContractLine(var FilteredBillingLineArchive: Record "Billing Line Archive"; ContractNo: Code[20]; ContractLineNo: Integer; ServicePartner: Enum "Service Partner")
     begin
         FilteredBillingLineArchive.SetRange(Partner, ServicePartner);
         FilteredBillingLineArchive.SetRange("Contract No.", ContractNo);
@@ -893,13 +925,7 @@ codeunit 139685 "Contract Test Library"
     begin
         CustomerContract.UpdateServicesDates();
     end;
-
-    procedure ServiceCommitmentIsClosed(var ServiceCommitment: Record "Service Commitment"): Boolean
-    begin
-        exit(ServiceCommitment.IsClosed());
-    end;
     #EndRegion Make local / internal functions public for external test apps
-
     procedure CreateTranslationForField(var FieldTranslation: Record "Field Translation"; SourceRecord: Variant; FieldID: Integer; LanguageCode: Code[10])
     var
         tblField: Record Field;
@@ -921,7 +947,7 @@ codeunit 139685 "Contract Test Library"
     end;
 
     #Region Imported Data
-    internal procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object"; CustomerNo: Code[20]; ItemNo: Code[20]; UseSerialNo: Boolean)
+    procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object"; CustomerNo: Code[20]; ItemNo: Code[20]; UseSerialNo: Boolean)
     var
         Customer: Record Customer;
         Item: Record Item;
@@ -957,17 +983,17 @@ codeunit 139685 "Contract Test Library"
         ImportedServiceObject.Modify(false);
     end;
 
-    internal procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object")
+    procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object")
     begin
         CreateImportedServiceObject(ImportedServiceObject, '', '', false);
     end;
 
-    internal procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object"; CustomerNo: Code[20]; ItemNo: Code[20])
+    procedure CreateImportedServiceObject(var ImportedServiceObject: Record "Imported Service Object"; CustomerNo: Code[20]; ItemNo: Code[20])
     begin
         CreateImportedServiceObject(ImportedServiceObject, CustomerNo, ItemNo, false);
     end;
 
-    internal procedure CreateImportedServiceCommitmentCustomer(var ImportedServiceCommitment: Record "Imported Service Commitment"; ImportedServiceObject: Record "Imported Service Object"; CustomerContract: Record "Customer Contract"; NewContractLineType: Enum "Contract Line Type")
+    procedure CreateImportedServiceCommitmentCustomer(var ImportedServiceCommitment: Record "Imported Service Commitment"; ImportedServiceObject: Record "Imported Service Object"; CustomerContract: Record "Customer Contract"; NewContractLineType: Enum "Contract Line Type")
     begin
         ImportedServiceObject.TestField("Service Object No.");
         CustomerContract.TestField("No.");
@@ -987,7 +1013,7 @@ codeunit 139685 "Contract Test Library"
         ImportedServiceCommitment.Insert(false);
     end;
 
-    internal procedure CreateImportedServiceCommitmentVendor(var ImportedServiceCommitment: Record "Imported Service Commitment"; ImportedServiceObject: Record "Imported Service Object"; VendorContract: Record "Vendor Contract"; NewContractLineType: Enum "Contract Line Type")
+    procedure CreateImportedServiceCommitmentVendor(var ImportedServiceCommitment: Record "Imported Service Commitment"; ImportedServiceObject: Record "Imported Service Object"; VendorContract: Record "Vendor Contract"; NewContractLineType: Enum "Contract Line Type")
     begin
         ImportedServiceObject.TestField("Service Object No.");
         VendorContract.TestField("No.");
@@ -1007,7 +1033,7 @@ codeunit 139685 "Contract Test Library"
         ImportedServiceCommitment.Insert(false);
     end;
 
-    local procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
+    procedure SetImportedServiceCommitmentData(var ImportedServiceCommitment: Record "Imported Service Commitment")
     var
         CurrExchRate: Record "Currency Exchange Rate";
     begin
@@ -1021,13 +1047,13 @@ codeunit 139685 "Contract Test Library"
         end;
     end;
 
-    internal procedure SetImportedServiceCommitmentServiceDates(var ImportedServiceCommitment: Record "Imported Service Commitment")
+    procedure SetImportedServiceCommitmentServiceDates(var ImportedServiceCommitment: Record "Imported Service Commitment")
     begin
         ImportedServiceCommitment."Service Start Date" := CalcDate('<-CY>', WorkDate());
         ImportedServiceCommitment."Service End Date" := CalcDate('<+CY>', WorkDate());
     end;
 
-    internal procedure SetImportedServiceCommitmentDateFormulas(var ImportedServiceCommitment: Record "Imported Service Commitment"; NewBillingBasePeriod: Text; NewInitialTerm: Text; NewExtensionTerm: Text; NewBillingRhythm: Text; NewNoticePeriod: Text)
+    procedure SetImportedServiceCommitmentDateFormulas(var ImportedServiceCommitment: Record "Imported Service Commitment"; NewBillingBasePeriod: Text; NewInitialTerm: Text; NewExtensionTerm: Text; NewBillingRhythm: Text; NewNoticePeriod: Text)
     begin
         Evaluate(ImportedServiceCommitment."Billing Base Period", NewBillingBasePeriod);
         Evaluate(ImportedServiceCommitment."Initial Term", NewInitialTerm);
@@ -1038,7 +1064,7 @@ codeunit 139685 "Contract Test Library"
     #EndRegion Imported Data
 
     #Region Attributes
-    internal procedure CreateServiceObjectAttributeMappedToServiceObject(ServiceObjectNo: Code[20]; var ItemAttribute: Record "Item Attribute";
+    procedure CreateServiceObjectAttributeMappedToServiceObject(ServiceObjectNo: Code[20]; var ItemAttribute: Record "Item Attribute";
                                                                                                     var ItemAttributeValue: Record "Item Attribute Value";
                                                                                                     NewPrimary: Boolean)
     var
@@ -1058,7 +1084,7 @@ codeunit 139685 "Contract Test Library"
         end;
     end;
 
-    internal procedure CreateItemAttributeValueMapping(TableID: Integer; No: Code[20]; AttributeID: Integer; AttributeValueID: Integer)
+    procedure CreateItemAttributeValueMapping(TableID: Integer; No: Code[20]; AttributeID: Integer; AttributeValueID: Integer)
     var
         ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
     begin
@@ -1071,7 +1097,7 @@ codeunit 139685 "Contract Test Library"
         ItemAttributeValueMapping.Insert(false);
     end;
 
-    internal procedure FilterItemAttributeValueMapping(var ItemAttributeValueMapping: Record "Item Attribute Value Mapping"; TableID: Integer; No: Code[20]; AttributeID: Integer; AttributeValueID: Integer)
+    procedure FilterItemAttributeValueMapping(var ItemAttributeValueMapping: Record "Item Attribute Value Mapping"; TableID: Integer; No: Code[20]; AttributeID: Integer; AttributeValueID: Integer)
     begin
         ItemAttributeValueMapping.SetRange("Table ID", TableID);
         ItemAttributeValueMapping.SetRange("No.", No);
@@ -1079,7 +1105,7 @@ codeunit 139685 "Contract Test Library"
         ItemAttributeValueMapping.SetRange("Item Attribute Value ID", AttributeValueID);
     end;
 
-    internal procedure TestServiceCommitmentAgainstImportedServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var ImportedServiceCommitment: Record "Imported Service Commitment")
+    procedure TestServiceCommitmentAgainstImportedServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var ImportedServiceCommitment: Record "Imported Service Commitment")
     begin
         ServiceCommitment.TestField("Invoicing via", ImportedServiceCommitment."Invoicing via");
         ServiceCommitment.TestField("Invoicing Item No.", ImportedServiceCommitment."Invoicing Item No.");
@@ -1116,7 +1142,7 @@ codeunit 139685 "Contract Test Library"
             ServiceCommitment.TestField("Calculation Base Amount (LCY)", ImportedServiceCommitment."Calculation Base Amount (LCY)");
     end;
 
-    internal procedure InsertDocumentAttachment(TableId: Integer; RecNo: Code[20])
+    procedure InsertDocumentAttachment(TableId: Integer; RecNo: Code[20])
     var
         DocumentAttachment: Record "Document Attachment";
     begin
@@ -1125,7 +1151,7 @@ codeunit 139685 "Contract Test Library"
         DocumentAttachment.Insert(false);
     end;
 
-    internal procedure CreateImportedCustomerContract(var ImportedCustomerContract: Record "Imported Customer Contract"; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
+    procedure CreateImportedCustomerContract(var ImportedCustomerContract: Record "Imported Customer Contract"; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
     var
         Customer: Record Customer;
     begin
@@ -1147,12 +1173,12 @@ codeunit 139685 "Contract Test Library"
         ImportedCustomerContract.Modify(false);
     end;
 
-    internal procedure CreateImportedCustomerContract(var ImportedCustomerContract: Record "Imported Customer Contract")
+    procedure CreateImportedCustomerContract(var ImportedCustomerContract: Record "Imported Customer Contract")
     begin
         CreateImportedCustomerContract(ImportedCustomerContract, '', '');
     end;
 
-    internal procedure UpdateServiceCommitmentPackageWithPriceGroup(var ServiceCommitmentPackage: Record "Service Commitment Package"; NewPriceGroupCode: Code[10])
+    procedure UpdateServiceCommitmentPackageWithPriceGroup(var ServiceCommitmentPackage: Record "Service Commitment Package"; NewPriceGroupCode: Code[10])
     var
         CustomerPriceGroup: Record "Customer Price Group";
     begin
@@ -1164,11 +1190,11 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentPackage.Modify(false);
     end;
 
-    internal procedure CreatePriceUpdateTemplate(var PriceUpdateTemplate: Record "Price Update Template"; ServicePartner: Enum "Service Partner"; PriceUpdateMethod: Enum "Price Update Method";
-                                                                                                                                 UpdateValuePerc: Decimal;
-                                                                                                                                 PerformUpdateOnFormula: Text;
-                                                                                                                                 InclContrLinesUpToDateFormula: Text;
-                                                                                                                                 PriceBindingPeriod: Text)
+    procedure CreatePriceUpdateTemplate(var PriceUpdateTemplate: Record "Price Update Template"; ServicePartner: Enum "Service Partner"; PriceUpdateMethod: Enum "Price Update Method";
+                                                                                                                              UpdateValuePerc: Decimal;
+                                                                                                                              PerformUpdateOnFormula: Text;
+                                                                                                                              InclContrLinesUpToDateFormula: Text;
+                                                                                                                              PriceBindingPeriod: Text)
     begin
         PriceUpdateTemplate.Init();
         PriceUpdateTemplate.Code := LibraryUtility.GenerateRandomCode20(PriceUpdateTemplate.FieldNo(Code), Database::"Price Update Template");
@@ -1182,7 +1208,7 @@ codeunit 139685 "Contract Test Library"
         PriceUpdateTemplate.Insert(false);
     end;
 
-    internal procedure CreateMultipleServiceObjectsWithItemSetup(var Customer: Record Customer; var ServiceObject: Record "Service Object"; var Item: Record Item; NoOfServiceObjects: Integer)
+    procedure CreateMultipleServiceObjectsWithItemSetup(var Customer: Record Customer; var ServiceObject: Record "Service Object"; var Item: Record Item; NoOfServiceObjects: Integer)
     var
         i: Integer;
     begin
@@ -1197,14 +1223,14 @@ codeunit 139685 "Contract Test Library"
         UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), false);
     end;
 
-    internal procedure UpdateItemUnitCostAndPrice(var Item: Record Item; UnitCost: Decimal; UnitPrice: Decimal; RunOnModifyTrigger: Boolean)
+    procedure UpdateItemUnitCostAndPrice(var Item: Record Item; UnitCost: Decimal; UnitPrice: Decimal; RunOnModifyTrigger: Boolean)
     begin
         Item."Unit Price" := UnitPrice;
         Item."Unit Cost" := UnitCost;
         Item.Modify(RunOnModifyTrigger);
     end;
 
-    internal procedure CreateServiceCommitmentTemplateSetup(var ServiceCommitmentTemplate: Record "Service Commitment Template"; CalcBasePeriodDateFormulaTxt: Text; InvoicingVia: Enum "Invoicing Via")
+    procedure CreateServiceCommitmentTemplateSetup(var ServiceCommitmentTemplate: Record "Service Commitment Template"; CalcBasePeriodDateFormulaTxt: Text; InvoicingVia: Enum "Invoicing Via")
     begin
         CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         if CalcBasePeriodDateFormulaTxt <> '' then
@@ -1213,7 +1239,7 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentTemplate.Modify(false);
     end;
 
-    internal procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode: Code[20]; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceCommPackageLine: Record "Service Comm. Package Line"; Item: Record Item; CalculationRhythmDateFormulaTxt: Text; PeriodCalculation: Enum "Period Calculation")
+    procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode: Code[20]; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceCommPackageLine: Record "Service Comm. Package Line"; Item: Record Item; CalculationRhythmDateFormulaTxt: Text; PeriodCalculation: Enum "Period Calculation")
     begin
         CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplateCode, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine."Period Calculation" := PeriodCalculation;
@@ -1227,18 +1253,18 @@ codeunit 139685 "Contract Test Library"
         ServiceCommPackageLine.Modify(false);
     end;
 
-    internal procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode: Code[20]; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceCommPackageLine: Record "Service Comm. Package Line"; Item: Record Item; CalculationRhythmDateFormulaTxt: Text)
+    procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode: Code[20]; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceCommPackageLine: Record "Service Comm. Package Line"; Item: Record Item; CalculationRhythmDateFormulaTxt: Text)
     begin
         CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode, ServiceCommitmentPackage, ServiceCommPackageLine, Item, CalculationRhythmDateFormulaTxt, "Period Calculation"::"Align to Start of Month");
     end;
 
-    internal procedure InsertServiceCommitmentFromServiceCommPackageSetup(var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceObject: Record "Service Object"; ServiceAndCalculationStartDate: Date)
+    procedure InsertServiceCommitmentFromServiceCommPackageSetup(var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceObject: Record "Service Object"; ServiceAndCalculationStartDate: Date)
     begin
         ServiceCommitmentPackage.SetRecFilter();
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate, ServiceCommitmentPackage);
     end;
 
-    internal procedure InsertServiceCommitmentFromServiceCommPackageSetup(var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceObject: Record "Service Object")
+    procedure InsertServiceCommitmentFromServiceCommPackageSetup(var ServiceCommitmentPackage: Record "Service Commitment Package"; var ServiceObject: Record "Service Object")
     begin
         InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject, 0D);
     end;

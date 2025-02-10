@@ -8,6 +8,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.Finance.GeneralLedger.Account;
 using System.TestLibraries.Utilities;
+using Microsoft.Finance.Dimension;
 
 codeunit 139777 "Bank Rec. With AI Tests"
 {
@@ -207,6 +208,9 @@ codeunit 139777 "Bank Rec. With AI Tests"
         TransToGLAccJnlBatch: Record "Trans. to G/L Acc. Jnl. Batch";
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
+        Dimension1, Dimension2 : Record Dimension;
+        DimensionValue11, DimensionValue12, DimensionValue21, DimensionValue22 : Record "Dimension Value";
+        DimensionSetEntry: Record "Dimension Set Entry";
         BankRecTransToAcc: Codeunit "Bank Acc. Rec. Trans. to Acc.";
         PostingDate: Date;
         BankAccountNo: Code[20];
@@ -215,16 +219,25 @@ codeunit 139777 "Bank Rec. With AI Tests"
         Description: Text[50];
         Amount: Decimal;
         LineNos: List of [Integer];
+        LastDimSetID: Integer;
     begin
+        // [SCENARIO 546904] Bank Rec: Post Diff to G/L - missing ability to add dimension to suggested lines
         Initialize();
 
         BankAccountLedgerEntry.SetRange(Open, true);
         BankAccountLedgerEntry.DeleteAll();
 
-        // Setup.
+        // [Given] G/L Accounts, Dimensions and a set of bank account reconciliation lines
         CreateInputData(PostingDate, BankAccountNo, StatementNo, DocumentNo, Description, Amount);
         LibraryERM.CreateGLAccount(GLAccount);
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateDimension(Dimension1);
+        LibraryERM.CreateDimensionValue(DimensionValue11, Dimension1.Code);
+        LibraryERM.CreateDimensionValue(DimensionValue12, Dimension1.Code);
+        LibraryERM.CreateDimension(Dimension2);
+        LibraryERM.CreateDimensionValue(DimensionValue21, Dimension2.Code);
+        LibraryERM.CreateDimensionValue(DimensionValue22, Dimension2.Code);
+        Commit();
         LibraryUtility.CreateNoSeries(NoSeries, false, false, false);
         LibraryUtility.CreateNoSeriesLine(NoSeriesLine, NoSeries.Code, 'T0900000', 'T0999999');
         NoSeriesLine."Last No. Used" := 'T0900001';
@@ -240,9 +253,8 @@ codeunit 139777 "Bank Rec. With AI Tests"
         LineNos.Add(CreateBankAccRecLine(BankAccReconciliation, PostingDate, Description, '', Amount));
         LineNos.Add(CreateBankAccRecLine(BankAccReconciliation, PostingDate, DocumentNo, '', Amount));
 
-        // Execute
-        // Propose to match Entries 1 and 2 to statement line 1, entry 3 to statement line 2, entry 4 to statement line 3
-        // Then apply the proposal
+        // [GIVEN] Copilot proposes to match Entries 1 and 2 to statement line 1, entry 3 to statement line 2, entry 4 to statement line 3
+        // [GIVEN] user adds dimensions to the proposals
         TempBankAccRecAIProposal."Statement Type" := BankAccReconciliation."Statement Type";
         TempBankAccRecAIProposal."Bank Account No." := BankAccReconciliation."Bank Account No.";
         TempBankAccRecAIProposal."Statement No." := BankAccReconciliation."Statement No.";
@@ -263,6 +275,21 @@ codeunit 139777 "Bank Rec. With AI Tests"
         TempBankAccRecAIProposal."Transaction Date" := PostingDate;
         TempBankAccRecAIProposal."Statement Line No." := LineNos.Get(3);
         TempBankAccRecAIProposal."G/L Account No." := GLAccount."No.";
+        if DimensionSetEntry.FindLast() then
+            LastDimSetID := DimensionSetEntry."Dimension Set ID";
+        LastDimSetID += 1;
+        Clear(DimensionSetEntry);
+        DimensionSetEntry."Dimension Set ID" := LastDimSetID;
+        DimensionSetEntry."Dimension Code" := Dimension1.Code;
+        DimensionSetEntry."Dimension Value Code" := DimensionValue12.Code;
+        DimensionSetEntry."Dimension Value ID" := DimensionValue12."Dimension Value ID";
+        DimensionSetEntry.Insert();
+        DimensionSetEntry."Dimension Set ID" := LastDimSetID;
+        DimensionSetEntry."Dimension Code" := Dimension2.Code;
+        DimensionSetEntry."Dimension Value Code" := DimensionValue21.Code;
+        DimensionSetEntry."Dimension Value ID" := DimensionValue21."Dimension Value ID";
+        DimensionSetEntry.Insert();
+        TempBankAccRecAIProposal."Dimension Set ID" := LastDimSetID;
         TempBankAccRecAIProposal.Description := DocumentNo;
         TempBankAccRecAIProposal.Difference := Amount;
         TempBankAccRecAIProposal.Insert();
@@ -272,19 +299,29 @@ codeunit 139777 "Bank Rec. With AI Tests"
         TransToGLAccJnlBatch."Journal Batch Name" := GenJournalBatch.Name;
         TransToGLAccJnlBatch.Insert();
 
+        // [WHEN] Accepting the proposal
         BankRecTransToAcc.PostNewPaymentsToProposedGLAccounts(TempBankAccRecAIProposal, TempBankStatementMatchingBuffer, TransToGLAccJnlBatch);
 
         Commit();
-        // Assert
+        // [THEN] The proposed payments are posted, you get bank account ledger entries and dimension sets are transferred from the proposal lines to the ledger entries
         BankAccountLedgerEntry.SetRange("Statement No.", BankAccReconciliation."Statement No.");
         BankAccountLedgerEntry.SetRange("Bank Account No.", BankAccReconciliation."Bank Account No.");
         BankAccountLedgerEntry.SetRange("Statement Line No.", LineNos.Get(1));
         BankAccountLedgerEntry.SetRange("Statement Status", BankAccountLedgerEntry."Statement Status"::"Bank Acc. Entry Applied");
-        Assert.IsFalse(BankAccountLedgerEntry.IsEmpty(), 'Statement Line ' + Format(LineNos.Get(1)) + ' not applied.');
+        Assert.IsTrue(BankAccountLedgerEntry.FindFirst(), 'Statement Line ' + Format(LineNos.Get(1)) + ' not applied.');
+        Assert.AreEqual(0, BankAccountLedgerEntry."Dimension Set ID", 'Unexpected Dimension Set ID');
         BankAccountLedgerEntry.SetRange("Statement Line No.", LineNos.Get(2));
-        Assert.IsFalse(BankAccountLedgerEntry.IsEmpty(), 'Statement Line ' + Format(LineNos.Get(2)) + ' not applied.');
+        Assert.IsTrue(BankAccountLedgerEntry.FindFirst(), 'Statement Line ' + Format(LineNos.Get(2)) + ' not applied.');
+        Assert.AreEqual(0, BankAccountLedgerEntry."Dimension Set ID", 'Unexpected Dimension Set ID');
         BankAccountLedgerEntry.SetRange("Statement Line No.", LineNos.Get(3));
-        Assert.IsFalse(BankAccountLedgerEntry.IsEmpty(), 'Statement Line ' + Format(LineNos.Get(3)) + ' not applied.');
+        Assert.IsTrue(BankAccountLedgerEntry.FindFirst(), 'Statement Line ' + Format(LineNos.Get(3)) + ' not applied.');
+        DimensionSetEntry.SetRange("Dimension Set ID", BankAccountLedgerEntry."Dimension Set ID");
+        DimensionSetEntry.SetRange("Dimension Code", Dimension1.Code);
+        DimensionSetEntry.SetRange("Dimension Value ID", DimensionValue12."Dimension Value ID");
+        Assert.IsFalse(DimensionSetEntry.IsEmpty(), 'Unexpected Dimension Set ID');
+        DimensionSetEntry.SetRange("Dimension Code", Dimension2.Code);
+        DimensionSetEntry.SetRange("Dimension Value ID", DimensionValue21."Dimension Value ID");
+        Assert.IsFalse(DimensionSetEntry.IsEmpty(), 'Unexpected Dimension Set ID');
     end;
 
     [Test]

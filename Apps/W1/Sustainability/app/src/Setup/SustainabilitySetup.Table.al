@@ -117,8 +117,33 @@ table 6217 "Sustainability Setup"
         }
         field(19; "Disch. Into Water Unit of Meas"; Code[10])
         {
-            Caption = 'Disch. Into Water Unit of Measure Code';
+            Caption = 'Discharged Into Water Unit of Measure Code';
             TableRelation = "Unit of Measure";
+        }
+        field(20; "G/L Account Emissions"; Boolean)
+        {
+            Caption = 'G/L Account Emissions';
+        }
+        field(21; "Item Emissions"; Boolean)
+        {
+            Caption = 'Item Emissions';
+        }
+        field(22; "Item Charge Emissions"; Boolean)
+        {
+            Caption = 'Item Charge Emissions';
+            Editable = false;
+        }
+        field(23; "Resource Emissions"; Boolean)
+        {
+            Caption = 'Resource Emissions';
+        }
+        field(24; "Work/Machine Center Emissions"; Boolean)
+        {
+            Caption = 'Work/Machine Center Emissions';
+        }
+        field(25; "Enable Value Chain Tracking"; Boolean)
+        {
+            Caption = 'Enable Value Chain Tracking';
         }
     }
 
@@ -134,7 +159,24 @@ table 6217 "Sustainability Setup"
         GLSetup: Record "General Ledger Setup";
         SustainabilitySetup: Record "Sustainability Setup";
         SustainabilitySetupRetrieved: Boolean;
+        RecordHasBeenRead: Boolean;
         AutoFormatExprLbl: Label '<Precision,%1><Standard Format,0>', Locked = true;
+
+    procedure GetRecordOnce()
+    begin
+        if RecordHasBeenRead then
+            exit;
+        Get();
+        RecordHasBeenRead := true;
+    end;
+
+    procedure IsValueChainTrackingEnabled(): Boolean
+    begin
+        SetLoadFields("Enable Value Chain Tracking");
+        GetRecordOnce();
+
+        exit("Enable Value Chain Tracking");
+    end;
 
     internal procedure GetFormat(FieldNo: Integer): Text
     begin

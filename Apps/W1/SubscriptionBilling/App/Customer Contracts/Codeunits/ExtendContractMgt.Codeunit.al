@@ -44,15 +44,18 @@ codeunit 8075 "Extend Contract Mgt."
     local procedure UpdateUsageDataSubscriptionWithServiceCommitment(ServiceCommitment: Record "Service Commitment")
     var
         UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription2: Record "Usage Data Subscription";
     begin
         UsageDataSubscription.SetRange("Supplier Reference Entry No.", ServiceCommitment."Supplier Reference Entry No.");
         UsageDataSubscription.SetFilter("Service Object No.", '');
         UsageDataSubscription.SetRange("Service Commitment Entry No.", 0);
-        if UsageDataSubscription.FindSet() then
+        if UsageDataSubscription.FindSet(true) then
             repeat
-                UsageDataSubscription."Service Object No." := ServiceCommitment."Service Object No.";
-                UsageDataSubscription."Service Commitment Entry No." := ServiceCommitment."Entry No.";
-                UsageDataSubscription.Modify(false);
+                UsageDataSubscription2 := UsageDataSubscription;
+                UsageDataSubscription2."Service Object No." := ServiceCommitment."Service Object No.";
+                UsageDataSubscription2."Service Commitment Entry No." := ServiceCommitment."Entry No.";
+                UsageDataSubscription2.Modify(false);
+                UsageDataSubscription2.UpdateServiceObjectNoForUsageDataGenericImport();
             until UsageDataSubscription.Next() = 0;
     end;
 

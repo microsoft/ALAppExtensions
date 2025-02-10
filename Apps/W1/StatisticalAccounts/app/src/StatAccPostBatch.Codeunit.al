@@ -30,6 +30,8 @@ codeunit 2626 "Stat. Acc. Post. Batch"
         VerifyLines(StatisticalAccJournalLine);
         ProcessLines(StatisticalAccJournalLine);
         StatisticalAccJournalLine.DeleteAll();
+        StatisticalAccJournalLine.SetRange("Journal Template Name");
+        StatisticalAccJournalLine.SetRange("Journal Batch Name");
 
         Commit();
 

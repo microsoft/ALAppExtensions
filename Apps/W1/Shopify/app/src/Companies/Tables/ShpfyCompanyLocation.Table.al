@@ -85,13 +85,18 @@ table 30151 "Shpfy Company Location"
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the tax registration identifier of the company location.';
         }
-        field(13; "Default"; Boolean)
+        field(13; "Recipient"; Text[100])
+        {
+            Caption = 'Recipient';
+            DataClassification = CustomerContent;
+        }
+        field(14; "Default"; Boolean)
         {
             Caption = 'Default';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies whether the location is the default location for the company.';
         }
-        field(14; "Shpfy Payment Terms Id"; BigInteger)
+        field(15; "Shpfy Payment Terms Id"; BigInteger)
         {
             Caption = 'Shopify Payment Terms Id';
             DataClassification = CustomerContent;

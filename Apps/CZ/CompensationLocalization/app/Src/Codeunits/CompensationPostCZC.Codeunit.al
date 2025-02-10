@@ -78,6 +78,7 @@ codeunit 31269 "Compensation - Post CZC"
 
                 GenJournalLine."Source Code" := SourceCodeSetup."Compensation CZC";
                 GenJournalLine."System-Created Entry" := true;
+                OnRunOnBeforeRunGenJnlPostLine(GenJournalLine, CompensationLineCZC, TempAmount);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 CompensationLineCZC."Amount (LCY)" := TempAmount;
                 CompensationLineCZC.Modify();
@@ -202,6 +203,11 @@ codeunit 31269 "Compensation - Post CZC"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterPostCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; PostedCompensationHeaderNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnRunOnBeforeRunGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; var CompensationLineCZC: Record "Compensation Line CZC"; var TempAmount: Decimal)
     begin
     end;
 }
