@@ -463,7 +463,7 @@ page 6121 "E-Document"
         {
             action(MatchToOrderCopilotEnabled)
             {
-                Caption = 'Match Purchase Order With Copilot';
+                Caption = 'Match Purchase Order';
                 ToolTip = 'Match E-document lines to Purchase Order.';
                 Image = SparkleFilled;
                 Visible = ShowMapToOrder and CopilotVisible;

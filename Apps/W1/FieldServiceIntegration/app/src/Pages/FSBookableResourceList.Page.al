@@ -7,7 +7,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 using Microsoft.Integration.Dataverse;
 using Microsoft.Projects.Resources.Resource;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 page 6610 "FS Bookable Resource List"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ApplicationArea = Suite;
     Caption = 'Bookable Resources - Dynamics 365 Field Service';

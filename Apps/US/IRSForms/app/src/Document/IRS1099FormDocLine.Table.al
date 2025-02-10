@@ -129,6 +129,7 @@ table 10036 "IRS 1099 Form Doc. Line"
             exit;
         IRS1099FormDocLine.SetRange("Document ID", "Document ID");
         IRS1099FormDocLine.SetFilter("Line No.", '<>%1', Rec."Line No.");
+        IRS1099FormDocLine.SetRange("Form Box No.", Rec."Form Box No.");
         if not IRS1099FormDocLine.IsEmpty() then
             Error(CreateCreateFormDocLineSameFormBoxErr);
     end;

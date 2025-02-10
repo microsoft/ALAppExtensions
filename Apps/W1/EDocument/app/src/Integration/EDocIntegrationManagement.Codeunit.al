@@ -149,7 +149,7 @@ codeunit 6134 "E-Doc. Integration Management"
             end;
 
             if not IsProcessed then
-                EDocImport.ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Create Journal Lines");
+                EDocImport.ProcessImportedDocument(EDocument, EDocService, TempBlob);
 
             if EDocErrorHelper.HasErrors(EDocument) then begin
                 EDocument2 := EDocument;
@@ -383,7 +383,9 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocument.Get(EDocument."Entry No");
         EDocumentService.Get(EDocumentService.Code);
         IsAsync := SendRunner.GetIsAsync();
-
+#if not CLEAN26
+        SendRunner.GetSendContext(SendContext);
+#endif
         OnAfterSendDocument(EDocument, EDocumentService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
         Telemetry.LogMessage('0000LBM', EDocTelemetrySendScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
@@ -420,6 +422,9 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocuments.FindSet();
         EDocumentService.Get(EDocumentService.Code);
         IsAsync := SendRunner.GetIsAsync();
+#if not CLEAN26
+        SendRunner.GetSendContext(SendContext);
+#endif
 
         Telemetry.LogMessage('0000LBO', EDocTelemetrySendBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;

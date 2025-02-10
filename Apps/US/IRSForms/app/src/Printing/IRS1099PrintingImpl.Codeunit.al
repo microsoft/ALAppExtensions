@@ -37,7 +37,8 @@ codeunit 10049 "IRS 1099 Printing Impl." implements "IRS 1099 Printing"
 
     procedure PrintContent(IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
     begin
-        IRS1099FormDocHeader.TestField(Status, "IRS 1099 Form Doc. Status"::Submitted);
+        if not (IRS1099FormDocHeader.Status in ["IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted]) then
+            IRS1099FormDocHeader.FieldError(Status);
         IRS1099FormDocHeader.SetRecFilter();
         Report.Run(Report::"IRS 1099 Print", true, false, IRS1099FormDocHeader);
     end;

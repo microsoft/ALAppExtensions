@@ -103,11 +103,15 @@ codeunit 4037 "Helper Functions"
         SavedJrnlLinesFoundMsg: Label 'Saved journal lines are found. In order to use the wizard, you will need to delete the journal lines before you migrate your data.';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
         PostingGroupCodeTxt: Label 'GP', Locked = true;
+#if not CLEAN25
         DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
+#endif
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         BankBatchNameTxt: Label 'GPBANK', Locked = true;
+#if not CLEAN25
         GlDocNoTxt: Label 'G00001', Locked = true;
+#endif
         MigrationTypeTxt: Label 'Great Plains';
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
@@ -1325,6 +1329,7 @@ codeunit 4037 "Helper Functions"
         Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
+#if not CLEAN25
     [Obsolete('This procedure will be soon removed.', '25.0')]
     procedure PostGLBatch(JournalBatchName: Code[10])
     var
@@ -1351,6 +1356,7 @@ codeunit 4037 "Helper Functions"
             if GenJournalLine.FindFirst() then
                 codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
     end;
+#endif
 
     local procedure SafePostGLBatch(JournalBatchName: Code[10])
     var
@@ -1366,6 +1372,7 @@ codeunit 4037 "Helper Functions"
         end;
     end;
 
+#if not CLEAN25
     [Obsolete('This procedure will be soon removed.', '25.0')]
     procedure PostStatisticalAccBatch(JournalBatchName: Code[10])
     var
@@ -1375,6 +1382,7 @@ codeunit 4037 "Helper Functions"
         if StatisticalAccJournalLine.FindFirst() then
             Codeunit.Run(Codeunit::"Stat. Acc. Post. Batch", StatisticalAccJournalLine);
     end;
+#endif
 
     local procedure SafePostStatisticalAccBatch(JournalBatchName: Code[10])
     var

@@ -3,11 +3,12 @@ namespace Microsoft.SubscriptionBilling;
 using System.Globalization;
 using Microsoft.Utilities;
 using Microsoft.Foundation.Attachment;
+using Microsoft.Finance.Currency;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Vendor;
 
 codeunit 148155 "Contracts Test"
 {
@@ -46,6 +47,7 @@ codeunit 148155 "Contracts Test"
         CopyDocMgt: Codeunit "Copy Document Mgt.";
         TextMgmt: Codeunit "Text Management";
         LibraryERM: Codeunit "Library - ERM";
+        LibraryUtility: Codeunit "Library - Utility";
         BillingRhythmValue: DateFormula;
         CustomerContractPage: TestPage "Customer Contract";
         DescriptionText: Text;
@@ -483,40 +485,48 @@ codeunit 148155 "Contracts Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler')]
-    procedure CheckClosedCustomerContractLines()
+    procedure UpdatingServiceDatesWillNotCloseCustomerContractLinesWhenLineIsNotInvoicedCompletely()
     var
         CustomerContractLine2: Record "Customer Contract Line";
-        NewServiceStartDateTok: Label '<-%1-1D>', Locked = true;
     begin
+        //[SCENARIO] Test if the customer contract line will be closed in case of different constalations
         ClearAll();
         ContractTestLibrary.ResetContractRecords();
         SetupServiceObjectWithServiceCommitment(false);
+
+        //[GIVEN]: Create a customer contract with service commitments
         ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); //ExchangeRateSelectionModalPageHandler, MessageHandler
         ContractTestLibrary.InsertCustomerContractCommentLine(CustomerContract, CustomerContractLine2);
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
         ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+
+        // [GIVEN]: Make sure that Service End Date is filled, to fullfill the requirement for closeur of the customer contract line
         if ServiceCommitment.FindSet() then
             repeat
-                ServiceCommitment."Service Start Date" := CalcDate(StrSubstNo(NewServiceStartDateTok, Format(ServiceCommitment."Billing Rhythm")), CalcDate('<-1M>', Today()));
-                ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-                ServiceCommitment."Next Billing Date" := CalcDate('<-1D>', ServiceCommitment."Service Start Date");
+                // Try to avoid service start and end date to be in the future
+                ServiceCommitment."Service End Date" := Today() - 1;
+                ServiceCommitment."Service Start Date" := LibraryUtility.GenerateRandomDate(
+                                                            CalcDate('-' + Format(ServiceCommitment."Billing Rhythm"), ServiceCommitment."Service End Date"),
+                                                            ServiceCommitment."Service End Date");
+                ServiceCommitment."Next Billing Date" := ServiceCommitment."Service Start Date";
                 ServiceCommitment.Modify(false);
             until ServiceCommitment.Next() = 0;
 
-        // Check if closed service commitments are actually invoiced
+        // [WHEN]: Try to update service dates
         ContractTestLibrary.CustomerContractUpdateServicesDates(CustomerContract);
-        CheckIfClosedServiceCommitmentsAreInvoiced(ServiceCommitment);
+        // [THEN]: Expect that customer contract line is not closed and not invoiced
+        VerifyServiceCommitmentClosureAndInvoicing(ServiceCommitment, false, false);
 
-        // Invoice the contract and check closing of service commitments
-        CreateAndPostBillingProposal(Today()); //CreateCustomerBillingDocsContractPageHandler
+        // [WHEN]: Invoice the contract and check closing of service commitments
+        CreateAndPostBillingProposal(ServiceCommitment."Service Start Date"); //CreateCustomerBillingDocsContractPageHandler
         ContractTestLibrary.CustomerContractUpdateServicesDates(CustomerContract);
-        CheckIfClosedServiceCommitmentsAreInvoiced(ServiceCommitment);
+        VerifyServiceCommitmentClosureAndInvoicing(ServiceCommitment, true, true);
 
-        // Check if any contract lines are left open
+        // [THEN]: Expect that all customer contract lines are closed and invoiced
         CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
         CustomerContractLine.SetRange("Contract Line Type", "Contract Line Type"::"Service Commitment");
         CustomerContractLine.SetRange(Closed, false);
-        asserterror CustomerContractLine.FindFirst();
+        AssertThat.RecordIsEmpty(CustomerContractLine);
     end;
 
     [Test]
@@ -1275,12 +1285,14 @@ codeunit 148155 "Contracts Test"
         AssertThat.AreEqual(0, FieldTranslation.Count, 'Translation has not been deleted with its master-record');
     end;
 
-    local procedure CheckIfClosedServiceCommitmentsAreInvoiced(var SourceServiceCommitment: Record "Service Commitment")
+    local procedure VerifyServiceCommitmentClosureAndInvoicing(var SourceServiceCommitment: Record "Service Commitment"; ExpectedClosedValue: Boolean; IsContractLineInvoiced: Boolean)
     begin
         SourceServiceCommitment.SetRange(Closed, true);
         if SourceServiceCommitment.FindSet() then
             repeat
-                SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Service End Date"));
+                AssertThat.AreEqual(ExpectedClosedValue, SourceServiceCommitment.Closed, 'Customer contract line should not be closed');
+                if IsContractLineInvoiced then //Double check that contract line is invoiced
+                    SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Service End Date"));
             until SourceServiceCommitment.Next() = 0;
     end;
 
@@ -1463,7 +1475,7 @@ codeunit 148155 "Contracts Test"
                 ContractAnalysisEntry.TestField("Next Billing Date", ServiceCommitment."Next Billing Date");
                 ContractAnalysisEntry.TestField("Calculation Base Amount", ServiceCommitment."Calculation Base Amount");
                 ContractAnalysisEntry.TestField("Calculation Base %", ServiceCommitment."Calculation Base %");
-                ContractAnalysisEntry.TestField("Price", ServiceCommitment."Price");
+                ContractAnalysisEntry.TestField(Price, ServiceCommitment."Price");
                 ContractAnalysisEntry.TestField("Discount %", ServiceCommitment."Discount %");
                 ContractAnalysisEntry.TestField("Discount Amount", ServiceCommitment."Discount Amount");
                 ContractAnalysisEntry.TestField("Service Amount", ServiceCommitment."Service Amount");
@@ -1499,8 +1511,8 @@ codeunit 148155 "Contracts Test"
     var
         ContractAnalysisEntry: Record "Contract Analysis Entry";
         VendorContract: Record "Vendor Contract";
-        BillingBasePeriodArray: Array[7] of Text;
-        AmountArray: Array[7] of Decimal;
+        BillingBasePeriodArray: array[7] of Text;
+        AmountArray: array[7] of Decimal;
         i: Integer;
     begin
         //[SCENARIO]: Try to create Contract Analysis Entry and test the values
@@ -1517,7 +1529,7 @@ codeunit 148155 "Contracts Test"
         //[GIVEN]:
         ClearAll();
         ContractAnalysisEntry.Reset();
-        ContractAnalysisEntry.DeleteAll();
+        ContractAnalysisEntry.DeleteAll(false);
 
         BillingBasePeriodArray[1] := '<12M>';
         BillingBasePeriodArray[2] := '<2M>';
@@ -1561,9 +1573,9 @@ codeunit 148155 "Contracts Test"
     var
         ContractAnalysisEntry: Record "Contract Analysis Entry";
         VendorContract: Record "Vendor Contract";
-        BillingBasePeriodArray: Array[4] of Text;
-        ExpectedResultArray: Array[4] of Decimal;
-        AmountArray: Array[4] of Decimal;
+        BillingBasePeriodArray: array[4] of Text;
+        ExpectedResultArray: array[4] of Decimal;
+        AmountArray: array[4] of Decimal;
         RoundedExpectedResult: Decimal;
         RoundedResult: Decimal;
         i: Integer;
@@ -1602,7 +1614,7 @@ codeunit 148155 "Contracts Test"
         Currency.InitRoundingPrecision();
         ContractAnalysisEntry.SetRange("Service Object No.", ServiceObject."No.");
         AssertThat.RecordIsNotEmpty(ContractAnalysisEntry);
-        ContractAnalysisEntry.FindFirst();
+        ContractAnalysisEntry.FindSet();
         for i := 1 to 4 do begin
             RoundedResult := Round(ContractAnalysisEntry."Monthly Recurr. Revenue (LCY)", Currency."Amount Rounding Precision");
             RoundedExpectedResult := Round(ExpectedResultArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
@@ -1616,6 +1628,64 @@ codeunit 148155 "Contracts Test"
         // Test Vendor Service Commitment in Contract Analysis Entry
         ContractAnalysisEntry.TestField("Monthly Recurr. Revenue (LCY)", 0);
         ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedResultArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM>', ContractAnalysisEntry."Analysis Date")));
+    end;
+
+    [Test]
+    procedure UT_GetDateFiltersForCurrentAndPreviousMonth()
+    begin
+        // [SCENARIO] Test that GetDateFilters procedure returns proper date formula to get the
+        // [SCENARIO] correct date for the begining of the current month and previous month
+        // Current Month Scenarios
+        TestDate(20240131D, 20240101D, 20240131D, true);
+        TestDate(20240205D, 20240201D, 20240229D, true);
+        TestDate(20240315D, 20240301D, 20240331D, true);
+        TestDate(20240430D, 20240401D, 20240430D, true);
+        TestDate(20240531D, 20240501D, 20240531D, true);
+        TestDate(20240630D, 20240601D, 20240630D, true);
+        TestDate(20240718D, 20240701D, 20240731D, true);
+        TestDate(20240814D, 20240801D, 20240831D, true);
+        TestDate(20240902D, 20240901D, 20240930D, true);
+        TestDate(20241031D, 20241001D, 20241031D, true);
+        TestDate(20241127D, 20241101D, 20241130D, true);
+        TestDate(20241231D, 20241201D, 20241231D, true);
+
+        // Previous Month Scenarios
+        TestDate(20240131D, 20231201D, 20231231D, false);
+        TestDate(20240205D, 20240101D, 20240131D, false);
+        TestDate(20240315D, 20240201D, 20240229D, false);
+        TestDate(20240430D, 20240301D, 20240331D, false);
+        TestDate(20240531D, 20240401D, 20240430D, false);
+        TestDate(20240630D, 20240501D, 20240531D, false);
+        TestDate(20240718D, 20240601D, 20240630D, false);
+        TestDate(20240814D, 20240701D, 20240731D, false);
+        TestDate(20240902D, 20240801D, 20240831D, false);
+        TestDate(20241031D, 20240901D, 20240930D, false);
+        TestDate(20241127D, 20241001D, 20241031D, false);
+        TestDate(20241231D, 20241101D, 20241130D, false);
+        TestDate(20250131D, 20241201D, 20241231D, false);
+    end;
+
+    local procedure TestDate(NewReferenceDate: Date; NewExpectedStartDate: Date; NewExpectedEndDate: Date; CurrentMonth: Boolean)
+    var
+        SubBillingActivitiesCue: Codeunit "Sub. Billing Activities Cue";
+        DateFilterFrom, DateFilterTo : Text;
+        ReferenceDate, ExpectedStartDate, ExpectedEndDate, MonthStartDate, MonthEndDate : Date;
+    begin
+        ReferenceDate := NewReferenceDate;
+        ExpectedStartDate := NewExpectedStartDate;
+        ExpectedEndDate := NewExpectedEndDate;
+
+        SubBillingActivitiesCue.GetDateFilterFormulas(CurrentMonth, DateFilterFrom, DateFilterTo);
+        CalculateDatesFromDateFormula(ReferenceDate, DateFilterFrom, DateFilterTo, MonthStartDate, MonthEndDate);
+
+        AssertThat.AreEqual(ExpectedStartDate, MonthStartDate, 'Calculated Month Start Date is unexpected.');
+        AssertThat.AreEqual(ExpectedEndDate, MonthEndDate, 'Calculated Month End Date is unexpected.');
+    end;
+
+    local procedure CalculateDatesFromDateFormula(ReferenceDate: Date; DateFilterFrom: Text; DateFilterTo: Text; var MonthStartDate: Date; var MonthEndDate: Date)
+    begin
+        MonthStartDate := CalcDate(DateFilterFrom, ReferenceDate);
+        MonthEndDate := CalcDate(DateFilterTo, ReferenceDate);
     end;
 
     local procedure SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray: array[4] of Text; AmountArray: array[4] of Decimal; NoOfRecords: Integer)
@@ -1649,14 +1719,75 @@ codeunit 148155 "Contracts Test"
             ServiceCommitment.Validate("Calculation Base %", 100);
             ServiceCommitment.Validate("Calculation Base Amount", AmountArray[i]);
             ServiceCommitment.Validate("Service Amount", AmountArray[i]);
-            ServiceCommitment.Modify();
+            ServiceCommitment.Modify(false);
             ServiceCommitment.Next();
         end;
         //+1 to make sure that vendor service commitment is  updated as well with the value of the last cust. service commitment
         ServiceCommitment.Validate("Calculation Base %", 100);
         ServiceCommitment.Validate("Calculation Base Amount", AmountArray[i]);
         ServiceCommitment.Validate("Service Amount", AmountArray[i]);
-        ServiceCommitment.Modify();
+        ServiceCommitment.Modify(false);
+    end;
+
+    [Test]
+    procedure ExpectErrorWhenDeleteCustomerIfExistInCustomerContract()
+    var
+        CustomerContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this customer.', Locked = true;
+    begin
+        // [SCENARIO] Customer cannot be deleted if exist in Customer Contract
+
+        // [GIVEN] Create Customer and Customer Contract
+        ClearAll();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        // [WHEN] Delete Customer
+        asserterror Customer.Delete(true);
+
+        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Customer Contract
+        AssertThat.ExpectedError(StrSubstNo(CustomerContractExistErr, Customer.TableCaption, Customer."No."));
+    end;
+
+    [Test]
+    procedure ExpectErrorWhenDeleteCustomerIfExistInServiceObject()
+    var
+        ServiceObjectExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Service Object for this customer.', Locked = true;
+    begin
+        // [SCENARIO] Customer cannot be deleted if exist in Service Object
+
+        // [GIVEN] Create Customer and Service Object
+        ClearAll();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(false);
+
+        // [WHEN] Delete Customer
+        asserterror Customer.Delete(true);
+
+        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Service Object
+        AssertThat.ExpectedError(StrSubstNo(ServiceObjectExistErr, Customer.TableCaption, Customer."No."));
+    end;
+
+    [Test]
+    procedure ExpectErrorWhenDeleteVendorIfExistInVendorContract()
+    var
+        Vendor: Record Vendor;
+        VendorContract: Record "Vendor Contract";
+        VendorContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this vendor.', Locked = true;
+    begin
+        // [SCENARIO] Vendor cannot be deleted if exist in Vendor Contract
+
+        // [GIVEN] Create Vendor and Vendor Contract
+        ClearAll();
+        ContractTestLibrary.CreateVendor(Vendor);
+        ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
+
+        // [WHEN] Delete Vendor
+        asserterror Vendor.Delete(true);
+
+        // [THEN] Error is displayed that it is not possible to delete Vendor if exist in Vendor Contract
+        AssertThat.ExpectedError(StrSubstNo(VendorContractExistErr, Vendor.TableCaption, Vendor."No."));
     end;
 
     local procedure Initialize()

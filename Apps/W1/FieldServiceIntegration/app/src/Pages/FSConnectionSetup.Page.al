@@ -13,7 +13,11 @@ using Microsoft.Integration.D365Sales;
 using Microsoft.Projects.Project.Journal;
 using System.Environment;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 page 6612 "FS Connection Setup"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     AccessByPermission = TableData "FS Connection Setup" = IM;
     ApplicationArea = Suite;

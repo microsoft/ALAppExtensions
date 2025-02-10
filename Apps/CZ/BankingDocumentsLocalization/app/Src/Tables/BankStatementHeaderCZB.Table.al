@@ -27,6 +27,7 @@ table 31252 "Bank Statement Header CZB"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
 
             trigger OnValidate()

@@ -950,6 +950,35 @@ codeunit 18133 "GST Purchase Import"
         LibraryGST.GSTLedgerEntryCount(DocumentNo, 2);
     end;
 
+    // [SCENARIO] GST not calculating for import vendor in case of Input Tax Credit is non-availment in Purchase order
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchOrdForGoodsImportWithoutITC()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentType: Enum "Purchase Document Type";
+        LineType: Enum "Sales Line Type";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Create GST Setup
+        InitializeShareStep(false, false, false);
+        CreateGSTSetup(GSTVendorType::Import, GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Purchase Order
+        Storage.Set(NoOfLineLbl, '1');
+        DocumentNo := CreateAndPostPurchaseDocument(
+            PurchaseHeader,
+            PurchaseLine,
+            LineType::Item,
+            DocumentType::Order);
+
+        //Verified GST Ledger Entries
+        LibraryGST.GSTLedgerEntryCount(DocumentNo, 1);
+    end;
+
     local procedure UpdateVendorSetupWithGST(
         VendorNo: Code[20];
         GSTVendorType: Enum "GST Vendor Type";

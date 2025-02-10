@@ -23,9 +23,9 @@ pageextension 6384 EDocumentCardExt extends "E-Document"
 
                     trigger OnDrillDown()
                     var
-                        IntegrationImpl: Codeunit "Integration Impl.";
+                        DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
                     begin
-                        IntegrationImpl.PreviewContent(Rec);
+                        DriveIntegrationImpl.PreviewContent(Rec);
                     end;
                 }
             }
@@ -34,9 +34,9 @@ pageextension 6384 EDocumentCardExt extends "E-Document"
 
     trigger OnOpenPage()
     var
-        IntegrationImpl: Codeunit "Integration Impl.";
+        DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
     begin
-        IntegrationImpl.SetConditionalVisibilityFlag(ServiceFieldGroupVisible);
+        DriveIntegrationImpl.SetConditionalVisibilityFlag(ServiceFieldGroupVisible);
     end;
 
     var

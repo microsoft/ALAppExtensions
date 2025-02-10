@@ -18,7 +18,8 @@ codeunit 139632 "Shpfy Create Item Variant Test"
     [Test]
     procedure UnitTestCreateVariantFromItem()
     var
-        Item: Record "Item";
+        Item: Record Item;
+        ParentItem: Record "Item";
         ShpfyVariant: Record "Shpfy Variant";
         ShpfyProduct: Record "Shpfy Product";
         ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
@@ -30,10 +31,12 @@ codeunit 139632 "Shpfy Create Item Variant Test"
         // [SCENARIO] Create a variant from a given item
         Initialize();
 
+        // [GIVEN] Parent Item
+        ParentItem := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ParentProductId := CreateShopifyProduct(ParentItem.SystemId);
         // [GIVEN] Item
         Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
-        // [GIVEN] Shopify product
-        ParentProductId := CreateShopifyProduct(Item.SystemId);
 
         // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
         BindSubscription(CreateItemAsVariantSub);
@@ -132,6 +135,36 @@ codeunit 139632 "Shpfy Create Item Variant Test"
 
         // [THEN] Error is thrown
         LibraryAssert.ExpectedError('The product has more than one option. Items cannot be added as variants to a product with multiple options.');
+    end;
+
+    [Test]
+    procedure UnitTestCreateVariantFromSameItem()
+    var
+        Item: Record "Item";
+        ShpfyVariant: Record "Shpfy Variant";
+        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        CreateItemAsVariant: Codeunit "Shpfy Create Item As Variant";
+        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
+        ParentProductId: BigInteger;
+        VariantId: BigInteger;
+    begin
+        // [SCENARIO] Create a variant from a given item for the same item
+        Initialize();
+
+        // [GIVEN] Item
+        Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ParentProductId := CreateShopifyProduct(Item.SystemId);
+
+        // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
+        BindSubscription(CreateItemAsVariantSub);
+        CreateItemAsVariant.SetParentProduct(ParentProductId);
+        CreateItemAsVariant.CreateVariantFromItem(Item);
+        VariantId := CreateItemAsVariantSub.GetNewVariantId();
+        UnbindSubscription(CreateItemAsVariantSub);
+
+        // [THEN] Variant is not created
+        LibraryAssert.IsFalse(ShpfyVariant.Get(VariantId), 'Variant created');
     end;
 
     local procedure Initialize()

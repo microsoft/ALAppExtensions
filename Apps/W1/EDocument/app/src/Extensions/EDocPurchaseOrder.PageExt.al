@@ -67,7 +67,7 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
         {
             action(MatchToOrderCopilotEnabled)
             {
-                Caption = 'Map E-Document Lines With Copilot';
+                Caption = 'Map E-Document Lines';
                 ToolTip = 'Map received E-Document to the Purchase Order';
                 ApplicationArea = All;
                 Image = SparkleFilled;

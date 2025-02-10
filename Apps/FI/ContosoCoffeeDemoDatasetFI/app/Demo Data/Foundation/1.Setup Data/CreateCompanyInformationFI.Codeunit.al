@@ -2,7 +2,7 @@ codeunit 13443 "Create Company Information FI"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
-    // TODO: Picture Name to Be Inserted
+
     trigger OnRun()
     begin
         UpdateCompanyInformation();

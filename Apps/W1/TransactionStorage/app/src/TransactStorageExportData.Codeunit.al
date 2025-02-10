@@ -83,6 +83,7 @@ codeunit 6202 "Transact. Storage Export Data"
         DocumentNoFieldNameTxt: Label 'Document No.', Locked = true;
         NoPermissionsForTableErr: Label 'User does not have permissions to read the table %1', Comment = '%1 = table name', Locked = true;
         ExportRecCountExceedsLimitErr: Label 'The number of records to export exceeds the limit. See Custom Dimensions.', Locked = true;
+        FilterRecToDateTimeErr: Label 'FilterRecTo datetime is 0DT', Locked = true;
 
     procedure ExportData(TaskStartingDateTime: DateTime)
     var
@@ -242,6 +243,8 @@ codeunit 6202 "Transact. Storage Export Data"
             end;
             RecRef.Close();
         end;
+        if MinFilterRecTo = 0DT then
+            MinFilterRecTo := TaskStartingDateTime;
         exit(MinFilterRecTo);
     end;
 
@@ -280,6 +283,11 @@ codeunit 6202 "Transact. Storage Export Data"
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             FilterRecToDate := FilterRecFromDate + (FilterRecToDate - FilterRecFromDate) div 2;
         until (RecRef.CountApprox() <= MaxRecordCount) or (FilterRecToDate - FilterRecFromDate < 1);
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            CustomDimensions.Add('FilterRecToDate', Format(FilterRecToDate));
+            TransactStorageExport.LogWarning('0000OHJ', FilterRecToDateTimeErr, CustomDimensions);
+        end;
         if RecRef.CountApprox() <= MaxRecordCount then
             exit;
 
@@ -298,6 +306,11 @@ codeunit 6202 "Transact. Storage Export Data"
                 SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             end;
         end;
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            CustomDimensions.Add('PeriodDelta', Format(PeriodDelta));
+            TransactStorageExport.LogWarning('0000OHK', FilterRecToDateTimeErr, CustomDimensions);
+        end;
 
         // try to export all entries for the last document
         if GetDocumentNoField(RecRef, DocumentNoFieldRef) then begin
@@ -309,6 +322,10 @@ codeunit 6202 "Transact. Storage Export Data"
                     FilterRecTo := SystemModifiedAtFieldRef.Value();
                 RecRef.Reset();
             end;
+        end;
+        if FilterRecTo = 0DT then begin
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            TransactStorageExport.LogWarning('0000OHL', FilterRecToDateTimeErr, CustomDimensions);
         end;
 
         // log warning if after all the limitations the number of records to export still exceeds the limit
@@ -322,6 +339,22 @@ codeunit 6202 "Transact. Storage Export Data"
             CustomDimensions.Add('FilterRecordTo', Format(FilterRecTo));
             TransactStorageExport.LogWarning('0000NBO', ExportRecCountExceedsLimitErr, CustomDimensions);
         end;
+    end;
+
+    local procedure GetCustomDimForZeroFilterRecToLog(TableID: Integer; FilterRecFrom: DateTime; TaskStartingDateTime: DateTime) CustomDimensions: Dictionary of [Text, Text]
+    var
+        RecRef: RecordRef;
+        SystemModifiedAtFieldRef: FieldRef;
+    begin
+        RecRef.Open(TableID);
+        SystemModifiedAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
+        SystemModifiedAtFieldRef.SetRange(FilterRecFrom, TaskStartingDateTime);
+        CustomDimensions.Add('TableName', RecRef.Name);
+        CustomDimensions.Add('RecordCountApprox', Format(RecRef.CountApprox()));
+        CustomDimensions.Add('MaxRecordCount', Format(GetMaxRecordCount()));
+        CustomDimensions.Add('FilterRecFrom', Format(FilterRecFrom));
+        CustomDimensions.Add('TaskStartingDateTime', Format(TaskStartingDateTime));
+        RecRef.Close();
     end;
 
     local procedure GetDocumentNoField(RecRef: RecordRef; var DocumentNoFieldRef: FieldRef): Boolean

@@ -27,17 +27,21 @@ codeunit 27054 "CA Contoso Localization"
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateCACompanyInformation: Codeunit "Create CA Company Information";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create CA Company Information");
                     Codeunit.Run(Codeunit::"Create CA Post Code");
                     Codeunit.Run(Codeunit::"Create CA CountryRegion Trans.");
                     Codeunit.Run(Codeunit::"Create CA Payment Term Trans.");
                     Codeunit.Run(Codeunit::"Create CA Data Exchange");
                     Codeunit.Run(Codeunit::"Create CA UnitOfMeasureTrans.");
+                    CreateCACompanyInformation.UpdateCACompanyInformationSetupData();
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create CA Company Information");
         end;
     end;
 
@@ -47,6 +51,8 @@ codeunit 27054 "CA Contoso Localization"
         CreateCATaxGroup: Codeunit "Create CA Tax Group";
         CreateCAVatPostingGroup: Codeunit "Create CA Vat Posting Group";
         CreateCAPostingGroup: Codeunit "Create CA Posting Group";
+        CreateCATaxArea: Codeunit "Create CA Tax Area";
+        CreateCAGeneralLedgerSetup: Codeunit "Create CA General Ledger Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -56,11 +62,6 @@ codeunit 27054 "CA Contoso Localization"
                     CreateCAVatPostingGroup.UpdateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create CA Column Layout Name");
                     CreateCAGLAccounts.AddCategoriesToGLAccountsForMini();
-                end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create CA Acc. Schedule Line");
-                    Codeunit.Run(Codeunit::"Create CA Column Layout");
                     Codeunit.Run(Codeunit::"Create CA Tax Group");
                     Codeunit.Run(Codeunit::"Create CA Tax Jurisdiction");
                     Codeunit.Run(Codeunit::"Create CA Tax Jurisd. Transl.");
@@ -71,6 +72,14 @@ codeunit 27054 "CA Contoso Localization"
                     CreateCATaxGroup.UpdateTaxGroupOnGL();
                     CreateCAPostingGroup.UpdateGenPostingSetup();
                     Codeunit.Run(Codeunit::"Create CA GIFI Code");
+                end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                begin
+                    Codeunit.Run(Codeunit::"Create CA Resource");
+                    Codeunit.Run(Codeunit::"Create CA Acc. Schedule Line");
+                    Codeunit.Run(Codeunit::"Create CA Column Layout");
+                    CreateCATaxArea.UpdateTaxAreaOnCompanyInformation();
+                    CreateCAGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
                 end;
         end;
     end;
@@ -129,9 +138,10 @@ codeunit 27054 "CA Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create CA Inv. Posting Group");
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create CA Inv. Posting Setup");
+                begin
+                    Codeunit.Run(Codeunit::"Create CA Inv. Posting Group");
+                    Codeunit.Run(Codeunit::"Create CA Inv. Posting Setup");
+                end;
         end;
     end;
 

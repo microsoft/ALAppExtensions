@@ -105,6 +105,33 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         VerifyPostedEntries(PostedDocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure VerifywithBondedWarehouseInterStateITCWithAutomaticCostPosting()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        InventorySetup: Record "Inventory Setup";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check Revaluation Entry in Value Entrey for GST Group Type Goods while transferring from Bonded Warehouse location.
+        // [GIVEN] Created GST Setup ,Transfer Locations with ITC for GSTGroupType Goods
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTVendorType::Import, GSTGroupType::Goods, false, true);
+        InventorySetup."Automatic Cost Posting" := true;
+
+        // [WHEN] Create and Post Interstate Transfer Order with ITC for Bonded Warehouse
+        PostedDocumentNo := CreateandPostTransferOrderAndGetTransferReceiptNo(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] Value Entry Verified 
+        VerifyValueEntryForRevaluationEntryType(PostedDocumentNo);
+    end;
+
     local procedure CreateItemWithInventory(): Code[20]
     var
         Item: Record Item;
@@ -160,6 +187,34 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         DocumentNo := TransferHeader."No.";
         LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
         PostedDocumentNo := GetPostedTransferShipmentNo(DocumentNo);
+        exit(PostedDocumentNo);
+    end;
+
+    local procedure CreateandPostTransferOrderAndGetTransferReceiptNo(var TransferHeader: Record "Transfer Header";
+        var TransferLine: Record "Transfer Line"): Code[20]
+    var
+        DocumentNo: Code[20];
+        PostedDocumentNo: Code[20];
+    begin
+        LibraryWarehouse.CreateTransferHeader(
+            TransferHeader,
+            (LibraryStorage.Get(FromLocationLbl)),
+            (LibraryStorage.Get(ToLocationLbl)),
+            (LibraryStorage.Get(InTransitLocationLbl)));
+
+        TransferHeader.Validate("Vendor No.", LibraryStorage.Get(VendorNoLbl));
+        TransferHeader."Bill of Entry No." := LibraryUtility.GenerateRandomCode(TransferHeader.FieldNo("Bill of Entry No."), Database::"Transfer Header");
+        TransferHeader."Bill of Entry Date" := WorkDate();
+        TransferHeader.Modify(true);
+
+        CreateTransferLineWithGST(TransferHeader, TransferLine, StorageBoolean.Get(AvailmentLbl));
+        TransferLine.Validate(TransferLine."GST Assessable Value", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Validate(TransferLine."Custom Duty Amount", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Modify(true);
+
+        DocumentNo := TransferHeader."No.";
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+        PostedDocumentNo := GetPostedTransferReceiptNo(DocumentNo);
         exit(PostedDocumentNo);
     end;
 
@@ -427,6 +482,37 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         InventoryPostingSetup.Modify(true);
     end;
 
+    local procedure VerifyValueEntryForRevaluationEntryType(DocumentNo: Code[20])
+    var
+        TransferReceiptHeader: Record "Transfer Receipt Header";
+        TransferReceiptLine: Record "Transfer Receipt Line";
+        ValueEntry: Record "Value Entry";
+    begin
+        TransferReceiptHeader.Get(DocumentNo);
+
+        TransferReceiptLine.SetRange("Document No.", DocumentNo);
+        TransferReceiptLine.FindFirst();
+
+        ValueEntry.SetRange("Document No.", DocumentNo);
+        ValueEntry.SetRange("Posting Date", TransferReceiptHeader."Posting Date");
+        ValueEntry.SetRange("Item Ledger Entry Type", ValueEntry."Item Ledger Entry Type"::Transfer);
+        ValueEntry.SetRange("Entry Type", ValueEntry."Entry Type"::Revaluation);
+        ValueEntry.SetRange("Document Type", ValueEntry."Document Type"::" ");
+        ValueEntry.FindLast();
+
+        Assert.AreEqual(TransferReceiptLine."Custom Duty Amount", ValueEntry."Cost Amount (Actual)",
+            StrSubstNo(ValueEntryVerifyErr, ValueEntry.FieldCaption("Cost Amount (Actual)"), ValueEntry.TableCaption));
+    end;
+
+    local procedure GetPostedTransferReceiptNo(DocumentNo: Code[20]): Code[20]
+    var
+        TransferReceiptHeader: Record "Transfer Receipt Header";
+    begin
+        TransferReceiptHeader.SetRange("Transfer Order No.", DocumentNo);
+        if TransferReceiptHeader.FindFirst() then
+            exit(TransferReceiptHeader."No.")
+    end;
+
     [PageHandler]
     procedure TaxRatesPage(var TaxRates: TestPage "Tax Rates")
     begin
@@ -471,4 +557,5 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         GSTAssessableErr: Label 'GST Assessable Value must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         LocGSTRegNoLbl: Label 'LocGSTRegNo';
         InTransitLocationLbl: Label 'InTransitLocation';
+        ValueEntryVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 }

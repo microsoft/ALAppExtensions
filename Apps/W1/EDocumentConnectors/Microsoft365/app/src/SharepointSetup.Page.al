@@ -10,6 +10,7 @@ page 6382 "Sharepoint Setup"
 {
     Permissions = tabledata "Sharepoint Setup" = rim;
     ApplicationArea = Basic, Suite;
+    PageType = StandardDialog;
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -37,15 +38,17 @@ page 6382 "Sharepoint Setup"
                 Caption = 'Shared Links to Document Folders';
                 InstructionalText = 'Use the Sharepoint ''Copy Link'' feature to create the shared links and define who they work for, then paste them to the corresponding fields.';
 
-                field("Documents"; Rec."Documents Folder")
+                field("Incoming Documents"; Rec."Documents Folder")
                 {
+                    Caption = 'Document Folder';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the shared link of the folder from which to import documents.';
                 }
-                field("Imported Documents"; Rec."Imp. Documents Folder")
+                field("Archived Documents"; Rec."Imp. Documents Folder")
                 {
+                    Caption = 'Archive Folder';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;

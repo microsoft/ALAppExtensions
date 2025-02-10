@@ -17,6 +17,11 @@ codeunit 8017 "Date Time Management"
         exit((CalcDate('<-CM>', ThisDate) = ThisDate) and ((ThisTime = 0T) or (ThisTime = 000000T)));
     end;
 
+    procedure IsLastDayOfMonth(ThisDate: Date): Boolean
+    begin
+        exit(CalcDate('<CM>', ThisDate) = ThisDate);
+    end;
+
     procedure GetTotalDurationForMonth(ReferenceDate: Date): BigInteger
     var
         StartDate: Date;
@@ -115,6 +120,11 @@ codeunit 8017 "Date Time Management"
         exit(3600000);
     end;
 
+    procedure MoveDateToLastDayOfMonth(var ThisDate: Date)
+    begin
+        ThisDate := CalcDate('<CM>', ThisDate)
+    end;
+
     internal procedure GetNumberOfDecimals(UnitPrice: Decimal) NoOfDecimals: Integer
     var
         BreakLoop: Boolean;
@@ -136,5 +146,19 @@ codeunit 8017 "Date Time Management"
         RoudingPrecision := 1;
         for i := 1 to NoOfDecimals do
             RoudingPrecision /= 10;
+    end;
+
+    internal procedure GetMaxDate(DateList: List of [Date]) MaxDate: Date
+    var
+        CurrentDate: Date;
+    begin
+        if DateList.Count() = 0 then
+            exit(0D);
+
+        MaxDate := DateList.Get(1);
+        foreach CurrentDate in DateList do
+            if CurrentDate > MaxDate then
+                MaxDate := CurrentDate;
+        exit(MaxDate);
     end;
 }

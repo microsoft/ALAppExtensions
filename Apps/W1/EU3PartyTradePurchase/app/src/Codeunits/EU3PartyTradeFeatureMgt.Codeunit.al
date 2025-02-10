@@ -20,7 +20,7 @@ codeunit 4881 "EU3 Party Trade Feature Mgt."
         VATSetup: Record "VAT Setup";
     begin
         if not VATSetup.ReadPermission() then
-           exit(false);
+            exit(false);
         if not VATSetup.Get() then
             exit(false);
         exit(VATSetup."Enable EU 3-Party Purchase");

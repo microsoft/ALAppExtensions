@@ -288,6 +288,7 @@ codeunit 6205 "Transaction Storage ABS"
         RequestBodyJson.Add('blobName', BlobName);
         RequestBodyJson.Add('blobContent', Base64Convert.ToBase64(BlobInStream));
         RequestBodyJson.Add('blobExpirationDate', BlobExpirationDate);
+        RequestBodyJson.Add('blobDocumentPK', StrSubstNo('%1-%2', IncomingDocAttachment."Incoming Document Entry No.", IncomingDocAttachment."Line No."));
         RequestBodyJson.Add('aadTenantId', GetAadTenantId());
         RequestBodyJson.Add('companyName', CompanyName());
         RequestBodyJson.Add('vatRegistrationNo', GetCompanyVATRegistrationNo());
