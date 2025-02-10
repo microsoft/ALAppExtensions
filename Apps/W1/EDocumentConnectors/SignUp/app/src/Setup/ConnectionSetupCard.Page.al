@@ -31,7 +31,6 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the client ID token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = this.FieldsVisible;
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -45,7 +44,6 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the client secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = this.FieldsVisible;
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -112,7 +110,6 @@ page 6380 ConnectionSetupCard
                     ToolTip = 'Specifies the root url token.';
                     ApplicationArea = Basic, Suite;
                     Visible = this.FieldsVisible;
-
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
