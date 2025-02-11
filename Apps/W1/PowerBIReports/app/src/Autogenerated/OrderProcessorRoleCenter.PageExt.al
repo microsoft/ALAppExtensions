@@ -96,11 +96,12 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                 action("Sales Actual vs. Budget Quantity")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Sales Actual vs. Budget Quantity';
+                    Caption = 'Sales Actual vs. Budget';
                     Image = "PowerBI";
                     RunObject = page "Sales Actual vs. Budget Qty.";
-                    Tooltip = 'Open a Power BI Report that provides a comparative analysis of sales quantity to budget quantity. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
+                    Tooltip = 'Open a Power BI Report that provides a comparative analysis of sales quantity to budget amounts/quantities. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
                 }
+#if not CLEAN26
                 action("Sales Actual vs. Budget Amount")
                 {
                     ApplicationArea = Basic, Suite;
@@ -108,7 +109,12 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                     Image = "PowerBI";
                     RunObject = page "Sales Actual vs. Budget Amt.";
                     Tooltip = 'Open a Power BI Report that provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
+#endif
                 action("Sales by Location")
                 {
                     ApplicationArea = Basic, Suite;

@@ -57,6 +57,7 @@ report 8051 "Contract Deferrals Release"
     begin
         TestDates();
         GetAndTestSourceCode();
+        GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch();
 
         FilterAndCountContractDeferrals();
 
@@ -75,6 +76,7 @@ report 8051 "Contract Deferrals Release"
 
     var
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
+        ServiceContractSetup: Record "Service Contract Setup";
         SalesSetup: Record "Sales & Receivables Setup";
         GenPostingSetup: Record "General Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
@@ -341,11 +343,25 @@ report 8051 "Contract Deferrals Release"
         SourceCodeSetup.TestField("Contract Deferrals Release");
     end;
 
+    internal procedure GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Journal Templ. Name Mandatory" then begin
+            ServiceContractSetup.Get();
+            ServiceContractSetup.TestField("Def. Rel. Jnl. Template Name");
+            ServiceContractSetup.TestField("Def. Rel. Jnl. Batch Name");
+        end;
+    end;
+
     procedure PostGenJnlLine(var TempGenJournalLine: Record "Gen. Journal Line" temporary; PostingDate: Date; SourceCodeSetupContractDeferralsRelease: Code[10])
     var
         GenJnlLine: Record "Gen. Journal Line";
     begin
         GenJnlLine.Init();
+        GenJnlLine."Journal Template Name" := ServiceContractSetup."Def. Rel. Jnl. Template Name";
+        GenJnlLine."Journal Batch Name" := ServiceContractSetup."Def. Rel. Jnl. Batch Name";
         GenJnlLine."Document No." := TempGenJournalLine."Document No.";
         GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
         GenJnlLine."VAT Posting" := GenJnlLine."VAT Posting"::"Manual VAT Entry";

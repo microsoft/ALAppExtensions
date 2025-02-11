@@ -8,7 +8,7 @@ using System.TestLibraries.Utilities;
 using System.TestTools.AITestToolkit;
 using System.Reflection;
 
-codeunit 139790 "Bank Rec. With AI Match Entr."
+codeunit 133574 "Bank Rec. With AI Match Entr."
 {
     Subtype = Test;
     TestPermissions = Disabled;

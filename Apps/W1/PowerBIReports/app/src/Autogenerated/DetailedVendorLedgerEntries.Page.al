@@ -6,11 +6,12 @@ page 36996 "Detailed Vendor Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Detailed Vendor Ledger Entries';
     AboutTitle = 'About Detailed Vendor Ledger Entries';
     AboutText = 'The Detailed Vendor Ledger Entries report provides granular detail about the entries posted to Vendor Ledger and Detailed Vendor Ledger.';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 36996 "Detailed Vendor Ledger Entries"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

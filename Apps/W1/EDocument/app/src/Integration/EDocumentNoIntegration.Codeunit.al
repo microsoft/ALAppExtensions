@@ -90,10 +90,14 @@ codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentR
 
     procedure GetApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
     begin
+        Message(NoSentDocumentApprovalActionLbl);
+        exit(false);
     end;
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
     begin
+        Message(NoSentDocumentCancellationActionLbl);
+        exit(false);
     end;
 
     #endregion
@@ -107,6 +111,9 @@ codeunit 6128 "E-Document No Integration" implements IDocumentSender, IDocumentR
 
     #endregion
 
+    var
+        NoSentDocumentApprovalActionLbl: Label 'No Sent document approval action is available for this integration.';
+        NoSentDocumentCancellationActionLbl: Label 'No Sent document cancellation action is available for this integration.';
 
 }
 #pragma warning restore AS0018

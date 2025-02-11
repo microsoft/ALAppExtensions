@@ -6,11 +6,12 @@ page 37021 "Purch. Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Purchases Actual vs. Budget Amount';
     AboutTitle = 'About Purchases Actual vs. Budget Amount';
     AboutText = 'The Purchases Actual vs. Budget Amount report offers a comparative analysis of purchase amounts against budgeted amounts. It includes variance and variance percentage metrics to clearly show how actual purchases align with budgeted targets.';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 37021 "Purch. Actual vs. Budget Amt."
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

@@ -28,5 +28,4 @@ enum 6106 "E-Document Service Status"
     value(17; "Order Linked") { Caption = 'Order linked'; }
     value(18; "Pending") { Caption = 'Pending Document Link'; }
     value(19; "Approval Error") { Caption = 'Approval error'; }
-    value(20; "Ready For Processing") { Caption = 'Ready for processing'; }
 }

@@ -314,6 +314,12 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'VAT Included';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if "VAT Amount" <> 0 then
+                    Error(VATAmountMustBeZeroErr);
+            end;
         }
         field(73; "Currency Code"; Code[10])
         {
@@ -810,6 +816,7 @@ table 30118 "Shpfy Order Header"
     }
     var
         ShopifyOrderLine: Record "Shpfy Order Line";
+        VATAmountMustBeZeroErr: Label 'VAT amount must be 0 in order to update VAT included.';
 
     trigger OnDelete()
     var

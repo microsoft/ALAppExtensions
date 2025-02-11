@@ -33,7 +33,6 @@ codeunit 30343 "Shpfy Create Item As Variant"
             exit;
 
         CreateProduct.CreateTempShopifyVariantFromItem(Item, TempShopifyVariant);
-        TempShopifyVariant."Product Id" := ShopifyProduct."Id";
         TempShopifyVariant.Title := Item."No.";
         if Options.Count = 1 then
             TempShopifyVariant."Option 1 Name" := CopyStr(Options.Values.Get(1), 1, MaxStrLen(TempShopifyVariant."Option 1 Name"))
@@ -42,8 +41,9 @@ codeunit 30343 "Shpfy Create Item As Variant"
         TempShopifyVariant."Option 1 Value" := Item."No.";
 
         Events.OnAfterCreateTempShopifyVariant(Item, TempShopifyVariant);
+        TempShopifyVariant.Modify();
 
-        if VariantApi.AddProductVariant(TempShopifyVariant) then begin
+        if VariantApi.AddProductVariants(TempShopifyVariant, ShopifyProduct.Id, "Shpfy Variant Create Strategy"::DEFAULT) then begin
             ShopifyProduct."Has Variants" := true;
             ShopifyProduct.Modify(true);
         end;

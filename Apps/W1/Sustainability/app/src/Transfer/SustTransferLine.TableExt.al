@@ -1,6 +1,5 @@
 namespace Microsoft.Sustainability.Transfer;
 
-using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
@@ -26,7 +25,6 @@ tableextension 6250 "Sust. Transfer Line" extends "Transfer Line"
                 end else begin
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Sust. Account No."));
                     CopyFromSustainabilityAccount(Rec);
-                    UpdateCO2eInformation();
                 end;
 
                 CreateDimFromDefaultDim();
@@ -106,14 +104,6 @@ tableextension 6250 "Sust. Transfer Line" extends "Transfer Line"
             Editable = false;
             DataClassification = CustomerContent;
         }
-        field(6217; "Posted Received Total CO2e"; Decimal)
-        {
-            AutoFormatType = 11;
-            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            Caption = 'Posted Received Total CO2e';
-            Editable = false;
-            DataClassification = CustomerContent;
-        }
     }
 
     procedure UpdateSustainabilityEmission(var TransferLine: Record "Transfer Line")
@@ -160,16 +150,6 @@ tableextension 6250 "Sust. Transfer Line" extends "Transfer Line"
                             Error(NotAllowedToUseSustAccountForWaterOrWasteErr, TransferLine."Sust. Account No.");
                 end;
         end;
-    end;
-
-    local procedure UpdateCO2eInformation()
-    var
-        Item: Record Item;
-    begin
-        if not Item.Get(Rec."Item No.") then
-            exit;
-
-        Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
     end;
 
     local procedure CopyFromSustainabilityAccount(var TransferLine: Record "Transfer Line")

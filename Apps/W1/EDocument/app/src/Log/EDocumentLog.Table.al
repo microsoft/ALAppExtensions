@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Utilities;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6124 "E-Document Log"
 {
@@ -75,6 +76,11 @@ table 6124 "E-Document Log"
         {
             Caption = 'Document Format';
             DataClassification = SystemMetadata;
+        }
+        field(12; "Processing Status"; Enum "Import E-Doc. Proc. Status")
+        {
+            Caption = 'Processing Status';
+            Editable = false;
         }
     }
 
