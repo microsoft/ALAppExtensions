@@ -223,6 +223,7 @@ codeunit 6103 "E-Document Subscription"
         EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
         Clear(EDocument."Document No.");
+        Clear(EDocument."Document Record ID");
         if Rec."Document Type" = Rec."Document Type"::Order then
             Clear(EDocument."Order No.");
         EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
