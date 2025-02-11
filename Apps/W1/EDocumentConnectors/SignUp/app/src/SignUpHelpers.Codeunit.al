@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Reflection;
 using Microsoft.Utilities;
+using System.DateTime;
 using System.Integration;
 using Microsoft.eServices.EDocument;
 
@@ -66,11 +67,11 @@ codeunit 6385 SignUpHelpers
 
     local procedure GetTokenDateTimeValue(InToken: SecretText; ClaimType: Text): DateTime
     var
-        TypeHelper: Codeunit "Type Helper";
+        UnixTimestamp: Codeunit "Unix Timestamp";
         Timestamp: Decimal;
     begin
         if Evaluate(Timestamp, this.GetValueFromToken(InToken, ClaimType)) then
-            exit(TypeHelper.EvaluateUnixTimestamp(Timestamp));
+            exit(UnixTimestamp.EvaluateTimestamp(Timestamp));
     end;
 
     [NonDebuggable]
