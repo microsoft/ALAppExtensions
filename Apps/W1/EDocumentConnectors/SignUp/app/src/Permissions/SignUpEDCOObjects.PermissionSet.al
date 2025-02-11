@@ -12,15 +12,15 @@ permissionset 6380 SignUpEDCOObjects
     Assignable = false;
     Caption = 'SignUp E-Doc. Connector - Obj.', MaxLength = 30;
 
-    Permissions = table ConnectionSetup = X,
-                  table MetadataProfile = X,
+    Permissions = table SignUpConnectionSetup = X,
+                  table SignUpMetadataProfile = X,
                   table "E-Document Integration Log" = X,
-                  page ConnectionSetupCard = X,
-                  page MetadataProfiles = X,
-                  codeunit APIRequests = X,
-                  codeunit Authentication = X,
-                  codeunit Connection = X,
-                  codeunit Helpers = X,
-                  codeunit IntegrationImpl = X,
-                  codeunit Processing = X;
+                  page SignUpConnectionSetupCard = X,
+                  page SignUpMetadataProfiles = X,
+                  codeunit SignUpAPIRequests = X,
+                  codeunit SignUpAuthentication = X,
+                  codeunit SignUpConnection = X,
+                  codeunit SignUpHelpers = X,
+                  codeunit SignUpIntegrationImpl = X,
+                  codeunit SignUpProcessing = X;
 }

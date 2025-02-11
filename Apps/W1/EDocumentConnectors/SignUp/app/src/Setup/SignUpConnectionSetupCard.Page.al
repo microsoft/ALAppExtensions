@@ -8,11 +8,11 @@ using System.Telemetry;
 using Microsoft.Foundation.Company;
 using System.Environment;
 
-page 6380 ConnectionSetupCard
+page 6380 SignUpConnectionSetupCard
 {
     AdditionalSearchTerms = 'SignUp,electronic document,e-invoice,e-document,external,connection,connector';
     PageType = Card;
-    SourceTable = ConnectionSetup;
+    SourceTable = SignUpConnectionSetup;
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
     Caption = 'E-Document External Connection Setup';
@@ -35,7 +35,7 @@ page 6380 ConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        this.Authentication.StorageSet(Rec."Client ID", this.ClientID);
+                        this.SignUpAuthentication.StorageSet(Rec."Client ID", this.ClientID);
                     end;
                 }
                 field(ClientSecret; this.ClientSecret)
@@ -62,7 +62,7 @@ page 6380 ConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        this.Authentication.StorageSet(Rec."Client Tenant", this.ClientTenant);
+                        this.SignUpAuthentication.StorageSet(Rec."Client Tenant", this.ClientTenant);
                     end;
                 }
                 field(RootID; this.RootID)
@@ -75,7 +75,7 @@ page 6380 ConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        this.Authentication.StorageSet(Rec."Root App ID", this.RootID);
+                        this.SignUpAuthentication.StorageSet(Rec."Root App ID", this.RootID);
                     end;
                 }
                 field(RootSecret; this.RootSecret)
@@ -101,7 +101,7 @@ page 6380 ConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        this.Authentication.StorageSet(Rec."Root Tenant", this.RootTenant);
+                        this.SignUpAuthentication.StorageSet(Rec."Root Tenant", this.RootTenant);
                     end;
                 }
                 field(RootUrl; Rec."Root Market URL")
@@ -144,10 +144,10 @@ page 6380 ConnectionSetupCard
 
                 trigger OnAction()
                 begin
-                    this.Authentication.CreateClientCredentials();
+                    this.SignUpAuthentication.CreateClientCredentials();
                     CurrPage.Update();
                     this.SetPageVariables();
-                    Hyperlink(this.Authentication.GetRootOnboardingUrl());
+                    Hyperlink(this.SignUpAuthentication.GetRootOnboardingUrl());
                     this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
@@ -159,7 +159,7 @@ page 6380 ConnectionSetupCard
         EnvironmentInformation: Codeunit "Environment Information";
     begin
         this.FieldsVisible := not EnvironmentInformation.IsSaaSInfrastructure();
-        this.Authentication.InitConnectionSetup();
+        this.SignUpAuthentication.InitConnectionSetup();
         if Rec.Get() then
             ;
         this.SetPageVariables();
@@ -185,11 +185,11 @@ page 6380 ConnectionSetupCard
     [NonDebuggable]
     local procedure SaveSecret(var TokenKey: Guid; Value: SecretText)
     begin
-        this.Authentication.StorageSet(TokenKey, Value);
+        this.SignUpAuthentication.StorageSet(TokenKey, Value);
     end;
 
     var
-        Authentication: Codeunit Authentication;
+        SignUpAuthentication: Codeunit SignUpAuthentication;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, RootID, RootSecret, RootTenant : Text;

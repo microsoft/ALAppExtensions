@@ -10,7 +10,7 @@ using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
-codeunit 6383 Processing
+codeunit 6383 SignUpProcessing
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -23,8 +23,8 @@ codeunit 6383 Processing
 
     #region variables
     var
-        Connection: Codeunit Connection;
-        HelpersImpl: Codeunit Helpers;
+        SignUpConnection: Codeunit SignUpConnection;
+        SignUpHelpersImpl: Codeunit SignUpHelpers;
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
         CouldNotSendPatchErr: Label 'Could not Send Patch for document with id: %1', Comment = '%1 - Document ID';
@@ -97,7 +97,7 @@ codeunit 6383 Processing
         if EDocument."SignUp Document Id" = '' then
             exit;
 
-        if not this.Connection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage) then
+        if not this.SignUpConnection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage) then
             exit;
 
         SendContext.Http().SetHttpRequestMessage(HttpRequestMessage);
@@ -143,7 +143,7 @@ codeunit 6383 Processing
         JsonToken: JsonToken;
         ReceiveSucced: Boolean;
     begin
-        ReceiveSucced := this.Connection.GetReceivedDocuments(HttpRequestMessage, HttpResponseMessage);
+        ReceiveSucced := this.SignUpConnection.GetReceivedDocuments(HttpRequestMessage, HttpResponseMessage);
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponseMessage);
         if not ReceiveSucced then
@@ -197,7 +197,7 @@ codeunit 6383 Processing
         Clear(ContentData);
         this.OnBeforeGetTargetDocumentRequest();
 
-        this.Connection.GetTargetDocumentRequest(EDocument."SignUp Document Id", HttpRequestMessage, HttpResponseMessage);
+        this.SignUpConnection.GetTargetDocumentRequest(EDocument."SignUp Document Id", HttpRequestMessage, HttpResponseMessage);
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponseMessage);
 
@@ -219,7 +219,7 @@ codeunit 6383 Processing
         HttpResponseMessage: HttpResponseMessage;
     begin
         this.OnBeforeMarkFetched();
-        this.Connection.RemoveDocumentFromReceived(EDocument, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpConnection.RemoveDocumentFromReceived(EDocument, HttpRequestMessage, HttpResponseMessage);
 
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponseMessage);
@@ -266,7 +266,7 @@ codeunit 6383 Processing
         Status := '';
         StatusDescription := '';
 
-        Result := this.HelpersImpl.ParseJsonString(HttpContentResponse);
+        Result := this.SignUpHelpersImpl.ParseJsonString(HttpContentResponse);
         if Result = '' then
             exit;
 
@@ -313,15 +313,15 @@ codeunit 6383 Processing
 
     local procedure SendEDocument(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage);
     begin
-        this.Connection.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpConnection.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage);
         this.SetEDocumentFileID(EDocument."Entry No", this.ParseSendFileResponse(HttpResponseMessage.Content));
     end;
 
     local procedure ParseReceivedDocument(InputTxt: Text; var DocumentId: Text): Boolean
     var
-        Helpers: Codeunit Helpers;
+        SignUpHelpers: Codeunit SignUpHelpers;
     begin
-        DocumentId := Helpers.GetJsonValueFromText(InputTxt, this.TransactionIdTxt);
+        DocumentId := SignUpHelpers.GetJsonValueFromText(InputTxt, this.TransactionIdTxt);
         exit(DocumentId <> '');
     end;
 
@@ -346,7 +346,7 @@ codeunit 6383 Processing
         JsonManagement: Codeunit "JSON Management";
         Result, Value : Text;
     begin
-        Result := this.HelpersImpl.ParseJsonString(HttpContentResponse);
+        Result := this.SignUpHelpersImpl.ParseJsonString(HttpContentResponse);
         if Result = '' then
             exit;
 
@@ -439,7 +439,7 @@ codeunit 6383 Processing
     local procedure SendAcknowledgePatch(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"): Boolean
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
-        APIRequests: Codeunit APIRequests;
+        SignUpAPIRequests: Codeunit SignUpAPIRequests;
         HttpResponseMessage: HttpResponseMessage;
         HttpRequestMessage: HttpRequestMessage;
     begin
@@ -448,7 +448,7 @@ codeunit 6383 Processing
         if not (EDocumentServiceStatus.Status in [EDocumentServiceStatus.Status::Sent, EDocumentServiceStatus.Status::"Pending Response", EDocumentServiceStatus.Status::"Pending Batch"]) then
             exit;
 
-        if APIRequests.PatchDocument(EDocument, HttpRequestMessage, HttpResponseMessage) then begin
+        if SignUpAPIRequests.PatchDocument(EDocument, HttpRequestMessage, HttpResponseMessage) then begin
             this.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
             exit(true);
         end else

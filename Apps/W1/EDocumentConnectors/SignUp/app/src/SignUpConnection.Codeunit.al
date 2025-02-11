@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.EServices.EDocument;
 using System.Utilities;
 
-codeunit 6391 Connection
+codeunit 6391 SignUpConnection
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -17,8 +17,8 @@ codeunit 6391 Connection
     #region variables
 
     var
-        APIRequests: Codeunit APIRequests;
-        HelpersImpl: Codeunit Helpers;
+        SignUpAPIRequests: Codeunit SignUpAPIRequests;
+        SignUpHelpersImpl: Codeunit SignUpHelpers;
         UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
         EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
         FourZeroThreeErr: Label 'You do not have a valid subscription.';
@@ -45,7 +45,7 @@ codeunit 6391 Connection
     /// <returns>True - if completed successfully</returns>
     procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        this.APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpAPIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage);
         exit(this.CheckIfSuccessfulRequest(EDocument, HttpResponseMessage));
     end;
 
@@ -58,7 +58,7 @@ codeunit 6391 Connection
     /// <returns>True - if completed successfully</returns>
     procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        this.APIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpAPIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
         exit(this.CheckIfSuccessfulRequest(EDocument, HttpResponseMessage));
     end;
 
@@ -70,7 +70,7 @@ codeunit 6391 Connection
     /// <returns>True - if completed successfully</returns>
     procedure GetReceivedDocuments(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        if not this.APIRequests.GetReceivedDocumentsRequest(HttpRequestMessage, HttpResponseMessage) then
+        if not this.SignUpAPIRequests.GetReceivedDocumentsRequest(HttpRequestMessage, HttpResponseMessage) then
             exit;
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
@@ -79,7 +79,7 @@ codeunit 6391 Connection
             else
                 exit;
 
-        exit(this.HelpersImpl.ParseJsonString(HttpResponseMessage.Content) <> '');
+        exit(this.SignUpHelpersImpl.ParseJsonString(HttpResponseMessage.Content) <> '');
     end;
 
     /// <summary>
@@ -91,7 +91,7 @@ codeunit 6391 Connection
     /// <returns>True - if completed successfully</returns>
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        this.APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpAPIRequests.GetTargetDocumentRequest(DocumentId, HttpRequestMessage, HttpResponseMessage);
         exit(HttpResponseMessage.IsSuccessStatusCode());
     end;
 
@@ -104,7 +104,7 @@ codeunit 6391 Connection
     /// <returns>True - if completed successfully</returns>
     procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        this.APIRequests.PatchReceivedDocument(EDocument, HttpRequestMessage, HttpResponseMessage);
+        this.SignUpAPIRequests.PatchReceivedDocument(EDocument, HttpRequestMessage, HttpResponseMessage);
         exit(HttpResponseMessage.IsSuccessStatusCode());
     end;
 
@@ -118,12 +118,12 @@ codeunit 6391 Connection
     /// </remarks>
     procedure UpdateMetadataProfile()
     var
-        MetadataProfile: Record MetadataProfile;
+        SignUpMetadataProfile: Record SignUpMetadataProfile;
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
         MetadataProfileContent: Text;
     begin
-        this.APIRequests.FetchMetaDataProfiles(HttpRequestMessage, HttpResponseMessage);
+        this.SignUpAPIRequests.FetchMetaDataProfiles(HttpRequestMessage, HttpResponseMessage);
         if not HttpResponseMessage.IsSuccessStatusCode() then begin
             if HttpResponseMessage.HttpStatusCode = 403 then
                 Message(this.FourZeroThreeErr)
@@ -135,11 +135,11 @@ codeunit 6391 Connection
         if not HttpResponseMessage.Content.ReadAs(MetadataProfileContent) then
             exit;
 
-        MetadataProfile.Reset();
-        MetadataProfile.DeleteAll();
+        SignUpMetadataProfile.Reset();
+        SignUpMetadataProfile.DeleteAll();
 
-        if this.MetadataProfileJsonToTable(MetadataProfileContent, MetadataProfile) then
-            this.DeleteUnusedMetadataProfileReferenses(MetadataProfile);
+        if this.MetadataProfileJsonToTable(MetadataProfileContent, SignUpMetadataProfile) then
+            this.DeleteUnusedMetadataProfileReferenses(SignUpMetadataProfile);
     end;
     #endregion
 
@@ -160,7 +160,7 @@ codeunit 6391 Connection
                 EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.UnsuccessfulResponseErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
     end;
 
-    local procedure MetadataProfileJsonToTable(JsonText: Text; var MetadataProfile: Record MetadataProfile): Boolean
+    local procedure MetadataProfileJsonToTable(JsonText: Text; var SignUpMetadataProfile: Record SignUpMetadataProfile): Boolean
     var
         JsonObject, ProfileJsonObject, ProcessIdentifierJsonObject, DocumentIdentifierJsonObject : JsonObject;
         JsonArray: JsonArray;
@@ -173,41 +173,41 @@ codeunit 6391 Connection
                     foreach JsonToken in JsonArray do
                         if JsonToken.IsObject() then begin
                             ProfileJsonObject := JsonToken.AsObject();
-                            MetadataProfile.Init();
+                            SignUpMetadataProfile.Init();
 
                             if ProfileJsonObject.SelectToken(this.ProfileIdLbl, JsonToken) then
-                                MetadataProfile."Profile ID" := this.GetJsonValueAsInteger(JsonToken.AsValue());
+                                SignUpMetadataProfile."Profile ID" := this.GetJsonValueAsInteger(JsonToken.AsValue());
 
                             if ProfileJsonObject.SelectToken(this.CommonNameLbl, JsonToken) then
-                                MetadataProfile."Profile Name" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(MetadataProfile."Profile Name"));
+                                SignUpMetadataProfile."Profile Name" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(SignUpMetadataProfile."Profile Name"));
 
                             if ProfileJsonObject.SelectToken(this.ProcessIdentifierLbl, JsonToken) then begin
                                 ProcessIdentifierJsonObject := JsonToken.AsObject();
 
                                 if ProcessIdentifierJsonObject.SelectToken(this.SchemeLbl, JsonToken) then
-                                    MetadataProfile."Process Identifier Scheme" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(MetadataProfile."Process Identifier Scheme"));
+                                    SignUpMetadataProfile."Process Identifier Scheme" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(SignUpMetadataProfile."Process Identifier Scheme"));
 
                                 if ProcessIdentifierJsonObject.SelectToken(this.ValueLbl, JsonToken) then
-                                    MetadataProfile."Process Identifier Value" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(MetadataProfile."Process Identifier Value"));
+                                    SignUpMetadataProfile."Process Identifier Value" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(SignUpMetadataProfile."Process Identifier Value"));
                             end;
 
                             if ProfileJsonObject.SelectToken(this.DocumentIdentifierLbl, JsonToken) then begin
                                 DocumentIdentifierJsonObject := JsonToken.AsObject();
 
                                 if DocumentIdentifierJsonObject.SelectToken(this.SchemeLbl, JsonToken) then
-                                    MetadataProfile."Document Identifier Scheme" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(MetadataProfile."Document Identifier Scheme"));
+                                    SignUpMetadataProfile."Document Identifier Scheme" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(SignUpMetadataProfile."Document Identifier Scheme"));
 
                                 if DocumentIdentifierJsonObject.SelectToken(this.ValueLbl, JsonToken) then
-                                    MetadataProfile."Document Identifier Value" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(MetadataProfile."Document Identifier Value"));
+                                    SignUpMetadataProfile."Document Identifier Value" := CopyStr(this.GetJsonValueAsText(JsonToken.AsValue()), 1, MaxStrLen(SignUpMetadataProfile."Document Identifier Value"));
                             end;
 
-                            MetadataProfile.Insert();
+                            SignUpMetadataProfile.Insert();
                         end;
                 end;
-        exit(not MetadataProfile.IsEmpty());
+        exit(not SignUpMetadataProfile.IsEmpty());
     end;
 
-    local procedure DeleteUnusedMetadataProfileReferenses(var MetadataProfile: Record MetadataProfile)
+    local procedure DeleteUnusedMetadataProfileReferenses(var SignUpMetadataProfile: Record SignUpMetadataProfile)
     var
         EDocumentService: Record "E-Document Service";
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
@@ -222,7 +222,7 @@ codeunit 6391 Connection
                 if not EDocServiceSupportedType.FindSet() then
                     repeat
                         if EDocServiceSupportedType."Profile Id" <> 0 then
-                            if not MetadataProfile.Get(EDocServiceSupportedType."Profile Id") then begin
+                            if not SignUpMetadataProfile.Get(EDocServiceSupportedType."Profile Id") then begin
                                 EDocServiceSupportedType."Profile Id" := 0;
                                 EDocServiceSupportedType.Modify();
                             end;

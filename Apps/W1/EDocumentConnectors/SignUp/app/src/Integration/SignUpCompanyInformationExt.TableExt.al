@@ -5,7 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.Foundation.Company;
 
-tableextension 6381 CompanyInformationExt extends "Company Information"
+tableextension 6381 SignUpCompanyInformationExt extends "Company Information"
 {
     fields
     {

@@ -10,7 +10,7 @@ permissionset 6382 SignUpEDCOEdit
     Assignable = false;
     Caption = 'SignUp E-Doc. Connector - Edit', MaxLength = 30;
     IncludedPermissionSets = SignUpEDCORead;
-    Permissions = tabledata ConnectionSetup = IMD,
-         tabledata MetadataProfile = IMD;
+    Permissions = tabledata SignUpConnectionSetup = IMD,
+         tabledata SignUpMetadataProfile = IMD;
 
 }

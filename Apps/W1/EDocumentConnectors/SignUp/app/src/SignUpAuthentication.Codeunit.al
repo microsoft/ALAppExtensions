@@ -10,7 +10,7 @@ using System.Security.Authentication;
 using System.Azure.KeyVault;
 using System.Environment;
 
-codeunit 6390 Authentication
+codeunit 6390 SignUpAuthentication
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -18,8 +18,8 @@ codeunit 6390 Authentication
 
     #region variables
     var
-        ConnectionSetup: Record ConnectionSetup;
-        HelpersImpl: Codeunit Helpers;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpHelpersImpl: Codeunit SignUpHelpers;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         AuthTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
@@ -50,14 +50,14 @@ codeunit 6390 Authentication
     /// </summary>
     procedure InitConnectionSetup()
     begin
-        if this.ConnectionSetup.Get() then
+        if this.SignUpConnectionSetup.Get() then
             exit;
 
-        this.ConnectionSetup."Authentication URL" := this.AuthURLTxt;
-        this.ConnectionSetup."Service URL" := this.GetServiceApi();
-        this.StorageSet(this.ConnectionSetup."Root Tenant", this.GetRootTenant());
-        this.StorageSet(this.ConnectionSetup."Client Tenant", this.GetClientTenant());
-        this.ConnectionSetup.Insert();
+        this.SignUpConnectionSetup."Authentication URL" := this.AuthURLTxt;
+        this.SignUpConnectionSetup."Service URL" := this.GetServiceApi();
+        this.StorageSet(this.SignUpConnectionSetup."Root Tenant", this.GetRootTenant());
+        this.StorageSet(this.SignUpConnectionSetup."Client Tenant", this.GetClientTenant());
+        this.SignUpConnectionSetup.Insert();
     end;
 
     /// <summary>
@@ -86,8 +86,8 @@ codeunit 6390 Authentication
         if not HttpResponseMessage.Content.ReadAs(Response) then
             exit;
 
-        ClientId := this.HelpersImpl.GetJsonValueFromText(Response, this.ClientIdTxt);
-        ClientSecret := this.HelpersImpl.GetJsonValueFromText(Response, this.ClientSecretTxt);
+        ClientId := this.SignUpHelpersImpl.GetJsonValueFromText(Response, this.ClientIdTxt);
+        ClientSecret := this.SignUpHelpersImpl.GetJsonValueFromText(Response, this.ClientSecretTxt);
 
         if (ClientId <> '') and (not ClientSecret.IsEmpty()) then
             this.SaveClientCredentials(ClientId, ClientSecret);
@@ -166,11 +166,11 @@ codeunit 6390 Authentication
         if this.FetchSecretFromKeyVault(this.SignupRootUrlTxt, ReturnValue) then
             exit;
 
-        if not this.ConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.GetSetup() then
             exit;
 
-        this.ConnectionSetup.TestField("Root Market URL");
-        ReturnValue := this.ConnectionSetup."Root Market URL";
+        this.SignUpConnectionSetup.TestField("Root Market URL");
+        ReturnValue := this.SignUpConnectionSetup."Root Market URL";
     end;
 
     #endregion
@@ -183,7 +183,7 @@ codeunit 6390 Authentication
     begin
         AccessToken := this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Company);
 
-        if this.HelpersImpl.IsTokenValid(AccessToken) then
+        if this.SignUpHelpersImpl.IsTokenValid(AccessToken) then
             exit;
 
         if not this.RefreshAccessToken(HttpError) then
@@ -200,27 +200,27 @@ codeunit 6390 Authentication
 
     local procedure SaveClientCredentials(ClientId: Text; ClientSecret: SecretText)
     begin
-        Clear(this.ConnectionSetup);
+        Clear(this.SignUpConnectionSetup);
 
-        this.ConnectionSetup.GetSetup();
-        this.StorageSet(this.ConnectionSetup."Client ID", ClientId);
-        this.StorageSet(this.ConnectionSetup."Client Secret", ClientSecret);
-        this.ConnectionSetup.Modify();
+        this.SignUpConnectionSetup.GetSetup();
+        this.StorageSet(this.SignUpConnectionSetup."Client ID", ClientId);
+        this.StorageSet(this.SignUpConnectionSetup."Client Secret", ClientSecret);
+        this.SignUpConnectionSetup.Modify();
 
-        Clear(this.ConnectionSetup);
+        Clear(this.SignUpConnectionSetup);
     end;
 
     [NonDebuggable]
     local procedure GetClientCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        APIRequests: Codeunit APIRequests;
+        SignUpAPIRequests: Codeunit SignUpAPIRequests;
     begin
-        APIRequests.GetMarketPlaceCredentials(HttpRequestMessage, HttpResponseMessage);
+        SignUpAPIRequests.GetMarketPlaceCredentials(HttpRequestMessage, HttpResponseMessage);
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
             exit;
 
-        exit(this.HelpersImpl.ParseJsonString(HttpResponseMessage.Content) <> '');
+        exit(this.SignUpHelpersImpl.ParseJsonString(HttpResponseMessage.Content) <> '');
     end;
 
     [NonDebuggable]
@@ -242,11 +242,11 @@ codeunit 6390 Authentication
         ModuleDataScope: DataScope;
     begin
         ModuleDataScope := ModuleDataScope::Module;
-        this.ConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.GetSetup();
 
         exit(this.GetAccessToken(AccessToken, this.GetRootId(),
                                                 this.GetRootSecret(),
-                                                this.StorageGetText(this.ConnectionSetup."Root Tenant", ModuleDataScope)));
+                                                this.StorageGetText(this.SignUpConnectionSetup."Root Tenant", ModuleDataScope)));
     end;
 
     [NonDebuggable]
@@ -255,11 +255,11 @@ codeunit 6390 Authentication
         ModuleDataScope: DataScope;
     begin
         ModuleDataScope := ModuleDataScope::Module;
-        this.ConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.GetSetup();
 
-        exit(this.GetAccessToken(AccessToken, this.StorageGetText(this.ConnectionSetup."Client ID", ModuleDataScope),
-                                                this.StorageGet(this.ConnectionSetup."Client Secret", ModuleDataScope),
-                                                this.StorageGetText(this.ConnectionSetup."Client Tenant", ModuleDataScope)));
+        exit(this.GetAccessToken(AccessToken, this.StorageGetText(this.SignUpConnectionSetup."Client ID", ModuleDataScope),
+                                                this.StorageGet(this.SignUpConnectionSetup."Client Secret", ModuleDataScope),
+                                                this.StorageGetText(this.SignUpConnectionSetup."Client Tenant", ModuleDataScope)));
     end;
 
     [NonDebuggable]
@@ -270,16 +270,16 @@ codeunit 6390 Authentication
         Response: Text;
     begin
         Clear(AccessToken);
-        this.ConnectionSetup.GetSetup();
-        this.ConnectionSetup.TestField("Authentication URL");
+        this.SignUpConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.TestField("Authentication URL");
 
         HttpRequestMessage := this.PrepareRequest(SecretStrSubstNo(this.AuthTemplateTxt, TypeHelper.UriEscapeDataString(ClientId), ClientSecret, TypeHelper.UriEscapeDataString(ClientId)),
-                                                  StrSubstNo(this.ConnectionSetup."Authentication URL", ClientTenant));
+                                                  StrSubstNo(this.SignUpConnectionSetup."Authentication URL", ClientTenant));
 
         if not this.SendRequest(HttpRequestMessage, Response) then
             exit;
 
-        AccessToken := this.HelpersImpl.GetJsonValueFromText(Response, this.AccessTokenTxt);
+        AccessToken := this.SignUpHelpersImpl.GetJsonValueFromText(Response, this.AccessTokenTxt);
         exit(not AccessToken.IsEmpty());
     end;
 
@@ -382,11 +382,11 @@ codeunit 6390 Authentication
         if this.FetchSecretFromKeyVault(this.SignUpRootIdTxt, ReturnValue) then
             exit;
 
-        if not this.ConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.GetSetup() then
             exit;
 
-        this.ConnectionSetup.TestField("Root App ID");
-        ReturnValue := this.StorageGetText(this.ConnectionSetup."Root App ID", DataScope::Module);
+        this.SignUpConnectionSetup.TestField("Root App ID");
+        ReturnValue := this.StorageGetText(this.SignUpConnectionSetup."Root App ID", DataScope::Module);
     end;
 
     local procedure GetRootSecret() ReturnValue: SecretText
@@ -394,11 +394,11 @@ codeunit 6390 Authentication
         if this.FetchSecretFromKeyVault(this.SignUpRootSecretTxt, ReturnValue) then
             exit;
 
-        if not this.ConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.GetSetup() then
             exit;
 
-        this.ConnectionSetup.TestField("Root Secret");
-        ReturnValue := this.StorageGet(this.ConnectionSetup."Root Secret", DataScope::Module);
+        this.SignUpConnectionSetup.TestField("Root Secret");
+        ReturnValue := this.StorageGet(this.SignUpConnectionSetup."Root Secret", DataScope::Module);
     end;
 
     [NonDebuggable]

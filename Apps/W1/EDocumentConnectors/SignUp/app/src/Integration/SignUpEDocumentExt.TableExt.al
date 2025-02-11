@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-tableextension 6382 EDocumentExt extends "E-Document"
+tableextension 6382 SignUpEDocumentExt extends "E-Document"
 {
     fields
     {

@@ -12,8 +12,8 @@ permissionset 6381 SignUpEDCORead
     Assignable = false;
     Caption = 'SignUp E-Doc. Connector - Read', MaxLength = 30;
     IncludedPermissionSets = SignUpEDCOObjects;
-    Permissions = tabledata ConnectionSetup = R,
-                  tabledata MetadataProfile = R,
+    Permissions = tabledata SignUpConnectionSetup = R,
+                  tabledata SignUpMetadataProfile = R,
                   tabledata "E-Document Integration Log" = rim;
 
 

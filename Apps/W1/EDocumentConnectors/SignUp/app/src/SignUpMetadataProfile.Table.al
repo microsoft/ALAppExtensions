@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6382 MetadataProfile
+table 6382 SignUpMetadataProfile
 {
     Caption = 'MetadataProfile';
     Access = Internal;

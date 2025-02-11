@@ -13,7 +13,7 @@ using System.Utilities;
 using System.Xml;
 using System.Environment;
 
-codeunit 6389 APIRequests
+codeunit 6389 SignUpAPIRequests
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -69,7 +69,7 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
         HttpContent: HttpContent;
         Payload: Text;
     begin
@@ -78,11 +78,11 @@ codeunit 6389 APIRequests
             exit;
 
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Environment Type", "Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Environment Type", "Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, ConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions');
-        this.PrepareContent(HttpContent, Payload, EDocument, ConnectionSetup);
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions');
+        this.PrepareContent(HttpContent, Payload, EDocument, SignUpConnectionSetup);
         HttpRequestMessage.Content(HttpContent);
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
@@ -97,13 +97,13 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetSentDocumentStatus(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions/' + EDocument."SignUp Document Id" + '/status');
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions/' + EDocument."SignUp Document Id" + '/status');
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -117,13 +117,13 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure PatchDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions/' + EDocument."SignUp Document Id" + '/acknowledge');
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::PATCH, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/outbox/transactions/' + EDocument."SignUp Document Id" + '/acknowledge');
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -136,13 +136,13 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions?partyId=' + this.SenderReceiverPrefixTxt + this.GetCompanyId());
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions?partyId=' + this.SenderReceiverPrefixTxt + this.GetCompanyId());
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -156,13 +156,13 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions/' + DocumentId);
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions/' + DocumentId);
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -177,13 +177,13 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions/' + EDocument."SignUp Document Id" + '/acknowledge');
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::PATCH, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/inbox/transactions/' + EDocument."SignUp Document Id" + '/acknowledge');
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -196,13 +196,13 @@ codeunit 6389 APIRequests
     /// <returns>Returns true if the metadata profiles were successfully fetched, otherwise false.</returns>
     procedure FetchMetaDataProfiles(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
-        ConnectionSetup.SetLoadFields("Service URL");
-        this.GetSetup(ConnectionSetup);
+        SignUpConnectionSetup.SetLoadFields("Service URL");
+        this.GetSetup(SignUpConnectionSetup);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup."Service URL" + '/api/v2/Peppol/metadataprofile');
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::GET, SignUpConnectionSetup."Service URL" + '/api/v2/Peppol/metadataprofile');
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage, false));
     end;
 
@@ -215,11 +215,11 @@ codeunit 6389 APIRequests
     /// <returns>True if successfully completed</returns>   
     procedure GetMarketPlaceCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        Authentication: Codeunit Authentication;
+        SignUpAuthentication: Codeunit SignUpAuthentication;
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, Authentication.GetRootUrl() + '/api/Registration/init?EntraTenantId=' + Authentication.GetBCInstanceIdentifier() + '&EnvironmentName=' + this.GetEnvironmentName());
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, SignUpAuthentication.GetRootUrl() + '/api/Registration/init?EntraTenantId=' + SignUpAuthentication.GetBCInstanceIdentifier() + '&EnvironmentName=' + this.GetEnvironmentName());
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage, true));
     end;
 
@@ -242,14 +242,14 @@ codeunit 6389 APIRequests
         Clear(HttpResponseMessage);
     end;
 
-    local procedure GetSetup(var ConnectionSetup: Record ConnectionSetup)
+    local procedure GetSetup(var SignUpConnectionSetup: Record SignUpConnectionSetup)
     var
         MissingSetupErrorInfo: ErrorInfo;
     begin
-        if not IsNullGuid(ConnectionSetup.SystemId) then
+        if not IsNullGuid(SignUpConnectionSetup.SystemId) then
             exit;
 
-        if not ConnectionSetup.Get() then begin
+        if not SignUpConnectionSetup.Get() then begin
             MissingSetupErrorInfo.Title := this.MissingSetupErr;
             MissingSetupErrorInfo.Message := this.MissingSetupMessageErr;
             MissingSetupErrorInfo.PageNo := Page::"E-Document Services";
@@ -278,13 +278,13 @@ codeunit 6389 APIRequests
         exit(this.CompanyId);
     end;
 
-    local procedure PrepareContent(var HttpContent: HttpContent; Payload: Text; EDocument: Record "E-Document"; ConnectionSetup: Record ConnectionSetup)
+    local procedure PrepareContent(var HttpContent: HttpContent; Payload: Text; EDocument: Record "E-Document"; SignUpConnectionSetup: Record SignUpConnectionSetup)
     var
         ContentText: Text;
         HttpHeaders: HttpHeaders;
     begin
         Clear(HttpContent);
-        ContentText := this.PrepareContentForSend(EDocument, this.GetCompanyId(), this.GetSenderCountryCode(), Payload, ConnectionSetup."Environment Type");
+        ContentText := this.PrepareContentForSend(EDocument, this.GetCompanyId(), this.GetSenderCountryCode(), Payload, SignUpConnectionSetup."Environment Type");
         HttpContent.WriteFrom(ContentText);
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains(this.ContentTypeTxt) then
@@ -299,15 +299,15 @@ codeunit 6389 APIRequests
 
     local procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
     var
-        Authentication: Codeunit Authentication;
+        SignUpAuthentication: Codeunit SignUpAuthentication;
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
     begin
         HttpRequestMessage.GetHeaders(HttpHeaders);
         if RootRequest then
-            HttpHeaders.Add(this.AuthorizationTxt, Authentication.GetRootBearerAuthToken())
+            HttpHeaders.Add(this.AuthorizationTxt, SignUpAuthentication.GetRootBearerAuthToken())
         else
-            HttpHeaders.Add(this.AuthorizationTxt, Authentication.GetBearerAuthToken());
+            HttpHeaders.Add(this.AuthorizationTxt, SignUpAuthentication.GetBearerAuthToken());
         exit(HttpClient.Send(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -371,12 +371,12 @@ codeunit 6389 APIRequests
         exit(CompanyInformation."Country/Region Code");
     end;
 
-    local procedure PrepareContentForSend(EDocument: Record "E-Document"; SendingCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum EnvironmentType): Text
+    local procedure PrepareContentForSend(EDocument: Record "E-Document"; SendingCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SignUpEnvironmentType): Text
     var
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
-        MetadataProfile: Record MetadataProfile;
+        SignUpMetadataProfile: Record SignUpMetadataProfile;
         EDocumentHelper: Codeunit "E-Document Helper";
         Base64Convert: Codeunit "Base64 Convert";
         JsonObject: JsonObject;
@@ -394,7 +394,7 @@ codeunit 6389 APIRequests
         EDocServiceSupportedType.SetRange("Source Document Type", EDocument."Document Type");
         if not EDocServiceSupportedType.FindFirst() then
             Error(this.UnSupportedDocumentTypeProfileMissingTxt, EDocument."Document Type", EDocServiceSupportedType.FieldCaption("Profile Id"), EDocumentService.TableCaption, this.SupportedDocumentTypesTxt);
-        if (EDocServiceSupportedType."Profile Id" = 0) or (not MetadataProfile.Get(EDocServiceSupportedType."Profile Id")) then
+        if (EDocServiceSupportedType."Profile Id" = 0) or (not SignUpMetadataProfile.Get(EDocServiceSupportedType."Profile Id")) then
             Error(this.UnSupportedDocumentTypeProfileMissingTxt, EDocument."Document Type", EDocServiceSupportedType.FieldCaption("Profile Id"), EDocumentService.TableCaption, this.SupportedDocumentTypesTxt);
 
         JsonObject.Add(this.DocumentTypeTxt, this.GetDocumentType(EDocument));
@@ -404,10 +404,10 @@ codeunit 6389 APIRequests
         if EDocument.Direction = EDocument.Direction::Incoming then
             JsonObject.Add(this.DocumentIdTxt, this.ApplicationResponseTxt)
         else
-            JsonObject.Add(this.DocumentIdTxt, MetadataProfile."Document Identifier Value");
-        JsonObject.Add(this.DocumentIdSchemeTxt, MetadataProfile."Document Identifier Scheme");
-        JsonObject.Add(this.ProcessIdTxt, MetadataProfile."Process Identifier Value");
-        JsonObject.Add(this.ProcessIdSchemeTxt, MetadataProfile."Process Identifier Scheme");
+            JsonObject.Add(this.DocumentIdTxt, SignUpMetadataProfile."Document Identifier Value");
+        JsonObject.Add(this.DocumentIdSchemeTxt, SignUpMetadataProfile."Document Identifier Scheme");
+        JsonObject.Add(this.ProcessIdTxt, SignUpMetadataProfile."Process Identifier Value");
+        JsonObject.Add(this.ProcessIdSchemeTxt, SignUpMetadataProfile."Process Identifier Scheme");
         JsonObject.Add(this.SendModeTxt, Format(SendMode));
         JsonObject.Add(this.DocumentTxt, Base64Convert.ToBase64(Payload));
         JsonObject.WriteTo(ContentText);

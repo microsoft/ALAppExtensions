@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-pageextension 6383 EDocServSuppTypeExtPageExt extends "E-Doc Service Supported Types"
+pageextension 6383 SignUpEDocSvcSupTypeExtPageExt extends "E-Doc Service Supported Types"
 {
 
     layout
@@ -43,9 +43,9 @@ pageextension 6383 EDocServSuppTypeExtPageExt extends "E-Doc Service Supported T
 
                 trigger OnAction()
                 var
-                    Connection: Codeunit Connection;
+                    SignUpConnection: Codeunit SignUpConnection;
                 begin
-                    Connection.UpdateMetadataProfile();
+                    SignUpConnection.UpdateMetadataProfile();
                 end;
             }
         }
@@ -53,9 +53,9 @@ pageextension 6383 EDocServSuppTypeExtPageExt extends "E-Doc Service Supported T
 
     trigger OnOpenPage()
     var
-        Helpers: Codeunit Helpers;
+        SignUpHelpers: Codeunit SignUpHelpers;
     begin
-        ExFlowEInvoicingVisible := Helpers.IsExFlowEInvoicing(Rec.GetFilter("E-Document Service Code"));
+        ExFlowEInvoicingVisible := SignUpHelpers.IsExFlowEInvoicing(Rec.GetFilter("E-Document Service Code"));
     end;
 
     var

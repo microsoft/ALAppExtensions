@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enumextension 6380 IntegrationEnumExt extends "Service Integration"
+enumextension 6380 SignUpIntegrationEnumExt extends "Service Integration"
 {
     value(6380; "ExFlow E-Invoicing")
     {
         Caption = 'ExFlow E-Invoicing';
-        Implementation = IDocumentSender = IntegrationImpl, IDocumentReceiver = IntegrationImpl;
+        Implementation = IDocumentSender = SignUpIntegrationImpl, IDocumentReceiver = SignUpIntegrationImpl;
     }
 }

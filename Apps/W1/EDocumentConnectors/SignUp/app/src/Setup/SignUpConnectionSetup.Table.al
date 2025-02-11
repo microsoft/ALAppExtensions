@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6381 ConnectionSetup
+table 6381 SignUpConnectionSetup
 {
     Access = Internal;
     DataPerCompany = false;
@@ -32,7 +32,7 @@ table 6381 ConnectionSetup
             Caption = 'Client Secret';
             ToolTip = 'Specifies the client secret.';
         }
-        field(5; "Environment Type"; Enum EnvironmentType)
+        field(5; "Environment Type"; Enum SignUpEnvironmentType)
         {
             Caption = 'Environment Type';
             ToolTip = 'Specifies the environment type.';
