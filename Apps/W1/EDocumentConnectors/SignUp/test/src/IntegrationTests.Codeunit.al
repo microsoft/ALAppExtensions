@@ -474,8 +474,6 @@ codeunit 148195 IntegrationTests
     procedure SubmitGetDocuments()
     var
         EDocument: Record "E-Document";
-        //PurchaseHeader: Record "Purchase Header";
-        IntegrationEvents: Codeunit IntegrationEvents;
         EDocumentServicesPage: TestPage "E-Document Service";
         TmpDocCount: Integer;
     begin
@@ -493,10 +491,8 @@ codeunit 148195 IntegrationTests
         EDocumentServicesPage.Close();
 
         TmpDocCount := EDocument.Count();
-        BindSubscription(IntegrationEvents);
         // Manually fire job queue job to import
         this.LibraryEDocument.RunImportJob();
-        UnbindSubscription(IntegrationEvents);
 
         // Assert that we have Purchase Invoice created
         this.Assert.AreEqual(EDocument.Count(), TmpDocCount + 1, 'The document was not imported!');
