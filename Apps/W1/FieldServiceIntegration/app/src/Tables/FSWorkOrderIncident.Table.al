@@ -296,6 +296,23 @@ table 6618 "FS Work Order Incident"
             ExternalType = 'String';
             ExternalAccess = Read;
         }
+        field(60; IncidentType; Guid)
+        {
+            ExternalName = 'msdyn_incidenttype';
+            ExternalType = 'Lookup';
+            Caption = 'Incident Type';
+            TableRelation = "FS Incident Type".IncidentTypeId;
+            DataClassification = SystemMetadata;
+        }
+        field(70; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

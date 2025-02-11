@@ -710,6 +710,35 @@ table 6619 "FS Work Order Product"
             Description = 'Quantity invoiced in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order product.';
             Caption = 'Quantity Invoiced';
         }
+        field(113; QuantityShipped; Decimal)
+        {
+            ExternalName = 'bcbi_quantityshipped';
+            ExternalType = 'Float';
+            Description = 'Quantity shipped in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order product.';
+            Caption = 'Quantity Shipped';
+        }
+        field(120; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
+        }
+        field(121; LocationCode; Code[10])
+        {
+            ExternalName = 'bcbi_locationcode';
+            ExternalType = 'String';
+            Description = 'Unique identifier of the warehouse associated with the entity.';
+            Caption = 'Location Code';
+            ExternalAccess = Read;
+        }
+        field(122; ProductId; Code[20])
+        {
+            ExternalName = 'bcbi_productid';
+            ExternalType = 'String';
+            Description = 'Unique identifier of the product associated with the entity.';
+            Caption = 'Product Id';
+        }
     }
     keys
     {
