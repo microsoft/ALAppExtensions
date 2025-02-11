@@ -220,12 +220,13 @@ codeunit 6103 "E-Document Subscription"
         EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
         EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
 
-        EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
-        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
         Clear(EDocument."Document No.");
         Clear(EDocument."Document Record ID");
         if Rec."Document Type" = Rec."Document Type"::Order then
             Clear(EDocument."Order No.");
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
         EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
     end;
 
