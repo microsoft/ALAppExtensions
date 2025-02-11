@@ -197,12 +197,6 @@ table 6121 "E-Document"
     }
 
     trigger OnDelete()
-    var
-        DocumentAttachment: Record "Document Attachment";
-        EDocMappingLog: Record "E-Doc. Mapping Log";
-        EDocumentIntegrationLog: Record "E-Document Integration Log";
-        EDocumentLog: Record "E-Document Log";
-        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         if (Rec.Status = Rec.Status::Processed) then
             Error(this.DeleteProcessedNotAllowedErr);
@@ -213,6 +207,28 @@ table 6121 "E-Document"
         if (not this.IsDuplicate()) then
             Error(this.DeleteUniqueNotAllowedErr);
 
+        this.DeleteRelatedRecords();
+    end;
+
+    local procedure IsDuplicate(): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", Rec."Document Date");
+        EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
+        exit(not EDocument.IsEmpty());
+    end;
+
+    local procedure DeleteRelatedRecords()
+    var
+        DocumentAttachment: Record "Document Attachment";
+        EDocMappingLog: Record "E-Doc. Mapping Log";
+        EDocumentIntegrationLog: Record "E-Document Integration Log";
+        EDocumentLog: Record "E-Document Log";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
         EDocumentLog.DeleteAll(true);
 
@@ -228,17 +244,6 @@ table 6121 "E-Document"
 
         EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
         EDocMappingLog.DeleteAll(true);
-    end;
-
-    local procedure IsDuplicate(): Boolean
-    var
-        EDocument: Record "E-Document";
-    begin
-        EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
-        EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
-        EDocument.SetRange("Document Date", Rec."Document Date");
-        EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
-        exit(not EDocument.IsEmpty());
     end;
 
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
