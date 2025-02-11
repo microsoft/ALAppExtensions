@@ -32,7 +32,7 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                 action(CreateAndSendEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and send E-Document';
+                    Caption = 'Create and Send E-Document';
                     Image = CreateDocument;
                     ToolTip = 'Creates an electronic document from the posted sales invoice and sends it via service.';
                     Enabled = not EDocumentExists;
@@ -46,7 +46,7 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                 action(CreateAndEmailEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and e-mail E-Document';
+                    Caption = 'Create and E-mail E-Document';
                     Image = CreateDocument;
                     ToolTip = 'Creates an electronic document, sends it via service and attaches created e-document file to email.';
                     Enabled = not EDocumentExists;

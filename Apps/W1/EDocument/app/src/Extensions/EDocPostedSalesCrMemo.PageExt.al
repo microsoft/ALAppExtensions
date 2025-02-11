@@ -32,7 +32,7 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
                 action(CreateAndSendEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and send E-Document';
+                    Caption = 'Create and Send E-Document';
                     Image = CreateDocument;
                     ToolTip = 'Creates an electronic document from the posted sales credit memo and sends it via service.';
                     Enabled = not EDocumentExists;

@@ -16,7 +16,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         IsInitialized: Boolean;
         XMLFileLbl: Label '%1 %2.xml', Locked = true;
 
-
     [Test]
     [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,PostAndSendStrMenuHandler,EmailEditorHandler,SalesShipmentSameActionConfirmHandler')]
     procedure PostAndSendSalesOrder()
@@ -122,6 +121,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
         EDocument.FindFirst();
         Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
+
         UnbindSubscription(EDocImplState);
     end;
 
@@ -164,6 +164,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
         EDocument.FindFirst();
         Assert.AreEqual(EDocument.Status, Enum::"E-Document Status"::Processed, 'E-document status different than processed.');
+
         UnbindSubscription(EDocImplState);
     end;
 
