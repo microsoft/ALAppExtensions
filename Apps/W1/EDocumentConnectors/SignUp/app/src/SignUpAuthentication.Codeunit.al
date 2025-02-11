@@ -150,8 +150,6 @@ codeunit 6390 SignUpAuthentication
     var
         AADTenantID, AADDomainName : Text;
     begin
-        Identifier := '10000000-d8ef-4dfb-b761-ffb073057794'; // Hardcoded fake during testing only
-
         if this.GetAADTenantInformation(AADTenantID, AADDomainName) then
             Identifier := AADTenantID;
     end;
@@ -181,7 +179,7 @@ codeunit 6390 SignUpAuthentication
     var
         HttpError: Text;
     begin
-        AccessToken := this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Company);
+        AccessToken := this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Module);
 
         if this.SignUpHelpersImpl.IsTokenValid(AccessToken) then
             exit;
@@ -189,7 +187,7 @@ codeunit 6390 SignUpAuthentication
         if not this.RefreshAccessToken(HttpError) then
             Error(HttpError);
 
-        exit(this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Company));
+        exit(this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Module));
     end;
 
     local procedure GetRootAuthToken() ReturnValue: SecretText;
@@ -233,7 +231,7 @@ codeunit 6390 SignUpAuthentication
             exit;
         end;
 
-        exit(this.SaveSignUpAccessToken(DataScope::Company, SecretToken));
+        exit(this.SaveSignUpAccessToken(DataScope::Module, SecretToken));
     end;
 
     [NonDebuggable]
