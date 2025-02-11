@@ -233,7 +233,7 @@ codeunit 6105 "E-Document Email"
     end;
 
     var
-        EDocumentAttachmentNameTok: Label '%1 %2', Locked = true;
+        EDocumentAttachmentNameTok: Label '%1 %2', Locked = true, Comment = '%1 = Attachment name, %2 = File format';
         XMLFileTypeTok: Label '.xml', Locked = true;
         PDFFileTypeTok: Label '.pdf', Locked = true;
         ZipFileTypeTok: Label '.zip', Locked = true;
