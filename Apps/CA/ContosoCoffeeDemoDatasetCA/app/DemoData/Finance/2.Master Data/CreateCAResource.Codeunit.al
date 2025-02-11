@@ -5,7 +5,26 @@ codeunit 27065 "Create CA Resource"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //TODO- Post Code Hard coded.
+    trigger OnRun()
+    var
+        CreateResource: Codeunit "Create Resource";
+        CreateCATaxGroup: Codeunit "Create CA Tax Group";
+    begin
+        UpdateTaxGroupOnResource(CreateResource.Katherine(), CreateCATaxGroup.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Lina(), CreateCATaxGroup.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Marty(), CreateCATaxGroup.Labor());
+        UpdateTaxGroupOnResource(CreateResource.Terry(), CreateCATaxGroup.Labor());
+    end;
+
+    local procedure UpdateTaxGroupOnResource(ResourceNo: Code[20]; TaxGroupCode: Code[20])
+    var
+        Resource: Record Resource;
+    begin
+        Resource.Get(ResourceNo);
+
+        Resource.Validate("Tax Group Code", TaxGroupCode);
+        Resource.Modify(true);
+    end;
 
     [EventSubscriber(ObjectType::Table, Database::Resource, 'OnBeforeOnInsert', '', false, false)]
     local procedure OnInsertRecord(var Resource: Record Resource; var IsHandled: Boolean)

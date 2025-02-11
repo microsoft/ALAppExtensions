@@ -107,6 +107,7 @@ page 30002 "APIV2 - Aut. Extensions"
         IsExtensionInstalled: Boolean;
         IsNotInstalledErr: Label 'The extension %1 is not installed.', Comment = '%1=name of app';
         IsInstalledErr: Label 'The extension %1 is already installed.', Comment = '%1=name of app';
+        CannotUnpublishInstalledAppErr: Label 'The extension %1 cannot be unpublished because it is installed.', Comment = '%1=name of app';
 
     [ServiceEnabled]
     [Scope('Cloud')]
@@ -151,6 +152,18 @@ page 30002 "APIV2 - Aut. Extensions"
         ActionContext.SetObjectId(Page::"APIV2 - Aut. Extensions");
         ActionContext.AddEntityKey(Rec.FieldNo(ID), Rec.ID);
         ActionContext.SetResultCode(WebServiceActionResultCode::Updated);
+    end;
+
+    [ServiceEnabled]
+    [Scope('Cloud')]
+    procedure unpublish(var ActionContext: WebServiceActionContext)
+    begin
+        if ExtensionManagement.IsInstalledByPackageId(Rec."Package ID") then
+            Error(CannotUnpublishInstalledAppErr, Rec.Name);
+
+        ExtensionManagement.UnpublishExtension(Rec."Package ID");
+
+        ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 
     var

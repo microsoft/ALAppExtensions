@@ -130,6 +130,15 @@ page 30083 "APIV2 - Purchase Credit Memos"
                     Caption = 'Vendor Name';
                     Editable = false;
                 }
+                field(vendorCreditMemoNumber; Rec."Vendor Cr. Memo No.")
+                {
+                    Caption = 'Vendor Credit Memo No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Vendor Cr. Memo No."));
+                    end;
+                }
                 field(payToVendorId; Rec."Pay-to Vendor Id")
                 {
                     Caption = 'Pay-to Vendor Id';

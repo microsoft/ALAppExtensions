@@ -1,7 +1,7 @@
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
-using System.Reflection;
+using System.Globalization;
 using System.Environment.Configuration;
 
 codeunit 36961 "Setup Helper"
@@ -100,11 +100,11 @@ codeunit 36961 "Setup Helper"
     procedure InitializeEmbeddedAddin(PowerBIManagement: ControlAddIn PowerBIManagement; ReportId: Guid; ReportPageTok: Text)
     var
         PowerBIServiceMgt: Codeunit "Power BI Service Mgt.";
-        TypeHelper: Codeunit "Type Helper";
+        Language: Codeunit Language;
         PowerBIEmbedReportUrlTemplateTxt: Label 'https://app.powerbi.com/reportEmbed?reportId=%1', Locked = true;
     begin
         PowerBiServiceMgt.InitializeAddinToken(PowerBIManagement);
-        PowerBIManagement.SetLocale(TypeHelper.GetCultureName());
+        PowerBIManagement.SetLocale(Language.GetCurrentCultureName());
         PowerBIManagement.SetFiltersVisible(true);
         PowerBIManagement.AddBottomPadding(true);
         PowerBIManagement.SetPageSelectionVisible(ReportPageTok = '');

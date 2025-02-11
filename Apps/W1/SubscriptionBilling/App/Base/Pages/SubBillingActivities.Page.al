@@ -15,6 +15,7 @@ page 8085 "Sub. Billing Activities"
     ShowFilter = false;
     SourceTable = "Subscription Billing Cue";
     ApplicationArea = Basic, Suite;
+    Permissions = tabledata "Subscription Billing Cue" = rimd;
 
     layout
     {

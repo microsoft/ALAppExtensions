@@ -91,7 +91,7 @@ codeunit 6381 "Drive Processing"
     begin
         FeatureTelemetry.LogUptake('0000OAZ', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OB2', FeatureName(), Format(EDocumentService."Service Integration V2"));
-        MyBCFilesLink := GetGraphSharesURL() + GetDocumentsSharedLink(EDocumentService."Service Integration V2") + '/driveItem/children?$top=100&$select=id,name,file,malware';
+        MyBCFilesLink := GetGraphSharesURL() + GetDocumentsSharedLink(EDocumentService."Service Integration V2") + '/driveItem/children?$top=100&$select=id,name,file,size,malware';
         if not GraphClient.GetDriveFolderInfo(MyBCFilesLink, FilesJson) then begin
             ErrorMessageTxt := GetLastErrorText() + GetLastErrorCallStack();
             ClearLastError();
@@ -135,20 +135,36 @@ codeunit 6381 "Drive Processing"
                 TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
                 Child := Children.GetObject(I);
                 Child.WriteTo(ChildTxt);
-                if not IgnoreDriveItem(ChildTxt.ToLower()) then begin
+                if not IgnoreDriveItem(Child, ChildTxt.ToLower()) then begin
                     OutStream.Write(ChildTxt);
                     Documents.Add(TempBlob);
                 end;
             end;
     end;
 
-    local procedure IgnoreDriveItem(ItemAsTxt: Text): Boolean
+    local procedure IgnoreDriveItem(Item: JSonObject; ItemAsTxt: Text): Boolean
+    var
+        SizeToken: JSonToken;
+        Size: BigInteger;
     begin
+        if Item.Get('size', SizeToken) then
+            if SizeToken.IsValue() then
+                Size := SizeToken.AsValue().AsBigInteger();
+
         if ItemAsTxt.Contains('"malware"') then
             exit(true);
 
         if not DelChr(ItemAsTxt, '=', ' ').Contains('"mimetype":"application/pdf"') then
             exit(true);
+
+        if Size > SizeThreshold() then
+            exit(true);
+    end;
+
+    internal procedure SizeThreshold(): Integer
+    begin
+        // 25 MB
+        exit(26214400)
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)

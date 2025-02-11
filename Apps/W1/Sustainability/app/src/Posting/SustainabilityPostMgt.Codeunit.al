@@ -1,12 +1,14 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.Assembly.Document;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Transfer;
 using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
-using Microsoft.Inventory.Journal;
 using Microsoft.Sustainability.Ledger;
 
 codeunit 6212 "Sustainability Post Mgt"
@@ -19,7 +21,25 @@ codeunit 6212 "Sustainability Post Mgt"
         InsertLedgerEntry(SustainabilityJnlLine);
     end;
 
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SalesLie: Record "Sales Line")
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SalesLine: Record "Sales Line")
+    begin
+        SkipUpdateCarbonEmissionValue := true;
+        InsertLedgerEntry(SustainabilityJnlLine);
+    end;
+
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; AssemblyHeader: Record "Assembly Header")
+    begin
+        SkipUpdateCarbonEmissionValue := true;
+        InsertLedgerEntry(SustainabilityJnlLine);
+    end;
+
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; AssemblyLine: Record "Assembly Line")
+    begin
+        SkipUpdateCarbonEmissionValue := true;
+        InsertLedgerEntry(SustainabilityJnlLine);
+    end;
+
+    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; TransferLine: Record "Transfer Line")
     begin
         SkipUpdateCarbonEmissionValue := true;
         InsertLedgerEntry(SustainabilityJnlLine);
@@ -51,23 +71,26 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityValueEntry: Record "Sustainability Value Entry";
         ShouldCalcExpectedCO2e: Boolean;
     begin
-        SkipUpdateCarbonEmissionValue := ItemLedgerEntry."Entry Type" <> ItemLedgerEntry."Entry Type"::Purchase;
+        SkipUpdateCarbonEmissionValue := ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase;
         SustainabilityValueEntry.Init();
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);
 
         if (ValueEntry."Order Type" = ValueEntry."Order Type"::Production) and
-           (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Output)
-        then
+           (ValueEntry."Item Ledger Entry Type" in [ValueEntry."Item Ledger Entry Type"::Output, ValueEntry."Item Ledger Entry Type"::" "])
+        then begin
+            SkipUpdateCarbonEmissionValue := true;
             SustainabilityValueEntry."Expected Emission" := false;
+        end;
 
         SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
         UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
 
         ShouldCalcExpectedCO2e :=
             ((SustainabilityValueEntry."Entry Type" = SustainabilityValueEntry."Entry Type"::"Direct Cost") and
-            (((SustainabilityValueEntry."Item Ledger Entry Quantity" = 0) and (SustainabilityValueEntry."Invoiced Quantity" <> 0))));
+            ((SustainabilityValueEntry."Item Ledger Entry Quantity" = 0) and (SustainabilityValueEntry."Invoiced Quantity" <> 0)) and
+            (SustainabilityValueEntry."Item Ledger Entry No." <> 0));
 
         if ShouldCalcExpectedCO2e then
             CalcExpectedCO2e(
@@ -85,13 +108,13 @@ codeunit 6212 "Sustainability Post Mgt"
     procedure UpdateCO2ePerUnit(SustValueEntry: Record "Sustainability Value Entry")
     var
         Item: Record Item;
-        ItemCostMgt: Codeunit SustCostManagement;
+        SustCostMgt: Codeunit SustCostManagement;
     begin
         if (SustValueEntry."Valued Quantity" > 0) and not (SustValueEntry."Expected Emission") then begin
             if not Item.Get(SustValueEntry."Item No.") then
                 exit;
 
-            ItemCostMgt.UpdateCO2ePerUnit(Item, 0);
+            SustCostMgt.UpdateCO2ePerUnit(Item, 0);
         end;
     end;
 

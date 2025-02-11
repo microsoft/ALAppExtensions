@@ -43,6 +43,7 @@ codeunit 6132 "E-Document Log"
 #if not CLEAN26
         EDocumentLog.Validate("Service Integration", EDocumentService."Service Integration");
 #endif
+        EDocumentLog.Validate("Service Integration V2", EDocumentService."Service Integration V2");
         EDocumentLog.Validate("Service Code", EDocumentService.Code);
         EDocumentLog.Validate("Document Format", EDocumentService."Document Format");
         EDocumentLog.Validate("E-Doc. Data Storage Entry No.", EDocDataStorageEntryNo);
@@ -152,6 +153,7 @@ codeunit 6132 "E-Document Log"
 #if not CLEAN26
         EDocumentLog.SetRange("Service Integration", EDocumentService."Service Integration");
 #endif
+        EDocumentLog.SetRange("Service Integration V2", EDocumentService."Service Integration V2");
         EDocumentLog.SetRange("Document Format", EDocumentService."Document Format");
         EDocumentLog.SetRange(Status, EDocumentServiceStatus);
         if not EDocumentLog.FindLast() then begin

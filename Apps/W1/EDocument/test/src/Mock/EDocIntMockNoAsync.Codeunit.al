@@ -1,4 +1,4 @@
-codeunit 139668 "E-Doc. Int Mock No Async" implements IDocumentSender, IDocumentReceiver
+codeunit 139668 "E-Doc. Int Mock No Async" implements IDocumentSender, IDocumentReceiver, IConsentManager
 {
 
     Access = Internal;
@@ -28,6 +28,11 @@ codeunit 139668 "E-Doc. Int Mock No Async" implements IDocumentSender, IDocument
     begin
         OnDownloadDocument(EDocument, EDocumentService, DocumentMetadata, DocumentDownloadBlob, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
         ReceiveContext.SetTempBlob(DocumentDownloadBlob);
+    end;
+
+    procedure ObtainPrivacyConsent(): Boolean
+    begin
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

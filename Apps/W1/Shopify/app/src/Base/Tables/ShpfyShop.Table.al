@@ -751,6 +751,30 @@ table 30102 "Shpfy Shop"
             Caption = 'Weight Unit';
             DataClassification = CustomerContent;
         }
+        field(130; "Product Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Product/Variant Metafields to Shopify';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(131; "Customer Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Customer Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(132; "Company Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Company Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(133; "Order Attributes To Shopify"; Boolean)
+        {
+            Caption = 'Sync Business Central Doc. No. as Attribute';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;

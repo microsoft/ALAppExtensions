@@ -293,9 +293,10 @@ codeunit 30159 "Shpfy Draft Orders API"
         Currency: Record Currency;
     begin
         if Currency.Get(CurrencyCode) then
-            exit(Currency."ISO Code")
-        else
-            exit(CopyStr(CurrencyCode, 1, 3)); // If it is not found in the currency table then it is LCY
+            if Currency."ISO Code" <> '' then
+                exit(Currency."ISO Code");
+
+        exit(CopyStr(CurrencyCode, 1, 3)); // If it is not found in the currency table then it is LCY
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant; ValueAsString: Boolean): Boolean

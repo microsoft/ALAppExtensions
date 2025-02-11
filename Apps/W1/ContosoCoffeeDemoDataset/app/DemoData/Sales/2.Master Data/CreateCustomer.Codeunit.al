@@ -3,11 +3,10 @@ codeunit 5209 "Create Customer"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //To do -Hard coded values pending to replace - Post Code
-
     trigger OnRun()
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
+        TempBlob: Codeunit "Temp Blob";
         ContosoCustomerVendor: Codeunit "Contoso Customer/Vendor";
         ContosoUtilities: Codeunit "Contoso Utilities";
         CreateVatPostingGroups: Codeunit "Create VAT Posting Groups";
@@ -23,11 +22,21 @@ codeunit 5209 "Create Customer"
         CreateContJobResponsibility: Codeunit "Create Cont Job Responsibility";
     begin
         ContosoCoffeeDemoDataSetup.Get();
-        ContosoCustomerVendor.InsertCustomer(DomesticAdatumCorporation(), AdatumCorporationLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", AdatumCorporationAddressLbl, '', 'CB1 2FB', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsM8D(), ContosoUtilities.EmptyPicture(), CreateDocSendingProfile.DefaultDocumentSendingProfile(), RobertTownesLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'robert.townes@contoso.com', CreateReminderTerms.Domestic());
-        ContosoCustomerVendor.InsertCustomer(DomesticTreyResearch(), TreyResearchLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", TreyResearchAddressLbl, '', 'SE1 0AX', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsDAYS14(), ContosoUtilities.EmptyPicture(), '', HelenRayLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'helen.ray@contoso.com', CreateReminderTerms.Domestic());
-        ContosoCustomerVendor.InsertCustomer(ExportSchoolofArt(), SchoolofArtLbl, CreateCountryRegion.US(), SchoolofArtAddressLbl, '', 'US-FL 37125', '', CreateCustomerPostinGroup.Foreign(), CreatePostingGroups.ExportPostingGroup(), CreateVatPostingGroups.Export(), '', '', false, CreatePaymentTerms.PaymentTermsCM(), ContosoUtilities.EmptyPicture(), '', MeaganBondLbl, CreateTerritory.Foreign(), CreateLanguage.ENU(), CreateSalespersonPurchaser.JimOlive(), 'meagan.bond@contoso.com', CreateReminderTerms.Foreign());
-        ContosoCustomerVendor.InsertCustomer(EUAlpineSkiHouse(), AlpineSkiHouseLbl, CreateCountryRegion.DE(), AlpineSkiHouseAddressLbl, AlpineSkiHouseAddress2Lbl, 'DE-80807', '', CreateCustomerPostinGroup.EU(), CreatePostingGroups.EUPostingGroup(), CreateVatPostingGroups.EU(), '', '', false, CreatePaymentTerms.PaymentTermsM8D(), ContosoUtilities.EmptyPicture(), '', IanDeberryLbl, CreateTerritory.Foreign(), CreateLanguage.DEU(), CreateSalespersonPurchaser.JimOlive(), 'ian.deberry@contoso.com', CreateReminderTerms.Foreign());
-        ContosoCustomerVendor.InsertCustomer(DomesticRelecloud(), RelecloudLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", RelecloudAddressLbl, RelecloudAddresss2Lbl, 'GU2 7YQ', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsDAYS14(), ContosoUtilities.EmptyPicture(), '', JesseHomerLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'jesse.homer@contoso.com', CreateReminderTerms.Domestic());
+
+        TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + RobertTownesImgLbl + '.jpg');
+        ContosoCustomerVendor.InsertCustomer(DomesticAdatumCorporation(), AdatumCorporationLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", AdatumCorporationAddressLbl, '', 'CB1 2FB', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsM8D(), TempBlob, CreateDocSendingProfile.DefaultDocumentSendingProfile(), RobertTownesLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'robert.townes@contoso.com', CreateReminderTerms.Domestic());
+
+        TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + HelenRayImgLbl + '.jpg');
+        ContosoCustomerVendor.InsertCustomer(DomesticTreyResearch(), TreyResearchLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", TreyResearchAddressLbl, '', 'SE1 0AX', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsDAYS14(), TempBlob, '', HelenRayLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'helen.ray@contoso.com', CreateReminderTerms.Domestic());
+
+        TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + MeaganBondImgLbl + '.jpg');
+        ContosoCustomerVendor.InsertCustomer(ExportSchoolofArt(), SchoolofArtLbl, CreateCountryRegion.US(), SchoolofArtAddressLbl, '', 'US-FL 37125', '', CreateCustomerPostinGroup.Foreign(), CreatePostingGroups.ExportPostingGroup(), CreateVatPostingGroups.Export(), '', '', false, CreatePaymentTerms.PaymentTermsCM(), TempBlob, '', MeaganBondLbl, CreateTerritory.Foreign(), CreateLanguage.ENU(), CreateSalespersonPurchaser.JimOlive(), 'meagan.bond@contoso.com', CreateReminderTerms.Foreign());
+
+        TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + IanDeberryImgLbl + '.jpg');
+        ContosoCustomerVendor.InsertCustomer(EUAlpineSkiHouse(), AlpineSkiHouseLbl, CreateCountryRegion.DE(), AlpineSkiHouseAddressLbl, AlpineSkiHouseAddress2Lbl, 'DE-80807', '', CreateCustomerPostinGroup.EU(), CreatePostingGroups.EUPostingGroup(), CreateVatPostingGroups.EU(), '', '', false, CreatePaymentTerms.PaymentTermsM8D(), TempBlob, '', IanDeberryLbl, CreateTerritory.Foreign(), CreateLanguage.DEU(), CreateSalespersonPurchaser.JimOlive(), 'ian.deberry@contoso.com', CreateReminderTerms.Foreign());
+
+        TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + JesseHomerImgLbl + '.jpg');
+        ContosoCustomerVendor.InsertCustomer(DomesticRelecloud(), RelecloudLbl, ContosoCoffeeDemoDataSetup."Country/Region Code", RelecloudAddressLbl, RelecloudAddresss2Lbl, 'GU2 7YQ', '', CreateCustomerPostinGroup.Domestic(), CreatePostingGroups.DomesticPostingGroup(), CreateVatPostingGroups.Domestic(), '', '', false, CreatePaymentTerms.PaymentTermsDAYS14(), TempBlob, '', JesseHomerLbl, '', CreateLanguage.ENG(), CreateSalespersonPurchaser.JimOlive(), 'jesse.homer@contoso.com', CreateReminderTerms.Domestic());
         CreateContJobResponsibility.UpdateCustomerContactJobResposibility();
     end;
 
@@ -74,9 +83,15 @@ codeunit 5209 "Create Customer"
         RelecloudAddressLbl: Label 'Occam Court, 1', MaxLength = 100, Locked = true;
         AlpineSkiHouseAddress2Lbl: Label 'Park Stadt Schwabing', MaxLength = 50, Locked = true;
         RelecloudAddresss2Lbl: Label 'Surrey', MaxLength = 50, Locked = true;
+        RobertTownesImgLbl: Label 'Robert Townes', Locked = true;
         RobertTownesLbl: Label 'Robert Townes', MaxLength = 100;
+        HelenRayImgLbl: Label 'Helen Ray', Locked = true;
         HelenRayLbl: Label 'Helen Ray', MaxLength = 100;
+        MeaganBondImgLbl: Label 'Meagan Bond', Locked = true;
         MeaganBondLbl: Label 'Meagan Bond', MaxLength = 100;
+        IanDeberryImgLbl: Label 'Ian Deberry', Locked = true;
         IanDeberryLbl: Label 'Ian Deberry', MaxLength = 100;
+        JesseHomerImgLbl: Label 'Jesse Homer', Locked = true;
         JesseHomerLbl: Label 'Jesse Homer', MaxLength = 100;
+        ImageFolderPathLbl: Label 'Images/Person', Locked = true;
 }

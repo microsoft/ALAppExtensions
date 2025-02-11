@@ -329,17 +329,17 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         FilterParameters := '$filter=';
         if Filters."Unread Emails" then
-            FilterParameters := FilterParameters + 'isRead ne true&';
+            FilterParameters := FilterParameters + 'isRead ne true and ';
         if Filters."Draft Emails" then
-            FilterParameters := FilterParameters + 'isDraft eq true&'
+            FilterParameters := FilterParameters + 'isDraft eq true and '
         else
-            FilterParameters := FilterParameters + 'isDraft ne true&';
+            FilterParameters := FilterParameters + 'isDraft ne true and ';
         if Filters."Earliest Email" <> 0DT then
-            FilterParameters := FilterParameters + 'receivedDateTime ge ' + Format(Filters."Earliest Email", 0, 9) + '&';
+            FilterParameters := FilterParameters + 'receivedDateTime ge ' + Format(Filters."Earliest Email", 0, 9) + ' and ';
 
         if FilterParameters <> '$filter=' then begin
             QueryParameters := QueryParameters + FilterParameters;
-            QueryParameters := CopyStr(QueryParameters, 1, StrLen(QueryParameters) - 1);
+            QueryParameters := CopyStr(QueryParameters, 1, StrLen(QueryParameters) - 5);
         end;
 
         RequestUri := RequestUri + QueryParameters;

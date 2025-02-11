@@ -3,6 +3,7 @@ namespace Microsoft.DataMigration.GP;
 using Microsoft.DataMigration;
 using System.Integration;
 using System.Text;
+using System.Environment;
 
 codeunit 4016 "Hybrid GP Management"
 {
@@ -49,6 +50,38 @@ codeunit 4016 "Hybrid GP Management"
 
         Handled := true;
         CloseWizard := true;
+    end;
+
+    /// <summary>
+    /// If product contains only GP migrations, do not show the live companies warning
+    /// </summary>
+    /// <param name="SkipShowLiveCompaniesWarning">Boolean value to skip the warning</param>
+    [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnSkipShowLiveCompaniesWarning', '', false, false)]
+    local procedure HandleSkipCompaniesWizard(var SkipShowLiveCompaniesWarning: Boolean)
+    var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+    begin
+        HybridReplicationSummary.SetRange(Source, HybridGPWizard.ProductId());
+        if HybridReplicationSummary.IsEmpty() then
+            exit;
+
+        HybridReplicationSummary.SetFilter(Source, '<>%1', HybridGPWizard.ProductId());
+        if not HybridReplicationSummary.IsEmpty() then
+            exit;
+
+        SkipShowLiveCompaniesWarning := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeResetUsersToIntelligentCloudPermissions', '', false, false)]
+    local procedure HandleBeforeResetUsersToIntelligentCloudPermissions(var Handled: Boolean)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+    begin
+        if not (HybridGPWizard.GetGPMigrationEnabled()) then
+            exit;
+
+        Handled := true;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Data Migration Overview", 'OnOpenPageEvent', '', false, false)]

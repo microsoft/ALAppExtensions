@@ -1,0 +1,2370 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-PesoUnidados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<PesoUnidad>
+		<Code>Tu</Code>
+		<Name>Contenedor externo</Name>
+		<Descripcion>Tipo de caja de contención que sirve como contenedor de transporte externo, no especificado como equipo de transporte.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1A</Code>
+		<Name>Tambor de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1B</Code>
+		<Name>Tambor de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1D</Code>
+		<Name>Tambor contrachapado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1F</Code>
+		<Name>Contenedor flexible</Name>
+		<Descripcion>Contenedor de empaque de construcción flexible.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1G</Code>
+		<Name>Tambor de fibra</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X1w</Code>
+		<Name>Tambor de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X2C</Code>
+		<Name>Barril de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X3A</Code>
+		<Name>Bidón de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X3H</Code>
+		<Name>Bidón de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X43</Code>
+		<Name>Bolsa de gran tamaño</Name>
+		<Descripcion>Bolsa de tela de plástico o de papel que tiene las dimensiones del pallet sobre el que está construido.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X44</Code>
+		<Name>Bolsa de plástico</Name>
+		<Descripcion>Un tipo de bolsa de plástico, normalmente utilizada para envolver piezas promocionales, publicaciones, muestras de productos y / o catálogos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4A</Code>
+		<Name>Caja de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4B</Code>
+		<Name>Caja de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4C</Code>
+		<Name>Caja de  madera natural</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4D</Code>
+		<Name>Caja de contrachapado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4F</Code>
+		<Name>Caja de madera reconstituida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4G</Code>
+		<Name>Caja de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X4H</Code>
+		<Name>Caja de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X5H</Code>
+		<Name>Bolsa de plástico tejido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X5L</Code>
+		<Name>Bolsa textil</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X5M</Code>
+		<Name>Bolsa de papel</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X6H</Code>
+		<Name>Recipiente de plástico, Contenedor compuesto.</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X6P</Code>
+		<Name>Recipiente de vidrio, Contenedor compuesto.</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X7A</Code>
+		<Name>Estuche para carro</Name>
+		<Descripcion>Tipo de contenedor portátil diseñado para almacenar equipo para el transporte en un automóvil.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X7B</Code>
+		<Name>Estuche de madera</Name>
+		<Descripcion>Un estuche de madera para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X8A</Code>
+		<Name>Pallet de madera</Name>
+		<Descripcion>Plataforma o caja abierta de madera, en la que se conservan las mercancías para facilitar su manejo mecánico durante el transporte y almacenamiento.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X8B</Code>
+		<Name>Cajón de madera</Name>
+		<Descripcion>Un contenedor de madera, en el que se conservan las mercancías para facilitar su manipulación mecánica durante el transporte y almacenamiento.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>X8C</Code>
+		<Name>Madera flejada</Name>
+		<Descripcion>Piezas sueltas o sin contenedor de madera atadas o envueltas.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAA</Code>
+		<Name>Contenedor intermedio  para gráneles de plástico rígido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAB</Code>
+		<Name>Contenedor de fibra</Name>
+		<Descripcion>Recipiente de contención de fibra, utilizado para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAC</Code>
+		<Name>Contenedor de papel</Name>
+		<Descripcion>Recipiente de contención de papel, para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAD</Code>
+		<Name>Contenedor de madera</Name>
+		<Descripcion>Recipiente de contención de madera, para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAE</Code>
+		<Name>Aerosol</Name>
+		<Descripcion>Una unidad de cuenta que define el número de Aerosoles</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAF</Code>
+		<Name>Pallet modular con collares,  80cms * 60cms</Name>
+		<Descripcion>Pallet de tamaño estándar con dimensiones de 80 centímetros por 60 centímetros (cms).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAG</Code>
+		<Name>Pallet o empaquetado</Name>
+		<Descripcion>La carga del pallet se asegura con una película de plástico transparente envuelta alrededor y luego encogido firmemente.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAH</Code>
+		<Name>Pallet, 100cms X 110cms</Name>
+		<Descripcion>Pallet tamaño estándar con dimensiones de 100 centímetros por 110 centímetros (cms).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAI</Code>
+		<Name>Contenedor tipo concha</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAJ</Code>
+		<Name>Cono</Name>
+		<Descripcion>Contenedor utilizado en el transporte de material lineal como el hilo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAL</Code>
+		<Name>Esfera</Name>
+		<Descripcion>Recipiente de contención esférico para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAM</Code>
+		<Name>Ampolleta no protegida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAP</Code>
+		<Name>Ampolleta protegida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAT</Code>
+		<Name>Atomizador</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XAV</Code>
+		<Name>Cápsula</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XB4</Code>
+		<Name>Cinturón</Name>
+		<Descripcion>Banda utiliza para retener varios artículos juntos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBA</Code>
+		<Name>Barril</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBB</Code>
+		<Name>Bobina</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBC</Code>
+		<Name>Cajón para botellas / Estante para botellas</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBD</Code>
+		<Name>Tablero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBE</Code>
+		<Name>Flejado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBF</Code>
+		<Name>Globo no protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBG</Code>
+		<Name>Bolso</Name>
+		<Descripcion>Recipiente de material flexible con tapa abierta o cerrada.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBH</Code>
+		<Name>Manojo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBI</Code>
+		<Name>Compartimiento</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBJ</Code>
+		<Name>Cubeta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBK</Code>
+		<Name>Cesta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBL</Code>
+		<Name>Paca comprimida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBM</Code>
+		<Name>Cuenco</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBN</Code>
+		<Name>Paca no comprimida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBO</Code>
+		<Name>Botella no-protegida y cilíndrica</Name>
+		<Descripcion>Recipiente de forma cilíndrica de cuello estrecho sin material de empaque protector externo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBP</Code>
+		<Name>Globo protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBQ</Code>
+		<Name>Botella cilíndrica protegida</Name>
+		<Descripcion>Recipiente de forma cilíndrica de cuello estrecho con material de empaque protector externo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBR</Code>
+		<Name>Barra</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBS</Code>
+		<Name>Botella, no-protegida en forma de bulbo</Name>
+		<Descripcion>Recipiente en forma de bulbo de cuello estrecho sin material de empaque protector externo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBT</Code>
+		<Name>Rollo de tela</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBU</Code>
+		<Name>Butt</Name>
+		<Descripcion>Barril de 1/2 tonel</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBV</Code>
+		<Name>Botella de bulbo protegido</Name>
+		<Descripcion>Recipiente en forma de bulbo de cuello estrecho con material de empaque protector externo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBW</Code>
+		<Name>Caja para líquidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBX</Code>
+		<Name>Caja</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBY</Code>
+		<Name>Tablero, con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XBZ</Code>
+		<Name>Barras, con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCA</Code>
+		<Name>Lata rectangular</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCB</Code>
+		<Name>Cajón para cerveza</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCC</Code>
+		<Name>Mantequera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCD</Code>
+		<Name>Lata con mango y boquilla</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCE</Code>
+		<Name>Cesto tejido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCF</Code>
+		<Name>Cofre</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCG</Code>
+		<Name>Contenedor tipo Jaula</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCH</Code>
+		<Name>Cajonera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCI</Code>
+		<Name>Frasco</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCJ</Code>
+		<Name>Ataúd</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCK</Code>
+		<Name>Barrica</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCL</Code>
+		<Name>Espiral</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCM</Code>
+		<Name>Paquete de tarjetas</Name>
+		<Descripcion>Paquete plano normalmente hecho de cartón desde / hacia el cual el producto es a menudo colgado o unido.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCN</Code>
+		<Name>Contenedor, no especificado como equipo de transporte</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCO</Code>
+		<Name>Garrafón no protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCP</Code>
+		<Name>Garrafón protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCQ</Code>
+		<Name>Cartucho</Name>
+		<Descripcion>Paquete que contiene una carga tal como un explosivo propulsor para armas de fuego o tóner de tinta para una impresora.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCR</Code>
+		<Name>Cajón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCS</Code>
+		<Name>Estuche</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCT</Code>
+		<Name>Cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCU</Code>
+		<Name>Vaso</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCV</Code>
+		<Name>Cubierta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCW</Code>
+		<Name>Jaula estilo rodillo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCX</Code>
+		<Name>Lata cilíndrica</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCY</Code>
+		<Name>Cilindro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XCZ</Code>
+		<Name>Lona</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDA</Code>
+		<Name>Cajón multicapa de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDB</Code>
+		<Name>Cajón de varias capas de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDC</Code>
+		<Name>Cajón multicapa de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDG</Code>
+		<Name>Jaula, Según la clasificación de la compañía (Commonwealth Handling Equipment Pool (CHEP))</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDH</Code>
+		<Name>Caja, Según la clasificación de la compañía (CHEP), Eurobox</Name>
+		<Descripcion>Caja montada sobre una base de pallet Según la clasificación de la compañía (CHEP).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDI</Code>
+		<Name>Tambor de hierro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDJ</Code>
+		<Name>damajuana o garrafa, no protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDK</Code>
+		<Name>Cajón a granel, cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDL</Code>
+		<Name>Cajas de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDM</Code>
+		<Name>Cajones a granel de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDN</Code>
+		<Name>Dispensador</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDP</Code>
+		<Name>damajuana o garrafa, protegido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDR</Code>
+		<Name>Tambor</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDS</Code>
+		<Name>Bandeja de una capa sin cubierta y de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDT</Code>
+		<Name>Bandeja de una capa sin cubierta y de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDU</Code>
+		<Name>Bandeja de una capa sin cubierta y  poliestireno</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDV</Code>
+		<Name>Bandeja de una capa sin cubierta y de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDW</Code>
+		<Name>Bandeja de dos capas sin tapa y con bandeja de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDX</Code>
+		<Name>Bandeja de dos capas sin cubierta y de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XDY</Code>
+		<Name>Bandeja de dos capas sin cubierta y de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEC</Code>
+		<Name>Bolsa de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XED</Code>
+		<Name>Estuche, con pallet de base</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEE</Code>
+		<Name>Estuche, con pallet base de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEF</Code>
+		<Name>Estuche, con pallet base de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEG</Code>
+		<Name>Estuche, con pallet base de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEH</Code>
+		<Name>Estuche, con pallet base de metal</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEI</Code>
+		<Name>Estuche isotérmico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XEN</Code>
+		<Name>Sobre</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFB</Code>
+		<Name>Bolsa flexible</Name>
+		<Descripcion>Bolsa de contención flexible hecha de plástico, usado típicamente para el transporte de mercancías no peligrosas a granel, que usan contenedores de transporte de tamaño estándar.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFC</Code>
+		<Name>Cajón para fruta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFD</Code>
+		<Name>Cajón enmarcado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFE</Code>
+		<Name>Tanque flexible</Name>
+		<Descripcion>Contenedor flexible de plástico, usado típicamente para el transporte de cargas no peligrosas a granel usando contenedores de transporte de tamaño estándar.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFI</Code>
+		<Name>Firkin</Name>
+		<Descripcion>Barril de 41 litros</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFL</Code>
+		<Name>Matraz</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFO</Code>
+		<Name>Cajón para zapatos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFP</Code>
+		<Name>Caja auxiliar para película fotográfica</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFR</Code>
+		<Name>Marco</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFT</Code>
+		<Name>Contenedor para alimentos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFW</Code>
+		<Name>Carro de cama plana</Name>
+		<Descripcion>Módulo con ruedas en el que las bandejas u otros artículos de forma regular se empacan para fines de transporte.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XFX</Code>
+		<Name>Bolsa flexible tipo contenedor</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGB</Code>
+		<Name>Botella para gas</Name>
+		<Descripcion>Cilindro metálico de cuello estrecho para la retención de gas licuado o comprimido.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGI</Code>
+		<Name>Viga</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGL</Code>
+		<Name>Contenedor tipo galón</Name>
+		<Descripcion>Contenedor con una capacidad de un galón.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGR</Code>
+		<Name>Recipiente de vidrio</Name>
+		<Descripcion>Recipiente de contención de vidrio para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGU</Code>
+		<Name>Bandeja contenedor para apilar horizontalmente objetos planos</Name>
+		<Descripcion>Bandeja para contiene objetos planos apilados uno encima del otro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGY</Code>
+		<Name>Costal de Yute</Name>
+		<Descripcion>Hecho de yute, usado para transportar mercancías gruesas, tales como granos, patatas, y otros productos agrícolas.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XGZ</Code>
+		<Name>Vigas con correas o agrupadas</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHA</Code>
+		<Name>Cesta con mango y de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHB</Code>
+		<Name>Cesta con mango y de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHC</Code>
+		<Name>Cesta  con asa y de  cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHG</Code>
+		<Name>Hogshead</Name>
+		<Descripcion>Barril de 1/4 de tonel</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHN</Code>
+		<Name>Gancho</Name>
+		<Descripcion>Artefacto, cuya forma con un gancho en la parte superior, tiene el propósito de colgar artículos de un carril.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XHR</Code>
+		<Name>Cesto</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIA</Code>
+		<Name>Paquete con pantalla y de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIB</Code>
+		<Name>Paquete  con pantalla y de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIC</Code>
+		<Name>Paquete con pantalla y de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XID</Code>
+		<Name>Paquete con pantalla y de metal</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIE</Code>
+		<Name>Paquete de mostrador.</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIF</Code>
+		<Name>Envase para alimentos</Name>
+		<Descripcion>Envase flexible tubular o de piel, posiblemente transparente, a menudo utilizado para contener alimentos (por ejemplo salami).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIG</Code>
+		<Name>Paquete envuelto en papel</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIH</Code>
+		<Name>Tambor de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIK</Code>
+		<Name>Paquete de cartón con los agujeros para botellas</Name>
+		<Descripcion>Material de empaque realizado en cartón que facilita la separación de botellas individuales de vidrio o plástico.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIL</Code>
+		<Name>Bandeja rígida con tapa y apilable (CEN TS 14482: 2002)</Name>
+		<Descripcion>Bandeja rígida apilable empotrada compatible con CEN TS 14482: 2002.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIN</Code>
+		<Name>Lingote</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XIZ</Code>
+		<Name>Lingotes  con correas/ agrupados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJB</Code>
+		<Name>Bolsa jumbo</Name>
+		<Descripcion>Bolsa de contención flexible, ampliamente utilizada para almacenamiento, transporte y manipulación de materiales en polvo, escamas o granulares. Típicamente construido a partir de tejido de polipropileno (PP) tejido en forma de bolsas cúbicas.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJC</Code>
+		<Name>Bidón rectangular</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJG</Code>
+		<Name>Jarra</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJR</Code>
+		<Name>Tarro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJT</Code>
+		<Name>Bolsa de yute</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XJY</Code>
+		<Name>Bidón, cilíndrico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XKG</Code>
+		<Name>Barrilete</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XKI</Code>
+		<Name>Kit (Conjunto de piezas)</Name>
+		<Descripcion>Conjunto de artículos o implementos utilizados para un propósito específico.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLE</Code>
+		<Name>Valijas</Name>
+		<Descripcion>Colección de bolsas, cajas y / o contenedores que contienen objetos personales para un viaje.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLG</Code>
+		<Name>Bitácora</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLT</Code>
+		<Name>Lote</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLU</Code>
+		<Name>Caja de arrastre</Name>
+		<Descripcion>Caja de madera para el transporte y almacenamiento de frutas y verduras.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLV</Code>
+		<Name>Contenedor pequeño</Name>
+		<Descripcion>Contenedor de madera o metal, usado para empacar artículos de uso doméstico y personales.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XLZ</Code>
+		<Name>Registros  con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMA</Code>
+		<Name>Cajón metálico</Name>
+		<Descripcion>Caja de contención hecha de metal para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMB</Code>
+		<Name>Múltiplo de bolsas</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMC</Code>
+		<Name>Cajón para leche</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XME</Code>
+		<Name>Contenedor de metal</Name>
+		<Descripcion>Tipo de caja de contención hecha de metal para retener sustancias o artículos, no especificado de otro modo como equipo de transporte.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMR</Code>
+		<Name>Recipiente de metal</Name>
+		<Descripcion>Recipiente de contención de metal para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMS</Code>
+		<Name>Saco milti-pared</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMT</Code>
+		<Name>Tapete</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMW</Code>
+		<Name>Contenedor envuelto en plástico</Name>
+		<Descripcion>Recipiente de contención envuelto en plástico para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XMX</Code>
+		<Name>Caja pequeña de cerillos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNA</Code>
+		<Name>No disponible</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNE</Code>
+		<Name>Sin empaque o no empaquetado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNF</Code>
+		<Name>Sin empaque o no empaquetado, unidad simple</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNG</Code>
+		<Name>Sin empaque o no empaquetado, unidades múltiples</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNS</Code>
+		<Name>Caja nido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNT</Code>
+		<Name>Red</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNU</Code>
+		<Name>Red de plástico con tubo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XNV</Code>
+		<Name>Red textil con tubo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOA</Code>
+		<Name>Pallet, Según la clasificación de la compañía (Commonwealth Handling Equipment Pool (CHEP) 40 cm x 60 cm</Name>
+		<Descripcion>Pallet de dimensiones 40 centímetros x 60 centímetros.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOB</Code>
+		<Name>Pallet, Según la clasificación de la compañía (Commonwealth Handling Equipment Pool (CHEP) 80 cm x 120 cm</Name>
+		<Descripcion>Pallet de dimensiones 80 centímetros x 120 centímetros.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOC</Code>
+		<Name>Pallet, Según la clasificación de la compañía (Commonwealth Handling Equipment Pool (CHEP) 100 cm x 120 cm</Name>
+		<Descripcion>Pallet de dimensiones 100 centímetros x 120 centímetros.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOD</Code>
+		<Name>Pallet, AS 4068-1993</Name>
+		<Descripcion>Pallet con  estándar australiano de dimensiones 115.5 centímetros x 116.5 centímetros.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOE</Code>
+		<Name>Pallet, ISO T11</Name>
+		<Descripcion>Pallet con estándar ISO de dimensiones 110 centímetros x 110 centímetros, prevalente en la región Asia-Pacífico.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOF</Code>
+		<Name>Plataforma, peso o dimensión no especificada</Name>
+		<Descripcion>Plataforma de carga equivalente del Pallet de dimensiones desconocidas o peso desconocido.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOK</Code>
+		<Name>Bloque</Name>
+		<Descripcion>Una pieza sólida de una sustancia dura, tal como granito, que tiene uno o más lados planos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XOT</Code>
+		<Name>Octabin</Name>
+		<Descripcion>Envase estándar de cartón de grandes dimensiones para almacenar por ejemplo verduras, gránulos de plástico u otros productos secos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XP2</Code>
+		<Name>Charola</Name>
+		<Descripcion>Recipiente ancho y abierto, usualmente de metal.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPA</Code>
+		<Name>Cajetilla</Name>
+		<Descripcion>Paquete pequeño.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPB</Code>
+		<Name>Pallet, Caja combinada y abierta con caja y pallet.</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPC</Code>
+		<Name>Paquete postal</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPD</Code>
+		<Name>Pallet modular con collares (80cms * 100cms)</Name>
+		<Descripcion>Pallet tamaño estándar de dimensiones 80 centímetros por 100 centímetros (cms).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPE</Code>
+		<Name>Pallet modular con collares (80cms * 120cms)</Name>
+		<Descripcion>Pallet tamaño estándar de dimensiones 80 centímetros por 120 centímetros (cms).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPF</Code>
+		<Name>Corral</Name>
+		<Descripcion>Pequeño recinto abierto para retener animales.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPG</Code>
+		<Name>Placa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPH</Code>
+		<Name>Cantaro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPI</Code>
+		<Name>Pleca</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPJ</Code>
+		<Name>Canastilla</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPK</Code>
+		<Name>Paquete</Name>
+		<Descripcion>Unidad de empaque estándar.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPL</Code>
+		<Name>Balde</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPN</Code>
+		<Name>Tablón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPO</Code>
+		<Name>Bolsa pequeña</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPR</Code>
+		<Name>Contenedor de plástico</Name>
+		<Descripcion>Recipiente de contención de plástico para retener sustancias o artículos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPT</Code>
+		<Name>Maceta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPU</Code>
+		<Name>Cacerola</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPV</Code>
+		<Name>Tubos, con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPX</Code>
+		<Name>Pallet</Name>
+		<Descripcion>Plataforma o caja abierta, generalmente de madera, en la que se conservan las mercancías para facilitar el manejo mecánico durante el transporte y almacenamiento.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPY</Code>
+		<Name>Placas con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XPZ</Code>
+		<Name>Tablones con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQA</Code>
+		<Name>Tambor de acero con cabeza no desmontable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQB</Code>
+		<Name>Tambor de  acero con cabeza extraíble</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQC</Code>
+		<Name>Tambor de aluminio con cabeza no extraíble</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQD</Code>
+		<Name>Tambor de aluminio con cabeza extraíble</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQF</Code>
+		<Name>Tambor, plástico con cabeza no desmontable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQG</Code>
+		<Name>Tambor, plástico, cabeza extraíble</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQH</Code>
+		<Name>Barril de madera con tapón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQJ</Code>
+		<Name>Barril de madera con cabeza desprendible</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQK</Code>
+		<Name>Bidón de acero con cabeza no desmontable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQL</Code>
+		<Name>Bidón de acero con cabeza desmontable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQM</Code>
+		<Name>Bidón de plástico con cabeza no desmontable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQN</Code>
+		<Name>Bidón de plástico con cabeza extraíble</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQP</Code>
+		<Name>Caja de madera natural estándar</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQQ</Code>
+		<Name>Caja de madera natural con muros a prueba de filtraciones</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQR</Code>
+		<Name>Caja de plástico expandida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XQS</Code>
+		<Name>Caja de plástico sólida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRD</Code>
+		<Name>Rod</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRG</Code>
+		<Name>Anillo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRJ</Code>
+		<Name>Estante, Perchero para ropa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRK</Code>
+		<Name>Estante</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRL</Code>
+		<Name>Carrete</Name>
+		<Descripcion>Dispositivo giratorio cilíndrico con un reborde en cada extremo en el que se enrollan los materiales.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRO</Code>
+		<Name>Rollo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRT</Code>
+		<Name>Red Roja</Name>
+		<Descripcion>Material de confinamiento hecho de redes de malla roja para retener artículos (por ejemplo árboles).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XRZ</Code>
+		<Name>Varillas  con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSA</Code>
+		<Name>Saco</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSB</Code>
+		<Name>Losa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSC</Code>
+		<Name>Cajón poco profundo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSD</Code>
+		<Name>Huso</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSE</Code>
+		<Name>Baúl</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSH</Code>
+		<Name>Bolsa pequeña hermética</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSI</Code>
+		<Name>Patín</Name>
+		<Descripcion>Una plataforma o plataforma móvil baja para facilitar el manejo y transporte de mercancías.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSK</Code>
+		<Name>Carcasa esqueleto</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSL</Code>
+		<Name>Hoja de deslizamiento</Name>
+		<Descripcion>Láminas de plástico duro se utilizan principalmente como la base sobre la cual apilan mercancías para optimizar el espacio dentro de un contenedor. Puede utilizarse como alternativa a un embalaje paletizado.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSM</Code>
+		<Name>Hoja de metal</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSO</Code>
+		<Name>Carrete pequeño</Name>
+		<Descripcion>Contenedor de empaque utilizado en el transporte de artículos tales como alambre, cable, cinta e hilo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSP</Code>
+		<Name>Hoja de empaque de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSS</Code>
+		<Name>Cajón de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSU</Code>
+		<Name>Maleta</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSV</Code>
+		<Name>Sobre de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSW</Code>
+		<Name>Envoltorio</Name>
+		<Descripcion>Mercancías retenidas en una película de plástico transparente que ha sido envuelta alrededor y luego encogido fuertemente a las mercancías.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSY</Code>
+		<Name>Manga</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XSZ</Code>
+		<Name>Hojas  con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XT1</Code>
+		<Name>Tableta</Name>
+		<Descripcion>Artículo suelto o sin empaque en forma de barra, bloque o pieza.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTB</Code>
+		<Name>Tina</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTC</Code>
+		<Name>Caja para té</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTD</Code>
+		<Name>Tubo plegable</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTG</Code>
+		<Name>Contenedor de tanque genérico</Name>
+		<Descripcion>Recipiente especialmente construido para el transporte de líquidos y gases a granel.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTI</Code>
+		<Name>Tierce</Name>
+		<Descripcion>Barril de 1/6 parte de tonel</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTK</Code>
+		<Name>Tanque rectangular</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTL</Code>
+		<Name>Tina con tapa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTN</Code>
+		<Name>Hojalata</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTO</Code>
+		<Name>Tonel</Name>
+		<Descripcion>Barril con capacidad para 982 litros</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTR</Code>
+		<Name>Maletero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTS</Code>
+		<Name>Estructura</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTT</Code>
+		<Name>Bolsa de mano</Name>
+		<Descripcion>Una gran bolsa o cesto.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTU</Code>
+		<Name>Tubo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTV</Code>
+		<Name>Tubo con boquilla</Name>
+		<Descripcion>Tubo de plástico, metal o cartón, provisto de una boquilla, que contiene un producto líquido o semilíquido, por ejemplo silicio.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTW</Code>
+		<Name>Pallet tricapa</Name>
+		<Descripcion>Una paleta ligera hecha de cartón ondulado resistente.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTY</Code>
+		<Name>Tanque cilíndrico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XTZ</Code>
+		<Name>Tubos  con fleje/ agrupados/ armados</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XUC</Code>
+		<Name>Sin empaque</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XUN</Code>
+		<Name>Unidad</Name>
+		<Descripcion>Tipo de paquete compuesto de un solo artículo u objeto, no especificado de otro modo como una unidad de equipo de transporte.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVA</Code>
+		<Name>Tanque</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVG</Code>
+		<Name>Tanque de gas (a 1,031 mbar y 15° C)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVI</Code>
+		<Name>Frasco pequeño</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVK</Code>
+		<Name>Paquete transportable</Name>
+		<Descripcion>Tipo de cajón de madera.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVL</Code>
+		<Name>Contenedor para líquidos a granel</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVN</Code>
+		<Name>Vehículo</Name>
+		<Descripcion>Medio de transporte autopropulsado.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVO</Code>
+		<Name>Contenedor para sólido de partículas grandes a granel ("nódulos")</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVP</Code>
+		<Name>Envasado al vacío</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVQ</Code>
+		<Name>Tanque para Gas licuado (a temperatura / presión anormal)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVR</Code>
+		<Name>Contenedor para sólidos de partículas granulares a granel (Granos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVS</Code>
+		<Name>Contenedor de chatarra a granel</Name>
+		<Descripcion>Chatarra suelta o sin empaquetar transportada a granel.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XVY</Code>
+		<Name>Contenedor para sólido de partículas finas a granel ("polvos")</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWA</Code>
+		<Name>Contenedor de granel intermedio</Name>
+		<Descripcion>Recipiente reutilizable hecho de metal, plástico, textiles, madera o materiales compuestos utilizados para facilitar el transporte de sólidos y líquidos a granel en volúmenes manejables.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWB</Code>
+		<Name>Botella de mimbre</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWC</Code>
+		<Name>Contenedor intermedio para gráneles y de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWD</Code>
+		<Name>Contenedor intermedio para gráneles y de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWF</Code>
+		<Name>Contenedor intermedio para gráneles y de metal</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWG</Code>
+		<Name>Contenedor intermedio para gráneles y de acero presurizado menor a 10 kpa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWH</Code>
+		<Name>Contenedor intermedio para gráneles y de aluminio, presurizado menor a 10 kpa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWJ</Code>
+		<Name>Contenedor intermedio para gráneles y de metal con una presión de 10 kpa</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWK</Code>
+		<Name>Contenedor intermedio para gráneles y de acero para líquido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWL</Code>
+		<Name>Contenedor intermedio para gráneles y de aluminio para líquido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWM</Code>
+		<Name>Contenedor intermedio para gráneles y de metal para líquido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWN</Code>
+		<Name>Contenedor intermedio para gráneles con tejido plástico sin capa con revestimiento</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWP</Code>
+		<Name>Contenedor intermedio para gráneles con tejido plástico y recubierto</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWQ</Code>
+		<Name>Contenedor intermedio para gráneles con tejido plástico con revestimiento</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWR</Code>
+		<Name>Contenedor intermedio para gráneles con tejido plástico, revestido y con forro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWS</Code>
+		<Name>Contenedor intermedio para gráneles con película de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWT</Code>
+		<Name>Contenedor intermedio para gráneles textil sin capa / forro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWU</Code>
+		<Name>Contenedor intermedio para gráneles de madera natural con forro interior</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWV</Code>
+		<Name>Contenedor intermedio para gráneles textil recubierto</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWW</Code>
+		<Name>Contenedor intermedio para gráneles textil con revestimiento</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWX</Code>
+		<Name>Contenedor intermedio para gráneles textil recubierto y con forro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWY</Code>
+		<Name>Contenedor intermedio para gráneles contrachapado con revestimiento interior</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XWZ</Code>
+		<Name>Contenedor intermedio para gráneles de madera reconstituida con revestimiento interior</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXA</Code>
+		<Name>Bolsa de tejido plástico, sin abrigo interior ni forro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXB</Code>
+		<Name>Bolsa de tejido plástico a prueba de filtraciones</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXC</Code>
+		<Name>Bolsa de tejido plástico resistente al agua</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXD</Code>
+		<Name>Bolsa con película de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXF</Code>
+		<Name>Bolsa textil sin capa ni forro interior</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXG</Code>
+		<Name>Bolsa textil a prueba de filtraciones</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXH</Code>
+		<Name>Bolsa textil resistente al agua</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXJ</Code>
+		<Name>Bolsa de papel multi-pared</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XXK</Code>
+		<Name>Bolsa de papel multi-pared, resistente al agua</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYA</Code>
+		<Name>Empaque compuesto, recipiente de plástico en tambor de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYB</Code>
+		<Name>Empaque compuesto, recipiente de plástico en cajas de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYC</Code>
+		<Name>Empaque compuesto, recipiente de plástico en tambor de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYD</Code>
+		<Name>Empaque compuesto, recipiente de plástico en cajón de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYF</Code>
+		<Name>Empaque compuesto, recipiente de plástico en caja de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYG</Code>
+		<Name>Empaque compuesto, recipiente de plástico en tambor de madera contrachapada</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYH</Code>
+		<Name>Empaque compuesto, recipiente de plástico en caja de madera contrachapada</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYJ</Code>
+		<Name>Empaque compuesto, recipiente de plástico en tambor de fibra</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYK</Code>
+		<Name>Empaque compuesto, recipiente de plástico en caja de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYL</Code>
+		<Name>Empaque compuesto, recipiente de plástico en el tambor de plástico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYM</Code>
+		<Name>Empaque compuesto, recipiente de plástico en caja de plástico sólido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYN</Code>
+		<Name>Empaque compuesto, receptáculo de vidrio en tambor de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYP</Code>
+		<Name>Empaque compuesto, receptáculo de vidrio en caja de cajas de acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYQ</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en tambor de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYR</Code>
+		<Name>Empaque compuesto, receptáculo de vidrio en caja de aluminio</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYS</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en caja de madera</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYT</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en tambor de madera contrachapada</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>Xyv</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en el cesto de mimbre</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYW</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en tambor de fibra</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYX</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en caja de cartón</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYY</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en paquete de plástico expandible</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XYZ</Code>
+		<Name>Empaque compuesto, recipiente de vidrio en paquete de plástico sólido</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZA</Code>
+		<Name>Contenedor de granel intermedio, papel, multi-pared</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZB</Code>
+		<Name>Bolsa grande</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZC</Code>
+		<Name>Contenedor intermedio para gráneles de papel, multi-pared y resistente al agua</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZD</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, con equipo estructural para sólidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZF</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, autoportante para sólidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZG</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, con equipo estructural, presurizado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZH</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, autoportante y presurizado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZJ</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, con equipo estructural para líquidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZK</Code>
+		<Name>Contenedor intermedio para gráneles de plástico rígido, autoportante, líquidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZL</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico rígido, sólidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZM</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico flexible, sólidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZN</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico rígido, presurizado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZP</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico flexible, presurizado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZQ</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico rígido, líquidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZR</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto y de plástico flexible para líquidos</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZS</Code>
+		<Name>Contenedor intermedio para gráneles, compuesto</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZT</Code>
+		<Name>Contenedor intermedio para gráneles con tablero de fibras</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZU</Code>
+		<Name>Contenedor intermedio para gráneles flexible</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZV</Code>
+		<Name>Contenedor intermedio para gráneles de metal, distinto del acero</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZW</Code>
+		<Name>Contenedor intermedio para gráneles, de madera natural</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZX</Code>
+		<Name>Contenedor intermedio para gráneles, de contrachapado</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>XZY</Code>
+		<Name>Contenedor intermedio para gráneles, de madera reconstituida</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>KGM</Code>
+		<Name>Kilogramo</Name>
+		<Descripcion>Una unidad de masa igual a mil gramos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MC</Code>
+		<Name>Microgramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DJ</Code>
+		<Name>Decagramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DG</Code>
+		<Name>Decigramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>GRM</Code>
+		<Name>Gramo</Name>
+		<Descripcion>Medida de masa, de símbolo g, que es igual a la milésima parte de un kilogramo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>CGM</Code>
+		<Name>Centigramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>TNE</Code>
+		<Name>Tonelada (tonelada métrica)</Name>
+		<Descripcion>Sinónimo: tonelada métrica</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DTN</Code>
+		<Name>Decitonelada métrica</Name>
+		<Descripcion>Sinónimo: centner, métrico 100 kg; Quintal, métrico 100 kg</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MGM</Code>
+		<Name>Miligramo</Name>
+		<Descripcion>Medida de masa, de símbolo mg, que es igual a la milésima parte de un gramo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>HGM</Code>
+		<Name>Hectogramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>KTN</Code>
+		<Name>Kilotonelada Métrica</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>2U</Code>
+		<Name>Megagramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>LBR</Code>
+		<Name>Libra</Name>
+		<Descripcion>Unidad monetaria de Irlanda (hasta su sustitución por el euro), Reino Unido, Chipre, Egipto, Líbano, Malta, Siria y otros países.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>GRN</Code>
+		<Name>Grano</Name>
+		<Descripcion>Es la mínima unidad de masa en el sistema inglés de medidas. Se utiliza para estimar con más sensibilidad y precisión la poca masa de pequeños objetos (medicamentos, drogas, pólvora, proyectiles, piezas de joyería, etc.).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>ONZ</Code>
+		<Name>Onza (avoirdupois)</Name>
+		<Descripcion>Es una unidad de masa usada desde la Antigua Roma para pesar con mayor precisión las mercancías y otros artículos, especialmente si su peso era menor que una libra romana</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>CWI</Code>
+		<Name>Hundredweight</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>CWA</Code>
+		<Name>Hundred pound</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>LTN</Code>
+		<Name>Tonelada (UK) o tonelada larga (estados unidos)</Name>
+		<Descripcion>Sinónimo: tonelada bruta (2240 ​​lb)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>STI</Code>
+		<Name>Estone (UK)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>STN</Code>
+		<Name>Tonelada (estados unidos) o tonelada corta (UK y estados unidos)</Name>
+		<Descripcion>Sinónimo: tonelada neta (2000 lb)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>APZ</Code>
+		<Name>Onza troy u onza farmacéutica </Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>F13</Code>
+		<Name>Slug</Name>
+		<Descripcion>Una unidad de masa. Un slug es la masa acelerada a 1 pie por segundo por segundo por una fuerza de 1 libra.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>K64</Code>
+		<Name>Libra (avoirdupois) por grado fahrenheit</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L69</Code>
+		<Name>Tonelada por kelvin</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L87</Code>
+		<Name>Tonelada corta por grado fahrenheit</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M85</Code>
+		<Name>Tonelada, ensayo</Name>
+		<Descripcion>Unidad de masa, utilizada en la mineralogía para determinar la concentración de metales preciosos en el mineral de acuerdo con la masa del metal precioso en miligramos en una muestra de la masa de un sonido de ensayo.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M86</Code>
+		<Name>Libra Alemana</Name>
+		<Descripcion>Anticuada unidad de masa usada en Alemania.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>J33</Code>
+		<Name>Microgramo por kilogramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L32</Code>
+		<Name>Nanogramo por kilogramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>NA</Code>
+		<Name>Miligramo por kilogramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M29</Code>
+		<Name>Kilogramo por kilogramo</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M91</Code>
+		<Name>Libra por libra</Name>
+		<Descripcion>Proporción de la masa consistente en la libra avoirdupois según el sistema unitario avoirdupois dividido por la libra avoirdupois según el sistema unitario avoirdupois.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>Q29</Code>
+		<Name>Microgramo por hectogramo</Name>
+		<Descripcion>Microgramo por hectogramo</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MTQ</Code>
+		<Name>Metro cúbico</Name>
+		<Descripcion>Sinónimo: metro cúbico</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MAL</Code>
+		<Name>Megalitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>LTR</Code>
+		<Name>Litro</Name>
+		<Descripcion>Es una unidad de volumen equivalente a un decímetro cúbico (1 dm³). Su uso es aceptado en el Sistema Internacional de Unidades (SI), aunque ya no pertenece estrictamente a él.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MMQ</Code>
+		<Name>Milímetro cúbico</Name>
+		<Descripcion>Medida de longitud, de símbolo mm, que es igual a la milésima parte de un metro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>CMQ</Code>
+		<Name>Centímetro cúbico</Name>
+		<Descripcion>Medida de longitud, de símbolo cm, que es igual a la centésima parte de un metro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DMQ</Code>
+		<Name>Decímetro cúbico</Name>
+		<Descripcion>Medida de longitud, de símbolo dm, que es igual a la décima parte de un metro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>MLT</Code>
+		<Name>Mililitro</Name>
+		<Descripcion>Medida de volumen, de símbolo ml, que es igual a la milésima parte de un litro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>HLT</Code>
+		<Name>Hectolitro</Name>
+		<Descripcion>Es una unidad de volumen equivalente a cien litros, representado por el símbolo hl. Es el segundo múltiplo del litro y también equivale a 100 decímetros cúbicos (0,1 metros cúbicos).</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>CLT</Code>
+		<Name>Centilitro</Name>
+		<Descripcion>Medida de volumen, de símbolo cl, que es igual a la centésima parte de un litro.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DMA</Code>
+		<Name>Decámetro cúbico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>H19</Code>
+		<Name>Hectómetro cúbico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>H20</Code>
+		<Name>Kilómetro cúbico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M71</Code>
+		<Name>Metro cúbico por pascal (joules)</Name>
+		<Descripcion>Unidad de Energía del sistema internacional, metro elevado al exponente 3 y dividido por la unidad pascal.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>DLT</Code>
+		<Name>Decilitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>4G</Code>
+		<Name>Microlitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>K6</Code>
+		<Name>Kilolitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>A44</Code>
+		<Name>Decalitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G94</Code>
+		<Name>Centímetro cúbico por bar</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G95</Code>
+		<Name>Litro por bar</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G96</Code>
+		<Name>Metro cúbico por bar</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G97</Code>
+		<Name>Mililitro por bar </Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>5I</Code>
+		<Name>Pies cúbicos estándar</Name>
+		<Descripcion>Utilice estándar (código común WSD)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>INQ</Code>
+		<Name>Pulgada cúbica</Name>
+		<Descripcion>Sinónimo: pulgada cuadrada</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>FTQ</Code>
+		<Name>Pie cúbico</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>YDQ</Code>
+		<Name>Yarda cúbica</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>GLI</Code>
+		<Name>Galón (UK)</Name>
+		<Descripcion>Es una unidad de volumen que se emplea en los países anglófonos o con influencia de estos, para medir volúmenes de líquidos. Dos definiciones de uso común: wine gallon y ale gallon. Es equivalente a 3.7854 litros.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>GLL</Code>
+		<Name>Galón (EUA)</Name>
+		<Descripcion>Es una unidad de volumen que se emplea en los países anglófonos o con influencia de estos, para medir volúmenes de líquidos. Dos definiciones de uso común: wine gallon y ale gallon.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>PT</Code>
+		<Name>Pinta (US)</Name>
+		<Descripcion>Utilice pinta líquida (código común PTL)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>PTI</Code>
+		<Name>Pint (uk)</Name>
+		<Descripcion>Es una unidad de volumen inglesa en el sistema imperial y los Estados Unidos. La versión imperial usada en el UK es de 20 onzas líquidas y es equivalente a 568,26125 ml, mientras que en los EUA es de 16 onzas líquidas y es equivalente a 473,17647 ml.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>QTI</Code>
+		<Name>Cuarto (UK)</Name>
+		<Descripcion>Es una unidad de medida de volumen equivalente a media fanega. En Castilla equivalía a aproximadamente a 6 celemines. La medida real cambia según regiones o incluso localidades.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>PTL</Code>
+		<Name>Pinta líquida (estados unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>QTL</Code>
+		<Name>Cuarto de líquido (estadis unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>PTD</Code>
+		<Name>Pinta seca (estados unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>OZI</Code>
+		<Name>Onza líquida (UK)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>QT</Code>
+		<Name>Cuarto (EUA)</Name>
+		<Descripcion>Utilice cuarto de galón líquido (código común QTL)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>J57</Code>
+		<Name>Barril (uk petróleo)</Name>
+		<Descripcion>Es el nombre de varias unidades de volumen usadas en el Reino Unido y en los Estados Unidos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>K21</Code>
+		<Name>Pie cúbico por grado fahrenheit</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>K23</Code>
+		<Name>Pie cúbico por psi (libra por pulgada cuadrada)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L43</Code>
+		<Name>Peck (UK)</Name>
+		<Descripcion>Un peck es una unidad tradicional de medida de volúmenes. Aunque puede ser utilizado para medir seco y líquido, se utiliza generalmente para las materias secas. Es igual a 1/4 bushel, 2 galones, o 8 cuartos de galón.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L61</Code>
+		<Name>Pinta (US seco)</Name>
+		<Descripcion>Utilice pinta seca (código común PTD)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L62</Code>
+		<Name>Cuarto de galón (seco de los EUA)</Name>
+		<Descripcion>Utilice cuarto seco (EUA) (código común QTD)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L84</Code>
+		<Name>Tonelada (flota UK)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>L86</Code>
+		<Name>Tonelada (flota estados unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M11</Code>
+		<Name>Yarda cúbica por grado fahrenheit</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M14</Code>
+		<Name>Yarda cúbica por psi (libra por pulgada cuadrada)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>OZA</Code>
+		<Name>Onza líquida (estados unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>BUI</Code>
+		<Name>Bushel (UK)</Name>
+		<Descripcion>Un bushel tiene 4 pecks o 32 quarts, y equivale a 1,03205 del bushel de los Estados Unidos, que a su vez equivale a 0,35238 hectolitros. La palabra bushel está cayendo en desuso rápidamente.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>BUA</Code>
+		<Name>Bushel (EUA)</Name>
+		<Descripcion>El bushel es una unidad de medida de capacidad para mercancía sólida en los países anglosajones (países de habla inglesa). Se utiliza en el comercio de granos, harinas y otros productos análogos.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>BLL</Code>
+		<Name>Barril (EUA)</Name>
+		<Descripcion>Un barril estadounidense es igual a:
+
+42 galones estadounidenses
+168 cuartos estadounidenses
+336 pintas estadounidenses
+1344 gills estadounidenses
+5376 onzas líquidas estadounidenses
+158.987294928 litros</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>BLD</Code>
+		<Name>Barril seco (EUA)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>GLD</Code>
+		<Name>Galón seco (EUA)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>QTD</Code>
+		<Name>Cuarto seco (estados unidos)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G26</Code>
+		<Name>Estere</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G21</Code>
+		<Name>Taza (unidad de volumen)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G24</Code>
+		<Name>Cucharada (estados unidos)</Name>
+		<Descripcion>1/2 onzas fluidas, 3 cucharaditas, 15 mililitros</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G25</Code>
+		<Name>Cucharilla (estados unidos)</Name>
+		<Descripcion>1/6 onzas fluidas o 5 mililitros</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>G23</Code>
+		<Name>Peck</Name>
+		<Descripcion>Es una unidad de medida imperial y habitual en  Estados Unidos de volumen seco.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M67</Code>
+		<Name>Acre-pie</Name>
+		<Descripcion>Unidad de volúmen, la cúal es usada en los Estados Unidos para medir la capacidad de las presas.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M68</Code>
+		<Name>Cordón</Name>
+		<Descripcion>Unidad tradicional del volumen de leña apilada que se ha medido con un cordón.</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M69</Code>
+		<Name>Milla cúbica (reino unido)</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>M70</Code>
+		<Name>Unidad tradicional de capacidad de carga</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>Q32</Code>
+		<Name>Femtolitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>Q33</Code>
+		<Name>Picolitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>Q34</Code>
+		<Name>Nanolitro</Name>
+		<Descripcion>-</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>NM3</Code>
+		<Name>Metro cúbico normalizado</Name>
+		<Descripcion>Metros cúbicos normalizados (temperatura 0 ° C y presión 101325 milibares)</Descripcion>
+	</PesoUnidad>
+	<PesoUnidad>
+		<Code>SM3</Code>
+		<Name>Metro cúbico estándar</Name>
+		<Descripcion>Metro cúbico estándar (temperatura 15 ° C y presión 101325 milibares)</Descripcion>
+	</PesoUnidad>
+</data-set-PesoUnidados>

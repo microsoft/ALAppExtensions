@@ -14,17 +14,17 @@ pageextension 6226 "Sust. Responsibility Center" extends "Responsibility Center 
                 field("Water Capacity Dimension"; Rec."Water Capacity Dimension")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the responsibility center''s Water Capacity Dimension.';
+                    ToolTip = 'Specifies the capacity dimension. For example, Area or Volume.';
                 }
                 field("Water Capacity Quantity"; Rec."Water Capacity Quantity(Month)")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the responsibility center''s Water Capacity Quantity.';
+                    ToolTip = 'Specifies the total water capacity quantity of the responsibility center.';
                 }
                 field("Water Capacity Unit"; Rec."Water Capacity Unit")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the responsibility center''s Water Capacity Unit.';
+                    ToolTip = 'Specifies the unit of measure that describes capacity quantity.';
                 }
             }
         }

@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using System.Globalization;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Attribute;
 using Microsoft.Sales.Customer;
@@ -65,8 +66,10 @@ codeunit 139687 "Recurring Billing Docs Test"
         BillingProposal: Codeunit "Billing Proposal";
         DocChangeMgt: Codeunit "Document Change Management";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryInventory: Codeunit "Library - Inventory";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
         CorrectPostedPurchaseInvoice: Codeunit "Correct Posted Purch. Invoice";
+        CreateBillingDocumentsCodeunit: Codeunit "Create Billing Documents";
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         LibraryPriceCalculation: Codeunit "Library - Price Calculation";
         PriceListManagement: Codeunit "Price List Management";
@@ -2540,5 +2543,104 @@ codeunit 139687 "Recurring Billing Docs Test"
         AssertThat.AreEqual(ServiceCommitment."Calculation Base Amount", CalculationBaseAmount, 'Service commitment was not reset on the page');
         AssertThat.AreEqual(ServiceCommitment."Service Amount", ServiceAmount, 'Service commitment was not reset on the page');
         AssertThat.AreEqual(ServiceCommitment."Price", Price, 'Service commitment was not reset on the page');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,CreateCustomerBillingDocsModalPageHandler')]
+    procedure ExpectVariantCodeFromServiceObjectWhenCreateInvoiceFromCustomerContract()
+    var
+        Item: Record Item;
+        ItemVariant: Record "Item Variant";
+        Customer: Record Customer;
+    begin
+        // [SCENARIO] When create Invoice from Customer Contract, Variant Code from Service Object is transferred to Sales Line if exist
+
+        // [GIVEN] Create: Service Commitment Item with Variant, Service Object with Service Commitment, Customer Contract with Lines and Billing Proposal
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibraryInventory.CreateVariant(ItemVariant, Item);
+        LibrarySales.CreateCustomer(Customer);
+        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ServiceObject."Variant Code" := ItemVariant.Code;
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.", false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+
+        // [WHEN] Create Invoice from Customer Contract
+        CreateBillingDocuments();
+        BillingLine.FindLast();
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.FindSet();
+        SalesLine.FindFirst();
+
+        // [THEN] Variant Code from Service Object is transferred to Sales Line
+        AssertThat.AreEqual(ServiceObject."Variant Code", SalesLine."Variant Code", 'Variant Code from Service Object should be transferred to Sales Line if exist');
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsModalPageHandler(var CreateCustomerBillingDocsPage: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocsPage.OK().Invoke();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,ExchangeRateSelectionModalPageHandler,MessageHandler,CreateVendorBillingDocsModalPageHandler')]
+    procedure ExpectVariantCodeFromServiceObjectWhenCreateInvoiceFromVendorContract()
+    var
+        Item: Record Item;
+        ItemVariant: Record "Item Variant";
+        Customer: Record Customer;
+    begin
+        // [SCENARIO] When create Invoice from Vendor Contract, Variant Code from Service Object is transferred to Purchase Line if exist
+
+        // [GIVEN] Create: Service Commitment Item with Variant, Service Object with Service Commitment, Vendor Contract with Lines and Billing Proposal
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibraryInventory.CreateVariant(ItemVariant, Item);
+        LibrarySales.CreateCustomer(Customer);
+        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 0, 1);
+        ServiceObject."Variant Code" := ItemVariant.Code;
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(false);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
+
+        // [WHEN] Create Invoice from Vendor Contract
+        CreateBillingDocuments();
+        BillingLine.FindLast();
+        FilterPurchaseLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        PurchaseLine.FindSet();
+        PurchaseLine.FindFirst();
+
+        // [THEN] Variant Code from Service Object is transferred to Purchase Line
+        AssertThat.AreEqual(ServiceObject."Variant Code", PurchaseLine."Variant Code", 'Variant Code from Service Object should be transferred to Purchase Line if exist');
+    end;
+
+    [Test]
+    procedure UT_ExpectErrorWhenItemUnitOfMeasureDoesNotExist()
+    var
+        Item: Record Item;
+        MockServiceObject: Record "Service Object";
+        UnitOfMeasure: Record "Unit of Measure";
+        ItemUOMDoesNotExistErr: Label 'The Unit of Measure of the Service Object (%1) contains a value (%2) that cannot be found in the Item Unit of Measure of the corresponding Invoicing Item (%3).', Locked = true;
+    begin
+        // [GIVEN] Create Service Commitment Item with Unit of Measure
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        // [WHEN] Create Service Object with different Unit of Measure
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        MockServiceObject.Init();
+        MockServiceObject."No." := LibraryUtility.GenerateGUID();
+        MockServiceObject."Unit of Measure" := UnitOfMeasure.Code;
+
+        // [THEN] Throw error if Item Unit of Measure for Invoicing Item No. does not exist
+        asserterror CreateBillingDocumentsCodeunit.ErrorIfItemUnitOfMeasureCodeDoesNotExist(Item."No.", MockServiceObject);
+        AssertThat.ExpectedError(StrSubstNo(ItemUOMDoesNotExistErr, MockServiceObject."No.", MockServiceObject."Unit of Measure", Item."No."));
+    end;
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsModalPageHandler(var CreateVendorBillingDocsPage: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocsPage.OK().Invoke();
     end;
 }

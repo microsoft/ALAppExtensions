@@ -81,10 +81,10 @@ codeunit 2682 "Data Search Events"
     end;
 
     /// <summary>
-    /// Enables adding and removing tables from the default initial setup for tables to search.
+    /// Enables adding and removing fields from the default initial setup for fields for the specified table.
     /// </summary>
     /// <param name="TableNo">The table no. of the table that is being set up.</param>
-    /// <param name="ListOfFieldNumbers">List of integer. You can specifify additional fields for a table here or remove unwanted.</param>
+    /// <param name="ListOfFieldNumbers">List of integer. You can specify additional fields for a table here or remove unwanted.</param>
     [IntegrationEvent(false, false)]
     procedure OnAfterGetFieldListForTable(TableNo: Integer; var ListOfFieldNumbers: List of [Integer])
     begin
