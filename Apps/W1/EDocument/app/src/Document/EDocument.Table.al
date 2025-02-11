@@ -230,20 +230,25 @@ table 6121 "E-Document"
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
-        EDocumentLog.DeleteAll(true);
+        if not EDocumentLog.IsEmpty() then
+            EDocumentLog.DeleteAll(true);
 
         EDocumentIntegrationLog.SetRange("E-Doc. Entry No", Rec."Entry No");
-        EDocumentIntegrationLog.DeleteAll(true);
+        if not EDocumentIntegrationLog.IsEmpty() then
+            EDocumentIntegrationLog.DeleteAll(true);
 
         EDocumentServiceStatus.SetRange("E-Document Entry No", Rec."Entry No");
-        EDocumentServiceStatus.DeleteAll(true);
+        if not EDocumentServiceStatus.IsEmpty() then
+            EDocumentServiceStatus.DeleteAll(true);
 
         DocumentAttachment.SetRange("E-Document Attachment", true);
         DocumentAttachment.SetRange("E-Document Entry No.", Rec."Entry No");
-        DocumentAttachment.DeleteAll(true);
+        if not DocumentAttachment.IsEmpty() then
+            DocumentAttachment.DeleteAll(true);
 
         EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
-        EDocMappingLog.DeleteAll(true);
+        if not EDocMappingLog.IsEmpty() then
+            EDocMappingLog.DeleteAll(true);
     end;
 
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
