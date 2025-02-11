@@ -9,7 +9,7 @@ table 6382 SignUpMetadataProfile
     Caption = 'MetadataProfile';
     Access = Internal;
     DataClassification = CustomerContent;
-    LookupPageId = 6381;
+    LookupPageId = SignUpMetadataProfiles;
 
     fields
     {
