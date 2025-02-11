@@ -47,12 +47,10 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
                 }
             }
         }
-
         modify(Control16)
         {
             Visible = ElectronicDocumentFormatEmailVisible;
         }
-
         modify("E-Mail Attachment")
         {
             trigger OnAfterValidate()

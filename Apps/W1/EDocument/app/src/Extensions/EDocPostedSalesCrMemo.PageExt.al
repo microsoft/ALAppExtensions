@@ -29,12 +29,12 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
                         EDocument.OpenEdocument(Rec.RecordId);
                     end;
                 }
-                action("CreateEDocument")
+                action(CreateAndSendEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create E-Document';
+                    Caption = 'Create and send E-Document';
                     Image = CreateDocument;
-                    ToolTip = 'Creates an electronic document from the posted sales credit memo.';
+                    ToolTip = 'Creates an electronic document from the posted sales credit memo and sends it via service.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
@@ -43,12 +43,12 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
                         Message(EDocumentCreatedMsg);
                     end;
                 }
-                action(CreateAndSendEDocument)
+                action(CreateAndEmailEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and email E-Document';
+                    Caption = 'Create and E-mail E-Document';
                     Image = CreateDocument;
-                    ToolTip = 'Creates an electronic document and attaches it to email.';
+                    ToolTip = 'Creates an electronic document, sends it via service and attaches created e-document file to email.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
@@ -60,7 +60,7 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
         }
         addlast(Category_Category7)
         {
-            actionref("CreateEDocument_Promoted"; CreateAndSendEDocument) { }
+            actionref(CreateAndEmailEDocument_Promoted; CreateAndEmailEDocument) { }
         }
     }
 
@@ -75,6 +75,4 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
         EDocument.SetRange("Document Record ID", Rec.RecordId());
         EDocumentExists := not EDocument.IsEmpty();
     end;
-
-
 }

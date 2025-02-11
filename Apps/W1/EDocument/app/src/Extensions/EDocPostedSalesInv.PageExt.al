@@ -29,12 +29,12 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                         EDocument.OpenEDocument(Rec.RecordId);
                     end;
                 }
-                action(CreateEDocument)
+                action(CreateAndSendEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create E-Document';
+                    Caption = 'Create and send E-Document';
                     Image = CreateDocument;
-                    ToolTip = 'Creates an electronic document from the posted sales invoice.';
+                    ToolTip = 'Creates an electronic document from the posted sales invoice and sends it via service.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
@@ -43,12 +43,12 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
                         Message(EDocumentCreatedMsg);
                     end;
                 }
-                action(CreateAndSendEDocument)
+                action(CreateAndEmailEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Create and email E-Document';
+                    Caption = 'Create and e-mail E-Document';
                     Image = CreateDocument;
-                    ToolTip = 'Creates an electronic document and attaches it to email.';
+                    ToolTip = 'Creates an electronic document, sends it via service and attaches created e-document file to email.';
                     Enabled = not EDocumentExists;
 
                     trigger OnAction()
@@ -60,7 +60,7 @@ pageextension 6144 "E-Doc. Posted Sales Inv." extends "Posted Sales Invoice"
         }
         addlast(Category_Category6)
         {
-            actionref(CreateEDocument_Promoted; CreateAndSendEDocument) { }
+            actionref(CreateAndEmailEDocument_Promoted; CreateAndEmailEDocument) { }
         }
     }
 

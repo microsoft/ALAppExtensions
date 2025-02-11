@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocument;
 
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Foundation.Reporting;
 
@@ -49,10 +50,12 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
     /// <summary>
     /// Emails an E-document for the posted sales credit memo with existing E-document.
     /// </summary>
+    /// <param name="ShowDialog">Determines if the email dialog should be shown.</param>
     internal procedure EmailEDocument(ShowDialog: Boolean)
     var
         DocumentSendingProfile: Record "Document Sending Profile";
         SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
+        Customer: Record Customer;
         ReportDistributionMgt: Codeunit "Report Distribution Management";
         DocumentTypeTxt: Text[50];
     begin
@@ -60,6 +63,9 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
 
         SalesCreditMemoHeader := Rec;
         SalesCreditMemoHeader.SetRecFilter();
+
+        Customer.Get(Rec."Bill-to Customer No.");
+        DocumentSendingProfile.Get(Customer."Document Sending Profile");
 
         DocumentSendingProfile.TrySendToEMailWithEDocument(
             Enum::"Report Selection Usage"::"S.Cr.Memo".AsInteger(),

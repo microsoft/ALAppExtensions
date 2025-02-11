@@ -14,17 +14,14 @@ pageextension 6102 "E-Doc. Select Sending Options" extends "Select Sending Optio
         {
             Visible = ElectronicDocumentVisible;
         }
-
         modify(Control18)
         {
             Visible = Rec."Electronic Document" = Rec."Electronic Document"::"Through Document Exchange Service";
         }
-
         modify(Control14)
         {
             Visible = ElectronicDocumentFormatEmailVisible;
         }
-
         modify("E-Mail Attachment")
         {
             trigger OnAfterValidate()

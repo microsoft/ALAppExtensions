@@ -1,6 +1,5 @@
 codeunit 139501 "E-Doc. Email E-Documents Test"
 {
-
     Subtype = Test;
     EventSubscriberInstance = Manual;
 
@@ -45,7 +44,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
             AttachmentName,
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
             'Attachment name is incorrect or attachment does not exist.');
-
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
         EDocument.FindFirst();
@@ -81,7 +79,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
             AttachmentName,
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
             'Attachment name is incorrect or attachment does not exist.');
-
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
         EDocument.FindFirst();
@@ -121,7 +118,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesInvoiceHeader), SalesInvoiceHeader."No."),
             AttachmentName,
             'Attachment name is incorrect or attachment does not exist.');
-
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
         EDocument.FindFirst();
@@ -164,7 +160,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
             StrSubstNo(XMLFileLbl, ReportDistributionManagement.GetFullDocumentTypeText(SalesCrMemoHeader), SalesCrMemoHeader."No."),
             AttachmentName,
             'Attachment name is incorrect or attachment does not exist.');
-
         // [THEN] E-Document status is processed
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
         EDocument.FindFirst();
@@ -178,6 +173,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         TransformationRule: Record "Transformation Rule";
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
+        LibraryWorkflow: Codeunit "Library - Workflow";
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
@@ -201,6 +197,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
+        LibraryWorkflow.SetUpEmailAccount();
 
         IsInitialized := true;
     end;
