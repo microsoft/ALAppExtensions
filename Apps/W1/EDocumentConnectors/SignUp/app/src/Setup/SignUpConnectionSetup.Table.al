@@ -9,6 +9,7 @@ table 6381 SignUpConnectionSetup
     Access = Internal;
     DataPerCompany = false;
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {
