@@ -56,7 +56,7 @@ table 6390 "Connection Setup"
             Caption = 'No. Of Participations';
             Editable = false;
             FieldClass = FlowField;
-            ToolTip = 'Specifies the number of participations in the Continia Delivery Network.';
+            ToolTip = 'Specifies the number of participations for the current company in the Continia Delivery Network.';
         }
     }
 

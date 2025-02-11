@@ -803,8 +803,8 @@ codeunit 6393 "Api Requests"
         ApiUrlMgt: Codeunit "Api Url Mgt.";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         DocumentGuid: Guid;
-        SuccessfulStatusLbl: Label 'SuccessEnum';
-        ErrorStatusLbl: Label 'ErrorEnum';
+        SuccessfulStatusTok: Label 'SuccessEnum', Locked = true;
+        ErrorStatusTok: Label 'ErrorEnum', Locked = true;
         DocumentStatus: Text;
         EDocumentDescription: Text;
         ResponseBody: Text;
@@ -840,12 +840,12 @@ codeunit 6393 "Api Requests"
 
             DocumentStatus := DocumentStatusNode.AsXmlElement().InnerText;
             case DocumentStatus of
-                SuccessfulStatusLbl:
+                SuccessfulStatusTok:
                     begin
                         MarkDocumentAsProcessed(DocumentGuid);
                         exit(true);
                     end;
-                ErrorStatusLbl:
+                ErrorStatusTok:
                     begin
                         if TechnicalResponseNode.SelectSingleNode('error_code', ErrorCodeNode) and TechnicalResponseNode.SelectSingleNode('error_message', ErrorMessageNode) then
                             EDocumentDescription := StrSubstNo('%1 - %2', ErrorCodeNode.AsXmlElement().InnerText, ErrorMessageNode.AsXmlElement().InnerText);
@@ -1085,7 +1085,7 @@ codeunit 6393 "Api Requests"
 
     internal procedure GetGuidAsText(Value: Guid): Text[36]
     begin
-        exit(CopyStr(DelChr(Value, '<>', '{}'), 1, 36))
+        exit(CopyStr(Format(Value, 0, 4), 1, 36))
     end;
 
     internal procedure SetSuppressError(NewSuppressError: Boolean)

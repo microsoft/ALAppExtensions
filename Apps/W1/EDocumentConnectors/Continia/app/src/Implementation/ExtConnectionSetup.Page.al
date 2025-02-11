@@ -9,7 +9,7 @@ using System.Environment;
 page 6390 "Ext. Connection Setup"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'E-Document External Connection Setup';
+    Caption = 'Continia E-Document External Connection Setup';
     DeleteAllowed = false;
     Editable = false;
     Extensible = false;
@@ -111,6 +111,7 @@ page 6390 "Ext. Connection Setup"
                 Caption = 'Cancel Subscription';
                 Enabled = ActionsEnabled and CanEditParticipation;
                 Image = Cancel;
+                Ellipsis = true;
                 ToolTip = 'Cancels the Continia subscription. You will not be able to send or receive e-documents using the Continia Delivery Network anymore.';
 
                 trigger OnAction()
