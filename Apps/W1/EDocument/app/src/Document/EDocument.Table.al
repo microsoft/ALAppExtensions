@@ -204,13 +204,13 @@ table 6121 "E-Document"
         if (Rec."Document Record ID".TableNo <> 0) then
             Error(this.DeleteLinkedNotAllowedErr);
 
-        if (not this.IsDuplicate()) then
+        if (not Rec.IsDuplicate()) then
             Error(this.DeleteUniqueNotAllowedErr);
 
         this.DeleteRelatedRecords();
     end;
 
-    local procedure IsDuplicate(): Boolean
+    internal procedure IsDuplicate(): Boolean
     var
         EDocument: Record "E-Document";
     begin
