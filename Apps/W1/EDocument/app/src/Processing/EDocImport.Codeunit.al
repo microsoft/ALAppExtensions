@@ -354,7 +354,7 @@ codeunit 6140 "E-Doc. Import"
             exit;
         end;
 
-        if HasDuplicate(EDocument) then begin
+        if EDocument.IsDuplicate() then begin
             EDocument.Delete(true);
             exit;
         end;
@@ -623,17 +623,6 @@ codeunit 6140 "E-Doc. Import"
                 EDocImportedLine.TransferFields(TempEDocImportedLine);
                 if EDocImportedLine.Insert() then;
             until TempEDocImportedLine.Next() = 0;
-    end;
-
-    local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"): Boolean
-    var
-        EDocument: Record "E-Document";
-    begin
-        EDocument.SetFilter("Entry No", '<>%1', IncomingEDocument."Entry No");
-        EDocument.SetRange("Incoming E-Document No.", IncomingEDocument."Incoming E-Document No.");
-        EDocument.SetRange("Bill-to/Pay-to No.", IncomingEDocument."Bill-to/Pay-to No.");
-        EDocument.SetRange("Document Date", IncomingEDocument."Document Date");
-        exit(not EDocument.IsEmpty());
     end;
 
     internal procedure SetHideDialogs(Hide: Boolean)
