@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
 using System.IO;
@@ -196,15 +197,37 @@ table 6121 "E-Document"
     }
 
     trigger OnDelete()
+    var
+        DocumentAttachment: Record "Document Attachment";
+        EDocMappingLog: Record "E-Doc. Mapping Log";
+        EDocumentIntegrationLog: Record "E-Document Integration Log";
+        EDocumentLog: Record "E-Document Log";
+        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         if (Rec.Status = Rec.Status::Processed) then
             Error(this.DeleteProcessedNotAllowedErr);
 
-        if (Rec."Document No." <> '') then
+        if (Rec."Document Record ID".TableNo <> 0) then
             Error(this.DeleteLinkedNotAllowedErr);
 
         if (not this.IsDuplicate()) then
             Error(this.DeleteUniqueNotAllowedErr);
+
+        EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        EDocumentLog.DeleteAll(true);
+
+        EDocumentIntegrationLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        EDocumentIntegrationLog.DeleteAll(true);
+
+        EDocumentServiceStatus.SetRange("E-Document Entry No", Rec."Entry No");
+        EDocumentServiceStatus.DeleteAll(true);
+
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        DocumentAttachment.SetRange("E-Document Entry No.", Rec."Entry No");
+        DocumentAttachment.DeleteAll(true);
+
+        EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
+        EDocMappingLog.DeleteAll(true);
     end;
 
     local procedure IsDuplicate(): Boolean

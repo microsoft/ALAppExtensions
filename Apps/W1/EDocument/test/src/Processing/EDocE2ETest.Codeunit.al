@@ -1458,7 +1458,7 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         // [FEATURE] [E-Document] [Deleting] 
         // [SCENARIO] 
-        Initialize(Enum::"E-Document Integration"::"Mock");
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create duplicate e-document
         VendorNo := this.LibraryPurchase.CreateVendorNo();
@@ -1483,7 +1483,7 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         // [FEATURE] [E-Document] [Deleting] 
         // [SCENARIO] 
-        Initialize(Enum::"E-Document Integration"::"Mock");
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create single e-document
         VendorNo := this.LibraryPurchase.CreateVendorNo();
@@ -1507,18 +1507,20 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         // [FEATURE] [E-Document] [Deleting] 
         // [SCENARIO] 
-        Initialize(Enum::"E-Document Integration"::"Mock");
+        Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create duplicate e-document and set to processed
         VendorNo := this.LibraryPurchase.CreateVendorNo();
         CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
         CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::Processed);
 
-        // [THEN] Get last E-Document
+        // [GIVEN] Get last E-Document
         EDocument.FindLast();
 
-        // [THEN] Delete not allowed
+        // [WHEN] Delete not allowed
         asserterror EDocument.Delete(true);
+
+        // [THEN] Check error message
         Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
     end;
 
@@ -2347,7 +2349,6 @@ codeunit 139624 "E-Doc E2E Test"
         // [THEN] Delete ok
         PurchaseHeader.Delete();
     end;
-
 
 #endif
 #pragma warning restore AS0018
