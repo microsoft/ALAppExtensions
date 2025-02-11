@@ -198,7 +198,6 @@ codeunit 6134 "E-Doc. Integration Management"
     local procedure ReceiveSingleDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; IDocumentReceiver: Interface IDocumentReceiver): Boolean
     var
         ReceiveContext, FetchContextImpl : Codeunit ReceiveContext;
-        EDocumentContent: Codeunit "Temp Blob";
         ErrorCount: Integer;
         Success, IsFetchableType : Boolean;
     begin
@@ -210,8 +209,7 @@ codeunit 6134 "E-Doc. Integration Management"
         if not Success then
             exit(false);
 
-        EDocumentContent := ReceiveContext.GetTempBlob();
-        if not EDocumentContent.HasValue() then
+        if not ReceiveContext.GetTempBlob().HasValue() then
             exit(false);
 
         IsFetchableType := IDocumentReceiver is IReceivedDocumentMarker;
