@@ -9,7 +9,7 @@ using Microsoft.eServices.EDocument;
 permissionset 6381 SignUpEDCORead
 {
     Access = Internal;
-    Assignable = false;
+    Assignable = true;
     Caption = 'SignUp E-Doc. Connector - Read', MaxLength = 30;
     IncludedPermissionSets = SignUpEDCOObjects;
     Permissions = tabledata SignUpConnectionSetup = R,

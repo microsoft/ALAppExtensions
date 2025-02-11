@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 permissionset 6382 SignUpEDCOEdit
 {
     Access = Internal;
-    Assignable = false;
+    Assignable = true;
     Caption = 'SignUp E-Doc. Connector - Edit', MaxLength = 30;
     IncludedPermissionSets = SignUpEDCORead;
     Permissions = tabledata SignUpConnectionSetup = IMD,
