@@ -26,6 +26,7 @@ codeunit 6383 SignUpProcessing
         SignUpConnection: Codeunit SignUpConnection;
         SignUpHelpersImpl: Codeunit SignUpHelpers;
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
+        EDocumentLogHelper: Codeunit "E-Document Log Helper";
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
         CouldNotSendPatchErr: Label 'Could not Send Patch for document with id: %1', Comment = '%1 - Document ID';
         CouldNotRetrieveStatusFromResponseLbl: Label 'Could not retrieve status from response';
@@ -195,7 +196,6 @@ codeunit 6383 SignUpProcessing
         EDocument.Modify();
 
         Clear(ContentData);
-        this.OnBeforeGetTargetDocumentRequest();
 
         this.SignUpConnection.GetTargetDocumentRequest(EDocument."SignUp Document Id", HttpRequestMessage, HttpResponseMessage);
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
@@ -218,7 +218,6 @@ codeunit 6383 SignUpProcessing
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
     begin
-        this.OnBeforeMarkFetched();
         this.SignUpConnection.RemoveDocumentFromReceived(EDocument, HttpRequestMessage, HttpResponseMessage);
 
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
@@ -228,35 +227,6 @@ codeunit 6383 SignUpProcessing
     #endregion
 
     #region local methods
-
-    local procedure InsertIntegrationLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequestMessage: HttpRequestMessage; HttpResponseMessage: HttpResponseMessage)
-    var
-        EDocumentIntegrationLog: Record "E-Document Integration Log";
-        EDocIntegrationLogRecordRef: RecordRef;
-        RequestTxt: Text;
-    begin
-        if EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::"No Integration" then
-            exit;
-
-        EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
-        EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
-        EDocumentIntegrationLog.Validate("Response Status", HttpResponseMessage.HttpStatusCode());
-        EDocumentIntegrationLog.Validate("Request URL", HttpRequestMessage.GetRequestUri());
-        EDocumentIntegrationLog.Validate(Method, HttpRequestMessage.Method());
-        EDocumentIntegrationLog.Insert();
-
-        EDocIntegrationLogRecordRef.GetTable(EDocumentIntegrationLog);
-
-        if HttpRequestMessage.Content.ReadAs(RequestTxt) then begin
-            this.InsertIntegrationBlob(EDocIntegrationLogRecordRef, RequestTxt, EDocumentIntegrationLog.FieldNo(EDocumentIntegrationLog."Request Blob"));
-            EDocIntegrationLogRecordRef.Modify();
-        end;
-
-        if HttpResponseMessage.Content.ReadAs(RequestTxt) then begin
-            this.InsertIntegrationBlob(EDocIntegrationLogRecordRef, RequestTxt, EDocumentIntegrationLog.FieldNo(EDocumentIntegrationLog."Response Blob"));
-            EDocIntegrationLogRecordRef.Modify();
-        end;
-    end;
 
     local procedure ParseDocumentResponse(HttpContentResponse: HttpContent; var Status: Text; var StatusDescription: Text): Boolean
     var
@@ -380,14 +350,6 @@ codeunit 6383 SignUpProcessing
         exit(true);
     end;
 
-    local procedure InsertIntegrationBlob(var EDocIntegrationLogRecordRef: RecordRef; Data: Text; FieldNo: Integer)
-    var
-        TempBlob: Codeunit "Temp Blob";
-    begin
-        TempBlob.CreateOutStream().WriteText(Data);
-        TempBlob.ToRecordRef(EDocIntegrationLogRecordRef, FieldNo);
-    end;
-
     local procedure LeaveJustNewLine(InputText: Text): Text
     var
         InputJson, OutputDocumentJsonObject, OutputJsonObject : JsonObject;
@@ -449,25 +411,10 @@ codeunit 6383 SignUpProcessing
             exit;
 
         if SignUpAPIRequests.PatchDocument(EDocument, HttpRequestMessage, HttpResponseMessage) then begin
-            this.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
+            this.EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
             exit(true);
         end else
             this.EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.CouldNotSendPatchErr, EDocument."SignUp Document Id"));
-    end;
-
-    #endregion
-
-    #region event publishers
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeGetTargetDocumentRequest()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeMarkFetched()
-    begin
-
     end;
 
     #endregion
