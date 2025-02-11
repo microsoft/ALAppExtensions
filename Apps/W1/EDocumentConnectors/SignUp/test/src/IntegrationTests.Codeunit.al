@@ -19,7 +19,7 @@ codeunit 148195 IntegrationTests
 {
     Subtype = Test;
 
-    Permissions = tabledata ConnectionSetup = rimd,
+    Permissions = tabledata SignUpConnectionSetup = rimd,
                     tabledata "E-Document" = r;
 
     var
@@ -508,33 +508,33 @@ codeunit 148195 IntegrationTests
     [Test]
     procedure GetMetadataProfiles()
     var
-        MetadataProfile: Record MetadataProfile;
+        SignUpMetadataProfile: Record SignUpMetadataProfile;
         EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
     begin
         this.Initialize();
 
-        MetadataProfile.Reset();
-        MetadataProfile.DeleteAll();
+        SignUpMetadataProfile.Reset();
+        SignUpMetadataProfile.DeleteAll();
 
         // Populate metadata profiles
         EDocServiceSupportedTypes.OpenView();
         EDocServiceSupportedTypes.PopulateMetaData.Invoke();
         EDocServiceSupportedTypes.Close();
 
-        this.Assert.TableIsNotEmpty(Database::MetadataProfile);
+        this.Assert.TableIsNotEmpty(Database::SignUpMetadataProfile);
     end;
 
     local procedure Initialize()
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
         CompanyInformation: Record "Company Information";
         ServiceParticipant: Record "Service Participant";
-        Authentication: Codeunit Authentication;
+        SignUpAuthentication: Codeunit SignUpAuthentication;
     begin
         this.LibraryLowerPermissions.SetOutsideO365Scope();
 
-        ConnectionSetup.DeleteAll();
-        Authentication.InitConnectionSetup();
+        SignUpConnectionSetup.DeleteAll();
+        SignUpAuthentication.InitConnectionSetup();
         this.IntegrationHelpers.SetCommonConnectionSetup();
         this.IntegrationHelpers.SetAPIWith200Code();
 
@@ -585,19 +585,19 @@ codeunit 148195 IntegrationTests
 
     local procedure CreateDefaultMetadataProfile()
     var
-        MetadataProfile: Record MetadataProfile;
+        SignUpMetadataProfile: Record SignUpMetadataProfile;
     begin
-        if not MetadataProfile.IsEmpty() then
-            MetadataProfile.DeleteAll(true);
+        if not SignUpMetadataProfile.IsEmpty() then
+            SignUpMetadataProfile.DeleteAll(true);
 
-        MetadataProfile.Init();
-        MetadataProfile.Validate("Profile ID", this.GetMetadataProfileId());
-        MetadataProfile.Validate("Profile Name", 'PEPPOL BIS Billing v 3 Invoice UBL');
-        MetadataProfile.Validate("Process Identifier Scheme", 'cenbii-procid-ubl');
-        MetadataProfile.Validate("Process Identifier Value", 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
-        MetadataProfile.Validate("Document Identifier Scheme", 'busdox-docid-qns');
-        MetadataProfile.Validate("Document Identifier Value", 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
-        MetadataProfile.Insert(true);
+        SignUpMetadataProfile.Init();
+        SignUpMetadataProfile.Validate("Profile ID", this.GetMetadataProfileId());
+        SignUpMetadataProfile.Validate("Profile Name", 'PEPPOL BIS Billing v 3 Invoice UBL');
+        SignUpMetadataProfile.Validate("Process Identifier Scheme", 'cenbii-procid-ubl');
+        SignUpMetadataProfile.Validate("Process Identifier Value", 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
+        SignUpMetadataProfile.Validate("Document Identifier Scheme", 'busdox-docid-qns');
+        SignUpMetadataProfile.Validate("Document Identifier Value", 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
+        SignUpMetadataProfile.Insert(true);
     end;
 
     local procedure ApplyMetadataProfile(ProfileID: Integer)

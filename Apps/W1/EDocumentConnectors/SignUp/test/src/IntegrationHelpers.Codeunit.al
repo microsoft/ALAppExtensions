@@ -15,29 +15,29 @@ codeunit 148196 IntegrationHelpers
 
     internal procedure SetAPICode(Path: Text)
     var
-        ConnectionSetup: Record ConnectionSetup;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
     begin
-        ConnectionSetup.Get();
-        ConnectionSetup."Service URL" := this.SetMockServiceUrl(Path);
-        ConnectionSetup.Modify(true);
+        SignUpConnectionSetup.Get();
+        SignUpConnectionSetup."Service URL" := this.SetMockServiceUrl(Path);
+        SignUpConnectionSetup.Modify(true);
     end;
 
     internal procedure SetCommonConnectionSetup()
     var
-        ConnectionSetup: Record ConnectionSetup;
-        Authentication: Codeunit Authentication;
+        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpAuthentication: Codeunit SignUpAuthentication;
     begin
-        ConnectionSetup.Get();
-        Authentication.StorageSet(ConnectionSetup."Root App ID", this.DummyId());
-        Authentication.StorageSet(ConnectionSetup."Root Secret", this.DummyId());
-        Authentication.StorageSet(ConnectionSetup."Root Tenant", this.DummyId());
-        Authentication.StorageSet(ConnectionSetup."Client ID", this.DummyId());
-        Authentication.StorageSet(ConnectionSetup."Client Secret", this.DummyId());
-        Authentication.StorageSet(ConnectionSetup."Client Tenant", this.ClientTenantId());
+        SignUpConnectionSetup.Get();
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root App ID", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root Secret", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root Tenant", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client ID", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client Secret", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client Tenant", this.ClientTenantId());
 
-        ConnectionSetup."Authentication URL" := this.SetMockServiceUrl('/%1/oauth2/token');
-        ConnectionSetup."Environment Type" := ConnectionSetup."Environment Type"::Test;
-        ConnectionSetup.Modify(true);
+        SignUpConnectionSetup."Authentication URL" := this.SetMockServiceUrl('/%1/oauth2/token');
+        SignUpConnectionSetup."Environment Type" := SignUpConnectionSetup."Environment Type"::Test;
+        SignUpConnectionSetup.Modify(true);
     end;
 
     internal procedure SetMockServiceUrl(Path: Text): Text[250]

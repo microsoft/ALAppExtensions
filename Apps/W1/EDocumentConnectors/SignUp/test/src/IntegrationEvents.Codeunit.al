@@ -9,7 +9,7 @@ codeunit 148197 IntegrationEvents
         LibraryLowerPermissions: Codeunit "Library - Lower Permissions";
         IntegrationHelpers: Codeunit IntegrationHelpers;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Processing, OnBeforeGetTargetDocumentRequest, '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::SignUpProcessing, OnBeforeGetTargetDocumentRequest, '', true, true)]
     local procedure ProcessingOnBeforeGetTargetDocumentRequest()
     begin
         this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
@@ -17,7 +17,7 @@ codeunit 148197 IntegrationEvents
         this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::Processing, OnBeforeGetTargetDocumentRequest, '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::SignUpProcessing, OnBeforeGetTargetDocumentRequest, '', true, true)]
     local procedure ProcessingOnBeforeMarkFetched()
     begin
         this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
