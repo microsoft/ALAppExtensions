@@ -18,7 +18,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
 
 
     [Test]
-    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,PostAndSendStrMenuHandler,EmailEditorHandler,ConfirmHandler')]
+    [HandlerFunctions('PostAndSendConfirmationYesModalPageHandler,PostAndSendStrMenuHandler,EmailEditorHandler,SalesShipmentSameActionConfirmHandler')]
     procedure PostAndSendSalesOrder()
     var
         SalesHeader: Record "Sales Header";
@@ -221,8 +221,10 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
     end;
 
     [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
+    procedure SalesShipmentSameActionConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     begin
+        if Question = 'You can take the same actions for the related Sales - Shipment document.\\Do you want to do that now?' then
+            Reply := false;
     end;
 
     [StrMenuHandler]
