@@ -18,7 +18,6 @@ page 6380 SignUpConnectionSetupCard
     Caption = 'SignUp Connection Setup';
     Extensible = false;
 
-
     layout
     {
         area(Content)
@@ -137,9 +136,6 @@ page 6380 SignUpConnectionSetupCard
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open Onboarding';
                 Image = Setup;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Create client credentials and open the onboarding process in a web browser.';
 
                 trigger OnAction()
@@ -151,6 +147,11 @@ page 6380 SignUpConnectionSetupCard
                     this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
+        }
+
+        area(Promoted)
+        {
+            actionref(InitOnboarding01_Promoted; InitOnboarding01) { }
         }
     }
 
