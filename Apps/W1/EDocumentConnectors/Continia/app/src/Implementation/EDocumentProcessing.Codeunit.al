@@ -198,7 +198,7 @@ codeunit 6391 "EDocument Processing"
 
     local procedure DocumentSupportedByEDocumentService(EDocumentService: Record "E-Document Service"; DocumentNode: XmlNode): Boolean
     var
-        ActivatedNetworkProfile: Record "Activated Net. Prof.";
+        ActivatedNetworkProfile: Record "Continia Activated Net. Prof.";
         ParticipationProfileIdNode: XmlNode;
         ParticipationNetworkProfileId: Guid;
     begin

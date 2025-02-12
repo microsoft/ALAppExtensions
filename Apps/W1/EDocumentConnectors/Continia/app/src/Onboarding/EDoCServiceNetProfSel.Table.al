@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-table 6395 "E-Doc. Service Net Prof. Sel."
+table 6395 "Continia E-Doc. Service Net Prof. Sel."
 {
     Access = Internal;
     Caption = 'E-Document Service Network Profile Selection';
@@ -21,7 +21,7 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         field(2; "Identifier Type Id"; Guid)
         {
             Caption = 'Identifier Type Id';
-            TableRelation = "Network Identifier".Id where(Network = field(Network));
+            TableRelation = "Continia Network Identifier".Id where(Network = field(Network));
             ToolTip = 'Specifies ID of E-Document Identifier Type.';
         }
         field(3; "Identifier Value"; Code[50])
@@ -32,7 +32,7 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         field(4; "Network Profile Id"; Guid)
         {
             Caption = 'Network Profile Id';
-            TableRelation = "Network Profile".Id where(Network = field(Network));
+            TableRelation = "Continia Network Profile".Id where(Network = field(Network));
             ToolTip = 'Specifies ID of E-Document INetwork Profile.';
         }
         field(5; Indent; Integer)
@@ -79,7 +79,7 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         }
     }
 
-    internal procedure FillNetwork(ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure FillNetwork(ActivatedNetProf: Record "Continia Activated Net. Prof.")
     var
         EmptyGuid: Guid;
     begin
@@ -93,9 +93,9 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         InsertIfPossible();
     end;
 
-    internal procedure FillParticipation(ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure FillParticipation(ActivatedNetProf: Record "Continia Activated Net. Prof.")
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         EmptyGuid: Guid;
     begin
         if not Participation.Get(ActivatedNetProf.Network, ActivatedNetProf."Identifier Type Id", ActivatedNetProf."Identifier Value") then
@@ -110,7 +110,7 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         InsertIfPossible();
     end;
 
-    internal procedure FillNetworkProfile(ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure FillNetworkProfile(ActivatedNetProf: Record "Continia Activated Net. Prof.")
     begin
         ActivatedNetProf.CalcFields("Network Profile Description");
         Init();
@@ -126,9 +126,9 @@ table 6395 "E-Doc. Service Net Prof. Sel."
         Insert(false);
     end;
 
-    local procedure GetParticipationDescription(Participation: Record Participation): Text[100]
+    local procedure GetParticipationDescription(Participation: Record "Continia Participation"): Text[100]
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
         ParticipationDescriptionPatternTxt: Label '%1 %2', Comment = '%1 - Scheme Id, %2 - Identifier Value';
     begin
         NetworkIdentifier := Participation.GetNetworkIdentifier();

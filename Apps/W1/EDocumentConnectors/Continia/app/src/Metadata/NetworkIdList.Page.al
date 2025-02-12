@@ -16,7 +16,7 @@ page 6395 "Network Id. List"
     ModifyAllowed = false;
     PageType = List;
     ShowFilter = false;
-    SourceTable = "Network Identifier";
+    SourceTable = "Continia Network Identifier";
     SourceTableView = sorting("Scheme Id") order(ascending);
     UsageCategory = None;
 

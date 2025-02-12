@@ -15,7 +15,7 @@ page 6396 "Network Profile List"
     LinksAllowed = false;
     ModifyAllowed = false;
     PageType = List;
-    SourceTable = "Network Profile";
+    SourceTable = "Continia Network Profile";
     UsageCategory = None;
 
     layout

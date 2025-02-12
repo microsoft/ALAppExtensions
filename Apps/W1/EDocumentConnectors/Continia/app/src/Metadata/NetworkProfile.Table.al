@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-table 6394 "Network Profile"
+table 6394 "Continia Network Profile"
 {
     Access = Internal;
     Caption = 'Network Profile';

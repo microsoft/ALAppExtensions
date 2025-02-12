@@ -231,7 +231,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure GetClientInfoApp(var ClientInfo: Record Participation temporary; ShowError: Boolean) Success: Boolean
+    internal procedure GetClientInfoApp(var ClientInfo: Record "Continia Participation" temporary; ShowError: Boolean) Success: Boolean
     var
         CredentialMgt: Codeunit "Credential Management";
         ContactPerson: XmlNode;
@@ -346,7 +346,7 @@ codeunit 6397 "Subscription Mgt."
 
         exit(VerifyResponse(ResponseXmlDoc, ShowError));
     end;
-
+"Continia Connection Setup"
     [NonDebuggable]
     internal procedure Unsubscribe(ShowError: Boolean) Success: Boolean
     var

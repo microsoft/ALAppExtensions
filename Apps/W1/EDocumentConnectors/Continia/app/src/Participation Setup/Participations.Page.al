@@ -11,7 +11,7 @@ page 6391 Participations
     Editable = false;
     Extensible = false;
     PageType = List;
-    SourceTable = Participation;
+    SourceTable = "Continia Participation";
     UsageCategory = None;
 
     layout

@@ -20,7 +20,7 @@ codeunit 6396 "Session Manager"
 
     internal procedure ClearAccessToken()
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         Clear(CachedAccessToken);
         AccessTokenRequested := 0DT;
@@ -37,7 +37,7 @@ codeunit 6396 "Session Manager"
 
     internal procedure GetClientIdentifier(): SecretText
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         if ClientCredentialLoaded then
             exit(ClientIdentifier);
@@ -53,7 +53,7 @@ codeunit 6396 "Session Manager"
     [NonDebuggable]
     internal procedure GetAccessToken() AccessTokenValue: SecretText
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         // Get token from Cache if possible
         if IsAccessTokenLoaded then
@@ -79,7 +79,7 @@ codeunit 6396 "Session Manager"
 
     local procedure AcquireToken(ShowError: Boolean): Boolean
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
         ActivationMgt: Codeunit "Subscription Mgt.";
         ExpiresIn: Integer;
         AccessTokenValue: Text;

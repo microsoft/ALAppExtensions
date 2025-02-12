@@ -10,7 +10,7 @@ page 6392 "Active Profiles"
     Caption = 'Active Network Profile';
     Extensible = false;
     PageType = ListPart;
-    SourceTable = "Activated Net. Prof.";
+    SourceTable = "Continia Activated Net. Prof.";
     SourceTableView = where(Disabled = filter(0DT));
 
     layout

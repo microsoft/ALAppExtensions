@@ -16,7 +16,7 @@ page 6390 "Ext. Connection Setup"
     InsertAllowed = false;
     ModifyAllowed = false;
     PageType = Card;
-    SourceTable = "Connection Setup";
+    SourceTable = "Continia Connection Setup";
     UsageCategory = None;
 
     layout
@@ -36,7 +36,7 @@ page 6390 "Ext. Connection Setup"
 
                     trigger OnDrillDown()
                     var
-                        Participation: Record Participation;
+                        Participation: Record "Continia Participation";
                         ApiRequests: Codeunit "Api Requests";
                         Participations: Page Participations;
                         ProgressWindow: Dialog;
@@ -115,7 +115,7 @@ page 6390 "Ext. Connection Setup"
 
                 trigger OnAction()
                 var
-                    Participation: Record Participation;
+                    Participation: Record "Continia Participation";
                     ApiRequests: Codeunit "Api Requests";
                     ActivationMgt: Codeunit "Subscription Mgt.";
                 begin

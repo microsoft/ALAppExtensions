@@ -12,7 +12,7 @@ codeunit 6395 "Credential Management"
 
     internal procedure IsClientCredentialsValid(): Boolean
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         if ConnectionSetup.Get() then
             exit((not ConnectionSetup.GetClientId().IsEmpty()) and (not ConnectionSetup.GetClientSecret().IsEmpty()));
@@ -21,7 +21,7 @@ codeunit 6395 "Credential Management"
     [NonDebuggable]
     internal procedure GetClientCredentialsApiBodyString(): Text
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
         CredentialsStringPlaceholderTok: Label 'grant_type=password&username=%1&password=%2', Comment = '%1 - Client Id, %2 - Client Secret', Locked = true;
     begin
         if IsClientCredentialsValid() then begin
@@ -32,7 +32,7 @@ codeunit 6395 "Credential Management"
 
     internal procedure InsertClientCredentials(ClientId: SecretText; ClientSecret: SecretText; TenantSubscriptionId: Code[50])
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
         SessionManager: Codeunit "Session Manager";
     begin
         if not ConnectionSetup.Get() then

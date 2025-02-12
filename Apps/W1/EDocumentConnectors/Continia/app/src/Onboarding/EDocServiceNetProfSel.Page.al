@@ -11,7 +11,7 @@ page 6398 "E-Doc. Service Net. Prof. Sel."
     Editable = false;
     Extensible = false;
     PageType = List;
-    SourceTable = "E-Doc. Service Net Prof. Sel.";
+    SourceTable = "Continia E-Doc. Service Net Prof. Sel.";
     SourceTableTemporary = true;
     UsageCategory = None;
 
@@ -35,7 +35,7 @@ page 6398 "E-Doc. Service Net. Prof. Sel."
 
     internal procedure FillRecords(): Boolean
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
     begin
         ActivatedNetProf.SetFilter("E-Document Service Code", '<>%1', EDocumentServiceCode);
         if ActivatedNetProf.FindSet() then
@@ -46,7 +46,7 @@ page 6398 "E-Doc. Service Net. Prof. Sel."
             until ActivatedNetProf.Next() = 0;
     end;
 
-    internal procedure GetSelectedProfilesAndNetworks(var ActivatedNetProf: Record "Activated Net. Prof."; var SelectedNetworkNames: List of [Text])
+    internal procedure GetSelectedProfilesAndNetworks(var ActivatedNetProf: Record "Continia Activated Net. Prof."; var SelectedNetworkNames: List of [Text])
     begin
         ActivatedNetProf.Reset();
         Clear(SelectedNetworkNames);

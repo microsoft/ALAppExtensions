@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-table 6393 "Network Identifier"
+table 6393 "Continia Network Identifier"
 {
     Access = Internal;
     Caption = 'Network Identifier';

@@ -10,7 +10,7 @@ page 6394 "Profile Selection"
     Caption = 'Network Profile Selection';
     DelayedInsert = true;
     PageType = ListPart;
-    SourceTable = "Activated Net. Prof.";
+    SourceTable = "Continia Activated Net. Prof.";
     SourceTableTemporary = true;
 
     layout
@@ -28,7 +28,7 @@ page 6394 "Profile Selection"
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
-                        NetworkProfile: Record "Network Profile";
+                        NetworkProfile: Record "Continia Network Profile";
                         NetworkProfileList: Page "Network Profile List";
                     begin
                         NetworkProfile.FilterGroup(2);
@@ -111,7 +111,7 @@ page 6394 "Profile Selection"
         Rec.DeleteAll();
     end;
 
-    internal procedure GetProfileSelection(var ActivatedNetworkProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure GetProfileSelection(var ActivatedNetworkProfiles: Record "Continia Activated Net. Prof." temporary)
     begin
         Clear(ActivatedNetworkProfiles);
 
@@ -125,9 +125,9 @@ page 6394 "Profile Selection"
             ActivatedNetworkProfiles.FindFirst();
     end;
 
-    internal procedure SetProfileSelection(var ActivatedNetworkProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure SetProfileSelection(var ActivatedNetworkProfiles: Record "Continia Activated Net. Prof." temporary)
     var
-        Original: Record "Activated Net. Prof.";
+        Original: Record "Continia Activated Net. Prof.";
     begin
         Original := ActivatedNetworkProfiles;
         ActivatedNetworkProfiles.SetFilter(Disabled, '=%1', 0DT);

@@ -10,7 +10,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure GetParticipation200()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -33,7 +33,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure GetParticipation400()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -55,7 +55,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure GetParticipation401()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -77,7 +77,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure GetParticipation404()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -99,7 +99,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure GetParticipation500()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -121,8 +121,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation200()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -146,8 +146,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation201()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -171,7 +171,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation400()
     var
-        TempParticipation: Record Participation temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -193,7 +193,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation401()
     var
-        TempParticipation: Record Participation temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -215,7 +215,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation404()
     var
-        TempParticipation: Record Participation temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -237,7 +237,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation422()
     var
-        TempParticipation: Record Participation temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -259,7 +259,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipation500()
     var
-        TempParticipation: Record Participation temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -281,8 +281,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation200()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -307,8 +307,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation400()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -331,8 +331,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation401()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -355,8 +355,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation404()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -379,8 +379,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation409()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -403,8 +403,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation422()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -427,8 +427,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipation500()
     var
-        TempParticipation: Record Participation temporary;
-        Participation: Record Participation;
+        TempParticipation: Record "Continia Participation" temporary;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -451,7 +451,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation200()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -473,7 +473,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation202()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -497,7 +497,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation400()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -519,7 +519,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation401()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -541,7 +541,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation404()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -563,7 +563,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation422()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -585,7 +585,7 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipation500()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -607,9 +607,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile200()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -631,8 +631,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile400()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -654,8 +654,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile401()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -677,8 +677,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile404()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -700,8 +700,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile422()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -723,8 +723,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PostParticipationProfile500()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -746,9 +746,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile200()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -775,9 +775,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile400()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -802,9 +802,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile401()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -829,9 +829,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile404()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -856,9 +856,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile422()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -883,9 +883,9 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure PatchParticipationProfile500()
     var
-        Participation: Record Participation;
-        TempActivatedNetProf: Record "Activated Net. Prof." temporary;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -910,8 +910,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipationProfile200()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -935,8 +935,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipationProfile400()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -958,8 +958,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipationProfile401()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -981,8 +981,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipationProfile404()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();
@@ -1004,8 +1004,8 @@ codeunit 148200 "Api Communication Unit Tests"
     [Test]
     procedure DeleteParticipationProfile500()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         Initialize();

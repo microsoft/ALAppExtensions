@@ -35,7 +35,7 @@ pageextension 6390 "E-Document Service" extends "E-Document Service"
 
     local procedure OpenNetworkProfiles()
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServiceNetProfiles: Page "E-Doc. Service Net. Profiles";
     begin
         ActivatedNetProf.SetRange("E-Document Service Code", Rec.Code);

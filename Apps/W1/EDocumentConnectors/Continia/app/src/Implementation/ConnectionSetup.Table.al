@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-table 6390 "Connection Setup"
+table 6390 "Continia Connection Setup"
 {
     Access = Internal;
     DataClassification = CustomerContent;
@@ -52,7 +52,7 @@ table 6390 "Connection Setup"
         }
         field(10; "No. Of Participations"; Integer)
         {
-            CalcFormula = count(Participation);
+            CalcFormula = count("Continia Participation");
             Caption = 'No. Of Participations';
             Editable = false;
             FieldClass = FlowField;

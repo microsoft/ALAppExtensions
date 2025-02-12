@@ -846,7 +846,7 @@ codeunit 148203 "Document Integration Tests"
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
-        ContiniaConnectionSetup: Record "Connection Setup";
+        ContiniaConnectionSetup: Record "Continia Connection Setup";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         LibraryPermission.SetOutsideO365Scope();

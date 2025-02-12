@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 using Microsoft.eServices.EDocument;
 
-table 6392 "Activated Net. Prof."
+table 6392 "Continia Activated Net. Prof."
 {
     Access = Internal;
     Caption = 'Activated Network Profile';
@@ -22,7 +22,7 @@ table 6392 "Activated Net. Prof."
         field(2; "Identifier Type Id"; Guid)
         {
             Caption = 'Identifier Type Id';
-            TableRelation = "Network Identifier".Id where(Network = field(Network));
+            TableRelation = "Continia Network Identifier".Id where(Network = field(Network));
         }
         field(3; "Identifier Value"; Code[50])
         {
@@ -31,7 +31,7 @@ table 6392 "Activated Net. Prof."
         field(4; "Network Profile Id"; Guid)
         {
             Caption = 'Network Profile Id';
-            TableRelation = "Network Profile".Id where(Network = field(Network));
+            TableRelation = "Continia Network Profile".Id where(Network = field(Network));
         }
         field(5; "Profile Direction"; Enum "Profile Direction")
         {
@@ -60,7 +60,7 @@ table 6392 "Activated Net. Prof."
         }
         field(10; "Network Profile Description"; Text[250])
         {
-            CalcFormula = lookup("Network Profile".Description where(Id = field("Network Profile Id")));
+            CalcFormula = lookup("Continia Network Profile".Description where(Id = field("Network Profile Id")));
             Caption = 'Profile Description';
             Editable = false;
             FieldClass = FlowField;
@@ -107,13 +107,13 @@ table 6392 "Activated Net. Prof."
         end;
     end;
 
-    internal procedure GetNetworkProfile(var NetworkProfile: Record "Network Profile"): Boolean
+    internal procedure GetNetworkProfile(var NetworkProfile: Record "Continia Network Profile"): Boolean
     begin
         if not IsNullGuid("Network Profile Id") then
             exit(NetworkProfile.Get("Network Profile Id"));
     end;
 
-    internal procedure FilterByParticipation(Participation: Record Participation)
+    internal procedure FilterByParticipation(Participation: Record "Continia Participation")
     begin
         SetRange(Network, Participation.Network);
         SetRange("Identifier Type Id", Participation."Identifier Type Id");
