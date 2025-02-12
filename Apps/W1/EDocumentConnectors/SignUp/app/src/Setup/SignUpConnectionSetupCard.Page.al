@@ -15,7 +15,7 @@ page 6380 SignUpConnectionSetupCard
     SourceTable = SignUpConnectionSetup;
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
-    Caption = 'E-Document External Connection Setup';
+    Caption = 'SignUp Connection Setup';
     Extensible = false;
 
 
