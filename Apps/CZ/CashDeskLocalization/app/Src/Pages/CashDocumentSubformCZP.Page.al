@@ -6,6 +6,7 @@ namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.ExtendedText;
 
 page 31161 "Cash Document Subform CZP"
 {
@@ -58,6 +59,7 @@ page 31161 "Cash Document Subform CZP"
                     trigger OnValidate()
                     begin
                         Rec.ShowShortcutDimCode(ShortcutDimCode);
+                        InsertExtendedText(false);
                     end;
                 }
                 field(Description; Rec.Description)
@@ -445,6 +447,19 @@ page 31161 "Cash Document Subform CZP"
                         Rec.ApplyEntries();
                     end;
                 }
+                action("Insert Ext. Texts CZP")
+                {
+                    AccessByPermission = TableData "Extended Text Header" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Insert &Ext. Texts';
+                    Image = Text;
+                    ToolTip = 'Insert the extended item description that is set up for the item that is being processed on the line.';
+
+                    trigger OnAction()
+                    begin
+                        InsertExtendedText(true);
+                    end;
+                }
             }
             group("Related Information")
             {
@@ -554,6 +569,22 @@ page 31161 "Cash Document Subform CZP"
         AccountTypeIsFilled := Rec."Account Type" <> Rec."Account Type"::" ";
     end;
 
+    procedure InsertExtendedText(Unconditionally: Boolean)
+    var
+        TransferExtendedTextCZP: Codeunit "Transfer Extended Text CZP";
+    begin
+        OnBeforeInsertExtendedText(Rec);
+        if TransferExtendedTextCZP.CashDeskCheckIfAnyExtText(Rec, Unconditionally) then begin
+            CurrPage.SaveRecord();
+            Commit();
+            TransferExtendedTextCZP.InsertCashDeskExtText(Rec);
+        end;
+        OnInsertExtendedTextOnAfterInsertCashDeskExtText(Rec);
+
+        if TransferExtendedTextCZP.MakeUpdate() then
+            CurrPage.Update(true);
+    end;
+
     local procedure SetDimensionsVisibility()
     var
         DimensionManagement: Codeunit DimensionManagement;
@@ -568,5 +599,15 @@ page 31161 "Cash Document Subform CZP"
         DimVisible8 := false;
         DimensionManagement.UseShortcutDims(DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8);
         Clear(DimensionManagement);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertExtendedText(var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertExtendedTextOnAfterInsertCashDeskExtText(CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
     end;
 }

@@ -63,10 +63,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.GetFileAsStream(Path, Stream);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -105,10 +103,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.CopyFile(TargetPath, SourcePath);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -170,10 +166,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.DeleteFile(Path);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -182,7 +176,7 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
-    /// <param name="TempFileAccountContent">A list with all directories stored in the path.</param>
+    /// <param name="Files">A list with all directories stored in the path.</param>
     procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         AFSDirectoryContent: Record "AFS Directory Content";
@@ -265,10 +259,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.DeleteDirectory(Path);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>

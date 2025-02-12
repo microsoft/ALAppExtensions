@@ -1,10 +1,14 @@
 namespace Microsoft.SubscriptionBilling;
 
 using System.Visualization;
+#if not CLEAN26
 using Microsoft.Foundation.Task;
+#endif
 using Microsoft.Sales.Document;
 using Microsoft.Purchases.Document;
+#if not CLEAN26
 using Microsoft.Projects.Project.Job;
+#endif
 using Microsoft.RoleCenters;
 
 page 8085 "Sub. Billing Activities"
@@ -21,11 +25,20 @@ page 8085 "Sub. Billing Activities"
     {
         area(content)
         {
+#if not CLEAN26
             cuegroup("My User Tasks")
             {
+                ObsoleteReason = 'Removed as tasks are already a part of other role centers.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                Visible = false;
                 Caption = 'My User Tasks';
                 field("UserTaskManagement.GetMyPendingUserTasksCount"; UserTaskManagement.GetMyPendingUserTasksCount())
                 {
+                    ObsoleteReason = 'Removed as tasks are already a part of other role centers.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Pending User Tasks';
                     Image = Checklist;
                     ToolTip = 'Specifies the number of pending tasks that are assigned to you or to a group that you are a member of.';
@@ -41,15 +54,24 @@ page 8085 "Sub. Billing Activities"
             }
             cuegroup("Jobs to Budget")
             {
+                ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                Visible = false;
                 Caption = 'Projects to Budget';
                 field("Jobs Over Budget"; Rec."Jobs Over Budget")
                 {
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                     Caption = 'Over Budget';
                     DrillDownPageId = "Job List";
                     Editable = false;
                     ToolTip = 'Specifies the number of projects where the usage cost exceeds the budgeted cost.';
                 }
             }
+#endif
 
             cuegroup("Open Posted Documents Customer")
             {
@@ -131,22 +153,22 @@ page 8085 "Sub. Billing Activities"
                 field("Revenue current Month"; Rec."Revenue current Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Saldo between posted Contract Invoices and Contract Credit Memos for Customer Contracts in current Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Contracts in current Month.';
                 }
                 field("Cost current Month"; Rec."Cost current Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Saldo between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in current Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in current Month.';
                 }
                 field("Revenue previous Month"; Rec."Revenue previous Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Saldo between posted Contract Invoices and Contract Credit Memos for Customer Contracts in previous Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Contracts in previous Month.';
                 }
                 field("Cost previous Month"; Rec."Cost previous Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Saldo between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in previous Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in previous Month.';
                 }
             }
         }
@@ -245,6 +267,8 @@ page 8085 "Sub. Billing Activities"
     var
         SubBillingActivitiesCue: Codeunit "Sub. Billing Activities Cue";
         CuesAndKpisCodeunit: Codeunit "Cues And KPIs";
+#if not CLEAN26
         UserTaskManagement: Codeunit "User Task Management";
+#endif
         CalcTaskId: Integer;
 }

@@ -334,7 +334,6 @@ page 30113 "Shpfy Order"
                 field(VATIncluded; Rec."VAT Included")
                 {
                     ApplicationArea = All;
-                    Editable = false;
                     ToolTip = 'Specifies if tax is included in the unit price.';
                 }
                 field(CurrencyCode; Rec."Currency Code")

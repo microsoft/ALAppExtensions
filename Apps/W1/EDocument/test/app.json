@@ -41,6 +41,12 @@
       "publisher": "Microsoft",
       "name": "AI Test Toolkit",
       "version": "26.0.0.0"
+    },
+    {
+      "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+      "name": "Any",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
     }
   ],
   "screenshots": [],

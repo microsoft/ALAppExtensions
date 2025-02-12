@@ -41,7 +41,7 @@ codeunit 148198 "Outlook Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -78,7 +78,7 @@ codeunit 148198 "Outlook Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'DoImport.pdf');
+        EDocument.SetRange("File Name", 'DoImport.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -115,7 +115,7 @@ codeunit 148198 "Outlook Int. Test"
 
         // [THEN] Two new e-documents are created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 2, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -125,7 +125,7 @@ codeunit 148198 "Outlook Int. Test"
         TestInStream.ReadText(EDocDataStorageContentTxt);
         Assert.AreEqual('1', EDocDataStorageContentTxt, '');
         Clear(TestInStream);
-        EDocument.SetRange("File Id", 'Medical-Bill-Receipt.pdf');
+        EDocument.SetRange("File Name", 'Medical-Bill-Receipt.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -162,7 +162,7 @@ codeunit 148198 "Outlook Int. Test"
 
         // [THEN] Two new e-documents are created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 3, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'PropsoalX.pdf');
+        EDocument.SetRange("File Name", 'PropsoalX.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         FirstDocMessageId := EDocument."Mail Message Id";
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -173,7 +173,7 @@ codeunit 148198 "Outlook Int. Test"
         TestInStream.ReadText(EDocDataStorageContentTxt);
         Assert.AreEqual('1', EDocDataStorageContentTxt, '');
         Clear(TestInStream);
-        EDocument.SetRange("File Id", 'Medical-Bill-ReceiptX.pdf');
+        EDocument.SetRange("File Name", 'Medical-Bill-ReceiptX.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         SecondDocMessageId := EDocument."Mail Message Id";
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -183,7 +183,7 @@ codeunit 148198 "Outlook Int. Test"
         EDocDataStorage."Data Storage".CreateInStream(TestInStream);
         TestInStream.ReadText(EDocDataStorageContentTxt);
         Assert.AreEqual('2', EDocDataStorageContentTxt, '');
-        EDocument.SetRange("File Id", 'AnotherPropsoalX.pdf');
+        EDocument.SetRange("File Name", 'AnotherPropsoalX.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         ThirdDocMessageId := EDocument."Mail Message Id";
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -252,7 +252,7 @@ codeunit 148198 "Outlook Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal');
+        EDocument.SetRange("File Name", 'Propsoal');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -290,8 +290,8 @@ codeunit 148198 "Outlook Int. Test"
         ReceiveContext.GetTempBlob().CreateOutStream(LocalOutStream, TextEncoding::UTF8);
         LocalOutStream.WriteText(Format(EDocument."Index In Batch"));
 
-        OutlookProcessing.UpdateEDocumentAfterMailAttachmentDownload(EDocument, ExternalMessageId, FileId, AttachmentId);
-        OutlookProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+        OutlookProcessing.UpdateEDocumentAfterMailAttachmentDownload(EDocument, ExternalMessageId, AttachmentId);
+        OutlookProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
     end;
 
     internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)

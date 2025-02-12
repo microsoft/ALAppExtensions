@@ -2,19 +2,16 @@ namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
 
-#pragma warning disable AS0125
-#pragma warning disable AS0030
 page 37031 "PowerBI Bin Contents"
-#pragma warning restore AS0030
-#pragma warning restore AS0125
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Bin Contents';
     AboutTitle = 'About Bin Contents';
     AboutText = 'The Bin Contents report provides a detailed view of item quantities by bin code and location. It includes additional information such as warehouse quantity, pick and put-away quantities, and both negative and positive adjustments, offering a comprehensive overview of bin movements and inventory management within the warehouse.';
-    Extensible = false;
 
     layout
     {
@@ -32,26 +29,6 @@ page 37031 "PowerBI Bin Contents"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

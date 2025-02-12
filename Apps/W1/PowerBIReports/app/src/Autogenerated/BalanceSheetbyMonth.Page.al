@@ -6,11 +6,12 @@ page 36986 "Balance Sheet by Month"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Balance Sheet by Month';
     AboutTitle = 'About Balance Sheet by Month';
     AboutText = 'The Balance Sheet by Month report provides a month-to-month comparative view of the balance at date for balance sheet accounts. ';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 36986 "Balance Sheet by Month"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }
