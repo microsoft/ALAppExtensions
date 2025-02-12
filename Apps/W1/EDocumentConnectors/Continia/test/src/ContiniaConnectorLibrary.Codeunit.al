@@ -4,7 +4,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using System.Environment.Configuration;
 
-codeunit 148202 "Connector Library"
+codeunit 148202 "Continia Connector Library"
 {
     internal procedure ApiMockBaseUrl(): Text
     begin

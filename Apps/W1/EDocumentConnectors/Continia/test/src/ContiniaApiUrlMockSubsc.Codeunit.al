@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-codeunit 148201 "Api Url Mock Subscribers"
+codeunit 148201 "Continia Api Url Mock Subsc."
 {
     EventSubscriberInstance = Manual;
 
@@ -104,14 +104,14 @@ codeunit 148201 "Api Url Mock Subscribers"
             Error('Continia Delivery Network Base Url is not initialized.');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Api Url Mgt.", OnGetCOBaseUrl, '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Continia Api Url Mgt.", OnGetCOBaseUrl, '', true, true)]
     local procedure OnGetCOBaseUrl(var ReturnUrl: Text; var Handled: Boolean)
     begin
         ReturnUrl := CoBaseCaseUrl;
         Handled := true;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Api Url Mgt.", OnGetCDNBaseUrl, '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Continia Api Url Mgt.", OnGetCDNBaseUrl, '', true, true)]
     local procedure OnGetCDNBaseUrl(var ReturnUrl: Text; var Handled: Boolean)
     begin
         ReturnUrl := CdnBaseCaseUrl;
