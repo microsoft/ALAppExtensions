@@ -10,7 +10,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        EDocImplState: Codeunit "E-Doc. Impl. State";
         Assert: Codeunit Assert;
         EDocReceiveFiles: Codeunit "E-Doc. Receive Files";
         LibraryRandom: Codeunit "Library - Random";
@@ -153,7 +152,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         DocumentAttachment: Record "Document Attachment";
         EDocument: Record "E-Document";
     begin
-        Clear(EDocImplState);
         Clear(PurchaseHeader);
         Clear(LibraryVariableStorage);
 
