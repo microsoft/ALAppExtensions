@@ -16,5 +16,5 @@ permissionset 6391 ContEDocConnRead
                   tabledata "Continia Activated Net. Prof." = R,
                   tabledata "Continia Network Identifier" = R,
                   tabledata "Continia Network Profile" = R,
-                  tabledata "Continia E-Doc. Service Net Prof. Sel." = R;
+                  tabledata "Con. E-Doc. Serv. Prof. Sel." = R;
 }
