@@ -1343,7 +1343,6 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler')]
     procedure ReceiveEDocumentDuplicate()
     var
         EDocService: Record "E-Document Service";
