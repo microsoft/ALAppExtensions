@@ -11,10 +11,10 @@ permissionset 6391 ContEDocConnRead
     Caption = 'Continia E-Document Connector - Read';
     IncludedPermissionSets = ContEDocConnObjects;
 
-    Permissions = tabledata "Connection Setup" = R,
-                  tabledata Participation = R,
-                  tabledata "Activated Net. Prof." = R,
-                  tabledata "Network Identifier" = R,
-                  tabledata "Network Profile" = R,
-                  tabledata "E-Doc. Service Net Prof. Sel." = R;
+    Permissions = tabledata "Continia Connection Setup" = R,
+                  tabledata "Continia Participation" = R,
+                  tabledata "Continia Activated Net. Prof." = R,
+                  tabledata "Continia Network Identifier" = R,
+                  tabledata "Continia Network Profile" = R,
+                  tabledata "Continia E-Doc. Service Net Prof. Sel." = R;
 }

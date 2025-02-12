@@ -13,8 +13,8 @@ page 6397 "E-Doc. Service Net. Profiles"
     Editable = false;
     Extensible = false;
     PageType = List;
-    Permissions = tabledata "Activated Net. Prof." = RIMD;
-    SourceTable = "Activated Net. Prof.";
+    Permissions = tabledata "Continia Activated Net. Prof." = RIMD;
+    SourceTable = "Continia Activated Net. Prof.";
     UsageCategory = None;
 
     layout
@@ -80,7 +80,7 @@ page 6397 "E-Doc. Service Net. Profiles"
 
     trigger OnAfterGetRecord()
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
         ParticipationInfoPatternTxt: Label '%1 %2', Comment = '%1 - Scheme Id, %2 - Identifier Value';
         TemporaryParticipationInfo: Text;
     begin
@@ -104,7 +104,7 @@ page 6397 "E-Doc. Service Net. Profiles"
 
     local procedure AddNetworkProfile()
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServiceNetProfSel: Page "E-Doc. Service Net. Prof. Sel.";
         SelectedNetworkNames: List of [Text];
     begin
@@ -122,14 +122,14 @@ page 6397 "E-Doc. Service Net. Profiles"
 
     local procedure RemoveNetworkProfiles()
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
     begin
         CurrPage.SetSelectionFilter(ActivatedNetProf);
         ActivatedNetProf.ModifyAll("E-Document Service Code", '', true);
         CurrPage.Update();
     end;
 
-    local procedure UpdateNetworkProfilesBySelection(var ActivatedNetProf: Record "Activated Net. Prof.")
+    local procedure UpdateNetworkProfilesBySelection(var ActivatedNetProf: Record "Continia Activated Net. Prof.")
     begin
         if ActivatedNetProf.FindSet() then
             repeat
@@ -140,7 +140,7 @@ page 6397 "E-Doc. Service Net. Profiles"
 
     local procedure HandleMultipleNetworkNames(var SelectedNetworkNames: List of [Text]): Boolean
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         ConfirmManagement: Codeunit "Confirm Management";
         LinkedNetworkNames: List of [Text];
         SelectedNetworkName: Text;
@@ -167,7 +167,7 @@ page 6397 "E-Doc. Service Net. Profiles"
 
     local procedure ResetPreviousRecordParticipationInfo()
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
     begin
         ActivatedNetProf.SetView(Rec.GetView());
         if not ActivatedNetProf.FindFirst() then

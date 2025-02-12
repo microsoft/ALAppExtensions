@@ -14,9 +14,9 @@ codeunit 6398 "Env. Cleanup Subscr."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]
     local procedure CleanupCompanyConfiguration(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
     var
-        ConnectionSetup: Record "Connection Setup";
-        Participation: Record Participation;
-        ParticipationProfiles: Record "Activated Net. Prof.";
+        ConnectionSetup: Record "Continia Connection Setup";
+        Participation: Record "Continia Participation";
+        ParticipationProfiles: Record "Continia Activated Net. Prof.";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
         if not EnvironmentInformation.IsSaaSInfrastructure() then

@@ -73,7 +73,7 @@ codeunit 148202 "Connector Library"
 
     internal procedure InitiateClientCredentials()
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         if not ConnectionSetup.Get() then
             ConnectionSetup.Insert();
@@ -87,7 +87,7 @@ codeunit 148202 "Connector Library"
 
     internal procedure ClearClientCredentials()
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         if ConnectionSetup.Get() then
             ConnectionSetup.Delete();
@@ -95,16 +95,16 @@ codeunit 148202 "Connector Library"
 
     internal procedure PrepareParticipation(EDocumentService: Record "E-Document Service")
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
     begin
         // Create a participation with profile
         PrepareParticipation(Participation, ActivatedNetProf, EDocumentService)
     end;
 
-    internal procedure PrepareParticipation(var Participation: Record Participation)
+    internal procedure PrepareParticipation(var Participation: Record "Continia Participation")
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
     begin
         NetworkIdentifier.Init();
         NetworkIdentifier.Id := IdentifierTypeIdLbl;
@@ -124,7 +124,7 @@ codeunit 148202 "Connector Library"
         Participation.Insert();
     end;
 
-    internal procedure PrepareParticipation(var Participation: Record Participation; var ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure PrepareParticipation(var Participation: Record "Continia Participation"; var ActivatedNetProf: Record "Continia Activated Net. Prof.")
     var
         LibraryEDocument: Codeunit "Library - E-Document";
         EDocServiceCode: Code[20];
@@ -138,7 +138,7 @@ codeunit 148202 "Connector Library"
         AddActivatedNetworkProfile(Participation, ActivatedNetProf, EDocServiceCode);
     end;
 
-    internal procedure PrepareParticipation(var Participation: Record Participation; var ActivatedNetProf: Record "Activated Net. Prof."; EDocumentService: Record "E-Document Service")
+    internal procedure PrepareParticipation(var Participation: Record "Continia Participation"; var ActivatedNetProf: Record "Continia Activated Net. Prof."; EDocumentService: Record "E-Document Service")
     begin
         // Create a participation with profile
         PrepareParticipation(Participation);
@@ -148,12 +148,12 @@ codeunit 148202 "Connector Library"
         AddActivatedNetworkProfile(Participation, ActivatedNetProf, EDocumentService.Code);
     end;
 
-    internal procedure AddActivatedNetworkProfile(var Participation: Record Participation; var ActivatedNetProf: Record "Activated Net. Prof."; EDocServiceCode: Code[20])
+    internal procedure AddActivatedNetworkProfile(var Participation: Record "Continia Participation"; var ActivatedNetProf: Record "Continia Activated Net. Prof."; EDocServiceCode: Code[20])
     begin
         AddActivatedNetworkProfile(Participation, DefaultNetworkProfileIdLbl, ActivatedNetworkProfileIdLbl, ActivatedNetProf, EDocServiceCode);
     end;
 
-    internal procedure AddActivatedNetworkProfile(var Participation: Record Participation; NetworkPrifileId: Guid; ActivatedNetworkPrifileId: Guid; var ActivatedNetProf: Record "Activated Net. Prof."; EDocServiceCode: Code[20])
+    internal procedure AddActivatedNetworkProfile(var Participation: Record "Continia Participation"; NetworkPrifileId: Guid; ActivatedNetworkPrifileId: Guid; var ActivatedNetProf: Record "Continia Activated Net. Prof."; EDocServiceCode: Code[20])
     begin
         ActivatedNetProf.Init();
         ActivatedNetProf.Network := Participation.Network;
@@ -172,7 +172,7 @@ codeunit 148202 "Connector Library"
 
     local procedure CreateNetworkProfiles()
     var
-        NetworkProfile: Record "Network Profile";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         NetworkProfile.Init();
         NetworkProfile.Id := DefaultNetworkProfileIdLbl;
@@ -184,29 +184,29 @@ codeunit 148202 "Connector Library"
     end;
 
     [TryFunction]
-    internal procedure GetParticipation(var Participation: Record Participation)
+    internal procedure GetParticipation(var Participation: Record "Continia Participation")
     begin
         Participation.Get(Participation.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl);
     end;
 
     [TryFunction]
-    internal procedure GetActivatedNetworkProfile(var ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure GetActivatedNetworkProfile(var ActivatedNetProf: Record "Continia Activated Net. Prof.")
     begin
         ActivatedNetProf.Get(ActivatedNetProf.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl, DefaultNetworkProfileIdLbl);
     end;
 
     [TryFunction]
-    internal procedure GetActivatedNetworkProfile(NetworkProfileId: Guid; var ActivatedNetProf: Record "Activated Net. Prof.")
+    internal procedure GetActivatedNetworkProfile(NetworkProfileId: Guid; var ActivatedNetProf: Record "Continia Activated Net. Prof.")
     begin
         ActivatedNetProf.Get(ActivatedNetProf.Network::Peppol, IdentifierTypeIdLbl, IdentifierValueLbl, NetworkProfileId);
     end;
 
     internal procedure CleanParticipations()
     var
-        Participation: Record Participation;
-        NetworkIdentifier: Record "Network Identifier";
-        NetworkProfile: Record "Network Profile";
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        NetworkIdentifier: Record "Continia Network Identifier";
+        NetworkProfile: Record "Continia Network Profile";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
     begin
         if not Participation.IsEmpty then
             Participation.DeleteAll();

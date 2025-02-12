@@ -983,7 +983,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure UpdateProfiles()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
     begin
         CurrPage.SelectProfilesPeppol.Page.GetProfileSelection(TempActivatedProfiles);
         OnboardingHelper.UpdateProfiles(TempParticipation, TempActivatedProfiles);
@@ -991,7 +991,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure RegisterParticipation()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
     begin
         CurrPage.SelectProfilesPeppol.Page.GetProfileSelection(TempActivatedProfiles);
         OnboardingHelper.RegisterParticipation(TempParticipation, TempActivatedProfiles);
@@ -999,7 +999,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure InitializeNetworkProfiles()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
     begin
         OnboardingHelper.InitializeNetworkProfiles(TempParticipation, TempActivatedProfiles);
 
@@ -1009,7 +1009,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure SetActivatedProfiles()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
     begin
         OnboardingHelper.GetCurrentActivatedProfiles(TempParticipation, TempActivatedProfiles);
 
@@ -1027,7 +1027,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure ValidateParticipationProfiles()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
         ApiRequests: Codeunit "Api Requests";
     begin
         CurrPage.SelectProfilesPeppol.Page.GetProfileSelection(TempActivatedProfiles);
@@ -1044,7 +1044,7 @@ page 6393 "Onboarding Wizard"
         RunScenario := ParamRunScenario;
     end;
 
-    internal procedure SetParticipation(ParamParticipation: Record Participation)
+    internal procedure SetParticipation(ParamParticipation: Record "Continia Participation")
     begin
         TempParticipation := ParamParticipation;
         if TempParticipation."Registration Status" in [TempParticipation."Registration Status"::Disabled, TempParticipation."Registration Status"::Rejected, TempParticipation."Registration Status"::Draft] then
@@ -1064,7 +1064,7 @@ page 6393 "Onboarding Wizard"
 
     local procedure PopulateNetworkProfilesByUserSelection()
     var
-        TempActivatedProfiles: Record "Activated Net. Prof." temporary;
+        TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary;
     begin
         TempActivatedProfiles.DeleteAll();
 
@@ -1074,7 +1074,7 @@ page 6393 "Onboarding Wizard"
         CurrPage.SelectProfilesPeppol.Page.SetProfileSelection(TempActivatedProfiles);
     end;
 
-    local procedure GetSelectedNetworksProfiles(var ActivatedProfiles: Record "Activated Net. Prof." temporary)
+    local procedure GetSelectedNetworksProfiles(var ActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     var
         ProfileDirection: Enum "Profile Direction";
     begin
@@ -1117,8 +1117,8 @@ page 6393 "Onboarding Wizard"
     end;
 
     var
-        TempCompanyContact: Record Participation temporary;
-        TempParticipation: Record Participation temporary;
+        TempCompanyContact: Record "Continia Participation" temporary;
+        TempParticipation: Record "Continia Participation" temporary;
         OnboardingHelper: Codeunit "Onboarding Helper";
         AdvancedSetupActionEnabled, BackActionEnabled, FinishActionEnabled, NextActionEnabled : Boolean;
         AdvancedSetupStepVisible, BackActionVisible, CompanyContactInformationStepVisible, DocumentTypesStepVisible, FinalStepVisible, FirstStepVisible, LegalCompanyInformationStepVisible, NetworkDetailsStepVisible, NextActionVisible, PartnerDetailsStepVisible : Boolean;

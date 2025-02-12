@@ -8,13 +8,13 @@ using System.Email;
 using Microsoft.Finance.VAT.Registration;
 using Microsoft.Foundation.Address;
 
-table 6391 Participation
+table 6391 "Continia Participation"
 {
     Access = Internal;
     Caption = 'Participation';
     DataClassification = CustomerContent;
     LookupPageId = Participations;
-    Permissions = tabledata "Activated Net. Prof." = rimd;
+    Permissions = tabledata "Continia Activated Net. Prof." = rimd;
 
     fields
     {
@@ -26,7 +26,7 @@ table 6391 Participation
         field(2; "Identifier Type Id"; Guid)
         {
             Caption = 'Identifier Type';
-            TableRelation = "Network Identifier".Id where(Network = field(Network));
+            TableRelation = "Continia Network Identifier".Id where(Network = field(Network));
         }
         field(3; "Identifier Value"; Code[50])
         {
@@ -50,7 +50,7 @@ table 6391 Participation
                 "VAT Registration No." := UpperCase("VAT Registration No.");
                 if "VAT Registration No." = xRec."VAT Registration No." then
                     exit;
-                if not VATRegNoFormat.Test("VAT Registration No.", "Country/Region Code", '', Database::Participation) then
+                if not VATRegNoFormat.Test("VAT Registration No.", "Country/Region Code", '', Database::"Continia Participation") then
                     exit;
             end;
         }
@@ -183,7 +183,7 @@ table 6391 Participation
         }
         field(40; "Identifier Scheme Id"; Text[50])
         {
-            CalcFormula = lookup("Network Identifier"."Scheme Id" where(Id = field("Identifier Type Id")));
+            CalcFormula = lookup("Continia Network Identifier"."Scheme Id" where(Id = field("Identifier Type Id")));
             Caption = 'Identifier Type';
             Editable = false;
             FieldClass = FlowField;
@@ -268,7 +268,7 @@ table 6391 Participation
         end;
     end;
 
-    internal procedure GetNetworkIdentifier() NetworkIdentifier: Record "Network Identifier"
+    internal procedure GetNetworkIdentifier() NetworkIdentifier: Record "Continia Network Identifier"
     begin
         NetworkIdentifier.SetRange(Id, "Identifier Type Id");
         NetworkIdentifier.FindFirst();
@@ -277,7 +277,7 @@ table 6391 Participation
 
     trigger OnDelete()
     var
-        ActivatedProfiles: Record "Activated Net. Prof.";
+        ActivatedProfiles: Record "Continia Activated Net. Prof.";
     begin
         ActivatedProfiles.SetRange(Network, Rec.Network);
         ActivatedProfiles.SetRange("Identifier Type Id", Rec."Identifier Type Id");

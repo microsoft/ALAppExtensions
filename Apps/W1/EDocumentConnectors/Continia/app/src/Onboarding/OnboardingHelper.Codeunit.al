@@ -12,14 +12,14 @@ using System.Utilities;
 codeunit 6394 "Onboarding Helper"
 {
     Access = Internal;
-    Permissions = tabledata "Network Profile" = rimd,
-                  tabledata "Network Identifier" = rimd,
-                  tabledata Participation = rimd,
-                  tabledata "Activated Net. Prof." = rimd;
+    Permissions = tabledata "Continia Network Profile" = rimd,
+                  tabledata "Continia Network Identifier" = rimd,
+                  tabledata "Continia Participation" = rimd,
+                  tabledata "Continia Activated Net. Prof." = rimd;
 
-    internal procedure InitializeGeneralScenario(var TempCompanyContact: Record Participation temporary; var TempParticipation: Record Participation temporary; var ParticipationCountyVisible: Boolean; var ContactInfoCountyVisible: Boolean; var SkipCompanyInformation: Boolean; var IdentifierTypeDesc: Text)
+    internal procedure InitializeGeneralScenario(var TempCompanyContact: Record "Continia Participation" temporary; var TempParticipation: Record "Continia Participation" temporary; var ParticipationCountyVisible: Boolean; var ContactInfoCountyVisible: Boolean; var SkipCompanyInformation: Boolean; var IdentifierTypeDesc: Text)
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
         FormatAddress: Codeunit "Format Address";
     begin
         TempCompanyContact.Init();
@@ -42,7 +42,7 @@ codeunit 6394 "Onboarding Helper"
                 SkipCompanyInformation := true;
     end;
 
-    internal procedure GetContactInformation(var TempParticipationCompanyContact: Record Participation temporary; ShowProgress: Boolean)
+    internal procedure GetContactInformation(var TempParticipationCompanyContact: Record "Continia Participation" temporary; ShowProgress: Boolean)
     var
         ActivationMgt: Codeunit "Subscription Mgt.";
     begin
@@ -93,7 +93,7 @@ codeunit 6394 "Onboarding Helper"
         MetaDataLoaded := true;
     end;
 
-    internal procedure FillParticipationWithCompanyInfo(var TempParticipation: Record Participation temporary; var IdentifierTypeDesc: Text)
+    internal procedure FillParticipationWithCompanyInfo(var TempParticipation: Record "Continia Participation" temporary; var IdentifierTypeDesc: Text)
     var
         CompanyInfo: Record "Company Information";
         CountryRegion: Record "Country/Region";
@@ -119,10 +119,10 @@ codeunit 6394 "Onboarding Helper"
         TempParticipation."Contact Phone No." := 'N/A';
     end;
 
-    internal procedure SetDefaultIdentifierData(var TempParticipation: Record Participation temporary; var IdentifierTypeDesc: Text)
+    internal procedure SetDefaultIdentifierData(var TempParticipation: Record "Continia Participation" temporary; var IdentifierTypeDesc: Text)
     var
         CompanyInformation: Record "Company Information";
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
         EmptyGuid: Guid;
     begin
         CompanyInformation.Get();
@@ -145,9 +145,9 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    internal procedure ValidateIdentifierType(var TempParticipation: Record Participation temporary; var IdentifierTypeDesc: Text)
+    internal procedure ValidateIdentifierType(var TempParticipation: Record "Continia Participation" temporary; var IdentifierTypeDesc: Text)
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
     begin
         if IdentifierTypeDesc <> '' then begin
             NetworkIdentifier.SetRange(Network, TempParticipation.Network);
@@ -159,9 +159,9 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    internal procedure LookupIdentifierType(var TempParticipation: Record Participation temporary; var IdentifierTypeDesc: Text): Boolean
+    internal procedure LookupIdentifierType(var TempParticipation: Record "Continia Participation" temporary; var IdentifierTypeDesc: Text): Boolean
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
         NetworkIdentifierList: Page "Network Id. List";
     begin
         Clear(NetworkIdentifier);
@@ -178,9 +178,9 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    internal procedure ValidateIdentifierValue(var TempParticipation: Record Participation temporary)
+    internal procedure ValidateIdentifierValue(var TempParticipation: Record "Continia Participation" temporary)
     var
-        NetworkIdentifier: Record "Network Identifier";
+        NetworkIdentifier: Record "Continia Network Identifier";
         RegEx: Codeunit Regex;
     begin
         if NetworkIdentifier.Get(TempParticipation."Identifier Type Id") then
@@ -188,9 +188,9 @@ codeunit 6394 "Onboarding Helper"
                 Error(InvalidIdentifierValueErr, TempParticipation."Identifier Value", NetworkIdentifier."Validation Rule");
     end;
 
-    internal procedure GetCurrentActivatedProfiles(var TempParticipation: Record Participation temporary; var TempActivatedProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure GetCurrentActivatedProfiles(var TempParticipation: Record "Continia Participation" temporary; var TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     var
-        ActivatedProfiles: Record "Activated Net. Prof.";
+        ActivatedProfiles: Record "Continia Activated Net. Prof.";
     begin
         ActivatedProfiles.SetRange(Network, TempParticipation.Network);
         ActivatedProfiles.SetRange("Identifier Type Id", TempParticipation."Identifier Type Id");
@@ -203,9 +203,9 @@ codeunit 6394 "Onboarding Helper"
             until ActivatedProfiles.Next() = 0;
     end;
 
-    internal procedure InitializeNetworkProfiles(var TempParticipation: Record Participation temporary; var TempActivatedProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure InitializeNetworkProfiles(var TempParticipation: Record "Continia Participation" temporary; var TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     var
-        NetworkProfile: Record "Network Profile";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         NetworkProfile.SetRange(Network, TempParticipation.Network);
         NetworkProfile.SetRange(Mandatory, true);
@@ -219,7 +219,7 @@ codeunit 6394 "Onboarding Helper"
             until NetworkProfile.Next() = 0;
     end;
 
-    internal procedure IsCompanyInfoValid(var TempCompanyContact: Record Participation temporary): Boolean
+    internal procedure IsCompanyInfoValid(var TempCompanyContact: Record "Continia Participation" temporary): Boolean
     begin
         if TempCompanyContact."Company Name" = '' then
             exit(false);
@@ -248,7 +248,7 @@ codeunit 6394 "Onboarding Helper"
         exit(true);
     end;
 
-    internal procedure IsParticipationInfoValid(var TempParticipation: Record Participation temporary): Boolean
+    internal procedure IsParticipationInfoValid(var TempParticipation: Record "Continia Participation" temporary): Boolean
     begin
         if TempParticipation."Company Name" = '' then
             exit(false);
@@ -274,7 +274,7 @@ codeunit 6394 "Onboarding Helper"
         exit(true);
     end;
 
-    internal procedure UpdateParticipation(var TempParticipation: Record Participation temporary)
+    internal procedure UpdateParticipation(var TempParticipation: Record "Continia Participation" temporary)
     var
         ApiRequests: Codeunit "Api Requests";
     begin
@@ -285,9 +285,9 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    internal procedure UpdateProfiles(var TempParticipation: Record Participation temporary; var TempActivatedProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure UpdateProfiles(var TempParticipation: Record "Continia Participation" temporary; var TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     var
-        ActivatedProfiles: Record "Activated Net. Prof.";
+        ActivatedProfiles: Record "Continia Activated Net. Prof.";
         ApiRequests: Codeunit "Api Requests";
     begin
         ShowProgressWindow(SendingDataProgressMsg);
@@ -318,10 +318,10 @@ codeunit 6394 "Onboarding Helper"
         CloseProgressWindow();
     end;
 
-    internal procedure RegisterParticipation(var TempParticipation: Record Participation temporary; var TempActivatedProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure RegisterParticipation(var TempParticipation: Record "Continia Participation" temporary; var TempActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     var
         CompanyInfo: Record "Company Information";
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Api Requests";
         ParticipationGuid: Guid;
     begin
@@ -350,9 +350,9 @@ codeunit 6394 "Onboarding Helper"
         CloseProgressWindow();
     end;
 
-    internal procedure IsParticipationChanged(var TempParticipation: Record Participation temporary): Boolean
+    internal procedure IsParticipationChanged(var TempParticipation: Record "Continia Participation" temporary): Boolean
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
     begin
         if not Participation.Get(TempParticipation.Network, TempParticipation."Identifier Type Id", TempParticipation."Identifier Value") then
             exit(true);
@@ -385,9 +385,9 @@ codeunit 6394 "Onboarding Helper"
             exit(true);
     end;
 
-    internal procedure CreateSubscription(var TempCompanyContact: Record Participation temporary)
+    internal procedure CreateSubscription(var TempCompanyContact: Record "Continia Participation" temporary)
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
         SubscriptionMgt: Codeunit "Subscription Mgt.";
         SubscriptionState: Enum "Subscription Status";
     begin
@@ -402,7 +402,7 @@ codeunit 6394 "Onboarding Helper"
         CloseProgressWindow();
     end;
 
-    internal procedure UpdateSubscriptionInfo(var TempCompanyContact: Record Participation temporary)
+    internal procedure UpdateSubscriptionInfo(var TempCompanyContact: Record "Continia Participation" temporary)
     var
         SubscriptionMgt: Codeunit "Subscription Mgt.";
     begin
@@ -416,14 +416,14 @@ codeunit 6394 "Onboarding Helper"
 
     internal procedure IsSubscribed(): Boolean
     var
-        ConnectionSetup: Record "Connection Setup";
+        ConnectionSetup: Record "Continia Connection Setup";
     begin
         ConnectionSetup.Get();
         exit(ConnectionSetup."Subscription Status" = ConnectionSetup."Subscription Status"::Subscription);
     end;
 
     #region Simple User Choice functions
-    internal procedure AddInvoiceCreditMemoProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof." temporary)
+    internal procedure AddInvoiceCreditMemoProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof." temporary)
     begin
         case TempParticipation.Network of
             "E-Delivery Network"::Peppol:
@@ -434,7 +434,7 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    local procedure AddPeppolInvoiceCreditMemoProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure AddPeppolInvoiceCreditMemoProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         case TempParticipation."Country/Region Code" of
             'DE':
@@ -457,9 +457,9 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
     end;
 
-    local procedure PopulateDEInvoiceCreditMemoProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulateDEInvoiceCreditMemoProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     var
-        NetworkProfile: Record "Network Profile";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         NetworkProfile.SetRange(Network, TempParticipation.Network);
         NetworkProfile.SetRange("Mandatory for Country", 'DE');
@@ -469,7 +469,7 @@ codeunit 6394 "Onboarding Helper"
             until NetworkProfile.Next() = 0;
     end;
 
-    local procedure PopulateNLInvoiceCreditMemoProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulateNLInvoiceCreditMemoProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         //SI-UBL 2.0 Credit Note
         AddNetworkProfileByIdentifiers(TempParticipation, ActivatedProfiles, ProfileDirection,
@@ -481,7 +481,7 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0::2.1');
     end;
 
-    internal procedure AddInvoiceResponseProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
+    internal procedure AddInvoiceResponseProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof.")
     begin
         case TempParticipation.Network of
             "E-Delivery Network"::Peppol:
@@ -492,7 +492,7 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    local procedure PopulatePeppolInvoiceResponseProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulatePeppolInvoiceResponseProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         //PEPPOL Invoice Response (BIS 3.0)
         AddNetworkProfileByIdentifiers(TempParticipation, ActivatedProfiles, ProfileDirection,
@@ -500,7 +500,7 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1');
     end;
 
-    internal procedure AddOrderOnlyProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
+    internal procedure AddOrderOnlyProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof.")
     begin
         case TempParticipation.Network of
             "E-Delivery Network"::Peppol:
@@ -511,7 +511,7 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    local procedure PopulatePeppolOrderOnlyProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulatePeppolOrderOnlyProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         case TempParticipation."Country/Region Code" of
             'NO':
@@ -527,7 +527,7 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1');
     end;
 
-    internal procedure AddOrderProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
+    internal procedure AddOrderProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof.")
     begin
         case TempParticipation.Network of
             "E-Delivery Network"::Peppol:
@@ -538,7 +538,7 @@ codeunit 6394 "Onboarding Helper"
         end;
     end;
 
-    local procedure PopulatePeppolOrderProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulatePeppolOrderProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         case TempParticipation."Country/Region Code" of
             'NO':
@@ -554,13 +554,13 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1');
     end;
 
-    internal procedure AddOrderResponseProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
+    internal procedure AddOrderResponseProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof.")
     begin
         if TempParticipation.Network = "E-Delivery Network"::Peppol then
             PopulatePeppolOrderResponseProfiles(TempParticipation, ActivatedProfiles, ProfileDirection);
     end;
 
-    local procedure PopulatePeppolOrderResponseProfiles(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulatePeppolOrderResponseProfiles(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         case TempParticipation."Country/Region Code" of
             'NO':
@@ -576,17 +576,17 @@ codeunit 6394 "Onboarding Helper"
             'urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1');
     end;
 
-    internal procedure AddInvoiceAndOrderProfiles(var TempParticipation: Record Participation temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
+    internal procedure AddInvoiceAndOrderProfiles(var TempParticipation: Record "Continia Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Continia Activated Net. Prof.")
     begin
         if TempParticipation.Network = "E-Delivery Network"::Nemhandel then
             AddNetworkProfileByIdentifiers(TempParticipation, ActivatedProfiles, ProfileDirection,
                 'Procurement-OrdSim-BilSim-1.0', '');
     end;
 
-    local procedure AddNetworkProfileByIdentifiers(var TempParticipation: Record Participation temporary; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction"; ProcessIdentifier: Text;
+    local procedure AddNetworkProfileByIdentifiers(var TempParticipation: Record "Continia Participation" temporary; var ActivatedProfiles: Record "Continia Activated Net. Prof."; ProfileDirection: Enum "Profile Direction"; ProcessIdentifier: Text;
                                                                    DocumentIdentifier: Text)
     var
-        NetworkProfile: Record "Network Profile";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         NetworkProfile.SetRange(Network, TempParticipation.Network);
         NetworkProfile.SetRange("Process Identifier", ProcessIdentifier);

@@ -10,7 +10,7 @@ permissionset 6390 ContEDocConnObjects
     Assignable = false;
     Caption = 'Continia E-Document Connector - Objects';
 
-    Permissions = table "Connection Setup" = X,
+    Permissions = table "Continia Connection Setup" = X,
                   page "Ext. Connection Setup" = X,
                   codeunit "Integration Impl." = X,
                   codeunit "EDocument Processing" = X,

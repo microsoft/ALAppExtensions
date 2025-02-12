@@ -197,7 +197,7 @@ codeunit 148204 "Registration Integration Tests"
     [Test]
     procedure Unregister_Connected()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -255,7 +255,7 @@ codeunit 148204 "Registration Integration Tests"
     [Test]
     procedure Unregister_InProcess()
     var
-        Participation: Record Participation;
+        Participation: Record "Continia Participation";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -312,8 +312,8 @@ codeunit 148204 "Registration Integration Tests"
     [Test]
     procedure EditParticipation_ChangeProfileDirection()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -417,8 +417,8 @@ codeunit 148204 "Registration Integration Tests"
     [HandlerFunctions('HandlePeppolInvoiceProfileSelection')]
     procedure EditParticipation_AddProfile()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -526,8 +526,8 @@ codeunit 148204 "Registration Integration Tests"
     [Test]
     procedure EditParticipation_RemoveProfile()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -637,8 +637,8 @@ codeunit 148204 "Registration Integration Tests"
     [Test]
     procedure EditParticipation_ChangeVat()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Ext. Connection Setup";
         Participations: TestPage Participations;
@@ -737,9 +737,9 @@ codeunit 148204 "Registration Integration Tests"
         EDocServicePage.Close();
     end;
 
-    local procedure TestActivatedNetworkProfiles(Participation: Record Participation; NetworkProfileIds: List of [Guid]; Disabled: Boolean)
+    local procedure TestActivatedNetworkProfiles(Participation: Record "Continia Participation"; NetworkProfileIds: List of [Guid]; Disabled: Boolean)
     var
-        ActivatedNetProf: Record "Activated Net. Prof.";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         UnexpectedProfileFoundErr: Label 'Unexpected Activated Network Profile %1 was found', Comment = '%1 - Network Profile Id';
     begin
         ActivatedNetProf.SetRange(Network, Participation.Network);
@@ -761,7 +761,7 @@ codeunit 148204 "Registration Integration Tests"
     [ModalPageHandler]
     internal procedure HandlePeppolInvoiceProfileSelection(var NetworkProfileList: TestPage "Network Profile List")
     var
-        NetworkProfile: Record "Network Profile";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         NetworkProfile.Get(ConnectorLibrary.NetworkProfileIdPeppolBis3Invoice());
         NetworkProfileList.GoToRecord(NetworkProfile);
@@ -795,9 +795,9 @@ codeunit 148204 "Registration Integration Tests"
 
     local procedure ValidateActivatedNetworkProfiles()
     var
-        Participation: Record Participation;
-        ActivatedNetProf: Record "Activated Net. Prof.";
-        NetworkProfile: Record "Network Profile";
+        Participation: Record "Continia Participation";
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
+        NetworkProfile: Record "Continia Network Profile";
     begin
         Participation.FindFirst();
         ActivatedNetProf.FindSet();
