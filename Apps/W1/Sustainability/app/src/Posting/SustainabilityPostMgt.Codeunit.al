@@ -1,11 +1,7 @@
 namespace Microsoft.Sustainability.Posting;
 
-using Microsoft.Assembly.Document;
 using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
-using Microsoft.Inventory.Transfer;
-using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
@@ -14,36 +10,6 @@ using Microsoft.Sustainability.Ledger;
 codeunit 6212 "Sustainability Post Mgt"
 {
     Access = Internal;
-
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; ItemJnlLine: Record "Item Journal Line")
-    begin
-        SkipUpdateCarbonEmissionValue := ItemJnlLine."Entry Type" <> ItemJnlLine."Entry Type"::Purchase;
-        InsertLedgerEntry(SustainabilityJnlLine);
-    end;
-
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SalesLine: Record "Sales Line")
-    begin
-        SkipUpdateCarbonEmissionValue := true;
-        InsertLedgerEntry(SustainabilityJnlLine);
-    end;
-
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; AssemblyHeader: Record "Assembly Header")
-    begin
-        SkipUpdateCarbonEmissionValue := true;
-        InsertLedgerEntry(SustainabilityJnlLine);
-    end;
-
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; AssemblyLine: Record "Assembly Line")
-    begin
-        SkipUpdateCarbonEmissionValue := true;
-        InsertLedgerEntry(SustainabilityJnlLine);
-    end;
-
-    procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; TransferLine: Record "Transfer Line")
-    begin
-        SkipUpdateCarbonEmissionValue := true;
-        InsertLedgerEntry(SustainabilityJnlLine);
-    end;
 
     procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var

@@ -17,6 +17,12 @@ tableextension 6169 "E-Doc. Purchase Header" extends "Purchase Header"
             FieldClass = FlowField;
         }
     }
+    keys
+    {
+        key(EDocKey1; "E-Document Link")
+        {
+        }
+    }
 
     internal procedure IsLinkedToEDoc(EDocumentToExclude: Record "E-Document"): Boolean
     begin

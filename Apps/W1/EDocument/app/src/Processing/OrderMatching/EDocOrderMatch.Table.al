@@ -79,6 +79,10 @@ table 6164 "E-Doc. Order Match"
         {
             Caption = 'Quantity';
         }
+        field(14; "Learn Matching Rule"; Boolean)
+        {
+            Caption = 'Learn Matching Rule';
+        }
     }
 
     keys

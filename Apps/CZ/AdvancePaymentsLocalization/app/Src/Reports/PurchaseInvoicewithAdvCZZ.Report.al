@@ -776,11 +776,14 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                             else
                                 VALSpecLCYHeader := VATAmtSpecificationLbl + Format(GeneralLedgerSetup."LCY Code");
 
+                            Clear(VALExchRate);
                             if not UseFunctionalCurrency then begin
                                 CurrencyExchangeRate.FindCurrency("Purch. Inv. Header"."Posting Date", "Purch. Inv. Header"."Currency Code", 1);
                                 CalculatedExchRate := Round(1 / "Purch. Inv. Header"."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                                 VALExchRate := StrSubstNo(ExchangeRateLbl, CalculatedExchRate, CurrencyExchangeRate."Exchange Rate Amount");
-                            end else
+                                if ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."LCY Code") or ("Purch. Inv. Header"."Currency Code" = '') then
+                                    VALSpecLCYHeader := '';
+                            end else begin
                                 if ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 0) and ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 1) then begin
                                     VALSpecLCYHeader := VATAmtSpecificationLbl + Format(GeneralLedgerSetup."Additional Reporting Currency");
                                     if CalculatedExchRate <> 1 then begin
@@ -792,6 +795,9 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                                     end;
                                     VALExchRate := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Inv. Header"."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                                 end;
+                                if (CalculatedExchRate = 1) or ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."Additional Reporting Currency") then
+                                    VALSpecLCYHeader := '';
+                            end;
                         end;
                     }
                     dataitem(Total; "Integer")

@@ -2,19 +2,16 @@ namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
 
-#pragma warning disable AS0125
-#pragma warning disable AS0030
 page 37049 "PowerBI Released Prod. Orders"
-#pragma warning restore AS0030
-#pragma warning restore AS0125
 {
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = All;
-    PageType = Card;
+    ApplicationArea = Manufacturing;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Released Production Orders';
     AboutTitle = 'About Released Production Orders';
     AboutText = 'View how your released production orders are tracking by comparing Expected Quantity vs Finished Quantity';
-    Extensible = false;
 
     layout
     {
@@ -32,26 +29,6 @@ page 37049 "PowerBI Released Prod. Orders"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

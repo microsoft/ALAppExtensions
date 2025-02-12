@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Posting;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
 
 codeunit 6256 "Sust. Item Post Subscriber"
@@ -43,6 +44,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         Sign: Integer;
     begin
         if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then begin
+            CheckSustainabilityItemJnlLine(ItemJournalLine."Sust. Account No.", ItemJournalLine."Sust. Account Category", ItemJournalLine."Sust. Account Subcategory", ItemJournalLine."Total CO2e");
             GHGCredit := ItemJournalLine.IsGHGCreditLine();
             Sign := ItemJournalLine.GetPostingSign(GHGCredit);
         end;
@@ -57,7 +59,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
 
-        If ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
+        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
             SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
         else
             SustainabilityJnlLine.Validate("CO2e Emission", ItemJournalLine."Total CO2e");
@@ -68,4 +70,23 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine.Validate("Country/Region Code", ItemJournalLine."Country/Region Code");
         SustainabilityPostMgt.InsertValueEntry(SustainabilityJnlLine, ValueEntry, ItemLedgerEntry);
     end;
+
+    local procedure CheckSustainabilityItemJnlLine(AccountNo: Code[20]; AccountCategory: Code[20]; AccountSubCategory: Code[20]; CO2eToPost: Decimal)
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        if SustAccountCategory.Get(AccountCategory) then
+            if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
+                Error(NotAllowedToPostSustValueEntryForWaterOrWasteErr, AccountNo);
+
+        if SustainAccountSubcategory.Get(AccountCategory, AccountSubCategory) then
+            if not SustainAccountSubcategory."Renewable Energy" then
+                if (CO2eToPost = 0) then
+                    Error(CO2eMustNotBeZeroErr);
+    end;
+
+    var
+        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
+        NotAllowedToPostSustValueEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Value Entry for water or waste in Production document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

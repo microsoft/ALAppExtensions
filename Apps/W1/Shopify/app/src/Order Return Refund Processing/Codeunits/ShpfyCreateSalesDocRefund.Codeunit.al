@@ -140,120 +140,22 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
         SalesLine: Record "Sales Line";
         RefundLine: Record "Shpfy Refund Line";
         ReturnLine: Record "Shpfy Return Line";
-        GiftCard: Record "Shpfy Gift Card";
-        ShopLocation: Record "Shpfy Shop Location";
         LineNo: Integer;
-        OpenAmount: Decimal;
-        IsHandled: Boolean;
     begin
         RefundLine.SetRange("Refund Id", RefundHeader."Refund Id");
         RefundLine.SetAutoCalcFields("Item No.", "Variant Code", Description, "Gift Card");
         LineNo := GetLastLineNo(SalesHeader."Document Type", SalesHeader."No.");
         if RefundLine.FindSet(false) then
-            repeat
-                case RefundLine."Restock Type" of
-                    "Shpfy Restock Type"::"Legacy Restock",
-                    "Shpfy Restock Type"::Return,
-                    "Shpfy Restock Type"::"No Restock":
-                        begin
-                            LineNo += 10000;
-
-                            RefundProcessEvents.OnBeforeCreateItemSalesLine(RefundHeader, RefundLine, SalesHeader, SalesLine, LineNo, IsHandled);
-                            if not IsHandled then begin
-                                SalesLine.Init();
-                                SalesLine.SetHideValidationDialog(true);
-                                SalesLine.Validate("Document Type", SalesHeader."Document Type");
-                                SalesLine.Validate("Document No.", SalesHeader."No.");
-                                SalesLine.Validate("Line No.", LineNo);
-                                SalesLine.Insert(true);
-
-                                if RefundLine."Gift Card" then begin
-                                    SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
-                                    SalesLine.Validate("No.", Shop."Sold Gift Card Account");
-                                end else
-                                    if RefundLine."Restock Type" = "Shpfy restock Type"::"No Restock" then begin
-                                        SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
-                                        SalesLine.Validate("No.", Shop."Refund Acc. non-restock Items");
-                                        SalesLine.Description := RefundLine.Description;
-                                    end else begin
-                                        SalesLine.Validate(Type, "Sales Line Type"::Item);
-                                        SalesLine.Validate("No.", RefundLine."Item No.");
-                                        if RefundLine."Variant Code" <> '' then
-                                            SalesLine.Validate("Variant Code", RefundLine."Variant Code");
-
-                                        if ShopLocation.Get(Shop.Code, RefundLine."Location Id") then
-                                            SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-
-                                        If (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
-                                            SalesLine.Validate("Location Code", Shop."Return Location");
-
-                                    end;
-                                SalesLine.Validate(Quantity, RefundLine.Quantity);
-                                SalesLine.Validate("Unit Price", RefundLine.Amount);
-                                SalesLine.Validate("Line Discount Amount", (SalesLine."Unit Price" * SalesLine.Quantity) - RefundLine."Subtotal Amount");
-                            end;
-                            SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
-                            SalesLine."Shpfy Refund Line Id" := RefundLine."Refund Line Id";
-                            SalesLine.Modify();
-                            if RefundLine."Gift Card" then begin
-                                GiftCard.SetRange("Order Line Id", RefundLine."Order Line Id");
-                                GiftCard.SetAutoCalcFields("Known Used Amount");
-                                OpenAmount := SalesLine.GetLineAmountInclVAT();
-                                if GiftCard.FindSet(true) then
-                                    repeat
-                                        if GiftCard.Amount - GiftCard."Known Used Amount" > 0 then
-                                            if OpenAmount <= GiftCard.Amount - GiftCard."Known Used Amount" then begin
-                                                GiftCard.Amount -= OpenAmount;
-                                                OpenAmount := 0;
-                                            end else begin
-                                                OpenAmount := GiftCard.Amount - GiftCard."Known Used Amount";
-                                                GiftCard.Amount := GiftCard."Known Used Amount";
-                                            end;
-                                        GiftCard.Modify();
-                                    until (OpenAmount = 0) or (GiftCard.Next() = 0);
-                            end;
-                            RefundProcessEvents.OnAfterCreateItemSalesLine(RefundHeader, RefundLine, SalesHeader, SalesLine);
-                        end;
-                end;
-            until RefundLine.Next() = 0
+            CreateSalesLinesFromRefundLines(RefundLine, RefundHeader, SalesHeader, LineNo)
         else
             if RefundHeader."Return Id" > 0 then begin
                 ReturnLine.SetRange("Return Id", RefundHeader."Return Id");
                 ReturnLine.SetAutoCalcFields("Item No.", "Variant Code", Description);
-
                 if ReturnLine.FindSet(false) then
-                    repeat
-                        LineNo += 10000;
-
-                        RefundProcessEvents.OnBeforeCreateItemSalesLineFromReturnLine(RefundHeader, ReturnLine, SalesHeader, SalesLine, LineNo, IsHandled);
-                        if not IsHandled then begin
-                            SalesLine.Init();
-                            SalesLine.SetHideValidationDialog(true);
-                            SalesLine.Validate("Document Type", SalesHeader."Document Type");
-                            SalesLine.Validate("Document No.", SalesHeader."No.");
-                            SalesLine.Validate("Line No.", LineNo);
-                            SalesLine.Insert(true);
-
-                            SalesLine.Validate(Type, "Sales Line Type"::Item);
-                            SalesLine.Validate("No.", ReturnLine."Item No.");
-                            if ReturnLine."Variant Code" <> '' then
-                                SalesLine.Validate("Variant Code", ReturnLine."Variant Code");
-
-                            if ShopLocation.Get(Shop.Code, ReturnLine."Location Id") then
-                                SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-
-                            If (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
-                                SalesLine.Validate("Location Code", Shop."Return Location");
-
-                            SalesLine.Validate(Quantity, ReturnLine.Quantity);
-                            SalesLine.Validate("Unit Price", ReturnLine."Discounted Total Amount" / ReturnLine.Quantity);
-                        end;
-                        SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
-                        SalesLine."Shpfy Refund Line Id" := RefundLine."Refund Line Id";
-                        SalesLine.Modify();
-                        RefundProcessEvents.OnAfterCreateItemSalesLineFromReturnLine(RefundHeader, ReturnLine, SalesHeader, SalesLine);
-                    until ReturnLine.Next() = 0;
+                    CreateSalesLinesFromReturnLines(ReturnLine, RefundHeader, SalesHeader, LineNo);
             end;
+
+        CreateSalesLinesFromRefundShippingLines(RefundHeader, SalesHeader, LineNo);
 
         SalesHeader.CalcFields(Amount, "Amount Including VAT");
         if SalesHeader."Amount Including VAT" <> RefundHeader."Total Refunded Amount" then begin
@@ -275,5 +177,163 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
             SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
             SalesLine.Modify();
         end;
+    end;
+
+    local procedure CreateSalesLinesFromRefundLines(var RefundLine: Record "Shpfy Refund Line"; RefundHeader: Record "Shpfy Refund Header"; var SalesHeader: Record "Sales Header"; var LineNo: Integer)
+    var
+        SalesLine: Record "Sales Line";
+        GiftCard: Record "Shpfy Gift Card";
+        ShopLocation: Record "Shpfy Shop Location";
+        OpenAmount: Decimal;
+        IsHandled: Boolean;
+    begin
+        repeat
+            case RefundLine."Restock Type" of
+                "Shpfy Restock Type"::"Legacy Restock",
+                "Shpfy Restock Type"::Return,
+                "Shpfy Restock Type"::"No Restock":
+                    begin
+                        LineNo += 10000;
+
+                        RefundProcessEvents.OnBeforeCreateItemSalesLine(RefundHeader, RefundLine, SalesHeader, SalesLine, LineNo, IsHandled);
+                        if not IsHandled then begin
+                            SalesLine.Init();
+                            SalesLine.SetHideValidationDialog(true);
+                            SalesLine.Validate("Document Type", SalesHeader."Document Type");
+                            SalesLine.Validate("Document No.", SalesHeader."No.");
+                            SalesLine.Validate("Line No.", LineNo);
+                            SalesLine.Insert(true);
+
+                            if RefundLine."Gift Card" then begin
+                                SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+                                SalesLine.Validate("No.", Shop."Sold Gift Card Account");
+                            end else
+                                if RefundLine."Restock Type" = "Shpfy restock Type"::"No Restock" then begin
+                                    SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+                                    SalesLine.Validate("No.", Shop."Refund Acc. non-restock Items");
+                                    SalesLine.Description := RefundLine.Description;
+                                end else begin
+                                    SalesLine.Validate(Type, "Sales Line Type"::Item);
+                                    SalesLine.Validate("No.", RefundLine."Item No.");
+                                    if RefundLine."Variant Code" <> '' then
+                                        SalesLine.Validate("Variant Code", RefundLine."Variant Code");
+
+                                    if ShopLocation.Get(Shop.Code, RefundLine."Location Id") then
+                                        SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
+
+                                    if (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
+                                        SalesLine.Validate("Location Code", Shop."Return Location");
+
+                                end;
+                            SalesLine.Validate(Quantity, RefundLine.Quantity);
+                            SalesLine.Validate("Unit Price", RefundLine.Amount);
+                            SalesLine.Validate("Line Discount Amount", (SalesLine."Unit Price" * SalesLine.Quantity) - RefundLine."Subtotal Amount");
+                        end;
+                        SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
+                        SalesLine."Shpfy Refund Line Id" := RefundLine."Refund Line Id";
+                        SalesLine.Modify();
+                        if RefundLine."Gift Card" then begin
+                            GiftCard.SetRange("Order Line Id", RefundLine."Order Line Id");
+                            GiftCard.SetAutoCalcFields("Known Used Amount");
+                            OpenAmount := SalesLine.GetLineAmountInclVAT();
+                            if GiftCard.FindSet(true) then
+                                repeat
+                                    if GiftCard.Amount - GiftCard."Known Used Amount" > 0 then
+                                        if OpenAmount <= GiftCard.Amount - GiftCard."Known Used Amount" then begin
+                                            GiftCard.Amount -= OpenAmount;
+                                            OpenAmount := 0;
+                                        end else begin
+                                            OpenAmount := GiftCard.Amount - GiftCard."Known Used Amount";
+                                            GiftCard.Amount := GiftCard."Known Used Amount";
+                                        end;
+                                    GiftCard.Modify();
+                                until (OpenAmount = 0) or (GiftCard.Next() = 0);
+                        end;
+                        RefundProcessEvents.OnAfterCreateItemSalesLine(RefundHeader, RefundLine, SalesHeader, SalesLine);
+                    end;
+                "Shpfy Restock Type"::Cancel:
+                    begin
+                        LineNo += 10000;
+                        SalesLine.Init();
+                        SalesLine.SetHideValidationDialog(true);
+                        SalesLine.Validate("Document Type", SalesHeader."Document Type");
+                        SalesLine.Validate("Document No.", SalesHeader."No.");
+                        SalesLine.Validate("Line No.", LineNo);
+                        SalesLine.Insert(true);
+
+                        SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+                        SalesLine.Validate("No.", Shop."Refund Account");
+                        SalesLine.Validate(Quantity, 1);
+                        SalesLine.Validate("Unit Price", RefundLine."Presentment Subtotal Amount");
+                        SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
+                        SalesLine."Shpfy Refund Line Id" := RefundLine."Refund Line Id";
+                        SalesLine.Modify();
+                    end;
+            end;
+        until RefundLine.Next() = 0
+    end;
+
+    local procedure CreateSalesLinesFromReturnLines(var ReturnLine: Record "Shpfy Return Line"; RefundHeader: Record "Shpfy Refund Header"; var SalesHeader: Record "Sales Header"; var LineNo: Integer)
+    var
+        SalesLine: Record "Sales Line";
+        ShopLocation: Record "Shpfy Shop Location";
+        IsHandled: Boolean;
+    begin
+        repeat
+            LineNo += 10000;
+            RefundProcessEvents.OnBeforeCreateItemSalesLineFromReturnLine(RefundHeader, ReturnLine, SalesHeader, SalesLine, LineNo, IsHandled);
+            if not IsHandled then begin
+                SalesLine.Init();
+                SalesLine.SetHideValidationDialog(true);
+                SalesLine.Validate("Document Type", SalesHeader."Document Type");
+                SalesLine.Validate("Document No.", SalesHeader."No.");
+                SalesLine.Validate("Line No.", LineNo);
+                SalesLine.Insert(true);
+
+                SalesLine.Validate(Type, "Sales Line Type"::Item);
+                SalesLine.Validate("No.", ReturnLine."Item No.");
+                if ReturnLine."Variant Code" <> '' then
+                    SalesLine.Validate("Variant Code", ReturnLine."Variant Code");
+
+                if ShopLocation.Get(Shop.Code, ReturnLine."Location Id") then
+                    SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
+
+                if (Shop."Return Location Priority" = "Shpfy Return Location Priority"::"Default Return Location") or (SalesLine."Location Code" = '') then
+                    SalesLine.Validate("Location Code", Shop."Return Location");
+
+                SalesLine.Validate(Quantity, ReturnLine.Quantity);
+                SalesLine.Validate("Unit Price", ReturnLine."Discounted Total Amount" / ReturnLine.Quantity);
+            end;
+            SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
+            SalesLine.Modify();
+            RefundProcessEvents.OnAfterCreateItemSalesLineFromReturnLine(RefundHeader, ReturnLine, SalesHeader, SalesLine);
+        until ReturnLine.Next() = 0;
+    end;
+
+    local procedure CreateSalesLinesFromRefundShippingLines(RefundHeader: Record "Shpfy Refund Header"; var SalesHeader: Record "Sales Header"; var LineNo: Integer)
+    var
+        RefundShippingLine: Record "Shpfy Refund Shipping Line";
+        SalesLine: Record "Sales Line";
+    begin
+        RefundShippingLine.SetRange("Refund Id", RefundHeader."Refund Id");
+        if RefundShippingLine.FindSet() then
+            repeat
+                LineNo += 10000;
+                SalesLine.Init();
+                SalesLine.SetHideValidationDialog(true);
+                SalesLine.Validate("Document Type", SalesHeader."Document Type");
+                SalesLine.Validate("Document No.", SalesHeader."No.");
+                SalesLine.Validate("Line No.", LineNo);
+                SalesLine.Insert(true);
+
+                SalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+                SalesLine.Validate("No.", Shop."Refund Account");
+                SalesLine.Validate(Description, RefundShippingLine.Title);
+                SalesLine.Validate(Quantity, 1);
+                SalesLine.Validate("Unit Price", RefundShippingLine."Presentment Subtotal Amount");
+                SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
+                SalesLine."Shpfy Refund Shipping Line Id" := RefundShippingLine."Refund Shipping Line Id";
+                SalesLine.Modify();
+            until RefundShippingLine.Next() = 0;
     end;
 }

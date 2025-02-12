@@ -139,6 +139,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         TelemetryDictionary.Add('TablesModified', TablesModified);
         TelemetryDictionary.Add('ReplicateData', Format(NewReplicateData, 0, 9));
         Session.LogMessage('0000MRJ', ChangedReplicationPropertyLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+        Session.LogAuditMessage(StrSubstNo(ReplicationPropertyChangedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDictionary);
     end;
 
     procedure SetPreserveDataForTable(TableID: Integer; CompanyName: Text[30])
@@ -463,4 +464,5 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         AddTableMappingsNotificationMessageTxt: Label 'We strongly recommend using "Add Table Mappings" action to add table mapping definitions. It will help you to enter the table mappings correctly and avoid any issues during replication.';
         AddTableMappingsNotificationTitleTxt: Label 'Add Migration Table Mappings';
         AddTableMappingsDescriptionTxt: Label 'Notification to learn more about how to configure table mappings instead of entering the data manually.';
+        ReplicationPropertyChangedLbl: Label 'The replication property has been changed by UserSecurityId %1.', Comment = '%1 - User Security ID';
 }
