@@ -11,13 +11,13 @@ permissionset 6390 ContEDocConnObjects
     Caption = 'Continia E-Document Connector - Objects';
 
     Permissions = table "Continia Connection Setup" = X,
-                  page "Ext. Connection Setup" = X,
-                  codeunit "Integration Impl." = X,
-                  codeunit "EDocument Processing" = X,
-                  codeunit "Api Url Mgt." = X,
-                  codeunit "Api Requests" = X,
-                  codeunit "Onboarding Helper" = X,
-                  codeunit "Credential Management" = X,
-                  codeunit "Session Manager" = X,
-                  codeunit "Subscription Mgt." = X;
+                  page "Continia Ext. Connection Setup" = X,
+                  codeunit "Continia Integration Impl." = X,
+                  codeunit "Continia EDocument Processing" = X,
+                  codeunit "Continia Api Url Mgt." = X,
+                  codeunit "Continia Api Requests" = X,
+                  codeunit "Continia Onboarding Helper" = X,
+                  codeunit "Continia Credential Management" = X,
+                  codeunit "Continia Session Manager" = X,
+                  codeunit "Continia Subscription Mgt." = X;
 }
