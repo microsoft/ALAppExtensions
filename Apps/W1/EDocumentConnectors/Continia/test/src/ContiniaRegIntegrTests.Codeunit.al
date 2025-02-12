@@ -5,7 +5,7 @@ using System.TestLibraries.Environment;
 using Microsoft.Sales.Customer;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Foundation.Company;
-codeunit 148204 "Registration Integration Tests"
+codeunit 148204 "Continia Reg. Integr. Tests"
 {
     Subtype = Test;
 
@@ -21,9 +21,9 @@ codeunit 148204 "Registration Integration Tests"
     procedure Registration_AdvancedFlow()
     var
         EDocServicePage: TestPage "E-Document Service";
-        OnboardingWizard: TestPage "Onboarding Wizard";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
+        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
         ParticipationAlreadyRegisteredPeppolErr: Label 'There is already a registration in Peppol network with the identifier type';
         EDocServiceMustBeAssignedErr: Label 'You must assign an E-Document Service Code to each selected network profile in the Advanced Setup';
     begin
@@ -179,7 +179,7 @@ codeunit 148204 "Registration Integration Tests"
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Participations.First();
         Assert.AreEqual(Format(ConnectorLibrary.ParticipationId(true)).ToLower(), Participations.Id.Value, IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"Registration Status"::InProcess), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::InProcess), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [Then] Activated network profiles created
         ValidateActivatedNetworkProfiles();
@@ -199,8 +199,8 @@ codeunit 148204 "Registration Integration Tests"
     var
         Participation: Record "Continia Participation";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
     begin
         Initialize();
 
@@ -231,7 +231,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with Connected participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Unregister
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('202'); // Response code 202 means it was disabled
@@ -239,7 +239,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participation status is Disabled
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Disabled), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Disabled), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         Participations.Close();
         ExtConnectionSetup.Close();
@@ -257,8 +257,8 @@ codeunit 148204 "Registration Integration Tests"
     var
         Participation: Record "Continia Participation";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
     begin
         Initialize();
 
@@ -289,7 +289,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with InProcess participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::InProcess), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::InProcess), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Unregister
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200'); // Response code 200 means it was deleted
@@ -315,9 +315,9 @@ codeunit 148204 "Registration Integration Tests"
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
-        OnboardingWizard: TestPage "Onboarding Wizard";
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
+        OnboardingWizard: TestPage "Continia Onboarding Wizard";
     begin
         Initialize();
 
@@ -351,7 +351,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with Connected participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
         OnboardingWizard.Trap();
@@ -385,7 +385,7 @@ codeunit 148204 "Registration Integration Tests"
         // [When] Set participation profile direction to Outgoing and click Next 
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-outgoing');
         OnboardingWizard.SelectProfilesPeppol.First();
-        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Profile Direction"::Outbound);
+        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Outbound);
         OnboardingWizard.ActionNext.Invoke();
         Commit();
 
@@ -400,7 +400,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Profile Direction is Outgoing
         ConnectorLibrary.GetActivatedNetworkProfile(ActivatedNetProf);
-        Assert.AreEqual(Enum::"Profile Direction"::Outbound, ActivatedNetProf."Profile Direction", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Profile Direction"::Outbound, ActivatedNetProf."Profile Direction", IncorrectValueErr);
 
         Participations.Close();
         ExtConnectionSetup.Close();
@@ -420,9 +420,9 @@ codeunit 148204 "Registration Integration Tests"
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
-        OnboardingWizard: TestPage "Onboarding Wizard";
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
+        OnboardingWizard: TestPage "Continia Onboarding Wizard";
         NetworkProfileIds: List of [Guid];
     begin
         Initialize();
@@ -457,7 +457,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with Connected participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
         OnboardingWizard.Trap();
@@ -493,7 +493,7 @@ codeunit 148204 "Registration Integration Tests"
         OnboardingWizard.SelectProfilesPeppol.New();
         OnboardingWizard.SelectProfilesPeppol."Profile Name".Lookup();
         // HandlePeppolInvoiceProfileSelection()
-        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Profile Direction"::Both);
+        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Both);
         OnboardingWizard.SelectProfilesPeppol."E-Document Service Code".SetValue(EDocumentService.Code);
         OnboardingWizard.ActionNext.Invoke();
         Commit();
@@ -529,9 +529,9 @@ codeunit 148204 "Registration Integration Tests"
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
-        OnboardingWizard: TestPage "Onboarding Wizard";
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
+        OnboardingWizard: TestPage "Continia Onboarding Wizard";
         NetworkProfileIds: List of [Guid];
     begin
         Initialize();
@@ -567,7 +567,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with Connected participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
         OnboardingWizard.Trap();
@@ -640,9 +640,9 @@ codeunit 148204 "Registration Integration Tests"
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocServicePage: TestPage "E-Document Service";
-        ExtConnectionSetup: TestPage "Ext. Connection Setup";
-        Participations: TestPage Participations;
-        OnboardingWizard: TestPage "Onboarding Wizard";
+        ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
+        Participations: TestPage "Continia Participations";
+        OnboardingWizard: TestPage "Continia Onboarding Wizard";
     begin
         Initialize();
 
@@ -676,7 +676,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participations Page opens with Connected participation
         Participations.First();
-        Assert.AreEqual(Format(Enum::"Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
         OnboardingWizard.Trap();
@@ -724,7 +724,7 @@ codeunit 148204 "Registration Integration Tests"
 
         // [Then] Participation registration status is In Process
         ConnectorLibrary.GetParticipation(Participation);
-        Assert.AreEqual(Enum::"Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
 
         // [When] Participations Page close and open again
         Participations.Close();
@@ -759,7 +759,7 @@ codeunit 148204 "Registration Integration Tests"
     end;
 
     [ModalPageHandler]
-    internal procedure HandlePeppolInvoiceProfileSelection(var NetworkProfileList: TestPage "Network Profile List")
+    internal procedure HandlePeppolInvoiceProfileSelection(var NetworkProfileList: TestPage "Continia Network Profile List")
     var
         NetworkProfile: Record "Continia Network Profile";
     begin
@@ -805,7 +805,7 @@ codeunit 148204 "Registration Integration Tests"
             Assert.AreEqual(Participation.Network, ActivatedNetProf.Network, 'Activated Network Profile Network field value is incorrect');
             Assert.AreEqual(Participation."Identifier Type Id", ActivatedNetProf."Identifier Type Id", 'Activated Network Profile "Identifier Type Id" field value is incorrect');
             Assert.AreEqual(Participation."Identifier Value", ActivatedNetProf."Identifier Value", 'Activated Network Profile "Identifier Value" field value is incorrect');
-            Assert.AreEqual(Enum::"Profile Direction"::Both, ActivatedNetProf."Profile Direction", 'Activated Network Profile "Profile Direction" field value is incorrect');
+            Assert.AreEqual(Enum::"Continia Profile Direction"::Both, ActivatedNetProf."Profile Direction", 'Activated Network Profile "Profile Direction" field value is incorrect');
             ActivatedNetProf.TestField(Created);
             ActivatedNetProf.TestField(Updated);
             NetworkProfile.Get(ActivatedNetProf."Network Profile Id");
@@ -819,9 +819,9 @@ codeunit 148204 "Registration Integration Tests"
         LibraryEDocument: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        ApiUrlMockSubscribers: Codeunit "Api Url Mock Subscribers";
+        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
-        ConnectorLibrary: Codeunit "Connector Library";
+        ConnectorLibrary: Codeunit "Continia Connector Library";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
         Response404ErrorMessageLbl: Label 'The Continia Delivery Network API returned the following error: Error Code Not Found - Not Found';

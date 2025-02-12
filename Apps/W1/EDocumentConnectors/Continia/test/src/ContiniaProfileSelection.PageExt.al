@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-pageextension 148200 "Profile Selection" extends "Profile Selection"
+pageextension 148200 "Continia Profile Selection" extends "Continia Profile Selection"
 {
 
     actions

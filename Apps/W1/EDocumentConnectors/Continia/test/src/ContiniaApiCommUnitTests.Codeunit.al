@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-codeunit 148200 "Api Communication Unit Tests"
+codeunit 148200 "Continia Api Comm. Unit Tests"
 {
     Subtype = Test;
 
@@ -11,7 +11,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure GetParticipation200()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
@@ -24,7 +24,7 @@ codeunit 148200 "Api Communication Unit Tests"
 
         // [Then] Make sure Participation values returned correct
         Assert.AreEqual(ConnectorLibrary.ParticipationId(true), Participation.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -34,7 +34,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure GetParticipation400()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -56,7 +56,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure GetParticipation401()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -78,7 +78,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure GetParticipation404()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -100,7 +100,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure GetParticipation500()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -123,7 +123,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
@@ -137,7 +137,7 @@ codeunit 148200 "Api Communication Unit Tests"
         // [Then] Make sure Participation values returned correct
         ConnectorLibrary.GetParticipation(Participation);
         Assert.AreEqual(ConnectorLibrary.ParticipationId(true), Participation.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -148,7 +148,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith201ResponseCodeCase();
@@ -162,7 +162,7 @@ codeunit 148200 "Api Communication Unit Tests"
         // [Then] Make sure Participation values returned correct
         ConnectorLibrary.GetParticipation(Participation);
         Assert.AreEqual(ConnectorLibrary.ParticipationId(true), Participation.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -172,7 +172,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure PostParticipation400()
     var
         TempParticipation: Record "Continia Participation" temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -194,7 +194,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure PostParticipation401()
     var
         TempParticipation: Record "Continia Participation" temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -216,7 +216,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure PostParticipation404()
     var
         TempParticipation: Record "Continia Participation" temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -238,7 +238,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure PostParticipation422()
     var
         TempParticipation: Record "Continia Participation" temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
@@ -260,7 +260,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure PostParticipation500()
     var
         TempParticipation: Record "Continia Participation" temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -283,7 +283,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
@@ -298,7 +298,7 @@ codeunit 148200 "Api Communication Unit Tests"
         // [Then] Make sure Participation values returned correct
         ConnectorLibrary.GetParticipation(Participation);
         Assert.AreEqual(ConnectorLibrary.ParticipationId(true), Participation.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -309,7 +309,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -333,7 +333,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -357,7 +357,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -381,7 +381,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith409ResponseCodeCase();
@@ -405,7 +405,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
@@ -429,7 +429,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         TempParticipation: Record "Continia Participation" temporary;
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -452,7 +452,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation200()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200');
@@ -474,7 +474,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation202()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('202');
@@ -488,7 +488,7 @@ codeunit 148200 "Api Communication Unit Tests"
         // [Then] Make sure Participation does not exist
         ConnectorLibrary.GetParticipation(Participation);
         Assert.AreEqual(ConnectorLibrary.ParticipationId(true), Participation.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Registration Status"::Disabled, Participation."Registration Status", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Registration Status"::Disabled, Participation."Registration Status", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -498,7 +498,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation400()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -520,7 +520,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation401()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -542,7 +542,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation404()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -564,7 +564,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation422()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
@@ -586,7 +586,7 @@ codeunit 148200 "Api Communication Unit Tests"
     procedure DeleteParticipation500()
     var
         Participation: Record "Continia Participation";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -610,7 +610,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
@@ -633,7 +633,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -656,7 +656,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -679,7 +679,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -702,7 +702,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
@@ -725,7 +725,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -749,7 +749,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
@@ -766,7 +766,7 @@ codeunit 148200 "Api Communication Unit Tests"
         // [Then] Make sure Activated Network Profile values returned correct
         ConnectorLibrary.GetActivatedNetworkProfile(ActivatedNetProf);
         Assert.AreEqual(ConnectorLibrary.ActiveNetworkProfileId(true), ActivatedNetProf.Id, IncorrectValueErr);
-        Assert.AreEqual(Enum::"Profile Direction"::Both, ActivatedNetProf."Profile Direction", IncorrectValueErr);
+        Assert.AreEqual(Enum::"Continia Profile Direction"::Both, ActivatedNetProf."Profile Direction", IncorrectValueErr);
     end;
 
     /// <summary>
@@ -778,7 +778,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -805,7 +805,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -832,7 +832,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -859,7 +859,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
@@ -886,7 +886,7 @@ codeunit 148200 "Api Communication Unit Tests"
         Participation: Record "Continia Participation";
         TempActivatedNetProf: Record "Continia Activated Net. Prof." temporary;
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -912,7 +912,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200');
@@ -937,7 +937,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
@@ -960,7 +960,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
@@ -983,7 +983,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
@@ -1006,7 +1006,7 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         Participation: Record "Continia Participation";
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiRequests: Codeunit "Api Requests";
+        ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
@@ -1041,8 +1041,8 @@ codeunit 148200 "Api Communication Unit Tests"
     var
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        ApiUrlMockSubscribers: Codeunit "Api Url Mock Subscribers";
-        ConnectorLibrary: Codeunit "Connector Library";
+        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
+        ConnectorLibrary: Codeunit "Continia Connector Library";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
         Response400ErrorMessageLbl: Label 'The Continia Delivery Network API returned the following error: Error Code Bad Request - Missing parameter';

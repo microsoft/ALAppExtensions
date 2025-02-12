@@ -11,7 +11,7 @@ using System.TestLibraries.Environment;
 using Microsoft.Purchases.Document;
 using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
-codeunit 148203 "Document Integration Tests"
+codeunit 148203 "Continia Doc. Integr. Tests"
 {
     Subtype = Test;
 
@@ -973,8 +973,8 @@ codeunit 148203 "Document Integration Tests"
         Assert: Codeunit Assert;
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryItemReference: Codeunit "Library - Item Reference";
-        ApiUrlMockSubscribers: Codeunit "Api Url Mock Subscribers";
-        ConnectorLibrary: Codeunit "Connector Library";
+        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
+        ConnectorLibrary: Codeunit "Continia Connector Library";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
         TestVendorItemNoTok: Label '1908-S', Locked = true;

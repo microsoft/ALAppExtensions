@@ -1,7 +1,7 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 using System.Environment.Configuration;
 
-codeunit 148205 "Install"
+codeunit 148205 "Continia Install"
 {
     Subtype = Install;
 
