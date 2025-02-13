@@ -100,6 +100,7 @@ report 4404 "EXR Vendor Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopVendorListLabel = 'Top Vendor List';
+        DateFilterLabel = 'Date Filter Label:';
     }
 
     var

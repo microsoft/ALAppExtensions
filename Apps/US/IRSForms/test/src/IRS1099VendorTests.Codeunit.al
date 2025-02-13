@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Vendor;
 using System.TestLibraries.Utilities;
 
@@ -26,6 +27,7 @@ codeunit 148011 "IRS 1099 Vendor Tests"
 
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
+        LibraryInventory: Codeunit "Library - Inventory";
         IsInitialized: Boolean;
         IRSReportingAmountCannotBeMoreThanAmountErr: Label 'IRS Reporting Amount cannot be more than Amount';
         IRSReportingAmountPositiveErr: Label 'IRS 1099 Reporting Amount must be positive';
@@ -102,7 +104,9 @@ codeunit 148011 "IRS 1099 Vendor Tests"
     procedure PropagateVendorFormBoxSetupToVendorLedgerEntriesSunshine()
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        PurchInvHeader: Record "Purch. Inv. Header";
         VendorNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -113,10 +117,18 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         Initialize();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         VendorNo := LibraryPurchase.CreateVendorNo();
-        // [GIVEN] Create purchase invoice
+        // [GIVEN] Vendor ledger entry and posted purchase invoice for vendor "X"
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
-        // [GIVEN] Create vendor ledger entries
-        LibraryIRS1099Document.MockInvVendLedgEntry(VendorLedgerEntry, WorkDate(), WorkDate(), VendorNo, '', '');
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, 1);
+        LibraryERM.FindVendorLedgerEntry(
+            VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+        PurchInvHeader.Get(VendorLedgerEntry."Document No.");
+
+        // [GIVEN] Open purchase invoice for vendor "X"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
+
+        // [GIVEN] Vendor form box setup with MISC-01 code is assigned to vendor "X"
         FormNo :=
             LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
         FormBoxNo :=
@@ -124,9 +136,9 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNo, WorkDate(), WorkDate(), FormNo, FormBoxNo);
         Commit();
         LibraryVariableStorage.Enqueue(PeriodNo);
-        // [WHEN] Propagate vendor form box setup to vendor ledger entries
+        // [WHEN] Propagate vendor form box setup to vendor ledger entries and purchase documents
         LibraryIRS1099FormBox.PropagateVendorFormBoxSetupToVendorLedgerEntries(WorkDate(), WorkDate(), VendorNo, FormNo, FormBoxNo);
-        // [THEN] Verify vendor ledger entries
+        // [THEN] Vendor ledger entry has MISC-01
         VendorLedgerEntry.Find();
         VendorLedgerEntry.CalcFields(Amount);
         VendorLedgerEntry.TestField("IRS 1099 Reporting Period", PeriodNo);
@@ -134,7 +146,13 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         VendorLedgerEntry.TestField("IRS 1099 Form Box No.", FormBoxNo);
         VendorLedgerEntry.TestField("IRS 1099 Reporting Amount", VendorLedgerEntry.Amount);
         VendorLedgerEntry.TestField("IRS 1099 Subject For Reporting", true);
-        // [THEN] Verify purchase document
+        // [THEN] Posted purchase invoice has MISC-01
+        // Bug 560895: IRS 1099 Form Box No. is not propagated to posted purchase documents
+        PurchInvHeader.Find();
+        PurchInvHeader.TestField("IRS 1099 Reporting Period", PeriodNo);
+        PurchInvHeader.TestField("IRS 1099 Form No.", FormNo);
+        PurchInvHeader.TestField("IRS 1099 Form Box No.", FormBoxNo);
+        // [THEN] Open purchase invoice has MISC-01
         PurchaseHeader.Find();
         PurchaseHeader.TestField("IRS 1099 Reporting Period", PeriodNo);
         PurchaseHeader.TestField("IRS 1099 Form No.", FormNo);

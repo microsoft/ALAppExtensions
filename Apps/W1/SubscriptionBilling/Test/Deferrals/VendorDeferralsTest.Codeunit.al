@@ -19,344 +19,69 @@ codeunit 139913 "Vendor Deferrals Test"
     Access = Internal;
 
     var
-        VendorContract: Record "Vendor Contract";
-        Vendor: Record Vendor;
-        Item: Record Item;
-        GLSetup: Record "General Ledger Setup";
-        CurrExchRate: Record "Currency Exchange Rate";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        BillingTemplate: Record "Billing Template";
         BillingLine: Record "Billing Line";
-        ServiceObject: Record "Service Object";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseCrMemoHeader: Record "Purchase Header";
+        BillingTemplate: Record "Billing Template";
+        CurrExchRate: Record "Currency Exchange Rate";
+        GLSetup: Record "General Ledger Setup";
+        GeneralPostingSetup: Record "General Posting Setup";
+        Item: Record Item;
+        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
         PurchaseInvoiceHeader: Record "Purch. Inv. Header";
         PurchInvLine: Record "Purch. Inv. Line";
-        VendorContractDeferral: Record "Vendor Contract Deferral";
-        PurchaseInvoiceDeferral: Record "Vendor Contract Deferral";
-        PurchaseCrMemoDeferral: Record "Vendor Contract Deferral";
+        PurchaseCrMemoHeader: Record "Purchase Header";
+        PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceObject: Record "Service Object";
         UserSetup: Record "User Setup";
-        GeneralPostingSetup: Record "General Posting Setup";
-        CorrectPostedPurchaseInvoice: Codeunit "Correct Posted Purch. Invoice";
+        Vendor: Record Vendor;
+        VendorContract: Record "Vendor Contract";
+        PurchaseCrMemoDeferral: Record "Vendor Contract Deferral";
+        PurchaseInvoiceDeferral: Record "Vendor Contract Deferral";
+        VendorContractDeferral: Record "Vendor Contract Deferral";
+        Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
+        CorrectPostedPurchaseInvoice: Codeunit "Correct Posted Purch. Invoice";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryUtility: Codeunit "Library - Utility";
-        AssertThat: Codeunit Assert;
-        PostingDate: Date;
-        PostedDocumentNo: Code[20];
         CorrectedDocumentNo: Code[20];
-        VendorDeferralsCount: Integer;
+        PostedDocumentNo: Code[20];
+        PostingDate: Date;
+        DeferralBaseAmount: Decimal;
         FirstMonthDefBaseAmount: Decimal;
         LastMonthDefBaseAmount: Decimal;
         MonthlyDefBaseAmount: Decimal;
-        DeferralBaseAmount: Decimal;
         PrevGLEntry: Integer;
         TotalNumberOfMonths: Integer;
+        VendorDeferralsCount: Integer;
 
-    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean)
-    begin
-        CreateVendorContractWithDeferrals(BillingDateFormula, IsVendorContractLCY, 1);
-    end;
-
-    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean; ServiceCommimentCount: Integer)
-    var
-        ContractsTestSubscriber: Codeunit "Contracts Test Subscriber";
-        i: Integer;
-    begin
-        ClearAll();
-        GLSetup.Get();
-        if IsVendorContractLCY then
-            ContractTestLibrary.CreateVendorInLCY(Vendor)
-        else
-            ContractTestLibrary.CreateVendor(Vendor);
-
-        ContractsTestSubscriber.SetCallerName('VendorDeferralsTest - CreatePurchaseDocumentsFromVendorContractWithDeferrals');
-        BindSubscription(ContractsTestSubscriber);
-
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
-        UnbindSubscription(ContractsTestSubscriber);
-
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
-        ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
-        for i := 1 to ServiceCommimentCount do begin
-            ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);
-            ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, Item."No.");
-        end;
-
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
-        ServiceObject.InsertServiceCommitmentsFromServCommPackage(CalcDate(BillingDateFormula, WorkDate()), ServiceCommitmentPackage);
-
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
-    end;
-
-    local procedure CreateBillingProposalAndCreateBillingDocuments(BillingDateFormula: Text; BillingToDateFormula: Text)
-    begin
-        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, BillingDateFormula, BillingToDateFormula, '', Enum::"Service Partner"::Vendor);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine); //CreateVendorBillingDocsContractPageHandler, MessageHandler
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-    end;
+    #region Tests
 
     [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectErrorOnPostPurchDocumentWithDeferralsWOGeneralPostingSetup()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        if PurchaseLine.FindSet() then
-            repeat
-                ContractTestLibrary.SetGeneralPostingSetup(PurchaseLine."Gen. Bus. Posting Group", PurchaseLine."Gen. Prod. Posting Group", true, Enum::"Service Partner"::Vendor);
-            until PurchaseLine.Next() = 0;
-        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectErrorOnPreviewPostPurchDocumentWithDeferrals()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        asserterror LibraryPurchase.PreviewPostPurchaseDocument(PurchaseHeader);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestIfDeferralsExistOnAfterPostPurchDocument()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostPurchDocumentAndFetchDeferrals();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestIfDeferralsExistOnAfterPostPurchCreditMemo()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostPurchDocumentAndGetPurchInvoice();
-        PostPurchCreditMemo();
-        FetchVendorContractDeferrals(CorrectedDocumentNo);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure DeferralsAreCorrectAfterPostingPartialPurchCreditMemo()
-    begin
-        // [SCENARIO] Making sure that Credit Memo Deferrals are created only for existing Credit Memo Lines
-        // [SCENARIO] Posted Invoice contains two lines connected for a contract.
-        // [SCENARIO] Credit Memo is created for Posted Invoice and one of the lines in a credit memo is deleted.
-        // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
-
-        // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
-        CreateVendorContractWithDeferrals('<2M-CM>', true, 2);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-
-        // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
-        PostPurchDocumentAndGetPurchInvoice();
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
-        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-        PurchaseCrMemoHeader.Modify(false);
-        PurchInvLine.SetRange("Document No.", PurchaseInvoiceHeader."No.");
-        PurchInvLine.SetFilter("Contract Line No.", '<>0');
-        PurchInvLine.FindLast();
-        PurchaseLine.SetRange("Document No.", PurchaseCrMemoHeader."No.");
-        PurchaseLine.SetRange(Type, PurchaseLine.Type::Item);
-        PurchaseLine.FindLast();
-        PurchaseLine.Delete();
-        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
-
-        // [THEN] Matching Deferral entries have been created for the first invoice line but not for the second invoice line
-        FetchVendorContractDeferrals(CorrectedDocumentNo);
-        PurchInvLine.FindFirst();
-        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
-        AssertThat.RecordIsNotEmpty(VendorContractDeferral);
-        PurchInvLine.FindLast();
-        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
-        AssertThat.RecordIsEmpty(VendorContractDeferral);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectEqualBillingMonthsNumberAndVendContractDeferrals()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        CalculateNumberOfBillingMonths();
-        PostPurchDocumentAndGetPurchInvoice();
-
-        VendorContractDeferral.Reset();
-        VendorContractDeferral.SetRange("Document No.", PostedDocumentNo);
-        VendorDeferralsCount := VendorContractDeferral.Count;
-        AssertThat.AreEqual(VendorDeferralsCount, TotalNumberOfMonths, 'Number of Vendor deferrals must be the same as total number of billing months');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectAmountsToBeNullOnAfterPostPurchCrMemo()
-    begin
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostPurchDocumentAndGetPurchInvoice();
-        PostPurchCreditMemo();
-
-        PurchaseCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
-        PurchaseInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
-        AssertThat.AreEqual(PurchaseInvoiceDeferral.Count, PurchaseCrMemoDeferral.Count, 'Deferrals were not corrected properly.');
-
-        VendorContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
-        VendorContractDeferral.SetRange(Released, true);
-        VendorContractDeferral.CalcSums(Amount, "Discount Amount");
-        AssertThat.AreEqual(0, VendorContractDeferral.Amount, 'Deferrals were not corrected properly.');
-        AssertThat.AreEqual(0, VendorContractDeferral."Discount Amount", 'Deferrals were not corrected properly.');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestPurchaseCrMemoDeferralsDocumentsAndDate()
-    begin
-        SetPostingAllowTo(WorkDate());
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-
-        PostPurchDocumentAndGetPurchInvoice();
-        FetchVendorContractDeferrals(PostedDocumentNo);
-        PostPurchCreditMemoAndFetchDeferrals();
-        repeat
-            PurchaseCrMemoDeferral.TestField("Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
-            PurchaseCrMemoDeferral.TestField("Document No.", CorrectedDocumentNo);
-            PurchaseCrMemoDeferral.TestField("Posting Date", VendorContractDeferral."Posting Date");
-            PurchaseCrMemoDeferral.TestField("Release Posting Date", PurchaseCrMemoHeader."Posting Date");
-            VendorContractDeferral.Next();
-        until PurchaseCrMemoDeferral.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure ExpectErrorIfDeferralsExistsAfterPostPurchaseDocumentWODeferrals()
-    begin
-        CreatePurchaseDocumentsFromVendorContractWODeferrals();
-        BillingLine.FindLast();
-        asserterror PostPurchDocumentAndFetchDeferrals();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestPurchInvoiceDeferralsOnAfterPostPurchCrMemo()
-    begin
-        SetPostingAllowTo(WorkDate());
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-
-        PostPurchDocumentAndGetPurchInvoice();
-        PostPurchCreditMemoAndFetchDeferrals();
-
-        PurchaseInvoiceDeferral.SetRange("Document No.", PostedDocumentNo); //Fetch updated Purchase Invoice Deferral
-        PurchaseInvoiceDeferral.FindFirst();
-        TestGLEntryFields(PurchaseInvoiceDeferral."G/L Entry No.", PurchaseInvoiceDeferral);
-        repeat
-            TestPurchaseInvoiceDeferralsReleasedFields(PurchaseInvoiceDeferral, PurchaseCrMemoHeader."Posting Date");
-        until PurchaseInvoiceDeferral.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
-    procedure TestReleasingVendorContractDeferrals()
-    var
-        GLEntry: Record "G/L Entry";
-        ContractDeferralsRelease: Report "Contract Deferrals Release";
-    begin
-        // [SCENARIO] Making sure that Deferrals are properly realease and contain Contract No. on GLEntries
-
-        // [GIVEN] Contract has been created and the billing proposal with unposted contract invoice
-        SetPostingAllowTo(0D);
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-
-        // [WHEN] Post the contract invoice
-        PostPurchDocumentAndFetchDeferrals();
-
-        // [THEN] Releasing each defferal entry should be correct
-        repeat
-            PostingDate := VendorContractDeferral."Posting Date";
-            ContractDeferralsRelease.Run();
-            VendorContractDeferral.Get(VendorContractDeferral."Entry No.");
-            GLEntry.Get(VendorContractDeferral."G/L Entry No.");
-            GLEntry.TestField("Sub. Contract No.", VendorContractDeferral."Contract No.");
-            FetchAndTestUpdatedVendorContractDeferral();
-        until VendorContractDeferral.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
-    procedure ExpectAmountsToBeNullAfterPostPurchCrMemoOfReleasedDeferrals()
-    var
-        ContractDeferralsRelease: Report "Contract Deferrals Release";
-    begin
-        SetPostingAllowTo(0D);
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        PostPurchDocumentAndFetchDeferrals();
-        //Release only first Vendor Contract Deferral
-        PostingDate := VendorContractDeferral."Posting Date";
-        ContractDeferralsRelease.Run();
-
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        PostPurchCreditMemo();
-
-        VendorContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
-        VendorContractDeferral.SetRange(Released, true);
-        VendorContractDeferral.CalcSums(Amount, "Discount Amount");
-        AssertThat.AreEqual(0, VendorContractDeferral.Amount, 'Deferrals were not corrected properly.');
-        AssertThat.AreEqual(0, VendorContractDeferral."Discount Amount", 'Deferrals were not corrected properly.');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure CheckContractDeferralsWhenStartDateIsOnFirstDayInMonthCaclulatedForFullYearLCY()
-    begin
-        CreateVendorContractWithDeferrals('<-CY>', true);
-        CreateBillingProposalAndCreateBillingDocuments('<-CY>', '<CY>');
-
-        PostPurchDocumentAndFetchDeferrals();
-        repeat
-            TestVendorContractDeferralsFields();
-            VendorContractDeferral.TestField(Amount, 10);
-            VendorContractDeferral.TestField("Deferral Base Amount", 120);
-            VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
-        until VendorContractDeferral.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForFullYearLCY()
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
+    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForFullYearFCY()
     var
         i: Integer;
-        VendorDeferalCount: Integer;
+        VendorDeferralCount: Integer;
     begin
-        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY+14D>', true, 11, VendorDeferalCount);
-        for i := 1 to VendorDeferalCount do begin
+        Initialize();
+        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY+14D>', false, 11, VendorDeferralCount);
+        for i := 1 to VendorDeferralCount do begin
             TestVendorContractDeferralsFields();
-            VendorContractDeferral.TestField("Deferral Base Amount", DeferralBaseAmount);
+            VendorContractDeferral.TestField("Deferral Base Amount", Round(CurrExchRate.ExchangeAmtFCYToLCY(
+                                                    PurchaseHeader."Posting Date",
+                                                    PurchaseHeader."Currency Code",
+                                                    DeferralBaseAmount,
+                                                    PurchaseHeader."Currency Factor"), GLSetup."Amount Rounding Precision"));
             case i of
                 1:
                     begin
                         VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
                         VendorContractDeferral.TestField("Number of Days", 17);
                     end;
-                VendorDeferalCount:
+                VendorDeferralCount:
                     begin
                         VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
                         VendorContractDeferral.TestField("Number of Days", 14);
@@ -372,13 +97,14 @@ codeunit 139913 "Vendor Deferrals Test"
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForPartialYearLCY()
+    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForFullYearLCY()
     var
         i: Integer;
-        VendorDeferalCount: Integer;
+        VendorDeferralCount: Integer;
     begin
-        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY-1M-9D>', true, 9, VendorDeferalCount);
-        for i := 1 to VendorDeferalCount do begin
+        Initialize();
+        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY+14D>', true, 11, VendorDeferralCount);
+        for i := 1 to VendorDeferralCount do begin
             TestVendorContractDeferralsFields();
             VendorContractDeferral.TestField("Deferral Base Amount", DeferralBaseAmount);
             case i of
@@ -387,7 +113,43 @@ codeunit 139913 "Vendor Deferrals Test"
                         VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
                         VendorContractDeferral.TestField("Number of Days", 17);
                     end;
-                VendorDeferalCount:
+                VendorDeferralCount:
+                    begin
+                        VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
+                        VendorContractDeferral.TestField("Number of Days", 14);
+                    end;
+                else begin
+                    VendorContractDeferral.TestField(Amount, MonthlyDefBaseAmount);
+                    VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
+                end;
+            end;
+            VendorContractDeferral.Next();
+        end;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
+    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForPartialYearFCY()
+    var
+        i: Integer;
+        VendorDeferralCount: Integer;
+    begin
+        Initialize();
+        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY-1M-9D>', false, 9, VendorDeferralCount);
+        for i := 1 to VendorDeferralCount do begin
+            TestVendorContractDeferralsFields();
+            VendorContractDeferral.TestField("Deferral Base Amount", CurrExchRate.ExchangeAmtFCYToLCY(
+                                                    PurchaseHeader."Posting Date",
+                                                    PurchaseHeader."Currency Code",
+                                                    DeferralBaseAmount,
+                                                    PurchaseHeader."Currency Factor"));
+            case i of
+                1:
+                    begin
+                        VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
+                        VendorContractDeferral.TestField("Number of Days", 17);
+                    end;
+                VendorDeferralCount:
                     begin
                         VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
                         VendorContractDeferral.TestField("Number of Days", 21);
@@ -402,9 +164,59 @@ codeunit 139913 "Vendor Deferrals Test"
     end;
 
     [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForPartialYearLCY()
+    var
+        i: Integer;
+        VendorDeferralCount: Integer;
+    begin
+        Initialize();
+        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY-1M-9D>', true, 9, VendorDeferralCount);
+        for i := 1 to VendorDeferralCount do begin
+            TestVendorContractDeferralsFields();
+            VendorContractDeferral.TestField("Deferral Base Amount", DeferralBaseAmount);
+            case i of
+                1:
+                    begin
+                        VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
+                        VendorContractDeferral.TestField("Number of Days", 17);
+                    end;
+                VendorDeferralCount:
+                    begin
+                        VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
+                        VendorContractDeferral.TestField("Number of Days", 21);
+                    end;
+                else begin
+                    VendorContractDeferral.TestField(Amount, MonthlyDefBaseAmount);
+                    VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
+                end;
+            end;
+            VendorContractDeferral.Next();
+        end;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure CheckContractDeferralsWhenStartDateIsOnFirstDayInMonthCalculatedForFullYearLCY()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<-CY>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<-CY>', '<CY>');
+
+        PostPurchDocumentAndFetchDeferrals();
+        repeat
+            TestVendorContractDeferralsFields();
+            VendorContractDeferral.TestField(Amount, 10);
+            VendorContractDeferral.TestField("Deferral Base Amount", 120);
+            VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
+        until VendorContractDeferral.Next() = 0;
+    end;
+
+    [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure CheckContractDeferralsWhenStartDateIsOnFirstDayInMonthCalculatedForFullYearFCY()
     begin
+        Initialize();
         CreateVendorContractWithDeferrals('<-CY>', false);
         CreateBillingProposalAndCreateBillingDocuments('<-CY>', '<CY>');
         DeferralBaseAmount := GetDeferralBaseAmount();
@@ -426,73 +238,41 @@ codeunit 139913 "Vendor Deferrals Test"
     end;
 
     [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
-    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForFullYearFCY()
-    var
-        i: Integer;
-        VendorDeferalCount: Integer;
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure DeferralsAreCorrectAfterPostingPartialPurchCreditMemo()
     begin
-        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY+14D>', false, 11, VendorDeferalCount);
-        for i := 1 to VendorDeferalCount do begin
-            TestVendorContractDeferralsFields();
-            VendorContractDeferral.TestField("Deferral Base Amount", Round(CurrExchRate.ExchangeAmtFCYToLCY(
-                                                    PurchaseHeader."Posting Date",
-                                                    PurchaseHeader."Currency Code",
-                                                    DeferralBaseAmount,
-                                                    PurchaseHeader."Currency Factor"), GLSetup."Amount Rounding Precision"));
-            case i of
-                1:
-                    begin
-                        VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
-                        VendorContractDeferral.TestField("Number of Days", 17);
-                    end;
-                VendorDeferalCount:
-                    begin
-                        VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
-                        VendorContractDeferral.TestField("Number of Days", 14);
-                    end;
-                else begin
-                    VendorContractDeferral.TestField(Amount, MonthlyDefBaseAmount);
-                    VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
-                end;
-            end;
-            VendorContractDeferral.Next();
-        end;
-    end;
+        Initialize();
+        // [SCENARIO] Making sure that Credit Memo Deferrals are created only for existing Credit Memo Lines
+        // [SCENARIO] Posted Invoice contains two lines connected for a contract.
+        // [SCENARIO] Credit Memo is created for Posted Invoice and one of the lines in a credit memo is deleted.
+        // [SCENARIO] Deferral Entries releasing a single invoice line should be created and not for all invoice lines
 
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
-    procedure CheckContractDeferralsWhenStartDateIsNotOnFirstDayInMonthCalculatedForPartialYearFCY()
-    var
-        i: Integer;
-        VendorDeferalCount: Integer;
-    begin
-        SetPurchDocumentAndVendorContractDeferrals('<-CY+14D>', '<CY-1M-9D>', false, 9, VendorDeferalCount);
-        for i := 1 to VendorDeferalCount do begin
-            TestVendorContractDeferralsFields();
-            VendorContractDeferral.TestField("Deferral Base Amount", CurrExchRate.ExchangeAmtFCYToLCY(
-                                                    PurchaseHeader."Posting Date",
-                                                    PurchaseHeader."Currency Code",
-                                                    DeferralBaseAmount,
-                                                    PurchaseHeader."Currency Factor"));
-            case i of
-                1:
-                    begin
-                        VendorContractDeferral.TestField(Amount, FirstMonthDefBaseAmount);
-                        VendorContractDeferral.TestField("Number of Days", 17);
-                    end;
-                VendorDeferalCount:
-                    begin
-                        VendorContractDeferral.TestField(Amount, LastMonthDefBaseAmount);
-                        VendorContractDeferral.TestField("Number of Days", 21);
-                    end;
-                else begin
-                    VendorContractDeferral.TestField(Amount, MonthlyDefBaseAmount);
-                    VendorContractDeferral.TestField("Number of Days", Date2DMY(CalcDate('<CM>', VendorContractDeferral."Posting Date"), 1));
-                end;
-            end;
-            VendorContractDeferral.Next();
-        end;
+        // [GIVEN] Contract has been created and the billing proposal with non posted contract invoice
+        CreateVendorContractWithDeferrals('<2M-CM>', true, 2, false);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract invoice and a credit memo crediting only the first invoice line
+        PostPurchDocumentAndGetPurchInvoice();
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
+        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        PurchaseCrMemoHeader.Modify(false);
+        PurchInvLine.SetRange("Document No.", PurchaseInvoiceHeader."No.");
+        PurchInvLine.SetFilter("Contract Line No.", '<>0');
+        PurchInvLine.FindLast();
+        PurchaseLine.SetRange("Document No.", PurchaseCrMemoHeader."No.");
+        PurchaseLine.SetRange(Type, PurchaseLine.Type::Item);
+        PurchaseLine.FindLast();
+        PurchaseLine.Delete(false);
+        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+
+        // [THEN] Matching Deferral entries have been created for the first invoice line but not for the second invoice line
+        FetchVendorContractDeferrals(CorrectedDocumentNo);
+        PurchInvLine.FindFirst();
+        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
+        Assert.RecordIsNotEmpty(VendorContractDeferral);
+        PurchInvLine.FindLast();
+        VendorContractDeferral.SetRange("Contract Line No.", PurchInvLine."Contract Line No.");
+        Assert.RecordIsEmpty(VendorContractDeferral);
     end;
 
     [Test]
@@ -500,92 +280,185 @@ codeunit 139913 "Vendor Deferrals Test"
     procedure ExpectAmountOnContractDeferralAccountToBeZero()
     var
         ContractDeferralsRelease: Report "Contract Deferrals Release";
-        StartingGLAmount: Decimal;
-        GLAmountAfterInvoicing: Decimal;
         FinalGLAmount: Decimal;
+        GLAmountAfterInvoicing: Decimal;
         GLAmountAfterRelease: Decimal;
+        StartingGLAmount: Decimal;
     begin
+        Initialize();
         SetPostingAllowTo(0D);
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         GeneralPostingSetup.Get(Vendor."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
 
-        //After crediting expect this amount to be on GL Entry
+        // After crediting expect this amount to be on GL Entry
         GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
 
-        //Release only first Vendor Contract Deferral
+        // Release only first Vendor Contract Deferral
         PostPurchDocumentAndFetchDeferrals();
         PostingDate := VendorContractDeferral."Posting Date";
         GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Vend. Contr. Deferral Account");
 
-        //Expect Amount on GL Account to be decreased by Released Vendor Deferral
+        // Expect Amount on GL Account to be decreased by Released Vendor Deferral
         ContractDeferralsRelease.Run();
         GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Vend. Contr. Deferral Account");
-        AssertThat.AreEqual(GLAmountAfterInvoicing - VendorContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
+        Assert.AreEqual(GLAmountAfterInvoicing - VendorContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
 
         PurchaseInvoiceHeader.Get(PostedDocumentNo);
         PostPurchCreditMemo();
 
         GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
-        AssertThat.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
+        Assert.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ContractDeferralsReleaseRequestPageHandler')]
+    procedure ExpectAmountOnContractDeferralAccountToBeZeroForContractLinesWithDiscount()
+    var
+        GLEntry: Record "G/L Entry";
+        ServiceCommitment: Record "Service Commitment";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+        FinalGLAmount: Decimal;
+        GLAmountAfterInvoicing: Decimal;
+        GLAmountAfterRelease: Decimal;
+        GLLineDiscountAmountAfterInvoicing: Decimal;
+        StartingGLAmount: Decimal;
+    begin
+        Initialize();
+        SetPostingAllowTo(0D);
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+
+        // use discounts on Service Commitment
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.FindSet();
+        repeat
+            ServiceCommitment.Validate("Discount %", 10);
+            ServiceCommitment.Modify(false);
+        until ServiceCommitment.Next() = 0;
+
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        GeneralPostingSetup.Get(Vendor."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
+        GeneralPostingSetup.TestField("Purch. Line Disc. Account");
+        GLEntry.SetRange("G/L Account No.", GeneralPostingSetup."Purch. Line Disc. Account");
+        GLEntry.DeleteAll(false);
+
+        // After crediting expect this amount to be on GL Entry
+        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
+
+        // Release only first Vendor Contract Deferral
+        PostPurchDocumentAndFetchDeferrals();
+        PostingDate := VendorContractDeferral."Posting Date";
+        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Vend. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(GLLineDiscountAmountAfterInvoicing, GeneralPostingSetup."Purch. Line Disc. Account");
+        Assert.AreEqual(0, GLLineDiscountAmountAfterInvoicing, 'There should not be amount posted into Purchase Line Discount Account.');
+
+        // Expect Amount on GL Account to be decreased by Released Vendor Deferral
+        ContractDeferralsRelease.Run();
+        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Vend. Contr. Deferral Account");
+        Assert.AreEqual(GLAmountAfterInvoicing - VendorContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
+
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        PostPurchCreditMemo();
+
+        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
+        Assert.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
     end;
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
-    procedure TestCorrectReleasedPurchaseInvoiceDeferrals()
+    procedure ExpectAmountsToBeNullAfterPostPurchCrMemoOfReleasedDeferrals()
     var
-        GLEntry: Record "G/L Entry";
         ContractDeferralsRelease: Report "Contract Deferrals Release";
     begin
-        //Step 1 Create contract invoice with deferrals
-        //Step 2 Release deferrals
-        //Step 3 Correct posted purchase invoice
-        //Expectation:
-        // -Vendor Contract Deferrals with opposite sign are created
-        // -Invoice Contract Deferrals are released
-        // -Credit Memo Contract Deferrals are released
-        // -GL Entries are posted on the Credit Memo Posting date
+        Initialize();
         SetPostingAllowTo(0D);
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostPurchDocumentAndFetchDeferrals();
-
-        PostingDate := VendorContractDeferral."Posting Date"; //Used in request page handler
+        // Release only first Vendor Contract Deferral
+        PostingDate := VendorContractDeferral."Posting Date";
         ContractDeferralsRelease.Run();
+
         PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
-        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-        PurchaseCrMemoHeader.Modify(false);
-        PostingDate := PurchaseCrMemoHeader."Posting Date";
-        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+        PostPurchCreditMemo();
 
-        VendorContractDeferral.Reset();
-        VendorContractDeferral.SetRange("Document No.", CorrectedDocumentNo, PostedDocumentNo);
-        VendorContractDeferral.SetRange(Released, false);
-        asserterror VendorContractDeferral.FindFirst();
-
-        GLEntry.Reset();
-        GLEntry.SetRange("Document No.", CorrectedDocumentNo);
-        if GLEntry.FindSet() then
-            repeat
-                GLEntry.TestField("Posting Date", PostingDate);
-            until GLEntry.Next() = 0;
+        VendorContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
+        VendorContractDeferral.SetRange(Released, true);
+        VendorContractDeferral.CalcSums(Amount, "Discount Amount");
+        Assert.AreEqual(0, VendorContractDeferral.Amount, 'Deferrals were not corrected properly.');
+        Assert.AreEqual(0, VendorContractDeferral."Discount Amount", 'Deferrals were not corrected properly.');
     end;
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestIfDeferralsExistOnAfterPostPurchCreditMemoWithoutAppliesToDocNo()
+    procedure ExpectAmountsToBeNullOnAfterPostPurchCrMemo()
     begin
+        Initialize();
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostPurchDocumentAndGetPurchInvoice();
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
-        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-        PurchaseCrMemoHeader."Applies-to Doc. Type" := PurchaseCrMemoHeader."Applies-to Doc. Type"::" ";
-        PurchaseCrMemoHeader."Applies-to Doc. No." := '';
-        PurchaseCrMemoHeader.Modify(false);
-        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
-        FetchVendorContractDeferrals(CorrectedDocumentNo);
+        PostPurchCreditMemo();
+
+        PurchaseCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
+        PurchaseInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
+        Assert.AreEqual(PurchaseInvoiceDeferral.Count, PurchaseCrMemoDeferral.Count, 'Deferrals were not corrected properly.');
+
+        VendorContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
+        VendorContractDeferral.SetRange(Released, true);
+        VendorContractDeferral.CalcSums(Amount, "Discount Amount");
+        Assert.AreEqual(0, VendorContractDeferral.Amount, 'Deferrals were not corrected properly.');
+        Assert.AreEqual(0, VendorContractDeferral."Discount Amount", 'Deferrals were not corrected properly.');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure ExpectEqualBillingMonthsNumberAndVendContractDeferrals()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        CalculateNumberOfBillingMonths();
+        PostPurchDocumentAndGetPurchInvoice();
+
+        VendorContractDeferral.Reset();
+        VendorContractDeferral.SetRange("Document No.", PostedDocumentNo);
+        VendorDeferralsCount := VendorContractDeferral.Count;
+        Assert.AreEqual(VendorDeferralsCount, TotalNumberOfMonths, 'Number of Vendor deferrals must be the same as total number of billing months');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure ExpectErrorIfDeferralsExistsAfterPostPurchaseDocumentWODeferrals()
+    begin
+        Initialize();
+        CreatePurchaseDocumentsFromVendorContractWODeferrals();
+        BillingLine.FindLast();
+        asserterror PostPurchDocumentAndFetchDeferrals();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure ExpectErrorOnPostPurchDocumentWithDeferralsWOGeneralPostingSetup()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                ContractTestLibrary.SetGeneralPostingSetup(PurchaseLine."Gen. Bus. Posting Group", PurchaseLine."Gen. Prod. Posting Group", true, Enum::"Service Partner"::Vendor);
+            until PurchaseLine.Next() = 0;
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure ExpectErrorOnPreviewPostPurchDocumentWithDeferrals()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        asserterror LibraryPurchase.PreviewPostPurchaseDocument(PurchaseHeader);
     end;
 
     [Test]
@@ -594,6 +467,7 @@ codeunit 139913 "Vendor Deferrals Test"
     var
         CopyDocumentMgt: Codeunit "Copy Document Mgt.";
     begin
+        Initialize();
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostPurchDocumentAndGetPurchInvoice();
@@ -612,17 +486,61 @@ codeunit 139913 "Vendor Deferrals Test"
     end;
 
     [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
+    procedure TestCorrectReleasedPurchaseInvoiceDeferrals()
+    var
+        GLEntry: Record "G/L Entry";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+    begin
+        Initialize();
+        // Step 1 Create contract invoice with deferrals
+        // Step 2 Release deferrals
+        // Step 3 Correct posted purchase invoice
+        // Expectation:
+        // -Vendor Contract Deferrals with opposite sign are created
+        // -Invoice Contract Deferrals are released
+        // -Credit Memo Contract Deferrals are released
+        // -GL Entries are posted on the Credit Memo Posting date
+        SetPostingAllowTo(0D);
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        PostPurchDocumentAndFetchDeferrals();
+
+        PostingDate := VendorContractDeferral."Posting Date"; // Used in request page handler
+        ContractDeferralsRelease.Run();
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
+        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        PurchaseCrMemoHeader.Modify(false);
+        PostingDate := PurchaseCrMemoHeader."Posting Date";
+        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+
+        VendorContractDeferral.Reset();
+        VendorContractDeferral.SetRange("Document No.", CorrectedDocumentNo, PostedDocumentNo);
+        VendorContractDeferral.SetRange(Released, false);
+        Assert.RecordIsEmpty(VendorContractDeferral);
+
+        GLEntry.Reset();
+        GLEntry.SetRange("Document No.", CorrectedDocumentNo);
+        if GLEntry.FindSet() then
+            repeat
+                GLEntry.TestField("Posting Date", PostingDate);
+            until GLEntry.Next() = 0;
+    end;
+
+    [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
     procedure TestCreateVendorDeferralsForPaidPurchaseInvoice()
     var
         CopyDocumentMgt: Codeunit "Copy Document Mgt.";
     begin
+        Initialize();
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
         PostPurchDocumentAndGetPurchInvoice();
         PurchaseInvoiceHeader.CalcFields("Amount Including VAT");
-        //Create payment and apply the invoice only partially
-        CreatePaymentAndApplytoInvoice(PurchaseHeader."Buy-from Vendor No.", PostedDocumentNo, PurchaseInvoiceHeader."Amount Including VAT" / 2);
+        // Create payment and apply the invoice only partially
+        CreatePaymentAndApplyToInvoice(PurchaseHeader."Buy-from Vendor No.", PostedDocumentNo, PurchaseInvoiceHeader."Amount Including VAT" / 2);
 
         LibraryPurchase.CreatePurchaseCreditMemoForVendorNo(PurchaseCrMemoHeader, PurchaseInvoiceHeader."Buy-from Vendor No.");
         CopyDocumentMgt.CopyPurchDoc(Enum::"Purchase Document Type From"::"Posted Invoice", PurchaseInvoiceHeader."No.", PurchaseCrMemoHeader);
@@ -634,17 +552,165 @@ codeunit 139913 "Vendor Deferrals Test"
 
         PurchaseCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
         PurchaseInvoiceDeferral.SetRange("Document No.", PostedDocumentNo);
-        AssertThat.AreEqual(PurchaseInvoiceDeferral.Count, PurchaseCrMemoDeferral.Count, 'Deferrals were not corrected properly.');
+        Assert.AreEqual(PurchaseInvoiceDeferral.Count, PurchaseCrMemoDeferral.Count, 'Deferrals were not corrected properly.');
 
         VendorContractDeferral.SetFilter("Document No.", '%1|%2', PostedDocumentNo, CorrectedDocumentNo);
         VendorContractDeferral.CalcSums(Amount);
-        AssertThat.AreEqual(0, VendorContractDeferral.Amount, 'Credit Memo deferrals were not corrected properly.');
+        Assert.AreEqual(0, VendorContractDeferral.Amount, 'Credit Memo deferrals were not corrected properly.');
     end;
 
-    procedure CreatePaymentAndApplytoInvoice(VendorNo: Code[20]; AppliesToDocNo: Code[20]; Amount: Decimal)
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestIfDeferralsExistOnAfterPostPurchCreditMemo()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        PostPurchDocumentAndGetPurchInvoice();
+        PostPurchCreditMemo();
+        FetchVendorContractDeferrals(CorrectedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestIfDeferralsExistOnAfterPostPurchCreditMemoWithoutAppliesToDocNo()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        PostPurchDocumentAndGetPurchInvoice();
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseCrMemoHeader);
+        PurchaseCrMemoHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        PurchaseCrMemoHeader."Applies-to Doc. Type" := PurchaseCrMemoHeader."Applies-to Doc. Type"::" ";
+        PurchaseCrMemoHeader."Applies-to Doc. No." := '';
+        PurchaseCrMemoHeader.Modify(false);
+        CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
+        FetchVendorContractDeferrals(CorrectedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestIfDeferralsExistOnAfterPostPurchDocument()
+    begin
+        Initialize();
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+        PostPurchDocumentAndFetchDeferrals();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestPurchaseCrMemoDeferralsDocumentsAndDate()
+    begin
+        Initialize();
+        SetPostingAllowTo(WorkDate());
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        PostPurchDocumentAndGetPurchInvoice();
+        FetchVendorContractDeferrals(PostedDocumentNo);
+        PostPurchCreditMemoAndFetchDeferrals();
+        repeat
+            PurchaseCrMemoDeferral.TestField("Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
+            PurchaseCrMemoDeferral.TestField("Document No.", CorrectedDocumentNo);
+            PurchaseCrMemoDeferral.TestField("Posting Date", VendorContractDeferral."Posting Date");
+            PurchaseCrMemoDeferral.TestField("Release Posting Date", PurchaseCrMemoHeader."Posting Date");
+            VendorContractDeferral.Next();
+        until PurchaseCrMemoDeferral.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestPurchInvoiceDeferralsOnAfterPostPurchCrMemo()
+    begin
+        Initialize();
+        SetPostingAllowTo(WorkDate());
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        PostPurchDocumentAndGetPurchInvoice();
+        PostPurchCreditMemoAndFetchDeferrals();
+
+        PurchaseInvoiceDeferral.SetRange("Document No.", PostedDocumentNo); // Fetch updated Purchase Invoice Deferral
+        PurchaseInvoiceDeferral.FindFirst();
+        TestGLEntryFields(PurchaseInvoiceDeferral."G/L Entry No.", PurchaseInvoiceDeferral);
+        repeat
+            TestPurchaseInvoiceDeferralsReleasedFields(PurchaseInvoiceDeferral, PurchaseCrMemoHeader."Posting Date");
+        until PurchaseInvoiceDeferral.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
+    procedure TestReleasingVendorContractDeferrals()
     var
-        GenJournalBatch: Record "Gen. Journal Batch";
+        GLEntry: Record "G/L Entry";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+    begin
+        Initialize();
+        // [SCENARIO] Making sure that Deferrals are properly release and contain Contract No. on GLEntries
+
+        // [GIVEN] Contract has been created and the billing proposal with non posted contract invoice
+        SetPostingAllowTo(0D);
+        CreateVendorContractWithDeferrals('<2M-CM>', true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract invoice
+        PostPurchDocumentAndFetchDeferrals();
+
+        // [THEN] Releasing each deferral entry should be correct
+        repeat
+            PostingDate := VendorContractDeferral."Posting Date";
+            ContractDeferralsRelease.Run();
+            VendorContractDeferral.Get(VendorContractDeferral."Entry No.");
+            GLEntry.Get(VendorContractDeferral."G/L Entry No.");
+            GLEntry.TestField("Sub. Contract No.", VendorContractDeferral."Contract No.");
+            FetchAndTestUpdatedVendorContractDeferral();
+        until VendorContractDeferral.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ContractDeferralsReleaseRequestPageHandler,MessageHandler')]
+    procedure TestReleasingVendorContractDeferralsForCreditMemoAsDiscount()
+    var
+        GLEntry: Record "G/L Entry";
+        ContractDeferralsRelease: Report "Contract Deferrals Release";
+    begin
+        Initialize();
+        // [SCENARIO] Making sure that Deferrals are properly released when Credit Memo is created from a Serv. Comm Package Line marked as Discount
+
+        // [GIVEN] Contract has been created and the billing proposal with non posted contract credit memo
+        SetPostingAllowTo(0D);
+        CreateVendorContractWithDeferrals('<2M-CM>', true, 1, true);
+        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
+
+        // [WHEN] Post the contract credit memo
+        PostPurchDocumentAndFetchDeferrals();
+
+        // [THEN] Releasing each deferral entry should be correct
+        repeat
+            PostingDate := VendorContractDeferral."Posting Date";
+            ContractDeferralsRelease.Run();
+            VendorContractDeferral.Get(VendorContractDeferral."Entry No.");
+            GLEntry.Get(VendorContractDeferral."G/L Entry No.");
+            GLEntry.TestField("Sub. Contract No.", VendorContractDeferral."Contract No.");
+            FetchAndTestUpdatedVendorContractDeferral();
+        until VendorContractDeferral.Next() = 0;
+    end;
+
+    #endregion Tests
+
+    #region Procedures
+
+    local procedure Initialize()
+    begin
+        ClearAll();
+        GLSetup.Get();
+    end;
+
+    local procedure CreatePaymentAndApplyToInvoice(VendorNo: Code[20]; AppliesToDocNo: Code[20]; Amount: Decimal)
+    var
         GLAccount: Record "G/L Account";
+        GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
         LibraryERM: Codeunit "Library - ERM";
     begin
@@ -662,29 +728,7 @@ codeunit 139913 "Vendor Deferrals Test"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
-    local procedure CreateGeneralJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
-    var
-        GenJournalTemplate: Record "Gen. Journal Template";
-        LibraryERM: Codeunit "Library - ERM";
-    begin
-        GenJournalTemplate.SetRange(Recurring, false);
-        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::General);
-        LibraryERM.FindGenJournalTemplate(GenJournalTemplate);
-        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
-    end;
-
-    local procedure FetchAndTestUpdatedVendorContractDeferral()
-    var
-        UpdatedVendorContractDeferral: Record "Vendor Contract Deferral";
-    begin
-        UpdatedVendorContractDeferral.Get(VendorContractDeferral."Entry No.");
-        AssertThat.AreNotEqual(PrevGLEntry, UpdatedVendorContractDeferral."G/L Entry No.", 'G/L Entry No. is not properly assigned');
-        TestPurchaseInvoiceDeferralsReleasedFields(UpdatedVendorContractDeferral, PostingDate);
-        TestGLEntryFields(UpdatedVendorContractDeferral."G/L Entry No.", UpdatedVendorContractDeferral);
-        PrevGLEntry := UpdatedVendorContractDeferral."G/L Entry No.";
-    end;
-
-    procedure CreatePurchaseDocumentsFromVendorContractWODeferrals()
+    local procedure CreatePurchaseDocumentsFromVendorContractWODeferrals()
     begin
         CreateVendorContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
@@ -692,24 +736,10 @@ codeunit 139913 "Vendor Deferrals Test"
         VendorContract.Modify(false);
     end;
 
-    local procedure TestVendorContractDeferralsFields()
+    local procedure GetDeferralBaseAmount(): Decimal
     begin
-        VendorContractDeferral.TestField("Contract No.", BillingLine."Contract No.");
-        VendorContractDeferral.TestField("Document No.", PostedDocumentNo);
-        VendorContractDeferral.TestField("Vendor No.", PurchaseHeader."Buy-from Vendor No.");
-        VendorContractDeferral.TestField("Pay-to Vendor No.", PurchaseHeader."Pay-to Vendor No.");
-        VendorContractDeferral.TestField("Document Posting Date", PurchaseHeader."Posting Date");
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
+        PurchaseLine.Get(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        exit(PurchaseLine.Amount);
     end;
 
     local procedure CalculateNumberOfBillingMonths()
@@ -727,6 +757,89 @@ codeunit 139913 "Vendor Deferrals Test"
                 StartingDate := CalcDate('<1M>', StartingDate);
             until StartingDate > CalcDate('<CM>', PurchaseLine."Recurring Billing to");
         until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure CreateBillingProposalAndCreateBillingDocuments(BillingDateFormula: Text; BillingToDateFormula: Text)
+    begin
+        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, BillingDateFormula, BillingToDateFormula, '', Enum::"Service Partner"::Vendor);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine); // CreateVendorBillingDocsContractPageHandler, MessageHandler
+        BillingLine.FindLast();
+        PurchaseHeader.Get(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.");
+        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
+            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID())
+        else
+            PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+    end;
+
+    local procedure CreateGeneralJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        LibraryERM: Codeunit "Library - ERM";
+    begin
+        GenJournalTemplate.SetRange(Recurring, false);
+        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::General);
+        LibraryERM.FindGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+    end;
+
+    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean)
+    begin
+        CreateVendorContractWithDeferrals(BillingDateFormula, IsVendorContractLCY, 1, false);
+    end;
+
+    local procedure CreateVendorContractWithDeferrals(BillingDateFormula: Text; IsVendorContractLCY: Boolean; ServiceCommitmentCount: Integer; Discount: Boolean)
+    var
+        i: Integer;
+    begin
+        if IsVendorContractLCY then
+            ContractTestLibrary.CreateVendorInLCY(Vendor)
+        else
+            ContractTestLibrary.CreateVendor(Vendor);
+
+        if Discount then
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item")
+        else
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        Item.Validate("Unit Cost", 1200);
+        Item.Modify(false);
+        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
+        ServiceObject.Validate("Quantity Decimal", 1);
+        ServiceObject.Modify(false);
+
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 10, Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", false);
+        ContractTestLibrary.CreateServiceCommitmentPackage(ServiceCommitmentPackage);
+        for i := 1 to ServiceCommitmentCount do begin
+            ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine);
+            ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, Item."No.");
+        end;
+
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceObject.InsertServiceCommitmentsFromServCommPackage(CalcDate(BillingDateFormula, WorkDate()), ServiceCommitmentPackage);
+
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
+    end;
+
+    local procedure FetchAndTestUpdatedVendorContractDeferral()
+    var
+        UpdatedVendorContractDeferral: Record "Vendor Contract Deferral";
+    begin
+        UpdatedVendorContractDeferral.Get(VendorContractDeferral."Entry No.");
+        Assert.AreNotEqual(PrevGLEntry, UpdatedVendorContractDeferral."G/L Entry No.", 'G/L Entry No. is not properly assigned');
+        TestPurchaseInvoiceDeferralsReleasedFields(UpdatedVendorContractDeferral, PostingDate);
+        TestGLEntryFields(UpdatedVendorContractDeferral."G/L Entry No.", UpdatedVendorContractDeferral);
+        PrevGLEntry := UpdatedVendorContractDeferral."G/L Entry No.";
+    end;
+
+    local procedure FetchVendorContractDeferrals(DocumentNo: Code[20])
+    begin
+        VendorContractDeferral.Reset();
+        VendorContractDeferral.SetRange("Document No.", DocumentNo);
+        VendorContractDeferral.FindFirst();
     end;
 
     local procedure GetCalculatedMonthAmountsForDeferrals(SourceDeferralBaseAmount: Decimal; NumberOfPeriods: Integer; FirstDayOfBillingPeriod: Date; LastDayOfBillingPeriod: Date; CalculateInLCY: Boolean)
@@ -748,59 +861,13 @@ codeunit 139913 "Vendor Deferrals Test"
         LastMonthDefBaseAmount := SourceDeferralBaseAmount - MonthlyDefBaseAmount * NumberOfPeriods - FirstMonthDefBaseAmount;
     end;
 
-    local procedure TestGLEntryFields(EntryNo: Integer; LocalVendorContractDeferrals: Record "Vendor Contract Deferral")
+    local procedure GetGLEntryAmountFromAccountNo(var GlEntryAmount: Decimal; GLAccountNo: Code[20])
     var
         GLEntry: Record "G/L Entry";
     begin
-        GLEntry.Get(EntryNo);
-        GLEntry.TestField("Document No.", LocalVendorContractDeferrals."Document No.");
-        GLEntry.TestField("Dimension Set ID", LocalVendorContractDeferrals."Dimension Set ID");
-        GLEntry.TestField("Sub. Contract No.", LocalVendorContractDeferrals."Contract No.");
-    end;
-
-    local procedure SetPostingAllowTo(PostingTo: Date)
-    begin
-        if UserSetup.Get(UserId) then begin
-            UserSetup."Allow Posting From" := 0D;
-            UserSetup."Allow Posting To" := PostingTo;
-            UserSetup.Modify(false);
-        end;
-        GLSetup.Get();
-        GLSetup."Allow Posting From" := 0D;
-        GLSetup."Allow Posting To" := PostingTo;
-        GLSetup.Modify(false);
-    end;
-
-    local procedure TestPurchaseInvoiceDeferralsReleasedFields(DeferralsToTest: Record "Vendor Contract Deferral"; DocumentPostingDate: Date)
-    begin
-        DeferralsToTest.TestField("Release Posting Date", DocumentPostingDate);
-        DeferralsToTest.TestField(Released, true);
-    end;
-
-    procedure GetDeferralBaseAmount(): Decimal
-    begin
-        PurchaseLine.Get(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        exit(PurchaseLine.Amount);
-    end;
-
-    local procedure FetchVendorContractDeferrals(DocumentNo: Code[20])
-    begin
-        VendorContractDeferral.Reset();
-        VendorContractDeferral.SetRange("Document No.", DocumentNo);
-        VendorContractDeferral.FindFirst();
-    end;
-
-    local procedure PostPurchDocumentAndGetPurchInvoice()
-    begin
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-    end;
-
-    local procedure PostPurchCreditMemoAndFetchDeferrals()
-    begin
-        PostPurchCreditMemo();
-        PurchaseCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
-        PurchaseCrMemoDeferral.FindFirst();
+        GLEntry.SetRange("G/L Account No.", GLAccountNo);
+        GLEntry.CalcSums(Amount);
+        GlEntryAmount := GLEntry.Amount;
     end;
 
     local procedure PostPurchCreditMemo()
@@ -811,13 +878,38 @@ codeunit 139913 "Vendor Deferrals Test"
         CorrectedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseCrMemoHeader, true, true);
     end;
 
+    local procedure PostPurchCreditMemoAndFetchDeferrals()
+    begin
+        PostPurchCreditMemo();
+        PurchaseCrMemoDeferral.SetRange("Document No.", CorrectedDocumentNo);
+        PurchaseCrMemoDeferral.FindFirst();
+    end;
+
     local procedure PostPurchDocumentAndFetchDeferrals()
     begin
         PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
         FetchVendorContractDeferrals(PostedDocumentNo);
     end;
 
-    local procedure SetPurchDocumentAndVendorContractDeferrals(BillingDateFormula: Text; BillingToDateFormula: Text; CalculateInLCY: Boolean; NumberOfPeriods: Integer; var VendorDeferalCount: Integer)
+    local procedure PostPurchDocumentAndGetPurchInvoice()
+    begin
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+    end;
+
+    local procedure SetPostingAllowTo(PostingTo: Date)
+    begin
+        if UserSetup.Get(UserId) then begin
+            UserSetup."Allow Posting From" := 0D;
+            UserSetup."Allow Posting To" := PostingTo;
+            UserSetup.Modify(false);
+        end;
+        GLSetup."Allow Posting From" := 0D;
+        GLSetup."Allow Posting To" := PostingTo;
+        GLSetup.Modify(false);
+    end;
+
+    local procedure SetPurchDocumentAndVendorContractDeferrals(BillingDateFormula: Text; BillingToDateFormula: Text; CalculateInLCY: Boolean; NumberOfPeriods: Integer; var VendorDeferralCount: Integer)
     begin
         CreateVendorContractWithDeferrals(BillingDateFormula, CalculateInLCY);
         CreateBillingProposalAndCreateBillingDocuments(BillingDateFormula, BillingToDateFormula);
@@ -825,17 +917,43 @@ codeunit 139913 "Vendor Deferrals Test"
         BillingLine.FindLast();
         DeferralBaseAmount := GetDeferralBaseAmount();
         PostPurchDocumentAndFetchDeferrals();
-        VendorDeferalCount := VendorContractDeferral.Count;
+        VendorDeferralCount := VendorContractDeferral.Count;
         GetCalculatedMonthAmountsForDeferrals(DeferralBaseAmount, NumberOfPeriods, CalcDate(BillingDateFormula, WorkDate()), CalcDate(BillingToDateFormula, WorkDate()), CalculateInLCY);
     end;
 
-    local procedure GetGLEntryAmountFromAccountNo(var GlEntryAmount: Decimal; GLAccountNo: Code[20])
+    local procedure TestGLEntryFields(EntryNo: Integer; LocalVendorContractDeferrals: Record "Vendor Contract Deferral")
     var
         GLEntry: Record "G/L Entry";
     begin
-        GLEntry.SetRange("G/L Account No.", GLAccountNo);
-        GLEntry.CalcSums(Amount);
-        GlEntryAmount := GLEntry.Amount;
+        GLEntry.Get(EntryNo);
+        GLEntry.TestField("Document No.", LocalVendorContractDeferrals."Document No.");
+        GLEntry.TestField("Dimension Set ID", LocalVendorContractDeferrals."Dimension Set ID");
+        GLEntry.TestField("Sub. Contract No.", LocalVendorContractDeferrals."Contract No.");
+    end;
+
+    local procedure TestPurchaseInvoiceDeferralsReleasedFields(DeferralsToTest: Record "Vendor Contract Deferral"; DocumentPostingDate: Date)
+    begin
+        DeferralsToTest.TestField("Release Posting Date", DocumentPostingDate);
+        DeferralsToTest.TestField(Released, true);
+    end;
+
+    local procedure TestVendorContractDeferralsFields()
+    begin
+        VendorContractDeferral.TestField("Contract No.", BillingLine."Contract No.");
+        VendorContractDeferral.TestField("Document No.", PostedDocumentNo);
+        VendorContractDeferral.TestField("Vendor No.", PurchaseHeader."Buy-from Vendor No.");
+        VendorContractDeferral.TestField("Pay-to Vendor No.", PurchaseHeader."Pay-to Vendor No.");
+        VendorContractDeferral.TestField("Document Posting Date", PurchaseHeader."Posting Date");
+    end;
+
+    #endregion Procedures
+
+    #region Handlers
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocs.OK().Invoke();
     end;
 
     [RequestPageHandler]
@@ -852,55 +970,10 @@ codeunit 139913 "Vendor Deferrals Test"
         ExchangeRateSelectionPage.OK().Invoke();
     end;
 
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,MessageHandler,ContractDeferralsReleaseRequestPageHandler')]
-    procedure ExpectAmountOnContractDeferralAccountToBeZeroForContractLinesWithDiscount()
-    var
-        ServiceCommitment: Record "Service Commitment";
-        GLEntry: Record "G/L Entry";
-        ContractDeferralsRelease: Report "Contract Deferrals Release";
-        StartingGLAmount: Decimal;
-        GLAmountAfterInvoicing: Decimal;
-        FinalGLAmount: Decimal;
-        GLAmountAfterRelease: Decimal;
-        GLLineDiscountAmountAfterInvoicing: Decimal;
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
     begin
-        SetPostingAllowTo(0D);
-        CreateVendorContractWithDeferrals('<2M-CM>', true);
-
-        // use discounts on Service Commitment
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.FindSet();
-        repeat
-            ServiceCommitment.Validate("Discount %", 10);
-            ServiceCommitment.Modify(false);
-        until ServiceCommitment.Next() = 0;
-
-        CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
-        GeneralPostingSetup.Get(Vendor."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
-        GeneralPostingSetup.TestField("Purch. Line Disc. Account");
-        GLEntry.SetRange("G/L Account No.", GeneralPostingSetup."Purch. Line Disc. Account");
-        GLEntry.DeleteAll(false);
-
-        //After crediting expect this amount to be on GL Entry
-        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
-
-        //Release only first Vendor Contract Deferral
-        PostPurchDocumentAndFetchDeferrals();
-        PostingDate := VendorContractDeferral."Posting Date";
-        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Vend. Contr. Deferral Account");
-        GetGLEntryAmountFromAccountNo(GLLineDiscountAmountAfterInvoicing, GeneralPostingSetup."Purch. Line Disc. Account");
-        AssertThat.AreEqual(0, GLLineDiscountAmountAfterInvoicing, 'There should not be amount posted into Purchase Line Discount Account.');
-
-        //Expect Amount on GL Account to be decreased by Released Vendor Deferral
-        ContractDeferralsRelease.Run();
-        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Vend. Contr. Deferral Account");
-        AssertThat.AreEqual(GLAmountAfterInvoicing - VendorContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
-
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        PostPurchCreditMemo();
-
-        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Vend. Contr. Deferral Account");
-        AssertThat.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
     end;
+
+    #endregion Handlers
 }

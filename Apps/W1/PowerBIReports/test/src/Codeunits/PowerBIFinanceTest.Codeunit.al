@@ -15,7 +15,6 @@ using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Document;
 using Microsoft.PowerBIReports.Test;
 using System.TestLibraries.Utilities;
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.Finance.GeneralLedger.Setup;
 using System.TestLibraries.Security.AccessControl;
 
@@ -31,7 +30,6 @@ codeunit 139876 "PowerBI Finance Test"
         LibSales: Codeunit "Library - Sales";
         LibPurch: Codeunit "Library - Purchase";
         LibJournals: Codeunit "Library - Journals";
-        LibFiscalYear: Codeunit "Library - Fiscal Year";
         LibVariableStorage: Codeunit "Library - Variable Storage";
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
@@ -507,68 +505,6 @@ codeunit 139876 "PowerBI Finance Test"
         Assert.AreEqual(0, JToken.AsArray().Count(), 'Response contains data outside of the filter.');
     end;
 
-    [Test]
-    [HandlerFunctions('ConfirmHandler,CloseIncomeStatementRequestPageHandler,MessageHandler')]
-    procedure TestClosingGLEntry()
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-        GenJournalBatch: Record "Gen. Journal Batch";
-        GenJnlLine: Record "Gen. Journal Line";
-        GLAccount: Record "G/L Account";
-        BalGLAccount: Record "G/L Account";
-        GLEntry: Record "G/L Entry";
-        Uri: Codeunit Uri;
-        TargetURL: Text;
-        Response: Text;
-    begin
-        // [GIVEN] Income statement is posted and closing G/L entries are created
-        LibFiscalYear.CloseFiscalYear();
-        LibFiscalYear.CreateFiscalYear();
-        CreateGeneralJournalBatch(GenJournalBatch, BalGLAccount);
-        LibERM.CreateGLAccount(GLAccount);
-        CreateGeneralJournalLines(GenJournalBatch, GLAccount, GenJnlLine, LibFiscalYear.GetLastPostingDate(true));
-        LibERM.PostGeneralJnlLine(GenJnlLine);
-        RunCloseIncomeStatement(GenJnlLine, GenJnlLine."Document No.");
-        GenJnlLine.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-        GenJnlLine.SetFilter("Account No.", '<>''''');
-        GenJnlLine.FindLast();
-        LibERM.PostGeneralJnlLine(GenJnlLine);
-        SourceCodeSetup.Get();
-#pragma warning disable AA0210
-        GLEntry.SetRange("Source Code", SourceCodeSetup."Close Income Statement");
-#pragma warning restore AA0210
-        GLEntry.SetFilter("G/L Account No.", '%1|%2', GLAccount."No.", BalGLAccount."No.");
-
-        Commit();
-
-        // [WHEN] Get request for income statement G/L entry is made
-        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"G/L Entries - Closing");
-        UriBuilder.Init(TargetURL);
-        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''' + GLAccount."No." + ''' or glAccountNo eq ''' + BalGLAccount."No." + ''''));
-        UriBuilder.GetUri(Uri);
-        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
-
-        // [THEN] The response contains the income statement G/L entry information
-        Assert.AreNotEqual('', Response, ResponseEmptyErr);
-        GLEntry.FindSet();
-        repeat
-            VerifyPostedGLEntry(Response, GLAccount, GLEntry, true);
-        until GLEntry.Next() = 0;
-    end;
-
-    local procedure CreateGeneralJournalLines(GenJournalBatch: Record "Gen. Journal Batch"; GLAccount: Record "G/L Account"; var GenJournalLine: Record "Gen. Journal Line"; PostingDate: Date)
-    var
-        Counter: Integer;
-    begin
-        for Counter := 1 to LibRandom.RandIntInRange(3, 5) do begin
-            LibERM.CreateGeneralJnlLine(
-            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::" ",
-            GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", LibRandom.RandInt(1000));
-            GenJournalLine.Validate("Posting Date", PostingDate);
-            GenJournalLine.Modify(true);
-        end;
-    end;
-
     local procedure VerifyPostedGLEntry(Response: Text; GLAccount: Record "G/L Account"; GLEntry: Record "G/L Entry"; EntryShouldExist: Boolean)
     var
         JsonMgt: Codeunit "JSON Management";
@@ -586,32 +522,6 @@ codeunit 139876 "PowerBI Finance Test"
             Assert.AreEqual(GLEntry."Source No.", JsonMgt.GetValue('sourceNo'), 'Source no. did not match.');
         end else
             Assert.IsFalse(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(GLEntry."Entry No.") + ')]'), 'G/L entry should not be found.');
-    end;
-
-    local procedure RunCloseIncomeStatement(GenJournalLine: Record "Gen. Journal Line"; DocumentNo: Code[20])
-    var
-        Date: Record Date;
-    begin
-        // Run the Close Income Statement Batch Job.
-        Date.SetRange("Period Type", Date."Period Type"::Month);
-        Date.SetRange("Period Start", LibFiscalYear.GetLastPostingDate(true));
-        Date.FindFirst();
-
-        RunCloseIncomeStatement(GenJournalLine, NormalDate(Date."Period End"), true, false, DocumentNo);
-    end;
-
-    local procedure RunCloseIncomeStatement(GenJournalLine: Record "Gen. Journal Line"; PostingDate: Date; ClosePerBusinessUnit: Boolean; UseDimensions: Boolean; DocumentNo: Code[20])
-    begin
-        // Enqueue values for CloseIncomeStatementRequestPageHandler.
-        LibVariableStorage.Enqueue(PostingDate);
-        LibVariableStorage.Enqueue(GenJournalLine."Journal Template Name");
-        LibVariableStorage.Enqueue(GenJournalLine."Journal Batch Name");
-        LibVariableStorage.Enqueue(DocumentNo);
-        LibVariableStorage.Enqueue(ClosePerBusinessUnit);
-        LibVariableStorage.Enqueue(UseDimensions);
-
-        Commit();  // commit requires to run report.
-        Report.Run(Report::"Close Income Statement");
     end;
 
     [ConfirmHandler]

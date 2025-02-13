@@ -425,11 +425,6 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Fulfillments';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL Get Fulfillments";
     }
-    value(85; ProductVariantDelete)
-    {
-        Caption = 'Product Variant Delete';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductVariantDelete";
-    }
     value(86; GetProductOptions)
     {
         Caption = 'Get Product Options';
@@ -544,5 +539,70 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Inventory Activate';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL InventoryActivate";
+    }
+    value(112; GetPaymentTransactions)
+    {
+        Caption = 'Get Payment Transactions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL PaymentTransactions";
+    }
+    value(113; GetNextPaymentTransactions)
+    {
+        Caption = 'Get Next Payment Transactions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextPaymTransactions";
+    }
+    value(114; GetDisputes)
+    {
+        Caption = 'Get Disputes';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Disputes";
+    }
+    value(115; GetNextDisputes)
+    {
+        Caption = 'Get Next Disputes';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextDisputes";
+    }
+    value(116; GetPayouts)
+    {
+        Caption = 'Get Payouts';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Payouts";
+    }
+    value(117; GetNextPayouts)
+    {
+        Caption = 'Get Next Payouts';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextPayouts";
+    }
+    value(118; GetDisputeById)
+    {
+        Caption = 'Get Dispute By Id';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL DisputeById";
+    }
+    value(119; CreateWebhookSubscription)
+    {
+        Caption = 'Create Webhook Subscription';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateWebhookSub";
+    }
+    value(120; GetWebhookSubscriptions)
+    {
+        Caption = 'Get Webhook Subscriptions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL GetWebhookSubs";
+    }
+    value(121; DeleteWebhookSubscription)
+    {
+        Caption = 'Delete Webhook Subscription';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL DeleteWebhookSub";
+    }
+    value(122; GetShipToCountries)
+    {
+        Caption = 'Get Ship To Countries';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ShipToCountries";
+    }
+    value(123; GetRefundShippingLines)
+    {
+        Caption = 'Get Refund Shipping Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RefundShippingLines";
+    }
+    value(124; GetNextRefundShippingLines)
+    {
+        Caption = 'Get Next Refund Shipping Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRefundShipLines";
     }
 }

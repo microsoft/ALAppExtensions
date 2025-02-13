@@ -1301,6 +1301,24 @@ codeunit 11148 "Create AT GL Account"
             until GLAccountCategory.Next() = 0;
     end;
 
+    internal procedure UpdateVATProdPostGrpInGLAccounts()
+    var
+        GLAccounts: Record "G/L Account";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+        CreateVATPostingGroupAT: Codeunit "Create VAT Posting Group AT";
+    begin
+        GLAccounts.SetFilter("VAT Prod. Posting Group", '<>%1', '');
+        if GLAccounts.FindSet() then
+            repeat
+                if GLAccounts."VAT Prod. Posting Group" = CreateVATPostingGroups.Standard() then
+                    GLAccounts.Validate(GLAccounts."VAT Prod. Posting Group", CreateVATPostingGroupAT.VAT20());
+                if GLAccounts."VAT Prod. Posting Group" = CreateVATPostingGroups.Reduced() then
+                    GLAccounts.Validate(GLAccounts."VAT Prod. Posting Group", CreateVATPostingGroupAT.VAT10());
+                if GLAccounts."VAT Prod. Posting Group" <> CreateVATPostingGroupAT.NOVAT() then
+                    GLAccounts.Modify(true);
+            until GLAccounts.Next() = 0;
+    end;
+
     procedure AssignCategoryToChartOfAccounts(GLAccountCategory: Record "G/L Account Category")
     var
         CreateGLAccount: Codeunit "Create G/L Account";
@@ -1336,20 +1354,12 @@ codeunit 11148 "Create AT GL Account"
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
         case GLAccountCategory.Description of
-            // GLAccountCategoryMgt.GetCurrentAssets():
-            //     ;
             GLAccountCategoryMgt.GetCash():
                 UpdateGLAccounts(GLAccountCategory, CashAndBank(), TotalCashAndBank());
             GLAccountCategoryMgt.GetAR():
                 UpdateGLAccounts(GLAccountCategory, OtherCurrentAssets(), TotalAccountsReceivable());
-            // GLAccountCategoryMgt.GetPrepaidExpenses():
-            //     ;
             GLAccountCategoryMgt.GetInventory():
                 UpdateGLAccounts(GLAccountCategory, SUPPLIES(), TOTALSUPPLIES());
-            // GLAccountCategoryMgt.GetEquipment():
-            //     ;
-            // GLAccountCategoryMgt.GetAccumDeprec():
-            //     ;
             GLAccountCategoryMgt.GetCurrentLiabilities():
                 begin
                     UpdateGLAccounts(GLAccountCategory, LIABILITIESPROVISIONS(), TotalProvisions());
@@ -1374,30 +1384,14 @@ codeunit 11148 "Create AT GL Account"
                 UpdateGLAccounts(GLAccountCategory, SalesRevenuesRawMaterial(), TotalSalesRevenuesRawMaterial());
             GLAccountCategoryMgt.GetIncomeSalesDiscounts():
                 UpdateGLAccounts(GLAccountCategory, RevenueAdjustments(), TotalRevenueAdjustments());
-            // GLAccountCategoryMgt.GetIncomeSalesReturns():
-            //     ;
             GLAccountCategoryMgt.GetIncomeInterest():
                 UpdateGLAccounts(GLAccountCategory, ChargesAndInterest(), TotalChargesAndInterest());
-            // GLAccountCategoryMgt.GetCOGSLabor():
-            //     ;
             GLAccountCategoryMgt.GetCOGSMaterials():
                 UpdateGLAccounts(GLAccountCategory, COSTOFMATERIALS(), TOTALCOSTOFMATERIALS());
-            // GLAccountCategoryMgt.GetRentExpense():
-            //     ;
-            // GLAccountCategoryMgt.GetAdvertisingExpense():
-            //     ;
             GLAccountCategoryMgt.GetInterestExpense():
                 UpdateGLAccounts(GLAccountCategory, FINANCIALREVENUESANDEXPENDITURESBeginTotal(), TotalFinancialIncomeAndExpensesEndTotal());
-            // GLAccountCategoryMgt.GetFeesExpense():
-            //     ;
-            // GLAccountCategoryMgt.GetInsuranceExpense():
-            //     ;
             GLAccountCategoryMgt.GetPayrollExpense():
                 UpdateGLAccounts(GLAccountCategory, CreateGLAccount.PersonnelExpenses(), CreateGLAccount.TotalPersonnelExpenses());
-            // GLAccountCategoryMgt.GetBenefitsExpense():
-            //     ;
-            // GLAccountCategoryMgt.GetRepairsExpense():
-            //     ;
             GLAccountCategoryMgt.GetUtilitiesExpense():
                 UpdateGLAccounts(GLAccountCategory, OfficeAdvertisingAndMaintenanceExpenditure(), TotalOfficeAdvertisingMaintenanceExpenditure());
             GLAccountCategoryMgt.GetOtherIncomeExpense():

@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 table 11718 "VAT Stmt. Report Line Data CZL"
 {
     Caption = 'VAT Statement Report Line Data CZL';
@@ -72,6 +75,14 @@ table 11718 "VAT Stmt. Report Line Data CZL"
             Caption = 'Amount';
             Editable = false;
         }
+        field(30; "Additional-Currency Amount"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetAdditionalCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Amount';
+            Editable = false;
+        }
     }
 
     keys
@@ -115,5 +126,13 @@ table 11718 "VAT Stmt. Report Line Data CZL"
     begin
         "XML Code" := VATAttributeCodeCZL."XML Code";
         "VAT Report Amount Type" := VATAttributeCodeCZL."VAT Report Amount Type";
+    end;
+
+    local procedure GetAdditionalCurrencyCode(): Code[10]
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 }

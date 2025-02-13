@@ -297,6 +297,18 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Source Curr. VAT Base Amount" := TempGenJournalLine."VAT Base Amount";
         TempGenJournalLine."Source Curr. VAT Amount" := TempGenJournalLine."VAT Amount";
         TempGenJournalLine."System-Created Entry" := true;
+        if InitCashDocumentLineCZP."Project No." <> '' then begin
+            TempGenJournalLine."System-Created Entry" := false;
+            TempGenJournalLine.Validate(TempGenJournalLine."Job No.", InitCashDocumentLineCZP."Project No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Task No.", InitCashDocumentLineCZP."Project Task No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Line Type", InitCashDocumentLineCZP."Project Line Type");
+            TempGenJournalLine.Validate("Job Planning Line No.", InitCashDocumentLineCZP."Project Planning Line No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Quantity", InitCashDocumentLineCZP."Project Quantity");
+            if InitCashDocumentLineCZP."Document Type" = InitCashDocumentLineCZP."Document Type"::Receipt then
+                TempGenJournalLine.Validate(TempGenJournalLine."Job Unit Price", InitCashDocumentLineCZP."Project Unit Price" * -1)
+            else
+                TempGenJournalLine.Validate(TempGenJournalLine."Job Unit Price", InitCashDocumentLineCZP."Project Unit Price");
+        end;
         TempGenJournalLine."Shortcut Dimension 1 Code" := InitCashDocumentLineCZP."Shortcut Dimension 1 Code";
         TempGenJournalLine."Shortcut Dimension 2 Code" := InitCashDocumentLineCZP."Shortcut Dimension 2 Code";
         TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";

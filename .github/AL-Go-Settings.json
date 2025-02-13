@@ -5,7 +5,7 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/26.0.27721.0/base",
+  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/26.0.30098.0/base",
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "26.0",
@@ -41,9 +41,8 @@
   "buildModes": [
     "Translated"
   ],
-  "CICDPushBranches": [
-    "main"
-  ],
+  "CICDPushBranches": [],
+  "CICDSchedule": "0 2 * * *",
   "CICDPullRequestBranches": [
     "main"
   ],
@@ -60,5 +59,5 @@
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "templateSha": "9308ffb724a39179ea32dd55c838f176903a2a5c"
+  "templateSha": "ef914042bcf3fb640cbf150a975c08e33657cf4a"
 }

@@ -59,8 +59,6 @@ codeunit 12201 "Create No. Series IT"
                 Rec.Validate("Date Order", true);
             CreateNoSeries.SalesShipment():
                 Rec.Validate("Date Order", true);
-            CreateNoSeries.AssemblyBlanketOrders():
-                Rec.Validate(Description, BlanketAssemblyOrdersLbl);
         end;
     end;
 
@@ -199,7 +197,6 @@ codeunit 12201 "Create No. Series IT"
         ExtPurchLbl: Label 'EXTPURCH', MaxLength = 10;
         EuSalesLbl: Label 'EUSALES', MaxLength = 10;
         ExtSalesLbl: Label 'EXTSALES', MaxLength = 10;
-        BlanketAssemblyOrdersLbl: Label 'Blanket Assembly Orders', MaxLength = 100;
         CustomerBillListLbl: Label 'Customer Bill List', MaxLength = 100;
         FinalCustomerBillNoLbl: Label 'Final Customer Bill No.', MaxLength = 100;
         InvCrMemoVATNoforEUVendLbl: Label 'Inv./Cr. Memo VAT No. for EU Vend.', MaxLength = 100;

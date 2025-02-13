@@ -5,6 +5,7 @@ using System.Utilities;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
 using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Item;
 
 codeunit 8060 "Create Billing Documents"
 {
@@ -76,6 +77,7 @@ codeunit 8060 "Create Billing Documents"
         TempBillingLine.Reset();
         TempBillingLine.SetCurrentKey("Contract No.", "Contract Line No.");
         SetDiscountLineExists(TempBillingLine, DiscountLineExists);
+        OnCreateSalesDocumentsPerContractBeforeTempBillingLineFindSet(TempBillingLine);
         if TempBillingLine.FindSet(true) then
             repeat
                 if TempBillingLine."Contract No." <> PreviousContractNo then begin
@@ -103,6 +105,7 @@ codeunit 8060 "Create Billing Documents"
         TempBillingLine.Reset();
         TempBillingLine.SetCurrentKey("Contract No.", "Service Object No.", "Service Commitment Entry No.");
         SetDiscountLineExists(TempBillingLine, DiscountLineExists);
+        OnCreatePurchaseDocumentsPerContractBeforeTempBillingLineFindSet(TempBillingLine);
         if TempBillingLine.FindSet() then
             repeat
                 if TempBillingLine."Contract No." <> PreviousContractNo then begin
@@ -134,6 +137,7 @@ codeunit 8060 "Create Billing Documents"
         TempBillingLine.Reset();
         TempBillingLine.SetCurrentKey("Partner No.", "Currency Code", "Detail Overview", "Contract No.", "Service Object No.", "Service Commitment Entry No.");
         SetDiscountLineExists(TempBillingLine, DiscountLineExists);
+        OnCreateSalesDocumentsPerCustomerBeforeTempBillingLineFindSet(TempBillingLine);
         if TempBillingLine.FindSet() then
             repeat
                 if IsNewSalesHeaderNeeded(PreviousCustomerNo, LastDetailOverview, PreviousCurrencyCode, PreviousContractNo) then begin
@@ -177,6 +181,7 @@ codeunit 8060 "Create Billing Documents"
         TempBillingLine.Reset();
         TempBillingLine.SetCurrentKey("Partner No.", "Currency Code", "Contract No.", "Service Object No.", "Service Commitment Entry No.");
         SetDiscountLineExists(TempBillingLine, DiscountLineExists);
+        OnCreatePurchaseDocumentsPerVendorBeforeTempBillingLineFindSet(TempBillingLine);
         if TempBillingLine.FindSet() then
             repeat
                 if (TempBillingLine."Partner No." <> PreviousVendorNo) or
@@ -224,13 +229,15 @@ codeunit 8060 "Create Billing Documents"
 
         SalesLine.InitFromSalesHeader(SalesHeader);
         SalesLine.Type := SalesLine.Type::Item;
-        if ServiceCommitment."Invoicing Item No." <> '' then begin
-            SessionStore.SetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo', true);
-            SalesLine.Validate("No.", ServiceCommitment."Invoicing Item No.");
-            SessionStore.RemoveBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo');
-        end
-        else
+        SessionStore.SetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo', true);
+        if (ServiceCommitment."Invoicing Item No." <> '') and (ServiceObject."Item No." <> ServiceCommitment."Invoicing Item No.") then
+            SalesLine.Validate("No.", ServiceCommitment."Invoicing Item No.")
+        else begin
             SalesLine.Validate("No.", ServiceObject."Item No.");
+            SalesLine.Validate("Variant Code", ServiceObject."Variant Code");
+            ErrorIfItemUnitOfMeasureCodeDoesNotExist(SalesLine."No.", ServiceObject);
+        end;
+        SessionStore.RemoveBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo');
         SalesLine.Validate("Unit of Measure Code", ServiceObject."Unit of Measure");
         SalesLine.Validate(Quantity, TempBillingLine.GetSign() * ServiceObject."Quantity Decimal");
         SalesLine.Validate("Unit Price", GetSalesDocumentSign(SalesLine."Document Type") * TempBillingLine."Unit Price");
@@ -300,12 +307,14 @@ codeunit 8060 "Create Billing Documents"
 
         InitPurchaseLine(PurchaseLine);
         PurchaseLine.Type := PurchaseLine.Type::Item;
-        if ServiceCommitment."Invoicing Item No." <> '' then begin
-            SessionStore.SetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo', true);
-            PurchaseLine.Validate("No.", ServiceCommitment."Invoicing Item No.");
-            SessionStore.RemoveBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo');
-        end else
+        SessionStore.SetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo', true);
+        if (ServiceCommitment."Invoicing Item No." <> '') and (ServiceObject."Item No." <> ServiceCommitment."Invoicing Item No.") then
+            PurchaseLine.Validate("No.", ServiceCommitment."Invoicing Item No.")
+        else begin
             PurchaseLine.Validate("No.", ServiceObject."Item No.");
+            PurchaseLine.Validate("Variant Code", ServiceObject."Variant Code");
+        end;
+        SessionStore.RemoveBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo');
         PurchaseLine.Validate("Unit of Measure Code", ServiceObject."Unit of Measure");
         PurchaseLine.Validate(Quantity, TempBillingLine.GetSign() * ServiceObject."Quantity Decimal");
         PurchaseLine.Validate("Direct Unit Cost", GetPurchaseDocumentSign(PurchaseLine."Document Type") * TempBillingLine."Unit Price");
@@ -947,6 +956,17 @@ codeunit 8060 "Create Billing Documents"
         OnAfterIsNewSalesHeaderNeeded(CreateNewSalesHeader, TempBillingLine, PreviousCustomerNo, LastDetailOverview, PreviousCurrencyCode, PreviousContractNo);
     end;
 
+    internal procedure ErrorIfItemUnitOfMeasureCodeDoesNotExist(ItemNo: Code[20]; ServiceObject: Record "Service Object")
+    var
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ItemUOMDoesNotExistErr: Label 'The Unit of Measure of the Service Object (%1) contains a value (%2) that cannot be found in the Item Unit of Measure of the corresponding Invoicing Item (%3).', Comment = '%1 = Service Object No., %2 = Unit Of Measure Code, %3 = Item No.';
+    begin
+        ItemUnitOfMeasure.SetRange("Item No.", ItemNo);
+        ItemUnitOfMeasure.SetRange(Code, ServiceObject."Unit of Measure");
+        if ItemUnitOfMeasure.IsEmpty() then
+            Error(ItemUOMDoesNotExistErr, ServiceObject."No.", ServiceObject."Unit of Measure", ItemNo);
+    end;
+
     [InternalEvent(false, false)]
     local procedure OnAfterCreateSalesHeaderFromContract(CustomerContract: Record "Customer Contract"; var SalesHeader: Record "Sales Header")
     begin
@@ -1044,6 +1064,26 @@ codeunit 8060 "Create Billing Documents"
 
     [InternalEvent(false, false)]
     local procedure OnAfterCustomerContractLineGetInInsertSalesLineFromTempBillingLine(CustomerContractLine: Record "Customer Contract Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateSalesDocumentsPerContractBeforeTempBillingLineFindSet(var TempBillingLine: Record "Billing Line" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreatePurchaseDocumentsPerContractBeforeTempBillingLineFindSet(var TempBillingLine: Record "Billing Line" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateSalesDocumentsPerCustomerBeforeTempBillingLineFindSet(var TempBillingLine: Record "Billing Line" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreatePurchaseDocumentsPerVendorBeforeTempBillingLineFindSet(var TempBillingLine: Record "Billing Line" temporary)
     begin
     end;
 

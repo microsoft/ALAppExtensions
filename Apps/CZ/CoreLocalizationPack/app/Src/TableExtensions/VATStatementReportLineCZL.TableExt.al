@@ -29,6 +29,21 @@ tableextension 31061 "VAT Statement Report Line CZL" extends "VAT Statement Repo
         exit(CalcAmount("VAT Report Amount Type CZL"::"Reduced Amount"));
     end;
 
+    procedure CalcBaseAdditionalCurrency(): Decimal
+    begin
+        exit(CalcAmountAdditionalCurrency("VAT Report Amount Type CZL"::Base));
+    end;
+
+    procedure CalcAmountAdditionalCurrency(): Decimal
+    begin
+        exit(CalcAmountAdditionalCurrency("VAT Report Amount Type CZL"::Amount));
+    end;
+
+    procedure CalcReducedAmountAdditionalCurrency(): Decimal
+    begin
+        exit(CalcAmountAdditionalCurrency("VAT Report Amount Type CZL"::"Reduced Amount"));
+    end;
+
     local procedure CalcAmount(VATReportAmountTypeCZL: Enum "VAT Report Amount Type CZL"): Decimal
     var
         VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL";
@@ -37,5 +52,15 @@ tableextension 31061 "VAT Statement Report Line CZL" extends "VAT Statement Repo
         VATStmtReportLineDataCZL.SetRange("VAT Report Amount Type", VATReportAmountTypeCZL);
         VATStmtReportLineDataCZL.CalcSums(Amount);
         exit(VATStmtReportLineDataCZL.Amount);
+    end;
+
+    local procedure CalcAmountAdditionalCurrency(VATReportAmountTypeCZL: Enum "VAT Report Amount Type CZL"): Decimal
+    var
+        VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL";
+    begin
+        VATStmtReportLineDataCZL.SetFilterTo(Rec);
+        VATStmtReportLineDataCZL.SetRange("VAT Report Amount Type", VATReportAmountTypeCZL);
+        VATStmtReportLineDataCZL.CalcSums("Additional-Currency Amount");
+        exit(VATStmtReportLineDataCZL."Additional-Currency Amount");
     end;
 }
