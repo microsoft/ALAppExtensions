@@ -6,8 +6,10 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
+using Microsoft.Service.Setup;
 using System;
 using Microsoft.Utilities;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 6615 "FS Integration Mgt."
 {
@@ -17,6 +19,7 @@ codeunit 6615 "FS Integration Mgt."
         ConnectionStringFormatTok: Label 'Url=%1; UserName=%2; Password=%3; ProxyVersion=%4; %5', Locked = true;
         UserDoesNotExistCRMErr: Label 'There is no user with email address %1 in %2. Enter a valid email address.', Comment = '%1 = User email address, %2 = Dataverse service name';
         MicrosoftDynamicsFSIntegrationTxt: Label 'bcbi_FieldServiceIntegration', Locked = true;
+        MicrosoftDynamicsPremiumFSIntegrationTxt: Label 'bcbi_PremiumFieldServiceIntegration', Locked = true;
         TeamNotFoundErr: Label 'Cannot find the default owning team for the coupled business unit %1 selected on page %2. To continue, you can select another business unit or revert to the default business unit that was created during setup.', Comment = '%1 = business unit name, %2 = setup page caption';
         TeamNotFoundTxt: Label 'The team was not found.', Locked = true;
         CategoryTok: Label 'AL Field Service Integration', Locked = true;
@@ -33,6 +36,7 @@ codeunit 6615 "FS Integration Mgt."
     internal procedure ImportFSSolution(ServerAddress: Text; IntegrationUserEmail: Text; AdminUserEmail: Text; AdminUserPassword: SecretText; AccessToken: SecretText; AdminADDomain: Text; ProxyVersion: Integer; ForceRedeploy: Boolean; ImportSolutionFailed: Boolean)
     var
         CDSConnectionSetup: Record "CDS Connection Setup";
+        FSConnectionSetup: Record "FS Connection Setup";
         CRMRole: Record "CRM Role";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
         CRMProductName: Codeunit "CRM Product Name";
@@ -44,9 +48,6 @@ codeunit 6615 "FS Integration Mgt."
         DefaultOwningTeamGUID: Guid;
         TempConnectionStringWithPlaceholders: Text;
         TempConnectionString: SecretText;
-        SolutionInstalled: Boolean;
-        SolutionOutdated: Boolean;
-        ImportSolution: Boolean;
     begin
         CRMIntegrationManagement.CheckConnectRequiredFields(ServerAddress, IntegrationUserEmail);
         CDSConnectionSetup.Get();
@@ -77,24 +78,11 @@ codeunit 6615 "FS Integration Mgt."
         if IsNullGuid(UserGUID) then
             Error(UserDoesNotExistCRMErr, IntegrationUserEmail, CRMProductName.CDSServiceName());
 
-        SolutionInstalled := CRMHelper.CheckSolutionPresence(MicrosoftDynamicsFSIntegrationTxt);
-        if SolutionInstalled then
-            SolutionOutdated := CRMIntegrationManagement.IsSolutionOutdated(TempConnectionString, MicrosoftDynamicsFSIntegrationTxt);
+        ImportFieldServiceIntegrationSolution(CRMHelper, TempConnectionString, UserGUID, IntegrationRoleGUID, ForceRedeploy, ImportSolutionFailed);
 
-        if ForceRedeploy then
-            ImportSolution := (not SolutionInstalled) or SolutionOutdated
-        else
-            ImportSolution := not SolutionInstalled;
-
-        if ImportSolution then
-            if not ImportDefaultFSSolution(CRMHelper) then begin
-                ImportSolutionFailed := true;
-                CRMIntegrationManagement.ProcessConnectionFailures();
-            end;
-
-        IntegrationRoleGUID := CRMHelper.GetRoleId(GetFieldServiceIntegrationRoleID());
-        if not CRMHelper.CheckRoleAssignedToUser(UserGUID, IntegrationRoleGUID) then
-            CRMHelper.AssociateUserWithRole(UserGUID, IntegrationRoleGUID);
+        FSConnectionSetup.Get();
+        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service then
+            ImportPremiumFieldServiceIntegrationSolution(CRMHelper, TempConnectionString, UserGUID, IntegrationRoleGUID, ForceRedeploy, ImportSolutionFailed);
 
         if CDSIntegrationImpl.IsIntegrationEnabled() then begin
             CDSIntegrationImpl.RegisterConnection();
@@ -133,6 +121,58 @@ codeunit 6615 "FS Integration Mgt."
         end
     end;
 
+    local procedure ImportFieldServiceIntegrationSolution(var CRMHelper: DotNet CrmHelper; var TempConnectionString: SecretText; UserGUID: Guid; var IntegrationRoleGUID: Guid; ForceRedeploy: Boolean; var ImportSolutionFailed: Boolean)
+    var
+        SolutionInstalled: Boolean;
+        SolutionOutdated: Boolean;
+        ImportSolution: Boolean;
+    begin
+        SolutionInstalled := CRMHelper.CheckSolutionPresence(MicrosoftDynamicsFSIntegrationTxt);
+        if SolutionInstalled then
+            SolutionOutdated := CRMIntegrationManagement.IsSolutionOutdated(TempConnectionString, MicrosoftDynamicsFSIntegrationTxt);
+
+        if ForceRedeploy then
+            ImportSolution := (not SolutionInstalled) or SolutionOutdated
+        else
+            ImportSolution := not SolutionInstalled;
+
+        if ImportSolution then
+            if not ImportDefaultFSSolution(CRMHelper) then begin
+                ImportSolutionFailed := true;
+                CRMIntegrationManagement.ProcessConnectionFailures();
+            end;
+
+        IntegrationRoleGUID := CRMHelper.GetRoleId(GetFieldServiceIntegrationRoleID());
+        if not CRMHelper.CheckRoleAssignedToUser(UserGUID, IntegrationRoleGUID) then
+            CRMHelper.AssociateUserWithRole(UserGUID, IntegrationRoleGUID);
+    end;
+
+    local procedure ImportPremiumFieldServiceIntegrationSolution(var CRMHelper: DotNet CrmHelper; var TempConnectionString: SecretText; UserGUID: Guid; var IntegrationRoleGUID: Guid; ForceRedeploy: Boolean; var ImportSolutionFailed: Boolean)
+    var
+        SolutionInstalled: Boolean;
+        SolutionOutdated: Boolean;
+        ImportSolution: Boolean;
+    begin
+        SolutionInstalled := CRMHelper.CheckSolutionPresence(MicrosoftDynamicsPremiumFSIntegrationTxt);
+        if SolutionInstalled then
+            SolutionOutdated := CRMIntegrationManagement.IsSolutionOutdated(TempConnectionString, MicrosoftDynamicsPremiumFSIntegrationTxt);
+
+        if ForceRedeploy then
+            ImportSolution := (not SolutionInstalled) or SolutionOutdated
+        else
+            ImportSolution := not SolutionInstalled;
+
+        if ImportSolution then
+            if not ImportPremiumFSSolution(CRMHelper) then begin
+                ImportSolutionFailed := true;
+                CRMIntegrationManagement.ProcessConnectionFailures();
+            end;
+
+        IntegrationRoleGUID := CRMHelper.GetRoleId(GetPremiumFieldServiceIntegrationRoleID());
+        if not CRMHelper.CheckRoleAssignedToUser(UserGUID, IntegrationRoleGUID) then
+            CRMHelper.AssociateUserWithRole(UserGUID, IntegrationRoleGUID);
+    end;
+
     [TryFunction]
     local procedure TryTouchFSSolutionEntities()
     var
@@ -145,8 +185,11 @@ codeunit 6615 "FS Integration Mgt."
     end;
 
     internal procedure IsFSSolutionInstalled(): Boolean
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
     begin
-        if TryTouchFSSolutionEntities() then
+        FSConnectionSetup.Get();
+        if TryTouchFSSolutionEntities() and (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Project) then
             exit(true);
 
         ClearLastError();
@@ -174,9 +217,20 @@ codeunit 6615 "FS Integration Mgt."
         CRMHelper.ImportDefaultFieldServiceSolution()
     end;
 
+    [TryFunction]
+    local procedure ImportPremiumFSSolution(var CRMHelper: DotNet CrmHelper)
+    begin
+        CRMHelper.ImportPremiumFieldServiceSolution();
+    end;
+
     local procedure GetFieldServiceIntegrationRoleID(): Text
     begin
         exit('c11b4fa8-956b-439d-8b3c-021e8736a78b');
+    end;
+
+    local procedure GetPremiumFieldServiceIntegrationRoleID(): Text
+    begin
+        exit('fe30a272-346c-ef11-a671-6045bdd58d0b');
     end;
 
     local procedure TextToGuid(TextVar: Text): Guid
@@ -185,6 +239,122 @@ codeunit 6615 "FS Integration Mgt."
     begin
         if not Evaluate(GuidVar, TextVar) then;
         exit(GuidVar);
+    end;
+
+    internal procedure EnableServiceOrderArchive()
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        ServiceMgtSetup.Get();
+        if ServiceMgtSetup."Archive Orders" then
+            exit;
+
+        ServiceMgtSetup.Validate("Archive Orders", true);
+        ServiceMgtSetup.Modify(true);
+    end;
+
+    internal procedure TestManualServiceOrderNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Codeunit "No. Series";
+        CannotInvoiceErrorInfo: ErrorInfo;
+        NoManualNoSeriesTitleErr: Label 'Service Order No. Series must be set to manual.';
+        NoManualNoSeriesErr: Label 'Please make sure that the No. Series setup is correct.';
+        SetToManualLbl: Label 'Set to Manual';
+        OpenNoSeriesListLbl: Label 'Open No. Series. list';
+    begin
+        if not (IntegrationType = IntegrationType::Service) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        if not NoSeries.IsManual(ServiceMgtSetup."Service Order Nos.") then begin
+            CannotInvoiceErrorInfo.Title := NoManualNoSeriesTitleErr;
+            CannotInvoiceErrorInfo.Message := NoManualNoSeriesErr;
+
+            if ServiceMgtSetup."Service Order Nos." <> '' then
+                CannotInvoiceErrorInfo.AddAction(
+                    SetToManualLbl,
+                    Codeunit::"FS Integration Mgt.",
+                    'SetServiceOrderNoSeriesToManual'
+                );
+
+            CannotInvoiceErrorInfo.PageNo := Page::"No. Series";
+            CannotInvoiceErrorInfo.AddNavigationAction(OpenNoSeriesListLbl);
+            Error(CannotInvoiceErrorInfo);
+        end;
+    end;
+
+    procedure SetServiceOrderNoSeriesToManual(ErrorInfo: ErrorInfo)
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Record "No. Series";
+    begin
+        ServiceMgtSetup.Get();
+        NoSeries.Get(ServiceMgtSetup."Service Order Nos.");
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Modify(true);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrder(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        if not (IntegrationType = IntegrationType::Service) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup.TestField("One Service Item Line/Order", false);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrderModificationIsAllowed(ServiceMgtSetup: Record "Service Mgt. Setup")
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        if not ServiceMgtSetup."One Service Item Line/Order" then
+            exit;
+
+        if not ConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        ConnectionSetup.TestField("Is Enabled", false);
+    end;
+
+    internal procedure GetDefaultWorkOrderIncident(): Guid
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        ConnectionSetup.Get();
+
+        if IsNullGuid(ConnectionSetup."Default Work Order Incident ID") then begin
+            ConnectionSetup."Default Work Order Incident ID" := GenerateDefaultWorkOrderIncident();
+            ConnectionSetup.Modify();
+        end;
+
+        exit(ConnectionSetup."Default Work Order Incident ID");
+    end;
+
+    internal procedure GenerateDefaultWorkOrderIncident(): Guid
+    var
+        IncidentType: Record "FS Incident Type";
+        IncidentTypeNameLbl: Label 'Business Central - Default Incident Type';
+    begin
+        IncidentType.IncidentTypeId := CreateGuid();
+        IncidentType.Name := IncidentTypeNameLbl;
+        IncidentType.Insert();
+
+        exit(IncidentType.IncidentTypeId);
+    end;
+
+    internal procedure GetBookingStatusCompleted(): Guid
+    var
+        FSBookingStatus: Record "FS Booking Status";
+        EmptyGuid: Guid;
+    begin
+        FSBookingStatus.SetRange(FieldServiceStatus, FSBookingStatus.FieldServiceStatus::Completed);
+        if not FSBookingStatus.FindFirst() then
+            exit(EmptyGuid);
+
+        exit(FSBookingStatus.BookingStatusId);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]

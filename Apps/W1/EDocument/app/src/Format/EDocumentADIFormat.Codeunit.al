@@ -73,10 +73,17 @@ codeunit 6174 "E-Document ADI Format" implements IStructuredFormatReader
                     EDocumentPurchaseHeader."Total Tax" := EDocument."Amount Incl. VAT" - Token.AsValue().AsDecimal();
 
         // Extract the Vendor Name
-        if FieldsObject.Get('vendorName', Token) then
+        if FieldsObject.Get('billingAddressRecipient', Token) then
             if Token.IsObject() then
                 if Token.AsObject().Get('value_text', Token) then
                     EDocumentPurchaseHeader."Vendor Name" := Token.AsValue().AsText();
+
+        // Extract the Vendor Name
+        if FieldsObject.Get('billingAddress', Token) then
+            if Token.IsObject() then
+                if Token.AsObject().Get('value_text', Token) then
+                    EDocumentPurchaseHeader."Vendor Address" := Token.AsValue().AsText();
+
         // Extract the VAT No 
         if FieldsObject.Get('vendorTaxId', Token) then
             if Token.IsObject() then

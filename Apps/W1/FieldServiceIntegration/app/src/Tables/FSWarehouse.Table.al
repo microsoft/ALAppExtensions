@@ -199,7 +199,7 @@ table 6624 "FS Warehouse"
         }
         field(33; CompanyId; GUID)
         {
-            ExternalName = 'bcbi_companyid';
+            ExternalName = 'bcbi_company';
             ExternalType = 'Lookup';
             Description = 'The unique identifier of the company associated with the location.';
             Caption = 'Company';
