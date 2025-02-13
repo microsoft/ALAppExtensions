@@ -1341,7 +1341,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    [HandlerFunctions('SelectPOHandlerCancel,ConfirmHandler')]
+    [HandlerFunctions('SelectPOHandlerCancel')]
     procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_WithoutLinkedOrder()
     var
         EDocService: Record "E-Document Service";
@@ -1355,6 +1355,7 @@ codeunit 139628 "E-Doc. Receive Test"
         // [SCENARIO] Receive single e-document with two attachments without linking to purchase order 
         Initialize();
         BindSubscription(EDocImplState);
+        EDocImplState.SetThrowCreateError();
 
         // [GIVEN] e-Document service to receive one single purchase order
         CreateEDocServiceToReceivePurchaseOrder(EDocService);
@@ -1485,6 +1486,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."VAT Registration No." := 'GB123456789';
         DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
         DocumentVendor.Modify(false);
     end;

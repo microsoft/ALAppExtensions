@@ -9,6 +9,7 @@ codeunit 139630 "E-Doc. Impl. State"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         EnableOnCheck, DisableOnCreateOutput, DisableOnCreateBatch, IsAsync2, EnableHttpData, ThrowIntegrationRuntimeError, ThrowIntegrationLoggedError : Boolean;
         ThrowRuntimeError, ThrowLoggedError, ThrowBasicInfoError, ThrowCompleteInfoError, OnGetResponseSuccess, OnGetApprovalSuccess, ActionHasUpdate : Boolean;
+        ThrowCreateError: Boolean;
         LocalHttpResponse: HttpResponseMessage;
         ActionStatus: Enum "E-Document Service Status";
 
@@ -276,6 +277,13 @@ codeunit 139630 "E-Doc. Impl. State"
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, 'TEST');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Create Purch. Doc.", 'OnCreateNewPurchHdrOnBeforeRecRefInsert', '', false, false)]
+    local procedure OnCreateNewPurchHdrOnBeforeRecRefInsert()
+    begin
+        if ThrowCreateError then
+            Error('TEST');
+    end;
+
 #if not CLEAN26
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnSend', '', false, false)]
     local procedure OnSend(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
@@ -461,5 +469,8 @@ codeunit 139630 "E-Doc. Impl. State"
         NewLibraryVariableStorage := LibraryVariableStorage;
     end;
 
-
+    internal procedure SetThrowCreateError()
+    begin
+        ThrowCreateError := true;
+    end;
 }
