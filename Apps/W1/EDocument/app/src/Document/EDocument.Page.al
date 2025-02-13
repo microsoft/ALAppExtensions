@@ -14,7 +14,6 @@ using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using Microsoft.eServices.EDocument.Service;
-using Microsoft.Foundation.Attachment;
 
 page 6121 "E-Document"
 {
