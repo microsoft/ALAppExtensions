@@ -147,6 +147,6 @@ page 6122 "E-Documents"
         EDocImport: Codeunit "E-Doc. Import";
     begin
         if EDocImport.ChooseEDocumentService(EDocumentService) then
-            EDocImport.UploadDocument(EDocument, EDocumentService)
+            EDocImport.UploadDocument(EDocument, EDocumentService);
     end;
 }
