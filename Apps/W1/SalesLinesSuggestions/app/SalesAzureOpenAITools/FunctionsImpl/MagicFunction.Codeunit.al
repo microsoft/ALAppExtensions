@@ -7,7 +7,11 @@ namespace Microsoft.Sales.Document;
 using System.AI;
 using System.Telemetry;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 codeunit 7284 "Magic Function" implements "AOAI Function"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Access = Internal;
 

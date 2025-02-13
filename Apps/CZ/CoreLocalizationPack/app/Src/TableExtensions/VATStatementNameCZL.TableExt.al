@@ -26,10 +26,34 @@ tableextension 11749 "VAT Statement Name CZL" extends "VAT Statement Name"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(11773; "XML Format CZL"; Enum "VAT Statement XML Format CZL")
+        {
+            Caption = 'XML Format';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                ConfirmManagement: Codeunit "Confirm Management";
+            begin
+                if ("XML Format CZL" <> xRec."XML Format CZL") then
+                    if ConfirmManagement.GetResponseOrDefault(StrSubstNo(YouChangedXMLFormatQst, FieldCaption("XML Format CZL"), "XML Format CZL", TableCaption, Name), true) then
+                        InitVATAttributesCZL(true);
+            end;
+        }
     }
 
+    trigger OnAfterInsert()
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        InitVATAttributesCZL();
+    end;
+
     var
+        VATAttributeCodeMgtCZL: Codeunit "VAT Attribute Code Mgt. CZL";
         VATStmtXMLExportRunnerCZL: Codeunit "VAT Stmt XML Export Runner CZL";
+        YouChangedXMLFormatQst: Label 'You have changed XML format.\\Do you want to initialize %1: "%2" default VAT attributes for %3 %4?', Comment = '%1=fieldcaption, %2=VAT statement XML format, %3=tablecaption, %4=VAT statement template name';
 
     procedure ExportToFileCZL()
     begin
@@ -39,5 +63,15 @@ tableextension 11749 "VAT Statement Name CZL" extends "VAT Statement Name"
     procedure ExportToXMLBlobCZL(var TempBlob: Codeunit "Temp Blob")
     begin
         VATStmtXMLExportRunnerCZL.ExportToXMLBlob(Rec, TempBlob);
+    end;
+
+    procedure InitVATAttributesCZL();
+    begin
+        InitVATAttributesCZL(false);
+    end;
+
+    procedure InitVATAttributesCZL(OverwriteData: Boolean);
+    begin
+        VATAttributeCodeMgtCZL.InitVATAttributes(Rec, OverwriteData);
     end;
 }

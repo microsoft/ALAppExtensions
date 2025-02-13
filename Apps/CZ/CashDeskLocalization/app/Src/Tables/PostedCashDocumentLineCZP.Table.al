@@ -16,6 +16,7 @@ using Microsoft.FixedAssets.Maintenance;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Enums;
 using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
@@ -192,6 +193,13 @@ table 11738 "Posted Cash Document Line CZP"
             TableRelation = "Reason Code";
             DataClassification = CustomerContent;
         }
+        field(45; "Project No."; Code[20])
+        {
+            Caption = 'Project No.';
+            Editable = false;
+            TableRelation = Job;
+            DataClassification = CustomerContent;
+        }
         field(51; "VAT Base Amount"; Decimal)
         {
             AutoFormatExpression = "Currency Code";
@@ -295,6 +303,14 @@ table 11738 "Posted Cash Document Line CZP"
         {
             Caption = 'Use Tax';
             DataClassification = CustomerContent;
+        }
+        field(80; "Attached to Line No."; Integer)
+        {
+            Caption = 'Attached to Line No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+            TableRelation = "Posted Cash Document Line CZP"."Line No." where("Cash Desk No." = field("Cash Desk No."),
+                                                                    "Cash Document No." = field("Cash Document No."));
         }
         field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
         {
@@ -403,6 +419,45 @@ table 11738 "Posted Cash Document Line CZP"
             begin
                 ShowDimensions();
             end;
+        }
+        field(1001; "Project Task No."; Code[20])
+        {
+            Caption = 'Project Task No.';
+            Editable = false;
+            TableRelation = "Job Task"."Job Task No." where("Job No." = field("Project No."));
+            DataClassification = CustomerContent;
+        }
+        field(1004; "Project Quantity"; Decimal)
+        {
+            AccessByPermission = TableData Job = R;
+            Caption = 'Project Quantity';
+            Editable = false;
+            DecimalPlaces = 0 : 5;
+            DataClassification = CustomerContent;
+        }
+        field(1009; "Project Line Type"; Enum "Job Line Type")
+        {
+            AccessByPermission = TableData Job = R;
+            Caption = 'Project Line Type';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(1010; "Project Unit Price"; Decimal)
+        {
+            AccessByPermission = TableData Job = R;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 2;
+            Caption = 'Project Unit Price';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(1020; "Project Planning Line No."; Integer)
+        {
+            AccessByPermission = TableData Job = R;
+            BlankZero = true;
+            Caption = 'Project Planning Line No.';
+            Editable = false;
+            DataClassification = CustomerContent;
         }
         field(2678; "Allocation Account No."; Code[20])
         {

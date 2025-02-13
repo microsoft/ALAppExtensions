@@ -7,19 +7,19 @@ permissionset 4766 "Contoso Demo - Read"
 {
     Access = Public;
     Assignable = true;
-    Caption = 'E-Document Core - Edit';
+    Caption = 'Contoso Demo - Edit';
 
     IncludedPermissionSets = "Contoso Demo - Objects";
 
     Permissions =
-                  tabledata "EService Demo Data Setup" = IM,
-                  tabledata "FA Module Setup" = IM,
-                  tabledata "Human Resources Module Setup" = IM,
-                  tabledata "Jobs Module Setup" = IM,
-                  tabledata "Manufacturing Module Setup" = IM,
-                  tabledata "Service Module Setup" = IM,
-                  tabledata "Warehouse Module Setup" = IM,
-                  tabledata "Contoso Coffee Demo Data Setup" = IM,
-                  tabledata "Contoso Demo Data Module" = IM,
-                  tabledata "Contoso Module Dependency" = IM;
+                  tabledata "EService Demo Data Setup" = R,
+                  tabledata "FA Module Setup" = R,
+                  tabledata "Human Resources Module Setup" = R,
+                  tabledata "Jobs Module Setup" = R,
+                  tabledata "Manufacturing Module Setup" = R,
+                  tabledata "Service Module Setup" = R,
+                  tabledata "Warehouse Module Setup" = R,
+                  tabledata "Contoso Coffee Demo Data Setup" = R,
+                  tabledata "Contoso Demo Data Module" = R,
+                  tabledata "Contoso Module Dependency" = R;
 }

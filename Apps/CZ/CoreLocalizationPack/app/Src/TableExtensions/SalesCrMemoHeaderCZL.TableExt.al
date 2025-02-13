@@ -16,6 +16,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -23,6 +24,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -30,6 +32,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             Editable = false;

@@ -9,7 +9,11 @@ using System.Environment;
 using System.Integration;
 using System.Utilities;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 codeunit 6384 "Graph Client"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Access = Internal;
 

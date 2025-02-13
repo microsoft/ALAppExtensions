@@ -35,7 +35,6 @@ table 6165 "E-Doc. Imported Line"
             Caption = 'Unit Of Measure';
             Editable = false;
         }
-#pragma warning disable AS0004
         field(6; Quantity; Decimal)
         {
             Caption = 'Quantity';
@@ -56,7 +55,6 @@ table 6165 "E-Doc. Imported Line"
                 Validate("Fully Matched");
             end;
         }
-#pragma warning restore AS0004
         field(8; "Fully Matched"; Boolean)
         {
             Caption = 'Fully Matched';

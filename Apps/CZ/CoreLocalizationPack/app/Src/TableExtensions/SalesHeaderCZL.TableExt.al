@@ -60,6 +60,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             DataClassification = CustomerContent;
 
@@ -71,6 +72,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             DataClassification = CustomerContent;
 
@@ -82,6 +84,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             DataClassification = CustomerContent;

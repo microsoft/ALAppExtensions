@@ -2,9 +2,7 @@ namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Sales.Setup;
-using Microsoft.Sales.History;
 using Microsoft.Purchases.Setup;
-using Microsoft.Purchases.History;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
@@ -20,7 +18,7 @@ report 8051 "Contract Deferrals Release"
     {
         layout
         {
-            area(content)
+            area(Content)
             {
                 group(Options)
                 {
@@ -59,6 +57,7 @@ report 8051 "Contract Deferrals Release"
     begin
         TestDates();
         GetAndTestSourceCode();
+        GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch();
 
         FilterAndCountContractDeferrals();
 
@@ -77,15 +76,13 @@ report 8051 "Contract Deferrals Release"
 
     var
         TempGenJournalLine: Record "Gen. Journal Line" temporary;
+        ServiceContractSetup: Record "Service Contract Setup";
         SalesSetup: Record "Sales & Receivables Setup";
         GenPostingSetup: Record "General Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
         PurchaseSetup: Record "Purchases & Payables Setup";
-        CustomerContractDeferrals: Record "Customer Contract Deferral";
-        CustContractDeferralsToUpdate: Record "Customer Contract Deferral";
-        VendContractDeferralsToUpdate: Record "Vendor Contract Deferral";
-        VendorContractDeferrals: Record "Vendor Contract Deferral";
-        PurchaseInvoiceLine: Record "Purch. Inv. Line";
+        GlobalCustomerContractDeferral: Record "Customer Contract Deferral";
+        GlobalVendorContractDeferral: Record "Vendor Contract Deferral";
         CustomerDeferralsMngmt: Codeunit "Customer Deferrals Mngmt.";
         VendorDeferralsMngmt: Codeunit "Vendor Deferrals Mngmt.";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
@@ -118,30 +115,32 @@ report 8051 "Contract Deferrals Release"
     begin
         ContractDeferralIteration := 0;
 
-        CustomerContractDeferrals.SetRange("Posting Date", 0D, PostUntilDate);
-        CustomerContractDeferrals.SetRange("Document Posting Date", 0D, PostUntilDate);
-        CustomerContractDeferrals.SetRange(Released, false);
-        VendorContractDeferrals.SetRange("Posting Date", 0D, PostUntilDate);
-        VendorContractDeferrals.SetRange("Document Posting Date", 0D, PostUntilDate);
-        VendorContractDeferrals.SetRange(Released, false);
-        TotalContractDeferralsCount := VendorContractDeferrals.Count + CustomerContractDeferrals.Count;
+        GlobalCustomerContractDeferral.SetRange("Posting Date", 0D, PostUntilDate);
+        GlobalCustomerContractDeferral.SetRange("Document Posting Date", 0D, PostUntilDate);
+        GlobalCustomerContractDeferral.SetRange(Released, false);
+        GlobalVendorContractDeferral.SetRange("Posting Date", 0D, PostUntilDate);
+        GlobalVendorContractDeferral.SetRange("Document Posting Date", 0D, PostUntilDate);
+        GlobalVendorContractDeferral.SetRange(Released, false);
+        TotalContractDeferralsCount := GlobalVendorContractDeferral.Count + GlobalCustomerContractDeferral.Count;
     end;
 
     local procedure ReleaseAllCustomerContractDeferralsAndInsertTempGenJournalLines()
-    var
-        SalesInvoiceLine: Record "Sales Invoice Line";
     begin
-        if CustomerContractDeferrals.FindSet() then begin
+        if GlobalCustomerContractDeferral.FindSet() then begin
             GetLineDiscountPostingSetup(Enum::"Service Partner"::Customer);
             repeat
-                if SalesInvoiceLine.Get(CustomerContractDeferrals."Document No.", CustomerContractDeferrals."Document Line No.") then
-                    ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(CustomerContractDeferrals, SalesInvoiceLine."Gen. Bus. Posting Group", SalesInvoiceLine."Gen. Prod. Posting Group");
-            until CustomerContractDeferrals.Next() = 0;
+                ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(GlobalCustomerContractDeferral);
+            until GlobalCustomerContractDeferral.Next() = 0;
         end;
     end;
 
-    internal procedure ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(var CustomerContractDeferral: Record "Customer Contract Deferral"; GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20])
+    internal procedure ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(var CustomerContractDeferral: Record "Customer Contract Deferral")
+    var
+        GenBusPostingGroup: Code[20];
+        GenProdPostingGroup: Code[20];
     begin
+        if not CustomerContractDeferral.GetDocumentPostingGroups(GenBusPostingGroup, GenProdPostingGroup) then
+            exit;
         CheckGenPostingSetup(GenBusPostingGroup, GenProdPostingGroup, Enum::"Service Partner"::Customer);
         ReleaseContractDeferral(Enum::"Service Partner"::Customer, CustomerContractDeferral."Entry No.");
         InsertTempGenJournalLine(
@@ -169,17 +168,21 @@ report 8051 "Contract Deferrals Release"
 
     local procedure ReleaseAllVendorContractDeferralsAndInsertTempGenJournalLines()
     begin
-        if VendorContractDeferrals.FindSet() then begin
+        if GlobalVendorContractDeferral.FindSet() then begin
             GetLineDiscountPostingSetup(Enum::"Service Partner"::Vendor);
             repeat
-                if PurchaseInvoiceLine.Get(VendorContractDeferrals."Document No.", VendorContractDeferrals."Document Line No.") then
-                    ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(VendorContractDeferrals, PurchaseInvoiceLine."Gen. Bus. Posting Group", PurchaseInvoiceLine."Gen. Prod. Posting Group");
-            until VendorContractDeferrals.Next() = 0;
+                ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(GlobalVendorContractDeferral);
+            until GlobalVendorContractDeferral.Next() = 0;
         end;
     end;
 
-    internal procedure ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(var VendorContractDeferral: Record "Vendor Contract Deferral"; GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20])
+    internal procedure ReleaseVendorContractDeferralsAndInsertTempGenJournalLines(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    var
+        GenBusPostingGroup: Code[20];
+        GenProdPostingGroup: Code[20];
     begin
+        if not VendorContractDeferral.GetDocumentPostingGroups(GenBusPostingGroup, GenProdPostingGroup) then
+            exit;
         CheckGenPostingSetup(GenBusPostingGroup, GenProdPostingGroup, Enum::"Service Partner"::Vendor);
         ReleaseContractDeferral(Enum::"Service Partner"::Vendor, VendorContractDeferral."Entry No.");
         InsertTempGenJournalLine(
@@ -243,6 +246,9 @@ report 8051 "Contract Deferrals Release"
     end;
 
     local procedure ReleaseContractDeferral(Partner: Enum "Service Partner"; DeferralEntryNo: Integer)
+    var
+        CustContractDeferralsToUpdate: Record "Customer Contract Deferral";
+        VendContractDeferralsToUpdate: Record "Vendor Contract Deferral";
     begin
         case Partner of
             Enum::"Service Partner"::Customer:
@@ -337,11 +343,25 @@ report 8051 "Contract Deferrals Release"
         SourceCodeSetup.TestField("Contract Deferrals Release");
     end;
 
+    internal procedure GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Journal Templ. Name Mandatory" then begin
+            ServiceContractSetup.Get();
+            ServiceContractSetup.TestField("Def. Rel. Jnl. Template Name");
+            ServiceContractSetup.TestField("Def. Rel. Jnl. Batch Name");
+        end;
+    end;
+
     procedure PostGenJnlLine(var TempGenJournalLine: Record "Gen. Journal Line" temporary; PostingDate: Date; SourceCodeSetupContractDeferralsRelease: Code[10])
     var
         GenJnlLine: Record "Gen. Journal Line";
     begin
         GenJnlLine.Init();
+        GenJnlLine."Journal Template Name" := ServiceContractSetup."Def. Rel. Jnl. Template Name";
+        GenJnlLine."Journal Batch Name" := ServiceContractSetup."Def. Rel. Jnl. Batch Name";
         GenJnlLine."Document No." := TempGenJournalLine."Document No.";
         GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
         GenJnlLine."VAT Posting" := GenJnlLine."VAT Posting"::"Manual VAT Entry";
@@ -371,7 +391,6 @@ report 8051 "Contract Deferrals Release"
         GenJnlLine.Description := StrSubstNo(ReleasingOfContractNoTxt, Format(GenJnlLine."Posting Date", 0, '<Month Text> <Year4>'));
         GenJnlPostLine.RunWithCheck(GenJnlLine);
     end;
-
 
     internal procedure SetRequestPageParameters(NewPostUntilDate: Date; NewPostingDate: Date)
     begin

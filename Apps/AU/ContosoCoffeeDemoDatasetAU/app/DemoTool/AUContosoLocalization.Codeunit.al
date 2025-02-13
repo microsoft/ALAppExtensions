@@ -52,13 +52,12 @@ codeunit 17131 "AU Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create AU Inv Posting Group");
-            Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create AU Inv Posting Group");
                     Codeunit.Run(Codeunit::"Create AU Inv Posting Setup");
-                    Codeunit.Run(Codeunit::"Create AU Item Template");
                 end;
-
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create AU Item Template");
         end;
     end;
 
@@ -77,12 +76,16 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create AU County");
                     Codeunit.Run(Codeunit::"Create AU Post Code");
-                    Codeunit.Run(Codeunit::"Create AU Company Information");
                     Codeunit.Run(Codeunit::"Create AU No. Series");
                     Codeunit.Run(Codeunit::"Create AU Shipping Agent");
                     Codeunit.Run(Codeunit::"Create AU Source Code");
-                    Codeunit.Run(Codeunit::"Create AU Source Code Setup");
                     Codeunit.Run(Codeunit::"Create AU Data Exchange");
+                    Codeunit.Run(Codeunit::"Create Data Exchange Type");
+                end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                begin
+                    Codeunit.Run(Codeunit::"Create AU Source Code Setup");
+                    Codeunit.Run(Codeunit::"Create AU Company Information");
                 end;
         end;
     end;
@@ -131,20 +134,14 @@ codeunit 17131 "AU Contoso Localization"
                     CreateAUVATPostingGroups.UpdateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create AU Gen. Journ. Template");
                     Codeunit.Run(Codeunit::"Create AU Gen. Journal Batch");
-                    Codeunit.Run(Codeunit::"Create AU Acc Schedule Name");
-                    Codeunit.Run(Codeunit::"Create AU Column Layout Name");
                     Codeunit.Run(Codeunit::"Create AU WHT Revenue Type");
                     Codeunit.Run(Codeunit::"Create AU WHT Posting Setup");
                     Codeunit.Run(Codeunit::"Create BAS XML ID AU");
-                end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create AU Column Layout");
-                    Codeunit.Run(Codeunit::"Create AU Financial Report");
                     Codeunit.Run(Codeunit::"Create AU VAT Statement");
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
                     Codeunit.Run(Codeunit::"Create VAT Setup Post.Grp. AU");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
         end;
     end;
 
@@ -174,12 +171,10 @@ codeunit 17131 "AU Contoso Localization"
         CreateAUItem: Codeunit "Create AU Item";
         CreateAUItemCharge: Codeunit "Create AU Item Charge";
         CreateAULocation: Codeunit "Create AU Location";
-        CreateAUCustomerTemplate: Codeunit "Create AU Customer Template";
         CreateAUShipToAddress: Codeunit "Create AU Ship-To Address";
         CreateAUFAPostingGroup: Codeunit "Create AU FA Posting Group";
         CreateAUResource: Codeunit "Create AU Resource";
         CreateAUAccScheduleLine: Codeunit "Create AU Acc. Schedule Line";
-        CreateAUGenJournalBatch: Codeunit "Create AU Gen. Journal Batch";
         CreateAUJobPostingGroup: Codeunit "Create AU Job Posting Group";
         CreateAUCustPostingGroup: Codeunit "Create AU Cust Posting Group";
         CreateAUCurrency: Codeunit "Create AU Currency";
@@ -199,7 +194,6 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     BindSubscription(CreateAUResource);
                     BindSubscription(CreateAUAccScheduleLine);
-                    BindSubscription(CreateAUGenJournalBatch);
                     BindSubscription(CreateAUCurrency);
                     BindSubscription(CreateCurrencyExRateAU);
                 end;
@@ -225,7 +219,6 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     BindSubscription(CreateAUCustPostingGroup);
                     BindSubscription(CreateAUCustomer);
-                    BindSubscription(CreateAUCustomerTemplate);
                     BindSubscription(CreateAUShipToAddress);
                     BindSubscription(CreateReminderLevelAU);
                     BindSubscription(CreateSalesDimValueAU);
@@ -255,11 +248,9 @@ codeunit 17131 "AU Contoso Localization"
         CreateAUItemCharge: Codeunit "Create AU Item Charge";
         CreateAUItem: Codeunit "Create AU Item";
         CreateAULocation: Codeunit "Create AU Location";
-        CreateAUCustomerTemplate: Codeunit "Create AU Customer Template";
         CreateAUShipToAddress: Codeunit "Create AU Ship-To Address";
         CreateAUFAPostingGroup: Codeunit "Create AU FA Posting Group";
         CreateAUResource: Codeunit "Create AU Resource";
-        CreateAUGenJournalBatch: Codeunit "Create AU Gen. Journal Batch";
         CreateAUAccScheduleLine: Codeunit "Create AU Acc. Schedule Line";
         CreateAUJobPostingGroup: Codeunit "Create AU Job Posting Group";
         CreateAUCustPostingGroup: Codeunit "Create AU Cust Posting Group";
@@ -298,7 +289,6 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     UnbindSubscription(CreateAUCustPostingGroup);
                     UnbindSubscription(CreateAUCustomer);
-                    UnbindSubscription(CreateAUCustomerTemplate);
                     UnbindSubscription(CreateAUShipToAddress);
                     UnbindSubscription(CreateReminderLevelAU);
                     UnbindSubscription(CreateSalesDimValueAU)
@@ -311,7 +301,6 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     UnbindSubscription(CreateAUResource);
                     UnbindSubscription(CreateAUAccScheduleLine);
-                    UnbindSubscription(CreateAUGenJournalBatch);
                     UnbindSubscription(CreateAUCurrency);
                     UnbindSubscription(CreateCurrencyExRateAU);
                 end;

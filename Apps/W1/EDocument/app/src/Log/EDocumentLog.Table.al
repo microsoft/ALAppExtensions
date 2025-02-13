@@ -5,6 +5,8 @@
 namespace Microsoft.eServices.EDocument;
 
 using System.Utilities;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6124 "E-Document Log"
 {
@@ -42,10 +44,20 @@ table 6124 "E-Document Log"
         {
             Caption = 'E-Document Status';
         }
+#if not CLEANSCHEMA29
         field(7; "Service Integration"; Enum "E-Document Integration")
         {
-            Caption = 'Integration Code';
+            Caption = 'Service Integration Code';
+            ObsoleteReason = 'Replaced by Service Integration V2.';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif
         }
+#endif
         field(8; "Document Type"; Enum "E-Document Type")
         {
             Caption = 'Document Type';
@@ -56,10 +68,19 @@ table 6124 "E-Document Log"
             Caption = 'Document No.';
             Editable = false;
         }
+        field(10; "Service Integration V2"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration';
+        }
         field(11; "Document Format"; Enum "E-Document Format")
         {
             Caption = 'Document Format';
             DataClassification = SystemMetadata;
+        }
+        field(12; "Processing Status"; Enum "Import E-Doc. Proc. Status")
+        {
+            Caption = 'Processing Status';
+            Editable = false;
         }
     }
 
@@ -74,8 +95,23 @@ table 6124 "E-Document Log"
             IncludedFields = Status;
             MaintainSiftIndex = false;
         }
+#if not CLEANSCHEMA29
         key(Key3; Status, "Service Code", "Document Format", "Service Integration")
         {
+            Clustered = false;
+            ObsoleteReason = 'Replaced by Key4.';
+#if CLEAN26
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif
+        }
+#endif
+        key(Key4; Status, "Service Code", "Document Format", "Service Integration V2")
+        {
+            Clustered = false;
         }
     }
 

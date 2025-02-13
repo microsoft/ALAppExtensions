@@ -8,6 +8,7 @@ namespace Microsoft.DataMigration.SL;
 using Microsoft.DataMigration;
 using System.Integration;
 using System.Text;
+using System.Environment;
 
 codeunit 47013 "SL Hybrid Management"
 {
@@ -50,6 +51,39 @@ codeunit 47013 "SL Hybrid Management"
 
         Handled := true;
         CloseWizard := true;
+    end;
+
+    /// <summary>
+    /// If product contains only SL migrations, do not show the live companies warning
+    /// </summary>
+    /// <param name="SkipShowLiveCompaniesWarning">Boolean value to skip the warning</param>
+    [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnSkipShowLiveCompaniesWarning', '', false, false)]
+    local procedure HandleSkipCompaniesWizard(var SkipShowLiveCompaniesWarning: Boolean)
+    var
+        HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridSLWizard: Codeunit "SL Hybrid Wizard";
+    begin
+        HybridReplicationSummary.SetRange(Source, HybridSLWizard.ProductIdTxt());
+        if HybridReplicationSummary.IsEmpty() then
+            exit;
+
+        HybridReplicationSummary.SetFilter(Source, '<>%1', HybridSLWizard.ProductIdTxt());
+        if not HybridReplicationSummary.IsEmpty() then
+            exit;
+
+        SkipShowLiveCompaniesWarning := true;
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeResetUsersToIntelligentCloudPermissions', '', false, false)]
+    local procedure HandleBeforeResetUsersToIntelligentCloudPermissions(var Handled: Boolean)
+    var
+        SLHybridWizard: Codeunit "SL Hybrid Wizard";
+    begin
+        if not (SLHybridWizard.GetSLMigrationEnabled()) then
+            exit;
+
+        Handled := true;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Data Migration Overview", OnOpenPageEvent, '', false, false)]

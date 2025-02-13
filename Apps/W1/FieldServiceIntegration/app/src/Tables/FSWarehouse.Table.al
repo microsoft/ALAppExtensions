@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6624 "FS Warehouse"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_warehouse';
     TableType = CRM;
@@ -195,7 +199,7 @@ table 6624 "FS Warehouse"
         }
         field(33; CompanyId; GUID)
         {
-            ExternalName = 'bcbi_companyid';
+            ExternalName = 'bcbi_company';
             ExternalType = 'Lookup';
             Description = 'The unique identifier of the company associated with the location.';
             Caption = 'Company';

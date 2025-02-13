@@ -99,6 +99,7 @@ report 4409 "EXR Customer Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopCustomerListLabel = 'Top Customer List';
+        DateFilterLabel = 'Date Filter:';
     }
 
     var

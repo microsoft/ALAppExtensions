@@ -30,7 +30,7 @@ codeunit 6169 "E-Doc. Attachment Processor"
     /// Insert Document Attachment record from stream and filename
     /// Framework moves E-Document attachments to created documents at the end of import process
     /// </summary>
-    internal procedure Insert(EDocument: Record "E-Document"; DocStream: InStream; FileName: Text)
+    procedure Insert(EDocument: Record "E-Document"; DocStream: InStream; FileName: Text)
     var
         DocumentAttachment: Record "Document Attachment";
         RecordRef: RecordRef;

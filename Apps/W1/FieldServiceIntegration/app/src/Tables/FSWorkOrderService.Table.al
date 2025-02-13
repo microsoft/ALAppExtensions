@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6620 "FS Work Order Service"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_workorderservice';
     TableType = CRM;
@@ -746,6 +750,28 @@ table 6620 "FS Work Order Service"
             ExternalType = 'Integer';
             Description = 'Duration invoiced in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
             Caption = 'Duration Invoiced';
+        }
+        field(114; DurationShipped; Integer)
+        {
+            ExternalName = 'bcbi_durationshipped';
+            ExternalType = 'Integer';
+            Description = 'Duration shipped in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
+            Caption = 'Duration Shipped';
+        }
+        field(120; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
+        }
+        field(121; LocationCode; Code[10])
+        {
+            ExternalName = 'bcbi_locationcode';
+            ExternalType = 'String';
+            Description = 'Unique identifier of the warehouse associated with the entity.';
+            Caption = 'Location Code';
+            ExternalAccess = Read;
         }
     }
     keys

@@ -14,6 +14,7 @@ tableextension 11743 "Issued Fin.Ch. Memo Header CZL" extends "Issued Fin. Charg
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -21,6 +22,7 @@ tableextension 11743 "Issued Fin.Ch. Memo Header CZL" extends "Issued Fin. Charg
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -28,6 +30,7 @@ tableextension 11743 "Issued Fin.Ch. Memo Header CZL" extends "Issued Fin. Charg
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             Editable = false;

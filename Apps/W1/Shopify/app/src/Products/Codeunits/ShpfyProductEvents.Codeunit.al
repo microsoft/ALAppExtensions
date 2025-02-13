@@ -56,6 +56,16 @@ codeunit 30177 "Shpfy Product Events"
     end;
 
     /// <summary> 
+    /// Raised After Temp Shopify Variant from Item is created.
+    /// </summary>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterCreateTempShopifyVariant(Item: Record Item; var ShopifyVariant: Record "Shpfy Variant")
+    begin
+    end;
+
+    /// <summary> 
     /// Raised After Create Product Body Html.
     /// </summary>
     /// <param name="ItemNo">Parameter of type Code[20].</param>

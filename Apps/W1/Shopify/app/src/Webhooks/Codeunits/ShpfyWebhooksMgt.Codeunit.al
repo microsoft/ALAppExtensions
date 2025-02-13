@@ -17,8 +17,8 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         CategoryTok: Label 'Shopify Integration', Locked = true;
         JobQueueCategoryLbl: Label 'SHPFY', Locked = true;
         WebhookRegistrationFailedErr: Label 'Failed to register webhook with Shopify';
-        BulkOperationTopicLbl: Label 'bulk_operations/finish', Locked = true;
-        OrdersCreateTopicLbl: Label 'orders/create', Locked = true;
+        BulkOperationTopicLbl: Label 'BULK_OPERATIONS_FINISH', Locked = true;
+        OrdersCreateTopicLbl: Label 'ORDERS_CREATE', Locked = true;
         BulkOperationNotificationReceivedLbl: Label 'Bulk operation notification received for shop %1', Comment = '%1 = Shop code', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]

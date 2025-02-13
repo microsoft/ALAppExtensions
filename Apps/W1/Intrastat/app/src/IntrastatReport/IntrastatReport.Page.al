@@ -294,7 +294,7 @@ page 4812 "Intrastat Report"
         exit(VATReportsConfiguration.FindFirst());
     end;
 
-    local procedure UpdateErrors()
+    protected procedure UpdateErrors()
     var
         IsHandled: Boolean;
     begin
