@@ -6,14 +6,14 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-permissionset 6381 SignUpEDCORead
+permissionset 6381 "SignUp EDCO Read"
 {
     Access = Internal;
     Assignable = true;
     Caption = 'SignUp E-Doc. Connector - Read', MaxLength = 30;
-    IncludedPermissionSets = SignUpEDCOObjects;
-    Permissions = tabledata SignUpConnectionSetup = R,
-                  tabledata SignUpMetadataProfile = R,
+    IncludedPermissionSets = "SignUp EDCO Objects";
+    Permissions = tabledata "SignUp Connection Setup" = R,
+                  tabledata "SignUp Metadata Profile" = R,
                   tabledata "E-Document Integration Log" = rim;
 
 

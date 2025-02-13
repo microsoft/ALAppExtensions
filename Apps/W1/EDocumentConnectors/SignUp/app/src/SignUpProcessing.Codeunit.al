@@ -10,7 +10,7 @@ using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
-codeunit 6383 SignUpProcessing
+codeunit 6383 "SignUp Processing"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -23,8 +23,8 @@ codeunit 6383 SignUpProcessing
 
     #region variables
     var
-        SignUpConnection: Codeunit SignUpConnection;
-        SignUpHelpersImpl: Codeunit SignUpHelpers;
+        SignUpConnection: Codeunit "SignUp Connection";
+        SignUpHelpersImpl: Codeunit "SignUp Helpers";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
@@ -289,7 +289,7 @@ codeunit 6383 SignUpProcessing
 
     local procedure ParseReceivedDocument(InputTxt: Text; var DocumentId: Text): Boolean
     var
-        SignUpHelpers: Codeunit SignUpHelpers;
+        SignUpHelpers: Codeunit "SignUp Helpers";
     begin
         DocumentId := SignUpHelpers.GetJsonValueFromText(InputTxt, this.TransactionIdTxt);
         exit(DocumentId <> '');
@@ -401,7 +401,7 @@ codeunit 6383 SignUpProcessing
     local procedure SendAcknowledgePatch(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"): Boolean
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
+        SignUpAPIRequests: Codeunit "SignUp API Requests";
         HttpResponseMessage: HttpResponseMessage;
         HttpRequestMessage: HttpRequestMessage;
     begin

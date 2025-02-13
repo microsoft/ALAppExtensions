@@ -8,11 +8,11 @@ using System.Telemetry;
 using Microsoft.Foundation.Company;
 using System.Environment;
 
-page 6380 SignUpConnectionSetupCard
+page 6380 "SignUp Connection Setup Card"
 {
     AdditionalSearchTerms = 'SignUp,electronic document,e-invoice,e-document,external,connection,connector';
     PageType = Card;
-    SourceTable = SignUpConnectionSetup;
+    SourceTable = "SignUp Connection Setup";
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
     Caption = 'SignUp Connection Setup';
@@ -190,7 +190,7 @@ page 6380 SignUpConnectionSetupCard
     end;
 
     var
-        SignUpAuthentication: Codeunit SignUpAuthentication;
+        SignUpAuthentication: Codeunit "SignUp Authentication";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, RootID, RootSecret, RootTenant : Text;

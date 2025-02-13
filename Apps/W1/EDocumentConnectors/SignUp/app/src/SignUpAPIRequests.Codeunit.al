@@ -13,7 +13,7 @@ using System.Utilities;
 using System.Xml;
 using System.Environment;
 
-codeunit 6389 SignUpAPIRequests
+codeunit 6389 "SignUp API Requests"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -69,7 +69,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
         HttpContent: HttpContent;
         Payload: Text;
     begin
@@ -97,7 +97,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetSentDocumentStatus(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -117,7 +117,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure PatchDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -136,7 +136,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -156,7 +156,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -177,7 +177,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -196,7 +196,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>Returns true if the metadata profiles were successfully fetched, otherwise false.</returns>
     procedure FetchMetaDataProfiles(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
         SignUpConnectionSetup.SetLoadFields("Service URL");
@@ -215,7 +215,7 @@ codeunit 6389 SignUpAPIRequests
     /// <returns>True if successfully completed</returns>   
     procedure GetMarketPlaceCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpAuthentication: Codeunit SignUpAuthentication;
+        SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
 
@@ -242,7 +242,7 @@ codeunit 6389 SignUpAPIRequests
         Clear(HttpResponseMessage);
     end;
 
-    local procedure GetSetup(var SignUpConnectionSetup: Record SignUpConnectionSetup)
+    local procedure GetSetup(var SignUpConnectionSetup: Record "SignUp Connection Setup")
     var
         MissingSetupErrorInfo: ErrorInfo;
     begin
@@ -278,7 +278,7 @@ codeunit 6389 SignUpAPIRequests
         exit(this.CompanyId);
     end;
 
-    local procedure PrepareContent(var HttpContent: HttpContent; Payload: Text; EDocument: Record "E-Document"; SignUpConnectionSetup: Record SignUpConnectionSetup)
+    local procedure PrepareContent(var HttpContent: HttpContent; Payload: Text; EDocument: Record "E-Document"; SignUpConnectionSetup: Record "SignUp Connection Setup")
     var
         ContentText: Text;
         HttpHeaders: HttpHeaders;
@@ -299,7 +299,7 @@ codeunit 6389 SignUpAPIRequests
 
     local procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
     var
-        SignUpAuthentication: Codeunit SignUpAuthentication;
+        SignUpAuthentication: Codeunit "SignUp Authentication";
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
     begin
@@ -371,12 +371,12 @@ codeunit 6389 SignUpAPIRequests
         exit(CompanyInformation."Country/Region Code");
     end;
 
-    local procedure PrepareContentForSend(EDocument: Record "E-Document"; SendingCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SignUpEnvironmentType): Text
+    local procedure PrepareContentForSend(EDocument: Record "E-Document"; SendingCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum "SignUp Environment Type"): Text
     var
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
-        SignUpMetadataProfile: Record SignUpMetadataProfile;
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
         EDocumentHelper: Codeunit "E-Document Helper";
         Base64Convert: Codeunit "Base64 Convert";
         JsonObject: JsonObject;

@@ -15,7 +15,7 @@ codeunit 148196 IntegrationHelpers
 
     internal procedure SetAPICode(Path: Text)
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
     begin
         SignUpConnectionSetup.Get();
         SignUpConnectionSetup."Service URL" := this.SetMockServiceUrl(Path);
@@ -24,8 +24,8 @@ codeunit 148196 IntegrationHelpers
 
     internal procedure SetCommonConnectionSetup()
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
-        SignUpAuthentication: Codeunit SignUpAuthentication;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
+        SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
         SignUpConnectionSetup.Get();
         SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root App ID", this.DummyId());

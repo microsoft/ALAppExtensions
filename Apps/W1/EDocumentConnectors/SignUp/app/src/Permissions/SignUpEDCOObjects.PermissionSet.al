@@ -6,21 +6,21 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-permissionset 6380 SignUpEDCOObjects
+permissionset 6380 "SignUp EDCO Objects"
 {
     Access = Internal;
     Assignable = false;
     Caption = 'SignUp E-Doc. Connector - Obj.', MaxLength = 30;
 
-    Permissions = table SignUpConnectionSetup = X,
-                  table SignUpMetadataProfile = X,
+    Permissions = table "SignUp Connection Setup" = X,
+                  table "SignUp Metadata Profile" = X,
                   table "E-Document Integration Log" = X,
-                  page SignUpConnectionSetupCard = X,
-                  page SignUpMetadataProfiles = X,
-                  codeunit SignUpAPIRequests = X,
-                  codeunit SignUpAuthentication = X,
-                  codeunit SignUpConnection = X,
-                  codeunit SignUpHelpers = X,
-                  codeunit SignUpIntegrationImpl = X,
-                  codeunit SignUpProcessing = X;
+                  page "SignUp Connection Setup Card" = X,
+                  page "SignUp Metadata Profiles" = X,
+                  codeunit "SignUp API Requests" = X,
+                  codeunit "SignUp Authentication" = X,
+                  codeunit "SignUp Connection" = X,
+                  codeunit "SignUp Helpers" = X,
+                  codeunit "SignUp Integration Impl." = X,
+                  codeunit "SignUp Processing" = X;
 }

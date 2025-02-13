@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6382 SignUpMetadataProfile
+table 6382 "SignUp Metadata Profile"
 {
     Caption = 'MetadataProfile';
     Access = Internal;
     DataClassification = CustomerContent;
-    LookupPageId = SignUpMetadataProfiles;
+    LookupPageId = "SignUp Metadata Profiles";
 
     fields
     {

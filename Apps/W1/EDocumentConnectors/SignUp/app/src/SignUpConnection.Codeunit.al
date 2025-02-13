@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.EServices.EDocument;
 using System.Utilities;
 
-codeunit 6391 SignUpConnection
+codeunit 6391 "SignUp Connection"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -17,8 +17,8 @@ codeunit 6391 SignUpConnection
     #region variables
 
     var
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
-        SignUpHelpersImpl: Codeunit SignUpHelpers;
+        SignUpAPIRequests: Codeunit "SignUp API Requests";
+        SignUpHelpersImpl: Codeunit "SignUp Helpers";
         UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
         EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
         FourZeroThreeErr: Label 'You do not have a valid subscription.';
@@ -118,7 +118,7 @@ codeunit 6391 SignUpConnection
     /// </remarks>
     procedure UpdateMetadataProfile()
     var
-        SignUpMetadataProfile: Record SignUpMetadataProfile;
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
         MetadataProfileContent: Text;
@@ -160,7 +160,7 @@ codeunit 6391 SignUpConnection
                 EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.UnsuccessfulResponseErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
     end;
 
-    local procedure MetadataProfileJsonToTable(JsonText: Text; var SignUpMetadataProfile: Record SignUpMetadataProfile): Boolean
+    local procedure MetadataProfileJsonToTable(JsonText: Text; var SignUpMetadataProfile: Record "SignUp Metadata Profile"): Boolean
     var
         JsonObject, ProfileJsonObject, ProcessIdentifierJsonObject, DocumentIdentifierJsonObject : JsonObject;
         JsonArray: JsonArray;
@@ -207,7 +207,7 @@ codeunit 6391 SignUpConnection
         exit(not SignUpMetadataProfile.IsEmpty());
     end;
 
-    local procedure DeleteUnusedMetadataProfileReferenses(var SignUpMetadataProfile: Record SignUpMetadataProfile)
+    local procedure DeleteUnusedMetadataProfileReferenses(var SignUpMetadataProfile: Record "SignUp Metadata Profile")
     var
         EDocumentService: Record "E-Document Service";
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";

@@ -19,7 +19,7 @@ codeunit 148195 IntegrationTests
 {
     Subtype = Test;
 
-    Permissions = tabledata SignUpConnectionSetup = rimd,
+    Permissions = tabledata "SignUp Connection Setup" = rimd,
                     tabledata "E-Document" = r;
 
     var
@@ -504,7 +504,7 @@ codeunit 148195 IntegrationTests
     [Test]
     procedure GetMetadataProfiles()
     var
-        SignUpMetadataProfile: Record SignUpMetadataProfile;
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
         EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
     begin
         this.Initialize();
@@ -517,15 +517,15 @@ codeunit 148195 IntegrationTests
         EDocServiceSupportedTypes.PopulateMetaData.Invoke();
         EDocServiceSupportedTypes.Close();
 
-        this.Assert.TableIsNotEmpty(Database::SignUpMetadataProfile);
+        this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
     end;
 
     local procedure Initialize()
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
         CompanyInformation: Record "Company Information";
         ServiceParticipant: Record "Service Participant";
-        SignUpAuthentication: Codeunit SignUpAuthentication;
+        SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
         this.LibraryLowerPermissions.SetOutsideO365Scope();
 
@@ -581,7 +581,7 @@ codeunit 148195 IntegrationTests
 
     local procedure CreateDefaultMetadataProfile()
     var
-        SignUpMetadataProfile: Record SignUpMetadataProfile;
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
     begin
         if not SignUpMetadataProfile.IsEmpty() then
             SignUpMetadataProfile.DeleteAll(true);

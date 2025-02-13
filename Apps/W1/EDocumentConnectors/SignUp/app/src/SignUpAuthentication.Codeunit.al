@@ -10,7 +10,7 @@ using System.Security.Authentication;
 using System.Azure.KeyVault;
 using System.Environment;
 
-codeunit 6390 SignUpAuthentication
+codeunit 6390 "SignUp Authentication"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -18,8 +18,8 @@ codeunit 6390 SignUpAuthentication
 
     #region variables
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
-        SignUpHelpersImpl: Codeunit SignUpHelpers;
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
+        SignUpHelpersImpl: Codeunit "SignUp Helpers";
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         AuthTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
@@ -211,7 +211,7 @@ codeunit 6390 SignUpAuthentication
     [NonDebuggable]
     local procedure GetClientCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
+        SignUpAPIRequests: Codeunit "SignUp API Requests";
     begin
         SignUpAPIRequests.GetMarketPlaceCredentials(HttpRequestMessage, HttpResponseMessage);
 

@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
 
-pageextension 6381 SignUpCompanyInformationExt extends "Company Information"
+pageextension 6381 "SignUp Company Information Ext" extends "Company Information"
 {
     layout
     {

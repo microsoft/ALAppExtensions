@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-tableextension 6383 SignUpEDocSvcSupportedTypeExt extends "E-Doc. Service Supported Type"
+tableextension 6383 "SignUp E-Doc. Svc. Type Ext" extends "E-Doc. Service Supported Type"
 {
     fields
     {
@@ -15,7 +15,7 @@ tableextension 6383 SignUpEDocSvcSupportedTypeExt extends "E-Doc. Service Suppor
             Caption = 'Profile Id';
             ToolTip = 'The unique identifier for the metadata profile.';
             DataClassification = CustomerContent;
-            TableRelation = SignUpMetadataProfile;
+            TableRelation = "SignUp Metadata Profile";
             BlankZero = true;
 
             trigger OnValidate()
@@ -29,7 +29,7 @@ tableextension 6383 SignUpEDocSvcSupportedTypeExt extends "E-Doc. Service Suppor
             ToolTip = 'The common name of the metadata profile.';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = lookup(SignUpMetadataProfile."Profile Name" where("Profile ID" = field("Profile Id")));
+            CalcFormula = lookup("SignUp Metadata Profile"."Profile Name" where("Profile ID" = field("Profile Id")));
         }
     }
 }

@@ -4,13 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-using System.Reflection;
 using Microsoft.Utilities;
 using System.DateTime;
 using System.Integration;
 using Microsoft.eServices.EDocument;
 
-codeunit 6385 SignUpHelpers
+codeunit 6385 "SignUp Helpers"
 {
     Access = Internal;
 

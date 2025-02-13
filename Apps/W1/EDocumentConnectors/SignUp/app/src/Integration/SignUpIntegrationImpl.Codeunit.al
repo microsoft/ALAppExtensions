@@ -11,12 +11,12 @@ using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
 
-codeunit 6386 SignUpIntegrationImpl implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
+codeunit 6386 "SignUp Integration Impl." implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
 {
     Access = Internal;
 
     var
-        SignUpProcessing: Codeunit SignUpProcessing;
+        SignUpProcessing: Codeunit "SignUp Processing";
 
     #region IDocumentSender
     procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext);
@@ -57,7 +57,7 @@ codeunit 6386 SignUpIntegrationImpl implements IDocumentSender, IDocumentReceive
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
     local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     var
-        SignUpConnectionSetupCard: Page SignUpConnectionSetupCard;
+        SignUpConnectionSetupCard: Page "SignUp Connection Setup Card";
     begin
         if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::"ExFlow E-Invoicing" then
             exit;
