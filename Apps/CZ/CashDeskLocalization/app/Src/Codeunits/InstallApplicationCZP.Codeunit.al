@@ -90,19 +90,7 @@ codeunit 31054 "Install Application CZP"
 
     local procedure CopyData()
     begin
-        CopySourceCodeSetup();
         InitCashDeskSourceCode();
-    end;
-
-    local procedure CopySourceCodeSetup();
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-    begin
-        SourceCodeSetup.SetLoadFields("Cash Desk");
-        if SourceCodeSetup.Get() then begin
-            SourceCodeSetup."Cash Desk CZP" := SourceCodeSetup."Cash Desk";
-            SourceCodeSetup.Modify(false);
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

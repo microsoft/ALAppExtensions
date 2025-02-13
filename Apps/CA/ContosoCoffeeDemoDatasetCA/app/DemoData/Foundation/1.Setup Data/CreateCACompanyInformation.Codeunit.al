@@ -3,7 +3,6 @@ codeunit 27018 "Create CA Company Information"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //TODO: Post Code hardcoded.
     trigger OnRun()
     begin
         UpdateCompanyInformation();
@@ -12,15 +11,11 @@ codeunit 27018 "Create CA Company Information"
     local procedure UpdateCompanyInformation()
     var
         CompanyInformation: Record "Company Information";
-        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        ContosoCoffeeDemoDataSetup.Get();
-
         CompanyInformation.Get();
 
         CompanyInformation.Validate(Address, YoungStreetLbl);
         CompanyInformation.Validate("Address 2", '');
-        // CompanyInformation.Validate("Country/Region Code", ContosoCoffeeDemoDataSetup."Country/Region Code");
         CompanyInformation.Validate("Post Code", 'M5E 1G5');
         CompanyInformation.Validate(City, TorontoLbl);
         CompanyInformation.Validate(County, OntarioLbl);
@@ -28,11 +23,22 @@ codeunit 27018 "Create CA Company Information"
         CompanyInformation.Validate("Fax No.", '+1 425 555 0101');
         CompanyInformation.Validate("Ship-to Address", YoungStreetLbl);
         CompanyInformation.Validate("Ship-to Address 2", '');
-        // CompanyInformation.Validate("Ship-to Country/Region Code", ContosoCoffeeDemoDataSetup."Country/Region Code");
         CompanyInformation.Validate("Ship-to Post Code", 'M5E 1G5');
         CompanyInformation.Validate("Ship-to City", TorontoLbl);
         CompanyInformation.Validate("Ship-to County", OntarioLbl);
         CompanyInformation.Validate("VAT Registration No.", '');
+        CompanyInformation.Modify(true);
+    end;
+
+    internal procedure UpdateCACompanyInformationSetupData()
+    var
+        CompanyInformation: Record "Company Information";
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
+    begin
+        ContosoCoffeeDemoDataSetup.Get();
+        CompanyInformation.Get();
+
+        CompanyInformation.Validate("Country/Region Code", ContosoCoffeeDemoDataSetup."Country/Region Code");
         CompanyInformation.Modify(true);
     end;
 

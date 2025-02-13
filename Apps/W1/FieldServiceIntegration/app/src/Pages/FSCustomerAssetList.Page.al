@@ -9,7 +9,11 @@ using Microsoft.Service.Item;
 using Microsoft.Integration.D365Sales;
 using System.Environment.Configuration;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 page 6611 "FS Customer Asset List"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ApplicationArea = Suite;
     Caption = 'Customer Assets - Dynamics 365 Field Service';

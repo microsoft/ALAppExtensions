@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6617 "FS Work Order"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_workorder';
     TableType = CRM;
@@ -884,6 +888,13 @@ table 6617 "FS Work Order"
             Description = 'Business Central Company';
             Caption = 'Company Id';
             TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
+        field(165; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
             DataClassification = SystemMetadata;
         }
     }

@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6618 "FS Work Order Incident"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_workorderincident';
     TableType = CRM;
@@ -291,6 +295,23 @@ table 6618 "FS Work Order Incident"
             ExternalName = 'msdyn_workordername';
             ExternalType = 'String';
             ExternalAccess = Read;
+        }
+        field(60; IncidentType; Guid)
+        {
+            ExternalName = 'msdyn_incidenttype';
+            ExternalType = 'Lookup';
+            Caption = 'Incident Type';
+            TableRelation = "FS Incident Type".IncidentTypeId;
+            DataClassification = SystemMetadata;
+        }
+        field(70; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
         }
     }
     keys

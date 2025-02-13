@@ -270,9 +270,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -283,6 +281,31 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(1, EDocument.Count(), IncorrectValueErr);
 
         UnbindSubscription(EDocImplState);
+    end;
+
+    local procedure VerifyOutboundFactboxValuesForSingleService(EDocument: Record "E-Document"; Status: Enum "E-Document Service Status"; Logs: Integer);
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        Factbox: TestPage "Outbound E-Doc. Factbox";
+    begin
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.FindSet();
+        // This function is for single service, so we expect only one record
+        Assert.RecordCount(EDocumentServiceStatus, 1);
+
+        Factbox.OpenView();
+        Factbox.GoToRecord(EDocumentServiceStatus);
+
+        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Status), Factbox.SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Logs), Factbox.Log.Value(), IncorrectValueErr);
+    end;
+
+    local procedure VerifyInboundFactboxValues(Factbox: TestPage "Inbound E-Doc. Factbox"; Status: Enum "E-Document Service Status"; Logs: Integer);
+    begin
+        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Status), Factbox.Status.Value(), IncorrectValueErr);
+        Assert.AreEqual(Logs, Factbox.Logs.Value(), IncorrectValueErr);
     end;
 
     [Test]
@@ -314,9 +337,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -362,9 +383,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Sending Error", 2);
 
         // [THEN] Logs are also correct
         EDocLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -420,9 +439,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 2);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -470,9 +487,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 2);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -518,9 +533,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Batch"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Batch", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -545,9 +558,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 3);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -561,9 +572,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(DocNoA, EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 3);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -1479,7 +1488,6 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
-        EDocumentService."Sent Actions Integration" := Enum::"Sent Document Actions"::Mock;
         EDocumentService.Modify();
 
         TransformationRule.DeleteAll();
@@ -1528,7 +1536,6 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 
-#pragma warning disable AS0018
 #if not CLEAN26
 
     [Test]
@@ -2254,8 +2261,6 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 #endif
-#pragma warning restore AS0018
-
     [ConfirmHandler]
     procedure DeleteConfirmationHandler(Message: Text[1024]; var Reply: Boolean)
     var

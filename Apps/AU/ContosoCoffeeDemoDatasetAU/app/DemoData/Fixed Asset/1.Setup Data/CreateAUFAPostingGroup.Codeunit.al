@@ -27,10 +27,6 @@ codeunit 17147 "Create AU FA Posting Group"
             CreateFAPostingGrp.Goodwill(),
             CreateFAPostingGrp.Plant(),
             CreateFAPostingGrp.Property():
-                // CreateFAPostingGrp.IP(),
-                // CreateFAPostingGrp.LeaseHold(),
-                // CreateFAPostingGrp.Patents(),
-                // CreateFAPostingGrp.Furniture():
                 ValidateRecordFields(Rec, CreateAUGLAccounts.OfficeEquipment(), CreateGLAccount.AccumDeprOperEquip(), CreateAUGLAccounts.OfficeEquipment(), CreateGLAccount.AccumDeprOperEquip(), CreateGLAccount.GainsAndLosses(), CreateGLAccount.GainsAndLosses(), CreateGLAccount.RepairsAndMaintenance(), CreateGLAccount.DepreciationEquipment(), CreateAUGLAccounts.OfficeEquipment());
             CreateFAPostingGrp.Vehicles():
                 ValidateRecordFields(Rec, CreateGLAccount.Vehicles(), CreateGLAccount.AccumDepreciationVehicles(), CreateGLAccount.Vehicles(), CreateGLAccount.AccumDepreciationVehicles(), CreateGLAccount.GainsAndLosses(), CreateGLAccount.GainsAndLosses(), CreateGLAccount.RepairsAndMaintenance(), CreateGLAccount.DepreciationVehicles(), CreateGLAccount.Vehicles());

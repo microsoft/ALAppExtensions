@@ -86,17 +86,23 @@ pageextension 36960 "Sales & Marketing Manager RC" extends "Sales & Marketing Ma
                 action("Sales Actual vs. Budget Qty. (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Sales Actual vs. Budget Qty. (Power BI)';
+                    Caption = 'Sales Actual vs. Budget (Power BI)';
                     Image = "PowerBI";
                     RunObject = page "Sales Actual vs. Budget Qty.";
                 }
+#if not CLEAN26
                 action("Sales Actual vs. Budget Amt. (Power BI)")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sales Actual vs. Budget Amt. (Power BI)';
                     Image = "PowerBI";
                     RunObject = page "Sales Actual vs. Budget Amt.";
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
+#endif
             }
         }
     }

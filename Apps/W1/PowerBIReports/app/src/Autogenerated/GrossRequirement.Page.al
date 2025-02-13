@@ -6,11 +6,12 @@ page 37027 "Gross Requirement"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Gross Requirement';
     AboutTitle = 'About Gross Requirement';
     AboutText = 'The Gross Requirement report visualizes Gross Requirements against Projected Available Balance over time, offering a clear view of inventory demands. A table matrix breaks down this data by item, showcasing key metrics like Gross Requirement, Projected Available Balance, and quantities from demand documents (sales orders and purchase return orders). ';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 37027 "Gross Requirement"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

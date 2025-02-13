@@ -22,7 +22,7 @@ codeunit 18156 "GST Service Ship To Address"
     var
         SelltoCustomer: Record Customer;
     begin
-        if SelltoCustomer.Get(ServiceHeader."Customer No.") then
+        if SelltoCustomer.Get(ServiceHeader."Bill-to Customer No.") then
             ServiceHeader.State := SelltoCustomer."State Code";
     end;
 

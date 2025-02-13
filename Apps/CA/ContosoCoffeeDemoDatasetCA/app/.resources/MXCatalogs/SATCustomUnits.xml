@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-CustomUnits xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_CustomUnit>
+		<Code>01</Code>
+		<Descripcion>KILO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>02</Code>
+		<Descripcion>GRAMO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>03</Code>
+		<Descripcion>METRO LINEAL  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>04</Code>
+		<Descripcion>METRO CUADRADO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>05</Code>
+		<Descripcion>METRO CUBICO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>06</Code>
+		<Descripcion>PIEZA  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>07</Code>
+		<Descripcion>CABEZA  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>08</Code>
+		<Descripcion>LITRO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>09</Code>
+		<Descripcion>PAR  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>10</Code>
+		<Descripcion>KILOWATT  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>11</Code>
+		<Descripcion>MILLAR  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>12</Code>
+		<Descripcion>JUEGO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>13</Code>
+		<Descripcion>KILOWATT/HORA  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>14</Code>
+		<Descripcion>TONELADA</Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>15</Code>
+		<Descripcion>BARRIL  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>16</Code>
+		<Descripcion>GRAMO NETO  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>17</Code>
+		<Descripcion>DECENAS  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>18</Code>
+		<Descripcion>CIENTOS</Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>19</Code>
+		<Descripcion>DOCENAS  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>20</Code>
+		<Descripcion>CAJA  </Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>21</Code>
+		<Descripcion>BOTELLA</Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>22</Code>
+		<Descripcion>CARAT</Descripcion>
+	</c_CustomUnit>
+	<c_CustomUnit>
+		<Code>99</Code>
+		<Descripcion>SERVICIO</Descripcion>
+	</c_CustomUnit>
+</data-set-CustomUnits>

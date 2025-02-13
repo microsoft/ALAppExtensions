@@ -63,6 +63,27 @@ codeunit 11186 "Create VAT Posting Group AT"
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT10(), StrSubstNo(MiscellaneousVATLbl, '10'));
     end;
 
+    procedure UpdateGeneralProdPostingGroup()
+    var
+        CreatePostingGroup: Codeunit "Create Posting Groups";
+    begin
+        UpdateGenProdPostingGrp(CreatePostingGroup.FreightPostingGroup(), VAT20());
+        UpdateGenProdPostingGrp(CreatePostingGroup.RawMatPostingGroup(), VAT20());
+        UpdateGenProdPostingGrp(CreatePostingGroup.RetailPostingGroup(), VAT20());
+        UpdateGenProdPostingGrp(CreatePostingGroup.MiscPostingGroup(), VAT20());
+        UpdateGenProdPostingGrp(CreatePostingGroup.ServicesPostingGroup(), VAT10());
+    end;
+
+    local procedure UpdateGenProdPostingGrp(ProdPostingGroup: COde[20]; DefaultVATProdPostingGroup: Code[20])
+    var
+        GenProdPostingGroup: Record "Gen. Product Posting Group";
+    begin
+        if GenProdPostingGroup.Get(ProdPostingGroup) then begin
+            GenProdPostingGroup.Validate("Def. VAT Prod. Posting Group", DefaultVATProdPostingGroup);
+            GenProdPostingGroup.Modify(true);
+        end;
+    end;
+
     procedure NOVAT(): Code[20]
     begin
         exit(NoVATTok);

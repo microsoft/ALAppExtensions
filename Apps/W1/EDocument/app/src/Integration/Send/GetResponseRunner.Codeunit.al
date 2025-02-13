@@ -27,8 +27,6 @@ codeunit 6149 "Get Response Runner"
 #if not CLEAN26
         IEDocIntegration := this.EDocumentService."Service Integration";
         Result := IEDocIntegration.GetResponse(this.EDocument, this.HttpRequestMessage, this.HttpResponseMessage);
-        SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
-        SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
 #endif
     end;
 
@@ -47,6 +45,17 @@ codeunit 6149 "Get Response Runner"
     begin
         exit(Result);
     end;
+
+#if not CLEAN26
+    // Handles that http is set in case of failures
+    procedure GetContext(var SendContext: Codeunit SendContext);
+    begin
+        // Need to set this
+        this.SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
+        this.SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
+        SendContext := this.SendContext;
+    end;
+#endif
 
     var
         EDocument: Record "E-Document";
