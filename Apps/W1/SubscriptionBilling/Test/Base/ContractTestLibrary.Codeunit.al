@@ -34,7 +34,6 @@ codeunit 139685 "Contract Test Library"
         LibraryERM: Codeunit "Library - ERM";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryItemTracking: Codeunit "Library - Item Tracking";
-        LibraryManufacturing: Codeunit "Library - Manufacturing";
         LibraryMarketing: Codeunit "Library - Marketing";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryRandom: Codeunit "Library - Random";
@@ -714,7 +713,7 @@ codeunit 139685 "Contract Test Library"
     var
         BOMComponent: Record "BOM Component";
     begin
-        LibraryManufacturing.CreateBOMComponent(BOMComponent, ParentItemNo, "BOM Component Type"::Item, ComponentItemNo, QuantityPer, UnitOfMeasureCode);
+        LibraryInventory.CreateBOMComponent(BOMComponent, ParentItemNo, "BOM Component Type"::Item, ComponentItemNo, QuantityPer, UnitOfMeasureCode);
     end;
 
     procedure CreateContactsWithCustomerAndGetContactPerson(var Contact: Record Contact; var Customer: Record Customer)

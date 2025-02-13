@@ -185,7 +185,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -283,7 +283,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -391,7 +391,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1571,7 +1571,6 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocService.Modify(false);
     end;
 
-#pragma warning disable AS0018
 #if not CLEAN26
 
     // Tests inside CLEAN26 are testing the interfaces that is to be removed when CLEAN26 tags are removed.
@@ -1733,7 +1732,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1831,7 +1830,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1939,7 +1938,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -2892,6 +2891,5 @@ codeunit 139628 "E-Doc. Receive Test"
 
 
 #endif
-#pragma warning restore AS0018
 
 }

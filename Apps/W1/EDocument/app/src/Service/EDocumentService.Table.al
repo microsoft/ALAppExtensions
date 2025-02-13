@@ -8,6 +8,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Format;
 
 table 6103 "E-Document Service"
 {
@@ -185,7 +186,7 @@ table 6103 "E-Document Service"
         }
         field(19; "Import Start Time"; Time)
         {
-            Caption = 'Batch Start Time';
+            Caption = 'Import Start Time';
             DataClassification = SystemMetadata;
             NotBlank = true;
             InitValue = 0T;
@@ -259,10 +260,10 @@ table 6103 "E-Document Service"
             DataClassification = SystemMetadata;
             ToolTip = 'Specifies the import process for the document.';
         }
-        field(32; "Automatic Processing"; Enum "Automatic Processing")
+        field(32; "Automatic Import Processing"; Enum "E-Doc. Automatic Processing")
         {
-            Caption = 'Automatic Processing';
-            ToolTip = 'Specifies if the processing of document should start immediately after downloading it.';
+            Caption = 'Automatic processing';
+            ToolTip = 'Specifies if the processing of a document should start automatically after it is imported.';
             DataClassification = SystemMetadata;
         }
     }
@@ -299,14 +300,14 @@ table 6103 "E-Document Service"
         Rec.Code := AzureDocumentIntelligenceTok;
         Rec."Import Process" := "Import Process"::"Version 2.0";
         Rec.Description := AzureDocumentIntelligenceServiceTxt;
-        Rec."Automatic Processing" := "Automatic Processing"::No;
+        Rec."Automatic Import Processing" := "E-Doc. Automatic Processing"::Yes;
         Rec."E-Document Structured Format" := "E-Document Structured Format"::"Azure Document Intelligence";
         Rec.Insert(true);
     end;
 
     internal procedure IsAutomaticProcessingEnabled(): Boolean
     begin
-        exit("Automatic Processing" = "Automatic Processing"::Yes);
+        exit(Rec."Automatic Import Processing" = Enum::"E-Doc. Automatic Processing"::Yes);
     end;
 
     internal procedure LastEDocumentLog(EDocumentServiceStatus: Enum "E-Document Service Status") EDocumentLog: Record "E-Document Log";
