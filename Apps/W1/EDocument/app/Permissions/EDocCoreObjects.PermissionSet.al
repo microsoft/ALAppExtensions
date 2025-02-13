@@ -28,6 +28,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Doc. Imported Line" = X,
         table "E-Doc. PO Match Prop. Buffer" = X,
         table "Service Participant" = X,
+        table "E-Invoice Line" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -91,5 +92,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Doc. PO Copilot Prop" = X,
         page "E-Doc. PO Match Prop. Sub" = X,
         page "E-Doc. Order Match Act." = X,
-        page "Service Participants" = X;
+        page "Service Participants" = X,
+        page "E-Invoice Lines" = X;
 }

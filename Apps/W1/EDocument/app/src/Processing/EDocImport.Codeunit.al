@@ -536,18 +536,14 @@ codeunit 6140 "E-Doc. Import"
         SourceDocumentHeader.Copy(SourceDocumentHeaderMapped, true);
         SourceDocumentLine.Copy(SourceDocumentLineMapped, true);
 
-        CreateEInvoiceLinesPreview(EDocument, SourceDocumentLine);
+        CreateEInvoicePreviewLines(EDocument, SourceDocumentLine);
 
         OnAfterPrepareReceivedDoc(EDocument, TempBlob, SourceDocumentHeader, SourceDocumentLine, TempEDocMapping);
     end;
 
-    local procedure CreateEInvoiceLinesPreview(EDocument: Record "E-Document"; SourceDocumentLine: RecordRef)
+    local procedure CreateEInvoicePreviewLines(EDocument: Record "E-Document"; SourceDocumentLine: RecordRef)
     var
-        EDocumentImportHelper: Codeunit "E-Document Import Helper";
         EInvoiceLine: Record "E-Invoice Line";
-        PurchaseLine: Record "Purchase Line";
-        LineAmount: Decimal;
-        LineDiscountAmount: Decimal;
     begin
         EInvoiceLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         if not EInvoiceLine.IsEmpty() then
@@ -558,22 +554,32 @@ codeunit 6140 "E-Doc. Import"
 
         if SourceDocumentLine.FindSet() then
             repeat
-                EInvoiceLine.Init();
-                EInvoiceLine."E-Document Entry No." := EDocument."Entry No";
-                EInvoiceLine."Line No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("Line No.")).Value(); // (line number from e-invoice file if exist, if not just ordered lines)
-                EInvoiceLine."No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value();
-                EInvoiceLine."Description" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Description")).Value();
-                EInvoiceLine."Unit of Measure Code" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value();
-                EInvoiceLine."Quantity" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Quantity")).Value();
-                EInvoiceLine."Direct Unit Cost" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value();
-
-                LineAmount := SourceDocumentLine.Field(PurchaseLine.FieldNo(Amount)).Value();
-                LineDiscountAmount := SourceDocumentLine.Field(PurchaseLine.FieldNo("Line Discount Amount")).Value();
-                if LineDiscountAmount <> 0 then
-                    EInvoiceLine."Line Discount %" := 100 * (LineDiscountAmount / (LineAmount + LineDiscountAmount));
-
-                EInvoiceLine.Insert(true);
+                InsertEInvoiceLine(EDocument."Entry No", SourceDocumentLine);
             until SourceDocumentLine.Next() = 0;
+    end;
+
+    local procedure InsertEInvoiceLine(EDocumentEntryNo: Integer; SourceDocumentLine: RecordRef)
+    var
+        EInvoiceLine: Record "E-Invoice Line";
+        PurchaseLine: Record "Purchase Line";
+        LineAmount: Decimal;
+        LineDiscountAmount: Decimal;
+    begin
+        EInvoiceLine.Init();
+        EInvoiceLine."E-Document Entry No." := EDocumentEntryNo;
+        EInvoiceLine."Line No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("Line No.")).Value();
+        EInvoiceLine."No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value();
+        EInvoiceLine."Description" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Description")).Value();
+        EInvoiceLine."Unit of Measure Code" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value();
+        EInvoiceLine."Quantity" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Quantity")).Value();
+        EInvoiceLine."Direct Unit Cost" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value();
+
+        LineAmount := SourceDocumentLine.Field(PurchaseLine.FieldNo(Amount)).Value();
+        LineDiscountAmount := SourceDocumentLine.Field(PurchaseLine.FieldNo("Line Discount Amount")).Value();
+        if LineDiscountAmount <> 0 then
+            EInvoiceLine."Line Discount %" := 100 * (LineDiscountAmount / (LineAmount + LineDiscountAmount));
+
+        EInvoiceLine.Insert(true);
     end;
 
     local procedure CreateDocument(var EDocument: Record "E-Document"; var TempDocumentHeader: RecordRef; var TempDocumentLine: RecordRef; var DocumentHeader: RecordRef; PurchaseDocumentType: Enum "Purchase Document Type")

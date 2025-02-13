@@ -2845,7 +2845,7 @@ codeunit 139628 "E-Doc. Receive Test"
         TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
         TempXMLBuffer.FindFirst();
         TempXMLBuffer.Value := DocumentVendor."VAT Registration No.";
-        TempXMLBuffer.Modify();
+        TempXMLBuffer.Modify(false);
 
         TempXMLBuffer.Reset();
         TempXMLBuffer.FindFirst();
