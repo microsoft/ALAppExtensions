@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-pageextension 6383 "SignUp EDoc. Svc. Type PageExt" extends "E-Doc Service Supported Types"
+pageextension 6441 "SignUp EDoc. Svc. Type PageExt" extends "E-Doc Service Supported Types"
 {
     layout
     {

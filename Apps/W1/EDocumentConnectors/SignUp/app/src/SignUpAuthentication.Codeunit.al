@@ -10,7 +10,7 @@ using System.Security.Authentication;
 using System.Azure.KeyVault;
 using System.Environment;
 
-codeunit 6390 "SignUp Authentication"
+codeunit 6442 "SignUp Authentication"
 {
     Access = Internal;
     InherentEntitlements = X;

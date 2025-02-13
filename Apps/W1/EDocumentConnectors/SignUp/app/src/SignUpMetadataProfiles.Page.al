@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-page 6381 "SignUp Metadata Profiles"
+page 6441 "SignUp Metadata Profiles"
 {
     PageType = List;
     SourceTable = "SignUp Metadata Profile";

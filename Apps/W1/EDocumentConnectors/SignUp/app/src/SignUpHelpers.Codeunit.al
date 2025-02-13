@@ -9,7 +9,7 @@ using System.DateTime;
 using System.Integration;
 using Microsoft.eServices.EDocument;
 
-codeunit 6385 "SignUp Helpers"
+codeunit 6444 "SignUp Helpers"
 {
     Access = Internal;
 

@@ -8,7 +8,7 @@ using System.Telemetry;
 using Microsoft.Foundation.Company;
 using System.Environment;
 
-page 6380 "SignUp Connection Setup Card"
+page 6440 "SignUp Connection Setup Card"
 {
     AdditionalSearchTerms = 'SignUp,electronic document,e-invoice,e-document,external,connection,connector';
     PageType = Card;

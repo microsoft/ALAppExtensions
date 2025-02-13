@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-permissionset 6380 "SignUp EDCO Objects"
+permissionset 6440 "SignUp EDCO Objects"
 {
     Access = Internal;
     Assignable = false;

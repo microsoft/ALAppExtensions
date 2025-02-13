@@ -10,7 +10,7 @@ using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
-codeunit 6383 "SignUp Processing"
+codeunit 6445 "SignUp Processing"
 {
     Access = Internal;
     InherentEntitlements = X;

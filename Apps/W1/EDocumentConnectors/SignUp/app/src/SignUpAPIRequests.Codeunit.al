@@ -13,7 +13,7 @@ using System.Utilities;
 using System.Xml;
 using System.Environment;
 
-codeunit 6389 "SignUp API Requests"
+codeunit 6441 "SignUp API Requests"
 {
     Access = Internal;
     InherentEntitlements = X;

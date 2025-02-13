@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6381 "SignUp Connection Setup"
+table 6440 "SignUp Connection Setup"
 {
     Access = Internal;
     DataPerCompany = false;

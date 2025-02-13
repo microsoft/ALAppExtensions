@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-permissionset 6381 "SignUp EDCO Read"
+permissionset 6441 "SignUp EDCO Read"
 {
     Access = Internal;
     Assignable = true;

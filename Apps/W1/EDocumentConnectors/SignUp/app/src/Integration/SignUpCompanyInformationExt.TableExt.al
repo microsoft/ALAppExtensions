@@ -5,11 +5,11 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.Foundation.Company;
 
-tableextension 6381 "SignUp Company Information Ext" extends "Company Information"
+tableextension 6440 "SignUp Company Information Ext" extends "Company Information"
 {
     fields
     {
-        field(6381; "SignUp Service Participant Id"; Text[100])
+        field(6440; "SignUp Service Participant Id"; Text[100])
         {
             Caption = 'Service Participant Id';
             ToolTip = 'Specifies the PEPPOL participant identifier registered for your company in the ExFlow E-Invoicing subscription. This identifier is used when you are sending/receiving documents via the PEPPOL network.';

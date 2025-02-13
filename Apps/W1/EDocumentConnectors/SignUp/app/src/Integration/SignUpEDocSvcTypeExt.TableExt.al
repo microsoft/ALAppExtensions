@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-tableextension 6383 "SignUp E-Doc. Svc. Type Ext" extends "E-Doc. Service Supported Type"
+tableextension 6441 "SignUp E-Doc. Svc. Type Ext" extends "E-Doc. Service Supported Type"
 {
     fields
     {
-        field(6381; "Profile Id"; Integer)
+        field(6440; "Profile Id"; Integer)
         {
             Caption = 'Profile Id';
             ToolTip = 'The unique identifier for the metadata profile.';

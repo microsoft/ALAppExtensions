@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.EServices.EDocument;
 using System.Utilities;
 
-codeunit 6391 "SignUp Connection"
+codeunit 6443 "SignUp Connection"
 {
     Access = Internal;
     InherentEntitlements = X;

@@ -11,7 +11,7 @@ using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
 
-codeunit 6386 "SignUp Integration Impl." implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
+codeunit 6440 "SignUp Integration Impl." implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
 {
     Access = Internal;
 

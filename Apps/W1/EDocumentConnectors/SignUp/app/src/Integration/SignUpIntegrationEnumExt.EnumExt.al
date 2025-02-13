@@ -6,9 +6,9 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enumextension 6380 "SignUp Integration Enum Ext" extends "Service Integration"
+enumextension 6440 "SignUp Integration Enum Ext" extends "Service Integration"
 {
-    value(6380; "ExFlow E-Invoicing")
+    value(6440; "ExFlow E-Invoicing")
     {
         Caption = 'ExFlow E-Invoicing';
         Implementation = IDocumentSender = "SignUp Integration Impl.", IDocumentReceiver = "SignUp Integration Impl.";

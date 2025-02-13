@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-enum 6380 "SignUp Environment Type"
+enum 6440 "SignUp Environment Type"
 {
     Access = Internal;
     Caption = 'Environment Type', Locked = true;

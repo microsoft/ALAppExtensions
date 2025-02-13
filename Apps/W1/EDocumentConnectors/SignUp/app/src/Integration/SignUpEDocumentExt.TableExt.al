@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.eServices.EDocument;
 
-tableextension 6382 "SignUp E-Document Ext" extends "E-Document"
+tableextension 6442 "SignUp E-Document Ext" extends "E-Document"
 {
     fields
     {
-        field(6381; "SignUp Document Id"; Text[50])
+        field(6440; "SignUp Document Id"; Text[50])
         {
             Caption = 'SignUp Document ID';
             ToolTip = 'This value is used by ExFlow E-Invoicing';

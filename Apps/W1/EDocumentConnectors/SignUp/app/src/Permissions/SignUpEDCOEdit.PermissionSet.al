@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-permissionset 6382 "SignUp EDCO Edit"
+permissionset 6442 "SignUp EDCO Edit"
 {
     Access = Internal;
     Assignable = true;
