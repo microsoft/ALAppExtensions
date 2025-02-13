@@ -228,7 +228,6 @@ codeunit 6140 "E-Doc. Import"
 
     local procedure GetDocumentBasicInfo(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
     var
-        EDocument2: Record "E-Document";
         EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
         EDocumentInterface: Interface "E-Document";
     begin
@@ -238,12 +237,6 @@ codeunit 6140 "E-Doc. Import"
         EDocGetBasicInfo.SetValues(EDocumentInterface, EDocument, TempBlob);
         if EDocGetBasicInfo.Run() then begin
             EDocGetBasicInfo.GetValues(EDocumentInterface, EDocument, TempBlob);
-
-            EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
-            EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
-            EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
-            if EDocument2.FindFirst() then
-                EDocErrorHelper.LogWarningMessage(EDocument, EDocument2, EDocument2.FieldNo("Incoming E-Document No."), DocAlreadyExistsMsg);
 
             if EDocService."Validate Receiving Company" then
                 EDocImportHelper.ValidateReceivingCompanyInfo(EDocument);
@@ -467,6 +460,12 @@ codeunit 6140 "E-Doc. Import"
         EDocErrorHelper.ClearErrorMessages(EDocument);
 
         GetDocumentBasicInfo(EDocument, EDocService, TempBlob);
+
+        if EDocument.IsDuplicate() then begin
+            EDocument.Delete(true);
+            exit;
+        end;
+
         if EDocErrorHelper.HasErrors(EDocument) then begin
             EDocServiceStatus := Enum::"E-Document Service Status"::"Imported document processing error";
             EDocumentLog.InsertLog(EDocument, EDocService, EDocServiceStatus);
@@ -475,10 +474,6 @@ codeunit 6140 "E-Doc. Import"
             exit;
         end;
 
-        if EDocument.IsDuplicate() then begin
-            EDocument.Delete(true);
-            exit;
-        end;
 
         ParseDocumentLines(EDocument, EDocService, TempBlob, SourceDocumentHeader, SourceDocumentLine, TempEDocMapping);
         if EDocErrorHelper.HasErrors(EDocument) then begin
@@ -791,7 +786,6 @@ codeunit 6140 "E-Doc. Import"
         DocCreateMsg: Label 'Creating Purchase %1', Comment = '%1 - Document type';
         DocLinkMsg: Label 'Linking to existing order';
         DocCreatePOMsg: Label 'Creating Purchase Order';
-        DocAlreadyExistsMsg: Label 'The document already exists.';
         DocTypeIsNotSupportedErr: Label 'Document type %1 is not supported.', Comment = '%1 - Document Type';
         FailedToFindVendorErr: Label 'No vendor is set for Edocument';
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
