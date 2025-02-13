@@ -143,12 +143,10 @@ page 6122 "E-Documents"
     local procedure NewFromFile()
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocImport.UploadDocument(EDocument);
-        if EDocument."Entry No" <> 0 then begin
-            EDocImport.ProcessIncomingEDocument(EDocument, EDocument.GetEDocumentService().GetDefaultImportParameters());
-            Page.Run(Page::"E-Document", EDocument);
-        end;
+        if EDocImport.ChooseEDocumentService(EDocumentService) then
+            EDocImport.UploadDocument(EDocument, EDocumentService);
     end;
 }

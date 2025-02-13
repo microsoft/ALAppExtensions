@@ -41,9 +41,10 @@ codeunit 139501 "E-Doc. Manual Import Test"
 
         // [WHEN] Creating e-document from stream
         Clear(EDocument);
-        CreateEDocFromStream(EDocument, EDocService, DocumentInStream);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream, 'test.xml');
 
         // [THEN] Document and attachments are created correctly
+        EDocument.Get(EDocument."Entry No"); // Load the record
         VerifyDocumentCreated(EDocument);
     end;
 
@@ -76,14 +77,15 @@ codeunit 139501 "E-Doc. Manual Import Test"
 
         // [WHEN] Creating first e-document from stream
         Clear(EDocument);
-        CreateEDocFromStream(EDocument, EDocService, DocumentInStream);
+        CreateEDocFromStream(EDocument, EDocService, DocumentInStream, 'test.xml');
 
         // [THEN] First document should be created successfully
+        EDocument.Get(EDocument."Entry No"); // Load the record
         VerifyDocumentCreated(EDocument);
 
         // [WHEN] Trying to create second e-document from same stream
         Clear(EDocument);
-        asserterror CreateEDocFromStream(EDocument, EDocService, DocumentInStream2);
+        asserterror CreateEDocFromStream(EDocument, EDocService, DocumentInStream2, 'test2.xml');
 
         // [THEN] Error should be thrown about duplicate document
         Assert.ExpectedError(GetDuplciateErrorText(EDocument));
@@ -124,11 +126,16 @@ codeunit 139501 "E-Doc. Manual Import Test"
         exit(IncommingDocNo);
     end;
 
-    local procedure CreateEDocFromStream(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var DocumentInStream: InStream)
+    local procedure CreateEDocFromStream(
+        var EDocument: Record "E-Document";
+        var EDocService: Record "E-Document Service";
+        var DocumentInStream: InStream;
+        FileName: Text)
     var
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocImport.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocService);
+        EDocImport.SetHideDialogs(true);
+        EDocImport.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocService, FileName);
     end;
 
     local procedure VerifyDocumentCreated(var EDocument: Record "E-Document")
@@ -183,6 +190,7 @@ codeunit 139501 "E-Doc. Manual Import Test"
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."VAT Registration No." := 'GB123456789';
         DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         DocumentVendor.Modify(false);
     end;
