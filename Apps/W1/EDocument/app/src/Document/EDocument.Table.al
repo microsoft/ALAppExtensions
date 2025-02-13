@@ -266,16 +266,15 @@ table 6121 "E-Document"
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocumentLog: Record "E-Document Log";
     begin
-        if not EDocDataStorage.Get("Unstructured Data Entry No.") then begin
-            EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
-            EDocumentLog.SetFilter(Status, '<>' + Format(EDocumentLog.Status::"Batch Imported"));
-            if not EDocumentLog.FindFirst() then
-                Error(NoFileErr, Rec.TableCaption());
-        end else begin
-            EDocumentLog.SetRange("E-Doc. Data Storage Entry No.", EDocDataStorage."Entry No.");
-            if not EDocumentLog.FindFirst() then
-                Error(NoFileErr, Rec.TableCaption());
-        end;
+        if Rec."Structured Data Entry No." <> 0 then
+            EDocDataStorage.Get(Rec."Structured Data Entry No.");
+        if Rec."Unstructured Data Entry No." <> 0 then
+            EDocDataStorage.Get(Rec."Unstructured Data Entry No.");
+
+        EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        EDocumentLog.SetRange("E-Doc. Data Storage Entry No.", EDocDataStorage."Entry No.");
+        if not EDocumentLog.FindFirst() then
+            Error(NoFileErr, Rec.TableCaption());
 
         EDocumentLog.ExportDataStorage();
     end;
@@ -289,8 +288,6 @@ table 6121 "E-Document"
             Rec.PreviewContent();
             exit;
         end;
-
-        Rec.ExportDataStorage();
     end;
 
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)

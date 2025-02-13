@@ -170,6 +170,9 @@ report 11735 "Withdrawal Cash Document CZP"
                     {
                         IncludeCaption = true;
                     }
+                    column(AccountType_CashDocumentLine; Format("Account Type", 0, 2))
+                    {
+                    }
 
                     trigger OnPreDataItem()
                     begin
