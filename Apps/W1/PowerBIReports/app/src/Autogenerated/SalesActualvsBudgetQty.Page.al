@@ -6,11 +6,12 @@ page 37007 "Sales Actual vs. Budget Qty."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
-    Caption = 'Sales Actual vs. Budget Quantity';
-    AboutTitle = 'About Sales Actual vs. Budget Quantity';
-    AboutText = 'The Sales Actual vs. Budget Quantity report provides a comparative analysis of sales quantity to budget quantity. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
-    Extensible = false;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
+    Caption = 'Sales Actual vs. Budget';
+    AboutTitle = 'About Sales Actual vs. Budget';
+    AboutText = 'The Sales Actual vs. Budget report provides a comparative analysis of sales to budget amounts/quantities. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
 
     layout
     {
@@ -28,26 +29,6 @@ page 37007 "Sales Actual vs. Budget Qty."
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

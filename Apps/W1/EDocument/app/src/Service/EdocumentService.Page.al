@@ -6,7 +6,6 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using Microsoft.eServices.EDocument.IO.Peppol;
-using Microsoft.eServices.EDocument.Integration.Receive;
 page 6133 "E-Document Service"
 {
     ApplicationArea = Basic, Suite;
@@ -38,6 +37,7 @@ page 6133 "E-Document Service"
                 field("Service Integration"; Rec."Service Integration")
                 {
                     ToolTip = 'Specifies integration code for the electronic export setup.';
+                    Visible = LegacyIntegrationVisible;
                     ObsoleteTag = '26.0';
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced with field "Service Integration V2"';
@@ -47,13 +47,17 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies integration code for the electronic export setup.';
                 }
-                field("Sent Actions"; Rec."Sent Actions Integration")
-                {
-                    ToolTip = 'Specifies integration code for sent e-document actions.';
-                }
                 field("Use Batch Processing"; Rec."Use Batch Processing")
                 {
                     ToolTip = 'Specifies if service uses batch processing for export.';
+                }
+                field("Import Process"; Rec."Import Process")
+                {
+                    ToolTip = 'Specifies the version of the import process to use for incoming e-documents.';
+                }
+                field("Automatic Processing"; Rec."Automatic Processing")
+                {
+                    ToolTip = 'Specifies if the processing of document should start immediately after downloading it.';
                 }
             }
             group(BatchSettings)
@@ -172,15 +176,6 @@ page 6133 "E-Document Service"
                     }
                 }
             }
-            group(Export)
-            {
-                field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
-                {
-                }
-                field("Buyer Reference"; Rec."Buyer Reference")
-                {
-                }
-            }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {
                 ApplicationArea = All;
@@ -246,6 +241,9 @@ page 6133 "E-Document Service"
     var
         ServiceIntegrationSetupMsg: Label 'There is no configuration setup for this service integration.';
         DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
+#if not CLEAN26
+        LegacyIntegrationVisible: Boolean;
+#endif
 
     trigger OnOpenPage()
     var
@@ -255,6 +253,9 @@ page 6133 "E-Document Service"
         FeatureTelemetry.LogUptake('0000KZ6', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Discovered);
         CurrPage.EDocumentExportFormatMapping.Page.SaveAsImport(false);
         CurrPage.EDocumentImportFormatMapping.Page.SaveAsImport(true);
+#if not CLEAN26
+        LegacyIntegrationVisible := (Rec."Service Integration" <> Rec."Service Integration"::"No Integration");
+#endif
     end;
 
 #if not CLEAN26
@@ -288,46 +289,18 @@ page 6133 "E-Document Service"
     end;
 #endif
 
-#if not CLEAN26
     local procedure ReceiveDocs()
     var
         FailedEDocument: Record "E-Document";
-        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
         EDocImport: Codeunit "E-Doc. Import";
-        ReceiveContext: Codeunit ReceiveContext;
-        EDocIntegration: Interface "E-Document Integration";
+        Success: Boolean;
     begin
-        if Rec."Service Integration V2" <> Rec."Service Integration V2"::"No Integration" then begin
-            EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
-            EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
-
-            if FailedEDocument."Entry No" <> 0 then
+        Success := EDocImport.ReceiveAndProcessAutomatically(Rec);
+        if not Success then
+            if FailedEDocument.Get(Rec.LastEDocumentLog("E-Document Service Status"::"Imported Document Processing Error")."E-Doc. Entry No") then
                 if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
                     Page.Run(Page::"E-Document", FailedEDocument);
-            exit;
-        end;
-
-        EDocIntegration := Rec."Service Integration";
-        EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
     end;
-#else
-    local procedure ReceiveDocs()
-    var
-        FailedEDocument: Record "E-Document";
-        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
-        EDocImport: Codeunit "E-Doc. Import";
-        ReceiveContext: Codeunit ReceiveContext;
-    begin
-        EDocIntegrationMgt.ReceiveDocuments(Rec, ReceiveContext);
-        EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
-
-        if FailedEDocument."Entry No" <> 0 then
-            if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
-                Page.Run(Page::"E-Document", FailedEDocument);
-
-    end;
-#endif
-
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)

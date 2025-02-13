@@ -44,4 +44,54 @@ table 31108 "VAT Ctrl. Report Section CZL"
             Clustered = true;
         }
     }
+
+    var
+        A1Tok: Label 'A1', Locked = true;
+        A2Tok: Label 'A2', Locked = true;
+        A3Tok: Label 'A3', Locked = true;
+        A4Tok: Label 'A4', Locked = true;
+        A5Tok: Label 'A5', Locked = true;
+        B1Tok: Label 'B1', Locked = true;
+        B2Tok: Label 'B2', Locked = true;
+        B3Tok: Label 'B3', Locked = true;
+
+    procedure ReverseChargeSalesSection(): Code[20]
+    begin
+        exit(A1Tok);
+    end;
+
+    procedure EUPurchaseSection(): Code[20]
+    begin
+        exit(A2Tok);
+    end;
+
+    procedure SalesOfInvestmentGoldSection(): Code[20]
+    begin
+        exit(A3Tok);
+    end;
+
+    procedure DomesticSalesAbove10ThousandSection(): Code[20]
+    begin
+        exit(A4Tok);
+    end;
+
+    procedure DomesticSalesBelow10ThousandSection(): Code[20]
+    begin
+        exit(A5Tok);
+    end;
+
+    procedure ReverseChargePurchaseSection(): Code[20]
+    begin
+        exit(B1Tok);
+    end;
+
+    procedure DomesticPurchaseAbove10ThousandSection(): Code[20]
+    begin
+        exit(B2Tok);
+    end;
+
+    procedure DomesticPurchaseBelow10ThousandSection(): Code[20]
+    begin
+        exit(B3Tok);
+    end;
 }

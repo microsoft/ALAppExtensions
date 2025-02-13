@@ -50,6 +50,18 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
                 VisibilityFlag := true;
     end;
 
+    internal procedure SetConditionalVisibilityFlag(var EDocument: Record "E-Document"; var VisibilityFlag: Boolean)
+    var
+        EDocumentService: Record "E-Document Service";
+    begin
+        if not EDocumentService.Get(EDocument.Service) then begin
+            VisibilityFlag := false;
+            exit;
+        end;
+
+        VisibilityFlag := (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Outlook);
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
     local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     var
@@ -66,8 +78,14 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         exit(Action + ' ' + SetupTableName + ConnectorTelemetrySnippetTxt);
     end;
 
+    internal procedure WebLinkText(): Text
+    begin
+        exit(WebLinkTxt);
+    end;
+
     var
         OutlookProcessing: Codeunit "Outlook Processing";
         SendNotSupportedErr: label 'Sending document is not supported in this context.';
         ConnectorTelemetrySnippetTxt: label ' for Microsoft 365 E-Document connector.', Locked = true;
+        WebLinkTxt: label 'https://outlook.office365.com/owa/?ItemID=%1&exvsurl=1&viewmodel=ReadMessageItem', Locked = true;
 }

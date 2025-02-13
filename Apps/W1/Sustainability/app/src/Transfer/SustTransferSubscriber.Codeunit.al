@@ -4,8 +4,6 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
 
 codeunit 6258 "Sust. Transfer Subscriber"
@@ -35,51 +33,24 @@ codeunit 6258 "Sust. Transfer Subscriber"
     begin
         if (ItemJournalLine.Quantity <> 0) then begin
             UpdateSustainabilityItemJournalLine(ItemJournalLine, TransferLine);
-            PostSustainabilityLine(TransferLine, ItemJournalLine.Quantity, true, false, ItemJournalLine."Source Code", ItemJournalLine."Document No.");
-            UpdatePostedSustainabilityEmissionOrderLine(TransferLine, ItemJournalLine.Quantity, true, false);
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforePostItemJournalLine', '', false, false)]
-    local procedure OnPostItemJnlLineOnAfterPrepareReceiptItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; TransferLine: Record "Transfer Line")
-    begin
-        if (ItemJournalLine.Quantity <> 0) then begin
-            UpdateSustainabilityItemJournalLine(ItemJournalLine, TransferLine);
-            PostSustainabilityLine(TransferLine, ItemJournalLine.Quantity, false, true, ItemJournalLine."Source Code", ItemJournalLine."Document No.");
-            UpdatePostedSustainabilityEmissionOrderLine(TransferLine, ItemJournalLine.Quantity, false, true);
+            UpdatePostedSustainabilityEmissionOrderLine(TransferLine, ItemJournalLine.Quantity, true);
         end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Shipment", 'OnBeforeInsertTransShptLine', '', false, false)]
     local procedure OnBeforeInsertTransShptLine(TransShptHeader: Record "Transfer Shipment Header"; TransLine: Record "Transfer Line"; var TransShptLine: Record "Transfer Shipment Line")
     begin
-        CopyTransShiplineFromTransLine(TransLine, TransShptLine);
+        CopyTransShipmentLineFromTransLine(TransLine, TransShptLine);
         UpdatePostedSustainabilityEmission(TransLine, TransShptLine.Quantity, 1, TransShptLine."Total CO2e");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforeInsertTransRcptLine', '', false, false)]
-    local procedure OnBeforeInsertTransRcptLine(TransLine: Record "Transfer Line"; var TransRcptLine: Record "Transfer Receipt Line")
-    begin
-        CopyTransReceiptlineFromTransLine(TransLine, TransRcptLine);
-        UpdatePostedSustainabilityEmission(TransLine, TransRcptLine.Quantity, 1, TransRcptLine."Total CO2e");
-    end;
-
-    local procedure CopyTransShiplineFromTransLine(TransLine: Record "Transfer Line"; var TransShptLine: Record "Transfer Shipment Line")
+    local procedure CopyTransShipmentLineFromTransLine(TransLine: Record "Transfer Line"; var TransShptLine: Record "Transfer Shipment Line")
     begin
         TransShptLine."Sust. Account No." := TransLine."Sust. Account No.";
         TransShptLine."Sust. Account Name" := TransLine."Sust. Account Name";
         TransShptLine."Sust. Account Category" := TransLine."Sust. Account Category";
         TransShptLine."Sust. Account Subcategory" := TransLine."Sust. Account Subcategory";
         TransShptLine."CO2e per Unit" := TransLine."CO2e per Unit";
-    end;
-
-    local procedure CopyTransReceiptlineFromTransLine(TransLine: Record "Transfer Line"; var TransReceiptLine: Record "Transfer Receipt Line")
-    begin
-        TransReceiptLine."Sust. Account No." := TransLine."Sust. Account No.";
-        TransReceiptLine."Sust. Account Name" := TransLine."Sust. Account Name";
-        TransReceiptLine."Sust. Account Category" := TransLine."Sust. Account Category";
-        TransReceiptLine."Sust. Account Subcategory" := TransLine."Sust. Account Subcategory";
-        TransReceiptLine."CO2e per Unit" := TransLine."CO2e per Unit";
     end;
 
     local procedure UpdateSustainabilityItemJournalLine(var ItemJournalLine: Record "Item Journal Line"; var TransferLine: Record "Transfer Line")
@@ -90,7 +61,7 @@ codeunit 6258 "Sust. Transfer Subscriber"
     begin
         GHGCredit := IsGHGCreditLine(TransferLine);
 
-        Sign := GetPostingSign(ItemJournalLine."Document Type" = ItemJournalLine."Document Type"::"Transfer Shipment", ItemJournalLine."Document Type" = ItemJournalLine."Document Type"::"Transfer Receipt", GHGCredit);
+        Sign := GetPostingSign(ItemJournalLine."Document Type" = ItemJournalLine."Document Type"::"Transfer Shipment", GHGCredit);
 
         CO2eToPost := TransferLine."CO2e per Unit" * Abs(ItemJournalLine.Quantity) * TransferLine."Qty. per Unit of Measure";
 
@@ -107,22 +78,19 @@ codeunit 6258 "Sust. Transfer Subscriber"
         ItemJournalLine."Total CO2e" := CO2eToPost;
     end;
 
-    local procedure UpdatePostedSustainabilityEmissionOrderLine(var TransferLine: Record "Transfer Line"; Qty: Decimal; Ship: Boolean; Receive: Boolean)
+    local procedure UpdatePostedSustainabilityEmissionOrderLine(var TransferLine: Record "Transfer Line"; Qty: Decimal; Ship: Boolean)
     var
         PostedEmissionCO2e: Decimal;
         GHGCredit: Boolean;
         Sign: Integer;
     begin
         GHGCredit := IsGHGCreditLine(TransferLine);
-        Sign := GetPostingSign(Ship, Receive, GHGCredit);
+        Sign := GetPostingSign(Ship, GHGCredit);
 
         UpdatePostedSustainabilityEmission(TransferLine, Qty, Sign, PostedEmissionCO2e);
 
         if Ship then
             TransferLine."Posted Shipped Total CO2e" += PostedEmissionCO2e;
-
-        if Receive then
-            TransferLine."Posted Received Total CO2e" += PostedEmissionCO2e;
 
         TransferLine.Modify();
     end;
@@ -132,49 +100,7 @@ codeunit 6258 "Sust. Transfer Subscriber"
         PostedEmissionCO2e := (TransferLine."CO2e per Unit" * Abs(Quantity) * TransferLine."Qty. per Unit of Measure") * Sign;
     end;
 
-    local procedure PostSustainabilityLine(TransferLine: Record "Transfer Line"; Qty: Decimal; Ship: Boolean; Receive: Boolean; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
-    var
-        TransferHeader: Record "Transfer Header";
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
-        GHGCredit: Boolean;
-        CO2eToPost: Decimal;
-        Sign: Integer;
-    begin
-        GHGCredit := IsGHGCreditLine(TransferLine);
-
-        Sign := GetPostingSign(Ship, Receive, GHGCredit);
-
-        CO2eToPost := TransferLine."CO2e per Unit" * Abs(Qty) * TransferLine."Qty. per Unit of Measure" * Sign;
-
-        TransferHeader.Get(TransferLine."Document No.");
-        if not CanPostSustainabilityJnlLine(TransferLine."Sust. Account No.", TransferLine."Sust. Account Category", TransferLine."Sust. Account Subcategory", CO2eToPost) then
-            exit;
-
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine."Journal Template Name" := '';
-        SustainabilityJnlLine."Journal Batch Name" := '';
-        SustainabilityJnlLine."Source Code" := SrcCode;
-        SustainabilityJnlLine.Validate("Posting Date", TransferHeader."Posting Date");
-
-        if GHGCredit then
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit")
-        else
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
-
-        SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
-        SustainabilityJnlLine.Validate("Account No.", TransferLine."Sust. Account No.");
-        SustainabilityJnlLine.Validate("Account Category", TransferLine."Sust. Account Category");
-        SustainabilityJnlLine.Validate("Account Subcategory", TransferLine."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", TransferLine."Unit of Measure Code");
-        SustainabilityJnlLine."Dimension Set ID" := TransferLine."Dimension Set ID";
-        SustainabilityJnlLine."Shortcut Dimension 1 Code" := TransferLine."Shortcut Dimension 1 Code";
-        SustainabilityJnlLine."Shortcut Dimension 2 Code" := TransferLine."Shortcut Dimension 2 Code";
-        SustainabilityJnlLine.Validate("CO2e Emission", CO2eToPost);
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine, TransferLine);
-    end;
-
-    local procedure GetPostingSign(Ship: Boolean; Receive: Boolean; GHGCredit: Boolean): Integer
+    local procedure GetPostingSign(Ship: Boolean; GHGCredit: Boolean): Integer
     var
         Sign: Integer;
     begin
@@ -182,11 +108,7 @@ codeunit 6258 "Sust. Transfer Subscriber"
 
         if Ship then
             if not GHGCredit then
-                Sign := -1;
-
-        if Receive then
-            if GHGCredit then
-                Sign := -1;
+                Sign := 1;
 
         exit(Sign);
     end;

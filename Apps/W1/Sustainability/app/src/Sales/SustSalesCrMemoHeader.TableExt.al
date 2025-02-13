@@ -19,7 +19,7 @@ tableextension 6236 "Sust. Sales Cr. Memo Header" extends "Sales Cr.Memo Header"
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Sustainability Ledger Entry"."CO2e Emission" where("Document No." = field("No."), "Document Type" = filter("Credit Memo" | "GHG Credit")));
+            CalcFormula = sum("Sustainability Value Entry"."CO2e Amount (Actual)" where("Document No." = field("No.")));
             Caption = 'Total CO2e';
             Editable = false;
             FieldClass = FlowField;

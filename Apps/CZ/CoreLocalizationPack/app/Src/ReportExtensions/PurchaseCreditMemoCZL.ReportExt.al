@@ -94,11 +94,14 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
                     else
                         VALSpecHeaderCZL := VATAmountSpecificationTxt + Format(GeneralLedgerSetup."LCY Code");
 
+                    Clear(VALExchRateCZL);
                     if not UseFunctionalCurrency then begin
                         CurrencyExchangeRate.FindCurrency("Purch. Cr. Memo Hdr."."Posting Date", "Purch. Cr. Memo Hdr."."Currency Code", 1);
                         CalculatedExchRate := Round(1 / "Purch. Cr. Memo Hdr."."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                         VALExchRateCZL := StrSubstNo(ExchangeRateTxt, CalculatedExchRate, CurrencyExchangeRate."Exchange Rate Amount");
-                    end else
+                        if ("Purch. Cr. Memo Hdr."."Currency Code" = GeneralLedgerSetup."LCY Code") or ("Purch. Cr. Memo Hdr."."Currency Code" = '') then
+                            VALSpecHeaderCZL := '';
+                    end else begin
                         if ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 0) and ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 1) then begin
                             VALSpecHeaderCZL := VATAmountSpecificationTxt + Format(GeneralLedgerSetup."Additional Reporting Currency");
                             if CalculatedExchRate <> 1 then begin
@@ -110,6 +113,9 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
                             end;
                             VALExchRateCZL := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Cr. Memo Hdr."."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                         end;
+                        if (CalculatedExchRate = 1) or ("Purch. Cr. Memo Hdr."."Currency Code" = GeneralLedgerSetup."Additional Reporting Currency") then
+                            VALSpecHeaderCZL := '';
+                    end;
                 end;
             }
         }

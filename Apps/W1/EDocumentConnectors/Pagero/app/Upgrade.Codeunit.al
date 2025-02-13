@@ -6,7 +6,6 @@ namespace Microsoft.EServices.EDocumentConnector;
 using System.Upgrade;
 
 #if not CLEAN26
-using Microsoft.eServices.EDocument.Integration.Action;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument;
 #endif
@@ -45,7 +44,6 @@ codeunit 6370 Upgrade
         if EDocumentService.FindSet() then
             repeat
                 EDocumentService."Service Integration V2" := Enum::"Service Integration"::Pagero;
-                EDocumentService."Sent Actions Integration" := Enum::"Sent Document Actions"::Pagero;
                 EDocumentService."Service Integration" := Enum::"E-Document Integration"::"No Integration";
                 EDocumentService.Modify();
             until EDocumentService.Next() = 0;

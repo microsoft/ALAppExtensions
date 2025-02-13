@@ -14,46 +14,57 @@ codeunit 139689 "Recurring Discount Test"
     TestPermissions = Disabled;
     Access = Internal;
 
-    local procedure InitTest()
-    begin
-        ClearAll();
-        ContractTestLibrary.InitContractsApp();
-        LibraryERMCountryData.UpdateSalesReceivablesSetup();
-        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
-        LibraryERMCountryData.UpdateGeneralLedgerSetup();
-    end;
+    var
+        BillingLine: Record "Billing Line";
+        BillingTemplate: Record "Billing Template";
+        Customer: Record Customer;
+        CustomerContract: Record "Customer Contract";
+        Item: Record Item;
+        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesLine: Record "Sales Line";
+        SalesServiceCommitment: Record "Sales Service Commitment";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceObject: Record "Service Object";
+        Vendor: Record Vendor;
+        VendorContract: Record "Vendor Contract";
+        Assert: Codeunit Assert;
+        BillingProposal: Codeunit "Billing Proposal";
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryUtility: Codeunit "Library - Utility";
+        PostedDocumentNo: Code[20];
+        DiscountDeferralAmountSignErr: Label 'Discount Deferral line must have %1 Amount.', Locked = true;
+        DiscountDeferralDeferralBaseAmountSignErr: Label 'Discount Deferral line must have %1 Deferral Base Amount.', Locked = true;
+        NoDeferralLinesErr: Label 'No Deferral lines were found.', Locked = true;
+        DiscBillingLineNegativeAmtErr: Label 'Discount Billing line must have negative amount', Locked = true;
+        DiscBillLineNegativeQtyErr: Label 'Discount Billing line must have negative quantity', Locked = true;
+        DiscBillLinePositivePriceErr: Label 'Discount Billing line must have positive price', Locked = true;
+        DiscPurchLineNegativeAmtErr: Label 'Discount Purchase line must have negative amount', Locked = true;
+        DiscPurchLinePositivePriceErr: Label 'Discount Purchase line must have positive price', Locked = true;
+        DiscPurchLineNegativePriceErr: Label 'Discount Purchase line must have negative price', Locked = true;
+        DiscSalesLineNegativeAmtErr: Label 'Discount Sales line must have negative amount', Locked = true;
+        DiscSalesLinePositivePriceErr: Label 'Discount Sales line must have positive price', Locked = true;
+        DiscSalesLineNegativePriceErr: Label 'Discount Sales line must have negative price', Locked = true;
 
-    [Test]
-    procedure TestTransferDiscountInServiceCommitmentPackage()
-    begin
-        InitTest();
-        ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.TestField(Discount, true);
-    end;
-
-    [Test]
-    procedure TestTransferDiscountInServiceCommitment()
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
-        ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
-        ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        if ServiceCommitment.FindSet() then
-            repeat
-                ServiceCommitment.TestField(Discount, true);
-            until ServiceCommitment.Next() = 0;
-    end;
+    #region Tests
 
     [Test]
     procedure ExpectErrorOnAssignDiscountInvoiceViaSalesInServiceCommitmentTemplate()
     begin
-        InitTest();
+        Initialize();
         ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
         asserterror ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
     end;
@@ -61,7 +72,7 @@ codeunit 139689 "Recurring Discount Test"
     [Test]
     procedure ExpectErrorOnAssignDiscountInvoiceViaSalesInServiceCommitmentPackage()
     begin
-        InitTest();
+        Initialize();
         ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         asserterror ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
@@ -70,7 +81,7 @@ codeunit 139689 "Recurring Discount Test"
     [Test]
     procedure ExpectErrorOnAssignDiscountToInvoicingItemInServiceCommitmentPackage()
     begin
-        InitTest();
+        Initialize();
         ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
@@ -78,60 +89,25 @@ codeunit 139689 "Recurring Discount Test"
     end;
 
     [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestDiscountInBillingLinesCustomerContract()
+    procedure ExpectErrorOnAssignRecurringDiscountToSalesServiceCommitment()
     begin
-        CreateBillingProposalForCustomerContract();
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
-        BillingLine.SetRange(Discount, true);
-        BillingLine.FindSet();
-        repeat
-            if BillingLine."Service Amount" >= 0 then
-                Error('Discount Billing line must have negative amount');
-            if BillingLine."Service Obj. Quantity Decimal" >= 0 then
-                Error('Discount Billing line must have negative quantity');
-            if BillingLine."Unit Price" < 0 then
-                Error('Discount Billing line must have positive price');
-        until BillingLine.Next() = 0;
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+        CreateServiceCommitmentTemplateSetup('<12M>');
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
+        asserterror ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
     end;
 
     [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestIfSalesInvoiceIsCreatedFromRecurringBilling()
+    procedure ExpectErrorOnAssignRecurringDiscountToInvoicingItem()
     begin
-        CreateBillingProposalForCustomerContract();
-        CreateBillingDocuments();
-        //Check if document is created for each billing line (both discount and standard)
-        if BillingLine.FindSet() then
-            repeat
-                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-                BillingLine.TestField("Document No.");
-            until BillingLine.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestSalesInvoiceRecurringDiscountLines()
-    begin
-        CreateBillingProposalForCustomerContract();
-        CreateBillingDocuments();
-        BillingLine.SetRange(Discount, true);
-        if BillingLine.FindSet() then
-            repeat
-                SalesLine.SetRange("Document Type", BillingLine.GetSalesDocumentTypeFromBillingDocumentType());
-                SalesLine.SetRange("Document No.", BillingLine."Document No.");
-                SalesLine.SetRange("Line No.", BillingLine."Document Line No.");
-                SalesLine.FindFirst();
-                if SalesLine.Amount >= 0 then
-                    Error('Discount Sales line must have negative amount');
-                if SalesLine."Amount Including VAT" >= 0 then
-                    Error('Discount Sales line must have negative amount');
-                if SalesLine."Unit Price" < 0 then
-                    Error('Discount Sales line must have positive price');
-                if SalesLine.Quantity > 0 then
-                    Error('Discount Sales line must have negative price');
-            until BillingLine.Next() = 0;
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        CreateServiceCommitmentTemplateSetup('<12M>');
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
+        asserterror ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
     end;
 
     [Test]
@@ -140,6 +116,7 @@ codeunit 139689 "Recurring Discount Test"
     var
         BillingArchiveLine: Record "Billing Line Archive";
     begin
+        Initialize();
         CreateBillingProposalForCustomerContract();
         CreateBillingDocuments();
         BillingLine.FindLast();
@@ -155,6 +132,7 @@ codeunit 139689 "Recurring Discount Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestCustomerContractDeferralsDiscountLines()
     begin
+        Initialize();
         CreateBillingProposalForCustomerContract();
         CreateBillingDocuments();
         BillingLine.FindLast();
@@ -164,36 +142,30 @@ codeunit 139689 "Recurring Discount Test"
     end;
 
     [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestSalesCreditMemoRecurringDiscountLine()
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestDiscountInBillingLinesCustomerContract()
     begin
+        Initialize();
         CreateBillingProposalForCustomerContract();
-        CreateBillingDocuments();
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Discount", true);
-        SalesLine.FindSet();
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange(Discount, true);
+        BillingLine.FindSet();
         repeat
-            if SalesLine.Amount >= 0 then
-                Error('Discount Sales line must have negative amount');
-            if SalesLine."Amount Including VAT" >= 0 then
-                Error('Discount Sales line must have negative amount');
-            if SalesLine."Unit Price" < 0 then
-                Error('Discount Sales line must have positive price');
-            if SalesLine.Quantity > 0 then
-                Error('Discount Sales line must have negative price');
-        until SalesLine.Next() = 0;
+            if BillingLine."Service Amount" >= 0 then
+                Error(DiscBillingLineNegativeAmtErr);
+            if BillingLine."Service Obj. Quantity Decimal" >= 0 then
+                Error(DiscBillLineNegativeQtyErr);
+            if BillingLine."Unit Price" < 0 then
+                Error(DiscBillLinePositivePriceErr);
+        until BillingLine.Next() = 0;
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestDiscountInBillingLinesVendorContract()
     begin
+        Initialize();
         CreateBillingProposalForVendorContract();
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange("Service Object No.", ServiceObject."No.");
@@ -201,21 +173,80 @@ codeunit 139689 "Recurring Discount Test"
         BillingLine.FindSet();
         repeat
             if BillingLine."Service Amount" >= 0 then
-                Error('Discount Billing line must have negative amount');
+                Error(DiscBillingLineNegativeAmtErr);
             if BillingLine."Service Obj. Quantity Decimal" >= 0 then
-                Error('Discount Billing line must have negative quantity');
+                Error(DiscBillLineNegativeQtyErr);
             if BillingLine."Unit Price" < 0 then
-                Error('Discount Billing line must have positive price');
+                Error(DiscBillLinePositivePriceErr);
         until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestDiscountInSalesServiceCommitments()
+    begin
+        Initialize();
+        SetupSalesServiceData();
+
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.FindSet();
+        repeat
+            SalesServiceCommitment.TestField(Discount, true);
+        until SalesServiceCommitment.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestDiscountServiceCommitmentsCreatedFromSales()
+    var
+        PositivePriceErr: Label 'Price should be positive in service commitments with discounts', Locked = true;
+        PositiveCalcBaseAmtErr: Label 'Calculation Base Amount should be positive in service commitments with discounts', Locked = true;
+        PositiveServAmtErr: Label 'Service Amount should be positive in service commitments with discounts', Locked = true;
+    begin
+        Initialize();
+        SetupSalesServiceData();
+
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        ServiceObject.FindLast();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.FindSet();
+        repeat
+            if ServiceCommitment.Price < 0 then
+                Error(PositivePriceErr);
+            if ServiceCommitment."Calculation Base Amount" < 0 then
+                Error(PositiveCalcBaseAmtErr);
+            if ServiceCommitment."Service Amount" < 0 then
+                Error(PositiveServAmtErr);
+            ServiceCommitment.TestField(Discount, true);
+        until ServiceCommitment.Next() = 0;
     end;
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestIfPurchaseInvoiceIsCreatedFromRecurringBilling()
     begin
+        Initialize();
         CreateBillingProposalForVendorContract();
         CreateBillingDocuments();
-        //Check if document is created for each billing line (both discount and standard)
+        // Check if document is created for each billing line (both discount and standard)
+        if BillingLine.FindSet() then
+            repeat
+                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+                BillingLine.TestField("Document No.");
+            until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestIfSalesInvoiceIsCreatedFromRecurringBilling()
+    begin
+        Initialize();
+        CreateBillingProposalForCustomerContract();
+        CreateBillingDocuments();
+        // Check if document is created for each billing line (both discount and standard)
         if BillingLine.FindSet() then
             repeat
                 BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
@@ -227,6 +258,7 @@ codeunit 139689 "Recurring Discount Test"
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestPurchaseInvoiceRecurringDiscountLines()
     begin
+        Initialize();
         CreateBillingProposalForVendorContract();
         CreateBillingDocuments();
         BillingLine.SetRange(Discount, true);
@@ -234,14 +266,121 @@ codeunit 139689 "Recurring Discount Test"
             repeat
                 PurchaseLine.Get(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
                 if PurchaseLine.Amount >= 0 then
-                    Error('Discount Purchase line must have negative amount');
+                    Error(DiscPurchLinePositivePriceErr);
                 if PurchaseLine."Amount Including VAT" >= 0 then
-                    Error('Discount Purchase line must have negative amount');
+                    Error(DiscPurchLinePositivePriceErr);
                 if PurchaseLine."Unit Cost" < 0 then
-                    Error('Discount Purchase line must have positive price');
+                    Error(DiscPurchLinePositivePriceErr);
                 if PurchaseLine.Quantity > 0 then
-                    Error('Discount Purchase line must have negative price');
+                    Error(DiscPurchLineNegativeAmtErr);
             until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestPurchaseCreditMemoRecurringDiscountLine()
+    begin
+        Initialize();
+        CreateBillingProposalForVendorContract();
+        CreateBillingDocuments();
+        BillingLine.FindLast();
+        PostedDocumentNo := UpdateAndPostPurchaseHeader(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchInvHeader.Get(PostedDocumentNo);
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvHeader, PurchaseHeader);
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange(Discount, true);
+        PurchaseLine.FindSet();
+        repeat
+            if PurchaseLine.Amount >= 0 then
+                Error(DiscPurchLineNegativeAmtErr);
+            if PurchaseLine."Amount Including VAT" >= 0 then
+                Error(DiscPurchLineNegativeAmtErr);
+            if PurchaseLine."Unit Cost" < 0 then
+                Error(DiscPurchLinePositivePriceErr);
+            if PurchaseLine.Quantity > 0 then
+                Error(DiscPurchLineNegativePriceErr);
+        until PurchaseLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestSalesInvoiceRecurringDiscountLines()
+    begin
+        Initialize();
+        CreateBillingProposalForCustomerContract();
+        CreateBillingDocuments();
+        BillingLine.SetRange(Discount, true);
+        if BillingLine.FindSet() then
+            repeat
+                SalesLine.SetRange("Document Type", BillingLine.GetSalesDocumentTypeFromBillingDocumentType());
+                SalesLine.SetRange("Document No.", BillingLine."Document No.");
+                SalesLine.SetRange("Line No.", BillingLine."Document Line No.");
+                SalesLine.FindFirst();
+                if SalesLine.Amount >= 0 then
+                    Error(DiscSalesLineNegativeAmtErr);
+                if SalesLine."Amount Including VAT" >= 0 then
+                    Error(DiscSalesLineNegativeAmtErr);
+                if SalesLine."Unit Price" < 0 then
+                    Error(DiscSalesLinePositivePriceErr);
+                if SalesLine.Quantity > 0 then
+                    Error(DiscSalesLineNegativePriceErr);
+            until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestSalesCreditMemoRecurringDiscountLine()
+    begin
+        Initialize();
+        CreateBillingProposalForCustomerContract();
+        CreateBillingDocuments();
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange(Discount, true);
+        SalesLine.FindSet();
+        repeat
+            if SalesLine.Amount >= 0 then
+                Error(DiscSalesLineNegativeAmtErr);
+            if SalesLine."Amount Including VAT" >= 0 then
+                Error(DiscSalesLineNegativeAmtErr);
+            if SalesLine."Unit Price" < 0 then
+                Error(DiscSalesLinePositivePriceErr);
+            if SalesLine.Quantity > 0 then
+                Error(DiscSalesLineNegativePriceErr);
+        until SalesLine.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestTransferDiscountInServiceCommitment()
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        if ServiceCommitment.FindSet() then
+            repeat
+                ServiceCommitment.TestField(Discount, true);
+            until ServiceCommitment.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestTransferDiscountInServiceCommitmentPackage()
+    begin
+        Initialize();
+        ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.TestField(Discount, true);
     end;
 
     [Test]
@@ -250,6 +389,7 @@ codeunit 139689 "Recurring Discount Test"
     var
         BillingArchiveLine: Record "Billing Line Archive";
     begin
+        Initialize();
         CreateBillingProposalForVendorContract();
         CreateBillingDocuments();
         BillingLine.FindLast();
@@ -265,6 +405,7 @@ codeunit 139689 "Recurring Discount Test"
     var
         VendorContractDeferral: Record "Vendor Contract Deferral";
     begin
+        Initialize();
         CreateBillingProposalForVendorContract();
         CreateBillingDocuments();
         BillingLine.FindLast();
@@ -282,37 +423,44 @@ codeunit 139689 "Recurring Discount Test"
     end;
 
     [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestPurchaseCreditMemoRecurringDiscountLine()
+    [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
+    procedure TestServiceAmountInDiscountSalesServiceCommitments()
+    var
+        ServAmtCalculationErr: Label 'Service Amount in Sales Service Commitments with Discount is not calculated properly.', Locked = true;
     begin
-        CreateBillingProposalForVendorContract();
-        CreateBillingDocuments();
-        BillingLine.FindLast();
-        PostedDocumentNo := UpdateAndPostPurchaseHeader(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchInvHeader.Get(PostedDocumentNo);
-        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvHeader, PurchaseHeader);
-        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
-        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        PurchaseLine.SetRange("Discount", true);
-        PurchaseLine.FindSet();
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        Item.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
+        Item.Modify(false);
+
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ServiceCommitmentTemplate.Validate(Discount, true);
+        ServiceCommitmentTemplate.Modify(false);
+
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
+
+        SalesServiceCommitment.Reset();
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.SetRange(Discount, true);
+        SalesServiceCommitment.FindSet();
         repeat
-            if PurchaseLine.Amount >= 0 then
-                Error('Discount Purchase line must have negative amount');
-            if PurchaseLine."Amount Including VAT" >= 0 then
-                Error('Discount Purchase line must have negative amount');
-            if PurchaseLine."Unit Cost" < 0 then
-                Error('Discount Purchase line must have positive price');
-            if PurchaseLine.Quantity > 0 then
-                Error('Discount Purchase line must have negative price');
-        until PurchaseLine.Next() = 0;
+            if SalesServiceCommitment."Service Amount" > 0 then
+                Error(ServAmtCalculationErr)
+        until SalesServiceCommitment.Next() = 0;
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
     procedure CreateContractInvoiceFromCustomerContractWhenDiscountLineIsFirst()
     begin
-        // when first Service Commitment is discount, but the document total amount is positive, Sales Invoice should be created
-        InitTest();
+        // [SCENARIO] first Service Commitment is discount, but the document total amount is positive, Sales Invoice should be created
+        Initialize();
+        CreateBillingDocuments();
+
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         CreateServiceCommitmentTemplateSetup('<12M>');
 
@@ -338,8 +486,10 @@ codeunit 139689 "Recurring Discount Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
     procedure CreateContractInvoiceFromVendorContractWhenDiscountLineIsFirst()
     begin
-        // when first Service Commitment is discount, but the document total amount is positive, Purchase Invoice should be created
-        InitTest();
+        // [SCENARIO] first Service Commitment is discount, but the document total amount is positive, Purchase Invoice should be created
+        Initialize();
+        CreateBillingDocuments();
+
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         Item."Last Direct Cost" := LibraryRandom.RandDec(100, 2);
         Item.Modify(false);
@@ -357,268 +507,10 @@ codeunit 139689 "Recurring Discount Test"
         ContractTestLibrary.CreateVendor(Vendor);
         ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
         BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+        BillingLine.SetRange(Partner);
         BillingLine.FindLast();
         // Test that correct purchase document type has been created
         PurchaseLine.Get("Purchase Document Type"::Invoice, BillingLine."Document No.", BillingLine."Document Line No.");
-    end;
-
-    [Test]
-    procedure TestDiscountInSalesServiceCommitments()
-    begin
-        SetupSalesServiceData();
-
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
-        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        SalesServiceCommitment.FindSet();
-        repeat
-            SalesServiceCommitment.TestField(Discount, true);
-        until SalesServiceCommitment.Next() = 0;
-    end;
-
-    [Test]
-    procedure TestDiscountServiceCommitmentsCreatedFromSales()
-    begin
-        SetupSalesServiceData();
-
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
-
-        ServiceObject.FindLast();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.FindSet();
-        repeat
-            if ServiceCommitment.Price < 0 then
-                Error('Price should be positive in service commitments with discounts');
-            if ServiceCommitment."Calculation Base Amount" < 0 then
-                Error('Calculation Base Amount should be positive in service commitments with discounts');
-            if ServiceCommitment."Service Amount" < 0 then
-                Error('Service Amount should be positive in service commitments with discounts');
-            ServiceCommitment.TestField(Discount, true);
-        until ServiceCommitment.Next() = 0;
-    end;
-
-    [Test]
-    procedure ExpectErrorOnAssignRecurringDiscountToSalesServiceCommitment()
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
-        CreateServiceCommitmentTemplateSetup('<12M>');
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
-        asserterror ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-    end;
-
-    [Test]
-    procedure ExpectErrorOnAssignRecurringDiscountToInvoicingItem()
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
-        CreateServiceCommitmentTemplateSetup('<12M>');
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
-        asserterror ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-    end;
-
-    [Test]
-    [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
-    procedure TestServiceAmountInDiscountSalesServiceCommitments()
-    var
-        ContractsTestSubscriber: Codeunit "Contracts Test Subscriber";
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        Item.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
-        Item.Modify(false);
-
-        ContractsTestSubscriber.SetCallerName('RecurringDiscountTest - TestServiceAmountInDiscountSalesServiceCommitments');
-        BindSubscription(ContractsTestSubscriber);
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        UnbindSubscription(ContractsTestSubscriber);
-
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
-
-        SalesServiceCommitment.Reset();
-        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        SalesServiceCommitment.SetRange(Discount, true);
-        SalesServiceCommitment.FindSet();
-        repeat
-            if SalesServiceCommitment."Service Amount" > 0 then
-                Error('Service Amount in Sales Service Commitments with Discount is not calculated properly.')
-        until SalesServiceCommitment.Next() = 0;
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateBillingDocumentPageHandler(var CreateBillingDocument: TestPage "Create Billing Document")
-    begin
-        CreateBillingDocument.BillingDate.SetValue(WorkDate());
-        CreateBillingDocument.BillingTo.SetValue(WorkDate());
-        CreateBillingDocument.OpenDocument.SetValue(false);
-        CreateBillingDocument.PostDocument.SetValue(false);
-        CreateBillingDocument.OK().Invoke()
-    end;
-
-    local procedure CreateBillingDocuments()
-    begin
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange(Partner, BillingTemplate.Partner);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-        Commit(); //retain posted data
-    end;
-
-    procedure CreateBillingProposalForCustomerContract()
-    begin
-        SetupServiceData(Enum::"Service Partner"::Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
-        CustomerContract.SetRange("No.", CustomerContract."No.");
-        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<2M-CM>', '<8M+CM>', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-    end;
-
-    procedure CreateBillingProposalForVendorContract()
-    begin
-        SetupServiceData(Enum::"Service Partner"::Vendor);
-        ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
-        VendorContract.SetRange("No.", VendorContract."No.");
-        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<2M-CM>', '<8M+CM>', VendorContract.GetView(), Enum::"Service Partner"::Vendor);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
-    end;
-
-    local procedure CreateServiceCommitmentTemplateSetup(CalcBasePeriodDateFormulaTxt: Text)
-    begin
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        if CalcBasePeriodDateFormulaTxt <> '' then
-            Evaluate(ServiceCommitmentTemplate."Billing Base Period", CalcBasePeriodDateFormulaTxt);
-        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Contract;
-        ServiceCommitmentTemplate.Modify(false);
-    end;
-
-    local procedure SetupServiceData(ServicePartner: Enum "Service Partner")
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        Item."Last Direct Cost" := LibraryRandom.RandDec(100, 2);
-        Item.Modify(false);
-        CreateServiceCommitmentTemplateSetup('<12M>');
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', ServicePartner, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', ServicePartner, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', false);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
-        ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
-    end;
-
-    local procedure UpdateAndPostPurchaseHeader(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]): Code[20]
-    begin
-        PurchaseHeader.Get(DocumentType, DocumentNo);
-        case DocumentType of
-            Enum::"Purchase Document Type"::Invoice:
-                PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-            Enum::"Purchase Document Type"::"Credit Memo":
-                PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-        end;
-        PurchaseHeader.Modify(false);
-        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
-    end;
-
-    local procedure SetupSalesServiceData()
-    begin
-        InitTest();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        CreateServiceCommitmentTemplateSetup('<12M>');
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
-        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
-    end;
-
-    local procedure IncreaseCalculationBaseAmountForNonDiscountServiceCommitment()
-    begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange(Discount, false);
-        ServiceCommitment.FindLast();
-        ServiceCommitment.Validate("Calculation Base Amount", ServiceCommitment."Calculation Base Amount" + LibraryRandom.RandDecInRange(1000, 2000, 2));
-        ServiceCommitment.Modify(false);
-    end;
-
-    local procedure VerifyCustomerContractDeferralLines(ContractNo: Code[20]; DocumentNo: Code[20]; DocumentType: Enum "Rec. Billing Document Type"; Discount: Boolean)
-    var
-        CustomerContractDeferral: Record "Customer Contract Deferral";
-    begin
-        CustomerContractDeferral.SetRange("Contract No.", ContractNo);
-        CustomerContractDeferral.SetRange("Document Type", DocumentType);
-        CustomerContractDeferral.SetRange("Document No.", DocumentNo);
-        CustomerContractDeferral.SetRange(Discount, Discount);
-
-        if CustomerContractDeferral.IsEmpty() then
-            Error(NoDeferralLinesErr);
-
-        CustomerContractDeferral.SetFilter(Amount, '<0');
-        if not CustomerContractDeferral.IsEmpty() then
-            Error(DiscountDeferralAmountSignErr, 'positive');
-        CustomerContractDeferral.SetRange(Amount);
-
-        CustomerContractDeferral.SetFilter("Deferral Base Amount", '<0');
-        if not CustomerContractDeferral.IsEmpty() then
-            Error(DiscountDeferralDeferralBaseAmountSignErr, 'positive');
-        CustomerContractDeferral.SetRange("Deferral Base Amount");
-    end;
-
-    local procedure VerifyVendorContractDeferralLinesCreated(ContractNo: Code[20]; DocumentNo: Code[20]; DocumentType: Enum "Rec. Billing Document Type"; Discount: Boolean)
-    var
-        VendorContractDeferral: Record "Vendor Contract Deferral";
-    begin
-        VendorContractDeferral.SetRange("Contract No.", ContractNo);
-        VendorContractDeferral.SetRange("Document Type", DocumentType);
-        VendorContractDeferral.SetRange("Document No.", DocumentNo);
-        VendorContractDeferral.SetRange(Discount, Discount);
-        if VendorContractDeferral.IsEmpty() then
-            Error(NoDeferralLinesErr);
-    end;
-
-    [ModalPageHandler]
-    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
-    begin
-        ExchangeRateSelectionPage.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure AssignServiceCommitmentsModalPageHandler(var AssignServiceCommitments: TestPage "Assign Service Commitments")
-    begin
-        AssignServiceCommitments.OK().Invoke();
     end;
 
     [Test]
@@ -627,7 +519,9 @@ codeunit 139689 "Recurring Discount Test"
     begin
         // [SCENARIO] When Sales Cr. Memo is created from Customer Contract with discount and posted, deferrals should be created as well
         ClearAll();
-        InitTest();
+        Initialize();
+        CreateBillingDocuments();
+
 
         // [GIVEN] Service Commitment Item
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
@@ -673,7 +567,9 @@ codeunit 139689 "Recurring Discount Test"
     begin
         // [SCENARIO] When Purchase Cr. Memo is created from Vendor Contract with discount and posted, deferrals should be created as well
         ClearAll();
-        InitTest();
+        Initialize();
+        CreateBillingDocuments();
+
 
         // [GIVEN] Service Commitment Item
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
@@ -702,6 +598,7 @@ codeunit 139689 "Recurring Discount Test"
         // [GIVEN] Billing Proposal with Billing Lines and Purch. Cr. Memo
         VendorContract.CreateBillingProposal();
         BillingLine.SetRange("Contract No.", VendorContract."No.");
+        BillingLine.SetRange(Partner);
         BillingLine.FindFirst();
 
         // [WHEN] Purchase Cr. Memo is posted
@@ -711,39 +608,191 @@ codeunit 139689 "Recurring Discount Test"
         VerifyVendorContractDeferralLinesCreated(VendorContract."No.", PostedDocumentNo, Enum::"Rec. Billing Document Type"::"Credit Memo", true);
     end;
 
+    #endregion Tests
+
+    #region Procedures
+
+    local procedure Initialize()
+    begin
+        ClearAll();
+        ContractTestLibrary.InitContractsApp();
+        LibraryERMCountryData.UpdateSalesReceivablesSetup();
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        LibraryERMCountryData.UpdateGeneralLedgerSetup();
+        LibraryERMCountryData.CreateVATData();
+    end;
+
+    local procedure CreateBillingDocuments()
+    begin
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange(Partner, BillingTemplate.Partner);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+        Commit(); // retain posted data
+    end;
+
+    local procedure CreateBillingProposalForCustomerContract()
+    begin
+        SetupServiceData(Enum::"Service Partner"::Customer);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        CustomerContract.SetRange("No.", CustomerContract."No.");
+        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<2M-CM>', '<8M+CM>', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+    end;
+
+    local procedure CreateBillingProposalForVendorContract()
+    begin
+        SetupServiceData(Enum::"Service Partner"::Vendor);
+        ContractTestLibrary.CreateVendor(Vendor);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
+        VendorContract.SetRange("No.", VendorContract."No.");
+        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<2M-CM>', '<8M+CM>', VendorContract.GetView(), Enum::"Service Partner"::Vendor);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
+    end;
+
+    local procedure CreateServiceCommitmentTemplateSetup(CalcBasePeriodDateFormulaTxt: Text)
+    begin
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        if CalcBasePeriodDateFormulaTxt <> '' then
+            Evaluate(ServiceCommitmentTemplate."Billing Base Period", CalcBasePeriodDateFormulaTxt);
+        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Contract;
+        ServiceCommitmentTemplate.Modify(false);
+    end;
+
+    local procedure IncreaseCalculationBaseAmountForNonDiscountServiceCommitment()
+    begin
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange(Discount, false);
+        ServiceCommitment.FindLast();
+        ServiceCommitment.Validate("Calculation Base Amount", ServiceCommitment."Calculation Base Amount" + LibraryRandom.RandDecInRange(1000, 2000, 2));
+        ServiceCommitment.Modify(false);
+    end;
+
+    local procedure SetupSalesServiceData()
+    begin
+
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        CreateServiceCommitmentTemplateSetup('<12M>');
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+    end;
+
+    local procedure SetupServiceData(ServicePartner: Enum "Service Partner")
+    begin
+
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        Item."Last Direct Cost" := LibraryRandom.RandDec(100, 2);
+        Item.Modify(false);
+        CreateServiceCommitmentTemplateSetup('<12M>');
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', ServicePartner, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', true);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', ServicePartner, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", '', '<1M>', false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
+        ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
+    end;
+
+    local procedure UpdateAndPostPurchaseHeader(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]): Code[20]
+    begin
+        PurchaseHeader.Get(DocumentType, DocumentNo);
+        case DocumentType of
+            Enum::"Purchase Document Type"::Invoice:
+                PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+            Enum::"Purchase Document Type"::"Credit Memo":
+                PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+        end;
+        PurchaseHeader.Modify(false);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure VerifyCustomerContractDeferralLines(ContractNo: Code[20]; DocumentNo: Code[20]; DocumentType: Enum "Rec. Billing Document Type"; Discount: Boolean)
     var
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceObject: Record "Service Object";
-        ServiceCommitment: Record "Service Commitment";
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        CustomerContract: Record "Customer Contract";
-        VendorContract: Record "Vendor Contract";
-        BillingLine: Record "Billing Line";
-        Item: Record Item;
-        BillingTemplate: Record "Billing Template";
-        Customer: Record Customer;
-        Vendor: Record Vendor;
-        SalesLine: Record "Sales Line";
-        PurchaseLine: Record "Purchase Line";
-        SalesHeader: Record "Sales Header";
-        PurchaseHeader: Record "Purchase Header";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        PurchInvHeader: Record "Purch. Inv. Header";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        LibrarySales: Codeunit "Library - Sales";
-        CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
-        LibraryPurchase: Codeunit "Library - Purchase";
-        LibraryUtility: Codeunit "Library - Utility";
-        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
-        BillingProposal: Codeunit "Billing Proposal";
-        Assert: Codeunit Assert;
-        NoDeferralLinesErr: Label 'No Deferral lines were found.', Locked = true;
-        DiscountDeferralAmountSignErr: Label 'Discount Deferral line must have %1 Amount.', Locked = true;
-        DiscountDeferralDeferralBaseAmountSignErr: Label 'Discount Deferral line must have %1 Deferral Base Amount.', Locked = true;
-        PostedDocumentNo: Code[20];
+        CustomerContractDeferral: Record "Customer Contract Deferral";
+    begin
+        CustomerContractDeferral.SetRange("Contract No.", ContractNo);
+        CustomerContractDeferral.SetRange("Document Type", DocumentType);
+        CustomerContractDeferral.SetRange("Document No.", DocumentNo);
+        CustomerContractDeferral.SetRange(Discount, Discount);
+
+        if CustomerContractDeferral.IsEmpty() then
+            Error(NoDeferralLinesErr);
+
+        CustomerContractDeferral.SetFilter(Amount, '<0');
+        if not CustomerContractDeferral.IsEmpty() then
+            Error(DiscountDeferralAmountSignErr, 'positive');
+        CustomerContractDeferral.SetRange(Amount);
+
+        CustomerContractDeferral.SetFilter("Deferral Base Amount", '<0');
+        if not CustomerContractDeferral.IsEmpty() then
+            Error(DiscountDeferralDeferralBaseAmountSignErr, 'positive');
+        CustomerContractDeferral.SetRange("Deferral Base Amount");
+    end;
+
+    local procedure VerifyVendorContractDeferralLinesCreated(ContractNo: Code[20]; DocumentNo: Code[20]; DocumentType: Enum "Rec. Billing Document Type"; Discount: Boolean)
+    var
+        VendorContractDeferral: Record "Vendor Contract Deferral";
+    begin
+        VendorContractDeferral.SetRange("Contract No.", ContractNo);
+        VendorContractDeferral.SetRange("Document Type", DocumentType);
+        VendorContractDeferral.SetRange("Document No.", DocumentNo);
+        VendorContractDeferral.SetRange(Discount, Discount);
+        if VendorContractDeferral.IsEmpty() then
+            Error(NoDeferralLinesErr);
+    end;
+
+    #endregion Procedures
+
+    #region Handlers
+
+    [ModalPageHandler]
+    procedure AssignServiceCommitmentsModalPageHandler(var AssignServiceCommitments: TestPage "Assign Service Commitments")
+    begin
+        AssignServiceCommitments.OK().Invoke();
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [ModalPageHandler]
+    procedure CreateBillingDocumentPageHandler(var CreateBillingDocument: TestPage "Create Billing Document")
+    begin
+        CreateBillingDocument.BillingDate.SetValue(WorkDate());
+        CreateBillingDocument.BillingTo.SetValue(WorkDate());
+        CreateBillingDocument.OpenDocument.SetValue(false);
+        CreateBillingDocument.PostDocument.SetValue(false);
+        CreateBillingDocument.OK().Invoke()
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
+    begin
+        ExchangeRateSelectionPage.OK().Invoke();
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
+    #endregion Handlers
 }

@@ -457,6 +457,8 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         DiscountNotTransferredTxt: Label 'The %1 of %2 %3 has not been transferred to the Sales Service Commitment(s). The %1 is only transferred to Sales Service Commitment, if %4 is set to %5.';
         DontShowAgainActionLbl: Label 'Don''t show again';
     begin
+        if SalesServiceCommitment.IsEmpty() then
+            exit;
         if not MyNotification.IsEnabled(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine()) then
             exit;
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
