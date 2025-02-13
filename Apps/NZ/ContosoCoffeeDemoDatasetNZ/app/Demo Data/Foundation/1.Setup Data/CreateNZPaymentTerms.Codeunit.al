@@ -12,7 +12,7 @@ codeunit 17108 "Create NZ Payment Terms"
     begin
         case Rec.Code of
             CreatePaymentTerms.PaymentTermsDAYS30():
-                ValidateRecordFields(Rec, EndofNextMonthLbl, Days30DueDateCalculationLbl);
+                ValidateRecordFields(Rec, EndofNextMonthLbl, '<1M+CM>');
         end;
     end;
 
@@ -25,5 +25,4 @@ codeunit 17108 "Create NZ Payment Terms"
 
     var
         EndofNextMonthLbl: Label 'End of Next Month', MaxLength = 100;
-        Days30DueDateCalculationLbl: Label '1M+CM', MaxLength = 10;
 }

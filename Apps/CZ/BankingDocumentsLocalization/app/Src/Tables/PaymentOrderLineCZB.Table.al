@@ -870,12 +870,13 @@ table 31257 "Payment Order Line CZB"
                 PaymentOrderCurrency.Testfield("Amount Rounding Precision");
             end;
     end;
-
+#if not CLEAN25
     [Obsolete('Replaced by CreateDescription function with PlaceholderValues parameter.', '25.0')]
     procedure CreateDescription(DocType: Text[30]; DocNo: Text[20]; PartnerNo: Text[20]; PartnerName: Text[100]; ExtNo: Text[35]): Text[50]
     begin
         exit(CopyStr(StrSubstNo(BankAccount."Payment Order Line Descr. CZB", DocType, DocNo, PartnerNo, PartnerName, ExtNo), 1, 50));
     end;
+#endif
 
     procedure CreateDescription(PlaceholderValues: List of [Text[100]]) Description: Text[100]
     var

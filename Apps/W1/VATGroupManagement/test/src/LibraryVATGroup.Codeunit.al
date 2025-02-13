@@ -228,7 +228,9 @@ codeunit 139525 "Library - VAT Group"
         VATReportSetup."Group Representative API URL" :=
           CopyStr(GetRepresentativeURL(), 1, MaxStrLen(VATReportSetup."Group Representative API URL"));
         VATReportSetup."Group Representative Company" := CopyStr(CompanyName(), 1, MaxStrLen(VATReportSetup."Group Representative Company"));
+#if not CLEAN25
         VATReportSetup."VAT Group Authentication Type" := VATReportSetup."VAT Group Authentication Type"::WindowsAuthentication;
+#endif
         VATReportSetup."Group Member ID" := CreateGuid();
         VATReportSetup."Manual Receive Period CU ID" := 0;
         VATReportSetup.Modify();

@@ -18,7 +18,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
     {
         dataitem("Sales Shipment Header"; "Sales Shipment Header")
         {
-            RequestFilterFields = "No.", "Posting Date";
+            RequestFilterFields = "No.", "Sell-to Customer No.", "Posting Date";
 
             trigger OnPreDataItem();
             begin

@@ -81,6 +81,7 @@ codeunit 30316 "Shpfy Metafield API"
     begin
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);
+        Metafield.SetFilter(Type, '<>%1&<>%2', Metafield.Type::string, Metafield.Type::integer);
         Metafield.SetFilter(Value, '<>%1', '');
         if Metafield.FindSet() then
             repeat

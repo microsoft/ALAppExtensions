@@ -332,19 +332,19 @@ codeunit 10774 "Factura-E Export"
         TaxesOutputsNode: XmlElement;
         InvoiceLineNode: XmlElement;
         InvoiceTotalsNode: XmlElement;
-        TotalsData: Dictionary of [Text, Decimal];
+        TotalsData, VATBases, VATAmounts : Dictionary of [Text, Decimal];
     begin
         InvoiceNode := XmlElement.Create('Invoice', '');
 
         // Lines
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
-        CreateLineNodes(InvoiceLineNode, SalesCrMemoLine, TotalsData);
+        CreateLineNodes(InvoiceLineNode, SalesCrMemoHeader, SalesCrMemoLine, TotalsData, VATBases, VATAmounts);
 
         // InvoiceTotals
         CreateInvoiceTotalsNode(InvoiceTotalsNode, TotalsData);
 
         // TaxesOutputs
-        CreateTaxesOutputsNode(TaxesOutputsNode, SalesCrMemoLine, TotalsData);
+        CreateTaxesOutputsNode(TaxesOutputsNode, VATBases, VATAmounts);
 
         // InvoiceIssueData
         CreateInvoiceIssueDataNode(InvoiceIssueDataNode, SalesCrMemoHeader);
@@ -373,19 +373,19 @@ codeunit 10774 "Factura-E Export"
         TaxesOutputsNode: XmlElement;
         InvoiceLineNode: XmlElement;
         InvoiceTotalsNode: XmlElement;
-        TotalsData: Dictionary of [Text, Decimal];
+        TotalsData, VATBases, VATAmounts : Dictionary of [Text, Decimal];
     begin
         InvoiceNode := XmlElement.Create('Invoice', '');
 
         // Lines
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
-        CreateLineNodes(InvoiceLineNode, SalesInvoiceLine, TotalsData);
+        CreateLineNodes(InvoiceLineNode, SalesInvoiceHeader, SalesInvoiceLine, TotalsData, VATBases, VATAmounts);
 
         // InvoiceTotals
         CreateInvoiceTotalsNode(InvoiceTotalsNode, TotalsData);
 
         // TaxesOutputs
-        CreateTaxesOutputsNode(TaxesOutputsNode, SalesInvoiceLine, TotalsData);
+        CreateTaxesOutputsNode(TaxesOutputsNode, VATBases, VATAmounts);
 
         // InvoiceIssueData
         CreateInvoiceIssueDataNode(InvoiceIssueDataNode, SalesInvoiceHeader);
@@ -484,7 +484,7 @@ codeunit 10774 "Factura-E Export"
         InvoiceIssueDataNode.Add(XmlElement.Create('LanguageName', '', CopyStr(SalesCrMemoHeader."Language Code", 1, 2).ToLower()));
     end;
 
-    local procedure CreateLineNodes(var InvoiceLineNode: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; var TotalsData: Dictionary of [Text, Decimal])
+    local procedure CreateLineNodes(var InvoiceLineNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; var TotalsData: Dictionary of [Text, Decimal]; var VATBases: Dictionary of [Text, Decimal]; var VATAmounts: Dictionary of [Text, Decimal])
     var
         UnitOfMeasure: Record "Unit of Measure";
         SingleLineNode: XmlElement;
@@ -515,12 +515,12 @@ codeunit 10774 "Factura-E Export"
                         SingleLineNode.Add(XmlElement.Create('UnitOfMeasure', '', Format(UnitOfMeasureInteger)));
                     end;
                 end;
-                SingleLineNode.Add(XmlElement.Create('UnitPriceWithoutTax', '', ToXMLDecimal8(SalesInvoiceLine."Unit Price")));
-                TotalCost := SalesInvoiceLine."Unit Price" * SalesInvoiceLine.Quantity;
+                SingleLineNode.Add(XmlElement.Create('UnitPriceWithoutTax', '', ToXMLDecimal8(GetUnitPrice(SalesInvoiceHeader, SalesInvoiceLine))));
+                TotalCost := GetUnitPrice(SalesInvoiceHeader, SalesInvoiceLine) * SalesInvoiceLine.Quantity;
                 SingleLineNode.Add(XmlElement.Create('TotalCost', '', ToXMLDecimal8(TotalCost)));
                 AddToTotals(TotalsData, 'TotalCost', TotalCost);
                 // Discount
-                DiscountAmount := SalesInvoiceLine."Line Discount Amount" + SalesInvoiceLine."Inv. Discount Amount";
+                DiscountAmount := SalesInvoiceLine."Line Discount Amount";
                 if DiscountAmount <> 0 then begin
                     DiscountsNode := XmlElement.Create('DiscountsAndRebates', '');
                     DiscountNode := XmlElement.Create('Discount', '');
@@ -529,6 +529,7 @@ codeunit 10774 "Factura-E Export"
                     DiscountsNode.Add(DiscountNode);
                     SingleLineNode.Add(DiscountsNode);
                 end;
+                AddToTotals(TotalsData, 'InvoiceDiscountAmount', SalesInvoiceLine."Inv. Discount Amount");
 
                 GrossAmount := TotalCost - DiscountAmount;
                 SingleLineNode.Add(XmlElement.Create('GrossAmount', '', ToXMLDecimal8(GrossAmount)));
@@ -544,22 +545,25 @@ codeunit 10774 "Factura-E Export"
                 TaxableBase := SalesInvoiceLine."VAT Base Amount";
                 TaxableBaseNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TaxableBase)));
                 TaxNode.Add(TaxableBaseNode);
-                AddToTotals(TotalsData, 'TaxableBase', TaxableBase);
+                AddToTotals(VATBases, ToXMLDecimal8(SalesInvoiceLine."VAT %" + SalesInvoiceLine."EC %"), TaxableBase);
 
                 TaxAmountNode := XmlElement.Create('TaxAmount', '');
                 TaxAmount := SalesInvoiceLine."Amount Including VAT" - SalesInvoiceLine.Amount;
                 TaxAmountNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TaxAmount)));
                 TaxNode.Add(TaxAmountNode);
+                AddToTotals(VATAmounts, ToXMLDecimal8(SalesInvoiceLine."VAT %" + SalesInvoiceLine."EC %"), TaxAmount);
                 AddToTotals(TotalsData, 'TaxAmount', TaxAmount);
 
                 TaxesOutputsNode.Add(TaxNode);
                 SingleLineNode.Add(TaxesOutputsNode);
+                if SalesInvoiceLine."Item Reference No." <> '' then
+                    SingleLineNode.Add(XmlElement.Create('ArticleCode', '', SalesInvoiceLine."Item Reference No."));
 
                 InvoiceLineNode.Add(SingleLineNode);
             until SalesInvoiceLine.Next() = 0;
     end;
 
-    local procedure CreateLineNodes(var InvoiceLineNode: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TotalsData: Dictionary of [Text, Decimal])
+    local procedure CreateLineNodes(var InvoiceLineNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TotalsData: Dictionary of [Text, Decimal]; var VATBases: Dictionary of [Text, Decimal]; var VATAmounts: Dictionary of [Text, Decimal])
     var
         UnitOfMeasure: Record "Unit of Measure";
         SingleLineNode: XmlElement;
@@ -590,12 +594,12 @@ codeunit 10774 "Factura-E Export"
                         SingleLineNode.Add(XmlElement.Create('UnitOfMeasure', '', Format(UnitOfMeasureInteger)));
                     end;
                 end;
-                SingleLineNode.Add(XmlElement.Create('UnitPriceWithoutTax', '', Format(SalesCrMemoLine."Unit Price", 0, 9)));
-                TotalCost := SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity;
+                SingleLineNode.Add(XmlElement.Create('UnitPriceWithoutTax', '', ToXMLDecimal8(GetUnitPrice(SalesCrMemoHeader, SalesCrMemoLine))));
+                TotalCost := GetUnitPrice(SalesCrMemoHeader, SalesCrMemoLine) * SalesCrMemoLine.Quantity;
                 SingleLineNode.Add(XmlElement.Create('TotalCost', '', ToXMLDecimal8(TotalCost)));
                 AddToTotals(TotalsData, 'TotalCost', TotalCost);
                 // Discount
-                DiscountAmount := SalesCrMemoLine."Line Discount Amount" + SalesCrMemoLine."Inv. Discount Amount";
+                DiscountAmount := SalesCrMemoLine."Line Discount Amount";
                 if DiscountAmount <> 0 then begin
                     DiscountsNode := XmlElement.Create('DiscountsAndRebates', '');
                     DiscountNode := XmlElement.Create('Discount', '');
@@ -604,6 +608,7 @@ codeunit 10774 "Factura-E Export"
                     DiscountsNode.Add(DiscountNode);
                     SingleLineNode.Add(DiscountsNode);
                 end;
+                AddToTotals(TotalsData, 'InvoiceDiscountAmount', SalesCrMemoLine."Inv. Discount Amount");
 
                 GrossAmount := TotalCost - DiscountAmount;
                 SingleLineNode.Add(XmlElement.Create('GrossAmount', '', ToXMLDecimal8(GrossAmount)));
@@ -619,69 +624,73 @@ codeunit 10774 "Factura-E Export"
                 TaxableBase := SalesCrMemoLine."VAT Base Amount";
                 TaxableBaseNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TaxableBase)));
                 TaxNode.Add(TaxableBaseNode);
-                AddToTotals(TotalsData, 'TaxableBase', TaxableBase);
+                AddToTotals(VATBases, ToXMLDecimal8(SalesCrMemoLine."VAT %" + SalesCrMemoLine."EC %"), TaxableBase);
 
                 TaxAmountNode := XmlElement.Create('TaxAmount', '');
                 TaxAmount := SalesCrMemoLine."Amount Including VAT" - SalesCrMemoLine.Amount;
                 TaxAmountNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TaxAmount)));
                 TaxNode.Add(TaxAmountNode);
+                AddToTotals(VATAmounts, ToXMLDecimal8(SalesCrMemoLine."VAT %" + SalesCrMemoLine."EC %"), TaxAmount);
                 AddToTotals(TotalsData, 'TaxAmount', TaxAmount);
 
                 TaxesOutputsNode.Add(TaxNode);
                 SingleLineNode.Add(TaxesOutputsNode);
+                if SalesCrMemoLine."Item Reference No." <> '' then
+                    SingleLineNode.Add(XmlElement.Create('ArticleCode', '', SalesCrMemoLine."Item Reference No."));
 
                 InvoiceLineNode.Add(SingleLineNode);
             until SalesCrMemoLine.Next() = 0;
     end;
 
     local procedure CreateInvoiceTotalsNode(var InvoiceTotalsNode: XmlElement; var TotalsData: Dictionary of [Text, Decimal])
+    var
+        InvoiceDiscountAmount: Decimal;
+        GrossAmount: Decimal;
+        GeneralDiscountsNode: XmlElement;
+        DiscountNode: XmlElement;
     begin
         InvoiceTotalsNode := XmlElement.Create('InvoiceTotals', '');
-        InvoiceTotalsNode.Add(XmlElement.Create('TotalGrossAmount', '', ToXMLDecimal8(TotalsData.Get('GrossAmount'))));
-        InvoiceTotalsNode.Add(XmlElement.Create('TotalGrossAmountBeforeTaxes', '', ToXMLDecimal8(TotalsData.Get('GrossAmount'))));
+        GrossAmount := TotalsData.Get('GrossAmount');
+        InvoiceTotalsNode.Add(XmlElement.Create('TotalGrossAmount', '', ToXMLDecimal8(GrossAmount)));
+        // Invoice discount
+        InvoiceDiscountAmount := TotalsData.Get('InvoiceDiscountAmount');
+        if (InvoiceDiscountAmount <> 0) and (GrossAmount <> 0) then begin
+            GeneralDiscountsNode := XmlElement.Create('GeneralDiscounts', '');
+            DiscountNode := XmlElement.Create('Discount', '');
+            DiscountNode.Add(XmlElement.Create('DiscountReason', '', ToXMLDecimal2(InvoiceDiscountAmount / GrossAmount * 100) + '%'));
+            DiscountNode.Add(XmlElement.Create('DiscountAmount', '', ToXMLDecimal8(InvoiceDiscountAmount)));
+            GeneralDiscountsNode.Add(DiscountNode);
+            InvoiceTotalsNode.Add(GeneralDiscountsNode);
+        end;
+        // Rest totals
+        InvoiceTotalsNode.Add(XmlElement.Create('TotalGrossAmountBeforeTaxes', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') - TotalsData.Get('InvoiceDiscountAmount'))));
         InvoiceTotalsNode.Add(XmlElement.Create('TotalTaxOutputs', '', ToXMLDecimal8(TotalsData.Get('TaxAmount'))));
         InvoiceTotalsNode.Add(XmlElement.Create('TotalTaxesWithheld', '', '0'));
-        InvoiceTotalsNode.Add(XmlElement.Create('InvoiceTotal', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') + TotalsData.Get('TaxAmount'))));
-        InvoiceTotalsNode.Add(XmlElement.Create('TotalOutstandingAmount', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') + TotalsData.Get('TaxAmount'))));
-        InvoiceTotalsNode.Add(XmlElement.Create('TotalExecutableAmount', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') + TotalsData.Get('TaxAmount'))));
+        InvoiceTotalsNode.Add(XmlElement.Create('InvoiceTotal', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') - TotalsData.Get('InvoiceDiscountAmount') + TotalsData.Get('TaxAmount'))));
+        InvoiceTotalsNode.Add(XmlElement.Create('TotalOutstandingAmount', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') - TotalsData.Get('InvoiceDiscountAmount') + TotalsData.Get('TaxAmount'))));
+        InvoiceTotalsNode.Add(XmlElement.Create('TotalExecutableAmount', '', ToXMLDecimal8(TotalsData.Get('GrossAmount') - TotalsData.Get('InvoiceDiscountAmount') + TotalsData.Get('TaxAmount'))));
     end;
 
-    local procedure CreateTaxesOutputsNode(var TaxesOutputsNode: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; var TotalsData: Dictionary of [Text, Decimal])
+    local procedure CreateTaxesOutputsNode(var TaxesOutputsNode: XmlElement; var VATBases: Dictionary of [Text, Decimal]; var VATAmounts: Dictionary of [Text, Decimal])
     var
         TempXMLNode: XmlElement;
         TaxNode: XmlElement;
+        VATCode: Text;
     begin
         TaxesOutputsNode := XmlElement.Create('TaxesOutputs', '');
-        TaxNode := XmlElement.Create('Tax', '');
-        TaxNode.Add(XmlElement.Create('TaxTypeCode', '', '01'));
-        TaxNode.Add(XmlElement.Create('TaxRate', '', ToXMLDecimal8(SalesInvoiceLine."VAT %" + SalesInvoiceLine."EC %")));
-        TempXMLNode := XmlElement.Create('TaxableBase', '');
-        TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TotalsData.Get('TaxableBase'))));
-        TaxNode.Add(TempXMLNode);
-        TempXMLNode := XmlElement.Create('TaxAmount', '');
-        TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TotalsData.Get('TaxAmount'))));
-        TaxNode.Add(TempXMLNode);
+        foreach VATCode in VATBases.Keys() do begin
+            TaxNode := XmlElement.Create('Tax', '');
+            TaxNode.Add(XmlElement.Create('TaxTypeCode', '', '01'));
+            TaxNode.Add(XmlElement.Create('TaxRate', '', VATCode));
+            TempXMLNode := XmlElement.Create('TaxableBase', '');
+            TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(VATBases.Get(VATCode))));
+            TaxNode.Add(TempXMLNode);
+            TempXMLNode := XmlElement.Create('TaxAmount', '');
+            TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(VATAmounts.Get(VATCode))));
+            TaxNode.Add(TempXMLNode);
 
-        TaxesOutputsNode.Add(TaxNode);
-    end;
-
-    local procedure CreateTaxesOutputsNode(var TaxesOutputsNode: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TotalsData: Dictionary of [Text, Decimal])
-    var
-        TempXMLNode: XmlElement;
-        TaxNode: XmlElement;
-    begin
-        TaxesOutputsNode := XmlElement.Create('TaxesOutputs', '');
-        TaxNode := XmlElement.Create('Tax', '');
-        TaxNode.Add(XmlElement.Create('TaxTypeCode', '', '01'));
-        TaxNode.Add(XmlElement.Create('TaxRate', '', ToXMLDecimal8(SalesCrMemoLine."VAT %" + SalesCrMemoLine."EC %")));
-        TempXMLNode := XmlElement.Create('TaxableBase', '');
-        TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TotalsData.Get('TaxableBase'))));
-        TaxNode.Add(TempXMLNode);
-        TempXMLNode := XmlElement.Create('TaxAmount', '');
-        TempXMLNode.Add(XmlElement.Create('TotalAmount', '', ToXMLDecimal8(TotalsData.Get('TaxAmount'))));
-        TaxNode.Add(TempXMLNode);
-
-        TaxesOutputsNode.Add(TaxNode);
+            TaxesOutputsNode.Add(TaxNode);
+        end;
     end;
 
     local procedure AddToTotals(var TotalsData: Dictionary of [Text, Decimal]; KeyText: Text; Value: Decimal)
@@ -758,6 +767,22 @@ codeunit 10774 "Factura-E Export"
         end;
         StartingDate := Format(CalcDate('<-CY>', SalesCrMemoHeader."Posting Date"), 0, 9);
         EndingDate := Format(CalcDate('<CY>', SalesCrMemoHeader."Posting Date"), 0, 9);
+    end;
+
+    local procedure GetUnitPrice(var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"): Decimal
+    begin
+        if not SalesInvoiceHeader."Prices Including VAT" then
+            exit(SalesInvoiceLine."Unit Price");
+
+        exit(SalesInvoiceLine."Unit Price" / (1 + ((SalesInvoiceLine."VAT %" + SalesInvoiceLine."EC %") / 100)));
+    end;
+
+    local procedure GetUnitPrice(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"): Decimal
+    begin
+        if not SalesCrMemoHeader."Prices Including VAT" then
+            exit(SalesCrMemoLine."Unit Price");
+
+        exit(SalesCrMemoLine."Unit Price" / (1 + ((SalesCrMemoLine."VAT %" + SalesCrMemoLine."EC %") / 100)));
     end;
 
     local procedure GetCurrencyISOCode(CurrencyCode: Code[10]): Text[3]

@@ -10,8 +10,32 @@ codeunit 11628 "Create CH ESR Setup"
         CreateCurrency: Codeunit "Create Currency";
         CreateCHGLAccounts: Codeunit "Create CH GL Accounts";
     begin
-        ContosoCHBank.InsertESRSetup(GiroBankCode(), CreateCHGLAccounts.PostAcc(), ESRFilenameLbl, '00000000000', GiroESRAccountNoLbl, '', CronusInternationalLtdLbl, TheRingLbl, ZugLbl, '', '', '', '', CreateCHPaymentMethod.ESRPost(), false);
-        ContosoCHBank.InsertESRSetup(NBLBankCode(), CreateCHGLAccounts.BankCredit(), ESRFilenameLbl, '68705010000', NBLESRAccountNoLbl, CreateCurrency.EUR(), ZugerKantonalbankLbl, BahnhofstrasseLbl, Zug1Lbl, InFavorLbl, CronusInternationalLtdLbl, TheRingLbl, ZugLbl, CreateCHPaymentMethod.ESR(), true);
+        ContosoCHBank.InsertESRSetup(GiroBankCode(), CreateCHGLAccounts.PostAcc(), ESRFilenameLbl, '00000000000', GiroESRAccountNoLbl, '', '', '', '', '', '', '', '', CreateCHPaymentMethod.ESRPost(), false);
+        ContosoCHBank.InsertESRSetup(NBLBankCode(), CreateCHGLAccounts.BankCredit(), ESRFilenameLbl, '68705010000', NBLESRAccountNoLbl, CreateCurrency.EUR(), ZugerKantonalbankLbl, BahnhofstrasseLbl, Zug1Lbl, InFavorLbl, '', '', '', CreateCHPaymentMethod.ESR(), true);
+    end;
+
+    internal procedure UpdateESRSetup()
+    begin
+        ValidateRecordsFields(GiroBankCode());
+        ValidateRecordsFields(NBLBankCode());
+    end;
+
+    local procedure ValidateRecordsFields(BankCode: Code[20])
+    var
+        ESRSetup: Record "ESR Setup";
+    begin
+        ESRSetup.Get(BankCode);
+        if BankCode = GiroBankCode() then begin
+            ESRSetup.Validate("ESR Member Name 1", CronusInternationalLtdLbl);
+            ESRSetup.Validate("ESR Member Name 2", TheRingLbl);
+            ESRSetup.Validate("ESR Member Name 3", ZugLbl);
+            ESRSetup.Modify(true);
+        end else begin
+            ESRSetup.Validate(Beneficiary, CronusInternationalLtdLbl);
+            ESRSetup.Validate("Beneficiary 2", TheRingLbl);
+            ESRSetup.Validate("Beneficiary 3", ZugLbl);
+            ESRSetup.Modify(true);
+        end;
     end;
 
     procedure GiroBankCode(): Code[20]

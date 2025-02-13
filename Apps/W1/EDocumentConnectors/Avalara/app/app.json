@@ -20,7 +20,7 @@
                         },
                         {
                             "id": "d852a468-263e-49e5-bfda-f09e33342b89",
-                            "name": "E-Documents Connector with External Endpoints",
+                            "name": "E-Document Connector - Pagero",
                             "publisher": "Microsoft",
                             "version":  "26.0.0.0"
                         }

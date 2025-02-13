@@ -115,6 +115,11 @@
       "justification": "Entitlements cannot be defined in an extension."
     },
     {
+      "id": "PTE0024",
+      "action": "None",
+      "justification": "We allow moved symbols for Microsoft apps because we run PTECop on the entire codebase which includes global apps."
+    },
+    {
       "id": "AW0006",
       "action": "None",
       "justification": "Pages and reports should use the UsageCategory and ApplicationArea properties to be searchable."

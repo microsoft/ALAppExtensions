@@ -29,6 +29,10 @@ page 8038 "Usage Data Generic Import"
                         Rec.ShowReason();
                     end;
                 }
+                field("Service Object"; Rec."Service Object Availability")
+                {
+                    ToolTip = 'Specifies whether a Service Object is available to be connected with the subscription or if the connection has been established already.';
+                }
                 field("Service Object No."; Rec."Service Object No.")
                 {
                     ToolTip = 'Specifices to which Service Object the usage data refers.';
@@ -179,6 +183,14 @@ page 8038 "Usage Data Generic Import"
                     CurrPage.Update();
                 end;
             }
+            action(ConnectSubscriptionToServiceObject)
+            {
+                Caption = 'Connect Subscription to Service Object';
+                ToolTip = 'Opens the page for connecting subscriptions to Service Objects, filtered to the currently selected subscription.';
+                Image = AddAction;
+                RunObject = page "Connect Subscription To SO";
+                RunPageLink = "Supplier Reference" = field("Subscription ID");
+            }
         }
         area(navigation)
         {
@@ -208,6 +220,9 @@ page 8038 "Usage Data Generic Import"
                 Caption = 'Process';
 
                 actionref(ExtendContract_Promoted; ExtendContract)
+                {
+                }
+                actionref(ConnectSubscriptionToServiceObject_Promoted; ConnectSubscriptionToServiceObject)
                 {
                 }
                 actionref("Usage Data Customers_Promoted"; "Usage Data Customers")

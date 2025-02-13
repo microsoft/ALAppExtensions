@@ -1,0 +1,1483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GroupingCategoryCode xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Grouping_Category_Code.xsd">
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forskning og utvikling</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1020</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Konsesjoner, patenter, lisenser, varemerker o.l. rettigheter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1070</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Utsatt skattefordel</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1080</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Goodwill (saldogruppe b)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1101</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Aktiverte letekostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1102</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Felt under utbygging</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1103</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Produksjonsinnretning og rørledning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1104</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fjernings- og nedstengningseiendeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1105</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forretningsbygg (saldogruppe i)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1115</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bygg og anlegg, hotell o.l. (saldogruppe h)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1117</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Elektronisk utrustning i kraftforetak mv. (saldogruppe g)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1120</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fast teknisk installasjon i bygninger (saldogruppe j)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1130</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Anlegg, maskiner under utførelse</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1150</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tomter og andre grunnarealer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1160</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bolig inkl. boligtomter, hytter mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1180</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringseiendommer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1205</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Personbiler, maskiner, inventar mv. (saldogruppe d)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1221</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skip, rigger mv. (saldogruppe e)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1225</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fly, helikopter mv. (saldogruppe f)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1238</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Vare-, lastebiler, busser mv. (saldogruppe c)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1239</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Varebiler med nullutslipp (saldogruppe c)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1280</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kontormaskiner o.l. (saldogruppe a)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1290</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre driftsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1312</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringer i datter- og konsernselskap med deltakerfastsetting</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1313</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringer i andre datter- og konsernselskap</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1320</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lån til foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1331</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringer i tilknyttede selskap med deltakerfastsetting</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1332</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringer i andre tilknyttede selskap</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1340</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lån til tilknyttet selskap og felles kontrollert virksomhet</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1350</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Investeringer i aksjer, andeler og verdipapirfondsandeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1360</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Obligasjoner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1370</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fordringer på personlige eiere, styremedl. o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1380</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fordringer på ansatte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1390</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre fordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1395</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Netto pensjonsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Varelager</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1470</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Mindre uttak av petroleumsprodukter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1510</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kundefordringer på foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1520</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre kundefordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1530</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Opptjent, ikke fakturert driftsinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1560</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre fordringer på selskap i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1565</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kortsiktige fordringer mot personlig eier/styremedl. o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1570</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre kortsiktige fordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1780</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Krav på innbetaling av selskapskapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1800</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Ikke-markedsbaserte aksjer og andeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1810</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Markedsbaserte aksjer og verdipapirfondsandeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1830</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Markedsbaserte obligasjoner, sertifikater mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1840</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre obligasjoner og sertifikater</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1880</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre finansielle instrumenter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kontanter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>1920</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bankinnskudd</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Aksjekap./EK andre foretak</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2010</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Egne aksjer (negativt beløp)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2020</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Overkurs</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2030</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen innskutt egenkapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2045</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fond for urealiserte gevinster</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2055</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsatt utbytte (jf. IFRS)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2059</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen egenkapital / Felleseid andelskapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2080</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Udekket tap</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2120</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Utsatt skatt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2130</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Derivater</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2160</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Uopptjent inntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2185</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsetninger for fjerning- og nedstengningsforpliktelser</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2189</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre avsetninger for forpliktelser</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2200</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Konvertible lån</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2210</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Obligasjonslån</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2220</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gjeld til kredittinstitusjoner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2260</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gjeld til selskap i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2290</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen langsiktig gjeld</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2310</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Konvertible lån</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2320</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Obligasjonslån</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2330</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Derivater</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2380</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gjeld til kredittinstitusjoner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leverandørgjeld</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2460</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leverandørgjeld til selskap i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2470</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Meruttak av petroleumsprodukter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Betalbar skatt, ikke fastsatt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2510</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Betalbar skatt, fastsatt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skattetrekk og andre trekk</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2740</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skyldig merverdiavgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2770</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skyldig arbeidsgiveravgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2790</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre offentlige avgifter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2800</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsatt utbytte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forskudd fra kunder</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2920</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gjeld til selskap i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2949</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lønn, feriepenger o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2950</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Påløpt rente</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2970</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Uopptjent inntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2980</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsetninger for forpliktelser</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>2990</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen kortsiktig gjeld</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3001</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekter og uttak av olje</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3002</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekter og uttak av tørrgass</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3003</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekter og uttak av våtgass</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3004</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tariff inntekt rørledning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3005</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tariff inntekt prosessering</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3006</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Timer viderefakturert</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3007</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen kostnad viderefakturert</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Offentlig tilskudd</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Endring uopptjent inntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leieinntekt fast eiendom</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3695</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen leieinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3850</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Verdiendring investeringseiendommer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3880</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gevinst ved avgang av immatr. eiendeler og varige driftsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3885</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gevinst ved avgang av finansielle anleggsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>3900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen driftsrelatert inntekt </CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4001</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Letekostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4002</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Utbyggingskostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4003</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Produksjonskostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4004</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Handling fee/ Service fee/ Trading fee</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4006</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen varekostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4007</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Endring i mer-/mindre uttak av petroleumsprodukter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4008</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fjernings- og nedstengningskostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>4295</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Beholdn.endring av varer under tilvirkning og ferdig tilv. varer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>5000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lønn, feriepenger mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>5300</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen opplysningspliktig godtgjørelse</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>5400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Arbeidsgiveravgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>5420</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Opplysningspliktig pensjonskostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>5900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen personalkostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6001</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avskriving på produksjonsinnretning og rørledning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6002</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avskriving på fjernings- og nedstengningseiendeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6004</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen avskriving</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6051</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Nedskriving på produksjonsinnretning og rørledning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6052</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Nedskriving på aktiverte letekostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6053</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Nedskriving på anlegg under utførelse</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6054</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen nedskriving</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6110</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg av olje</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6120</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg av tørrgass</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6130</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg av LNG</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6140</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg av våtgass</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6310</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leie lokale, lys, varme, renovasjon, vann, avløp, renhold mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6350</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">IT kostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leie maskiner, inventar, transportmidler o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Verktøy, inventar mv som ikke er aktivert</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reparasjon og vedlikehold bygning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6695</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reparasjon og annen vedlikehold</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6700</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fremmed tjeneste (regnskap rev.hon., rådgivning o.l.)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>6750</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Konserntjenester</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7155</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reise-, diett- og bilgodtgjørelse (opplysningspliktig)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7165</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reise- og diettkostnader (ikke opplysningspliktig)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7295</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Provisjonskostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7330</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgs- og reklamekostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7370</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Representasjonskostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7490</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kontingenter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7501</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Driftsforsikring</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7502</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Utbyggingsforsikring</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7503</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen forsikring</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7565</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Garanti- og servicekostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lisens, patentkostnad, royalty o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7650</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forskning og utviklingskostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7651</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tilskudd til vitenskapelig forskning mv jf sktl § 6-42</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7700</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen kostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7880</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tap ved avgang av immatr. Eiendeler og varige driftsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7885</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tap ved avgang av finansielle anleggsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>7830</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tap på fordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8005</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Netto positiv resultatandel vedr. invest. i DS, TS og FKV</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8030</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Renteinntekt fra foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8050</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen renteinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8054</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Garantiinntekter fra foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8059</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Garantiinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8060</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Valutagevinst (agio)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8074</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gevinst v/realisasjon av aksjer, egenkap.bevis og fondsandeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8075</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Finansinntekt fra foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8079</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen finansinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8080</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Verdiøkn. av finans. instrumenter vurd. til virkelig verdi</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8090</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Inntekter av andre investeringer/utbytte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8006</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Netto neg. resultatandel vedr. investering i DS, TS og FKV</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8100</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Verdired. av finans. instrumenter vurd. til virkelig verdi</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8115</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Nedskrivning av finansielle eiendeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8120</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kalkulatorisk rente fjerning- og nedstengningsforpliktelse</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8130</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Rentekostnader til foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8150</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen rentekostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8154</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Garantikostnad til foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8159</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen garantikostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8160</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Valutatap (disagio)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8174</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tap ved realisasjon av aksjer, egenkap.bevis og fondsandeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8175</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Finanskostnader til foretak i samme konsern</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8179</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen finanskostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8300</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Betalbar skatt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8320</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Endring utsatt skatt/skattefordel</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>9150</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Ordinært resultat</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Ekstraordinær inntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Ekstraordinær kostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Betalbar skatt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8620</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Endring utsatt skatt/skattefordel</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1323</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Skattemelding petroleumsskatteloven</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Tax return Petroleum Tax Act</CategoryDescription>
+    <GroupingCode>8910</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre resultatkomponenter for IFRS-foretak</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+</GroupingCategoryCode>

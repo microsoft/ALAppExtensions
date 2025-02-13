@@ -2,7 +2,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Attachment;
 
-pageextension 6102 "E-Doc. Attachment List Factbox" extends "Doc. Attachment List Factbox"
+pageextension 6103 "E-Doc. Attachment List Factbox" extends "Doc. Attachment List Factbox"
 {
     actions
     {

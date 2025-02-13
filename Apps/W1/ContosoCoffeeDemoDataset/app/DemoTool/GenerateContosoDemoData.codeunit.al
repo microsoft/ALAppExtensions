@@ -1,7 +1,10 @@
 codeunit 5279 "Generate Contoso Demo Data"
 {
-    TableNo = "Contoso Demo Data Module";
     Access = Internal;
+    TableNo = "Contoso Demo Data Module";
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     trigger OnRun()
     var
         JobQueueEntry: Record "Job Queue Entry";
@@ -24,10 +27,12 @@ codeunit 5279 "Generate Contoso Demo Data"
             JobQueueEntry.InsertLogEntry(JobQueueLogEntry);
             JobQueueEntry.FinalizeLogEntry(JobQueueLogEntry);
             Commit();
+            Session.LogMessage('0000OL9', GetLastErrorCallStack(), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
             Error(GetLastErrorText);
         end;
     end;
 
     var
         DescriptionTxt: Label 'Could not complete the company setup.';
+        ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
 }

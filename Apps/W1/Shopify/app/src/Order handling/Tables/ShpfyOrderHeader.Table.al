@@ -137,7 +137,7 @@ table 30118 "Shpfy Order Header"
             Caption = 'Risk Level';
             DataClassification = SystemMetadata;
             Editable = false;
-            ObsoleteReason = 'This field is not imported.';
+            ObsoleteReason = 'This field is not imported. Use field "High Risk" field.';
 #if not CLEAN25
             ObsoleteState = Pending;
             ObsoleteTag = '25.0';
@@ -314,6 +314,12 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'VAT Included';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if "VAT Amount" <> 0 then
+                    Error(VATAmountMustBeZeroErr);
+            end;
         }
         field(73; "Currency Code"; Code[10])
         {
@@ -605,6 +611,17 @@ table 30118 "Shpfy Order Header"
             Caption = 'Company Location Id';
             DataClassification = SystemMetadata;
         }
+        field(128; "High Risk"; Boolean)
+        {
+            Caption = 'High Risk';
+            FieldClass = FlowField;
+            CalcFormula = exist("Shpfy Order Risk" where("Order Id" = field("Shopify Order Id"), Level = const(High)));
+        }
+        field(129; "Due Date"; Date)
+        {
+            Caption = 'Due Date';
+            DataClassification = CustomerContent;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -799,6 +816,7 @@ table 30118 "Shpfy Order Header"
     }
     var
         ShopifyOrderLine: Record "Shpfy Order Line";
+        VATAmountMustBeZeroErr: Label 'VAT amount must be 0 in order to update VAT included.';
 
     trigger OnDelete()
     var

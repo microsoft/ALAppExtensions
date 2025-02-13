@@ -2621,6 +2621,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               </Style>
                             </Tablix>
                             <Textbox Name="QRCode">
+                              <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
@@ -2637,9 +2638,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Paragraph>
                               </Paragraphs>
                               <rd:DefaultName>QRCode</rd:DefaultName>
-                              <Top>11.31545cm</Top>
-                              <Left>14.3081cm</Left>
-                              <Height>3.3441cm</Height>
+                              <Top>11.00293cm</Top>
+                              <Left>14.30806cm</Left>
+                              <Height>3.6919cm</Height>
                               <Width>3.6919cm</Width>
                               <ZIndex>3</ZIndex>
                               <Visibility>
@@ -2696,7 +2697,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                             </Border>
                           </Style>
                         </Rectangle>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -2930,7 +2930,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>0in</Top>
               <Height>0.5cm</Height>
               <Width>12cm</Width>
               <Style>

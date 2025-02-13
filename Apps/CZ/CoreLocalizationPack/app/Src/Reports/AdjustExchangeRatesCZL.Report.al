@@ -224,6 +224,7 @@ report 31004 "Adjust Exchange Rates CZL"
                             if Temp2DimensionBuffer.FindFirst() then
                                 DimensionBufferManagement.GetDimensions(Temp2DimensionBuffer."Entry No.", TempDimensionBuffer);
                             DimensionManagement.CopyDimBufToDimSetEntry(TempDimensionBuffer, TempDimensionSetEntry);
+                            OnAdjustBankAccountOnBeforePost(TempAdjExchangeRateBufferCZL2, "Bank Account");
                             if TempEntryNoAmountBuffer.Amount > 0 then begin
                                 Currency.TestField("Realized Gains Acc.");
                                 PostAdjmt(
@@ -1357,8 +1358,6 @@ report 31004 "Adjust Exchange Rates CZL"
         TotalAdjAmount: Decimal;
         GainsAmount: Decimal;
         LossesAmount: Decimal;
-        PostingDate: Date;
-        PostingDescription: Text[100];
         AdjBase: Decimal;
         AdjBaseLCY: Decimal;
         AdjAmount: Decimal;
@@ -1379,20 +1378,15 @@ report 31004 "Adjust Exchange Rates CZL"
         GLAddCurrNetChangeTotal: Decimal;
         GLNetChangeBase: Decimal;
         GLAddCurrNetChangeBase: Decimal;
-        PostingDocNo: Code[20];
-        StartDate: Date;
         EndDate: Date;
-        EndDateReq: Date;
         Correction: Boolean;
         HideUI: Boolean;
         OK: Boolean;
-        AdjGLAcc: Boolean;
         AddCurrCurrencyFactor: Decimal;
         VATEntryNoTotal: Decimal;
         VATEntryNo: Decimal;
         NewEntryNo: Integer;
         FirstEntry: Boolean;
-        SkipAdvancePayments: Boolean;
         MaxAdjExchRateBufIndex: Integer;
         RatesAdjustedMsg: Label 'One or more currency exchange rates have been adjusted.';
         NothingToAdjustMsg: Label 'There is nothing to adjust.';
@@ -1401,19 +1395,12 @@ report 31004 "Adjust Exchange Rates CZL"
         TotalVendorsAdjusted: Integer;
         TotalGLAccountsAdjusted: Integer;
         TotalEmployeesAdjusted: Integer;
-        AdjCust: Boolean;
-        AdjVend: Boolean;
-        AdjEmpl: Boolean;
-        AdjBank: Boolean;
-        Post: Boolean;
-        SummarizeEntries: Boolean;
         GainOrLoss: Text[30];
         AdjDebit: Decimal;
         AdjCredit: Decimal;
         AdjustedFactor: Decimal;
         RealGainLossAmt: Decimal;
         TableType: Integer;
-        DimMoveType: Option "No move","Source Entry","By G/L Account";
         BankAccFilters: Text;
         CustFilters: Text;
         VendFilters: Text;
@@ -1439,6 +1426,22 @@ report 31004 "Adjust Exchange Rates CZL"
         GLAccountTxt: Label 'G/L Account    @1@@@@@@@@@@@@@';
         ExchangeRateAdjustmentErr: Label '%1 on %2 %3 must be %4. When this %2 is used in %5, the exchange rate adjustment is defined in the %6 field in the %7. %2 %3 is used in the %8 field in the %5. ', Comment = '%1 = "Exchange Rate Adjustment", %2 = GLAccount.TableCaption, %3 = GLAccount."No.", %4 = GLAccount."Exchange Rate Adjustment", %5 = SetupTableName, %6 = GeneralLedgerSetup.FieldCaption("VAT Exchange Rate Adjustment"), %7 = GeneralLedgerSetup.TableCaption, %8 = SetupFieldName';
         PostingDateEnteredErr: Label 'This posting date cannot be entered because it does not occur within the adjustment period. Reenter the posting date.';
+
+    protected var
+        StartDate: Date;
+        EndDateReq: Date;
+        PostingDate: Date;
+        PostingDescription: Text[100];
+        PostingDocNo: Code[20];
+        AdjCust: Boolean;
+        AdjVend: Boolean;
+        AdjEmpl: Boolean;
+        AdjBank: Boolean;
+        AdjGLAcc: Boolean;
+        SkipAdvancePayments: Boolean;
+        Post: Boolean;
+        SummarizeEntries: Boolean;
+        DimMoveType: Option "No move","Source Entry","By G/L Account";
 
     local procedure PostAdjmt(PostGLAccNo: Code[20]; PostingAmount: Decimal; AdjBase2: Decimal; CurrencyCode2: Code[10]; var DimensionSetEntry: Record "Dimension Set Entry"; PostingDate2: Date; ICCode: Code[20]) TransactionNo: Integer
     begin
@@ -2508,6 +2511,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
             TempAdjExchangeRateBufferCZL."Document Type" := EmployeeLedgerEntry."Document Type";
             TempAdjExchangeRateBufferCZL."Document No." := EmployeeLedgerEntry."Document No.";
+            OnAdjustEmployeeLedgerEntryOnBeforeModifyBuffer(TempAdjExchangeRateBufferCZL, EmplLedgerEntry);
             TempAdjExchangeRateBufferCZL.Modify();
         end;
     end;
@@ -2971,6 +2975,11 @@ report 31004 "Adjust Exchange Rates CZL"
         Post := NewPostMode;
     end;
 
+    procedure SetDimMoveType(NewDimMoveType: Option "No move","Source Entry","By G/L Account")
+    begin
+        DimMoveType := NewDimMoveType;
+    end;
+
     procedure CreateCustRealGainLossEntries(var ThreeDetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
     var
         FourDetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
@@ -3220,6 +3229,11 @@ report 31004 "Adjust Exchange Rates CZL"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnAdjustEmployeeLedgerEntryOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; EmployeeLedgerEntry: Record "Employee Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnCreateDtldCustLedgEntryUnrealOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
     end;
@@ -3231,6 +3245,11 @@ report 31004 "Adjust Exchange Rates CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateDtldEmployeeLedgEntryUnrealOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; EmployeeLedgerEntry: Record "Employee Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAdjustBankAccountOnBeforePost(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; BankAccount: Record "Bank Account")
     begin
     end;
 }

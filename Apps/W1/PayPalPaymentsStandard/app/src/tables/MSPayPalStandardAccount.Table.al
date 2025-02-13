@@ -87,7 +87,6 @@ table 1070 "MS - PayPal Standard Account"
             trigger OnValidate();
             begin
                 VerifyAccountID();
-                "Account ID" := LOWERCASE("Account ID");
             end;
         }
         field(12; "Target URL"; BLOB)
@@ -237,7 +236,7 @@ table 1070 "MS - PayPal Standard Account"
             ERROR(AccountIDTooLongForWebhooksErr, MaxStrLen(SubscriptionId));
         end;
 
-        SubscriptionId := CopyStr(LowerCase("Account ID"), 1, MaxStrLen(SubscriptionId));
+        SubscriptionId := CopyStr("Account ID", 1, MaxStrLen(SubscriptionId));
         WebhookSubscription.SETRANGE("Subscription ID", SubscriptionId);
         WebhookSubscription.SetFilter("Created By", MSPayPalWebhookManagement.GetCreatedByFilterForWebhooks());
         WebhooksAdapterUri := LOWERCASE(WebhookManagement.GetNotificationUrl());
@@ -264,7 +263,7 @@ table 1070 "MS - PayPal Standard Account"
         WebhookSubscription: Record "Webhook Subscription";
         SubscriptionId: Text[150];
     begin
-        SubscriptionId := CopyStr(LowerCase(AccountId), 1, MaxStrLen(SubscriptionId));
+        SubscriptionId := CopyStr(AccountId, 1, MaxStrLen(SubscriptionId));
         WebhookSubscription.SETRANGE("Subscription ID", SubscriptionId);
         WebhookSubscription.SetFilter("Created By", MSPayPalWebhookManagement.GetCreatedByFilterForWebhooks());
         if not WebhookSubscription.IsEmpty() then begin

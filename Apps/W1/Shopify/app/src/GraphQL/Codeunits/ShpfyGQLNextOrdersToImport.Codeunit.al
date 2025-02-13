@@ -13,7 +13,7 @@ codeunit 30138 "Shpfy GQL NextOrdersToImport" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "{orders(first:25, after:\"{{After}}\", query: \"updated_at:>''{{Time}}''\"){ pageInfo { hasNextPage } edges { cursor node { legacyResourceId name createdAt updatedAt channel { name } test fullyPaid unpaid closed displayFinancialStatus displayFulfillmentStatus subtotalLineItemsQuantity totalPriceSet { shopMoney { amount currencyCode } } customAttributes { key value } tags purchasingEntity { ... on PurchasingCompany { company { id }}}}}}}"}');
+        exit('{"query": "{orders(first:25, after:\"{{After}}\", query: \"updated_at:>''{{Time}}''\"){ pageInfo { hasNextPage } edges { cursor node { legacyResourceId name createdAt updatedAt channel { name } test fullyPaid unpaid closed displayFinancialStatus displayFulfillmentStatus subtotalLineItemsQuantity totalPriceSet { shopMoney { amount currencyCode } } customAttributes { key value } tags risk { assessments { riskLevel }} displayAddress { countryCode } shippingAddress { countryCode } billingAddress { countryCode } totalTaxSet { presentmentMoney { amount } shopMoney { amount } } purchasingEntity { ... on PurchasingCompany { company { id }}}}}}}"}');
     end;
 
     /// <summary>
