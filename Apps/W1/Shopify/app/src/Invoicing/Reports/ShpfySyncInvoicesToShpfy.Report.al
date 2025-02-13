@@ -16,7 +16,7 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
     {
         dataitem(SalesInvoiceHeader; "Sales Invoice Header")
         {
-            RequestFilterFields = "No.", "Posting Date";
+            RequestFilterFields = "No.", "Sell-to Customer No.", "Posting Date";
             trigger OnPreDataItem()
             var
                 ShopifyPaymentTerms: Record "Shpfy Payment Terms";

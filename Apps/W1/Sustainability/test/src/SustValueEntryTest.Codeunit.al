@@ -1487,6 +1487,8 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("Posted Total CO2e"), -TotalCO2e, SalesLine.TableCaption()));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
     procedure VerifySustainabilityFieldsInSalesOrderStatistics()
@@ -1578,6 +1580,100 @@ codeunit 148190 "Sust. Value Entry Test"
 
         // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with Shipping and Invoicing.
         OpenSalesOrderStatistics(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+    end;
+#endif
+    [Test]
+    [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]
+    procedure VerifySustainabilityFieldsInSalesOrderStatisticsNM()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Fields in Sales Order Statistics.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 200));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" before posting of Sales order.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Shipping.
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Shipping.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Invoicing.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Update "External Document No." in Sales line.
+        SalesHeader.Validate("External Document No.", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify();
+
+        // [GIVEN] Update "Qty. to Ship" in Sales line.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(2, 2));
+        SalesLine.Modify();
+
+        // [GIVEN] Post a Sales Document with Shipping and Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(7, 7) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with Shipping and Invoicing.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
 
@@ -3232,6 +3328,8 @@ codeunit 148190 "Sust. Value Entry Test"
         CorrectPostedSalesInvoice.CancelPostedInvoice(SalesInvoiceHeader);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     local procedure OpenSalesOrderStatistics(No: Code[20])
     var
         SalesOrder: TestPage "Sales Order";
@@ -3239,6 +3337,15 @@ codeunit 148190 "Sust. Value Entry Test"
         SalesOrder.OpenEdit();
         SalesOrder.FILTER.SetFilter("No.", No);
         SalesOrder.Statistics.Invoke();
+    end;
+#endif
+    local procedure OpenSalesOrderStatisticsNM(No: Code[20])
+    var
+        SalesOrder: TestPage "Sales Order";
+    begin
+        SalesOrder.OpenEdit();
+        SalesOrder.FILTER.SetFilter("No.", No);
+        SalesOrder.SalesOrderStatistics.Invoke();
     end;
 
     local procedure VerifyPostedSalesInvoiceStatistics(No: Code[20])
@@ -3606,9 +3713,25 @@ codeunit 148190 "Sust. Value Entry Test"
         Navigate."No. of Records".AssertEquals('');
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure SalesOrderStatisticsPageHandler(var SalesOrderStatisticsPage: TestPage "Sales Order Statistics")
+    var
+        TotalCO2e: Variant;
+        PostedTotalCO2e: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(TotalCO2e);
+        LibraryVariableStorage.Dequeue(PostedTotalCO2e);
+
+        SalesOrderStatisticsPage."Total CO2e".AssertEquals(TotalCO2e);
+        SalesOrderStatisticsPage."Posted Total CO2e".AssertEquals(PostedTotalCO2e);
+    end;
+#endif
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure SalesOrderStatisticsPageHandlerNM(var SalesOrderStatisticsPage: TestPage "Sales Order Statistics")
     var
         TotalCO2e: Variant;
         PostedTotalCO2e: Variant;

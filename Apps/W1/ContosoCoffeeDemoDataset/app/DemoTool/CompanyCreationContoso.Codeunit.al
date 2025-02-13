@@ -1,7 +1,9 @@
 codeunit 5382 "Company Creation Contoso"
 {
-    TableNo = "Contoso Demo Data Module";
     Access = Internal;
+    TableNo = "Contoso Demo Data Module";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var
