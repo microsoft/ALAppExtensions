@@ -88,10 +88,15 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
         AccSchedName: Record "Acc. Schedule Name";
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         TestBalance: Boolean;
+        IsHandled: Boolean;
         ColValue: Decimal;
         Balance: Decimal;
     begin
         ColValue := 0;
+        IsHandled := false;
+        OnBeforeCalcStatisticalAccount(StatisticalAccount, AccSchedLine, SourceAccScheduleLine, ColumnLayout, ColValue, IsHandled);
+        if IsHandled then
+            exit(ColValue);
 
         if AccSchedName.Name <> AccSchedLine."Schedule Name" then
             AccSchedName.Get(AccSchedLine."Schedule Name");
@@ -155,6 +160,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
         StatisticalLedgerEntry.SetCurrentKey("Statistical Account No.", "Posting Date");
         StatisticalLedgerEntry.SetRange("Statistical Account No.", StatisticalAccount."No.");
         StatisticalAccount.CopyFilter("Date Filter", StatisticalLedgerEntry."Posting Date");
+        StatisticalAccount.CopyFilter("No.", StatisticalLedgerEntry."Statistical Account No.");
 
         SourceAccScheduleLine.CopyFilter("Dimension 1 Filter", StatisticalLedgerEntry."Global Dimension 1 Code");
         SourceAccScheduleLine.CopyFilter("Dimension 2 Filter", StatisticalLedgerEntry."Global Dimension 2 Code");
@@ -238,4 +244,10 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
 
     var
         StatisticalAccountDoesNotExistMsg: Label 'There is no statistical account named %1.', Comment = '%1 name of the statistical account.';
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalcStatisticalAccount(var StatisticalAccount: Record "Statistical Account"; var AccSchedLine: Record "Acc. Schedule Line"; var SourceAccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; var ColValue: Decimal; var IsHandled: Boolean);
+    begin
+    end;
 }

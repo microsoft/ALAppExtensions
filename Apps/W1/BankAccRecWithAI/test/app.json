@@ -41,7 +41,7 @@
   "platform": "26.0.0.0",
   "idRanges": [
     {
-      "from": 139777,
+      "from": 133500,
       "to": 139791
     }
   ],
@@ -52,6 +52,9 @@
     "includeSourceInSymbolFile": false
   },
   "target": "Cloud",
+  "resourceFolders": [
+    ".resources"
+  ],
   "application": "26.0.0.0",
   "features": [
     "TranslationFile",

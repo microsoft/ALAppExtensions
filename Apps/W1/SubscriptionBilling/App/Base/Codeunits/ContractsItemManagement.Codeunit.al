@@ -1,5 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
@@ -245,7 +246,6 @@ codeunit 8055 "Contracts Item Management"
         ItemAttributeValueSelection.Primary := TempItemAttributeValue.Primary;
     end;
 
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Catalog Item Management", OnAfterCreateNewItem, '', false, false)]
     local procedure InsertItemServiceCommPackAfterCreateNewItem(var Item: Record Item; NonstockItem: Record "Nonstock Item"; var NewItem: Record Item)
     begin
@@ -293,6 +293,22 @@ codeunit 8055 "Contracts Item Management"
         if Item.Get(PriceListLine."Asset No.") then
             if Item.IsServiceCommitmentItem() then
                 PriceListLine."Allow Invoice Disc." := Item."Allow Invoice Disc.";
+    end;
+
+    internal procedure GetItemTranslation(ItemNo: Code[20]; VariantCode: Code[10]; CustomerNo: Code[20]): Text[100]
+    var
+        Item: Record Item;
+        ItemTranslation: Record "Item Translation";
+        Customer: Record Customer;
+    begin
+        if ItemNo = '' then
+            exit('');
+        if Customer.Get(CustomerNo) then
+            if ItemTranslation.Get(ItemNo, VariantCode, Customer."Language Code") then
+                exit(ItemTranslation.Description);
+
+        Item.Get(ItemNo);
+        exit(Item.Description);
     end;
 
     var

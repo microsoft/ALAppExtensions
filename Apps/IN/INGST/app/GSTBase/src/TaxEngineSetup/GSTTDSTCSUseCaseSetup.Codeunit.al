@@ -54,5 +54,7 @@ codeunit 18014 "GST TDS TCS Use Case Setup"
         CaseList.Add('{81E6747B-B7CE-4A75-BEE5-F630FF17C687}');
         CaseList.Add('{c34d7e4b-1538-4d41-9e72-71dfcf6fc94d}');
         CaseList.Add('{5430a349-b6ae-4ca1-a7d9-6884d93da5ef}');
+        CaseList.Add('{7C83D9D2-7B73-48C6-AB6F-3E2E7221B1D8}');
+        CaseList.Add('{88BBCE88-A277-47A7-AC40-ED384C9224E8}');
     end;
 }

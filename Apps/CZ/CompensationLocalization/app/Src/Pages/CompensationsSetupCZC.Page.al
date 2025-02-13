@@ -51,6 +51,11 @@ page 31270 "Compensations Setup CZC"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies which customer/vendor entries to display if the system does not find any. If the value in the field is set to "NO", the entries of all other partners will be displayed, if set to "YES", the page will be blank.';
                 }
+                field("Including Entries with On Hold"; Rec."Including Entries with On Hold")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if the entries with On Hold status will be included in the compensation proposal.';
+                }
             }
             group(Numbering)
             {

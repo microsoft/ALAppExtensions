@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
+
 table 6138 "E-Document Service Status"
 {
     fields
@@ -18,12 +20,24 @@ table 6138 "E-Document Service Status"
         {
             TableRelation = "E-Document Service";
             DataClassification = SystemMetadata;
-            Caption = 'E-Document Service Code';
+            Caption = 'Service Code';
         }
         field(3; "Status"; Enum "E-Document Service Status")
         {
             DataClassification = SystemMetadata;
             Caption = 'E-Document Status';
+        }
+        field(4; "Import Processing Status"; Enum "Import E-Doc. Proc. Status")
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Processing Status';
+            trigger OnValidate()
+            begin
+                if Rec."Import Processing Status" = "Import E-Doc. Proc. Status"::Unprocessed then
+                    Rec.Validate(Status, "E-Document Service Status"::Imported);
+                if Rec."Import Processing Status" = "Import E-Doc. Proc. Status"::Processed then
+                    Rec.Validate(Status, "E-Document Service Status"::"Imported Document Created");
+            end;
         }
     }
 

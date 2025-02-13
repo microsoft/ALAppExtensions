@@ -3,14 +3,6 @@ codeunit 12203 "Create Post Code IT"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    // TODO: MS
-    // Discuss it
-    // Maybe a service provide a better list of post codes?
-    // This can be the same for now, then we convert to a list later.
-
-    // Keep as it is for now
-    // Wael
-
     trigger OnRun()
     var
         ContosoPostCodeIT: Codeunit "Contoso Post Code IT";

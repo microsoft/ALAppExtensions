@@ -9,6 +9,7 @@ using Microsoft.Projects.Project.Job;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.UOM;
 using Microsoft.Projects.Project.Setup;
+using Microsoft.Service.Item;
 using Microsoft.Integration.SyncEngine;
 using Microsoft.Inventory.Setup;
 using Microsoft.Sales.Customer;
@@ -18,9 +19,12 @@ using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Inventory.Item;
+using Microsoft.Service.Archive;
+using Microsoft.Service.Document;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Project.Ledger;
 using Microsoft.Sales.History;
+using Microsoft.Service.Setup;
 
 codeunit 6610 "FS Int. Table Subscriber"
 {
@@ -117,6 +121,30 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnBeforeModifyEvent', '', false, false)]
+    local procedure IntegrationTableMappingOnBeforeModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceItem: Record "Service Item";
+        MandatoryFilterErr: Label '"%1" must be included in the filter. If you need this behavior, please contact your partner for assistance.', Comment = '%1 = a field caption';
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+        if not RunTrigger then
+            exit;
+        if Rec.IsTemporary() then
+            exit;
+
+        if Rec."Table ID" <> Database::"Service Item" then
+            exit;
+
+        ServiceItem.SetView(Rec.GetTableFilter());
+        if ServiceItem.GetFilter(SystemId) <> '' then
+            exit;
+        if ServiceItem.GetFilter("Service Item Components") = '' then
+            Error(MandatoryFilterErr, ServiceItem.FieldCaption("Service Item Components"));
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeTransferRecordFields', '', false, false)]
     local procedure OnBeforeTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
@@ -124,14 +152,24 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSProjectTask: Record "FS Project Task";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
+        FSIncident: Record "FS Incident Type";
         JobJournalLine: Record "Job Journal Line";
         JobTask: Record "Job Task";
+        ServiceHeader: Record "Service Header";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+        DefaultIncidentLbl: Label 'Service Order Incident';
+        SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
             exit;
 
-        case GetSourceDestCode(SourceRecordRef, DestinationRecordRef) of
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
             'FS Work Order Product-Job Journal Line',
             'FS Work Order Service-Job Journal Line':
                 begin
@@ -155,6 +193,162 @@ codeunit 6610 "FS Int. Table Subscriber"
                     JobJournalLine."Job Task No." := JobTask."Job Task No.";
                     DestinationRecordRef.GetTable(JobJournalLine);
                 end;
+            'FS Work Order Incident-Service Item Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderIncident);
+                    DestinationRecordRef.SetTable(ServiceItemLine);
+
+                    if ServiceItemLine."Document No." <> '' then
+                        exit;
+
+                    if CRMIntegrationRecord.FindByCRMID(FSWorkOrderIncident.WorkOrder) then
+                        ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
+
+                    ServiceItemLine."Document Type" := ServiceItemLine."Document Type"::Order;
+                    ServiceItemLine."Document No." := ServiceHeader."No.";
+                    ServiceItemLine."Line No." := GetNextLineNo(ServiceItemLine);
+
+                    if IsNullGuid(FSWorkOrderIncident.CustomerAsset) then
+                        if FSIncident.Get(FSWorkOrderIncident.IncidentType) then
+                            ServiceItemLine.Description := FSIncident.Name
+                        else
+                            ServiceItemLine.Description := DefaultIncidentLbl;
+
+                    DestinationRecordRef.GetTable(ServiceItemLine);
+                end;
+            'FS Work Order Product-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderProduct);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    if ServiceLine."Document No." <> '' then
+                        exit;
+
+                    if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrder) then
+                        ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
+
+                    ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
+                    ServiceLine."Document No." := ServiceHeader."No.";
+                    ServiceLine."Line No." := GetNextLineNo(ServiceLine);
+                    ServiceLine."Service Item Line No." := ServiceItemLine."Line No.";
+                    ServiceLine."Service Item No." := ServiceItemLine."Service Item No.";
+                    ServiceLine.Type := ServiceLine.Type::Item;
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'FS Work Order Service-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderService);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    if ServiceLine."Document No." <> '' then
+                        exit;
+
+                    if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrder) then
+                        ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
+
+                    ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
+                    ServiceLine."Document No." := ServiceHeader."No.";
+                    ServiceLine."Line No." := GetNextLineNo(ServiceLine);
+                    ServiceLine."Service Item Line No." := ServiceItemLine."Line No.";
+                    ServiceLine."Service Item No." := ServiceItemLine."Service Item No.";
+                    ServiceLine.Type := ServiceLine.Type::Item;
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSBookableResourceBooking);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    if ServiceLine."Document No." <> '' then
+                        exit;
+
+                    if CRMIntegrationRecord.FindByCRMID(FSBookableResourceBooking.WorkOrder) then
+                        ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
+
+                    ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
+                    ServiceLine."Document No." := ServiceHeader."No.";
+                    ServiceLine."Line No." := GetNextLineNo(ServiceLine);
+                    ServiceLine.Type := ServiceLine.Type::Resource;
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterTransferRecordFields', '', false, false)]
+    local procedure OnAfterTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef; var AdditionalFieldsWereModified: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        ServiceLine: Record "Service Line";
+        SourceDestCode: Text;
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
+            'FS Work Order Product-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderProduct);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSWorkOrderProduct, ServiceLine, false);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(FSWorkOrderProduct);
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'Service Line-FS Work Order Product':
+                begin
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderProduct);
+
+                    UpdateQuantities(FSWorkOrderProduct, ServiceLine, true);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(ServiceLine);
+                    DestinationRecordRef.GetTable(FSWorkOrderProduct);
+                end;
+
+            'FS Work Order Service-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderService);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSWorkOrderService, ServiceLine, false);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(FSWorkOrderService);
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'Service Line-FS Work Order Service':
+                begin
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderService);
+
+                    UpdateQuantities(FSWorkOrderService, ServiceLine, true);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(ServiceLine);
+                    DestinationRecordRef.GetTable(FSWorkOrderService);
+                end;
+
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSBookableResourceBooking);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSBookableResourceBooking, ServiceLine);
+                    AdditionalFieldsWereModified := true;
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
         end;
     end;
 
@@ -162,21 +356,29 @@ codeunit 6610 "FS Int. Table Subscriber"
     local procedure OnTransferFieldData(SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean; var NeedsConversion: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
         FSWorkOrderService: Record "FS Work Order Service";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         JobJournalLine: Record "Job Journal Line";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
         SourceRecordRef: RecordRef;
         DestinationRecordRef: RecordRef;
+        NAVItemUomRecordId: RecordId;
         DurationInHours: Decimal;
         DurationInMinutes: Decimal;
         Quantity: Decimal;
         QuantityToTransferToInvoice: Decimal;
         QuantityCurrentlyConsumed: Decimal;
         QuantityCurrentlyInvoiced: Decimal;
+        NotCoupledCRMUomErr: Label 'The unit is not coupled to a unit of measure.';
     begin
         if not FSConnectionSetup.IsEnabled() then
             exit;
+
         if IsValueFound then
             exit;
 
@@ -184,17 +386,110 @@ codeunit 6610 "FS Int. Table Subscriber"
             if SourceFieldRef.Record().Number() = DestinationFieldRef.Record().Number() then
                 exit;
 
-        if SourceFieldRef.Record().Number = Database::"FS Work Order Service" then
+        if (SourceFieldRef.Record().Number = Database::"Service Header") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order") then
+            case DestinationFieldRef.Name() of
+                FSWorkOrder.FieldName(SystemStatus):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceHeader);
+                        DestinationFieldRef.Record().SetTable(FSWorkOrder);
+                        NewValue := FSWorkOrder.SystemStatus; // default -> no update
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order") and
+            (DestinationFieldRef.Record().Number = Database::"Service Header") then
+            case DestinationFieldRef.Name() of
+                ServiceHeader.FieldName(Status):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrder);
+                        DestinationFieldRef.Record().SetTable(ServiceHeader);
+
+                        case FSWorkOrder.SystemStatus of
+                            FSWorkOrder.SystemStatus::Unscheduled,
+                            FSWorkOrder.SystemStatus::Scheduled:
+                                NewValue := ServiceHeader.Status::Pending;
+                            FSWorkOrder.SystemStatus::InProgress:
+                                NewValue := ServiceHeader.Status::"In Process";
+                            FSWorkOrder.SystemStatus::Completed:
+                                NewValue := ServiceHeader.Status::Finished;
+                            else
+                                NewValue := ServiceHeader.Status; // default -> no update
+                        end;
+
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Service") then
+            case DestinationFieldRef.Name() of
+                FSWorkOrderService.FieldName(DurationShipped):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Shipped";
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+                FSWorkOrderService.FieldName(DurationInvoiced):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Invoiced";
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+                FSWorkOrderService.FieldName(DurationConsumed):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Consumed";
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order") then
             case SourceFieldRef.Name() of
+                FSWorkOrder.FieldName(CreatedOn):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrder);
+                        NewValue := DT2Date(FSWorkOrder.CreatedOn);
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Service") then
+            case SourceFieldRef.Name() of
+                FSWorkOrderService.FieldName(EstimateDuration):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrderService);
+                        DurationInMinutes := FSWorkOrderService.EstimateDuration;
+                        DurationInHours := (DurationInMinutes / 60);
+                        NewValue := DurationInHours;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
                 FSWorkOrderService.FieldName(Duration),
                 FSWorkOrderService.FieldName(DurationToBill):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(FSWorkOrderService);
-                        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
-                        DestinationRecordRef := DestinationFieldRef.Record();
-                        DestinationRecordRef.SetTable(JobJournalLine);
-                        if SourceFieldRef.Name() = FSWorkOrderService.FieldName(Duration) then begin
+                        if DestinationFieldRef.Record().Number = Database::"Job Journal Line" then
+                            SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+                        if SourceFieldRef.Name() in [FSWorkOrderService.FieldName(Duration)] then begin
                             DurationInMinutes := FSWorkOrderService.Duration;
                             DurationInHours := (DurationInMinutes / 60);
                             NewValue := DurationInHours - QuantityCurrentlyConsumed;
@@ -202,10 +497,14 @@ codeunit 6610 "FS Int. Table Subscriber"
                         if SourceFieldRef.Name() = FSWorkOrderService.FieldName(DurationToBill) then begin
                             DurationInMinutes := FSWorkOrderService.DurationToBill;
                             DurationInHours := (DurationInMinutes / 60);
-                            if JobJournalLine."Line Type" in [JobJournalLine."Line Type"::Budget, JobJournalLine."Line Type"::" "] then
-                                NewValue := 0
-                            else
-                                NewValue := DurationInHours - QuantityCurrentlyInvoiced;
+                            NewValue := DurationInHours - QuantityCurrentlyInvoiced;
+
+                            if (DestinationFieldRef.Record().Number = Database::"Job Journal Line") then begin
+                                DestinationRecordRef := DestinationFieldRef.Record();
+                                DestinationRecordRef.SetTable(JobJournalLine);
+                                if JobJournalLine."Line Type" in [JobJournalLine."Line Type"::Budget, JobJournalLine."Line Type"::" "] then
+                                    NewValue := 0;
+                            end;
                         end;
                         IsValueFound := true;
                         NeedsConversion := false;
@@ -213,6 +512,9 @@ codeunit 6610 "FS Int. Table Subscriber"
                     end;
                 FSWorkOrderService.FieldName(Description):
                     begin
+                        if (DestinationFieldRef.Record().Number <> Database::"Job Journal Line") then
+                            exit;
+
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(FSWorkOrderService);
                         DestinationRecordRef := DestinationFieldRef.Record();
@@ -237,14 +539,15 @@ codeunit 6610 "FS Int. Table Subscriber"
                     end;
             end;
 
-        if SourceFieldRef.Record().Number = Database::"FS Work Order Product" then
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Product") then
             case SourceFieldRef.Name() of
                 FSWorkOrderProduct.FieldName(Quantity),
                 FSWorkOrderProduct.FieldName(QtyToBill):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(FSWorkOrderProduct);
-                        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+                        if DestinationFieldRef.Record().Number = Database::"Job Journal Line" then
+                            SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
                         if SourceFieldRef.Name() = FSWorkOrderProduct.FieldName(Quantity) then begin
                             Quantity := FSWorkOrderProduct.Quantity - QuantityCurrentlyConsumed;
                             NewValue := Quantity;
@@ -267,6 +570,239 @@ codeunit 6610 "FS Int. Table Subscriber"
                         NeedsConversion := false;
                         exit;
                     end;
+                FSWorkOrderProduct.FieldName(Unit):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrderProduct);
+
+                        if not CRMIntegrationRecord.FindRecordIDFromID(FSWorkOrderProduct.Unit, Database::"Item Unit of Measure", NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        if not ItemUnitOfMeasure.Get(NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        NewValue := ItemUnitOfMeasure.Code;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                        exit;
+                    end;
+            end;
+    end;
+
+    internal procedure UpdateQuantities(var FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
+    begin
+        if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Estimated then begin
+            if ToFieldService then
+                FSWorkOrderProduct.EstimateQuantity := ServiceLine.Quantity
+            else
+                ServiceLine.Validate(Quantity, FSWorkOrderProduct.EstimateQuantity);
+
+            ServiceLine.Validate("Qty. to Ship", 0);
+            ServiceLine.Validate("Qty. to Invoice", 0);
+            ServiceLine.Validate("Qty. to Consume", 0);
+
+            if ToFieldService then
+                ServiceLine.Modify(true);
+        end else begin
+            ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
+            ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill) - ServiceLine."Quantity Shipped");
+            ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced");
+        end;
+    end;
+
+    internal procedure UpdateQuantities(var FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
+    begin
+        if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Estimated then begin
+            if ToFieldService then
+                FSWorkOrderService.EstimateDuration := ServiceLine.Quantity * 60
+            else
+                ServiceLine.Validate(Quantity, FSWorkOrderService.EstimateDuration / 60);
+
+            ServiceLine.Validate("Qty. to Ship", 0);
+            ServiceLine.Validate("Qty. to Invoice", 0);
+            ServiceLine.Validate("Qty. to Consume", 0);
+
+            if ToFieldService then
+                ServiceLine.Modify(true);
+        end else begin
+            ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60);
+            ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
+            ServiceLine.Validate("Qty. to Invoice", FSWorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
+        end;
+    end;
+
+    internal procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")
+    begin
+        if ServiceLine."Qty. to Consume" <> 0 then
+            ServiceLine.Validate("Qty. to Consume", 0);
+        ServiceLine.Validate(Quantity, FSBookableResourceBooking.Duration / 60);
+        ServiceLine.Validate("Qty. to Consume", ServiceLine.Quantity - ServiceLine."Quantity Consumed");
+    end;
+
+    procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal): Decimal
+    var
+        MaxQuantity: Decimal;
+    begin
+        MaxQuantity := Quantity1;
+
+        if Quantity2 > MaxQuantity then
+            MaxQuantity := Quantity2;
+
+        exit(MaxQuantity);
+    end;
+
+    procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal; Quantity3: Decimal): Decimal
+    var
+        MaxQuantity: Decimal;
+    begin
+        MaxQuantity := Quantity1;
+
+        if Quantity2 > MaxQuantity then
+            MaxQuantity := Quantity2;
+
+        if Quantity3 > MaxQuantity then
+            MaxQuantity := Quantity3;
+
+        exit(MaxQuantity);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', false, false)]
+    local procedure OnFindNewValueForCoupledRecordPK(IntegrationTableMapping: Record "Integration Table Mapping"; SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrderService: Record "FS Work Order Service";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        CRMUom: Record "CRM Uom";
+        SourceRecordRef: RecordRef;
+        NAVItemUomRecordId: RecordId;
+        WorkOrderIncidentId: Guid;
+        NAVItemUomId: Guid;
+        NotCoupledCRMUomErr: Label 'The unit is not coupled to a unit of measure.';
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Product") and
+            (DestinationFieldRef.Record().Number = Database::"Service Line") then
+            case SourceFieldRef.Name() of
+                FSWorkOrderProduct.FieldName(WorkOrderIncident):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrderProduct);
+                        DestinationFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
+
+                FSWorkOrderProduct.FieldName(Unit):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrderProduct);
+
+                        if not CRMIntegrationRecord.FindRecordIDFromID(FSWorkOrderProduct.Unit, Database::"Item Unit of Measure", NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        if not ItemUnitOfMeasure.Get(NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        NewValue := ItemUnitOfMeasure.Code;
+                        IsValueFound := true;
+                        exit;
+                    end;
+            end;
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Service") and
+            (DestinationFieldRef.Record().Number = Database::"Service Line") then
+            case SourceFieldRef.Name() of
+                FSWorkOrderProduct.FieldName(WorkOrderIncident):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrderService);
+                        DestinationFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
+
+                FSWorkOrderService.FieldName(Unit):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrderService);
+
+                        if not CRMIntegrationRecord.FindRecordIDFromID(FSWorkOrderService.Unit, Database::"Item Unit of Measure", NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        if not ItemUnitOfMeasure.Get(NAVItemUomRecordId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        NewValue := ItemUnitOfMeasure.Code;
+                        IsValueFound := true;
+                        exit;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
+            case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then begin
+                            NewValue := WorkOrderIncidentId;
+                            IsValueFound := true;
+                        end;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Service") then
+            case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then begin
+                            NewValue := WorkOrderIncidentId;
+                            IsValueFound := true;
+                        end;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number in [Database::"FS Work Order Product", Database::"FS Work Order Service"]) then
+            case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
+                ServiceLine.FieldName("Unit of Measure Code"):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+
+                        if not ItemUnitOfMeasure.Get(ServiceLine."No.", ServiceLine."Unit of Measure Code") then
+                            Error(NotCoupledCRMUomErr);
+
+                        if not CRMIntegrationRecord.FindIDFromRecordID(ItemUnitOfMeasure.RecordId, NAVItemUomId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        if not CRMUom.Get(NAVItemUomId) then
+                            Error(NotCoupledCRMUomErr);
+
+                        NewValue := CRMUom.UoMId;
+                        IsValueFound := true;
+                        exit;
+                    end;
             end;
     end;
 
@@ -282,6 +818,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         JobPlanningLineInvoice: Record "Job Planning Line Invoice";
         JobUsageLink: Record "Job Usage Link";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -342,6 +879,20 @@ codeunit 6610 "FS Int. Table Subscriber"
                                         end;
                         until JobPlanningLineInvoice.Next() = 0;
                 end;
+            'FS Work Order-Service Header':
+                begin
+                    ValidateServiceHeaderAfterInsert(DestinationRecordRef);
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                end;
+            'Service Header-FS Work Order':
+                begin
+                    ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                end;
         end;
     end;
 
@@ -360,6 +911,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobJournalLine: Record "Job Journal Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -381,13 +934,435 @@ codeunit 6610 "FS Int. Table Subscriber"
                     UpdateCorrelatedJobJournalLine(SourceRecordRef, DestinationRecordRef);
                     ConditionallyPostJobJournalLine(FSConnectionSetup, FSWorkOrderService, JobJournalLine);
                 end;
+            'FS Work Order-Service Header':
+                begin
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                end;
+            'Service Header-FS Work Order':
+                begin
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                end;
         end;
+    end;
+
+    local procedure ProofAllServiceItemLinesAssigned(ServiceHeader: Record "Service Header")
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("Service Item Line No.", 0);
+        if ServiceLine.FindFirst() then
+            ServiceLine.TestField("Service Item Line No.");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterUnchangedRecordHandled', '', false, false)]
+    local procedure HandleOnAfterUnchangedRecordHandled(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ArchivedServiceOrders: List of [Code[20]];
+        SourceDestCode: Text;
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
+            'FS Work Order-Service Header':
+                begin
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                end;
+            'Service Header-FS Work Order':
+                begin
+                    ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                end;
+        end;
+    end;
+
+    local procedure ValidateServiceHeaderAfterInsert(DestinationRecordRef: RecordRef)
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        DestinationRecordRef.SetTable(ServiceHeader);
+        ServiceHeader.Validate("Customer No."); // explicit recalculation, as InitRecord() was called after setting the customer
+        ServiceHeader.Modify(true);
+        DestinationRecordRef.GetTable(ServiceHeader);
+    end;
+
+    local procedure ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceItemLineToDelete: Record "Service Item Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
+        FSWorkOrderIncident2: Record "FS Work Order Incident";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        CRMSalesorderdetailRecordRef: RecordRef;
+        CRMSalesorderdetailId: Guid;
+        FSWorkOrderIncidentIdList: List of [Guid];
+        FSWorkOrderIncidentIdFilter: Text;
+    begin
+        SourceRecordRef.SetTable(FSWorkOrder);
+        DestinationRecordRef.SetTable(ServiceHeader);
+
+        ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceItemLine.SetRange("Document No.", ServiceHeader."No.");
+        if ServiceItemLine.FindSet() then
+            repeat
+                CRMIntegrationRecord.SetRange("Integration ID", ServiceItemLine.SystemId);
+                CRMIntegrationRecord.SetRange("Table ID", Database::"Service Item Line");
+                if CRMIntegrationRecord.FindFirst() then begin
+                    FSWorkOrderIncident.SetRange(WorkOrderIncidentId, CRMIntegrationRecord."CRM ID");
+                    if FSWorkOrderIncident.IsEmpty() then begin
+                        CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+                        if ServiceItemLineToDelete.GetBySystemId(ServiceItemLine.SystemId) then begin
+                            DeleteServiceLines(ServiceItemLine);
+                            ServiceItemLineToDelete.Delete(true);
+                        end;
+                    end;
+                end;
+            until ServiceItemLine.Next() = 0;
+
+        FSWorkOrderIncident.Reset();
+        FSWorkOrderIncident.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSWorkOrderIncident.FindSet() then begin
+            repeat
+                if not SkipReimport(FSWorkOrderIncident.WorkOrderIncidentId, FSWorkOrderIncident.ModifiedOn) then
+                    FSWorkOrderIncidentIdList.Add(FSWorkOrderIncident.WorkOrderIncidentId)
+            until FSWorkOrderIncident.Next() = 0;
+
+            foreach CRMSalesorderdetailId in FSWorkOrderIncidentIdList do
+                FSWorkOrderIncidentIdFilter += CRMSalesorderdetailId + '|';
+            FSWorkOrderIncidentIdFilter := FSWorkOrderIncidentIdFilter.TrimEnd('|');
+
+            FSWorkOrderIncident2.SetFilter(WorkOrderIncidentId, FSWorkOrderIncidentIdFilter);
+            CRMSalesorderdetailRecordRef.GetTable(FSWorkOrderIncident2);
+            CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(CRMSalesorderdetailRecordRef, Database::"Service Item Line", false, false);
+        end;
+    end;
+
+    local procedure DeleteServiceLines(ServiceItemLine: Record "Service Item Line")
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        ServiceLine.SetRange("Document Type", ServiceItemLine."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceItemLine."Document No.");
+        ServiceLine.SetRange("Service Item Line No.", ServiceItemLine."Line No.");
+        if not ServiceLine.IsEmpty() then
+            ServiceLine.DeleteAll(true);
+    end;
+
+    local procedure ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceLineToDelete: Record "Service Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderProduct2: Record "FS Work Order Product";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        FSWorkOrderProductRecordRef: RecordRef;
+        FSWorkOrderProductId: Guid;
+        FSWorkOrderProductIdList: List of [Guid];
+        FSWorkOrderProductIdFilter: Text;
+    begin
+        SourceRecordRef.SetTable(FSWorkOrder);
+        DestinationRecordRef.SetTable(ServiceHeader);
+
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Inventory);
+        if ServiceLine.FindSet() then
+            repeat
+                CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+                CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+                if CRMIntegrationRecord.FindFirst() then begin
+                    FSWorkOrderProduct.SetRange(WorkOrderProductId, CRMIntegrationRecord."CRM ID");
+                    if FSWorkOrderProduct.IsEmpty() then begin
+                        CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
+                            ServiceLineToDelete.Delete(true);
+                    end;
+                end;
+            until ServiceLine.Next() = 0;
+
+        FSWorkOrderProduct.Reset();
+        FSWorkOrderProduct.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSWorkOrderProduct.FindSet() then begin
+            repeat
+                if not SkipReimport(FSWorkOrderProduct.WorkOrderProductId, FSWorkOrderProduct.ModifiedOn) then
+                    FSWorkOrderProductIdList.Add(FSWorkOrderProduct.WorkOrderProductId);
+            until FSWorkOrderProduct.Next() = 0;
+
+            foreach FSWorkOrderProductId in FSWorkOrderProductIdList do
+                FSWorkOrderProductIdFilter += FSWorkOrderProductId + '|';
+            FSWorkOrderProductIdFilter := FSWorkOrderProductIdFilter.TrimEnd('|');
+
+            FSWorkOrderProduct2.SetFilter(WorkOrderProductId, FSWorkOrderProductIdFilter);
+            FSWorkOrderProductRecordRef.GetTable(FSWorkOrderProduct2);
+            CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSWorkOrderProductRecordRef, Database::"Service Line", false, false);
+        end;
+    end;
+
+    local procedure ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceLineToDelete: Record "Service Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderService: Record "FS Work Order Service";
+        FSWorkOrderService2: Record "FS Work Order Service";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        FSWorkOrderServiceRecordRef: RecordRef;
+        FSWorkOrderServiceId: Guid;
+        FSWorkOrderServiceIdList: List of [Guid];
+        FSWorkOrderServiceIdFilter: Text;
+    begin
+        SourceRecordRef.SetTable(FSWorkOrder);
+        DestinationRecordRef.SetTable(ServiceHeader);
+
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Service, ServiceLine."Item Type"::"Non-Inventory");
+        if ServiceLine.FindSet() then
+            repeat
+                CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+                CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+                if CRMIntegrationRecord.FindFirst() then begin
+                    FSWorkOrderService.SetRange(WorkOrderServiceId, CRMIntegrationRecord."CRM ID");
+                    if FSWorkOrderService.IsEmpty() then begin
+                        CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
+                            ServiceLineToDelete.Delete(true);
+                    end;
+                end;
+            until ServiceLine.Next() = 0;
+
+        FSWorkOrderService.Reset();
+        FSWorkOrderService.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSWorkOrderService.FindSet() then begin
+            repeat
+                if not SkipReimport(FSWorkOrderService.WorkOrderServiceId, FSWorkOrderService.ModifiedOn) then
+                    FSWorkOrderServiceIdList.Add(FSWorkOrderService.WorkOrderServiceId);
+            until FSWorkOrderService.Next() = 0;
+
+            foreach FSWorkOrderServiceId in FSWorkOrderServiceIdList do
+                FSWorkOrderServiceIdFilter += FSWorkOrderServiceId + '|';
+            FSWorkOrderServiceIdFilter := FSWorkOrderServiceIdFilter.TrimEnd('|');
+
+            FSWorkOrderService2.SetFilter(WorkOrderServiceId, FSWorkOrderServiceIdFilter);
+            FSWorkOrderServiceRecordRef.GetTable(FSWorkOrderService2);
+            CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSWorkOrderServiceRecordRef, Database::"Service Line", false, false);
+        end;
+    end;
+
+    local procedure ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceLineToDelete: Record "Service Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        FSBookableResourceBooking2: Record "FS Bookable Resource Booking";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
+        FSBookableResourceBookingRecordRef: RecordRef;
+        FSBookableResourceBookingId: Guid;
+        FSBookableResourceBookingIdList: List of [Guid];
+        FSBookableResourceBookingIdFilter: Text;
+    begin
+        SourceRecordRef.SetTable(FSWorkOrder);
+        DestinationRecordRef.SetTable(ServiceHeader);
+
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Resource);
+        if ServiceLine.FindSet() then
+            repeat
+                CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+                CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+                if CRMIntegrationRecord.FindFirst() then begin
+                    FSBookableResourceBooking.SetRange(BookableResourceBookingId, CRMIntegrationRecord."CRM ID");
+                    if FSBookableResourceBooking.IsEmpty() then begin
+                        CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then begin
+                            DeleteServiceItemLineForBooking(ServiceLine);
+                            ServiceLineToDelete.Delete(true);
+                        end;
+                    end;
+                end;
+            until ServiceLine.Next() = 0;
+
+        FSBookableResourceBooking.Reset();
+        FSBookableResourceBooking.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        FSBookableResourceBooking.SetRange(BookingStatus, FSIntegrationMgt.GetBookingStatusCompleted());
+        if FSBookableResourceBooking.FindSet() then begin
+            repeat
+                if not SkipReimport(FSBookableResourceBooking.BookableResourceBookingId, FSBookableResourceBooking.ModifiedOn) then
+                    FSBookableResourceBookingIdList.Add(FSBookableResourceBooking.BookableResourceBookingId);
+            until FSBookableResourceBooking.Next() = 0;
+
+            foreach FSBookableResourceBookingId in FSBookableResourceBookingIdList do
+                FSBookableResourceBookingIdFilter += FSBookableResourceBookingId + '|';
+            FSBookableResourceBookingIdFilter := FSBookableResourceBookingIdFilter.TrimEnd('|');
+
+            FSBookableResourceBooking2.SetFilter(BookableResourceBookingId, FSBookableResourceBookingIdFilter);
+            FSBookableResourceBookingRecordRef.GetTable(FSBookableResourceBooking2);
+            CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSBookableResourceBookingRecordRef, Database::"Service Line", false, false);
+        end;
+    end;
+
+    local procedure SkipReimport(CRMId: Guid; CurrentModifyTimeStamp: DateTime): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        // check if skipped (because of deletion)
+        CRMIntegrationRecord.SetRange("CRM ID", CRMId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+        if not CRMIntegrationRecord."Skip Reimport" then
+            exit(false);
+        if (CRMIntegrationRecord."Skip Reimport") and (CRMIntegrationRecord."Last Synch. Modified On" > CurrentModifyTimeStamp) then
+            exit(true);
+
+        CRMIntegrationRecord.Delete(); // there was an update in field service -> start import again with new coupling
+        exit(false);
+    end;
+
+    local procedure ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        ServiceHeader: Record "Service Header";
+        FSWorkOrder: Record "FS Work Order";
+        ServiceItemLine: Record "Service Item Line";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        ServiceItemLineRecordRef: RecordRef;
+    begin
+        SourceRecordRef.SetTable(ServiceHeader);
+        DestinationRecordRef.SetTable(FSWorkOrder);
+
+        ServiceItemLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceItemLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceItemLine.SetRange("FS Bookings", false);
+        if not ServiceItemLine.IsEmpty() then begin
+            ServiceItemLineRecordRef.GetTable(ServiceItemLine);
+            CRMIntegrationTableSynch.SynchRecordsToIntegrationTable(ServiceItemLineRecordRef, false, false);
+        end;
+    end;
+
+    local procedure ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        ServiceHeader: Record "Service Header";
+        FSWorkOrder: Record "FS Work Order";
+        ServiceLine: Record "Service Line";
+        ServiceLineRecordRef: RecordRef;
+    begin
+        SourceRecordRef.SetTable(ServiceHeader);
+        DestinationRecordRef.SetTable(FSWorkOrder);
+
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("Type", ServiceLine.Type::Item);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Inventory, ServiceLine."Item Type"::"Non-Inventory");
+        if not ServiceLine.IsEmpty() then begin
+            ServiceLineRecordRef.GetTable(ServiceLine);
+            SynchRecordsToIntegrationTable(ServiceLineRecordRef, Database::"FS Work Order Product", false, false);
+        end;
+    end;
+
+    local procedure ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        ServiceHeader: Record "Service Header";
+        FSWorkOrder: Record "FS Work Order";
+        ServiceLine: Record "Service Line";
+        ServiceLineRecordRef: RecordRef;
+    begin
+        SourceRecordRef.SetTable(ServiceHeader);
+        DestinationRecordRef.SetTable(FSWorkOrder);
+
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("Type", ServiceLine.Type::Item);
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Service);
+        if not ServiceLine.IsEmpty() then begin
+            ServiceLineRecordRef.GetTable(ServiceLine);
+            SynchRecordsToIntegrationTable(ServiceLineRecordRef, Database::"FS Work Order Service", false, false);
+        end;
+    end;
+
+    procedure SynchRecordsToIntegrationTable(var RecordsToSynchRecordRef: RecordRef; TargetTable: Integer; IgnoreChanges: Boolean; IgnoreSynchOnlyCoupledRecords: Boolean) JobID: Guid
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationTableSynch: Codeunit "Integration Table Synch.";
+        IntegrationRecordRef: RecordRef;
+        SynchronizeEmptySetErr: Label 'Attempted to synchronize an empty set of records.';
+    begin
+        IntegrationTableMapping.SetRange("Table ID", RecordsToSynchRecordRef.Number);
+        IntegrationTableMapping.SetRange("Integration Table ID", TargetTable);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        if not IntegrationTableMapping.FindFirst() then
+            Error(SynchronizeEmptySetErr);
+
+        RecordsToSynchRecordRef.Ascending(false);
+        if not RecordsToSynchRecordRef.FindSet() then
+            Error(SynchronizeEmptySetErr);
+
+        JobID :=
+          IntegrationTableSynch.BeginIntegrationSynchJob(
+            TableConnectionType::CRM, IntegrationTableMapping, RecordsToSynchRecordRef.Number);
+        if not IsNullGuid(JobID) then begin
+            repeat
+                IntegrationTableSynch.Synchronize(RecordsToSynchRecordRef, IntegrationRecordRef, IgnoreChanges, IgnoreSynchOnlyCoupledRecords)
+            until RecordsToSynchRecordRef.Next() = 0;
+            IntegrationTableSynch.EndIntegrationSynchJob();
+        end;
+    end;
+
+    internal procedure ArchiveServiceOrder(ServiceHeader: Record "Service Header"; ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        ServiceDocumentArchiveMgmt: Codeunit "Service Document Archive Mgmt.";
+    begin
+        if ArchivedServiceOrders.Contains(ServiceHeader."No.") then
+            exit;
+
+        ServiceMgtSetup.Get();
+        if not ServiceMgtSetup."Archive Orders" then
+            exit;
+
+        ArchivedServiceOrders.Add(ServiceHeader."No.");
+        ServiceDocumentArchiveMgmt.ArchServiceDocumentNoConfirm(ServiceHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', false, false)]
     local procedure HandleOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -398,8 +1373,37 @@ codeunit 6610 "FS Int. Table Subscriber"
         case SourceDestCode of
             'FS Work Order Service-Job Journal Line':
                 UpdateCorrelatedJobJournalLine(SourceRecordRef, DestinationRecordRef);
+            'Service Header-FS Work Order':
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnUpdateIntegrationRecordCoupling', '', false, false)]
+    local procedure HandleOnUpdateIntegrationRecordCoupling(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        SourceDestCode: Text;
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
+            'Service Header-FS Work Order':
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
+        end;
+    end;
+
 
     [EventSubscriber(ObjectType::Table, Database::"Inventory Setup", 'OnAfterValidateEvent', 'Location Mandatory', false, false)]
     local procedure AfterValidateLocationMandatory(var Rec: Record "Inventory Setup"; var xRec: Record "Inventory Setup"; CurrFieldNo: Integer)
@@ -514,6 +1518,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobJournalLine: Record "Job Journal Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -533,6 +1538,19 @@ codeunit 6610 "FS Int. Table Subscriber"
                     SourceRecordRef.SetTable(FSWorkOrderService);
                     DestinationRecordRef.SetTable(JobJournalLine);
                     ConditionallyPostJobJournalLine(FSConnectionSetup, FSWorkOrderService, JobJournalLine);
+                end;
+            'FS Work Order-Service Header':
+                begin
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                end;
+            'Service Header-FS Work Order':
+                begin
+                    ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
+                    ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
                 end;
         end;
     end;
@@ -611,11 +1629,19 @@ codeunit 6610 "FS Int. Table Subscriber"
         Resource: Record Resource;
         FSBookableResource: Record "FS Bookable Resource";
         LastJobJournalLine: Record "Job Journal Line";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
         CRMProductName: Codeunit "CRM Product Name";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         RecID: RecordId;
         SourceDestCode: Text;
         BillingAccId: Guid;
         ServiceAccId: Guid;
+        WorkOrderId: Guid;
         Handled: Boolean;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -624,6 +1650,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
 
         case SourceDestCode of
+            'Location-FS Warehouse':
+                SetCompanyId(DestinationRecordRef);
             'Service Item-FS Customer Asset':
                 SetCompanyId(DestinationRecordRef);
             'FS Customer Asset-Service Item':
@@ -713,6 +1741,51 @@ codeunit 6610 "FS Int. Table Subscriber"
                     end;
                     DestinationRecordRef.GetTable(JobJournalLine);
                 end;
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    DestinationRecordRef.SetTable(ServiceLine);
+                    GenerateServiceItemLineForBooking(ServiceLine);
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'Service Order Type-FS Work Order Type':
+                SetCompanyId(DestinationRecordRef);
+            'Service Header-FS Work Order':
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
+            'Service Item Line-FS Work Order Incident':
+                begin
+                    SetCompanyId(DestinationRecordRef);
+
+                    SourceRecordRef.SetTable(ServiceItemLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderIncident);
+                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceItemLine."Document No."), WorkOrderId) then
+                        FSWorkOrderIncident.WorkOrder := WorkOrderId;
+                    FSWorkOrderIncident.IncidentType := FSIntegrationMgt.GetDefaultWorkOrderIncident();
+                    DestinationRecordRef.GetTable(FSWorkOrderIncident);
+                end;
+            'Service Line-FS Work Order Product':
+                begin
+                    SetCompanyId(DestinationRecordRef);
+
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderProduct);
+                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
+                        FSWorkOrderProduct.WorkOrder := WorkOrderId;
+                    DestinationRecordRef.GetTable(FSWorkOrderProduct);
+                end;
+            'Service Line-FS Work Order Service':
+                begin
+                    SetCompanyId(DestinationRecordRef);
+
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderService);
+                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
+                        FSWorkOrderService.WorkOrder := WorkOrderId;
+                    DestinationRecordRef.GetTable(FSWorkOrderService);
+                end;
         end;
     end;
 
@@ -795,6 +1868,145 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
+    local procedure GenerateServiceItemLineForBooking(var ServiceLine: Record "Service Line")
+    var
+        ServiceItemLine: Record "Service Item Line";
+        Resource: Record Resource;
+    begin
+        if not GetServiceItemLine(ServiceLine, ServiceItemLine) then begin
+            ServiceItemLine.Validate("Document Type", ServiceLine."Document Type");
+            ServiceItemLine.Validate("Document No.", ServiceLine."Document No.");
+            ServiceItemLine.Validate("Line No.", GetNextLineNo(ServiceItemLine));
+            ServiceItemLine.Validate(Description, Resource.TableCaption());
+            ServiceItemLine.Validate("FS Bookings", true);
+            ServiceItemLine.Insert(true);
+        end;
+
+        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
+    end;
+
+    local procedure DeleteServiceItemLineForBooking(ServiceLineToDelete: Record "Service Line")
+    var
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+    begin
+        // other service line exists?
+        ServiceLine.SetRange("Document Type", ServiceLineToDelete."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceLineToDelete."Document No.");
+        ServiceLine.SetRange("Service Item Line No.", ServiceLineToDelete."Service Item Line No.");
+        ServiceLine.SetFilter("Line No.", '<>%1', ServiceLineToDelete."Line No.");
+        if not ServiceLine.IsEmpty() then
+            exit;
+
+        // delete service item line -> only if no other service line exists
+        ServiceItemLine.SetRange("Document Type", ServiceLineToDelete."Document Type");
+        ServiceItemLine.SetRange("Document No.", ServiceLineToDelete."Document No.");
+        ServiceItemLine.SetRange("Line No.", ServiceLineToDelete."Service Item Line No.");
+        if not ServiceItemLine.IsEmpty() then
+            ServiceItemLine.DeleteAll()
+    end;
+
+    local procedure GetServiceItemLine(ServiceLine: Record "Service Line"; var ServiceItemLine: Record "Service Item Line"): Boolean
+    begin
+        ServiceItemLine.SetRange("Document Type", ServiceLine."Document Type");
+        ServiceItemLine.SetRange("Document No.", ServiceLine."Document No.");
+        ServiceItemLine.SetRange("FS Bookings", true);
+        exit(ServiceItemLine.FindFirst());
+    end;
+
+    local procedure GetNextLineNo(ServiceItemLine: Record "Service Item Line"): Integer
+    var
+        ServiceItemLineSearch: Record "Service Item Line";
+    begin
+        ServiceItemLineSearch.SetRange("Document Type", ServiceItemLine."Document Type");
+        ServiceItemLineSearch.SetRange("Document No.", ServiceItemLine."Document No.");
+        if ServiceItemLineSearch.FindLast() then
+            exit(ServiceItemLineSearch."Line No." + 10000);
+        exit(10000);
+    end;
+
+    local procedure GetNextLineNo(ServiceLine: Record "Service Line"): Integer
+    var
+        ServiceLineSearch: Record "Service Line";
+    begin
+        ServiceLineSearch.SetRange("Document Type", ServiceLine."Document Type");
+        ServiceLineSearch.SetRange("Document No.", ServiceLine."Document No.");
+        if ServiceLineSearch.FindLast() then
+            exit(ServiceLineSearch."Line No." + 10000);
+        exit(10000);
+    end;
+
+    local procedure GetServiceOrderRecordId(DocumentNo: Code[20]): RecordId
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        if ServiceHeader.Get(ServiceHeader."Document Type"::Order, DocumentNo) then
+            exit(ServiceHeader.RecordId);
+    end;
+
+    local procedure GetServiceOrderItemLineRecordId(DocumentNo: Code[20]; LineNo: Integer): RecordId
+    var
+        ServiceItemLine: Record "Service Item Line";
+    begin
+        if ServiceItemLine.Get(ServiceItemLine."Document Type"::Order, DocumentNo, LineNo) then
+            exit(ServiceItemLine.RecordId);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Table Synch.", 'OnSynchNAVTableToCRMOnBeforeCheckLatestModifiedOn', '', true, false)]
+    local procedure OnSynchNAVTableToCRMOnBeforeCheckLatestModifiedOn(var SourceRecordRef: RecordRef; IntegrationTableMapping: Record "Integration Table Mapping")
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceHeaderToSync: Record "Service Header";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        ServiceOrderRecordRef: RecordRef;
+        ServiceOrdersToIgnore: List of [Code[20]];
+        ServiceOrdersToSync: List of [Code[20]];
+        ServiceOrderNo: Code[20];
+    begin
+        if SourceRecordRef.Number() <> Database::"Service Header" then
+            exit;
+
+        // sync of service header should triggered by changes in service item lines and service lines:
+        // search for modified service orders and start sync -> only if not already synced (via service header).
+
+        // already synced service orders should not be triggered again
+        SourceRecordRef.SetTable(ServiceHeader);
+        if ServiceHeader.FindSet() then
+            repeat
+                ServiceOrdersToIgnore.Add(ServiceHeader."No.");
+            until ServiceHeader.Next() = 0;
+
+        // search for modified service (item) lines and start sync
+        ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceItemLine.SetFilter(SystemModifiedAt, ServiceHeader.GetFilter(SystemModifiedAt));
+        if ServiceItemLine.FindSet() then
+            repeat
+                if not ServiceOrdersToIgnore.Contains(ServiceItemLine."Document No.") then
+                    if not ServiceOrdersToSync.Contains(ServiceItemLine."Document No.") then
+                        ServiceOrdersToSync.Add(ServiceItemLine."Document No.");
+            until ServiceItemLine.Next() = 0;
+
+        ServiceLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceLine.SetFilter(SystemModifiedAt, ServiceHeader.GetFilter(SystemModifiedAt));
+        if ServiceLine.FindSet() then
+            repeat
+                if not ServiceOrdersToIgnore.Contains(ServiceLine."Document No.") then
+                    if not ServiceOrdersToSync.Contains(ServiceLine."Document No.") then
+                        ServiceOrdersToSync.Add(ServiceLine."Document No.");
+            until ServiceLine.Next() = 0;
+
+        // start sync for found service orders
+        foreach ServiceOrderNo in ServiceOrdersToSync do begin
+            ServiceHeaderToSync.Reset();
+            ServiceHeaderToSync.SetRange("Document Type", ServiceHeaderToSync."Document Type"::Order);
+            ServiceHeaderToSync.SetRange("No.", ServiceOrderNo);
+            ServiceOrderRecordRef.GetTable(ServiceHeaderToSync);
+            CRMIntegrationTableSynch.SynchRecordsToIntegrationTable(ServiceOrderRecordRef, false, false);
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnDeletionConflictDetectedSetRecordStateAndSynchAction', '', false, false)]
     local procedure HandleOnDeletionConflictDetectedSetRecordStateAndSynchAction(var IntegrationTableMapping: Record "Integration Table Mapping"; var SourceRecordRef: RecordRef; var CoupledRecordRef: RecordRef; var RecordState: Option NotFound,Coupled,Decoupled; var SynchAction: Option "None",Insert,Modify,ForceModify,IgnoreUnchanged,Fail,Skip,Delete,Uncouple,Couple; var DeletionConflictHandled: Boolean)
     var
@@ -874,6 +2086,7 @@ codeunit 6610 "FS Int. Table Subscriber"
 
     local procedure SetCurrentProjectPlanningQuantities(var SourceRecordRef: RecordRef; var QuantityCurrentlyConsumed: Decimal; var QuantityCurrentlyInvoiced: Decimal)
     var
+        FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
@@ -885,6 +2098,10 @@ codeunit 6610 "FS Int. Table Subscriber"
     begin
         QuantityCurrentlyConsumed := 0;
         QuantityCurrentlyInvoiced := 0;
+
+        if not FSConnectionSetup.IsIntegrationTypeProjectEnabled() then
+            exit;
+
         case SourceRecordRef.Number() of
             Database::"FS Work Order Product":
                 begin
@@ -1200,6 +2417,16 @@ codeunit 6610 "FS Int. Table Subscriber"
         if IgnoreRecord then
             exit;
 
+        case SourceRecordRef.Number() of
+            Database::"FS Work Order Product",
+            Database::"FS Work Order Service":
+                IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
+            Database::"Service Header":
+                IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
+            Database::"FS Work Order":
+                IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
+        end;
+
         if FSConnectionSetup.IsEnabled() then
             exit;
 
@@ -1230,6 +2457,103 @@ codeunit 6610 "FS Int. Table Subscriber"
                     IgnoreRecord := (not Job."Apply Usage Link");
                 end;
         end;
+    end;
+
+    internal procedure IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+        QuantityCurrentlyConsumed: Decimal;
+        QuantityCurrentlyInvoiced: Decimal;
+        FSQuantityToConsume: Decimal;
+        FSQuantityToInvoice: Decimal;
+        IntegrateToService: Boolean;
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeProjectEnabled() then
+            exit;
+        if IgnoreRecord then
+            exit;
+        if FSConnectionSetup."Line Synch. Rule" <> "FS Work Order Line Synch. Rule"::LineUsed then
+            exit;
+
+        case SourceRecordRef.Number() of
+            Database::"FS Work Order Product":
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderProduct);
+                    if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Used then begin
+                        FSQuantityToConsume := FSWorkOrderProduct.Quantity;
+                        FSQuantityToInvoice := FSWorkOrderProduct.QtyToBill;
+                    end;
+                    if FSWorkOrder.Get(FSWorkOrderProduct.WorkOrder) then
+                        IntegrateToService := FSWorkOrder.IntegrateToService;
+                end;
+            Database::"FS Work Order Service":
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderService);
+                    if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Used then begin
+                        FSQuantityToConsume := FSWorkOrderService.Duration / 60;
+                        FSQuantityToInvoice := FSWorkOrderService.DurationToBill / 60;
+                    end;
+                    if FSWorkOrder.Get(FSWorkOrderService.WorkOrder) then
+                        IntegrateToService := FSWorkOrder.IntegrateToService;
+                end;
+        end;
+
+        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+
+        if IntegrateToService then
+            IgnoreRecord := true;
+
+        if (QuantityCurrentlyConsumed = FSQuantityToConsume) and (QuantityCurrentlyInvoiced = FSQuantityToInvoice) then
+            IgnoreRecord := true;
+    end;
+
+    internal procedure IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        if IgnoreRecord then
+            exit;
+
+        SourceRecordRef.SetTable(ServiceHeader);
+        if not CRMIntegrationRecord.FindByRecordID(ServiceHeader.RecordId) then
+            exit;
+
+        if CRMIntegrationRecord."Archived Service Order" then
+            IgnoreRecord := true;
+    end;
+
+    internal procedure IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        if IgnoreRecord then
+            exit;
+
+        SourceRecordRef.SetTable(FSWorkOrder);
+
+        // at least one work order incident should exist
+        FSWorkOrderIncident.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSWorkOrderIncident.IsEmpty() then
+            IgnoreRecord := true;
+
+        // skip archived work orders
+        if CRMIntegrationRecord.FindByCRMID(FSWorkOrder.WorkOrderId) then
+            if CRMIntegrationRecord."Archived Service Order" then
+                IgnoreRecord := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Table Synch.", 'OnAfterInitSynchJob', '', true, true)]
@@ -1287,6 +2611,209 @@ codeunit 6610 "FS Int. Table Subscriber"
         if (SourceRecordRef.Number() <> 0) and (DestinationRecordRef.Number() <> 0) then
             exit(SourceRecordRef.Name() + '-' + DestinationRecordRef.Name());
         exit('');
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Mgt. Setup", 'OnBeforeValidateEvent', 'One Service Item Line/Order', true, false)]
+    local procedure ServiceMgtSetupOnBeforeValidateOneServiceItemLinePerOrder(var Rec: Record "Service Mgt. Setup")
+    var
+        IntegrationMgt: Codeunit "FS Integration Mgt.";
+    begin
+        IntegrationMgt.TestOneServiceItemLinePerOrderModificationIsAllowed(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnIsCRMIntegrationRecord', '', false, false)]
+    local procedure HandleOnIsCRMIntegrationRecord(TableID: Integer; var isIntegrationRecord: Boolean)
+    begin
+        if TableID = Database::"Service Header Archive" then
+            isIntegrationRecord := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteServiceHeader(var Rec: Record "Service Header")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        MarkArchivedServiceOrder(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Document Archive Mgmt.", 'OnAfterStoreServiceLineArchive', '', false, false)]
+    local procedure OnAfterStoreServiceLineArchive(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
+    begin
+        MarkArchivedServiceOrderLine(ServiceLine, ServiceLineArchive);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Item Line", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteServiceItemLine(var Rec: Record "Service Item Line")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        UncoupleRecord(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteServiceLine(var Rec: Record "Service Line")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        UncoupleRecord(Rec);
+    end;
+
+    local procedure UncoupleRecord(ServiceItemLine: Record "Service Item Line")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetCurrentKey("Integration ID");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceItemLine.SystemId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit;
+
+        CRMIntegrationRecord."Last Synch. CRM Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. CRM Result" := CRMIntegrationRecord."Last Synch. CRM Result"::Success;
+        CRMIntegrationRecord."Last Synch. Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. Result" := CRMIntegrationRecord."Last Synch. Result"::Success;
+        CRMIntegrationRecord.Skipped := true;
+        CRMIntegrationRecord."Skip Reimport" := true;
+        CRMIntegrationRecord.Modify();
+    end;
+
+    local procedure UncoupleRecord(ServiceLine: Record "Service Line")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetCurrentKey("Integration ID");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit;
+
+        CRMIntegrationRecord."Last Synch. CRM Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. CRM Result" := CRMIntegrationRecord."Last Synch. CRM Result"::Success;
+        CRMIntegrationRecord."Last Synch. Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. Result" := CRMIntegrationRecord."Last Synch. Result"::Success;
+        CRMIntegrationRecord.Skipped := true;
+        CRMIntegrationRecord."Skip Reimport" := true;
+        CRMIntegrationRecord.Modify();
+    end;
+
+    internal procedure MarkArchivedServiceOrder(ServiceHeader: Record "Service Header")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceHeader.SystemId);
+        if CRMIntegrationRecord.FindFirst() then begin
+            CRMIntegrationRecord."Archived Service Header Id" := GetLatestServiceOrderArchiveSystemId(ServiceHeader."No.");
+            CRMIntegrationRecord."Archived Service Order" := true;
+            CRMIntegrationRecord.Modify();
+        end;
+    end;
+
+    internal procedure MarkArchivedServiceOrderLine(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+        if CRMIntegrationRecord.FindFirst() then begin
+            CRMIntegrationRecord."Archived Service Line Id" := ServiceLineArchive.SystemId;
+            CRMIntegrationRecord.Modify();
+        end;
+    end;
+
+    local procedure GetLatestServiceOrderArchiveSystemId(OrderNo: Code[20]): Guid
+    var
+        ServiceHeaderArchive: Record "Service Header Archive";
+        EmptyGuid: Guid;
+    begin
+        ServiceHeaderArchive.SetRange("Document Type", ServiceHeaderArchive."Document Type"::Order);
+        ServiceHeaderArchive.SetRange("No.", OrderNo);
+        if not ServiceHeaderArchive.FindLast() then
+            exit(EmptyGuid);
+
+        exit(ServiceHeaderArchive.SystemId);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenCoupledNavRecordPage', '', false, false)]
+    local procedure OnBeforeOpenCoupledNavRecordPage(CRMID: Guid; CRMEntityTypeName: Text; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled or Result or (CRMEntityTypeName <> 'msdyn_workorder') then
+            exit;
+
+        if not OnlyServiceHeaderArchiveExists(CRMID) then
+            exit;
+        Result := OpenServiceHeaderArchive(CRMID);
+
+        IsHandled := Result;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', false, false)]
+    local procedure OnBeforeOpenRecordCardPage(RecordID: RecordID; var IsHandled: Boolean)
+    var
+        ServiceHeader: Record "Service Header";
+        RecordRef: RecordRef;
+    begin
+        RecordRef := RecordID.GetRecord();
+        case RecordID.TableNo of
+            Database::"Service Header":
+                begin
+                    RecordRef.SetTable(ServiceHeader);
+                    Page.Run(Page::"Service Order", ServiceHeader);
+                    IsHandled := true;
+                end;
+        end;
+    end;
+
+    local procedure OnlyServiceHeaderArchiveExists(CRMID: Guid): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ServiceHeader: Record "Service Header";
+        ServiceHeaderArchive: Record "Service Header Archive";
+    begin
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("CRM ID", CRMID);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+
+        if ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID") then
+            exit(false);
+
+        if ServiceHeaderArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Header Id") then
+            exit(true);
+    end;
+
+    local procedure OpenServiceHeaderArchive(CRMID: Guid): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ServiceHeaderArchive: Record "Service Header Archive";
+    begin
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("CRM ID", CRMID);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+
+        if not ServiceHeaderArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Header Id") then
+            exit(false);
+
+        Page.Run(Page::"Service Order Archive", ServiceHeaderArchive);
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

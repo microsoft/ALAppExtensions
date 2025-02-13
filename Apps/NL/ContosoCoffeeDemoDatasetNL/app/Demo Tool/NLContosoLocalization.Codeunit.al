@@ -12,8 +12,6 @@ codeunit 11508 "NL Contoso Localization"
             FinanceModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Bank then
             BankModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::CRM then
-            CRMModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::"Human Resources Module" then
             HumanResourceModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::"Fixed Asset Module" then
@@ -33,12 +31,13 @@ codeunit 11508 "NL Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information NL");
                     Codeunit.Run(Codeunit::"Create No. Series NL");
                     Codeunit.Run(Codeunit::"Create Post Code NL");
                     Codeunit.Run(Codeunit::"Create Source Code NL");
                     Codeunit.Run(Codeunit::"Create Data Exchange NL");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information NL");
         end;
     end;
 
@@ -51,17 +50,19 @@ codeunit 11508 "NL Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create General Ledger Setup NL");
                     Codeunit.Run(Codeunit::"Create VAT Posting Groups NL");
+                    Codeunit.Run(Codeunit::"Create Posting Groups NL");
                     Codeunit.Run(Codeunit::"Create Gen. Journal Batch NL");
+                    Codeunit.Run(Codeunit::"Create VAT Setup PostingGrp NL");
+                    Codeunit.Run(Codeunit::"Create Elec Tax Declaration NL");
+                    Codeunit.Run(Codeunit::"Create Vat Statement Line NL");
+                    Codeunit.Run(Codeunit::"Create Freely Transfer Max. NL");
                     CreateNLGLAccounts.AddCategoriesToGLAccountsForMini();
                 end;
 
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Posting Groups NL");
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate NL");
-                    Codeunit.Run(Codeunit::"Create Freely Transfer Max. NL");
                     Codeunit.Run(Codeunit::"Create Resource NL");
-                    Codeunit.Run(Codeunit::"Create VAT Setup PostingGrp NL");
                 end;
         end;
     end;
@@ -70,15 +71,13 @@ codeunit 11508 "NL Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Bank Ex/Import NL");
-                    Codeunit.Run(Codeunit::"Create Bank Posting Grp NL");
-                end;
+                Codeunit.Run(Codeunit::"Create Bank Posting Grp NL");
         end;
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Bank Account NL");
+                    Codeunit.Run(Codeunit::"Create Bank Ex/Import NL");
                     Codeunit.Run(Codeunit::"Create Imp./Exp. Protocol NL");
                     Codeunit.Run(Codeunit::"Create Gen. Journal Templ. NL");
                 end;
@@ -87,25 +86,12 @@ codeunit 11508 "NL Contoso Localization"
         end;
     end;
 
-    local procedure CRMModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Elec Tax Declaration NL");
-                    Codeunit.Run(Codeunit::"Create Vat Statement Line NL");
-                end;
-        end;
-    end;
 
     local procedure FixedAssetModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create FA Ins Jnl. Template NL");
-                    Codeunit.Run(Codeunit::"Create FA No. Series NL");
-                end;
+                Codeunit.Run(Codeunit::"Create FA Ins Jnl. Template NL");
         end;
     end;
 
@@ -113,10 +99,7 @@ codeunit 11508 "NL Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Employee NL");
-                    Codeunit.Run(Codeunit::"Create Employee Template NL");
-                end;
+                Codeunit.Run(Codeunit::"Create Employee NL");
         end;
     end;
 

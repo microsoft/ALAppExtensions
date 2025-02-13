@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-CancellationReason xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Motivo>
+		<Code>01</Code>
+		<Descripcion>Comprobante emitido con errores con relación</Descripcion>
+		<SubstitutionRequired>1</SubstitutionRequired>
+	</Motivo>
+	<Motivo>
+		<Code>02</Code>
+		<Descripcion>Comprobante emitido con errores sin relación</Descripcion>
+		<SubstitutionRequired>0</SubstitutionRequired>
+	</Motivo>
+	<Motivo>
+		<Code>03</Code>
+		<Descripcion>No se llevó a cabo la operación</Descripcion>
+		<SubstitutionRequired>0</SubstitutionRequired>
+	</Motivo>
+	<Motivo>
+		<Code>04</Code>
+		<Descripcion>Operación nominativa relacionada con una factura global</Descripcion>
+		<SubstitutionRequired>0</SubstitutionRequired>
+	</Motivo>
+</data-set-CancellationReason>

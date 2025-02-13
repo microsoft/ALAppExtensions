@@ -48,6 +48,7 @@ codeunit 5181 "Sales Module" implements "Contoso Demo Data Module"
     begin
         Codeunit.Run(Codeunit::"Create Posted Sales Data");
         Codeunit.Run(Codeunit::"Post Late Payment Entry");
+        Codeunit.Run(Codeunit::"Run CashFlow Forecast Wizard");
 
         BankAccReconciliation.SetRange("Statement Type", Enum::"Bank Acc. Rec. Stmt. Type"::"Payment Application");
         if BankAccReconciliation.FindFirst() then

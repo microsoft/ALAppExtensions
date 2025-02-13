@@ -416,6 +416,9 @@ report 31189 "Sales Invoice CZL"
                         UnitPriceExclVAT := "Unit Price";
                         if "Sales Invoice Header"."Prices Including VAT" then
                             UnitPriceExclVAT := Round("Unit Price" / (1 + "VAT %" / 100), Currency."Amount Rounding Precision");
+
+                        if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Sales Invoice Line", FieldNo(Quantity)) then
+                            CurrReport.Skip();
                     end;
                 }
                 dataitem(SalesInvoiceAdvance; "Integer")
@@ -651,6 +654,12 @@ report 31189 "Sales Invoice CZL"
                         Caption = 'Show Additional Fee Note';
                         ToolTip = 'Specifies when the additional fee note is to be show';
                     }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
+                    }
                 }
             }
         }
@@ -751,6 +760,7 @@ report 31189 "Sales Invoice CZL"
         NoOfLoops: Integer;
         DisplayAdditionalFeeNote: Boolean;
         LogInteraction: Boolean;
+        HideLinesWithZeroQuantity: Boolean;
 
     procedure InitLogInteraction()
     begin

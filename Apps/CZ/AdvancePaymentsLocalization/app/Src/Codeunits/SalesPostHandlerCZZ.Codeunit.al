@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
@@ -78,5 +79,14 @@ codeunit 31008 "Sales-Post Handler CZZ"
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
+    local procedure DisableApplicationOnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
+    begin
+        if (not SalesHeader.Invoice) or (not SalesHeader.IsAdvanceLetterDocTypeCZZ()) then
+            exit;
+        if SalesHeader.HasAdvanceLetterLinkedCZZ() then
+            GenJnlLine."Allow Application" := false;
     end;
 }

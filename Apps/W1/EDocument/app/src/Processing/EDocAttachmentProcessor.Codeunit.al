@@ -30,7 +30,7 @@ codeunit 6169 "E-Doc. Attachment Processor"
     /// Insert Document Attachment record from stream and filename
     /// Framework moves E-Document attachments to created documents at the end of import process
     /// </summary>
-    internal procedure Insert(EDocument: Record "E-Document"; DocStream: InStream; FileName: Text)
+    procedure Insert(EDocument: Record "E-Document"; DocStream: InStream; FileName: Text)
     var
         DocumentAttachment: Record "Document Attachment";
         RecordRef: RecordRef;
@@ -124,6 +124,36 @@ codeunit 6169 "E-Doc. Attachment Processor"
             Database::"E-Document":
                 DocumentAttachment.SetRange("E-Document Attachment", true);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterGetRefTable, '', false, false)]
+    local procedure OnAfterGetRefTableForEDocs(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
+    var
+        EDocument: Record "E-Document";
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::"E-Document":
+                begin
+                    RecRef.Open(Database::"E-Document");
+                    if EDocument.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(EDocument);
+                end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Doc. Attachment List FactBox", OnBeforeDocumentAttachmentDetailsRunModal, '', false, false)]
+    local procedure FilterEDocumentAttachmentsOnBeforeDocumentAttachmentDetailsRunModal(var DocumentAttachment: Record "Document Attachment"; var DocumentAttachmentDetails: Page "Document Attachment Details")
+    var
+        EDocumentEntryNo: Integer;
+        EDocumentEntryNoText: Text;
+    begin
+        DocumentAttachment.FilterGroup(4);
+        EDocumentEntryNoText := DocumentAttachment.GetFilter("E-Document Entry No.");
+        if EDocumentEntryNoText <> '' then begin
+            Evaluate(EDocumentEntryNo, EDocumentEntryNoText);
+            DocumentAttachmentDetails.FilterForEDocuments(EDocumentEntryNo);
+        end;
+        DocumentAttachment.FilterGroup(0);
     end;
 
     var

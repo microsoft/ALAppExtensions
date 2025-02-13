@@ -29,7 +29,7 @@ codeunit 5258 "Create Bank Acc. Rec."
 
         GenJournalLine.SetRange("Document No.", CreateGenJournalLine.Bank2DocumentNo());
         if GenJournalLine.FindFirst() then begin
-            ContosoBank.InsertBankAccRecLine(BankAccReconciliation, '', CalcDate('<+3D>', GenJournalLine."Posting Date"), FundsForSpringEventLbl + Format(Date2DMY(GenJournalLine."Posting Date", 3) - 1), -GenJournalLine.Amount, 0, 0, Enum::"Gen. Journal Account Type"::"G/L Account", '');
+            ContosoBank.InsertBankAccRecLine(BankAccReconciliation, '', CalcDate('<+3D>', GenJournalLine."Posting Date"), FundsForSpringEventLbl, -GenJournalLine.Amount, 0, 0, Enum::"Gen. Journal Account Type"::"G/L Account", '');
             BankAccReconciliation."Statement Ending Balance" += GenJournalLine.Amount;
         end;
 
@@ -85,6 +85,6 @@ codeunit 5258 "Create Bank Acc. Rec."
 
     var
         TransferToSavingLbl: Label 'Transfer to savings account', MaxLength = 100;
-        FundsForSpringEventLbl: Label 'Funds for Spring event ', MaxLength = 100;
+        FundsForSpringEventLbl: Label 'Funds for Spring event', MaxLength = 100;
         DepositToAccountLbl: Label 'Deposit to Account ', MaxLength = 100;
 }

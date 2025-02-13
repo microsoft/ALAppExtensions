@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
+
 pageextension 31237 "VAT Report Stmt. Subform CZL" extends "VAT Report Statement Subform"
 {
     layout
@@ -49,6 +51,45 @@ pageextension 31237 "VAT Report Stmt. Subform CZL" extends "VAT Report Statement
                 ToolTip = 'Specifies the reduced amount of the entry in the report statement.';
                 Editable = false;
             }
+            field("Additional-Currency Base CZL"; Rec.CalcBaseAdditionalCurrency())
+            {
+                Caption = 'Additional-Currency Base';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Additional-Currency amount that the VAT amount in the amount is calculated from.';
+                Editable = false;
+                Visible = UseAmtsInAddCurrVisible;
+            }
+            field("Additional-Currency Amount CZL"; Rec.CalcAmountAdditionalCurrency())
+            {
+                Caption = 'Additional-Currency Amount';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the Additional-Currency amount of the entry in the report statement.';
+                Editable = false;
+                Visible = UseAmtsInAddCurrVisible;
+            }
+            field("Additional-Currency Reduced Amount CZL"; Rec.CalcReducedAmountAdditionalCurrency())
+            {
+                Caption = 'Additional-Currency Reduced Amount';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the reduced Additional-Currency amount of the entry in the report statement.';
+                Editable = false;
+                Visible = UseAmtsInAddCurrVisible;
+            }
         }
     }
+    var
+        UseAmtsInAddCurrVisible: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        SetUseAmtsInAddCurrVisible()
+    end;
+
+    local procedure SetUseAmtsInAddCurrVisible()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurrVisible := (GeneralLedgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL";
+    end;
 }
