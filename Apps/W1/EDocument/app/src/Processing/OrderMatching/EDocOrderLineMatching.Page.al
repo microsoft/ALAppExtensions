@@ -5,7 +5,6 @@ using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using Microsoft.Purchases.Document;
 using System.AI;
 using System.Telemetry;
-#pragma warning disable AS0032
 page 6167 "E-Doc. Order Line Matching"
 {
     Caption = 'Purchase Order Matching';
@@ -403,4 +402,3 @@ page 6167 "E-Doc. Order Line Matching"
     end;
 
 }
-#pragma warning restore AS0032

@@ -13,7 +13,8 @@ using Microsoft.Purchases.Document;
 codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft, IEDocumentCreatePurchaseInvoice
 {
     Access = Internal;
-    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters")
+
+    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
     var
         PurchaseHeader: Record "Purchase Header";
         IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseInvoice;
@@ -26,6 +27,8 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseHeader.FindFirst();
         PurchaseHeader."E-Document Link" := EDocument.SystemId;
         PurchaseHeader.Modify();
+
+        exit(PurchaseHeader.RecordId);
     end;
 
     procedure RevertDraftActions(EDocument: Record "E-Document")
@@ -51,7 +54,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
         EDocumentHeaderMapping := EDocument.GetEDocumentHeaderMapping();
-        PurchaseHeader.SetRange("Buy-from Vendor No.", EDocumentHeaderMapping."Vendor No.");
+        PurchaseHeader.Validate("Pay-to Vendor No.", EDocumentHeaderMapping."Vendor No.");
         PurchaseHeader."Document Type" := "Purchase Document Type"::Invoice;
         PurchaseHeader."Vendor Invoice No." := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
         PurchaseHeader.Insert(true);
@@ -59,10 +62,13 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         if EDocumentPurchaseLine.FindSet() then
             repeat
                 if EDocumentLineMapping.Get(EDocumentPurchaseLine."E-Document Line Id") then;
+                PurchaseLine."Document Type" := PurchaseHeader."Document Type";
+                PurchaseLine."Document No." := PurchaseHeader."No.";
+                PurchaseLine."Line No." += 10000;
+
                 PurchaseLine."Unit of Measure Code" := EDocumentLineMapping."Unit of Measure";
                 PurchaseLine.Type := EDocumentLineMapping."Purchase Line Type";
                 PurchaseLine."No." := EDocumentLineMapping."Purchase Type No.";
-                PurchaseLine."Line No." += 10000;
                 PurchaseLine.Description := EDocumentPurchaseLine.Description;
                 PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
                 PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
