@@ -102,7 +102,7 @@ pageextension 36959 "Finance Manager Role Center" extends "Finance Manager Role 
                     ApplicationArea = Basic, Suite;
                     Caption = 'General Ledger Entries (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "General Ledger Entries";
+                    RunObject = page "PowerBI General Ledg. Entries";
                 }
                 action("Detailed Vendor Ledger Entries (Power BI)")
                 {

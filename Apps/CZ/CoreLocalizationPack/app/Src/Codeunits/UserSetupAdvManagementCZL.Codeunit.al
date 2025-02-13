@@ -83,14 +83,16 @@ codeunit 31072 "User Setup Adv. Management CZL"
         LocationQtyIncreaseErr: Label 'You have no right to post Location (quantity increase) with Location Code: %1. Check User Setup!', Comment = '%1 = Location Code';
         LocationQtyDecreaseErr: Label 'You have no right to post Location (quantity decrease) with Location Code: %1. Check User Setup!', Comment = '%1 = Location Code';
     begin
-        if not CheckWorkDocDate(ItemJournalLine."Document Date") then
-            ItemJournalLine.TestField("Document Date", WorkDate());
-        if not CheckSysDocDate(ItemJournalLine."Document Date") then
-            ItemJournalLine.TestField("Document Date", Today);
-        if not CheckWorkPostingDate(ItemJournalLine."Posting Date") then
-            ItemJournalLine.TestField("Posting Date", WorkDate());
-        if not CheckSysPostingDate(ItemJournalLine."Posting Date") then
-            ItemJournalLine.TestField("Posting Date", Today);
+        if not IsUndoPosting(ItemJournalLine) then begin
+            if not CheckWorkDocDate(ItemJournalLine."Document Date") then
+                ItemJournalLine.TestField("Document Date", WorkDate());
+            if not CheckSysDocDate(ItemJournalLine."Document Date") then
+                ItemJournalLine.TestField("Document Date", Today);
+            if not CheckWorkPostingDate(ItemJournalLine."Posting Date") then
+                ItemJournalLine.TestField("Posting Date", WorkDate());
+            if not CheckSysPostingDate(ItemJournalLine."Posting Date") then
+                ItemJournalLine.TestField("Posting Date", Today);
+        end;
 
         // Location checks
         if ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation then begin
@@ -133,6 +135,15 @@ codeunit 31072 "User Setup Adv. Management CZL"
             if not CheckWhseNetChangeTemplate(ItemJournalLine) then
                 ItemJournalLine.FieldError("Invt. Movement Template CZL");
         end;
+    end;
+
+    local procedure IsUndoPosting(ItemJournalLine: Record "Item Journal Line"): Boolean
+    begin
+        exit(ItemJournalLine.Correction and
+           (ItemJournalLine."Document Type" in [
+            ItemJournalLine."Document Type"::"Purchase Receipt",
+            ItemJournalLine."Document Type"::"Sales Shipment",
+            ItemJournalLine."Document Type"::"Transfer Shipment"]));
     end;
 
     [TryFunction]

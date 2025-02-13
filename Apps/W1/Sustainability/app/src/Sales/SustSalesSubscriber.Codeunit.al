@@ -8,46 +8,42 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Posting;
+using Microsoft.Sustainability.Setup;
 
 codeunit 6253 "Sust. Sales Subscriber"
 {
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignGLAccountValues', '', false, false)]
     local procedure OnAfterAssignGLAccountValues(var SalesLine: Record "Sales Line"; GLAccount: Record "G/L Account")
     begin
-        SalesLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure OnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
     begin
-        SalesLine.Validate("Sust. Account No.", Item."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", Item."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignResourceValues', '', false, false)]
     local procedure OnAfterAssignResourceValues(var SalesLine: Record "Sales Line"; Resource: Record Resource)
     begin
-        SalesLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", Resource."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemChargeValues', '', false, false)]
     local procedure OnAfterAssignItemChargeValues(var SalesLine: Record "Sales Line"; ItemCharge: Record "Item Charge")
     begin
-        SalesLine.Validate("Sust. Account No.", ItemCharge."Default Sust. Account");
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", ItemCharge."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnValidateQuantityOnBeforeResetAmounts', '', false, false)]
     local procedure OnValidateQuantityOnBeforeResetAmounts(var SalesLine: Record "Sales Line")
     begin
         SalesLine.UpdateSustainabilityEmission(SalesLine);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostSalesLineOnBeforePostItemTrackingLine', '', false, false)]
-    local procedure OnAfterPostSalesLine(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
-    begin
-        if (SalesLine."Qty. to Invoice" <> 0) then
-            PostSustainabilityLine(SalesHeader, SalesLine, SrcCode, GenJnlLineDocNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostItemTrackingForShipmentConditionOnBeforeUpdateBlanketOrderLine', '', false, false)]
@@ -140,55 +136,6 @@ codeunit 6253 "Sust. Sales Subscriber"
         PostedEmissionCO2e := (SalesLine."CO2e per Unit" * Abs(Quantity) * SalesLine."Qty. per Unit of Measure") * Sign;
     end;
 
-    local procedure PostSustainabilityLine(SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
-    var
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
-        GHGCredit: Boolean;
-        Sign: Integer;
-        CO2eToPost: Decimal;
-    begin
-        GHGCredit := IsGHGCreditLine(SalesLine);
-
-        Sign := GetPostingSign(SalesHeader, GHGCredit);
-
-        CO2eToPost := SalesLine."CO2e per Unit" * Abs(SalesLine."Qty. to Invoice") * SalesLine."Qty. per Unit of Measure" * Sign;
-
-        if not (SalesHeader.Invoice) then
-            exit;
-
-        if not CanPostSustainabilityJnlLine(SalesLine."Sust. Account No.", SalesLine."Sust. Account Category", SalesLine."Sust. Account Subcategory", CO2eToPost) then
-            exit;
-
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine."Journal Template Name" := SalesHeader."Journal Templ. Name";
-        SustainabilityJnlLine."Journal Batch Name" := '';
-        SustainabilityJnlLine."Source Code" := SrcCode;
-        SustainabilityJnlLine.Validate("Posting Date", SalesHeader."Posting Date");
-
-        if GHGCredit then
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit")
-        else
-            if SalesHeader."Document Type" in [SalesHeader."Document Type"::"Credit Memo", SalesHeader."Document Type"::"Return Order"] then
-                SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"Credit Memo")
-            else
-                SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
-
-        SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
-        SustainabilityJnlLine.Validate("Account No.", SalesLine."Sust. Account No.");
-        SustainabilityJnlLine.Validate("Responsibility Center", SalesHeader."Responsibility Center");
-        SustainabilityJnlLine.Validate("Reason Code", SalesHeader."Reason Code");
-        SustainabilityJnlLine.Validate("Account Category", SalesLine."Sust. Account Category");
-        SustainabilityJnlLine.Validate("Account Subcategory", SalesLine."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", SalesLine."Unit of Measure Code");
-        SustainabilityJnlLine."Dimension Set ID" := SalesLine."Dimension Set ID";
-        SustainabilityJnlLine."Shortcut Dimension 1 Code" := SalesLine."Shortcut Dimension 1 Code";
-        SustainabilityJnlLine."Shortcut Dimension 2 Code" := SalesLine."Shortcut Dimension 2 Code";
-        SustainabilityJnlLine.Validate("CO2e Emission", CO2eToPost);
-        SustainabilityJnlLine.Validate("Country/Region Code", SalesHeader."Sell-to Country/Region Code");
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine, SalesLine);
-    end;
-
     local procedure GetPostingSign(SalesHeader: Record "Sales Header"; GHGCredit: Boolean): Integer
     var
         Sign: Integer;
@@ -230,6 +177,9 @@ codeunit 6253 "Sust. Sales Subscriber"
         if AccountNo = '' then
             exit(false);
 
+        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
+            exit(false);
+
         if SustAccountCategory.Get(AccountCategory) then
             if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
                 Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, AccountNo);
@@ -237,13 +187,14 @@ codeunit 6253 "Sust. Sales Subscriber"
         if SustainAccountSubcategory.Get(AccountCategory, AccountSubCategory) then
             if not SustainAccountSubcategory."Renewable Energy" then
                 if (CO2eToPost = 0) then
-                    Error(EmissionMustNotBeZeroErr);
+                    Error(CO2eMustNotBeZeroErr);
 
         if (CO2eToPost <> 0) then
             exit(true);
     end;
 
     var
-        EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
+        SustainabilitySetup: Record "Sustainability Setup";
+        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in sales document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

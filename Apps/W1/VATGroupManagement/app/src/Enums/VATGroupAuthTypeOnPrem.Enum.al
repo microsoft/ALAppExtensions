@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Group;
 
 enum 4704 "VAT Group Auth Type OnPrem"
 {
+#if not CLEAN25
     value(0; WebServiceAccessKey)
     {
         Caption = 'Web Service Access Key';
@@ -13,10 +14,12 @@ enum 4704 "VAT Group Auth Type OnPrem"
         ObsoleteReason = 'OAuth2 is the only authentication option for making a Business Central API call.';
         ObsoleteTag = '25.0';
     }
+#endif
     value(1; OAuth2)
     {
         Caption = 'OAuth2';
     }
+#if not CLEAN25
     value(2; WindowsAuthentication)
     {
         Caption = 'Windows Authentication';
@@ -24,4 +27,5 @@ enum 4704 "VAT Group Auth Type OnPrem"
         ObsoleteReason = 'OAuth2 is the only authentication option for making a Business Central API call.';
         ObsoleteTag = '25.0';
     }
+#endif
 }

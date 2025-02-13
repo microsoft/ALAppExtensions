@@ -1,4 +1,4 @@
-codeunit 139658 "E-Doc. Integration Mock V2" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, ISentDocumentActions
+codeunit 139658 "E-Doc. Integration Mock V2" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, ISentDocumentActions, IConsentManager
 {
 
     Access = Internal;
@@ -55,6 +55,11 @@ codeunit 139658 "E-Doc. Integration Mock V2" implements IDocumentSender, IDocume
 
     procedure OpenServiceIntegrationSetupPage(var EDocumentService: Record "E-Document Service"): Boolean
     begin
+    end;
+
+    procedure ObtainPrivacyConsent(): Boolean
+    begin
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

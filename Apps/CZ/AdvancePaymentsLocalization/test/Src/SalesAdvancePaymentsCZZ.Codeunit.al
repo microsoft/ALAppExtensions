@@ -2731,6 +2731,48 @@ codeunit 148109 "Sales Advance Payments CZZ"
         SalesAdvLetterHeaderCZZ.TestField("Job Task No.", JobTask1."Job Task No.");
     end;
 
+    [Test]
+    [HandlerFunctions('CreateSalesAdvLetterHandler,ConfirmHandler')]
+    procedure CopySalesReturnFromPostedInvoiceWithGLRoundingLineWhenPostSalesOrderWithSalesAdvLetter()
+    var
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesHeader: array[2] of Record "Sales Header";
+        SalesLine: array[2] of Record "Sales Line";
+        CopyDocumentMgt: Codeunit "Copy Document Mgt.";
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO 562031] Verify Copy Sales Return Order From Posted Sales Invoice With GL Rounding Line 
+        // When Post Sales Order With Sales Advance Letter.
+        Initialize();
+
+        // [GIVEN] Create a Sales Order With Multiple Line.
+        CreateSalesOrderWithMultipleLine(SalesHeader[1], SalesLine);
+
+        // [GIVEN] Sales Advance Letter from Sales Order has been created.
+        SetExpectedConfirm(OpenAdvanceLetterQst, false);
+        CreateSalesAdvLetterFromOrderWithAdvancePer(SalesHeader[1], AdvanceLetterTemplateCZZ.Code, 100, true, SalesAdvLetterHeaderCZZ);
+
+        // [GIVEN] Sales Advance Letter has been released.
+        LibrarySalesAdvancesCZZ.ReleaseSalesAdvLetter(SalesAdvLetterHeaderCZZ);
+
+        // [GIVEN] Sales advance has been Paid.
+        SalesHeader[1].CalcFields("Amount Including VAT");
+        CreateAndPostPaymentSalesAdvLetter(SalesAdvLetterHeaderCZZ, -SalesHeader[1]."Amount Including VAT");
+
+        // [WHEN] Post Sales Order.
+        DocumentNo := ShipAndPostSalesLine(SalesHeader[1], SalesLine);
+        SalesInvoiceHeader.Get(DocumentNo);
+
+        // [GIVEN] Create a Sales Return Order.
+        LibrarySales.CreateSalesHeader(SalesHeader[2], SalesHeader[2]."Document Type"::"Return Order", SalesInvoiceHeader."Sell-to Customer No.");
+        SalesHeader[2].Validate("Prices Including VAT", SalesInvoiceHeader."Prices Including VAT");
+        SalesHeader[2].Modify(true);
+
+        // [THEN] Verify no error occur when Copy the Document from Posted Sales Invoice to Sales Return Order.
+        CopyDocumentMgt.CopySalesDoc("Sales Document Type From"::"Posted Invoice", DocumentNo, SalesHeader[2]);
+    end;
+
     local procedure CreateSalesAdvLetterBase(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CustomerNo: Code[20]; CurrencyCode: Code[10]; VATPostingSetup: Record "VAT Posting Setup")
     var
         Customer: Record Customer;
@@ -2960,6 +3002,56 @@ codeunit 148109 "Sales Advance Payments CZZ"
             LibraryERM.CreateVATPostingSetupWithAccounts(
                 VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
         LibrarySalesAdvancesCZZ.AddAdvLetterAccounsToVATPostingSetup(VATPostingSetup);
+    end;
+
+    local procedure CreateSalesOrderWithMultipleLine(var SalesHeader: Record "Sales Header"; var SalesLine: array[2] of Record "Sales Line")
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        LibrarySalesAdvancesCZZ.CreateSalesOrder(SalesHeader, SalesLine[1]);
+
+        VATPostingSetup.Get(SalesHeader."VAT Bus. Posting Group", SalesLine[1]."VAT Prod. Posting Group");
+        VATPostingSetup.Validate("VAT %", LibraryRandom.RandIntInRange(21, 21));
+        VATPostingSetup.Modify(true);
+
+        SalesHeader.Validate("Prices Including VAT", true);
+        SalesHeader.Modify(true);
+
+        SalesLine[1].Validate("No.");
+        SalesLine[1].Validate(Quantity, 1);
+        SalesLine[1].Validate("Unit Price", LibraryRandom.RandIntInRange(4000, 5000));
+        SalesLine[1].Validate("Line Discount %", LibraryRandom.RandInt(30));
+        SalesLine[1].Modify(true);
+
+        LibrarySales.CreateSalesLine(
+            SalesLine[2],
+            SalesHeader, SalesLine[2].Type::"G/L Account", SalesLine[1]."No.", SalesLine[1].Quantity);
+        SalesLine[2].Validate("Unit Price", LibraryRandom.RandIntInRange(1540, 1540));
+        SalesLine[2].Validate("Line Discount %", LibraryRandom.RandIntInRange(20, 20));
+        SalesLine[2].Modify(true);
+    end;
+
+    local procedure ShipAndPostSalesLine(SalesHeader: Record "Sales Header"; var SalesLine: array[2] of Record "Sales Line"): Code[20]
+    begin
+        // Ship First Sales Line.
+        SalesLine[1].Validate("Qty. to Invoice", 0);
+        SalesLine[1].Modify(true);
+        SalesLine[2].Validate("Qty. to Ship", 0);
+        SalesLine[2].Modify(true);
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // Invoice First Sales Line.
+        SalesLine[2].Get(SalesLine[2]."Document Type"::Order, SalesLine[2]."Document No.", SalesLine[2]."Line No.");
+        SalesLine[2].Validate("Qty. to Ship", 0);
+        SalesLine[2].Modify(true);
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // Ship and Invoice Second Sales Line.
+        SalesLine[2].Get(SalesLine[2]."Document Type"::Order, SalesLine[2]."Document No.", SalesLine[2]."Line No.");
+        SalesLine[2].Validate("Qty. to Ship", SalesLine[2].Quantity);
+        SalesLine[2].Modify(true);
+
+        exit(PostSalesDocument(SalesHeader));
     end;
 
     [RequestPageHandler]

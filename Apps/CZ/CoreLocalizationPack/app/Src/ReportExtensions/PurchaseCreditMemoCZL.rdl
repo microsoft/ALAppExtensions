@@ -3119,14 +3119,14 @@ Cstr(Fields!EMailCaption.Value)
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="Textbox31">
+                                          <Textbox Name="VALSpecLCYHeaderCaption2">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value />
+                                                    <Value>=Fields!VALSpecHeaderCZL.Value</Value>
                                                     <Style>
                                                       <FontFamily>Segoe UI</FontFamily>
                                                       <FontSize>8pt</FontSize>
@@ -3139,9 +3139,10 @@ Cstr(Fields!EMailCaption.Value)
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
-                                            <rd:DefaultName>Textbox31</rd:DefaultName>
+                                            <ZIndex>27</ZIndex>
                                             <Style>
-                                              <VerticalAlign>Bottom</VerticalAlign>
+                                              <Border />
+                                              <VerticalAlign>Top</VerticalAlign>
                                               <PaddingRight>5pt</PaddingRight>
                                             </Style>
                                           </Textbox>
@@ -5523,7 +5524,7 @@ Cstr(Fields!EMailCaption.Value)
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=First(Fields!VALExchRateCZL.Value)</Value>
+                                                    <Value>=Fields!VALExchRateCZL.Value</Value>
                                                     <Style>
                                                       <FontFamily>Segoe UI</FontFamily>
                                                       <FontSize>8pt</FontSize>
@@ -5543,7 +5544,6 @@ Cstr(Fields!EMailCaption.Value)
                                             </Style>
                                           </Textbox>
                                           <ColSpan>2</ColSpan>
-                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                       <TablixCell />
@@ -6323,7 +6323,7 @@ Cstr(Fields!EMailCaption.Value)
                               </TablixRowHierarchy>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier_VATCounterCZL.Value</FilterExpression>
+                                  <FilterExpression>=Fields!VALSpecHeaderCZL.Value</FilterExpression>
                                   <Operator>GreaterThanOrEqual</Operator>
                                   <FilterValues>
                                     <FilterValue>""</FilterValue>
@@ -6335,7 +6335,7 @@ Cstr(Fields!EMailCaption.Value)
                               <Width>18.14225cm</Width>
                               <ZIndex>6</ZIndex>
                               <Visibility>
-                                <Hidden>=IIF(Fields!VATAmtLineVATIdentifier_VATCounterCZL.Value&lt;&gt;"",False,True)</Hidden>
+                                <Hidden>=IIF(Fields!VALSpecHeaderCZL.Value="",TRUE,FALSE)</Hidden>
                               </Visibility>
                               <DataElementOutput>NoOutput</DataElementOutput>
                               <Style />

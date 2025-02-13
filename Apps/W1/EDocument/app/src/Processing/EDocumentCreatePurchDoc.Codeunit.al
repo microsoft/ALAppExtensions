@@ -181,6 +181,10 @@ codeunit 6136 "E-Document Create Purch. Doc."
         if Format(Value) <> '' then
             PurchaseHeader.Validate("VAT Base Discount %", Value);
 
+        Value := TempDocumentHeader.Field(PurchaseHeader.FieldNo("Prices Including VAT")).Value();
+        if Format(Value) <> '' then
+            PurchaseHeader.Validate("Prices Including VAT", Value);
+
         PurchaseHeader.Modify(true);
         RecRef.GetTable(PurchaseHeader);
     end;

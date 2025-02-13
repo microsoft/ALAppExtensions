@@ -26,6 +26,17 @@ codeunit 11204 "Create Company Information SE"
         CompanyInformation.Modify(true);
     end;
 
+    procedure UpdateCompanyRegistrationInformation()
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.Validate("Phone No.", '031-00000');
+        CompanyInformation.Validate("Registration No.", '5562334804');
+        CompanyInformation."VAT Registration No." := 'SE556233480401';
+        CompanyInformation.Modify(true);
+    end;
+
     var
         CityLbl: Label 'GÖTEBORG', Maxlength = 30, Locked = true;
         PostCodeLbl: Label '415 06', MaxLength = 20;

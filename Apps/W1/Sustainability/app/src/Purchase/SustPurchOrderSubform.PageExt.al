@@ -22,19 +22,19 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission CO2 Per Unit field.';
+                ToolTip = 'Specifies the value of the Emission CO2 field.';
             }
             field("Emission CH4"; Rec."Emission CH4")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission CH4 Per Unit field.';
+                ToolTip = 'Specifies the value of the Emission CH4 field.';
             }
             field("Emission N2O"; Rec."Emission N2O")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission N2O Per Unit field.';
+                ToolTip = 'Specifies the value of the Emission N2O field.';
             }
         }
     }

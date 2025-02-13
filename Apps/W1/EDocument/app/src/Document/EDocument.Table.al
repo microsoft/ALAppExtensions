@@ -12,6 +12,7 @@ using System.Automation;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6121 "E-Document"
 {
@@ -183,7 +184,41 @@ table 6121 "E-Document"
             Caption = 'Receiving Company Id';
             ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
         }
-
+        field(32; "Unstructured Data Entry No."; Integer)
+        {
+            Caption = 'Unstructured Content';
+            ToolTip = 'Specifies the content that is not structured, such as PDF';
+            TableRelation = "E-Doc. Data Storage";
+        }
+        field(33; "Structured Data Entry No."; Integer)
+        {
+            Caption = 'Structured Content';
+            ToolTip = 'Specifies the content that is structured, such as XML';
+            TableRelation = "E-Doc. Data Storage";
+        }
+        field(34; Service; Code[20])
+        {
+            Caption = 'Service';
+            ToolTip = 'Specifies the service that is used to process the E-Document.';
+            Editable = false;
+            TableRelation = "E-Document Service";
+            ValidateTableRelation = true;
+        }
+        field(35; "File Name"; Text[256])
+        {
+            Caption = 'File Name';
+            ToolTip = 'Specifies the file name of the E-Document source.';
+        }
+        field(36; "File Type"; Enum "E-Doc. Data Storage Blob Type")
+        {
+            Caption = 'File Type';
+            ToolTip = 'Specifies the file type of the E-Document source.';
+        }
+        field(37; "Structured Data Process"; Enum "E-Doc. Structured Data Process")
+        {
+            Caption = 'Structured Data Process';
+            ToolTip = 'Specifies the structured data process to run on the E-Document data.';
+        }
     }
     keys
     {
@@ -251,6 +286,69 @@ table 6121 "E-Document"
             EDocMappingLog.DeleteAll(true);
     end;
 
+    internal procedure PreviewContent()
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocumentLog: Record "E-Document Log";
+        FileInStr: InStream;
+    begin
+        if Rec."File Type" <> Rec."File Type"::PDF then
+            exit;
+
+        EDocDataStorage.SetAutoCalcFields("Data Storage");
+        if not EDocDataStorage.Get("Unstructured Data Entry No.") then begin
+            EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+            EDocumentLog.SetFilter(Status, '<>' + Format(EDocumentLog.Status::"Batch Imported"));
+
+            if not EDocumentLog.FindFirst() then
+                Error(NoFileErr, Rec.TableCaption());
+
+            if not EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then
+                Error(NoFileErr, Rec.TableCaption());
+        end;
+
+        if EDocDataStorage."Data Type" <> EDocDataStorage."Data Type"::PDF then
+            exit;
+
+        if not EDocDataStorage."Data Storage".HasValue() then
+            Error(NoFileContentErr, Rec."File Name", EDocDataStorage.TableCaption());
+
+        EDocDataStorage."Data Storage".CreateInStream(FileInStr);
+        File.ViewFromStream(FileInStr, Rec."File Name", true);
+    end;
+
+    internal procedure ExportDataStorage()
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocumentLog: Record "E-Document Log";
+    begin
+        if not EDocDataStorage.Get("Unstructured Data Entry No.") then begin
+            EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+            EDocumentLog.SetFilter(Status, '<>' + Format(EDocumentLog.Status::"Batch Imported"));
+            if not EDocumentLog.FindFirst() then
+                Error(NoFileErr, Rec.TableCaption());
+        end else begin
+            EDocumentLog.SetRange("E-Doc. Data Storage Entry No.", EDocDataStorage."Entry No.");
+            if not EDocumentLog.FindFirst() then
+                Error(NoFileErr, Rec.TableCaption());
+        end;
+
+        EDocumentLog.ExportDataStorage();
+    end;
+
+    internal procedure ViewSourceFile()
+    begin
+        if Rec."File Name" = '' then
+            exit;
+
+        if Rec."File Type" = Rec."File Type"::PDF then begin
+            Rec.PreviewContent();
+            exit;
+        end;
+
+        Rec.ExportDataStorage();
+    end;
+
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
     var
         EDocument: Record "E-Document";
@@ -276,6 +374,29 @@ table 6121 "E-Document"
         end;
     end;
 
+    internal procedure GetEDocumentServiceStatus() EDocumentServiceStatus: Record "E-Document Service Status"
+    begin
+        EDocumentServiceStatus.SetRange("E-Document Entry No", Rec."Entry No");
+        if EDocumentServiceStatus.FindFirst() then;
+    end;
+
+    internal procedure GetEDocumentService() EDocumentService: Record "E-Document Service"
+    begin
+        if EDocumentService.Get(Rec.Service) then
+            exit;
+        if EDocumentService.Get(GetEDocumentServiceStatus()."E-Document Service Code") then;
+    end;
+
+    internal procedure GetEDocumentImportProcessingStatus(): Enum "Import E-Doc. Proc. Status"
+    begin
+        exit(GetEDocumentServiceStatus()."Import Processing Status");
+    end;
+
+    internal procedure GetEDocumentHeaderMapping() EDocumentHeaderMapping: Record "E-Document Header Mapping"
+    begin
+        if EDocumentHeaderMapping.Get(Rec."Entry No") then;
+    end;
+
     internal procedure ToString(): Text
     begin
         exit(StrSubstNo(ToStringLbl, SystemId, "Document Record ID", "Workflow Step Instance ID", "Job Queue Entry ID"));
@@ -286,4 +407,6 @@ table 6121 "E-Document"
         DeleteLinkedNotAllowedErr: Label 'The E-Document is linked to sales or purchase document and cannot be deleted.';
         DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
         DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted.';
+        NoFileErr: label 'No previewable attachment exists for this %2.', Comment = '%1 - a table caption';
+        NoFileContentErr: label 'Previewing file %1 failed. The file was found in table %2, but it has no content.', Comment = '%1 - a file name; %2 - a table caption';
 }

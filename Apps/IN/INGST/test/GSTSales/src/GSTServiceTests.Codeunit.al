@@ -1817,6 +1817,40 @@ codeunit 18198 "GST Service Tests"
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostServiceInvWithGSTWithoutPaymntofDutyForExportCust()
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Service Document Type";
+        LineType: Enum "Service Line Type";
+        DocumentNo: Code[20];
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check and Post Service Invoice - GST Without Payment of Duty is selected for Export Customer.
+        // [GIVEN] Created GST Setup for Export Customer with GSTGroupType Goods
+        CreateGSTSetup(GSTCustomeType::Export, GSTGroupType::Goods, false);
+        InitializeShareStep(false, true, false);
+
+        // [WHEN] Create Service Order with GST and Line Type as Item for Interstate Juridisction
+        CreateServiceDocumentwithGstWithoutPaymentofDuty(
+            ServiceHeader,
+            ServiceLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        DocumentNo := ServiceHeader."No.";
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+        PostedDocumentNo := GetPostedServiceInvNo(DocumentNo);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries Verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 3);
+        VerifyGSTEntries(PostedDocumentNo);
+    end;
+
     local procedure UpdateReferenceInvoiceNoAndVerify(ServiceHeader: Record "Service Header")
     var
         ServiceCreditMemo: TestPage "Service Credit Memo";
@@ -1862,6 +1896,21 @@ codeunit 18198 "GST Service Tests"
         CreateServiceLineWithGST(ServiceHeader, ServiceLine, ServiceLineType, StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl), StorageBoolean.Get(ServiceItemLbl));
     end;
 
+    local procedure CreateServiceDocumentwithGstWithoutPaymentofDuty(
+        var ServiceHeader: Record "Service Header";
+        var ServiceLine: Record "Service Line";
+        ServiceLineType: Enum "Service Line Type";
+        DocumentType: Enum "Service Document Type"): Code[20];
+    var
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+    begin
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        CreateServiceHeaderWithGSTWithoutPaymentofDuty(ServiceHeader, CustomerNo, DocumentType, LocationCode);
+        CreateServiceLineWithGST(ServiceHeader, ServiceLine, ServiceLineType, StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl), StorageBoolean.Get(ServiceItemLbl));
+    end;
+
     local procedure CreateServiceHeaderWithGST(
         var ServiceHeader: Record "Service Header";
         CustomerNo: Code[20];
@@ -1872,6 +1921,20 @@ codeunit 18198 "GST Service Tests"
         ServiceHeader.Validate("Customer No.", CustomerNo);
         ServiceHeader.Validate("Posting Date", WorkDate());
         ServiceHeader.Validate("Location Code", LocationCode);
+        ServiceHeader.Modify(true);
+    end;
+
+    local procedure CreateServiceHeaderWithGSTWithoutPaymentofDuty(
+        var ServiceHeader: Record "Service Header";
+        CustomerNo: Code[20];
+        DocumentType: Enum "Service Document Type";
+        LocationCode: Code[10])
+    begin
+        LibraryService.CreateServiceHeader(ServiceHeader, DocumentType, CustomerNo);
+        ServiceHeader.Validate("Customer No.", CustomerNo);
+        ServiceHeader.Validate("Posting Date", WorkDate());
+        ServiceHeader.Validate("Location Code", LocationCode);
+        ServiceHeader.Validate("GST Without Payment of Duty", true);
         ServiceHeader.Modify(true);
     end;
 
@@ -2249,8 +2312,12 @@ codeunit 18198 "GST Service Tests"
                   ServiceInvoiceHeader."GST Customer Type"::"Deemed Export",
                   ServiceInvoiceHeader."GST Customer Type"::"SEZ Development",
                   ServiceInvoiceHeader."GST Customer Type"::"SEZ Unit"] then
-            if ServiceInvoiceLine."GST Jurisdiction Type" = ServiceInvoiceLine."GST Jurisdiction Type"::Interstate then
-                exit((ServiceInvoiceLine.Amount * ComponentPerArray[4]) / 100)
+            if ServiceInvoiceLine."GST Jurisdiction Type" = ServiceInvoiceLine."GST Jurisdiction Type"::Interstate then begin
+                if ServiceInvoiceHeader."GST Without Payment of Duty" then
+                    exit(0.00)
+                else
+                    exit((ServiceInvoiceLine.Amount * ComponentPerArray[4]) / 100);
+            end
             else
                 exit(ServiceInvoiceLine.Amount * ComponentPerArray[1] / 100)
         else

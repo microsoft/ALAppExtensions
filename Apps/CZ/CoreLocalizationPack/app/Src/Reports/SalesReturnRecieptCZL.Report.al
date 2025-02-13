@@ -265,6 +265,12 @@ report 31192 "Sales Return Reciept CZL"
                     column(UnitofMeasure_ReturnReceiptLine; "Unit of Measure")
                     {
                     }
+
+                    trigger OnAfterGetRecord()
+                    begin
+                        if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Return Receipt Line", FieldNo(Quantity)) then
+                            CurrReport.Skip();
+                    end;
                 }
                 dataitem("User Setup"; "User Setup")
                 {
@@ -351,6 +357,12 @@ report 31192 "Sales Return Reciept CZL"
                         Caption = 'Show Serial/Lot Number Appendix';
                         ToolTip = 'Specifies when the show serial/lot number appendixis to be show';
                     }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
+                    }
                 }
             }
         }
@@ -405,6 +417,7 @@ report 31192 "Sales Return Reciept CZL"
         NoOfLoops: Integer;
         LogInteraction: Boolean;
         ShowLotSN: Boolean;
+        HideLinesWithZeroQuantity: Boolean;
 
     procedure InitLogInteraction()
     begin
