@@ -135,6 +135,51 @@ codeunit 6140 "E-Doc. Import"
         EDocument.Modify();
     end;
 
+    internal procedure UploadDocument(var EDocument: Record "E-Document")
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocLog: Record "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+        FileName: Text;
+        EDocumentServiceStatus: Enum "E-Document Service Status";
+        BlobType: Enum "E-Doc. Data Storage Blob Type";
+    begin
+        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
+            exit;
+
+        if not UploadIntoStream('', '', '', FileName, InStr) then
+            exit;
+
+        BlobType := GetFileType(FileName);
+        if BlobType = Enum::"E-Doc. Data Storage Blob Type"::Unspecified then
+            Error(FileTypeNotSupportedErr);
+
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument."Document Type" := Enum::"E-Document Type"::None;
+        EDocument.Service := EDocumentService.Code;
+        EDocumentServiceStatus := "E-Document Service Status"::Imported;
+
+        OutStr := TempBlob.CreateOutStream();
+        CopyStream(OutStr, InStr);
+
+        EDocument."File Name" := CopyStr(FileName, 1, 256);
+        EDocument."File Type" := BlobType;
+
+        if EDocument."Entry No" = 0 then begin
+            EDocument.Insert(true);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+        end else begin
+            EDocument.Modify(true);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+        end;
+
+        EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
+        EDocument.Modify();
+    end;
+
     internal procedure UploadDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         InStr: InStream;
@@ -143,7 +188,7 @@ codeunit 6140 "E-Doc. Import"
         if not UploadIntoStream('', '', '', FileName, InStr) then
             exit;
 
-        this.HandleSingleDocumentUpload(InStr, EDocument, EDocumentService, FileName);
+        this.HandleSingleDocumentUpload(InStr, EDocument, EDocumentService);
     end;
 
     internal procedure UploadDocuments(Documents: List of [FileUpload]; EDocumentService: Record "E-Document Service")
@@ -156,7 +201,7 @@ codeunit 6140 "E-Doc. Import"
 
         if Documents.Count() = 1 then begin
             Documents.Get(1).CreateInStream(DocumentInStream);
-            this.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocumentService, Documents.Get(1).FileName());
+            this.HandleSingleDocumentUpload(DocumentInStream, EDocument, EDocumentService)
         end else
             this.HandleMultipleDocumentUpload(Documents, EDocument, EDocumentService);
     end;
@@ -727,45 +772,25 @@ codeunit 6140 "E-Doc. Import"
         exit(Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK);
     end;
 
-    local procedure ImportEDocumentFromStream(
-        var EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
-        var InStr: InStream;
-        FileName: Text)
+    local procedure ImportEDocumentFromStream(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var InStr: InStream)
     var
-        EDocLog: Record "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
-        EDocumentServiceStatus: Enum "E-Document Service Status";
-        BlobType: Enum "E-Doc. Data Storage Blob Type";
     begin
-
-
-        BlobType := GetFileType(FileName);
-        if BlobType = Enum::"E-Doc. Data Storage Blob Type"::Unspecified then
-            Error(FileTypeNotSupportedErr);
-
+        CopyStream(TempBlob.CreateOutStream(), InStr);
 
         EDocument.Direction := EDocument.Direction::Incoming;
         EDocument."Document Type" := Enum::"E-Document Type"::None;
-        EDocument.Service := EDocumentService.Code;
-        EDocumentServiceStatus := "E-Document Service Status"::Imported;
-
-        CopyStream(TempBlob.CreateOutStream(), InStr);
-
-        EDocument."File Name" := CopyStr(FileName, 1, 256);
-        EDocument."File Type" := BlobType;
 
         if EDocument."Entry No" = 0 then begin
             EDocument.Insert(true);
-            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
         end else begin
             EDocument.Modify(true);
-            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
         end;
 
-        EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
-        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
-        EDocument.Modify(false);
+        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
     end;
 
     internal procedure SetHideDialogs(Hide: Boolean)
@@ -820,7 +845,7 @@ codeunit 6140 "E-Doc. Import"
             if HasDuplicate(EDocument, TempBlob, EDocumentService."Document Format") then
                 NotProcessedDocuments += 1
             else
-                CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream, Document.FileName());
+                CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
         end;
 
         if NotProcessedDocuments > 0 then
@@ -829,11 +854,7 @@ codeunit 6140 "E-Doc. Import"
             Message(DocsImportedMsg);
     end;
 
-    internal procedure HandleSingleDocumentUpload(
-        DocumentInstream: InStream;
-        var EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
-        FileName: Text)
+    internal procedure HandleSingleDocumentUpload(DocumentInstream: InStream; var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         TempBlob: Codeunit "Temp Blob";
     begin
@@ -848,10 +869,11 @@ codeunit 6140 "E-Doc. Import"
                 EDocument.FieldCaption("Document Date"),
                 EDocument."Document Date")
         else
-            CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream, FileName);
+            CreateEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
 
-        if not this.HideDialogs then
-            Page.Run(Page::"E-Document", EDocument);
+        if not this.HideDialogs and EDocErrorHelper.HasErrors(EDocument) then
+            if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
+                Page.Run(Page::"E-Document", EDocument);
     end;
 
     local procedure HasDuplicate(var IncomingEDocument: Record "E-Document"; var EDocumentContent: Codeunit "Temp Blob"; IEDocument: Interface "E-Document"): Boolean
@@ -871,12 +893,11 @@ codeunit 6140 "E-Doc. Import"
     internal procedure CreateEDocumentFromStream(
         var EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
-        var DocumentInstream: InStream;
-        FileName: Text)
+        var DocumentInstream: InStream)
     begin
         DocumentInstream.ResetPosition();
-        this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInstream, FileName);
-        this.ProcessIncomingEDocument(EDocument, EDocumentService.GetDefaultImportParameters());
+        this.ImportEDocumentFromStream(EDocument, EDocumentService, DocumentInstream);
+        this.V1_ProcessEDocument(EDocument, false);
     end;
 
     var
