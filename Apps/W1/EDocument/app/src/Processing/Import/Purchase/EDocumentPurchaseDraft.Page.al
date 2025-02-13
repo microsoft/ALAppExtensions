@@ -17,7 +17,7 @@ page 6181 "E-Document Purchase Draft"
     SourceTable = "E-Document";
     InsertAllowed = false;
     DeleteAllowed = false;
-    ModifyAllowed = false;
+    ModifyAllowed = true;
     RefreshOnActivate = true;
 
     layout
@@ -171,24 +171,43 @@ page 6181 "E-Document Purchase Draft"
     {
         area(Processing)
         {
-
-        }
-        area(Navigation)
-        {
-            action(EDocumentLog)
+            action(CreateDocument)
             {
-                Caption = 'Logs';
-                ToolTip = 'Shows all logs for the E-Document.';
-                Image = Log;
-                RunObject = Page "E-Document Logs";
-                RunPageLink = "E-Doc. Entry No" = field("Entry No");
-                RunPageMode = View;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Create Document';
+                ToolTip = 'Process the selected electronic document into a business central document';
+                Image = CreateDocument;
+                Visible = ShowCreateDocumentAction;
+
+                trigger OnAction()
+                begin
+                    ProcessEDocument();
+                end;
+            }
+            action(AnalyzeDocument)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Analyze Document';
+                ToolTip = 'Analyze the selected electronic document';
+                Image = SendAsPDF;
+                Visible = ShowAnalyzeDocumentAction;
+
+                trigger OnAction()
+                begin
+                    AnalyzeEDocument();
+                end;
             }
         }
         area(Promoted)
         {
             group(Category_Process)
             {
+                actionref(Promoted_CreateDocument; CreateDocument)
+                {
+                }
+                actionref(Promoted_AnalyseDocument; AnalyzeDocument)
+                {
+                }
             }
         }
     }
@@ -204,7 +223,7 @@ page 6181 "E-Document Purchase Draft"
 
     trigger OnAfterGetRecord()
     begin
-        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
+        RecordLinkTxt := EDocumentProcessing.GetRecordLinkText(Rec);
         HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
         HasErrors := EDocumentErrorHelper.ErrorMessageCount(Rec) > 0;
         if HasErrorsOrWarnings then
@@ -214,6 +233,11 @@ page 6181 "E-Document Purchase Draft"
 
         SetStyle();
         DataCaption := 'Purchase Document Draft ' + Format(Rec."Entry No");
+
+        ShowCreateDocumentAction := Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Doc. Proc. Status"::"Draft Ready";
+        ShowAnalyzeDocumentAction :=
+            (Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Document Steps"::"Structure received data") and
+            (Rec.Status = Enum::"E-Document Status"::Error);
     end;
 
     local procedure SetStyle()
@@ -263,15 +287,44 @@ page 6181 "E-Document Purchase Draft"
         CurrPage.ErrorMessagesPart.Page.Update(false);
     end;
 
+    local procedure ProcessEDocument()
+    var
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        EDocImport: Codeunit "E-Doc. Import";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        ImportEdocumentProcess: Codeunit "Import E-Document Process";
+    begin
+        if not EDocumentHelper.EnsureInboundEDocumentHasService(Rec) then
+            exit;
+
+        EDocImportParameters."Step to Run" := ImportEdocumentProcess.GetNextStep(Rec.GetEDocumentImportProcessingStatus());
+        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+    end;
+
+    local procedure AnalyzeEDocument()
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        EDocumentService.GetPDFReaderService();
+        Rec.TestField("Service", EDocumentService.Code);
+
+        EDocImportParameters."Step to Run" := Enum::"Import E-Document Steps"::"Structure received data";
+        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+    end;
+
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         EDocumentHeaderMapping: Record "E-Document Header Mapping";
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        EDocumentHelper: Codeunit "E-Document Processing";
+        EDocumentProcessing: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
+        ShowCreateDocumentAction: Boolean;
+        ShowAnalyzeDocumentAction: Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
 
 }

@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
+
 page 6125 "E-Document Logs"
 {
     ApplicationArea = Basic, Suite;

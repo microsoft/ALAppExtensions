@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.eServices.EDocument.IO;
 using System.DataAdministration;
+using System.Apps.AppSource;
 using System.Telemetry;
 
 page 6103 "E-Document Services"
@@ -39,18 +40,21 @@ page 6103 "E-Document Services"
                 {
                     ToolTip = 'Specifies the export format of the electronic export setup.';
                 }
+                field("Service Integration V2"; Rec."Service Integration V2")
+                {
+                    Caption = 'Service Integration';
+                    ToolTip = 'Specifies service integration for the electronic document setup.';
+                }
 #if not CLEAN26
                 field("Service Integration"; Rec."Service Integration")
                 {
+                    Caption = 'Service Integration (Legacy)';
                     ToolTip = 'Specifies service integration for the electronic document setup.';
                     ObsoleteTag = '26.0';
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Moved to field "Service Integration V2" on "E-Document Service" table';
                 }
 #endif
-                field("Service Integration V2"; Rec."Service Integration V2")
-                {
-                }
             }
         }
     }
@@ -135,6 +139,35 @@ page 6103 "E-Document Services"
                         EDocumentInstall.ImportServiceCreditMemoXML();
                     end;
                 }
+            }
+        }
+        area(Navigation)
+        {
+            action(OpenAppSourceInstallableServices)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Install E-Document integrations from AppSource';
+                Tooltip = 'Open AppSource to install services.';
+                Image = Insert;
+
+                trigger OnAction()
+                var
+                    AppSourceProductList: Page "AppSource Product List";
+                    RecordRef: RecordRef;
+                    FieldRef, FieldRef2 : FieldRef;
+                    Variant: Variant;
+                begin
+                    RecordRef.Open(2515); // Record "AppSource Product"
+                    FieldRef := RecordRef.Field(4);
+                    FieldRef.SetRange('microsoftdynsmb');
+                    FieldRef2 := RecordRef.Field(2);
+                    FieldRef2.SetFilter('E-Document*');
+
+                    Variant := RecordRef;
+                    AppSourceProductList.SetTableView(Variant);
+                    AppSourceProductList.RunModal();
+                end;
+
             }
         }
     }

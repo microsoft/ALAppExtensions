@@ -538,13 +538,15 @@ codeunit 30189 "Shpfy Variant API"
                 BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), ShopifyVariant."Product Id", ShopifyVariant.Id, Price, CompareAtPrice));
                 ShopifyVariant."Updated At" := CurrentDateTime();
                 ShopifyVariant.Modify();
-            end else
+            end else begin
+                JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
                 if JsonHelper.GetJsonArray(JResponse, JVariants, 'data.productVariantsBulkUpdate.productVariants') then
                     if JVariants.Get(0, JVariant) then begin
                         ShopifyVariant."Updated At" := JsonHelper.GetValueAsDateTime(JVariant, 'updatedAt');
                         if ShopifyVariant."Updated At" > 0DT then
                             ShopifyVariant.Modify();
                     end;
+            end;
     end;
 
     internal procedure UpdateProductPrice(GraphQuery: TextBuilder)
