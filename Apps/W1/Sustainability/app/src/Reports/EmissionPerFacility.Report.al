@@ -21,6 +21,9 @@ report 6211 "Emission Per Facility"
             column(PeriodFilter; StrSubstNo(PeriodLbl, SustLedgDateFilter))
             {
             }
+            column(SustLedgDateFilter; SustLedgDateFilter)
+            {
+            }
             column(CompanyName; CompanyProperty.DisplayName())
             {
             }
@@ -111,6 +114,7 @@ report 6211 "Emission Per Facility"
     labels
     {
         EmissionPerFacility = 'Emission Per Facility';
+        EmissionPerFacilityPrint = 'Emission Per Facility (Print)', Comment = 'Max length: 31. Excel worksheet name.';
         PageCaption = 'Page';
         EmissionsByRespCenter = 'Emissions by R. C.';
         AverageByScopeAndRC = 'Average by Scope and R. C.';
@@ -127,6 +131,15 @@ report 6211 "Emission Per Facility"
         AverageOfEmission_CH4 = 'Average of Emission CH4';
         AverageOfEmission_N2O = 'Average of Emission N2O';
         AccountName = 'Account Name';
+        DataRetrieved = 'Data retrieved:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()
