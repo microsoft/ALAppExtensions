@@ -2971,6 +2971,11 @@ report 31004 "Adjust Exchange Rates CZL"
         Post := NewPostMode;
     end;
 
+    procedure SetDimMoveType(NewDimMoveType: Option "No move","Source Entry","By G/L Account")
+    begin
+        DimMoveType := NewDimMoveType;
+    end;
+
     procedure CreateCustRealGainLossEntries(var ThreeDetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
     var
         FourDetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";

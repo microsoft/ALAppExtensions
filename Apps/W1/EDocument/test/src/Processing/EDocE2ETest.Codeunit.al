@@ -1479,7 +1479,6 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
-        EDocumentService."Sent Actions Integration" := Enum::"Sent Document Actions"::Mock;
         EDocumentService.Modify();
 
         TransformationRule.DeleteAll();
@@ -2255,5 +2254,4 @@ codeunit 139624 "E-Doc E2E Test"
 
 #endif
 #pragma warning restore AS0018
-
 }

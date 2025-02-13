@@ -24,13 +24,10 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
     var
         Uri: Text;
         GraphQlQuery: Text;
-        CreateItemVariantTok: Label '{"query":"mutation { productVariantCreate(input: {productId: \"gid://shopify/Product/', locked = true;
+        CreateItemVariantTok: Label '{"query":"mutation { productVariantsBulkCreate(productId: \"gid://shopify/Product/', locked = true;
         GetOptionsStartTok: Label '{"query":"{product(id: \"gid://shopify/Product/', locked = true;
         GetOptionsEndTok: Label '\") {id title options {id name}}}"}', Locked = true;
-        RemoveVariantStartTok: Label '{"query":"mutation {productVariantDelete(id: \"gid://shopify/ProductVariant/', Locked = true;
-        RemoveVariantEndTok: Label '\") {deletedProductVariantId userErrors{field message}}}"}', Locked = true;
         GetVariantsTok: Label 'variants(first:200){pageInfo{hasNextPage} edges{cursor node{legacyResourceId updatedAt}}}', Locked = true;
-
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -47,11 +44,6 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
                                         HttpResponseMessage := GetProductMultipleOptionsResponse()
                                     else
                                         HttpResponseMessage := GetProductOptionsResponse();
-                                GraphQlQuery.StartsWith(RemoveVariantStartTok) and GraphQlQuery.EndsWith(RemoveVariantEndTok):
-                                    begin
-                                        HttpResponseMessage := GetRemoveVariantResponse();
-                                        GraphQueryTxt := GraphQlQuery;
-                                    end;
                                 GraphQlQuery.Contains(GetVariantsTok):
                                     HttpResponseMessage := GetDefaultVariantResponse();
                             end;

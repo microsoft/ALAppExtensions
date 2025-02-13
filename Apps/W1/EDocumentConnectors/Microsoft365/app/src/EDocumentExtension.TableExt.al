@@ -18,5 +18,9 @@ tableextension 6386 "E-Document Extension" extends "E-Document"
         {
             DataClassification = CustomerContent;
         }
+        field(6384; "Drive Item Id"; Text[2048])
+        {
+            DataClassification = CustomerContent;
+        }
     }
 }
