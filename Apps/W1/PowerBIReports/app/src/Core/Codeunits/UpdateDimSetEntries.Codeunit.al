@@ -5,9 +5,9 @@ codeunit 36952 "Update Dim. Set Entries"
     Access = Internal;
 
     var
-        PBIDimensionSetEntry: Record "PowerBI Flat Dim. Set Entry";
+        PBIDimensionSetEntry: Record "Dimension Set Entry";
         PBISetup: Record "PowerBI Reports Setup";
-        PBIDimensionSets: Query "PowerBI Dimension Sets";
+        PBIDimensionSets: Query "Dimension Sets";
 
     trigger OnRun()
     var

@@ -543,66 +543,6 @@ codeunit 139683 "Statistical Account Test"
 
     end;
 
-    [Test]
-    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
-    procedure AccountRangeShouldRecognizedForTotalingTypeStatisticalAccountInFinancialReport()
-    var
-        ColumnLayout: Record "Column Layout";
-        ColumnLayoutName: Record "Column Layout Name";
-        AccScheduleName: Record "Acc. Schedule Name";
-        AccScheduleLine: Record "Acc. Schedule Line";
-        FinancialReport: Record "Financial Report";
-        StatisticalAccount: array[3] of Record "Statistical Account";
-        FinancialReports: TestPage "Financial Reports";
-        AccScheduleOverview: TestPage "Acc. Schedule Overview";
-        ExpectedAmount: Decimal;
-        DateFilter: Text;
-    begin
-        // [SCENARIO 556238] Account ranges are not getting recognized when the Totaling Type is Statistical Account in Financial reports row definition
-        Initialize();
-
-        // [GIVEN] Setup Demo Data.
-        SetupFinancialReport();
-
-        // [GIVEN] Create Statistical Account and Post Journal
-        CreateStatisticalAccount(StatisticalAccount, 3);
-        CreateStatisticalAccountsJournalAndPost(StatisticalAccount, 3, ExpectedAmount);
-
-        // [GIVEN] Create a Column Name and Column Layout.
-        LibraryERM.CreateColumnLayoutName(ColumnLayoutName);
-        LibraryERM.CreateColumnLayout(ColumnLayout, ColumnLayoutName.Name);
-        ColumnLayout.Validate("Column Type", "Column Layout Type"::"Balance at Date");
-        ColumnLayout.Modify();
-
-        // [GIVEN] Create a Account Schedule Name and Line with "Statistical Account" and Range in Totaling
-        LibraryERM.CreateAccScheduleName(AccScheduleName);
-        LibraryERM.CreateAccScheduleLine(AccScheduleLine, AccScheduleName.Name);
-        AccScheduleLine.Validate("Totaling Type", "Acc. Schedule Line Totaling Type"::"Statistical Account");
-        AccScheduleLine.Validate(Totaling, StatisticalAccount[1]."No." + '..' + StatisticalAccount[3]."No.");
-        AccScheduleLine.Modify();
-
-        // [GIVEN] Update "Financial Report Column Group" in Financial report.
-        FinancialReport.Get(AccScheduleLine."Schedule Name");
-        FinancialReport.Validate("Financial Report Column Group", ColumnLayout."Column Layout Name");
-        FinancialReport.Modify();
-
-        // [WHEN] Run Account Schedule Overview with "Period Type" as year.
-        FinancialReports.OpenEdit();
-        FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
-        AccScheduleOverview.Trap();
-        FinancialReports.Overview.Invoke();
-        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
-
-        // [GIVEN] Save the Date Filter.
-        DateFilter := Format(AccScheduleOverview.DateFilter);
-
-        // [VERIFY] Verify Balance should be shown correctly filtered by Range in the Financial Reports.
-        Assert.AreEqual(
-            ExpectedAmount,
-            AccScheduleOverview.ColumnValues1.AsDecimal(),
-            StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
-    end;
-
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -908,38 +848,6 @@ codeunit 139683 "Statistical Account Test"
                 StatisticalAccountsJournal.ShortcutDimCode8.AssertEquals(DimensionValue[8].Code);
                 StatisticalAccountsJournal.Close();
             until StatisticalAccountJournalLine.Next() = 0;
-    end;
-
-    local procedure CreateStatisticalAccount(var StatisticalAccount: array[3] of Record "Statistical Account"; NoOfLines: Integer)
-    var
-        i: Integer;
-    begin
-        for i := 1 to NoOfLines do begin
-            StatisticalAccount[i]."No." := Format(LibraryRandom.RandIntInRange(1000, 1000) + i);
-            StatisticalAccount[i].Name := StatisticalAccount[i]."No.";
-            StatisticalAccount[i].Insert();
-        end;
-    end;
-
-    local procedure CreateStatisticalAccountsJournalAndPost(
-        var StatisticalAccount: array[3] of Record "Statistical Account";
-        NoOfLines: Integer; var Amount: Decimal)
-    var
-        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
-        i: Integer;
-    begin
-        for i := 1 to NoOfLines do begin
-            StatisticalAccountsJournal.OpenEdit();
-            StatisticalAccountsJournal.New();
-            StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
-            StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
-            StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount[i]."No.");
-            StatisticalAccountsJournal.Amount.SetValue(LibraryRandom.RandIntInRange(1000, 1000));
-            Amount += StatisticalAccountsJournal.Amount.AsDecimal();
-            StatisticalAccountsJournal.Close();
-        end;
-        StatisticalAccountsJournal.OpenEdit();
-        RegisterJournal(StatisticalAccountsJournal);
     end;
 
     [ModalPageHandler]

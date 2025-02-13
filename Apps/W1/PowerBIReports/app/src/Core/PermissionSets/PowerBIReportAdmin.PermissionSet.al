@@ -9,8 +9,7 @@ permissionset 36950 "PowerBI Report Admin"
     Assignable = true;
     IncludedPermissionSets = "PowerBi Report Basic";
     Permissions =
-        tabledata "PBI C. Income St. Source Code" = RIMD,
-        tabledata "PowerBI Flat Dim. Set Entry" = RIMD,
+        tabledata "Dimension Set Entry" = RIMD,
         tabledata "PowerBI Reports Setup" = RIMD,
         tabledata "Working Day" = RIMD,
         tabledata "Account Category" = RM;

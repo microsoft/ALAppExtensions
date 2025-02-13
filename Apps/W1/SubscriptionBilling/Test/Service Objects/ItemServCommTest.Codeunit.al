@@ -8,15 +8,21 @@ codeunit 139884 "Item Serv. Comm. Test"
     Access = Internal;
 
     var
-        Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
         ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        Item: Record Item;
         ContractTestLibrary: Codeunit "Contract Test Library";
         AssignedItems: Page "Assigned Items";
         i: Integer;
 
-    #region Tests
+    local procedure SetupServiceCommPackageAndServiceCommitmentItem(CreateServiceCommitmentItem: Boolean)
+    begin
+        ClearAll();
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        if CreateServiceCommitmentItem then
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+    end;
 
     [Test]
     [HandlerFunctions('ItemListModalPageHandler')]
@@ -90,41 +96,6 @@ codeunit 139884 "Item Serv. Comm. Test"
         asserterror ItemServCommitmentPackage.FindFirst();
     end;
 
-    [Test]
-    [HandlerFunctions('ConfirmHandler')]
-    procedure RemoveItemsFromServCommPackage()
-    begin
-        SetupServiceCommPackageAndServiceCommitmentItem(true);
-        ItemServCommitmentPackage."Item No." := Item."No.";
-        ItemServCommitmentPackage.Code := ServiceCommitmentPackage.Code;
-        ItemServCommitmentPackage.Insert(false);
-        ItemServCommitmentPackage.SetRecFilter();
-        AssignedItems.RemoveItems(ItemServCommitmentPackage);
-        asserterror ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
-    end;
-
-    #endregion Tests
-
-    #region Procedures
-
-    local procedure SetupServiceCommPackageAndServiceCommitmentItem(CreateServiceCommitmentItem: Boolean)
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
-        if CreateServiceCommitmentItem then
-            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-    end;
-
-    #endregion Procedures
-
-    #region Handlers
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
-    end;
-
     [ModalPageHandler]
     procedure ItemListModalPageHandler(var ItemList: TestPage "Item List")
     begin
@@ -138,5 +109,23 @@ codeunit 139884 "Item Serv. Comm. Test"
         ItemServCommitmentPackages.Code.SetValue(ServiceCommitmentPackage.Code);
         ItemServCommitmentPackages.OK().Invoke();
     end;
-    #endregion Handlers
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure RemoveItemsFromServCommPackage()
+    begin
+        SetupServiceCommPackageAndServiceCommitmentItem(true);
+        ItemServCommitmentPackage."Item No." := Item."No.";
+        ItemServCommitmentPackage.Code := ServiceCommitmentPackage.Code;
+        ItemServCommitmentPackage.Insert(false);
+        ItemServCommitmentPackage.SetRecFilter();
+        AssignedItems.RemoveItems(ItemServCommitmentPackage);
+        asserterror ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
 }

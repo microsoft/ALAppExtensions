@@ -26,13 +26,7 @@ codeunit 8069 "Sales Service Commitment Mgmt."
     var
         ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
         SalesHeader: Record "Sales Header";
-        IsHandled: Boolean;
     begin
-        IsHandled := false;
-        OnBeforeAddSalesServiceCommitmentsForSalesLine(SalesLine, SkipAddAdditionalSalesServComm, IsHandled);
-        if IsHandled then
-            exit;
-
         if not IsSalesLineWithSalesServiceCommitments(SalesLine, false) then
             exit;
 
@@ -67,13 +61,13 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         SalesHeader: Record "Sales Header";
         AssignServiceCommitments: Page "Assign Service Commitments";
         PackageFilter: Text;
-        NoAddServicesForContractRenewalAllowedErr: Label 'Process must not be Contract Renewal. Additional services cannot be added to a Contract Renewal';
-        ShowAssignServiceCommitments: Boolean;
+        NoAddServicesForContractRenewalAllowedErr: Label 'Pricess must not be Contract Renewal. Additional services cannot be added to a Contract Renewal';
     begin
         if SalesLine."Line No." = 0 then
             exit;
         if SalesLine.IsContractRenewal() then
             Error(NoAddServicesForContractRenewalAllowedErr);
+
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         ServiceCommitmentPackage.SetRange("Price Group", SalesHeader."Customer Price Group");
         if ServiceCommitmentPackage.IsEmpty then
@@ -83,10 +77,7 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         ServiceCommitmentPackage.FilterCodeOnPackageFilter(PackageFilter);
         OnAddAdditionalSalesServiceCommitmentsForSalesLineAfterApplyFilters(ServiceCommitmentPackage, SalesLine);
 
-        ShowAssignServiceCommitments := not ServiceCommitmentPackage.IsEmpty();
-        OnAfterShowAssignServiceCommitmentsDetermined(SalesLine, ServiceCommitmentPackage, ShowAssignServiceCommitments);
-
-        if ShowAssignServiceCommitments and GuiAllowed() then begin
+        if not ServiceCommitmentPackage.IsEmpty() then begin
             AssignServiceCommitments.SetTableView(ServiceCommitmentPackage);
             AssignServiceCommitments.SetSalesLine(SalesLine);
             AssignServiceCommitments.LookupMode(true);
@@ -175,6 +166,16 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         exit(true);
     end;
 
+    internal procedure IsSalesLineWithServiceCommitmentItemToInvoice(SalesLine: Record "Sales Line"): Boolean
+    begin
+        if not IsSalesLineWithServiceCommitmentItem(SalesLine, true) then
+            exit(false);
+        if SalesLine."Qty. to Invoice" = 0 then
+            exit(false);
+
+        exit(true);
+    end;
+
     local procedure InsertSalesServiceCommitmentFromServiceCommitmentPackage(var SalesLine: Record "Sales Line"; ServCommPackageCode: Code[20])
     var
         ServiceCommitmentPackage: Record "Service Commitment Package";
@@ -213,8 +214,6 @@ codeunit 8069 "Sales Service Commitment Mgmt."
             SalesServiceCommitment.Partner := ServiceCommitmentPackageLine.Partner;
             SalesServiceCommitment.Validate("Calculation Base Type", ServiceCommitmentPackageLine."Calculation Base Type");
             SalesServiceCommitment.Validate("Billing Base Period", ServiceCommitmentPackageLine."Billing Base Period");
-            SalesServiceCommitment."Usage Based Billing" := ServiceCommitmentPackageLine."Usage Based Billing";
-            SalesServiceCommitment."Usage Based Pricing" := ServiceCommitmentPackageLine."Usage Based Pricing";
             SalesServiceCommitment."Calculation Base %" := ServiceCommitmentPackageLine."Calculation Base %";
             SalesServiceCommitment.Validate("Service Comm. Start Formula", ServiceCommitmentPackageLine."Service Comm. Start Formula");
             SalesServiceCommitment.Validate("Billing Rhythm", ServiceCommitmentPackageLine."Billing Rhythm");
@@ -222,6 +221,8 @@ codeunit 8069 "Sales Service Commitment Mgmt."
             SalesServiceCommitment."Price Binding Period" := ServiceCommitmentPackageLine."Price Binding Period";
             SalesServiceCommitment."Period Calculation" := ServiceCommitmentPackageLine."Period Calculation";
             SalesServiceCommitment.CalculateCalculationBaseAmount();
+            SalesServiceCommitment."Usage Based Billing" := ServiceCommitmentPackageLine."Usage Based Billing";
+            SalesServiceCommitment."Usage Based Pricing" := ServiceCommitmentPackageLine."Usage Based Pricing";
             SalesServiceCommitment."Pricing Unit Cost Surcharge %" := ServiceCommitmentPackageLine."Pricing Unit Cost Surcharge %";
             OnBeforeModifySalesServiceCommitmentFromServCommPackageLine(SalesServiceCommitment, ServiceCommitmentPackageLine);
             SalesServiceCommitment.Modify(false);
@@ -433,8 +434,9 @@ codeunit 8069 "Sales Service Commitment Mgmt."
                 SalesServiceCommitment2 := SalesServiceCommitment;
                 SalesServiceCommitment2.SetDocumentFields(ToSalesLine."Document Type", ToSalesLine."Document No.", ToSalesLine."Line No.");
                 SalesServiceCommitment2."Line No." := 0;
-                SalesServiceCommitment2.Validate("Calculation Base Amount", SalesServiceCommitment."Calculation Base Amount");
                 SalesServiceCommitment2.Insert(false);
+                SalesServiceCommitment2.CalculateCalculationBaseAmount();
+                SalesServiceCommitment2.Modify(false);
             until SalesServiceCommitment.Next() = 0;
     end;
 
@@ -457,8 +459,6 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         DiscountNotTransferredTxt: Label 'The %1 of %2 %3 has not been transferred to the Sales Service Commitment(s). The %1 is only transferred to Sales Service Commitment, if %4 is set to %5.';
         DontShowAgainActionLbl: Label 'Don''t show again';
     begin
-        if SalesServiceCommitment.IsEmpty() then
-            exit;
         if not MyNotification.IsEnabled(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine()) then
             exit;
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
@@ -484,16 +484,6 @@ codeunit 8069 "Sales Service Commitment Mgmt."
         CustomerContract: Record "Customer Contract";
     begin
         CustomerContract.DontNotifyCurrentUserAgain(CustomerContract.GetNotificationIdDiscountIsNotTransferredFromSalesLine());
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeAddSalesServiceCommitmentsForSalesLine(SalesLine: Record "Sales Line"; SkipAddAdditionalSalesServComm: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterShowAssignServiceCommitmentsDetermined(SalesLine: Record "Sales Line"; var ServiceCommitmentPackage: Record "Service Commitment Package"; var ShowAssignServiceCommitments: Boolean)
-    begin
     end;
 
     var

@@ -8,18 +8,15 @@ codeunit 17146 "Create NZ Gen. Journ. Template"
         ContosoGeneralLedger: Codeunit "Contoso General Ledger";
     begin
         ContosoGeneralLedger.InsertGeneralJournalTemplate(PostDated(), PostDatedChecksLbl, Enum::"Gen. Journal Template Type"::"Post Dated", Page::"General Journal", '', false);
-        UpdateSourceCodeOnGenJournalTemplate(PostDated());
+        UpdateSourceCodeOnGenJournalTemplate(PostDated(), PostDatedSourceCodeLbl);
     end;
 
-    local procedure UpdateSourceCodeOnGenJournalTemplate(TemplateName: Code[10])
+    local procedure UpdateSourceCodeOnGenJournalTemplate(TemplateName: Code[10]; SourceCode: Code[10])
     var
-        SourceCodeSetup: Record "Source Code Setup";
         GenJournalTemplate: Record "Gen. Journal Template";
     begin
-        SourceCodeSetup.Get();
-
         if GenJournalTemplate.Get(TemplateName) then begin
-            GenJournalTemplate.Validate("Source Code", SourceCodeSetup."General Journal");
+            GenJournalTemplate.Validate("Source Code", SourceCode);
             GenJournalTemplate.Modify(true);
         end;
     end;
@@ -32,4 +29,5 @@ codeunit 17146 "Create NZ Gen. Journ. Template"
     var
         PostDatedChecksLbl: Label 'Post Dated Checks', MaxLength = 80;
         PostDatedTok: Label 'POSTDATED', MaxLength = 10;
+        PostDatedSourceCodeLbl: Label 'GENJNL', MaxLength = 10;
 }

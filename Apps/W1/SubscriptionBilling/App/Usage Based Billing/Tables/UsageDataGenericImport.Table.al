@@ -53,7 +53,6 @@ table 8018 "Usage Data Generic Import"
         {
             Caption = 'Service Object No.';
             TableRelation = "Service Object";
-            Editable = false;
         }
         field(7; "Customer ID"; Text[80])
         {
@@ -152,8 +151,10 @@ table 8018 "Usage Data Generic Import"
                 if "Subscription ID" = '' then
                     exit;
 
-                if UsageDataImport.Get("Usage Data Import Entry No.") then
-                    if UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", "Subscription ID") then begin
+                if UsageDataImport.Get("Usage Data Import Entry No.") then begin
+                    UsageDataSubscription.SetRange("Supplier No.", UsageDataImport."Supplier No.");
+                    UsageDataSubscription.SetRange("Supplier Reference", "Subscription ID");
+                    if UsageDataSubscription.FindFirst() then begin
                         if Rec."Subscription Name" = '' then
                             Rec."Subscription Name" := UsageDataSubscription."Customer Name";
                         if Rec."Product ID" = '' then
@@ -163,6 +164,7 @@ table 8018 "Usage Data Generic Import"
                         if (Rec.Quantity = 0) and (CurrFieldNo <> 0) then
                             Rec.Quantity := UsageDataSubscription.Quantity;
                     end;
+                end;
             end;
         }
         field(11; "Subscription Name"; Text[250])
@@ -251,11 +253,7 @@ table 8018 "Usage Data Generic Import"
             AutoFormatType = 2;
             Caption = 'Cost Amount';
         }
-        field(30; "Service Object Availability"; Enum "Service Object Availability")
-        {
-            Caption = 'Service Object Availability';
-            Editable = false;
-        }
+
         field(50; Text1; Text[80])
         {
             Caption = 'Text1';

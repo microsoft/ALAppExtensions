@@ -1,7 +1,5 @@
 namespace Microsoft.SubscriptionBilling;
 
-using Microsoft.Finance.GeneralLedger.Setup;
-
 page 8051 "Service Contract Setup"
 {
     ApplicationArea = Basic, Suite;
@@ -95,22 +93,6 @@ page 8051 "Service Contract Setup"
                     }
                 }
             }
-            group("Gen. Journal Templates")
-            {
-                Caption = 'Journal Templates';
-                Visible = IsJournalTemplatesVisible;
-
-                field("Def. Rel. Jnl. Template Name"; Rec."Def. Rel. Jnl. Template Name")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the name of the journal template to use for posting of deferrals release.';
-                }
-                field("Def. Rel. Jnl. Batch Name"; Rec."Def. Rel. Jnl. Batch Name")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the name of the journal batch to use for posting of deferrals release.';
-                }
-            }
         }
     }
 
@@ -122,13 +104,6 @@ page 8051 "Service Contract Setup"
             Rec.ContractTextsCreateDefaults();
             Rec.Insert(false);
         end;
-
-        GLSetup.Get();
-        IsJournalTemplatesVisible := GLSetup."Journal Templ. Name Mandatory";
     end;
-
-    var
-        GLSetup: Record "General Ledger Setup";
-        IsJournalTemplatesVisible: Boolean;
 }
 

@@ -7,7 +7,7 @@ permissionset 4767 "Contoso Demo - Edit"
 {
     Access = Public;
     Assignable = true;
-    Caption = 'Contoso Demo - Edit';
+    Caption = 'E-Document Core - Edit';
 
     IncludedPermissionSets = "Contoso Demo - Read";
 

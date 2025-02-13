@@ -133,7 +133,18 @@ codeunit 8031 "Usage Based Billing Inst."
 
     procedure CreateUsageBasedDataExchangeMapping(DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; TableId: Integer; NewName: Text[250]; MappingCodeunit: Integer; DataExchNoFieldId: Integer; DataExchLineFieldId: Integer)
     begin
-        DataExchMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, TableId, NewName, MappingCodeunit, DataExchNoFieldId, DataExchLineFieldId);
+        //TODO: Check in BC21 if OnPrem scope has been removed from InsertRec function in DataExchMapping table
+        // DataExchMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, TableId, NewName, MappingCodeunit, 0, 0);
+
+        DataExchMapping.Init();
+        DataExchMapping.Validate("Data Exch. Def Code", DataExchDefCode);
+        DataExchMapping.Validate("Data Exch. Line Def Code", DataExchLineDefCode);
+        DataExchMapping.Validate("Table ID", TableId);
+        DataExchMapping.Validate(Name, NewName);
+        DataExchMapping.Validate("Mapping Codeunit", MappingCodeunit);
+        DataExchMapping.Validate("Data Exch. No. Field ID", DataExchNoFieldId);
+        DataExchMapping.Validate("Data Exch. Line Field ID", DataExchLineFieldId);
+        DataExchMapping.Insert(false);
     end;
 
     procedure CreateUsageBasedGenericDataExchangeFieldMapping(DataExchDefCode: Code[20]; DataExchDefLineCode: Code[20]; TableId: Integer)

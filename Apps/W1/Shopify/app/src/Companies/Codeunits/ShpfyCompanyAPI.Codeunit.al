@@ -125,8 +125,6 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
-        if CompanyLocation.Recipient <> '' then
-            AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
         exit(GraphQuery.ToText());
@@ -213,8 +211,6 @@ codeunit 30286 "Shpfy Company API"
             HasChange := AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> xCompanyLocation."Province Code" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
-        if CompanyLocation.Recipient <> xCompanyLocation.Recipient then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
 
         if HasChange then begin
@@ -349,7 +345,6 @@ codeunit 30286 "Shpfy Company API"
                     PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
-                    CompanyLocation.Recipient := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.recipient', MaxStrLen(CompanyLocation.Recipient)), 1, MaxStrLen(CompanyLocation.Recipient));
                     CompanyLocation.Modify();
                 end;
         if JsonHelper.GetJsonArray(JCompany, JMetafields, 'metafields.edges') then

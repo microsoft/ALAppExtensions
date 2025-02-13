@@ -13,12 +13,11 @@ permissionset 36951 "PowerBi Report Basic"
     Caption = 'Power BI Core Basic', MaxLength = 30;
     Assignable = true;
     Permissions =
-        tabledata "PBI C. Income St. Source Code" = R,
-        tabledata "PowerBI Flat Dim. Set Entry" = R,
+        tabledata "Dimension Set Entry" = R,
         tabledata "PowerBI Reports Setup" = R,
         tabledata "Working Day" = R,
         tabledata "Account Category" = R,
-        table "PowerBI Flat Dim. Set Entry" = X,
+        table "Dimension Set Entry" = X,
         table "PowerBI Reports Setup" = X,
         table "Working Day" = X,
         table "Account Category" = X,
@@ -30,11 +29,11 @@ permissionset 36951 "PowerBi Report Basic"
         codeunit "Purchases Filter Helper" = X,
         codeunit "Sales Filter Helper" = X,
         codeunit "Update Dim. Set Entries" = X,
-        page "PowerBI Assisted Setup" = X,
-        page "PBI Close Income Stmt. SC." = X,
+        codeunit "Finance Installation Handler" = X,
+        page "Assisted Setup" = X,
         page Customers = X,
         page "Date Setup" = X,
-        page "General Ledger Setup - PBI API" = X,
+        page "General Ledger Setup" = X,
         page Locations = X,
         page "Power BI Selection Lookup" = X,
 #if not CLEAN25
@@ -44,7 +43,7 @@ permissionset 36951 "PowerBi Report Basic"
 #endif
         page "Salesperson/Purchasers" = X,
         page "PowerBI Reports Setup" = X,
-        page "Vendors - PBI API" = X,
+        page Vendors = X,
         page "Working Days" = X,
         page "Working Days Setup" = X,
         page "Working Days Subform" = X,
@@ -54,33 +53,24 @@ permissionset 36951 "PowerBi Report Basic"
         query Bins = X,
         query "Calendar Entries" = X,
         query "Capacity Ledger Entries" = X,
-        query "Close Income Source - PBI API" = X,
         query "Customer Ledger Entries" = X,
-        query "PowerBI Dimension Set Entries" = X,
-        query "PowerBI Dimension Sets" = X,
+        query "Dimension Set Entries" = X,
+        query "Dimension Sets" = X,
         query Dimensions = X,
         query "G/L Account Categories" = X,
         query "G/L Accounts" = X,
-        query "G/L Budget Entries - PBI API" = X,
+        query "G/L Budget Entries" = X,
         query "G/L Budgets" = X,
-#if not CLEAN25
-#pragma warning disable AL0432
         query "G/L Entries - Closing" = X,
-#pragma warning restore AL0432
-#endif
-#if not CLEAN26
-#pragma warning disable AL0432
         query "G/L Entries - Income Statement" = X,
-#pragma warning restore AL0432
-#endif
         query "G\L Entries - Balance Sheet" = X,
         query "Item Budget Entries - Purch." = X,
         query "Item Budget Entries - Sales" = X,
         query "Item Budget Names" = X,
-        query "Item Ledger Entries - PBI API" = X,
+        query "Item Ledger Entries" = X,
         query "Item Ledger Entries - Prod." = X,
-        query "Items - PBI API" = X,
-        query "Job Ledger Entries - PBI API" = X,
+        query Items = X,
+        query "Job Ledger Entries" = X,
         query "Job Planning Lines" = X,
         query "Job Planning Lines - Item" = X,
         query "Job Tasks" = X,
@@ -107,7 +97,7 @@ permissionset 36951 "PowerBi Report Basic"
         query "Value Entries - Item" = X,
         query "Value Entries - Purch." = X,
         query "Value Entries - Sales" = X,
-        query "Vendor Ledg. Entries - PBI API" = X,
+        query "Vendor Ledger Entries" = X,
         query "Warehouse Activity Lines" = X,
         query "Warehouse Entries" = X,
         query "Whse. Journal Lines - From Bin" = X,

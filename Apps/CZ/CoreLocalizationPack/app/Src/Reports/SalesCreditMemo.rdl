@@ -4266,7 +4266,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!ExchRateText.Value</Value>
+                                                    <Value>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, Fields!ExchRateText.Value, " ")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Normal</FontWeight>
@@ -4543,6 +4543,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
+                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                     </TablixCells>
@@ -4969,12 +4970,12 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                   <TablixMember />
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
+                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
+                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                 </TablixMembers>
@@ -4983,7 +4984,7 @@ Cstr(IIf(Fields!CreditMemoType_SalesCrMemoHeader.Value = 3, Fields!Type3Text.Val
                                 <TablixMembers>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
+                                      <Hidden>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, False, True)</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember />

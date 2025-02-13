@@ -28,13 +28,9 @@
       "to": 27095
     }
   ],
-  "resourceFolders": [
-    ".resources"
-  ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
-  },
-  "target": "OnPrem"
+  }
 }

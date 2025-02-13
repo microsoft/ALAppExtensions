@@ -30,28 +30,26 @@ pageextension 8062 "Sales Invoice Subform" extends "Sales Invoice Subform"
                 Image = DataEntry;
                 Scope = Repeater;
                 ToolTip = 'Shows related usage data.';
-                Enabled = UsageDataEnabled;
 
                 trigger OnAction()
                 var
                     UsageDataBilling: Record "Usage Data Billing";
+                    UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
                 begin
-                    UsageDataBilling.ShowForSalesDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
+                    UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(Rec."Document Type"), Rec."Document No.");
+                    UsageDataBilling.SetRange("Document Line No.", Rec."Line No.");
+                    Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
                 end;
             }
         }
     }
 
     trigger OnAfterGetCurrRecord()
-    var
-        UsageDataBilling: Record "Usage Data Billing";
     begin
         IsConnectedToBillingLine := Rec.IsLineAttachedToBillingLine();
-        UsageDataEnabled := UsageDataBilling.ExistForSalesDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
     end;
 
     var
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         IsConnectedToBillingLine: Boolean;
-        UsageDataEnabled: Boolean;
 }

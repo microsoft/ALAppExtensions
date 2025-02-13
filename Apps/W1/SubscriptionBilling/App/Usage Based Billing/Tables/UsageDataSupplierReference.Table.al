@@ -58,7 +58,7 @@ table 8015 "Usage Data Supplier Reference"
         {
         }
     }
-    procedure CreateSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")
+    internal procedure CreateSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")
     begin
         if Rec.FindSupplierReference(SupplierNo, SupplierReference, ReferenceType) then begin
             Rec.Reset();

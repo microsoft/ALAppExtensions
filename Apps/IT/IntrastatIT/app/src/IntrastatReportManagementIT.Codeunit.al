@@ -322,7 +322,7 @@ codeunit 148121 "Intrastat Report Management IT"
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCalculateTotalsCall', '', true, true)]
     local procedure OnBeforeCalculateTotalsCall(IntrastatReportHeader: Record "Intrastat Report Header"; var IntrastatReportLine: Record "Intrastat Report Line"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry";
-        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean; AmountInclItemCharges: Boolean)
+        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean)
     var
         IntrastatReportLine2: Record "Intrastat Report Line";
     begin
@@ -330,7 +330,7 @@ codeunit 148121 "Intrastat Report Management IT"
         ValueEntry.SetRange("Item Ledger Entry No.", ItemLedgerEntry."Entry No.");
         if ValueEntry.FindSet() then
             repeat
-                CalculateTotals(IntrastatReportHeader, ValueEntry, ItemLedgerEntry, StartDate, EndDate, AddCurrencyFactor, CurrReportSkip, AmountInclItemCharges);
+                CalculateTotals(IntrastatReportHeader, ValueEntry, ItemLedgerEntry, StartDate, EndDate, AddCurrencyFactor, CurrReportSkip);
 
                 if not CurrReportSkip then
                     if (TotalAmt <> 0) or (not SkipZeroAmounts) then
@@ -400,7 +400,7 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
-    local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean; AmountInclItemCharges: Boolean)
+    local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean)
     var
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchInvLine: Record "Purch. Inv. Line";
@@ -499,7 +499,7 @@ codeunit 148121 "Intrastat Report Management IT"
                             if SalesInvoiceLine.FindSet() then begin
                                 SalesInvoiceHeader.Get(ValueEntry."Document No.");
                                 repeat
-                                    TotalInvoicedQty -= SalesInvoiceLine."Quantity (Base)";
+                                    TotalInvoicedQty -= SalesInvoiceLine.Quantity;
                                     if SalesInvoiceHeader."Currency Factor" <> 0 then
                                         TotalAmt -= SalesInvoiceLine.Amount / SalesInvoiceHeader."Currency Factor"
                                     else
@@ -527,7 +527,7 @@ codeunit 148121 "Intrastat Report Management IT"
                                 if SalesCrMemoLine.FindSet() then begin
                                     SalesCrMemoHeader.Get(ValueEntry."Document No.");
                                     repeat
-                                        TotalInvoicedQty += SalesCrMemoLine."Quantity (Base)";
+                                        TotalInvoicedQty += SalesCrMemoLine.Quantity;
                                         if SalesCrMemoHeader."Currency Factor" <> 0 then
                                             TotalAmt += SalesCrMemoLine.Amount / SalesCrMemoHeader."Currency Factor"
                                         else
@@ -625,8 +625,7 @@ codeunit 148121 "Intrastat Report Management IT"
             end;
         OnCalculateTotalsOnAfterSumTotals(ItemLedgerEntry, IntrastatReportHeader, TotalAmt, TotalCostAmt);
 
-        if AmountInclItemCharges then
-            CalcTotalItemChargeAmt(IntrastatReportHeader, ValueEntry, AddCurrencyFactor);
+        CalcTotalItemChargeAmt(IntrastatReportHeader, ValueEntry, AddCurrencyFactor);
 
         OnAfterCalculateTotals(ItemLedgerEntry, IntrastatReportHeader, TotalAmt, TotalCostAmt);
     end;

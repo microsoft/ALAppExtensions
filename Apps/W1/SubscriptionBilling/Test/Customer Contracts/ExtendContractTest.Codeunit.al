@@ -1,6 +1,5 @@
 namespace Microsoft.SubscriptionBilling;
 
-using Microsoft.Finance.Currency;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Pricing;
@@ -10,151 +9,6 @@ codeunit 148152 "Extend Contract Test"
 {
     Subtype = Test;
     Access = Internal;
-
-    var
-        Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerPriceGroup: Record "Customer Price Group";
-        Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
-        Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
-        Assert: Codeunit Assert;
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        LibrarySales: Codeunit "Library - Sales";
-        SkipAssignAdditionalServiceCommitments: Boolean;
-        ServiceObjectQty: Decimal;
-        CustomerContractCard: TestPage "Customer Contract";
-
-    #region Tests
-
-    [Test]
-    [HandlerFunctions('ExtendContractModalPageHandler')]
-    procedure ExpectErrorIfItemNoIsEmpty()
-    begin
-        ResetGlobals();
-        ContractTestLibrary.InitContractsApp();
-        CreateCustomerAndVendorContracts();
-        asserterror InvokeExtendContractFromCustContractCard();
-        CustomerContractCard.Close();
-    end;
-
-    [Test]
-    [HandlerFunctions('ExtendContractModalPageHandler,MessageHandler')]
-    procedure ExpectNoneOfTheServiceCommitmentsToBeInContractExtension()
-    begin
-        // Create service commitment without standard package, only additional one
-        // Extend contract without selecting any additional packages
-        // Contract should not have any new lines
-        ResetGlobals();
-        SkipAssignAdditionalServiceCommitments := true;
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        CreateCustomerAndVendorContracts();
-
-        // Additional Service Commitment Package
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
-        Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
-        Evaluate(ServiceCommPackageLine."Notice Period", '<1M>');
-        Evaluate(ServiceCommPackageLine."Initial Term", '<1Y>');
-        Evaluate(ServiceCommPackageLine."Billing Rhythm", '<1M>');
-        ServiceCommPackageLine.Modify(false);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-
-        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
-
-        InvokeExtendContractFromCustContractCard();
-        ServiceObject.FindLast();
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
-        Assert.RecordCount(ServiceCommitment, 0);
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler')]
-    procedure ExtendContractWithDifferentBillToCustomerNoAndShipToCode()
-    var
-        Customer2: Record Customer;
-        ShipToAddress: Record "Ship-to Address";
-    begin
-        // [SCENARIO] Create Customer Contract with different Bill to Customer No. and Ship-to Code
-        // [SCENARIO] Run Extend Contract action and expect that the data from the Customer contract will be transferred to newly Service Object
-        ResetGlobals();
-        ContractTestLibrary.InitContractsApp();
-
-        // [GIVEN] Create two customers, additional Ship to Address and assign it to a Customer Contract
-        // [GIVEN] Create Service Commitment Item
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateCustomer(Customer);
-        LibrarySales.CreateShipToAddress(ShipToAddress, Customer."No.");
-
-        ContractTestLibrary.CreateCustomer(Customer2);
-        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
-        CustomerContract.Validate("Bill-to Customer No.", Customer2."No.");
-        CustomerContract.Validate("Ship-to Code", ShipToAddress.Code);
-        CustomerContract.Modify(false);
-        Assert.AreEqual(Customer2."No.", CustomerContract."Bill-to Customer No.", 'Unexpected Bill-to Customer No. in Customer Contract.');
-        Assert.AreEqual(ShipToAddress.Code, CustomerContract."Ship-to Code", 'Unexpected Ship-to Code in Customer Contract.');
-        SetupItemWithMultipleServiceCommitmentPackages();
-
-        // [WHEN] Call InsertFromItemNoAndCustomerContract
-        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
-        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", ServiceObjectQty, WorkDate(), CustomerContract);
-
-        // [THEN] Check if the data in Service Object is transferred from Customer Contract
-        ServiceObject.TestField("End-User Customer No.", CustomerContract."Sell-to Customer No.");
-        ServiceObject.TestField("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
-        ServiceObject.TestField("Ship-to Code", CustomerContract."Ship-to Code");
-    end;
-
-    [Test]
-    procedure ServiceCommitmentCurrencyFactorUpdatedFromCustomerContractLineWithDifferentCurrencyCode()
-    var
-        Currency: Record Currency;
-        MockCustomerContract: Record "Customer Contract";
-        MockServiceCommitment: Record "Service Commitment";
-        MockServiceObject: Record "Service Object";
-        LibraryERM: Codeunit "Library - ERM";
-        ProvisionStartDate: Date;
-        ExchangeRateAmount: Decimal;
-    begin
-        // [SCENARIO] Check if currency factor is updated in Service commitment, when Customer Contract Line with Different Currency Code is Created from serv. commitment
-        // [GIVEN] Create Dummy Service Object, Customer Contract (Currency2), Service Commitment (LCY)
-        LibraryERM.CreateCurrency(Currency);
-        ExchangeRateAmount := LibraryRandom.RandDec(1000, 2);
-        ProvisionStartDate := LibraryRandom.RandDateFrom(WorkDate(), 12);
-        LibraryERM.CreateExchangeRate(Currency.Code, ProvisionStartDate, ExchangeRateAmount, LibraryRandom.RandDec(10, 2));
-
-        MockServiceObject.Init();
-        MockServiceObject."Provision Start Date" := ProvisionStartDate;
-        MockServiceObject.Insert(false);
-
-        MockCustomerContract.Init();
-        MockCustomerContract."Currency Code" := Currency.Code;
-        MockCustomerContract.Insert(false);
-
-        MockServiceCommitment.Init();
-        MockServiceCommitment."Service Object No." := MockServiceObject."No.";
-        MockServiceCommitment."Service Start Date" := MockServiceObject."Provision Start Date";
-        MockServiceCommitment.Insert(false);
-
-        // [WHEN] Create Customer Contract Line from Service Commitment
-        MockCustomerContract.CreateCustomerContractLineFromServiceCommitment(MockServiceCommitment, MockCustomerContract."No.");
-
-        // [THEN] Test if currency data is updated in service commitment
-        MockServiceCommitment.Get(MockServiceCommitment."Entry No.");
-        MockServiceCommitment.TestField("Currency Code", Currency.Code);
-        MockServiceCommitment.TestField("Currency Factor", ExchangeRateAmount);
-        MockServiceCommitment.TestField("Currency Factor Date", MockServiceObject."Provision Start Date");
-    end;
 
     [Test]
     [HandlerFunctions('TestExtendContractModalPageHandler')]
@@ -171,6 +25,66 @@ codeunit 148152 "Extend Contract Test"
         CreateCustomerAndVendorContracts();
         InvokeExtendContractFromCustContractCard();
         CustomerContractCard.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtendContractModalPageHandler')]
+    procedure ExpectErrorIfItemNoIsEmpty()
+    begin
+        ResetGlobals();
+        ContractTestLibrary.InitContractsApp();
+        CreateCustomerAndVendorContracts();
+        asserterror InvokeExtendContractFromCustContractCard();
+        CustomerContractCard.Close();
+    end;
+
+    [Test]
+    procedure TestServiceObjectOnAfterExtendContractStandardPackage()
+    begin
+        ResetGlobals();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        CreateCustomerAndVendorContracts();
+        SetupItemWithMultipleServiceCommitmentPackages();
+        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
+        ServiceObject.InsertFromItemNoAndSelltoCustomerNo(ServiceObject, Item."No.", ServiceObjectQty, CustomerContract."Sell-to Customer No.", WorkDate());
+        CheckCreatedServiceObject();
+
+        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(ServiceObject."Provision Start Date");
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
+        ItemServCommitmentPackage.SetRange(Standard, true);
+        ItemServCommitmentPackage.FindSet();
+        repeat
+            ServiceCommPackageLine.SetRange("Package Code", ItemServCommitmentPackage.Code);
+            if ServiceCommPackageLine.FindFirst() then
+                CheckAssignedSalesServiceCommitmentValues(ServiceCommitment, ServiceCommPackageLine);
+        until ItemServCommitmentPackage.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ExtendContractModalPageHandler,AssignServiceCommPackagesModalPageHandler,MessageHandler')]
+
+    procedure TestServiceObjectOnAfterExtendContractStandardAllPackages()
+    begin
+        ResetGlobals();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        CreateCustomerAndVendorContracts();
+        SetupItemWithMultipleServiceCommitmentPackages();
+        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
+
+        InvokeExtendContractFromCustContractCard();
+        CheckCreatedServiceObject();
+
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
+        ItemServCommitmentPackage.FindSet();
+        repeat
+            ServiceCommPackageLine.SetRange("Package Code", ItemServCommitmentPackage.Code);
+            if ServiceCommPackageLine.FindFirst() then
+                CheckAssignedSalesServiceCommitmentValues(ServiceCommitment, ServiceCommPackageLine);
+        until ItemServCommitmentPackage.Next() = 0;
     end;
 
     [Test]
@@ -203,7 +117,7 @@ codeunit 148152 "Extend Contract Test"
             ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
             ServiceCommitment.SetRange(Template, ServiceCommPackageLine.Template);
             ServiceCommitment.SetRange("Package Code", ServiceCommPackageLine."Package Code");
-            ServiceCommitment.FindFirst(); // Checks if Customer contract lines are created
+            ServiceCommitment.FindFirst(); //Checks if Customer contract lines are created
             if ServiceCommitment.IsPartnerCustomer() then
                 ServiceCommitment.TestField("Contract No.", CustomerContract."No.")
             else
@@ -212,131 +126,44 @@ codeunit 148152 "Extend Contract Test"
     end;
 
     [Test]
-    [HandlerFunctions('ExtendContractModalPageHandler,AssignServiceCommPackagesModalPageHandler,MessageHandler')]
-    procedure TestServiceObjectOnAfterExtendContractStandardAllPackages()
+    [HandlerFunctions('ExtendContractModalPageHandler,MessageHandler')]
+    procedure ExpectNoneOfTheServiceCommitmentsToBeInContractExtension()
     begin
+        //Create service commitment without standard package, only additional one
+        //Extend contract without selecting any additional packages
+        //Contract should not have any new lines
         ResetGlobals();
+        SkipAssignAdditionalServiceCommitments := true;
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         CreateCustomerAndVendorContracts();
-        SetupItemWithMultipleServiceCommitmentPackages();
+
+        //Additional Service Commitment Package
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
+        Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
+        Evaluate(ServiceCommPackageLine."Notice Period", '<1M>');
+        Evaluate(ServiceCommPackageLine."Initial Term", '<1Y>');
+        Evaluate(ServiceCommPackageLine."Billing Rhythm", '<1M>');
+        ServiceCommPackageLine.Modify(false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+
         ServiceObjectQty := LibraryRandom.RandDec(10, 2);
 
         InvokeExtendContractFromCustContractCard();
-        CheckCreatedServiceObject();
-
+        ServiceObject.FindLast();
+        ServiceCommitment.Reset();
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
-        ItemServCommitmentPackage.FindSet();
-        repeat
-            ServiceCommPackageLine.SetRange("Package Code", ItemServCommitmentPackage.Code);
-            if ServiceCommPackageLine.FindFirst() then
-                CheckAssignedSalesServiceCommitmentValues(ServiceCommitment, ServiceCommPackageLine);
-        until ItemServCommitmentPackage.Next() = 0;
+        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        Assert.RecordCount(ServiceCommitment, 0);
     end;
 
-    [Test]
-    procedure TestServiceObjectOnAfterExtendContractStandardPackage()
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
     begin
-        ResetGlobals();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        CreateCustomerAndVendorContracts();
-        SetupItemWithMultipleServiceCommitmentPackages();
-        ServiceObjectQty := LibraryRandom.RandDec(10, 2);
-        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", ServiceObjectQty, WorkDate(), CustomerContract);
-        CheckCreatedServiceObject();
-
-        ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(ServiceObject."Provision Start Date");
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
-        ItemServCommitmentPackage.SetRange(Standard, true);
-        ItemServCommitmentPackage.FindSet();
-        repeat
-            ServiceCommPackageLine.SetRange("Package Code", ItemServCommitmentPackage.Code);
-            if ServiceCommPackageLine.FindFirst() then
-                CheckAssignedSalesServiceCommitmentValues(ServiceCommitment, ServiceCommPackageLine);
-        until ItemServCommitmentPackage.Next() = 0;
     end;
 
-    [Test]
-    procedure TranslateItemDescriptionBasedOnCustomerLanguageCodeWhenExtendContract()
-    var
-        ItemTranslation: Record "Item Translation";
-    begin
-        // [SCENARIO] When Extend Contract action is run for Item with translation defined that match Customer Language Code, Item Description in Service Object should be translated
-
-        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Customer Contract
-        ClearAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
-        CreateCustomerWithLanguageCode(ItemTranslation."Language Code");
-        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
-
-        // [WHEN] Extend Contract with Item
-        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, Item."No.", LibraryRandom.RandDec(10, 2), WorkDate(), CustomerContract);
-
-        // [THEN] Item Description should be translated in Service Object
-        Assert.AreEqual(ItemTranslation.Description, ServiceObject.Description, 'Item description should be translated in Service Object');
-    end;
-
-    [Test]
-    procedure UT_GetItemTranslationFunctionReturnsBlankWhenItemNoIsBlank()
-    var
-        ContractsItemManagement: Codeunit "Contracts Item Management";
-        Result: Text[100];
-    begin
-        // [SCENARIO] GetItemTranslation function returns blank value whenever the Item No. is blank
-
-        // [GIVEN]
-        ResetGlobals();
-
-        // [WHEN] GetItemTranslation function is called with blank Item No
-        Result := ContractsItemManagement.GetItemTranslation('', '', '');
-
-        // [THEN] Return value of the function GetItemTranslation is blank
-        Assert.AreEqual('', Result, 'GetItemTranslation should return a blank value when Item No. is blank.');
-    end;
-
-    [Test]
-    procedure UT_UpdateExistingItemDescriptionWhenSetCustomerOnExtendContract()
-    var
-        ItemTranslation: Record "Item Translation";
-        ExtendContract: TestPage "Extend Contract";
-    begin
-        // [SCENARIO] When set Customer on Extend Contract with existing Item, Item Description is updated based on Customer Language Code
-
-        // [GIVEN] Create: Language, Service Commitment Item with translation defined, Customer with Language Code, Customer Contract, Set Item on Extend Contract page
-        ResetGlobals();
-
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
-        CreateCustomerWithLanguageCode(ItemTranslation."Language Code");
-        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
-
-        // [GIVEN] Setting Item on Extend Contract page first
-        ExtendContract.OpenEdit();
-        ExtendContract.ExtendCustomerContract.SetValue(false);
-        ExtendContract.ItemNo.SetValue(Item."No.");
-        ExtendContract.ItemDescription.AssertEquals(Item.Description);
-        ExtendContract.Close();
-
-        // [WHEN] Customer with Language Code is set on Extend Contract page
-        ExtendContract.OpenEdit();
-        ExtendContract.ExtendCustomerContract.SetValue(true);
-        ExtendContract.CustomerContractNo.SetValue(CustomerContract."No.");
-
-        // [THEN] Item Description should be updated based on Customer Language Code if exist
-        ExtendContract.ItemDescription.AssertEquals(ItemTranslation.Description);
-    end;
-
-    #endregion Tests
-
-    #region Procedures
-
-    local procedure SetupItemWithMultipleServiceCommitmentPackages()
+    procedure SetupItemWithMultipleServiceCommitmentPackages()
     begin
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDec(100, 2);
@@ -344,9 +171,9 @@ codeunit 148152 "Extend Contract Test"
         ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Contract;
         ServiceCommitmentTemplate.Modify(false);
 
-        // Standard Service Comm. Package with two Service Comm. Package Lines
-        // 1. for Customer
-        // 2. for Vendor
+        //Standard Service Comm. Package with two Service Comm. Package Lines
+        //1. for Customer
+        //2. for Vendor
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -364,7 +191,7 @@ codeunit 148152 "Extend Contract Test"
         ServiceCommPackageLine.Modify(false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
 
-        // Additional Service Commitment Package
+        //Additional Service Commitment Package
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -373,6 +200,22 @@ codeunit 148152 "Extend Contract Test"
         Evaluate(ServiceCommPackageLine."Billing Rhythm", '<1M>');
         ServiceCommPackageLine.Modify(false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
+    end;
+
+    local procedure SetupItemWithAdditionalServiceCommitmentPackageWithCustomerPricingGroup()
+    begin
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
+        Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
+        Evaluate(ServiceCommPackageLine."Notice Period", '<1M>');
+        Evaluate(ServiceCommPackageLine."Initial Term", '<1Y>');
+        Evaluate(ServiceCommPackageLine."Billing Rhythm", '<1M>');
+        ServiceCommPackageLine.Modify(false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+        LibrarySales.CreateCustomerPriceGroup(CustomerPriceGroup);
+        ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
+        ItemServCommitmentPackage.Validate("Price Group", CustomerPriceGroup.Code);
+        ItemServCommitmentPackage.Modify(false);
     end;
 
     local procedure CheckAssignedSalesServiceCommitmentValues(var ServiceCommitmentToTest: Record "Service Commitment"; var SourceServiceCommPackageLine: Record "Service Comm. Package Line")
@@ -405,28 +248,6 @@ codeunit 148152 "Extend Contract Test"
         ServiceObject.TestField("Unit of Measure", Item."Base Unit of Measure");
     end;
 
-    local procedure CreateCustomerAndVendorContracts()
-    begin
-        ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
-        ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
-    end;
-
-    local procedure CreateCustomerWithLanguageCode(LanguageCode: Text[10])
-    begin
-        LibrarySales.CreateCustomer(Customer);
-        Customer.Validate("Language Code", LanguageCode);
-        Customer.Modify(true);
-    end;
-
-    local procedure InvokeExtendContractFromCustContractCard()
-    begin
-        CustomerContractCard.OpenEdit();
-        CustomerContractCard.GoToRecord(CustomerContract);
-        CustomerContractCard.ExtendContract.Invoke();
-    end;
-
     local procedure ResetGlobals()
     begin
         ClearAll();
@@ -440,55 +261,19 @@ codeunit 148152 "Extend Contract Test"
         ItemServCommitmentPackage.DeleteAll(false);
     end;
 
-    local procedure SetupItemWithAdditionalServiceCommitmentPackageWithCustomerPricingGroup()
+    local procedure CreateCustomerAndVendorContracts()
     begin
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
-        Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
-        Evaluate(ServiceCommPackageLine."Notice Period", '<1M>');
-        Evaluate(ServiceCommPackageLine."Initial Term", '<1Y>');
-        Evaluate(ServiceCommPackageLine."Billing Rhythm", '<1M>');
-        ServiceCommPackageLine.Modify(false);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-        LibrarySales.CreateCustomerPriceGroup(CustomerPriceGroup);
-        ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
-        ItemServCommitmentPackage.Validate("Price Group", CustomerPriceGroup.Code);
-        ItemServCommitmentPackage.Modify(false);
-    end;
-    #endregion Procedures
-
-    #region Handlers
-
-    [ModalPageHandler]
-    procedure AssignServiceCommPackagesModalPageHandler(var AssignServiceCommPackages: TestPage "Assign Service Comm. Packages")
-    begin
-        AssignServiceCommPackages.First();
-        AssignServiceCommPackages.Selected.SetValue(true);
-        AssignServiceCommPackages.OK().Invoke();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+        ContractTestLibrary.CreateVendor(Vendor);
+        ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
     end;
 
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    local procedure InvokeExtendContractFromCustContractCard()
     begin
-        Reply := true;
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
-
-    [ModalPageHandler]
-    procedure ExtendContractModalPageHandler(var ExtendContract: TestPage "Extend Contract")
-    begin
-        ExtendContract.ExtendVendorContract.SetValue(true);
-        ExtendContract.VendorContractNo.SetValue(VendorContract."No.");
-        ExtendContract.ItemNo.SetValue(Item."No.");
-        ExtendContract.Quantity.SetValue(ServiceObjectQty);
-        ExtendContract.ProvisionStartDate.SetValue(WorkDate());
-        if not SkipAssignAdditionalServiceCommitments then
-            ExtendContract.AdditionalServiceCommitments.AssistEdit();
-        ExtendContract."Perform Extension".Invoke();
+        CustomerContractCard.OpenEdit();
+        CustomerContractCard.GoToRecord(CustomerContract);
+        CustomerContractCard.ExtendContract.Invoke();
     end;
 
     [ModalPageHandler]
@@ -511,5 +296,45 @@ codeunit 148152 "Extend Contract Test"
         ExtendContract.Cancel().Invoke();
     end;
 
-    #endregion Handlers
+    [ModalPageHandler]
+    procedure ExtendContractModalPageHandler(var ExtendContract: TestPage "Extend Contract")
+    begin
+        ExtendContract.ExtendVendorContract.SetValue(true);
+        ExtendContract.VendorContractNo.SetValue(VendorContract."No.");
+        ExtendContract.ItemNo.SetValue(Item."No.");
+        ExtendContract.Quantity.SetValue(ServiceObjectQty);
+        ExtendContract.ProvisionStartDate.SetValue(WorkDate());
+        if not SkipAssignAdditionalServiceCommitments then
+            ExtendContract.AdditionalServiceCommitments.AssistEdit();
+        ExtendContract."Perform Extension".Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure AssignServiceCommPackagesModalPageHandler(var AssignServiceCommPackages: TestPage "Assign Service Comm. Packages")
+    begin
+        AssignServiceCommPackages.First();
+        AssignServiceCommPackages.Selected.SetValue(true);
+        AssignServiceCommPackages.OK().Invoke();
+    end;
+
+    var
+        CustomerContract: Record "Customer Contract";
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        Item: Record Item;
+        Customer: Record Customer;
+        ServiceCommitment: Record "Service Commitment";
+        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ServiceObject: Record "Service Object";
+        VendorContract: Record "Vendor Contract";
+        Vendor: Record Vendor;
+        CustomerPriceGroup: Record "Customer Price Group";
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        Assert: Codeunit Assert;
+        LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
+        ServiceObjectQty: Decimal;
+        CustomerContractCard: TestPage "Customer Contract";
+        SkipAssignAdditionalServiceCommitments: Boolean;
 }

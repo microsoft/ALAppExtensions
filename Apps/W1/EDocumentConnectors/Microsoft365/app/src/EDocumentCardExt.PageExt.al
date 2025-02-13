@@ -2,42 +2,43 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.eServices.EDocument;
 
-pageextension 6385 EDocumentCardExt extends "E-Document"
+pageextension 6384 EDocumentCardExt extends "E-Document"
 {
-    actions
+    layout
     {
-        addlast(Processing)
+        addafter(General)
         {
-            action(ViewMailMessage)
+            group(Service)
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'View e-mail message';
-                ToolTip = 'View the source e-mail message.';
-                Image = Email;
-                Visible = EmailActionsVisible;
+                Caption = 'Service';
+                Visible = ServiceFieldGroupVisible;
 
-                trigger OnAction()
-                var
-                    OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
-                begin
-                    if (Rec."Mail Message Id" <> '') then
-                        HyperLink(StrSubstNo(OutlookIntegrationImpl.WebLinkText(), Rec."Mail Message Id"))
-                end;
+                field("File Id"; Rec."File Id")
+                {
+                    ApplicationArea = All;
+                    Caption = 'File Name';
+                    ToolTip = 'Specifies the name of the attached file';
+                    Visible = ServiceFieldGroupVisible;
+                    Editable = false;
+
+                    trigger OnDrillDown()
+                    var
+                        IntegrationImpl: Codeunit "Integration Impl.";
+                    begin
+                        IntegrationImpl.PreviewContent(Rec);
+                    end;
+                }
             }
-        }
-        addafter(Preview_promoteed)
-        {
-            actionref(Promoted_ViewMailMessage; ViewMailMessage) { }
         }
     }
 
     trigger OnOpenPage()
     var
-        OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
+        IntegrationImpl: Codeunit "Integration Impl.";
     begin
-        OutlookIntegrationImpl.SetConditionalVisibilityFlag(Rec, EmailActionsVisible);
+        IntegrationImpl.SetConditionalVisibilityFlag(ServiceFieldGroupVisible);
     end;
 
     var
-        EmailActionsVisible: Boolean;
+        ServiceFieldGroupVisible: Boolean;
 }

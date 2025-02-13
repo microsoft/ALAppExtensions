@@ -1,6 +1,5 @@
 namespace Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using Microsoft.eServices.EDocument.OrderMatch;
-using Microsoft.Purchases.Setup;
 
 page 6163 "E-Doc. PO Match Prop. Sub"
 {
@@ -45,21 +44,9 @@ page 6163 "E-Doc. PO Match Prop. Sub"
 
                     trigger OnDrillDown()
                     begin
-                        TempEDocOrderMatches.SetRange("E-Document Line No.", Rec."E-Document Line No.");
-                        Page.Run(Page::"E-Doc. Order Match", TempEDocOrderMatches);
-                        TempEDocOrderMatches.SetRange("E-Document Line No.");
-                    end;
-                }
-                field("Learn Matching Rule"; Rec."Learn Matching Rule")
-                {
-                    ApplicationArea = All;
-                    Tooltip = 'Specifies whether a matching rule should be created for this proposal. Item references are created for Items and Text To Account mappings are created for G/L Accounts.';
-
-                    trigger OnValidate()
-                    begin
-                        TempEDocOrderMatches.Get(Rec."Document Order No.", Rec."Document Line No.", Rec."E-Document Entry No.", Rec."E-Document Line No.");
-                        TempEDocOrderMatches."Learn Matching Rule" := Rec."Learn Matching Rule";
-                        TempEDocOrderMatches.Modify();
+                        TempEdocOrderMatches.SetRange("E-Document Line No.", Rec."E-Document Line No.");
+                        Page.Run(Page::"E-Doc. Order Match", TempEdocOrderMatches);
+                        TempEdocOrderMatches.SetRange("E-Document Line No.");
                     end;
                 }
             }
@@ -67,37 +54,33 @@ page 6163 "E-Doc. PO Match Prop. Sub"
     }
 
     var
-        TempEDocOrderMatches: Record "E-Doc. Order Match" temporary;
+        TempEdocOrderMatches: Record "E-Doc. Order Match" temporary;
         StyleTxt: Text;
 
-    internal procedure GetRecords(var TempEDocOrderMatches2: Record "E-Doc. Order Match" temporary)
+    internal procedure GetRecords(var TempEdocOrderMatches2: Record "E-Doc. Order Match" temporary)
     begin
-        Clear(TempEDocOrderMatches2);
-        if TempEDocOrderMatches.FindSet() then
+        Clear(TempEdocOrderMatches2);
+        if TempEdocOrderMatches.FindSet() then
             repeat
-                TempEDocOrderMatches2.TransferFields(TempEDocOrderMatches);
-                TempEDocOrderMatches2.Insert();
-            until TempEDocOrderMatches.Next() = 0;
+                TempEdocOrderMatches2.TransferFields(TempEdocOrderMatches);
+                TempEdocOrderMatches2.Insert();
+            until TempEdocOrderMatches.Next() = 0;
     end;
 
-    internal procedure Load(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer"; var TempInputEDocOrderMatches: Record "E-Doc. Order Match" temporary)
-    var
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+    internal procedure Load(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer"; var TempInputEdocOrderMatches: Record "E-Doc. Order Match" temporary)
     begin
-        if PurchasesPayablesSetup.Get() then;
         TempAIProposalBuffer.Reset();
         if TempAIProposalBuffer.FindSet() then
             repeat
                 Rec.TransferFields(TempAIProposalBuffer);
-                Rec."Learn Matching Rule" := PurchasesPayablesSetup."E-Document Learn Copilot Matchings";
                 Rec.Insert();
             until TempAIProposalBuffer.Next() = 0;
 
-        if TempInputEDocOrderMatches.FindSet() then
+        if TempInputEdocOrderMatches.FindSet() then
             repeat
-                TempEDocOrderMatches := TempInputEDocOrderMatches;
-                TempEDocOrderMatches.Insert();
-            until TempInputEDocOrderMatches.Next() = 0;
+                TempEdocOrderMatches := TempInputEdocOrderMatches;
+                TempEdocOrderMatches.Insert();
+            until TempInputEdocOrderMatches.Next() = 0;
     end;
 
     trigger OnAfterGetRecord();
@@ -107,11 +90,11 @@ page 6163 "E-Doc. PO Match Prop. Sub"
 
     trigger OnDeleteRecord(): Boolean
     begin
-        TempEDocOrderMatches.SetRange("E-Document Line No.", Rec."E-Document Line No.");
-        if TempEDocOrderMatches.FindSet() then
+        TempEdocOrderMatches.SetRange("E-Document Line No.", Rec."E-Document Line No.");
+        if TempEdocOrderMatches.FindSet() then
             repeat
-                TempEDocOrderMatches.Delete();
-            until TempEDocOrderMatches.Next() = 0;
-        TempEDocOrderMatches.Reset();
+                TempEdocOrderMatches.Delete();
+            until TempEdocOrderMatches.Next() = 0;
+        TempEdocOrderMatches.Reset();
     end;
 }

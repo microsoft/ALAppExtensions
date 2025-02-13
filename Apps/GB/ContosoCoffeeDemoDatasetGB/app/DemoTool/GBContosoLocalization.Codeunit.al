@@ -33,7 +33,7 @@ codeunit 11487 "GB Contoso Localization"
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Master Data":
+            Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create GB Company Information");
         end;
     end;
@@ -66,7 +66,6 @@ codeunit 11487 "GB Contoso Localization"
         CreateGBVATPostingGroup: Codeunit "Create GB VAT Posting Group";
         CreateGBGenPostingSetup: Codeunit "Create GB Gen Posting Setup";
         CreateGBGLAccounts: Codeunit "Create GB GL Accounts";
-        CreateGBGeneralLedgerSetup: Codeunit "Create GB General Ledger Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -76,14 +75,13 @@ codeunit 11487 "GB Contoso Localization"
                     CreateGBGenPostingSetup.UpdateGenPostingSetup();
                     CreateGBVATPostingGroup.UpdateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create GB Column Layout Name");
-                    Codeunit.Run(Codeunit::"Create GB VAT Report Setup");
-                    Codeunit.Run(Codeunit::"Create GB VAT Statement");
-                    Codeunit.Run(Codeunit::"Create GB Gen. Journal Batch");
+                    Codeunit.Run(Codeunit::"Create GB VAT Report Setup")
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create GB Column Layout");
-                    CreateGBGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
+                    Codeunit.Run(Codeunit::"Create GB VAT Statement");
+                    Codeunit.Run(Codeunit::"Create GB Gen. Journal Batch");
                 end;
         end;
     end;
@@ -102,6 +100,7 @@ codeunit 11487 "GB Contoso Localization"
         CreateGBInvPostingSetup: Codeunit "Create GB Inv Posting Setup";
         CreateGBBankAccPostingGrp: Codeunit "Create GB Bank Acc Posting Grp";
         CreateGBPaymentMethod: Codeunit "Create GB Payment Method";
+        CreateGBBankAccRec: Codeunit "Create GB Bank Acc. Rec.";
         CreateGBVendor: Codeunit "Create GB Vendor";
         CreateGBVATStatement: Codeunit "Create GB VAT Statement";
         CreateGBVATSetupPostGrp: Codeunit "Create GB VAT Setup Post. Grp.";
@@ -125,6 +124,7 @@ codeunit 11487 "GB Contoso Localization"
                 begin
                     BindSubscription(CreateGBBankAccPostingGrp);
                     BindSubscription(CreateGBPaymentMethod);
+                    BindSubscription(CreateGBBankAccRec);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
@@ -162,6 +162,7 @@ codeunit 11487 "GB Contoso Localization"
         CreateGBInvPostingSetup: Codeunit "Create GB Inv Posting Setup";
         CreateGBBankAccPostingGrp: Codeunit "Create GB Bank Acc Posting Grp";
         CreateGBPaymentMethod: Codeunit "Create GB Payment Method";
+        CreateGBBankAccRec: Codeunit "Create GB Bank Acc. Rec.";
         CreateGBVendor: Codeunit "Create GB Vendor";
         CreateGBVATSetupPostGrp: Codeunit "Create GB VAT Setup Post. Grp.";
         CreateGBVATStatement: Codeunit "Create GB VAT Statement";
@@ -183,6 +184,7 @@ codeunit 11487 "GB Contoso Localization"
                 begin
                     UnbindSubscription(CreateGBBankAccPostingGrp);
                     UnbindSubscription(CreateGBPaymentMethod);
+                    UnbindSubscription(CreateGBBankAccRec);
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 UnbindSubscription(CreateGBInvPostingSetup);

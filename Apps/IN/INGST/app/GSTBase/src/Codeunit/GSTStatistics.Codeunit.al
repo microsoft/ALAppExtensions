@@ -247,9 +247,6 @@ codeunit 18006 "GST Statistics"
         GSTStatsManagement: Codeunit "GST Stats Management";
         RCMAmount: Decimal;
     begin
-        if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import then
-            exit;
-
         GSTAmount := GSTStatsManagement.GetGstStatsAmount();
         GetPurchaseRCMStatisticsAmount(PurchaseHeader, RCMAmount);
         GSTAmount := GSTAmount - RCMAmount;

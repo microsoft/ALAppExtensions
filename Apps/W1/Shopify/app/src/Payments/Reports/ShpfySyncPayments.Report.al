@@ -18,10 +18,9 @@ report 30105 "Shpfy Sync Payments"
 
             trigger OnAfterGetRecord()
             var
-                Payments: Codeunit "Shpfy Payments";
+                Sync: Codeunit "Shpfy Payments";
             begin
-                Payments.SetShop(Shop);
-                Payments.SyncPaymentTransactions();
+                Sync.Run(Shop);
             end;
         }
     }

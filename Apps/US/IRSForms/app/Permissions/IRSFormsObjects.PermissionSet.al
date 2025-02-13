@@ -47,7 +47,6 @@ permissionset 10032 "IRS Forms - Objects"
                   codeunit "IRS Forms Facade" = X,
                   codeunit "IRS Reporting Period" = X,
                   report "IRS 1099 Create Form Docs" = X,
-                  report "IRS 1099 FIRE" = X,
                   report "IRS 1099 Print" = X,
                   report "IRS 1099 Send Email" = X;
 }

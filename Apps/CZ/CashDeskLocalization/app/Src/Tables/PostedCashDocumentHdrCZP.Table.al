@@ -39,7 +39,6 @@ table 11737 "Posted Cash Document Hdr. CZP"
         field(2; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(3; "Pay-to/Receive-from Name"; Text[100])
@@ -215,7 +214,6 @@ table 11737 "Posted Cash Document Hdr. CZP"
         field(65; "Payment Purpose"; Text[100])
         {
             Caption = 'Payment Purpose';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(70; "Received By"; Text[100])
@@ -236,13 +234,11 @@ table 11737 "Posted Cash Document Hdr. CZP"
         field(73; "Received From"; Text[100])
         {
             Caption = 'Received From';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(74; "Paid To"; Text[100])
         {
             Caption = 'Paid To';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(80; "Registration No."; Text[20])

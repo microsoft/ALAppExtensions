@@ -609,6 +609,7 @@ table 8052 "Customer Contract"
                 PostCode.LookupPostCode(ShipToCity, "Ship-to Post Code", ShipToCounty, "Ship-to Country/Region Code");
                 "Ship-to City" := CopyStr(ShipToCity, 1, MaxStrLen("Ship-to City"));
                 "Ship-to County" := CopyStr(ShipToCounty, 1, MaxStrLen("Ship-to County"));
+
             end;
 
             trigger OnValidate()
@@ -673,6 +674,7 @@ table 8052 "Customer Contract"
                 DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+
         field(5052; "Sell-to Contact No."; Code[20])
         {
             Caption = 'Sell-to Contact No.';
@@ -816,7 +818,7 @@ table 8052 "Customer Contract"
             TableRelation = "Contract Type";
             Caption = 'Contract Type';
 
-            trigger OnValidate()
+            trigger onValidate()
             begin
                 ClearHarmonizedBillingFields(Rec."Contract Type", xRec."Contract Type");
                 SetDefaultWithoutContractDeferralsFromContractType();
@@ -1091,6 +1093,7 @@ table 8052 "Customer Contract"
         CustomerContractLine.SetRange("Contract No.", Rec."No.");
         exit(not CustomerContractLine.IsEmpty());
     end;
+
 
     internal procedure NotReleasedCustomerContractDeferralsExists(): Boolean
     begin
@@ -1979,7 +1982,6 @@ table 8052 "Customer Contract"
 
         ServiceCommitment.GetCombinedDimensionSetID(ServiceCommitment."Dimension Set ID", CustomerContract."Dimension Set ID");
         if "Currency Code" <> ServiceCommitment."Currency Code" then begin
-            CalculateCurrencyFactor(ServiceCommitment."Service Start Date", CustomerContract."Currency Code");
             ServiceCommitment.SetCurrencyData(CurrencyFactor, CurrencyFactorDate, CustomerContract."Currency Code");
             ServiceCommitment.RecalculateAmountsFromCurrencyData();
         end;
@@ -2025,7 +2027,6 @@ table 8052 "Customer Contract"
             "Default Billing Rhythm" := ServiceCommitment."Billing Rhythm";
         end;
         CalculateNextBillingDates();
-        OnAfterUpdateHarmonizedBillingFields(Rec);
     end;
 
     internal procedure CalculateNextBillingDates()
@@ -2207,23 +2208,6 @@ table 8052 "Customer Contract"
         AppendDifferentShipToAddressNotification(ServiceObject."No.");
     end;
 
-    local procedure CalculateCurrencyFactor(ProvisionStartDate: Date; CurrencyCode: Code[10])
-    var
-        CurrExchRage: Record "Currency Exchange Rate";
-    begin
-        if CurrencyCode = '' then
-            exit;
-        if CurrencyFactor <> 0 then
-            exit;
-        if CurrencyFactorDate <> 0D then
-            exit;
-        if ProvisionStartDate = 0D then
-            exit;
-
-        CurrencyFactorDate := ProvisionStartDate;
-        CurrencyFactor := CurrExchRage.ExchangeRate(ProvisionStartDate, CurrencyCode)
-    end;
-
     [InternalEvent(false, false)]
     local procedure OnAfterIsShipToAddressEqualToSellToAddress(SellToCustomerContract: Record "Customer Contract"; ShipToCustomerContract: Record "Customer Contract"; var Result: Boolean)
     begin
@@ -2294,6 +2278,7 @@ table 8052 "Customer Contract"
     begin
     end;
 
+
     [InternalEvent(false, false)]
     local procedure OnBeforeCopyShipToCustomerAddressFieldsFromCustomer(var CustomerContract: Record "Customer Contract"; Customer: Record Customer; var IsHandled: Boolean)
     begin
@@ -2353,6 +2338,7 @@ table 8052 "Customer Contract"
     local procedure OnInitFromContactOnAfterInitNoSeries(var CustomerContract: Record "Customer Contract"; var xCustomerContract: Record "Customer Contract")
     begin
     end;
+
 
     [InternalEvent(false, false)]
     local procedure OnValidateSellToCustomerNoAfterInit(var CustomerContract: Record "Customer Contract"; var xCustomerContract: Record "Customer Contract")
@@ -2446,11 +2432,6 @@ table 8052 "Customer Contract"
 
     [InternalEvent(false, false)]
     local procedure OnAfterCreateDimDimSource(Rec: Record "Customer Contract"; CurrFieldNo: Integer; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
-    begin
-    end;
-
-    [IntegrationEvent(true, false)]
-    local procedure OnAfterUpdateHarmonizedBillingFields(var CustomerContract: Record "Customer Contract")
     begin
     end;
 }

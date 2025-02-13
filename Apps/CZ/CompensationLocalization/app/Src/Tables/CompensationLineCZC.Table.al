@@ -94,11 +94,9 @@ table 31273 "Compensation Line CZC"
 
             trigger OnLookup()
             var
-                CompensationsSetup: Record "Compensations Setup CZC";
                 CustLedgerEntry: Record "Cust. Ledger Entry";
                 VendorLedgerEntry: Record "Vendor Ledger Entry";
             begin
-                CompensationsSetup.Get();
                 case "Source Type" of
                     "Source Type"::Customer:
                         begin
@@ -106,8 +104,7 @@ table 31273 "Compensation Line CZC"
                             CustLedgerEntry.SetRange(Open, true);
                             CustLedgerEntry.SetRange(Prepayment, false);
                             CustLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
-                            if not CompensationsSetup."Including Entries with On Hold" then
-                                CustLedgerEntry.SetRange("On Hold", '');
+                            CustLedgerEntry.SetRange("On Hold", '');
                             OnSourceEntryNoLookupOnAfterCustLedgerEntryFilter(CustLedgerEntry);
                             if CustLedgerEntry.FindSet() then
                                 repeat
@@ -129,8 +126,7 @@ table 31273 "Compensation Line CZC"
                             VendorLedgerEntry.SetRange(Open, true);
                             VendorLedgerEntry.SetRange(Prepayment, false);
                             VendorLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
-                            if not CompensationsSetup."Including Entries with On Hold" then
-                                VendorLedgerEntry.SetRange("On Hold", '');
+                            VendorLedgerEntry.SetRange("On Hold", '');
                             OnSourceEntryNoLookupOnAfterCustLedgerEntryFilter(CustLedgerEntry);
                             if VendorLedgerEntry.FindSet() then
                                 repeat
@@ -616,7 +612,6 @@ table 31273 "Compensation Line CZC"
 
     local procedure CheckCustLedgerEntry(var CustLedgerEntry: Record "Cust. Ledger Entry")
     var
-        CompensationsSetup: Record "Compensations Setup CZC";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -624,21 +619,18 @@ table 31273 "Compensation Line CZC"
         if IsHandled then
             exit;
 
-        CompensationsSetup.Get();
         if CustLedgerEntry."Entry No." = 0 then
             exit;
         CustLedgerEntry.TestField(Open, true);
         CustLedgerEntry.TestField(Prepayment, false);
+        CustLedgerEntry.TestField("On Hold", '');
         CustLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
-        if not CompensationsSetup."Including Entries with On Hold" then
-            CustLedgerEntry.TestField("On Hold", '');
         if CustLedgerEntry.RelatedToAdvanceLetterCZL() then
             Error(RelatedToAdvanceLetterErr, CustLedgerEntry.TableCaption(), CustLedgerEntry."Entry No.");
     end;
 
     local procedure CheckVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry")
     var
-        CompensationsSetup: Record "Compensations Setup CZC";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -646,14 +638,12 @@ table 31273 "Compensation Line CZC"
         if IsHandled then
             exit;
 
-        CompensationsSetup.Get();
         if VendorLedgerEntry."Entry No." = 0 then
             exit;
         VendorLedgerEntry.TestField(Open, true);
         VendorLedgerEntry.TestField(Prepayment, false);
+        VendorLedgerEntry.TestField("On Hold", '');
         VendorLedgerEntry.TestField("Compensation Amount (LCY) CZC", 0);
-        if not CompensationsSetup."Including Entries with On Hold" then
-            VendorLedgerEntry.TestField("On Hold", '');
         if VendorLedgerEntry.RelatedToAdvanceLetterCZL() then
             Error(RelatedToAdvanceLetterErr, VendorLedgerEntry.TableCaption(), VendorLedgerEntry."Entry No.");
     end;

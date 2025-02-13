@@ -11,6 +11,5 @@ permissionset 6382 M365EDocConnRead
     Caption = 'Microsoft 365 E-Document Connector - Read';
 
     Permissions = tabledata "OneDrive Setup" = r,
-                  tabledata "Sharepoint Setup" = r,
-                  tabledata "Outlook Setup" = r;
+                  tabledata "Sharepoint Setup" = r;
 }

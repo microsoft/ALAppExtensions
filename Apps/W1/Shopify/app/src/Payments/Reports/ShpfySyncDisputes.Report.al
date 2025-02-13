@@ -14,10 +14,11 @@ report 30120 "Shpfy Sync Disputes"
             RequestFilterFields = Code;
             trigger OnAfterGetRecord()
             var
-                Payments: Codeunit "Shpfy Payments";
+                Sync: Codeunit "Shpfy Payments";
             begin
-                Payments.SetShop(Shop);
-                Payments.SyncDisputes();
+                Sync.SetShop(Shop);
+                Sync.UpdateUnfinishedDisputes();
+                Sync.ImportNewDisputes();
             end;
         }
     }

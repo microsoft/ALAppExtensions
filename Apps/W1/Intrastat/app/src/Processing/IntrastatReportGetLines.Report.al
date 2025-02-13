@@ -76,7 +76,7 @@ report 4810 "Intrastat Report Get Lines"
 
                 IsHandled := false;
                 CurrReportSkip := false;
-                OnBeforeCalculateTotalsCall(IntrastatReportHeader, IntrastatReportLine, ValueEntry, "Item Ledger Entry", StartDate, EndDate, SkipZeroAmounts, AddCurrencyFactor, IndirectCostPctReq, CurrReportSkip, IsHandled, AmountInclItemCharges);
+                OnBeforeCalculateTotalsCall(IntrastatReportHeader, IntrastatReportLine, ValueEntry, "Item Ledger Entry", StartDate, EndDate, SkipZeroAmounts, AddCurrencyFactor, IndirectCostPctReq, CurrReportSkip, IsHandled);
 
                 if CurrReportSkip then
                     CurrReport.Skip();
@@ -616,9 +616,8 @@ report 4810 "Intrastat Report Get Lines"
 
         IsHandled := false;
         OnBeforeInsertJobLedgerLine(IntrastatReportLine, "Job Ledger Entry", IsHandled);
-        if IsHandled then
-            exit;
-        IntrastatReportLine.Insert();
+        if not IsHandled then
+            IntrastatReportLine.Insert();
 
         IntrastatReportLine."Record ID Filter" := Format(IntrastatReportLine.RecordId);
         IntrastatReportLine.Modify();
@@ -1259,7 +1258,7 @@ report 4810 "Intrastat Report Get Lines"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCalculateTotalsCall(IntrastatReportHeader: Record "Intrastat Report Header"; var IntrastatReportLine: Record "Intrastat Report Line"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry";
-        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean; AmountInclItemCharges: Boolean)
+        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean)
     begin
     end;
 

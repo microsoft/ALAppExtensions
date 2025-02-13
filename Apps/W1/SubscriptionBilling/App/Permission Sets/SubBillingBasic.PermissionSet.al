@@ -5,8 +5,6 @@ permissionset 8054 "Sub. Billing Basic"
     Assignable = true;
     Caption = 'Subscription Billing Basic', MaxLength = 30;
 
-    IncludedPermissionSets = "Sub. Billing Objects";
-
     Permissions =
         tabledata "Service Contract Setup" = R,
         tabledata "Customer Contract" = R,
@@ -18,9 +16,6 @@ permissionset 8054 "Sub. Billing Basic"
         tabledata "Service Commitment Package" = R,
         tabledata "Service Comm. Package Line" = R,
         tabledata "Service Object" = R,
-        tabledata "Imported Service Object" = R,
-        tabledata "Imported Service Commitment" = R,
-        tabledata "Imported Customer Contract" = R,
         tabledata "Item Serv. Commitment Package" = R,
         tabledata "Service Commitment" = R,
         tabledata "Billing Template" = R,
@@ -39,15 +34,5 @@ permissionset 8054 "Sub. Billing Basic"
         tabledata "Contract Price Update Line" = R,
         tabledata "Item Templ. Serv. Comm. Pack." = R,
         tabledata "Field Translation" = R,
-        tabledata "Contract Analysis Entry" = R,
-        tabledata "Sales Service Commitment Buff." = R,
-        tabledata "Generic Import Settings" = R,
-        tabledata "Usage Data Billing" = R,
-        tabledata "Usage Data Blob" = R,
-        tabledata "Usage Data Customer" = R,
-        tabledata "Usage Data Generic Import" = R,
-        tabledata "Usage Data Import" = R,
-        tabledata "Usage Data Subscription" = R,
-        tabledata "Usage Data Supplier" = R,
-        tabledata "Usage Data Supplier Reference" = R;
+        tabledata "Contract Analysis Entry" = R;
 }

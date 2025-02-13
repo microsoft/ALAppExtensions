@@ -8,19 +8,18 @@ codeunit 139888 "Generic Import Test"
     TestPermissions = Disabled;
     Access = Internal;
 
-    var
-        GenericImportSettings: Record "Generic Import Settings";
-        UsageDataBilling: Record "Usage Data Billing";
-        UsageDataBlob: Record "Usage Data Blob";
-        UsageDataGenericImport: Record "Usage Data Generic Import";
-        UsageDataImport: Record "Usage Data Import";
-        LibraryPaymentFormat: Codeunit "Library - Payment Format";
-        LibraryRandom: Codeunit "Library - Random";
-        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
-        i: Integer;
-        j: Integer;
+    local procedure Reset()
+    begin
+        ClearAll();
+        UsageBasedBTestLibrary.ResetUsageBasedRecords();
+    end;
 
-    #region Tests
+    procedure CreateGenericImportSettings(SupplierNo: Code[20])
+    begin
+        GenericImportSettings.Init();
+        GenericImportSettings."Usage Data Supplier No." := SupplierNo;
+        GenericImportSettings.Insert(true);
+    end;
 
     [Test]
     procedure ExpectErrorWhenDataExchangeDefinitionIsNotGenericImportForGenericImportSettings()
@@ -31,8 +30,8 @@ codeunit 139888 "Generic Import Test"
         Ordinal: Integer;
         ListOfOrdinals: List of [Integer];
     begin
-        // [GIVEN] Error for validating "Data Exchange Definition" for "Data Exchange Definition Type" different than "Generic Import"
-        Initialize();
+        //[GIVEN] Error for validating "Data Exchange Definition" for "Data Exchange Definition Type" different than "Generic Import"
+        Reset();
         SupplierNo := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(SupplierNo));
         CreateGenericImportSettings(SupplierNo);
 
@@ -48,28 +47,9 @@ codeunit 139888 "Generic Import Test"
     end;
 
     [Test]
-    procedure TestIfRelatedDataIsDeletedOnActionDeleteUsageDataBillingLines()
-    begin
-        Initialize();
-        CreateSimpleUsageDataImport();
-        CreateSimpleUsageDataGenericImport();
-        CreateSimpleUsageDataBilling();
-
-        UsageDataBilling.Reset();
-        UsageDataBilling.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
-        UsageDataBilling.FindFirst();
-        UsageDataGenericImport.Reset();
-        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
-        UsageDataImport.DeleteUsageDataBillingLines();
-
-        asserterror UsageDataBilling.FindFirst();
-        asserterror UsageDataGenericImport.FindFirst();
-    end;
-
-    [Test]
     procedure TestIfRelatedDataIsDeletedOnDeleteUsageDataImport()
     begin
-        Initialize();
+        Reset();
         j := LibraryRandom.RandIntInRange(2, 10);
         for i := 1 to j do begin
             CreateSimpleUsageDataImport();
@@ -94,21 +74,24 @@ codeunit 139888 "Generic Import Test"
         until UsageDataImport.Next() = 0;
     end;
 
-    #endregion Tests
 
-    #region Procedures
-
-    local procedure Initialize()
+    [Test]
+    procedure TestIfRelatedDataIsDeletedOnActionDeleteUsageDataBillingLines()
     begin
-        ClearAll();
-        UsageBasedBTestLibrary.DeleteAllUsageBasedRecords();
-    end;
+        Reset();
+        CreateSimpleUsageDataImport();
+        CreateSimpleUsageDataGenericImport();
+        CreateSimpleUsageDataBilling();
 
-    local procedure CreateGenericImportSettings(SupplierNo: Code[20])
-    begin
-        GenericImportSettings.Init();
-        GenericImportSettings."Usage Data Supplier No." := SupplierNo;
-        GenericImportSettings.Insert(true);
+        UsageDataBilling.Reset();
+        UsageDataBilling.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataBilling.FindFirst();
+        UsageDataGenericImport.Reset();
+        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataImport.DeleteUsageDataBillingLines();
+
+        asserterror UsageDataBilling.FindFirst();
+        asserterror UsageDataGenericImport.FindFirst();
     end;
 
     local procedure CreateDataExchangeDef(var DataExchDef: Record "Data Exch. Def"; DataExchDefType: Enum "Data Exchange Definition Type")
@@ -158,5 +141,15 @@ codeunit 139888 "Generic Import Test"
         end;
     end;
 
-    #endregion Procedures
+    var
+        GenericImportSettings: Record "Generic Import Settings";
+        UsageDataImport: Record "Usage Data Import";
+        UsageDataBlob: Record "Usage Data Blob";
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+        UsageDataBilling: Record "Usage Data Billing";
+        LibraryPaymentFormat: Codeunit "Library - Payment Format";
+        LibraryRandom: Codeunit "Library - Random";
+        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
+        i: Integer;
+        j: Integer;
 }

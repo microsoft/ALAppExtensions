@@ -27,14 +27,18 @@ codeunit 30176 "Shpfy Product API"
     internal procedure CreateProduct(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag"): BigInteger
     var
         NewShopifyProduct: Record "Shpfy Product";
+        NewShopifyVariant: Record "Shpfy Variant";
+        EmptyShopifyVariant: Record "Shpfy Variant";
+        JArray: JsonArray;
         JResponse: JsonToken;
+        JToken: JsonToken;
         Data: Text;
         GraphQuery: TextBuilder;
 
     begin
         ShopifyVariant.FindSet();
         ProductEvents.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant, ShopifyTag);
-        GraphQuery.Append('{"query":"mutation {productCreate(product: {');
+        GraphQuery.Append('{"query":"mutation {productCreate(input: {');
         GraphQuery.Append('title: \"');
         GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Title));
         GraphQuery.Append('\"');
@@ -84,8 +88,8 @@ codeunit 30176 "Shpfy Product API"
             end;
             GraphQuery.Append(']');
         end;
-        GraphQuery.Append('}) ');
-        GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags}, userErrors {field, message}}');
+        GraphQuery.Append(', published: true}) ');
+        GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}, userErrors {field, message}}');
         GraphQuery.Append('}"}');
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
@@ -102,7 +106,21 @@ codeunit 30176 "Shpfy Product API"
         NewShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productCreate.product.updatedAt');
         NewShopifyProduct.Insert();
 
-        VariantApi.AddProductVariants(ShopifyVariant, NewShopifyProduct.Id, "Shpfy Variant Create Strategy"::REMOVE_STANDALONE_VARIANT);
+        NewShopifyVariant := ShopifyVariant;
+        NewShopifyVariant."Product Id" := NewShopifyProduct.Id;
+        if JsonHelper.GetJsonArray(JResponse, JArray, 'data.productCreate.product.variants.edges') and JArray.Get(0, JToken) then begin
+            NewShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JToken, 'edges.node.legacyResourceId');
+            NewShopifyVariant."Created At" := JsonHelper.GetValueAsDateTime(JToken, 'edges.node.createdAt');
+            NewShopifyVariant."Updated At" := JsonHelper.GetValueAsDateTime(JToken, 'edges.node.updatedAt');
+            NewShopifyVariant.Insert();
+        end;
+
+        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true);
+
+        while ShopifyVariant.Next() > 0 do begin
+            ShopifyVariant."Product Id" := NewShopifyProduct.Id;
+            VariantApi.AddProductVariant(ShopifyVariant);
+        end;
 
         PublishProduct(NewShopifyProduct);
 
@@ -423,7 +441,7 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery: TextBuilder;
     begin
         ProductEvents.OnBeforeSendUpdateShopifyProduct(Shop, ShopifyProduct, xShopifyProduct);
-        GraphQuery.Append('{"query":"mutation {productUpdate(product: {id: \"gid://shopify/Product/');
+        GraphQuery.Append('{"query":"mutation {productUpdate(input: {id: \"gid://shopify/Product/');
         GraphQuery.Append(Format(ShopifyProduct.Id));
         GraphQuery.Append('\"');
         if ShopifyProduct.Title <> xShopifyProduct.Title then begin
@@ -485,7 +503,7 @@ codeunit 30176 "Shpfy Product API"
         JResponse: JsonToken;
         GraphQuery: TextBuilder;
     begin
-        GraphQuery.Append('{"query":"mutation {productUpdate(product: {id: \"gid://shopify/Product/');
+        GraphQuery.Append('{"query":"mutation {productUpdate(input: {id: \"gid://shopify/Product/');
         GraphQuery.Append(Format(ShopifyProduct.Id));
         GraphQuery.Append('\"');
         if ShopifyProduct.Status <> Status then begin
@@ -585,6 +603,9 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery: Text;
         JResponse: JsonToken;
     begin
+        if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
+            exit;
+
         if not FilterSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 

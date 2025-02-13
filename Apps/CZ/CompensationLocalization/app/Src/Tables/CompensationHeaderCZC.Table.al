@@ -31,7 +31,6 @@ table 31272 "Compensation Header CZC"
         field(5; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -49,7 +48,6 @@ table 31272 "Compensation Header CZC"
         field(10; Description; Text[100])
         {
             Caption = 'Description';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(13; "Company Type"; Enum "Compensation Company Type CZC")

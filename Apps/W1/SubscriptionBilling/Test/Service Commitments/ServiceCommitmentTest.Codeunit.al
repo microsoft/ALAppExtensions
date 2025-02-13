@@ -1,7 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Sales.Document;
 
 codeunit 148156 "Service Commitment Test"
 {
@@ -9,26 +8,95 @@ codeunit 148156 "Service Commitment Test"
     Access = Internal;
 
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
         ServiceCommPackageLine: Record "Service Comm. Package Line";
         ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        Item: Record Item;
+        CustomerContract: Record "Customer Contract";
         VendorContract: Record "Vendor Contract";
-        Assert: Codeunit Assert;
+        ServiceObject: Record "Service Object";
+        CustomerContractLine: Record "Customer Contract Line";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
-        LibrarySales: Codeunit "Library - Sales";
+        Assert: Codeunit Assert;
 
-    #region Tests
+    local procedure Setup()
+    begin
+        ClearAll();
+
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+    end;
+
+    [Test]
+    procedure CheckItemNoEntryOnServiceCommitmentTemplate()
+    begin
+        Setup();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
+        ServiceCommitmentTemplate.Modify(false);
+        ServiceCommitmentTemplate.Validate("Invoicing Item No.", Item."No.");
+        ServiceCommitmentTemplate.TestField("Invoicing Item No.", Item."No.");
+        ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
+        ServiceCommitmentTemplate.TestField("Invoicing Item No.", '');
+        asserterror ServiceCommitmentTemplate.Validate("Invoicing Item No.", Item."No.");
+    end;
+
+    [Test]
+    procedure CheckItemNoEntryOnPackageLine()
+    begin
+        Setup();
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
+        ServiceCommPackageLine.Modify(false);
+        ServiceCommPackageLine.Validate("Invoicing Item No.", Item."No.");
+        ServiceCommPackageLine.TestField("Invoicing Item No.", Item."No.");
+        ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
+        ServiceCommPackageLine.TestField("Invoicing Item No.", '');
+        asserterror ServiceCommPackageLine.Validate("Invoicing Item No.", Item."No.");
+    end;
+
+    [Test]
+    procedure CheckServiceCommitmentTemplateAssignmentOnPackageLine()
+    begin
+        Setup();
+        ServiceCommitmentTemplate.Description += ' Temp';
+        ServiceCommitmentTemplate."Calculation Base Type" := Enum::"Calculation Base Type"::"Document Price";
+        ServiceCommitmentTemplate."Calculation Base %" := 10;
+        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
+        ServiceCommitmentTemplate.Modify(false);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.TestField(Description, ServiceCommitmentTemplate.Description);
+        ServiceCommPackageLine.TestField("Calculation Base Type", ServiceCommitmentTemplate."Calculation Base Type");
+        ServiceCommPackageLine.TestField("Calculation Base %", ServiceCommitmentTemplate."Calculation Base %");
+        ServiceCommPackageLine.TestField("Billing Base Period", ServiceCommitmentTemplate."Billing Base Period");
+        ServiceCommPackageLine.TestField("Invoicing via", ServiceCommitmentTemplate."Invoicing via");
+        ServiceCommPackageLine.TestField("Invoicing Item No.", ServiceCommitmentTemplate."Invoicing Item No.");
+        ServiceCommPackageLine.TestField(Discount, ServiceCommitmentTemplate.Discount);
+    end;
+
+    [Test]
+    procedure ExpectErrorDuringCommitmentTemplateDeletion()
+    begin
+        Setup();
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommitmentTemplate.Delete(true);
+    end;
+
+    [Test]
+    procedure CheckPackageDeletion()
+    begin
+        Setup();
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.SetRange("Package Code", ServiceCommitmentPackage.Code);
+        ServiceCommitmentPackage.Delete(true);
+        asserterror ServiceCommPackageLine.FindFirst();
+    end;
 
     [Test]
     procedure CheckCalculationBaseDateFormulaEntry()
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         Commit(); // retain data after asserterror
 
@@ -49,82 +117,16 @@ codeunit 148156 "Service Commitment Test"
         asserterror ValidateDateFormulaCombinations('<1M + 1Q>', '<1Y>');
     end;
 
-    [Test]
-    [HandlerFunctions('SendNotificationHandler')]
-    procedure CheckCalculationBaseTypeChangeForVendorOnServiceCommitmentPackageLine()
-    begin
-        Initialize();
-        ServiceCommitmentTemplate."Calculation Base Type" := Enum::"Calculation Base Type"::"Document Price And Discount";
-        ServiceCommitmentTemplate.Modify(false);
-
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
-        ServiceCommPackageLine.TestField("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
-
-        ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, '', ServiceCommPackageLine);
-        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
-        ServiceCommPackageLine.Validate(Template, ServiceCommitmentTemplate.Code);
-        ServiceCommPackageLine.TestField("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
-
-        ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, '', ServiceCommPackageLine);
-        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
-        asserterror ServiceCommPackageLine.Validate("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price And Discount");
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckDeleteServiceCommitmentAfterDeleteCustomerContractLine()
-    begin
-        Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.DeleteAll(true);
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.DeleteAll(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckDeleteServiceCommitmentAfterDeleteVendorContractLine()
+    local procedure ValidateDateFormulaCombinations(DateFormulaText1: Text; DateFormulaText2: Text)
     var
-        VendorContractLine: Record "Vendor Contract Line";
+        DateFormula1: DateFormula;
     begin
-        Initialize();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
-        VendorContractLine.DeleteAll(true);
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.DeleteAll(true);
-    end;
-
-    [Test]
-    procedure CheckItemNoEntryOnPackageLine()
-    begin
-        Initialize();
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
-        ServiceCommPackageLine.Modify(false);
-        ServiceCommPackageLine.Validate("Invoicing Item No.", Item."No.");
-        ServiceCommPackageLine.TestField("Invoicing Item No.", Item."No.");
-        ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
-        ServiceCommPackageLine.TestField("Invoicing Item No.", '');
-        asserterror ServiceCommPackageLine.Validate("Invoicing Item No.", Item."No.");
-    end;
-
-    [Test]
-    procedure CheckItemNoEntryOnServiceCommitmentTemplate()
-    begin
-        Initialize();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
-        ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
-        ServiceCommitmentTemplate.Modify(false);
-        ServiceCommitmentTemplate.Validate("Invoicing Item No.", Item."No.");
-        ServiceCommitmentTemplate.TestField("Invoicing Item No.", Item."No.");
-        ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
-        ServiceCommitmentTemplate.TestField("Invoicing Item No.", '');
-        asserterror ServiceCommitmentTemplate.Validate("Invoicing Item No.", Item."No.");
+        ServiceCommPackageLine.Get(ServiceCommPackageLine."Package Code", ServiceCommPackageLine."Line No.");
+        Evaluate(DateFormula1, DateFormulaText1);
+        ServiceCommPackageLine."Billing Base Period" := DateFormula1;
+        Evaluate(DateFormula1, DateFormulaText2);
+        ServiceCommPackageLine."Billing Rhythm" := DateFormula1;
+        ServiceCommPackageLine.Modify(true);
     end;
 
     [Test]
@@ -133,7 +135,7 @@ codeunit 148156 "Service Commitment Test"
         NegativeDateFormula: DateFormula;
         PositiveDateFormula: DateFormula;
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         Commit(); // retain data after asserterror
 
@@ -158,7 +160,7 @@ codeunit 148156 "Service Commitment Test"
     var
         PositiveDateFormula: DateFormula;
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         Commit(); // retain data after asserterror
 
@@ -169,19 +171,36 @@ codeunit 148156 "Service Commitment Test"
     end;
 
     [Test]
-    procedure CheckPackageDeletion()
+    [HandlerFunctions('SendNotificationHandler')]
+    procedure CheckCalculationBaseTypeChangeForVendorOnServiceCommitmentPackageLine()
     begin
-        Initialize();
+        Setup();
+        ServiceCommitmentTemplate."Calculation Base Type" := Enum::"Calculation Base Type"::"Document Price And Discount";
+        ServiceCommitmentTemplate.Modify(false);
+
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.SetRange("Package Code", ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.Delete(true);
-        Assert.RecordIsEmpty(ServiceCommPackageLine);
+        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
+        ServiceCommPackageLine.TestField("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
+
+        ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, '', ServiceCommPackageLine);
+        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
+        ServiceCommPackageLine.Validate(Template, ServiceCommitmentTemplate.Code);
+        ServiceCommPackageLine.TestField("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
+
+        ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, '', ServiceCommPackageLine);
+        ServiceCommPackageLine.Validate(Partner, ServiceCommPackageLine.Partner::Vendor);
+        asserterror ServiceCommPackageLine.Validate("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price And Discount");
+    end;
+
+    [SendNotificationHandler]
+    procedure SendNotificationHandler(var Notification: Notification): Boolean
+    begin
     end;
 
     [Test]
     procedure CheckServiceCommitmentPackageLineDefaultAndAssignedInvoiceViaValue()
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.TestField("Invoicing via", Enum::"Invoicing Via"::Contract);
         ServiceCommitmentTemplate.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
@@ -191,86 +210,11 @@ codeunit 148156 "Service Commitment Test"
     end;
 
     [Test]
-    procedure CheckServiceCommitmentTemplateAssignmentOnPackageLine()
-    begin
-        Initialize();
-        ServiceCommitmentTemplate.Description += ' Temp';
-        ServiceCommitmentTemplate."Calculation Base Type" := Enum::"Calculation Base Type"::"Document Price";
-        ServiceCommitmentTemplate."Calculation Base %" := 10;
-        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
-        ServiceCommitmentTemplate.Modify(false);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.TestField(Description, ServiceCommitmentTemplate.Description);
-        ServiceCommPackageLine.TestField("Calculation Base Type", ServiceCommitmentTemplate."Calculation Base Type");
-        ServiceCommPackageLine.TestField("Calculation Base %", ServiceCommitmentTemplate."Calculation Base %");
-        ServiceCommPackageLine.TestField("Billing Base Period", ServiceCommitmentTemplate."Billing Base Period");
-        ServiceCommPackageLine.TestField("Invoicing via", ServiceCommitmentTemplate."Invoicing via");
-        ServiceCommPackageLine.TestField("Invoicing Item No.", ServiceCommitmentTemplate."Invoicing Item No.");
-        ServiceCommPackageLine.TestField(Discount, ServiceCommitmentTemplate.Discount);
-    end;
-
-    [Test]
-    procedure CopyServiceCommitmentItemLineFromSalesQuoteToSalesOrder()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        FromDocNo: Code[20];
-    begin
-        // [SCENARIO] When sales order is created from sales quote expect that qty to invoice is set to 0 in case of service commitment items
-        ContractTestLibrary.InitContractsApp();
-
-        // [GIVEN]  Create service commitment item
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-
-        // [GIVEN] Create sales quote
-        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, "Sales Document Type"::Quote, '', Item."No.", LibraryRandom.RandInt(10), '', LibraryRandom.RandDate(12));
-        FromDocNo := SalesHeader."No.";
-
-        // [GIVEN] Set sales header for the order
-        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, SalesHeader."Sell-to Customer No.");
-
-        // [WHEN] Copy lines from sales quote to sales order
-        LibrarySales.CopySalesDocument(SalesHeader, "Sales Document Type"::Quote, FromDocNo, false, true);
-
-        // [THEN] Qty to Invoice = 0 in sales order line
-        SalesLine.Reset();
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange(Type, Enum::"Sales Line Type"::Item);
-        SalesLine.SetRange("No.", Item."No.");
-        SalesLine.FindFirst();
-        SalesLine.TestField("Document Type", "Sales Document Type"::Order);
-        SalesLine.TestField("Qty. to Invoice", 0);
-    end;
-
-    [Test]
-    procedure ExpectErrorDuringCommitmentTemplateDeletion()
-    begin
-        Initialize();
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommitmentTemplate.Delete(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorDeleteServiceCommitmentAfterCustomerContractLineSetToClosed()
-    var
-    begin
-        Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
-        UpdateServiceDatesAndCloseCustomerContractLines();
-
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.DeleteAll(true);
-    end;
-
-    [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectErrorWhenDeleteServiceCommitment()
     var
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
         ServiceCommitment.Reset();
         ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
@@ -279,10 +223,53 @@ codeunit 148156 "Service Commitment Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckDeleteServiceCommitmentAfterDeleteCustomerContractLine()
+    begin
+        Setup();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.DeleteAll(true);
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.DeleteAll(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorDeleteServiceCommitmentAfterCustomerContractLineSetToClosed()
+    var
+    begin
+        Setup();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        UpdateServiceDatesAndCloseCustomerContractLines();
+
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.DeleteAll(true);
+    end;
+
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckDeleteServiceCommitmentAfterDeleteVendorContractLine()
+    var
+        VendorContractLine: Record "Vendor Contract Line";
+    begin
+        Setup();
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
+        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.DeleteAll(true);
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.DeleteAll(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectDeleteServiceCommitmentAfterVendorContractLineSetToClosed()
     var
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
         UpdateServiceDatesAndCloseCustomerContractLines();
 
@@ -296,7 +283,7 @@ codeunit 148156 "Service Commitment Test"
     procedure ExpectErrorOnModifyClosedServiceCommitment()
     var
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
         UpdateServiceDatesAndCloseCustomerContractLines();
 
@@ -304,46 +291,28 @@ codeunit 148156 "Service Commitment Test"
         asserterror ServiceCommitment.Modify(true);
     end;
 
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestOverdueServiceCommitments()
-    var
-        OverdueServiceCommitments: Record "Overdue Service Commitments";
-        ServiceContractSetup: Record "Service Contract Setup";
-        i: Integer;
-        InsertCounter: Integer;
-        MaxInsertCount: Integer;
+    local procedure UpdateServiceDatesAndCloseCustomerContractLines()
     begin
-        ContractTestLibrary.InitContractsApp();
-        Initialize();
-        ServiceContractSetup.Get();
-        Evaluate(ServiceContractSetup."Overdue Date Formula", '<1M>');
-        ServiceContractSetup.Modify(false);
-
-        // Create closed service commitments that should not be considered
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true); // ExchangeRateSelectionModalPageHandler,MessageHandler
-        UpdateServiceDatesAndCloseCustomerContractLines();
-
-        // Create service commitments to consider
-        MaxInsertCount := LibraryRandom.RandIntInRange(2, 9);
-        InsertCounter := 0;
-        for i := 1 to MaxInsertCount do begin
-            InsertServiceCommitment(ServiceCommitment.Partner::Customer, InsertCounter);
-            if i mod 2 = 0 then
-                InsertServiceCommitment(ServiceCommitment.Partner::Vendor, InsertCounter);
-        end;
-
-        Assert.AreEqual(InsertCounter, OverdueServiceCommitments.CountOverdueServiceCommitments(), 'Only service commitments that are open and within the correct date range should be counted.');
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        if ServiceCommitment.FindSet() then
+            repeat
+                ServiceCommitment."Service Start Date" := CalcDate('<-2D>', Today());
+                ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
+                ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
+                ServiceCommitment.Modify(false);
+            until ServiceCommitment.Next() = 0;
+        ServiceObject.UpdateServicesDates();
     end;
 
     [Test]
     procedure TestServiceCommitmentPackageCopy()
     var
-        CopiedServiceCommPackageLines: Record "Service Comm. Package Line";
         CopiedServiceCommPackage: Record "Service Commitment Package";
+        CopiedServiceCommPackageLines: Record "Service Comm. Package Line";
         NewPackageFilter: Code[20];
     begin
-        Initialize();
+        Setup();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
 
         NewPackageFilter := ServiceCommitmentPackage.Code;
@@ -368,15 +337,47 @@ codeunit 148156 "Service Commitment Test"
         CopiedServiceCommPackageLines.TestField("Initial Term", ServiceCommPackageLine."Initial Term");
     end;
 
-    #endregion Tests
-
-    #region Procedures
-
-    local procedure Initialize()
+    [ModalPageHandler]
+    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
     begin
-        ClearAll();
+        ExchangeRateSelectionPage.OK().Invoke();
+    end;
 
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestOverdueServiceCommitments()
+    var
+        OverdueServiceCommitments: Record "Overdue Service Commitments";
+        ServiceContractSetup: Record "Service Contract Setup";
+        i: Integer;
+        InsertCounter: Integer;
+        MaxInsertCount: Integer;
+    begin
+        ContractTestLibrary.InitContractsApp();
+        Setup();
+        ServiceContractSetup.Get();
+        Evaluate(ServiceContractSetup."Overdue Date Formula", '<1M>');
+        ServiceContractSetup.Modify(false);
+
+        // Create closed service commitments that should not be considered
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        UpdateServiceDatesAndCloseCustomerContractLines();
+
+        // Create service commitments to consider
+        MaxInsertCount := LibraryRandom.RandIntInRange(2, 9);
+        InsertCounter := 0;
+        for i := 1 to MaxInsertCount do begin
+            InsertServiceCommitment(ServiceCommitment.Partner::Customer, InsertCounter);
+            if i mod 2 = 0 then
+                InsertServiceCommitment(ServiceCommitment.Partner::Vendor, InsertCounter);
+        end;
+
+        Assert.AreEqual(InsertCounter, OverdueServiceCommitments.CountOverdueServiceCommitments(), 'Only service commitments that are open and within the correct date range should be counted.');
     end;
 
     local procedure InsertServiceCommitment(ServicePartner: Enum "Service Partner"; var InsertCounter: Integer)
@@ -389,52 +390,4 @@ codeunit 148156 "Service Commitment Test"
         ServiceCommitment.Insert(false);
         InsertCounter += 1;
     end;
-
-    local procedure UpdateServiceDatesAndCloseCustomerContractLines()
-    begin
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        if ServiceCommitment.FindSet() then
-            repeat
-                ServiceCommitment."Service Start Date" := CalcDate('<-2D>', Today());
-                ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-                ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
-                ServiceCommitment.Modify(false);
-            until ServiceCommitment.Next() = 0;
-        ServiceObject.UpdateServicesDates();
-    end;
-
-    local procedure ValidateDateFormulaCombinations(DateFormulaText1: Text; DateFormulaText2: Text)
-    var
-        DateFormula1: DateFormula;
-    begin
-        ServiceCommPackageLine.Get(ServiceCommPackageLine."Package Code", ServiceCommPackageLine."Line No.");
-        Evaluate(DateFormula1, DateFormulaText1);
-        ServiceCommPackageLine."Billing Base Period" := DateFormula1;
-        Evaluate(DateFormula1, DateFormulaText2);
-        ServiceCommPackageLine."Billing Rhythm" := DateFormula1;
-        ServiceCommPackageLine.Modify(true);
-    end;
-
-    #endregion Procedures
-
-    #region Handlers
-
-    [ModalPageHandler]
-    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
-    begin
-        ExchangeRateSelectionPage.OK().Invoke();
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
-
-    [SendNotificationHandler]
-    procedure SendNotificationHandler(var Notification: Notification): Boolean
-    begin
-    end;
-
-    #endregion Handlers
 }

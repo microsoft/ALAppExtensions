@@ -38,7 +38,6 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Metafield" = IMD,
         tabledata "Shpfy Refund Header" = IMD,
         tabledata "Shpfy Refund Line" = IMD,
-        tabledata "Shpfy Refund Shipping Line" = IMD,
         tabledata "Shpfy Return Header" = IMD,
         tabledata "Shpfy Return Line" = IMD,
         tabledata "Shpfy Order Attribute" = IMD,

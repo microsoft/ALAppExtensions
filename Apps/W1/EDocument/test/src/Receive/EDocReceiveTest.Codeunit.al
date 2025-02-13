@@ -386,7 +386,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
         EDocServicePage.Receive.Invoke();
 
-        // [THEN] Purchase invoice is created with corresponding values
+        // [THEN] Purchase invoice is created with corresponfing values
         EDocument.FindLast();
         EDocumentPage.OpenView();
         EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
@@ -1247,6 +1247,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetBasicInfoFromReceivedDocumentError()
     var
         EDocService: Record "E-Document Service";
@@ -1294,6 +1295,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure GetCompleteInfoFromReceivedDocumentError()
     var
         EDocService: Record "E-Document Service";

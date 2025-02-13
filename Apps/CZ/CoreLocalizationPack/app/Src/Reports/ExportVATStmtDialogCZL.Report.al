@@ -231,7 +231,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
             XMLFormat := GetXmlFormat();
             Attachments := CalcAttachmentsCount();
             Comments := CalcCommentsCount();
-            RequestOptionsPage.Caption := StrSubstNo(PageCaptionLbl, RequestOptionsPage.Caption(), VATStatementTemplateName, VATStmtName);
+            RequestOptionsPage.Caption := StrSubstNo(PageCaptionLbl, RequestOptionsPage.Caption(), VATStatementTemplateName, VATStatementName);
             UpdateControls();
             UpdateDateParameters();
             UpdateFilledByEmployeeNo();
@@ -244,7 +244,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
     end;
 
     var
-        VATStmtName: Record "VAT Statement Name";
+        VATStatementTemplate: Record "VAT Statement Template";
         Comments: Integer;
         Attachments: Integer;
         Selection: Enum "VAT Statement Report Selection";
@@ -277,8 +277,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure GetXmlFormat(): Enum "VAT Statement XML Format CZL"
     begin
-        VATStmtName.Get(VATStatementTemplateName, VATStatementName);
-        exit(VATStmtName."XML Format CZL");
+        VATStatementTemplate.Get(VATStatementTemplateName);
+        exit(VATStatementTemplate."XML Format CZL");
     end;
 
     local procedure CalcAttachmentsCount(): Integer

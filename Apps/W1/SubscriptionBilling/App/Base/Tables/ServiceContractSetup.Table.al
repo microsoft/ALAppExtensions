@@ -2,7 +2,6 @@ namespace Microsoft.SubscriptionBilling;
 
 using System.Utilities;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Finance.GeneralLedger.Journal;
 
 table 8051 "Service Contract Setup"
 {
@@ -79,27 +78,6 @@ table 8051 "Service Contract Setup"
                 if xRec."Default Period Calculation" <> Rec."Default Period Calculation" then
                     if ConfirmManagement.GetResponse(UpdatePeriodCalculationQst, true) then
                         PropagatePeriodCalculationUpdate();
-            end;
-        }
-        field(180; "Def. Rel. Jnl. Template Name"; Code[10])
-        {
-            Caption = 'Deferrals Release Jnl. Template Name';
-            TableRelation = "Gen. Journal Template";
-
-            trigger OnValidate()
-            begin
-                if "Def. Rel. Jnl. Template Name" = '' then
-                    "Def. Rel. Jnl. Batch Name" := '';
-            end;
-        }
-        field(181; "Def. Rel. Jnl. Batch Name"; Code[10])
-        {
-            Caption = 'Deferrals Release Jnl. Batch Name';
-            TableRelation = if ("Def. Rel. Jnl. Template Name" = filter(<> '')) "Gen. Journal Batch".Name where("Journal Template Name" = field("Def. Rel. Jnl. Template Name"));
-
-            trigger OnValidate()
-            begin
-                TestField("Def. Rel. Jnl. Template Name");
             end;
         }
     }

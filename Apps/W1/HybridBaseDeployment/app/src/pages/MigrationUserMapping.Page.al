@@ -158,7 +158,7 @@ page 4022 "Migration User Mapping"
     var
         User: Record User;
         User2: Record User;
-        UserCodeunit: Codeunit User;
+        UserManagement: Codeunit "User Management";
     begin
         Rec.Reset();
         Rec.SetFilter("Dest User ID", '<>%1', '');
@@ -173,7 +173,7 @@ page 4022 "Migration User Mapping"
                         User2."User Name" := Rec."Source User ID";
                         User2.Modify(true);
                     end;
-                    UserCodeunit.RenameUser(Rec."Dest User ID", Rec."Source User ID");
+                    UserManagement.RenameUser(Rec."Dest User ID", Rec."Source User ID");
                 end;
             until Rec.Next() = 0;
     end;

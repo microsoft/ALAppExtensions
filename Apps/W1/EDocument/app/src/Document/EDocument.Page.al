@@ -8,7 +8,6 @@ using System.Telemetry;
 using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
-using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
@@ -52,29 +51,6 @@ page 6121 "E-Document"
                 {
                     Importance = Additional;
                     ToolTip = 'Specifies the direction of the electronic document.';
-                }
-                // Todo: Move
-                field("File Name"; Rec."File Name")
-                {
-                    ToolTip = 'Specifies the name of the source file.';
-
-                    trigger OnDrillDown()
-                    begin
-                        Rec.ViewSourceFile();
-                    end;
-                }
-                // Todo: Move
-                field("File Type"; Rec."File Type")
-                {
-                    Importance = Additional;
-                    ToolTip = 'Specifies the type of the source file.';
-                    Visible = false;
-                }
-                // Todo: Move
-                field(Service; Rec.Service)
-                {
-                    Importance = Additional;
-                    ToolTip = 'Specifies the name of the corresponding e-document service.';
                 }
                 field("Workflow Code"; Rec."Workflow Code")
                 {
@@ -293,18 +269,6 @@ page 6121 "E-Document"
                         end
                     end;
                 }
-                action(ViewFile)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'View file';
-                    ToolTip = 'View the source file.';
-                    Image = ViewDetails;
-
-                    trigger OnAction()
-                    begin
-                        Rec.ViewSourceFile();
-                    end;
-                }
             }
             group(Incoming)
             {
@@ -318,7 +282,7 @@ page 6121 "E-Document"
 
                     trigger OnAction()
                     begin
-                        EDocImport.V1_GetBasicInfo(Rec);
+                        EDocImport.GetBasicInfo(Rec);
                     end;
                 }
                 action(CreateDocument)
@@ -329,11 +293,8 @@ page 6121 "E-Document"
                     Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
-                    var
-                        EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
-                        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
-                        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+                        EDocImport.ProcessDocument(Rec, false);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
@@ -346,11 +307,8 @@ page 6121 "E-Document"
                     Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
-                    var
-                        EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
-                        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
-                        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+                        EDocImport.ProcessDocument(Rec, true);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
@@ -457,7 +415,6 @@ page 6121 "E-Document"
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
-                actionref(Preview_promoteed; ViewFile) { }
 
             }
             group(Category_Troubleshoot)
@@ -510,7 +467,7 @@ page 6121 "E-Document"
         {
             action(MatchToOrderCopilotEnabled)
             {
-                Caption = 'Match Purchase Order';
+                Caption = 'Match Purchase Order With Copilot';
                 ToolTip = 'Match E-document lines to Purchase Order.';
                 Image = SparkleFilled;
                 Visible = ShowMapToOrder and CopilotVisible;
@@ -553,7 +510,7 @@ page 6121 "E-Document"
         ResetActionVisiability();
         SetIncomingDocActions();
 
-        EDocImport.V1_ProcessEDocPendingOrderMatch(Rec);
+        EDocImport.ProcessEDocPendingOrderMatch(Rec);
     end;
 
     local procedure SetStyle()

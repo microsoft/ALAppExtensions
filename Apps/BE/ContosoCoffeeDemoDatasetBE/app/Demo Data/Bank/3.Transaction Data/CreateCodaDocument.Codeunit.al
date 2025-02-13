@@ -4,10 +4,11 @@ codeunit 11415 "Create Coda Document"
     InherentPermissions = X;
     trigger OnRun()
     begin
+        CodedTransactions();
         CodedBankAccStatement();
     end;
 
-    internal procedure CodedTransactions()
+    local procedure CodedTransactions()
     var
         ContosoCODABE: Codeunit "Contoso CODA BE";
         CreateBEGLAccount: Codeunit "Create GL Account BE";

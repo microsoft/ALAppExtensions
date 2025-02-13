@@ -39,7 +39,7 @@ pageextension 36964 "Manufacturing Manager RC" extends "Manufacturing Manager RC
                     ApplicationArea = Basic, Suite;
                     Caption = 'Work Center Load (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "PowerBI Work Center Load";
+                    RunObject = page "Work Center Load";
                 }
                 action("Allocated Hours (Power BI)")
                 {
@@ -88,7 +88,7 @@ pageextension 36964 "Manufacturing Manager RC" extends "Manufacturing Manager RC
                     ApplicationArea = Basic, Suite;
                     Caption = 'Released Production Orders (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "PowerBI Released Prod. Orders";
+                    RunObject = page "Released Production Orders";
                 }
                 action("Production Scrap (Power BI)")
                 {

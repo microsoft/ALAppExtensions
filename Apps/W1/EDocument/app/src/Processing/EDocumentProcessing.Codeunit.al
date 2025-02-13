@@ -18,7 +18,6 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Reflection;
-using Microsoft.eServices.EDocument.Processing.Import;
 
 codeunit 6108 "E-Document Processing"
 {
@@ -110,15 +109,6 @@ codeunit 6108 "E-Document Processing"
             EDocument.Validate(Status, EDocument.Status::"In Progress");
 
         EDocument.Modify(true);
-    end;
-
-    procedure ModifyEDocumentProcessingStatus(EDocument: Record "E-Document"; NewStatus: Enum "Import E-Doc. Proc. Status")
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-    begin
-        EDocumentServiceStatus := EDocument.GetEDocumentServiceStatus();
-        EDocumentServiceStatus.Validate("Import Processing Status", NewStatus);
-        EDocumentServiceStatus.Modify();
     end;
 
     procedure GetDocSendingProfileForDocRef(var RecRef: RecordRef): Record "Document Sending Profile";

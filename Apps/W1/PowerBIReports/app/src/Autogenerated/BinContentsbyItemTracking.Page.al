@@ -6,12 +6,11 @@ page 37032 "Bin Contents by Item Tracking"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    PageType = Card;
     Caption = 'Bin Contents by Item Tracking';
     AboutTitle = 'About Bin Contents by Item Tracking';
     AboutText = 'The Bin Contents by Item Tracking report provides a detailed view of warehouse quantities by Item, Location, Bin Code, Zone Code, Lot number or Serial number. ';
+    Extensible = false;
 
     layout
     {
@@ -29,6 +28,26 @@ page 37032 "Bin Contents by Item Tracking"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
+                end;
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

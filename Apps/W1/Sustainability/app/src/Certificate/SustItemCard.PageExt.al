@@ -38,6 +38,7 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 field("Default Sust. Account"; Rec."Default Sust. Account")
                 {
                     ApplicationArea = Basic, Suite;
+                    Editable = Rec."Replenishment System" = Rec."Replenishment System"::Purchase;
                     ToolTip = 'Specifies the value of the Default Sust. Account field.';
                 }
                 field("Default CO2 Emission"; Rec."Default CO2 Emission")
@@ -68,28 +69,6 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
         }
     }
 
-    actions
-    {
-        addafter(PrintLabel)
-        {
-            action("Calculate CO2e")
-            {
-                Caption = 'Calculate CO2e';
-                ApplicationArea = Basic, Suite;
-                Visible = SustainabilityVisible;
-                Image = Calculate;
-                Promoted = true;
-                PromotedCategory = Process;
-                ToolTip = 'Executes the Calculate CO2e action.';
-
-                trigger OnAction()
-                begin
-                    RunCalculateCO2e();
-                end;
-            }
-        }
-    }
-
     trigger OnOpenPage()
     begin
         VisibleSustainabilityControls();
@@ -102,16 +81,6 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Item Emissions";
-    end;
-
-    local procedure RunCalculateCO2e()
-    var
-        Item: Record Item;
-        CalculateCO2e: Report "Sust. Item Calculate CO2e";
-    begin
-        Item.SetFilter("No.", Rec."No.");
-        CalculateCO2e.SetTableView(Item);
-        CalculateCO2e.Run();
     end;
 
     var

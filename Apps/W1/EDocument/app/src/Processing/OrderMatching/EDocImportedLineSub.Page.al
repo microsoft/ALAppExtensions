@@ -76,45 +76,16 @@ page 6165 "E-Doc. Imported Line Sub"
             }
         }
     }
-    actions
-    {
-        area(Processing)
-        {
-            action(CreatePurchaseOrderLine)
-            {
-                ApplicationArea = All;
-                Caption = 'Create purchase order Line';
-                ToolTip = 'Create purchase order line based on this imported line.';
-                Image = NewRow;
-                Ellipsis = true;
-                Scope = Repeater;
-                Visible = IsPurchaseOrder;
-
-                trigger OnAction()
-                var
-                    EDocLineMatching: Codeunit "E-Doc. Line Matching";
-                begin
-                    EDocLineMatching.CreatePurchaseOrderLine(EDocumentBeingMatched, Rec);
-                end;
-            }
-        }
-    }
 
     var
         EDocumentBeingMatched: Record "E-Document";
         StyleTxt: Text;
-        IsPurchaseOrder: Boolean;
+
 
     trigger OnAfterGetRecord()
     begin
         SetUserInteractions();
     end;
-
-    trigger OnAfterGetCurrRecord()
-    begin
-        IsPurchaseOrder := EDocumentBeingMatched."Document Type" = Enum::"E-Document Type"::"Purchase Order";
-    end;
-
 
     internal procedure GetRecords(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary)
     var

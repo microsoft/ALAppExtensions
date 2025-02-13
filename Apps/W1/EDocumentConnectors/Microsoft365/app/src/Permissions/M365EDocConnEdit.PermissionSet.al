@@ -12,6 +12,5 @@ permissionset 6381 M365EDocConnEdit
     Caption = 'Microsoft 365 E-Document Connector - Edit';
 
     Permissions = tabledata "OneDrive Setup" = imd,
-                  tabledata "Sharepoint Setup" = imd,
-                  tabledata "Outlook Setup" = imd;
+                  tabledata "Sharepoint Setup" = imd;
 }

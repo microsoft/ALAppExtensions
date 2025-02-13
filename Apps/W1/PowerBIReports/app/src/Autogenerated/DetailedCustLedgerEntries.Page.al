@@ -6,12 +6,11 @@ page 36997 "Detailed Cust. Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    PageType = Card;
     Caption = 'Detailed Cust. Ledger Entries';
     AboutTitle = 'About Detailed Cust. Ledger Entries';
     AboutText = 'The Detailed Customer Ledger Entries report provides granular detail about the entries posted to Customer Ledger and Detailed Customer Sub Ledger.';
+    Extensible = false;
 
     layout
     {
@@ -29,6 +28,26 @@ page 36997 "Detailed Cust. Ledger Entries"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
+                end;
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

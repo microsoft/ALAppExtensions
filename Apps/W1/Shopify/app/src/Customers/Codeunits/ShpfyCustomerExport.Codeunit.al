@@ -268,8 +268,7 @@ codeunit 30116 "Shpfy Customer Export"
             CustomerAddress.Modify();
         end;
 
-        if Shop."Customer Metafields To Shopify" then
-            UpdateMetafields(ShopifyCustomer.Id);
+        UpdateMetafields(ShopifyCustomer.Id);
     end;
 
     internal procedure SetCreateCustomers(NewCustomers: Boolean)

@@ -59,8 +59,6 @@
                   codeunit "Invt. Document Handler CZL" = X,
                   codeunit "Invt. Document-Printed CZL" = X,
                   codeunit "Item Handler CZL" = X,
-                  codeunit "Item Charge Assgnt Handler CZL" = X,
-                  codeunit "Item Charge Assgnt. Purch. CZL" = X,
                   codeunit "Item Jnl.CheckLine Handler CZL" = X,
                   codeunit "Item Jnl. Template Handler CZL" = X,
                   codeunit "Item Journal Line Handler CZL" = X,
@@ -129,13 +127,8 @@
                   codeunit "VAT Report Suggest Lines CZL" = X,
                   codeunit "VAT Report Validate CZL" = X,
                   codeunit "VAT Statement DPHDP3 CZL" = X,
-                  codeunit "VAT Statement DPHDP3v3 CZL" = X,
                   codeunit "VAT Statement Line Handler CZL" = X,
-#if not CLEAN26
-#pragma warning disable AL0432
                   codeunit "VAT Stmt. Template Handler CZL" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "VAT Stmt XML Export Helper CZL" = X,
                   codeunit "VAT Stmt XML Export Runner CZL" = X,
                   codeunit "Vendor Bank Acc. Handler CZL" = X,

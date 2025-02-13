@@ -5,21 +5,7 @@ codeunit 139893 "Usage Based B. Test Subscr."
     EventSubscriberInstance = Manual;
     Access = Internal;
 
-    var
-        TestContext: Text;
-
-    #region Procedures
-
-    procedure SetTestContext(NewTestContext: Text)
-    begin
-        TestContext := NewTestContext;
-    end;
-
-    #endregion Procedures
-
-    #region Subscribers
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contract Test Library", OnCreateServiceCommitmentTemplateOnBeforeInsert, '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contract Test Library", 'OnCreateServiceCommitmentTemplateOnBeforeInsert', '', false, false)]
     local procedure SetUsageBasedServiceCommitment(var ServiceCommitmentTemplate: Record "Service Commitment Template")
     begin
         if TestContext = '' then
@@ -29,5 +15,12 @@ codeunit 139893 "Usage Based B. Test Subscr."
         ServiceCommitmentTemplate."Usage Based Pricing" := Enum::"Usage Based Pricing"::"Fixed Quantity";
     end;
 
-    #endregion Subscribers
+    procedure SetTestContext(NewTestContext: Text)
+    begin
+        TestContext := NewTestContext;
+    end;
+
+
+    var
+        TestContext: Text;
 }

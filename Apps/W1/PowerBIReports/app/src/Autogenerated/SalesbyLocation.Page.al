@@ -6,12 +6,11 @@ page 37066 "Sales by Location"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    PageType = Card;
     Caption = 'Sales by Location';
     AboutTitle = 'About Sales by Location';
     AboutText = 'The Sales by Location report breaks down sales performance by location, highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';
+    Extensible = false;
 
     layout
     {
@@ -29,6 +28,26 @@ page 37066 "Sales by Location"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
+                end;
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

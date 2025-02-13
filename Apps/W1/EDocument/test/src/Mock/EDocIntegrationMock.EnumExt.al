@@ -1,4 +1,3 @@
-#if not CLEAN26
 enumextension 139616 "E-Doc Integration Mock" extends "E-Document Integration"
 {
 #pragma warning disable PTE0023 // The IDs should have been in the range [139500..139899]
@@ -14,4 +13,3 @@ enumextension 139616 "E-Doc Integration Mock" extends "E-Document Integration"
 #pragma warning restore PTE0023 // The IDs should have been in the range [139500..139899]
 
 }
-#endif

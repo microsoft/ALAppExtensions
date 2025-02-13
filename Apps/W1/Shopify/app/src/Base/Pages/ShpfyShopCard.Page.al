@@ -229,7 +229,7 @@ page 30101 "Shpfy Shop Card"
                 field(RemoveProductAction; Rec."Action for Removed Products")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is blocked or removed from the Shopify Product in Business Central.';
+                    ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is removed in Shopify or an item is blocked in Business Central.';
                 }
 #if not CLEAN26
                 field("Items Mapped to Products"; Rec."Items Mapped to Products")
@@ -247,11 +247,6 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Importance = Additional;
                     ToolTip = 'Specifies the weight unit of the Shopify Shop.';
-                }
-                field("Product Metafields To Shopify"; Rec."Product Metafields To Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether product/variant metafields are synchronized to Shopify.';
                 }
             }
             group(PriceSynchronization)
@@ -400,11 +395,6 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how to synchronize the county of the customer/company.';
                 }
-                field("Customer Metafields To Shopify"; Rec."Customer Metafields To Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether customer metafields are synchronized to Shopify.';
-                }
             }
             group("B2B Company Synchronization")
             {
@@ -449,11 +439,6 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
-                }
-                field("Company Metafields To Shopify"; Rec."Company Metafields To Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether company metafields are synchronized to Shopify.';
                 }
             }
             group(OrderProcessing)
@@ -517,12 +502,6 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the customer is notified when the shipment is synchronized to Shopify.';
-                }
-                field("Order Attributes To Shopify"; Rec."Order Attributes To Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies if Business Central document no. is synchronized to Shopify as order attribute.';
-                    Enabled = Rec."Allow Outgoing Requests" or Rec."Order Attributes To Shopify";
                 }
 #if not CLEAN24
                 field(ReplaceOrderAttributeValue; Rec."Replace Order Attribute Value")
@@ -834,19 +813,6 @@ page 30101 "Shpfy Shop Card"
                 RunObject = Page "Shpfy Sales Channels";
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'View a list of Shopify Sales Channels for the shop and choose ones used for new product publishing.';
-            }
-            action(BulkOperations)
-            {
-                ApplicationArea = All;
-                Caption = 'Bulk Operations';
-                Image = Administration;
-                Promoted = true;
-                PromotedCategory = Category4;
-                PromotedIsBig = true;
-                PromotedOnly = true;
-                RunObject = Page "Shpfy Bulk Operations";
-                RunPageLink = "Shop Code" = field(Code);
-                ToolTip = 'View a list of Shopify Bulk Operations for the shop.';
             }
         }
         area(Processing)

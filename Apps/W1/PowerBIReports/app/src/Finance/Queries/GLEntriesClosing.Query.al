@@ -1,4 +1,3 @@
-#if not CLEAN26
 namespace Microsoft.Finance.PowerBIReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
@@ -15,9 +14,6 @@ query 36956 "G/L Entries - Closing"
     EntityName = 'closingGeneralLedgerEntry';
     EntitySetName = 'closingGeneralLedgerEntries';
     DataAccessIntent = ReadOnly;
-    ObsoleteState = Pending;
-    ObsoleteReason = 'This query has been replaced by G/L Entries Balance Sheet and Income Statement queries.';
-    ObsoleteTag = '26.0';
 
     elements
     {
@@ -75,4 +71,3 @@ query 36956 "G/L Entries - Closing"
             CurrQuery.SetFilter(sourceCode, '%1', SourceCodeText);
     end;
 }
-#endif

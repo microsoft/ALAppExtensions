@@ -48,8 +48,6 @@ codeunit 11620 "CH Contoso Localization"
     end;
 
     local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateCHESRSetup: Codeunit "Create CH ESR Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -59,8 +57,10 @@ codeunit 11620 "CH Contoso Localization"
                     Codeunit.Run(Codeunit::"Create CH LSV Setup");
                     Codeunit.Run(Codeunit::"Create CH Bank Ex/Import");
                 end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                CreateCHESRSetup.UpdateESRSetup();
+            Enum::"Contoso Demo Data Level"::"Transactional Data":
+                Codeunit.Run(Codeunit::"Create CH Gen. Journal Line");
+            Enum::"Contoso Demo Data Level"::"Historical Data":
+                Codeunit.Run(Codeunit::"Create CH Bank Acc. Rec.");
         end;
     end;
 
@@ -71,10 +71,9 @@ codeunit 11620 "CH Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create CH No. Series");
                     Codeunit.Run(Codeunit::"Create CH Post Code");
+                    Codeunit.Run(Codeunit::"Create CH Company Information");
                     Codeunit.Run(Codeunit::"Create CH Data Exchange");
                 end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create CH Company Information");
         end;
     end;
 
@@ -116,14 +115,19 @@ codeunit 11620 "CH Contoso Localization"
                     CreateCHGLAccounts.AddCategoriesToGLAccounts();
                     Codeunit.Run(Codeunit::"Create CH Posting Groups");
                     Codeunit.Run(Codeunit::"Create CH VAT Posting Groups");
+                    Codeunit.Run(Codeunit::"Create CH Acc. Schedule Name");
+                    Codeunit.Run(Codeunit::"Create CH Column Layout Name");
                     Codeunit.Run(Codeunit::"Create CH VAT Cipher");
                     Codeunit.Run(Codeunit::"Create CH VAT Setup Post. Grp.");
-                    Codeunit.Run(Codeunit::"Create CH VAT Reg. No. Format");
-                    Codeunit.Run(Codeunit::"Create CH VAT Statement");
                 end;
 
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create CH Currency Ex. Rate");
+                begin
+                    Codeunit.Run(Codeunit::"Create CH Currency Ex. Rate");
+                    Codeunit.Run(Codeunit::"Create CH Column Layout");
+                    Codeunit.Run(Codeunit::"Create CH Financial Report");
+                    Codeunit.Run(Codeunit::"Create CH VAT Reg. No. Format");
+                end;
         end;
     end;
 
@@ -131,6 +135,7 @@ codeunit 11620 "CH Contoso Localization"
     local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateCHAccScheduleLine: Codeunit "Create CH Acc Schedule Line";
+        CreateCHColumnLayout: Codeunit "Create CH Column Layout";
         CreateCHVATPostingGroups: Codeunit "Create CH VAT Posting Groups";
         CreateCHVATStatement: Codeunit "Create CH VAT Statement";
         CreateCHCurrency: Codeunit "Create CH Currency";
@@ -153,12 +158,17 @@ codeunit 11620 "CH Contoso Localization"
         CreateCHCustomer: Codeunit "Create CH Customer";
         CreateCHCustBankAccount: Codeunit "Create CH Cust. Bank Account";
         CreateCHShipToAddress: Codeunit "Create CH Ship-to Address";
+        CreateCHEmployeeTemplate: Codeunit "Create CH Employee Template";
     begin
         case Module of
+            Enum::"Contoso Demo Data Module"::"Human Resources Module":
+                BindSubscription(CreateCHEmployeeTemplate);
+
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
                     CreateCHVATPostingGroups.CreateVATProductPostingGroup();
                     BindSubscription(CreateCHAccScheduleLine);
+                    BindSubscription(CreateCHColumnLayout);
                     BindSubscription(CreateCHCurrency);
                     BindSubscription(CreateCHCurrencyExRate);
                     BindSubscription(CreateCHVATPostingGroups);
@@ -205,6 +215,7 @@ codeunit 11620 "CH Contoso Localization"
     local procedure OnAfterGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateCHAccScheduleLine: Codeunit "Create CH Acc Schedule Line";
+        CreateCHColumnLayout: Codeunit "Create CH Column Layout";
         CreateCHVATPostingGroups: Codeunit "Create CH VAT Posting Groups";
         CreateCHVATStatement: Codeunit "Create CH VAT Statement";
         CreateCHCurrency: Codeunit "Create CH Currency";
@@ -227,11 +238,16 @@ codeunit 11620 "CH Contoso Localization"
         CreateCHReminderLevel: Codeunit "Create CH Reminder Level";
         CreateCHCustomer: Codeunit "Create CH Customer";
         CreateCHShipToAddress: Codeunit "Create CH Ship-to Address";
+        CreateCHEmployeeTemplate: Codeunit "Create CH Employee Template";
     begin
         case Module of
+            Enum::"Contoso Demo Data Module"::"Human Resources Module":
+                UnbindSubscription(CreateCHEmployeeTemplate);
+
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
                     UnbindSubscription(CreateCHAccScheduleLine);
+                    UnbindSubscription(CreateCHColumnLayout);
                     UnbindSubscription(CreateCHCurrency);
                     UnbindSubscription(CreateCHCurrencyExRate);
                     UnbindSubscription(CreateCHVATPostingGroups);

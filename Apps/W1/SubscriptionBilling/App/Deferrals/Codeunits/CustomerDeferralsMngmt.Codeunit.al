@@ -16,8 +16,6 @@ codeunit 8067 "Customer Deferrals Mngmt."
 {
     SingleInstance = true;
     Access = Internal;
-    Permissions =
-        tabledata "Sales Invoice Line" = r;
 
     var
         TempCustomerContractDeferral: Record "Customer Contract Deferral" temporary;
@@ -308,13 +306,11 @@ codeunit 8067 "Customer Deferrals Mngmt."
         InvoiceCustContractDeferral.SetRange("Contract Line No.", SalesCrMemoLine."Contract Line No.");
         if InvoiceCustContractDeferral.FindSet() then begin
             ContractDeferralRelease.GetAndTestSourceCode();
-            ContractDeferralRelease.GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch();
             ContractDeferralRelease.SetAllowGUI(false);
             repeat
                 CreditMemoCustContractDeferral := InvoiceCustContractDeferral;
                 CreditMemoCustContractDeferral."Document Type" := Enum::"Rec. Billing Document Type"::"Credit Memo";
                 CreditMemoCustContractDeferral."Document No." := SalesCrMemoLine."Document No.";
-                CreditMemoCustContractDeferral."Document Line No." := SalesCrMemoLine."Line No.";
                 CreditMemoCustContractDeferral."Posting Date" := InvoiceCustContractDeferral."Posting Date";
                 CreditMemoCustContractDeferral."Document Posting Date" := SalesCrMemoLine."Posting Date";
                 CreditMemoCustContractDeferral."Deferral Base Amount" := InvoiceCustContractDeferral."Deferral Base Amount" * -1;
@@ -328,11 +324,11 @@ codeunit 8067 "Customer Deferrals Mngmt."
                 SalesInvoiceLine.Get(InvoiceCustContractDeferral."Document No.", InvoiceCustContractDeferral."Document Line No.");
                 if not InvoiceCustContractDeferral.Released then begin
                     ContractDeferralRelease.SetRequestPageParameters(InvoiceCustContractDeferral."Posting Date", SalesCrMemoLine."Posting Date");
-                    ContractDeferralRelease.ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(InvoiceCustContractDeferral);
+                    ContractDeferralRelease.ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(InvoiceCustContractDeferral, SalesInvoiceLine."Gen. Bus. Posting Group", SalesInvoiceLine."Gen. Prod. Posting Group");
                     ContractDeferralRelease.PostTempGenJnlLineBufferForCustomerDeferrals();
                 end;
                 ContractDeferralRelease.SetRequestPageParameters(CreditMemoCustContractDeferral."Posting Date", SalesCrMemoLine."Posting Date");
-                ContractDeferralRelease.ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(CreditMemoCustContractDeferral);
+                ContractDeferralRelease.ReleaseCustomerContractDeferralAndInsertTempGenJournalLine(CreditMemoCustContractDeferral, SalesInvoiceLine."Gen. Bus. Posting Group", SalesInvoiceLine."Gen. Prod. Posting Group");
                 ContractDeferralRelease.PostTempGenJnlLineBufferForCustomerDeferrals();
 
                 TempCustomerContractDeferral := CreditMemoCustContractDeferral;
@@ -369,26 +365,29 @@ codeunit 8067 "Customer Deferrals Mngmt."
             Page.Run(Page::"Customer Contract Deferrals", TempCustomerContractDeferral);
     end;
 
+#if not CLEAN25
     [EventSubscriber(ObjectType::Page, Page::Navigate, OnAfterNavigateFindRecords, '', false, false)]
     local procedure OnAfterFindEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
         CustomerContractDeferral: Record "Customer Contract Deferral";
+        Navigate: Page Navigate;
     begin
-        CustomerContractDeferral.SetFilter("Document No.", DocNoFilter);
-        DocumentEntry.InsertIntoDocEntry(Database::"Customer Contract Deferral", CustomerContractDeferral."Document Type", CustomerContractDeferral.TableCaption, CustomerContractDeferral.Count);
+        CustomerContractDeferral.SetRange("Document No.", DocNoFilter);
+        Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Customer Contract Deferral", CustomerContractDeferral."Document Type", CustomerContractDeferral.TableCaption, CustomerContractDeferral.Count);
     end;
-
-    [EventSubscriber(ObjectType::Page, Page::Navigate, OnBeforeShowRecords, '', false, false)]
+#endif
+#if not CLEAN25
+    [EventSubscriber(ObjectType::Page, Page::Navigate, OnBeforeNavigateShowRecords, '', false, false)]
     local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
         CustomerContractDeferral: Record "Customer Contract Deferral";
     begin
         if TempDocumentEntry."Table ID" <> Database::"Customer Contract Deferral" then
             exit;
-        CustomerContractDeferral.SetFilter("Document No.", DocNoFilter);
+        CustomerContractDeferral.SetRange("Document No.", DocNoFilter);
         Page.Run(Page::"Customer Contract Deferrals", CustomerContractDeferral);
     end;
-
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnAfterGLFinishPosting, '', false, false)]
     local procedure GetEntryNo(GLEntry: Record "G/L Entry"; var GenJnlLine: Record "Gen. Journal Line")
     var

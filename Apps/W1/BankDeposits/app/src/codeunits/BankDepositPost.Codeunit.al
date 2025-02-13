@@ -405,13 +405,7 @@ codeunit 1690 "Bank Deposit-Post"
         BankAccCommentLine: Record "Bank Acc. Comment Line";
         PostedBankDepositHeaderLocal: Record "Posted Bank Deposit Header";
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
-        IsHandled: Boolean;
     begin
-        IsHandled := false;
-        OnBeforeCleanPostedBankDepositHeaderAndLines(BankDepositNo, IsHandled);
-        if IsHandled then
-            exit;
-
         PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositNo);
         PostedBankDepositLine.DeleteAll();
         if not PostedBankDepositHeaderLocal.Get(BankDepositNo) then
@@ -555,11 +549,6 @@ codeunit 1690 "Bank Deposit-Post"
 
     [IntegrationEvent(false, false)]
     local procedure OnRunOnBeforeGenJournalLineDeleteAll(var BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositLine: Record "Posted Bank Deposit Line"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCleanPostedBankDepositHeaderAndLines(var BankDepositNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

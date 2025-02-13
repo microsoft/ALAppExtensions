@@ -11,7 +11,6 @@ page 6381 "OneDrive Setup"
     Permissions = tabledata "OneDrive Setup" = rim;
     ApplicationArea = Basic, Suite;
     Caption = 'OneDrive Document Import Setup';
-    PageType = StandardDialog;
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
@@ -41,17 +40,17 @@ page 6381 "OneDrive Setup"
                 Caption = 'Shared Links to Document Folders';
                 InstructionalText = 'Use the OneDrive ''Copy Link'' feature to create the shared links and define who they work for, then paste them to the corresponding fields.';
 
-                field("Incoming Documents"; Rec."Documents Folder")
+                field("Documents Folder URL"; Rec."Documents Folder")
                 {
-                    Caption = 'Document Folder';
+                    Caption = 'Documents';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the shared link of the folder from which to import documents.';
                 }
-                field("Archived Documents"; Rec."Imp. Documents Folder")
+                field("Imported Documents Folder URL"; Rec."Imp. Documents Folder")
                 {
-                    Caption = 'Archive Folder';
+                    Caption = 'Imported Documents';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;

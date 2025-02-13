@@ -25,7 +25,7 @@ codeunit 6257 "SustCostManagement"
         if not CalculateAverageCost(Item, AverageCost) then
             exit;
 
-        Item."CO2e per Unit" := AverageCost;
+        Item."CO2e per Unit" := Round(AverageCost, SustSetup."Emission Rounding Precision");
     end;
 
     procedure CalculateAverageCost(var Item: Record Item; var AverageCost: Decimal): Boolean
@@ -107,4 +107,7 @@ codeunit 6257 "SustCostManagement"
         SustValueEntry.CalcSums("CO2e Amount (Expected)");
         exit(SustValueEntry."CO2e Amount (Expected)");
     end;
+
+    var
+        SustSetup: Record "Sustainability Setup";
 }

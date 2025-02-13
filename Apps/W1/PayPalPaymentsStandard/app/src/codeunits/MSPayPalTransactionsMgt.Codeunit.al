@@ -189,6 +189,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         Session.LogMessage('00008H1', GetTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         JObject.ReadFrom(JsonString);
         GetPropertyValueFromJObject(JObject, 'receiver_email', AccountID);
+        AccountID := LOWERCASE(AccountID);
         GetPropertyValueFromJObject(JObject, 'txn_id', TransactionID);
         GetPropertyValueFromJObject(JObject, 'txn_type', PayPalTransactiontype);
         GetPropertyValueFromJObject(JObject, 'payment_date', TransactionDateStr);

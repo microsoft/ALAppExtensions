@@ -32,6 +32,5 @@
     "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
-  },
-  "target": "OnPrem"
+  }
 }

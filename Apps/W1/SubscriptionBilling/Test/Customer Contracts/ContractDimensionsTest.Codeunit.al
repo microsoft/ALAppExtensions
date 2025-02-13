@@ -16,8 +16,6 @@ codeunit 139693 "Contract Dimensions Test"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         IsInitialized: Boolean;
 
-    #region Tests
-
     [Test]
     procedure CheckCustomerContractDimensionValueCreatedAndAssigned()
     var
@@ -27,7 +25,7 @@ codeunit 139693 "Contract Dimensions Test"
         Initialize();
 
         // [WHEN] Auto Insert Customer Contract Dimension Value is enabled
-        ContractTestLibrary.SetAutomaticDimensions(true);
+        ContractTestLibrary.SetAutomaticDimentions(true);
 
         // [WHEN] Customer Contract dimension value is created
         ContractTestLibrary.InsertCustomerContractDimensionCode();
@@ -47,10 +45,6 @@ codeunit 139693 "Contract Dimensions Test"
         TempDimensionSetEntry.TestField("Dimension Value Code", CustomerContract."No.");
     end;
 
-    #endregion Tests
-
-    #region Procedures
-
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Contract Dimensions Test");
@@ -64,6 +58,4 @@ codeunit 139693 "Contract Dimensions Test"
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contract Dimensions Test");
     end;
-
-    #endregion Procedures
 }

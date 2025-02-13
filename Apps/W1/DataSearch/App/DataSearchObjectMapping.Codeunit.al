@@ -856,7 +856,7 @@ codeunit 2685 "Data Search Object Mapping"
         WarehouseActivityLine: Record "Warehouse Activity Line";
     begin
         RecRef.SetTable(WarehouseActivityLine);
-        WarehouseActivityHeader.Get(WarehouseActivityLine."Activity Type", WarehouseActivityLine."No.");
+        WarehouseActivityHeader.Get(WarehouseActivityLine."No.");
         RecRef.GetTable(WarehouseActivityHeader);
     end;
 
@@ -866,7 +866,7 @@ codeunit 2685 "Data Search Object Mapping"
         RegisteredWhseActivityLine: Record "Registered Whse. Activity Line";
     begin
         RecRef.SetTable(RegisteredWhseActivityLine);
-        RegisteredWhseActivityHdr.Get(RegisteredWhseActivityLine."Activity Type", RegisteredWhseActivityLine."No.");
+        RegisteredWhseActivityHdr.Get(RegisteredWhseActivityLine."No.");
         RecRef.GetTable(RegisteredWhseActivityHdr);
     end;
 

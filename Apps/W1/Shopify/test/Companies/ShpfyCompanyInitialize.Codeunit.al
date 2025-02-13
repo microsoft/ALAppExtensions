@@ -27,7 +27,6 @@ codeunit 139638 "Shpfy Company Initialize"
         CompanyLocation.Zip := '1111';
         CompanyLocation.City := 'City';
         CompanyLocation."Country/Region Code" := 'US';
-        CompanyLocation.Recipient := 'Recipient';
         CompanyLocation.Insert();
     end;
 
@@ -64,7 +63,7 @@ codeunit 139638 "Shpfy Company Initialize"
 
     internal procedure CreateCompanyGraphQLResult(): Text
     begin
-        exit('{"query":"mutation {companyCreate(input: {company: {name: \"Name\"}, companyLocation: {billingSameAsShipping: true,name: \"Address\", phone: \"111\", shippingAddress: {address1: \"Address\", address2: \"Address 2\", zip: \"1111\", city: \"City\", phone: \"111\", countryCode: US, recipient: \"Recipient\"}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
+        exit('{"query":"mutation {companyCreate(input: {company: {name: \"Name\"}, companyLocation: {billingSameAsShipping: true,name: \"Address\", phone: \"111\", shippingAddress: {address1: \"Address\", address2: \"Address 2\", zip: \"1111\", city: \"City\", phone: \"111\", countryCode: US}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
     end;
 
     internal procedure CreateGraphQueryUpdateCompanyResult(CompanyId: BigInteger): Text
@@ -76,7 +75,7 @@ codeunit 139638 "Shpfy Company Initialize"
 
     internal procedure CreateGraphQueryUpdateCompanyLocationResult(CompanyLocationId: BigInteger): Text
     var
-        GraphQLTxt: Label '{"query":"mutation {companyLocationAssignAddress(locationId: \"gid://shopify/CompanyLocation/%1\", addressTypes: [BILLING,SHIPPING] address: {address1: \"!Address\", address2: \"!Address 2\", city: \"!City\", phone: \"!111\", recipient: \"!Recipient\"}) {addresses {id}, userErrors {field, message}}}"}', Comment = '%1 = CompanyLocationId', Locked = true;
+        GraphQLTxt: Label '{"query":"mutation {companyLocationAssignAddress(locationId: \"gid://shopify/CompanyLocation/%1\", addressTypes: [BILLING,SHIPPING] address: {address1: \"!Address\", address2: \"!Address 2\", city: \"!City\", phone: \"!111\"}) {addresses {id}, userErrors {field, message}}}"}', Comment = '%1 = CompanyLocationId', Locked = true;
     begin
         exit(StrSubstNo(GraphQLTxt, CompanyLocationId));
     end;

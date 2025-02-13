@@ -80,7 +80,6 @@ codeunit 139511 "Intrastat IT Test"
                             Locked = true;
         DataExchangeXMLCSQP2Txt: Label '<TransformationRules><Code>GETAMOUNTSIGN</Code><Description>Get Amount Sign</Description><TransformationType>6</TransformationType><FindValue>^\d</FindValue><ReplaceValue>+</ReplaceValue><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>FIRSTCHAR</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="12" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to Integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="13" FieldID="8" Optional="true" TransformationRule="FIRSTCHAR"><TransformationRules><Code>FIRSTCHAR</Code><Description>First Character</Description><TransformationType>4</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>1</StartPosition><Length>1</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="14" FieldID="5" Optional="true" TransformationRule="TRIMALL"><TransformationRules><Code>TRIMALL</Code><Description>Removes all spaces</Description><TransformationType>5</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping></DataExchMapping></DataExchLineDef></DataExchDef></root>',
                             Locked = true;
-        AmountErr: Label 'Amount must be %1 in %2.', Comment = '%1= Amount Value, %2= Table Caption.';
 
     [Test]
     [Scope('OnPrem')]
@@ -2242,107 +2241,6 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportPage.Close();
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
-    procedure IntrastatReportTotalWeight()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        Item: Record Item;
-        BaseUnitOfMeasure: Record "Unit of Measure";
-        UnitOfMeasure: Record "Unit of Measure";
-        ItemUnitOfMeasure: Record "Item Unit of Measure";
-        ItemLedgerEntry: Record "Item Ledger Entry";
-        IntrastatReportLine: Record "Intrastat Report Line";
-        NewPostingDate: Date;
-        ShipmentDocumentNo, InvoiceDocumentNo, CustomerNo, IntrastatReportNo : Code[20];
-    begin
-        // [SCENARIO 537508] Incorrect values in "Total Weight" field in the Intrastat report in the Italian Version
-
-        // [GIVEN] Create 2 Unit of Measure
-        Initialize();
-        NewPostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-        WorkDate(NewPostingDate);
-
-        LibraryInventory.CreateUnitOfMeasureCode(BaseUnitOfMeasure);
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-
-        // Create Item with Base Unit of Measure and Net Weight and Gross Weight as 1
-        LibraryInventory.CreateItem(Item);
-        Item."Base Unit of Measure" := BaseUnitOfMeasure.Code;
-        Item."Net Weight" := 1;
-        Item."Gross Weight" := 1;
-        item.Modify(true);
-
-        // [GIVEN] Create 2 Item Unit Of Measure 
-        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", BaseUnitOfMeasure.Code, 1);
-        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure.Code, LibraryRandom.RandDecInRange(0, 1, 4));
-
-        // [GIVEN] Create and Post Sales Order
-        CustomerNo := LibraryIntrastat.CreateCustomer();
-        LibraryIntrastat.CreateSalesDocument(SalesHeader, SalesLine, CustomerNo, WorkDate(), SalesLine."Document Type"::Order,
-            SalesLine.Type::Item, Item."No.", 1);
-        SalesLine.Validate(Quantity, LibraryRandom.RandDecInRange(1600, 1800, 5));
-        SalesLine.Validate("Unit of Measure Code", UnitOfMeasure.Code);
-        SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(0, 1, 3));
-        SalesLine.Modify(true);
-
-        ShipmentDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
-        InvoiceDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, false, true);
-
-        // [WHEN] Create and Get Intrastat Report Lines based on WORKDATE for Sales.
-        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
-
-        // [THEN] Verify Item Ledger Entry and Total Weight of Intrastat Report Line
-        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
-        IntrastatReportLine.SetRange("Document No.", InvoiceDocumentNo);
-        IntrastatReportLine.FindFirst();
-        VerifyItemLedgerEntryExist(ItemLedgerEntry."Document Type"::"Sales Shipment", ShipmentDocumentNo, LibraryIntrastat.GetCountryRegionCode(), -IntrastatReportLine.Quantity);
-        IntrastatReportLine.TestField("Total Weight", IntrastatReportLine.Quantity * IntrastatReportLine."Net Weight");
-    end;
-
-    [Test]
-    [HandlerFunctions('IntrastatReportGetLinesRequestPageHandler')]
-    procedure IntrastatReportWithAmountIncludingItemCharge()
-    var
-        IntrastatReportLine: Record "Intrastat Report Line";
-        SalesInvoiceLine: Record "Sales Invoice Line";
-        PostingDate: Date;
-        DocumentNo: Code[20];
-        IntrastatReportNo: Code[20];
-    begin
-        // [SCENARIO 550618] Amount Including Item Charge  working in Intrastat Report Suggestion.
-        Initialize();
-
-        // [GIVEN] Create and Store Posting Date.
-        PostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
-
-        // [GIVEN] Create and Post Sales Invoice with Item and Item Charge.
-        DocumentNo := LibraryIntrastat.CreateAndPostSalesInvoiceWithItemAndItemCharge(PostingDate);
-
-        // [GIVEN] Find Sales Invoice Line.
-        SalesInvoiceLine.SetRange("Document No.", DocumentNo);
-        SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
-        SalesInvoiceLine.FindFirst();
-
-        // [WHEN] Create Intrastat Report and Run Suggest Lines.
-        CreateIntrastatReportAndSuggestLines(PostingDate, IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
-        Commit();
-
-        // [THEN] Amount should not include Item Charge Amount in Intrastat Report Line.        
-        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
-        IntrastatReportLine.SetRange("Document No.", DocumentNo);
-        IntrastatReportLine.FindFirst();
-        Assert.AreEqual(
-            SalesInvoiceLine.Amount,
-            IntrastatReportLine.Amount,
-            StrSubstNo(
-                AmountErr,
-                SalesInvoiceLine.Amount,
-                IntrastatReportLine.TableCaption()));
-    end;
-
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -2515,25 +2413,6 @@ codeunit 139511 "Intrastat IT Test"
         Assert.AreEqual(
           Quantity, ItemLedgerEntry."Remaining Quantity",
           StrSubstNo(ValidationErr, ItemLedgerEntry.FieldCaption("Remaining Quantity"), Quantity, ItemLedgerEntry.TableCaption()));
-    end;
-
-    local procedure VerifyItemLedgerEntryExist(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20];
-                                                               CountryRegionCode: Code[10];
-                                                               Quantity: Decimal)
-    var
-        ItemLedgerEntry: Record "Item Ledger Entry";
-    begin
-        ItemLedgerEntry.SetRange("Document Type", DocumentType);
-        ItemLedgerEntry.SetRange("Document No.", DocumentNo);
-        ItemLedgerEntry.FindFirst();
-
-        Assert.AreEqual(
-          CountryRegionCode, ItemLedgerEntry."Country/Region Code", StrSubstNo(ValidationErr,
-            ItemLedgerEntry.FieldCaption("Country/Region Code"), CountryRegionCode, ItemLedgerEntry.TableCaption()));
-
-        Assert.AreEqual(
-          Quantity, ItemLedgerEntry.Quantity,
-          StrSubstNo(ValidationErr, ItemLedgerEntry.FieldCaption(Quantity), Quantity, ItemLedgerEntry.TableCaption()));
     end;
 
     local procedure VerifyIntrastatLineForItemExist(DocumentNo: Code[20]; IntrastatNo: Code[20])
@@ -2899,13 +2778,6 @@ codeunit 139511 "Intrastat IT Test"
     [Scope('OnPrem')]
     procedure IntrastatReportGetLinesPageHandler(var IntrastatReportGetLines: TestRequestPage "Intrastat Report Get Lines")
     begin
-        IntrastatReportGetLines.OK().Invoke();
-    end;
-
-    [RequestPageHandler]
-    procedure IntrastatReportGetLinesRequestPageHandler(var IntrastatReportGetLines: TestRequestPage "Intrastat Report Get Lines")
-    begin
-        IntrastatReportGetLines.AmtInclItemCharges.SetValue(false);
         IntrastatReportGetLines.OK().Invoke();
     end;
 

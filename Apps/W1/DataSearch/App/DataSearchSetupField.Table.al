@@ -14,7 +14,7 @@ table 2682 "Data Search Setup (Field)"
         field(1; "Table No."; Integer)
         {
             Caption = 'Table No.';
-            TableRelation = "Table Metadata";
+            TableRelation = "Data Search Setup (Table)";
             DataClassification = SystemMetadata;
         }
         field(2; "Field No."; Integer)

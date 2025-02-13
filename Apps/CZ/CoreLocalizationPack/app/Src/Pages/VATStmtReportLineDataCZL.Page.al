@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Finance.GeneralLedger.Setup;
-
 page 31217 "VAT Stmt. Report Line Data CZL"
 {
     ApplicationArea = Basic, Suite;
@@ -34,11 +32,6 @@ page 31217 "VAT Stmt. Report Line Data CZL"
                 {
                     ToolTip = 'Specifies the amount of the statement.';
                 }
-                field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
-                {
-                    ToolTip = 'Specifies the amount of the statement in additional currency.';
-                    Visible = UseAmtsInAddCurrVisible;
-                }
                 field("VAT Report Amount Type"; Rec."VAT Report Amount Type")
                 {
                     ToolTip = 'Specifies the attribute code value to display amounts in corresponding columns of VAT Return.';
@@ -47,19 +40,4 @@ page 31217 "VAT Stmt. Report Line Data CZL"
             }
         }
     }
-    var
-        UseAmtsInAddCurrVisible: Boolean;
-
-    trigger OnOpenPage()
-    begin
-        SetUseAmtsInAddCurrVisible()
-    end;
-
-    local procedure SetUseAmtsInAddCurrVisible()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        GeneralLedgerSetup.Get();
-        UseAmtsInAddCurrVisible := (GeneralLedgerSetup."Additional Reporting Currency" <> '') and (GeneralLedgerSetup."Functional Currency CZL");
-    end;
 }

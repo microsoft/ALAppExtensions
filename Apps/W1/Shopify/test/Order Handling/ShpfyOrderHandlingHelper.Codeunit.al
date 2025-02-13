@@ -19,7 +19,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Any.SetDefaultSeed();
         OrdersToImport := Any.IntegerInRange(1, 5);
         JPageInfo.Add('hasNextPage', false);
-        JOrders.Add('pageInfo', JPageInfo);
+        JOrders.Add('pageInf', JPageInfo);
         for Index := 1 to OrdersToImport do
             JEdges.Add(OrderToImport(B2B));
         JOrders.Add('edges', JEdges);
@@ -55,7 +55,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JNode.Add('test', true);
         JNode.Add('fullyPaid', false);
         JNode.Add('unpaid', false);
-        JNode.Add('risk', GetRiskLevels());
+        JNode.Add('riskLevel', 'LOW');
         JNode.Add('displayFinancialStatus', 'PENDING');
         JNode.Add('displayFulfillmentStatus', 'UNFULFILLED');
         JNode.Add('subtotalLineItemsQuantity', 1);
@@ -81,6 +81,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         if JsonHelper.GetJsonArray(JOrdersToImport, JOrders, 'data.orders.edges') then
             exit(JOrders.Count);
     end;
+
 
     internal procedure CreateShopifyOrderAsJson(Shop: Record "Shpfy Shop"; var OrdersToImport: Record "Shpfy Orders to Import"; var JShopifyLineItems: JsonArray; B2B: Boolean) JOrder: JsonObject
     var
@@ -154,6 +155,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('displayFulfillmentStatus', Format(OrdersToImport."Fulfillment Status").ToUpper());
         JOrder.Add('total_weight', Any.IntegerInRange(0, 1000));
         JOrder.Add('refundable', false);
+        JOrder.Add('risks', GetRiskLevels());
         JOrder.Add('tags', OrdersToImport.Tags);
         JOrder.Add('paymentGatewayNames', GetPaymentGatewayNames());
         JOrder.Add('processedAt', OrdersToImport."Created At");
@@ -275,24 +277,6 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLines.Add(JLine);
     end;
 
-    internal procedure CreatePaymentTermsAsJson(DueDate: DateTime) JPaymentTerms: JsonObject
-    var
-        JPaymentSchedules: JsonObject;
-        JNode: JsonObject;
-        JNodes: JsonArray;
-        JNull: JsonValue;
-    begin
-        JPaymentTerms.Add('id', 'gid://shopify/PaymentTerms/123');
-        JPaymentTerms.Add('dueInDays', JNull);
-        JPaymentTerms.Add('paymentTermsName', 'Fixed');
-        JPaymentTerms.Add('paymentTermsType', 'FIXED');
-        JPaymentTerms.Add('translatedName', 'Fixed');
-        JNode.Add('dueAt', Format(DueDate, 0, 9));
-        JNodes.Add(JNode);
-        JPaymentSchedules.Add('nodes', JNodes);
-        JPaymentTerms.Add('paymentSchedules', JPaymentSchedules);
-    end;
-
     local procedure CreateTaxLines(TaxPrice: Decimal; TaxRate: Decimal) JTaxLines: JsonArray;
     var
         JTaxLine: JsonObject;
@@ -327,20 +311,19 @@ codeunit 139607 "Shpfy Order Handling Helper"
         exit(InitializeTest.GetDummyCustomer());
     end;
 
-    local procedure GetRiskLevels() JRisk: JsonObject
+    local procedure GetRiskLevels() JRisks: JsonArray
     var
         Index: Integer;
-        JAssessments: JsonArray;
     begin
         for Index := 1 to Any.IntegerInRange(5, 10) do
-            JAssessments.Add(GetRiskLevel());
-
-        JRisk.Add('assessments', JAssessments);
+            JRisks.Add(GetRiskLevel());
     end;
 
-    local procedure GetRiskLevel() JAssessment: JsonObject
+    local procedure GetRiskLevel() JRisk: JsonObject
     begin
-        JAssessment.Add('riskLevel', "Shpfy Risk Level".Names().Get(Any.IntegerInRange(1, "Shpfy Risk Level".Names().Count)).ToUpper());
+        JRisk.Add('level', "Shpfy Risk Level".Names().Get(Any.IntegerInRange(1, "Shpfy Risk Level".Names().Count)).ToUpper());
+        JRisk.Add('display', Any.Boolean());
+        JRisk.Add('message', Any.AlphabeticText(100));
     end;
 
     local procedure CreateAddress(Customer: Record Customer; AddressId: BigInteger; IncludeFullName: Boolean; IncludeGeoCodes: Boolean) JAddress: JsonObject

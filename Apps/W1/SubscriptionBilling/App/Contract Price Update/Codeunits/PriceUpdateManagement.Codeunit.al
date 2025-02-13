@@ -109,14 +109,10 @@ codeunit 8009 "Price Update Management"
 
     internal procedure GetAndApplyFiltersOnServiceCommitment(var ServiceCommitment: Record "Service Commitment"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     var
-        TempServiceCommitment: Record "Service Commitment" temporary;
         ServiceObjectFilterText: Text;
         ServiceCommitmentFilterText: Text;
         ContractFilterText: Text;
     begin
-        ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
-        InitTempServiceCommitmentTable(ServiceCommitment, TempServiceCommitment);
-
         if PriceUpdateTemplate."Contract Filter".HasValue() then
             ContractFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Contract Filter"));
         if PriceUpdateTemplate."Service Object Filter".HasValue() then
@@ -124,99 +120,36 @@ codeunit 8009 "Price Update Management"
         if PriceUpdateTemplate."Service Commitment Filter".HasValue() then
             ServiceCommitmentFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Service Commitment Filter"));
 
-        if ServiceCommitmentFilterText <> '' then begin
+        if ServiceCommitmentFilterText <> '' then
             ServiceCommitment.SetView(ServiceCommitmentFilterText);
-            ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
-            FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(ServiceCommitment, TempServiceCommitment);
-        end;
-        if ServiceObjectFilterText <> '' then begin
-            FilterAndMarkServiceCommitmentOnServiceObject(ServiceCommitment, ServiceObjectFilterText, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
-            FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(ServiceCommitment, TempServiceCommitment);
-        end;
-        if ContractFilterText <> '' then begin
-            FilterAndMarkServiceCommitmentOnContract(ServiceCommitment, ContractFilterText, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
-            FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(ServiceCommitment, TempServiceCommitment);
-        end;
+        if ServiceObjectFilterText <> '' then
+            ApplyServiceObjectFilterOnMarkedServiceCommitments(ServiceCommitment, ServiceObjectFilterText);
+        if ContractFilterText <> '' then
+            ApplyContractFilterOnMarkedServiceCommitments(ServiceCommitment, PriceUpdateTemplate.Partner, ContractFilterText);
 
-        MarkServiceCommitmentsFromTempTable(ServiceCommitment, TempServiceCommitment);
-        OnAfterFilterServiceCommitmentOnAfterGetAndApplyFiltersOnServiceCommitment(ServiceCommitment);
-    end;
-
-    local procedure ApplyDefaultFiltering(var ServiceCommitment: Record "Service Commitment"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
-    begin
         ServiceCommitment.SetRange(Partner, PriceUpdateTemplate.Partner);
         ServiceCommitment.SetRange("Exclude from Price Update", false);
         ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
         ServiceCommitment.SetFilter("Next Price Update", '<=%1|%2', IncludeServiceCommitmentUpToDate, 0D);
         ServiceCommitment.SetRange("Planned Serv. Comm. exists", false);
         ServiceCommitment.SetRange("Usage Based Billing", false);
+        OnAfterFilterServiceCommitmentOnAfterGetAndApplyFiltersOnServiceCommitment(ServiceCommitment);
+
         ServiceCommitment.SetRange(Closed, false);
     end;
 
-    local procedure InitTempServiceCommitmentTable(ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
-    begin
-        TempServiceCommitment.Reset();
-        TempServiceCommitment.DeleteAll(false);
-        if ServiceCommitment.FindSet() then
-            repeat
-                TempServiceCommitment := ServiceCommitment;
-                TempServiceCommitment.Insert(false);
-            until ServiceCommitment.Next() = 0;
-    end;
-
-    local procedure FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
-    begin
-        if ServiceCommitment.FindSet() then
-            repeat
-                if TempServiceCommitment.Get(ServiceCommitment."Entry No.") then
-                    TempServiceCommitment.Mark(true);
-            until ServiceCommitment.Next() = 0;
-        DeleteUnmarkedTempServiceCommitment(TempServiceCommitment);
-    end;
-
-    local procedure DeleteUnmarkedTempServiceCommitment(var TempServiceCommitment: Record "Service Commitment" temporary)
-    begin
-        if TempServiceCommitment.FindSet() then
-            repeat
-                if not TempServiceCommitment.Mark() then
-                    TempServiceCommitment.Delete(false);
-            until TempServiceCommitment.Next() = 0;
-        TempServiceCommitment.Reset();
-    end;
-
-    local procedure FilterAndMarkServiceCommitmentOnServiceObject(var ServiceCommitment: Record "Service Commitment"; ServiceObjectFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
-    var
-        ServiceObject: Record "Service Object";
-    begin
-        ServiceCommitment.Reset();
-        ServiceObject.SetView(ServiceObjectFilterText);
-        ServiceObject.SetLoadFields("No.");
-        if ServiceObject.FindSet() then
-            repeat
-                ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-                ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
-                if ServiceCommitment.FindSet() then
-                    repeat
-                        ServiceCommitment.Mark(true);
-                    until ServiceCommitment.Next() = 0;
-            until ServiceObject.Next() = 0;
-        ServiceCommitment.SetRange("Service Object No.");
-        ServiceCommitment.MarkedOnly(true);
-    end;
-
-    local procedure FilterAndMarkServiceCommitmentOnContract(var ServiceCommitment: Record "Service Commitment"; ContractFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure ApplyContractFilterOnMarkedServiceCommitments(var ServiceCommitment: Record "Service Commitment"; ServicePartner: Enum "Service Partner"; ContractFilterText: Text): Boolean
     var
         VendorContract: Record "Vendor Contract";
         CustomerContract: Record "Customer Contract";
     begin
-        ServiceCommitment.Reset();
-        case PriceUpdateTemplate.Partner of
+        case ServicePartner of
             "Service Partner"::Customer:
                 begin
                     CustomerContract.SetView(ContractFilterText);
                     if CustomerContract.FindSet() then
                         repeat
-                            ApplyContractFilterAndMarkServiceCommitment(ServiceCommitment, CustomerContract."No.", PriceUpdateTemplate, IncludeServiceCommitmentUpToDate)
+                            MarkServiceCommitmentsForContract(ServiceCommitment, ServicePartner, CustomerContract."No.");
                         until CustomerContract.Next() = 0;
                 end;
             "Service Partner"::Vendor:
@@ -224,33 +157,37 @@ codeunit 8009 "Price Update Management"
                     VendorContract.SetView(ContractFilterText);
                     if VendorContract.FindSet() then
                         repeat
-                            ApplyContractFilterAndMarkServiceCommitment(ServiceCommitment, VendorContract."No.", PriceUpdateTemplate, IncludeServiceCommitmentUpToDate)
+                            MarkServiceCommitmentsForContract(ServiceCommitment, ServicePartner, VendorContract."No.");
                         until VendorContract.Next() = 0;
                 end;
         end;
-        ServiceCommitment.SetRange(Partner);
-        ServiceCommitment.SetRange("Contract No.");
-        ServiceCommitment.MarkedOnly(true);
     end;
 
-    local procedure ApplyContractFilterAndMarkServiceCommitment(var ServiceCommitment: Record "Service Commitment"; ContractNo: Code[20]; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure ApplyServiceObjectFilterOnMarkedServiceCommitments(var ServiceCommitment: Record "Service Commitment"; ServiceObjectFilterText: Text)
+    var
+        ServiceObject: Record "Service Object";
+        ServiceCommitment2: Record "Service Commitment";
     begin
-        ServiceCommitment.FilterOnContract(PriceUpdateTemplate.Partner, ContractNo);
-        ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
+        ServiceObject.SetView(ServiceObjectFilterText);
+        if ServiceObject.FindSet() then
+            repeat
+                ServiceCommitment2.SetRange("Service Object No.", ServiceObject."No.");
+                if ServiceCommitment2.FindSet() then
+                    repeat
+                        if ServiceCommitment.Get(ServiceCommitment2."Entry No.") then
+                            ServiceCommitment.Mark(true);
+                    until ServiceCommitment2.Next() = 0;
+                ServiceCommitment.MarkedOnly(true);
+            until ServiceObject.Next() = 0;
+    end;
+
+    local procedure MarkServiceCommitmentsForContract(var ServiceCommitment: Record "Service Commitment"; ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
+    begin
+        ServiceCommitment.FilterOnContract(ServicePartner, ContractNo);
         if ServiceCommitment.FindSet() then
             repeat
                 ServiceCommitment.Mark(true);
             until ServiceCommitment.Next() = 0;
-    end;
-
-    local procedure MarkServiceCommitmentsFromTempTable(var ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
-    begin
-        ServiceCommitment.Reset();
-        if TempServiceCommitment.FindSet() then
-            repeat
-                ServiceCommitment.Get(TempServiceCommitment."Entry No.");
-                ServiceCommitment.Mark(true);
-            until TempServiceCommitment.Next() = 0;
         ServiceCommitment.MarkedOnly(true);
     end;
 

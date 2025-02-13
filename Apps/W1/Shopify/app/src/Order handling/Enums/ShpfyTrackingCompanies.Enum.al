@@ -203,8 +203,5 @@ enum 30122 "Shpfy Tracking Companies"
     {
         Caption = 'YunExpress';
     }
-    value(48; Other)
-    {
-        Caption = 'Other';
-    }
+
 }

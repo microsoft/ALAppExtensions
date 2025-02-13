@@ -119,7 +119,7 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
             group(Job)
             {
-                ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
@@ -128,7 +128,7 @@ page 8084 "Sub. Billing Role Center"
                 ToolTip = 'Create, plan, and execute tasks in project management. ';
                 action(Jobs)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -139,7 +139,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(Open)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -150,7 +150,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsPlannedAndQuotd)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -161,7 +161,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsComplet)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -172,7 +172,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsUnassign)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -183,7 +183,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobTasks)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -194,7 +194,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobRegister)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -205,7 +205,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobPlanningLines)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -215,7 +215,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobJournals)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -226,7 +226,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobGLJournals)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -238,7 +238,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(RecurringJobJournals)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -290,7 +290,7 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
                 action(JobRegisters)
                 {
-                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -377,7 +377,7 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
             action(JobsList)
             {
-                ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
+                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;

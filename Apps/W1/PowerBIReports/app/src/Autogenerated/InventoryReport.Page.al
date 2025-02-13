@@ -6,12 +6,11 @@ page 37064 "Inventory Report"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    PageType = Card;
     Caption = 'Inventory Report';
     AboutTitle = 'About Inventory Report';
     AboutText = 'The Inventory Report offers a consolidated view of all inventory report pages, conveniently embedded into a single page for easy access.';
+    Extensible = false;
 
     layout
     {
@@ -34,12 +33,30 @@ page 37064 "Inventory Report"
         }
     }
 
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
+                end;
+            }
+        }
+    }
+
     var
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

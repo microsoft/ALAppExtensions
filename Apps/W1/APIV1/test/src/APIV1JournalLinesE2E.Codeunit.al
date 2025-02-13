@@ -155,34 +155,6 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         Assert.IsTrue(FoundInResponse, 'The default dimension and dimension value was not found on the response.');
     end;
 
-    [Test]
-    procedure TestCreateJournalLineWithDisabledCopyVATSetup()
-    var
-        GenJournalBatch: Record "Gen. Journal Batch";
-        GLAccount: Record "G/L Account";
-        VATProductPostingGroup: Record "VAT Product Posting Group";
-        AccountType: Enum "Sales Document Type";
-        Response: Text;
-    begin
-        // [SCENARIO 557128] VAT posting group filled in General Journal created by standard API.
-        Initialize();
-
-        // [GIVEN] Create new VAT Product Posting Group
-        LibraryERM.CreateVATProductPostingGroup(VATProductPostingGroup);
-
-        // [GIVEN] Create new G/L Account and assign VAT Prod. Posting Group
-        CreateGLAccountWithVATProdPostingGroup(GLAccount, VATProductPostingGroup.Code);
-
-        // [GIVEN] Create new General Journal Batch and disable Copy VAT Setup to Jnl. Lines in Journal Batch
-        CreateGeneralJournalBatchWithCopyVATSetupJnlLines(GenJournalBatch, AccountType, GLAccount."No.");
-
-        // [WHEN] A journal line is created through the API for that journal batch.
-        CreateAndPostJournalLineJson(GenJournalBatch, GLAccount."No.", Response);
-
-        // [THEN] Verify VAT Product Posting Group should be blank in journal line.
-        VerifyJournalLineVATProdPostingGroup(GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GetLineNoFromJSONText(Response));
-    end;
-
     var
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
@@ -190,7 +162,6 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
         LibraryRandom: Codeunit "Library - Random";
         JSONManagement: Codeunit "JSON Management";
         Assert: Codeunit "Assert";
-        VATProdPostingGroupBlankMsg: Label 'VAT Prod. Posting Group must be blank';
 
     procedure JObjectMatchesDimension("Newtonsoft.Json.Linq.JObject": Dotnet JObject; DimensionValue: Record "Dimension Value"): Boolean
     var
@@ -232,51 +203,5 @@ codeunit 139745 "APIV1 - Journal Lines E2E"
 
         LibraryDimension.CreateDimWithDimValue(DimensionValue);
         LibraryDimension.CreateDefaultDimension(DefaultDimension, Database::"G/L Account", AccountNo, DimensionValue."Dimension Code", DimensionValue.Code);
-    end;
-
-    local procedure CreateAndPostJournalLineJson(GenJournalBatch: Record "Gen. Journal Batch"; GLAccountNo: Code[20]; var Response: Text)
-    var
-        JournalLineJSON: Text;
-        TargetURL: Text;
-    begin
-        TargetURL := LibraryGraphMgt.CreateTargetURLWithSubpage(GenJournalBatch.SystemId, Page::"APIV1 - Journals", 'journals', 'journalLines');
-        JournalLineJSON := LibraryGraphMgt.AddPropertytoJSON(JournalLineJSON, 'documentNumber', LibraryRandom.RandText(5));
-        JournalLineJSON := LibraryGraphMgt.AddPropertytoJSON(JournalLineJSON, 'accountType', 'G/L Account');
-        JournalLineJSON := LibraryGraphMgt.AddPropertytoJSON(JournalLineJSON, 'accountNumber', GLAccountNo);
-        JournalLineJSON := LibraryGraphMgt.AddPropertytoJSON(JournalLineJSON, 'amount', LibraryRandom.RandDecInRange(10000, 50000, 2));
-
-        LibraryGraphMgt.PostToWebService(TargetURL, JournalLineJSON, Response);
-    end;
-
-    local procedure CreateGeneralJournalBatchWithCopyVATSetupJnlLines(var GenJournalBatch: Record "Gen. Journal Batch"; BalAccountType: Enum "Sales Document Type"; BalAccountNo: Code[20])
-    begin
-        CreateGeneralJournalBatch(GenJournalBatch, BalAccountType, BalAccountNo);
-        GenJournalBatch.Validate("Copy VAT Setup to Jnl. Lines", false);
-        GenJournalBatch.Modify(true);
-    end;
-
-    local procedure CreateGLAccountWithVATProdPostingGroup(var GLAccount: Record "G/L Account"; VATProductPostingGroupCode: Code[20])
-    begin
-        LibraryERM.CreateGLAccount(GLAccount);
-        GLAccount.Validate("VAT Prod. Posting Group", VATProductPostingGroupCode);
-        GLAccount.Modify(true);
-    end;
-
-    local procedure GetLineNoFromJSONText(Response: Text): Integer
-    var
-        JObject: JsonObject;
-        JToken: JsonToken;
-    begin
-        JObject.ReadFrom(Response);
-        JObject.Get('lineNumber', JToken);
-        exit(JToken.AsValue().AsInteger());
-    end;
-
-    local procedure VerifyJournalLineVATProdPostingGroup(JournalTemplateName: Code[10]; JournalBatchName: code[10]; LineNo: Integer)
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-    begin
-        GenJournalLine.Get(JournalTemplateName, JournalBatchName, LineNo);
-        Assert.AreEqual(GenJournalLine."VAT Prod. Posting Group", '', VATProdPostingGroupBlankMsg);
     end;
 }

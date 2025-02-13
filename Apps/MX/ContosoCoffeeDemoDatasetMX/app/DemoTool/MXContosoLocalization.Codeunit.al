@@ -25,13 +25,12 @@ codeunit 14108 "MX Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create Company Information MX");
                     Codeunit.Run(Codeunit::"Create Post Code MX");
                     Codeunit.Run(Codeunit::"Create VAT Posting Groups MX");
                     Codeunit.Run(Codeunit::"Create Posting Groups MX");
                     Codeunit.Run(Codeunit::"Create Data Exchange Def MX");
                 end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create Company Information MX");
         end;
     end;
 
@@ -56,17 +55,16 @@ codeunit 14108 "MX Contoso Localization"
                     Codeunit.Run(Codeunit::"Create General Ledger Setup MX");
                     Codeunit.Run(Codeunit::"Create VATSetupPostingGrp. MX");
                     Codeunit.Run(Codeunit::"Create Column Layout Name MX");
-                    Codeunit.Run(Codeunit::"Create VAT Statement MX");
-                    CreateMXGLAccounts.AddCategoriesToGLAccounts();
-                    CreateMXGLAccounts.UpdateDebitCreditOnGL();
-                    CreateMXGLAccounts.UpdateVATProdPostingGroupOnGL();
-                    CreatePostingGroupsMX.CreateGenPostingSetup();
-                    Codeunit.Run(Codeunit::"Create Currency MX");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Column Layout MX");
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate MX");
+                    Codeunit.Run(Codeunit::"Create VAT Statement MX");
+                    CreateMXGLAccounts.AddCategoriesToGLAccounts();
+                    CreateMXGLAccounts.UpdateDebitCreditOnGL();
+                    CreateMXGLAccounts.UpdateVATProdPostingGroupOnGL();
+                    CreatePostingGroupsMX.CreateGenPostingSetup();
                 end;
         end;
     end;

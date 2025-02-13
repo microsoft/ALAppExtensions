@@ -8,7 +8,7 @@ using Microsoft.Utilities;
 /// </summary>
 table 30159 "Shpfy Skipped Record"
 {
-    Caption = 'Shopify Skipped Record';
+    Caption = 'Shpfy Skipped Record';
     DataClassification = CustomerContent;
     Access = Internal;
 

@@ -28,11 +28,4 @@ tableextension 8008 "Usage Based Item Reference" extends "Item Reference"
     var
         NotServiceCommitmentItemErr: Label 'Usage Data Supplier Ref. Entry No. can only be entered for Service Commitment Items (see "Service Commitment Option in the Item).';
 
-    internal procedure FindForVendorAndSupplierReference(VendorNo: Code[20]; SupplierReferenceEntryNo: Integer): Boolean
-    begin
-        Rec.SetRange("Reference Type", Enum::"Item Reference Type"::Vendor);
-        Rec.SetRange("Reference Type No.", VendorNo);
-        Rec.SetRange("Supplier Ref. Entry No.", SupplierReferenceEntryNo);
-        exit(Rec.FindFirst());
-    end;
 }

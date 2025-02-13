@@ -27,7 +27,6 @@ table 31258 "Iss. Payment Order Header CZB"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(2; "No. Series"; Code[20])
@@ -384,7 +383,6 @@ table 31258 "Iss. Payment Order Header CZB"
                 GenJournalLine.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type");
                 GenJournalLine.Validate("Bal. Account No.", GenJournalBatch."Bal. Account No.");
                 GenJournalLine.Validate("Payment Method Code", IssPaymentOrderLineCZB."Payment Method Code");
-                GenJournalLine.Description := IssPaymentOrderLineCZB.Description;
                 GenJournalLine."Variable Symbol CZL" := IssPaymentOrderLineCZB."Variable Symbol";
                 GenJournalLine."Constant Symbol CZL" := IssPaymentOrderLineCZB."Constant Symbol";
                 GenJournalLine."Specific Symbol CZL" := IssPaymentOrderLineCZB."Specific Symbol";

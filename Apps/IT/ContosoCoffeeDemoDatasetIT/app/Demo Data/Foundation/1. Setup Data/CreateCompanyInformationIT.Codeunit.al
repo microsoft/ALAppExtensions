@@ -5,6 +5,8 @@ codeunit 12200 "Create Company Information IT"
     InherentEntitlements = X;
     InherentPermissions = X;
 
+    // TODO: Picture Name to Be Inserted
+
     trigger OnRun()
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
@@ -39,6 +41,9 @@ codeunit 12200 "Create Company Information IT"
         CompanyInformation.Validate("Autoriz. No.", AutorizeNo);
         CompanyInformation.Validate("Autoriz. Date", 20020101D);
         CompanyInformation.Validate("Signature on Bill", SignatureOnBill);
+
+        // todo add picture from attached files
+        // CompanyInformation.Picture.Import();
 
         CompanyInformation.Modify(true);
     end;

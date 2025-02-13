@@ -26,13 +26,9 @@ page 6248 "Sustainability Value Entries"
                 {
                     ToolTip = 'Specifies the value of the Entry No. field.';
                 }
-                field("Type"; Rec."Type")
+                field("Item No."; Rec."Item No.")
                 {
-                    ToolTip = 'Specifies the value of the Type field.';
-                }
-                field("No."; Rec."No.")
-                {
-                    ToolTip = 'Specifies the value of the No. field.';
+                    ToolTip = 'Specifies the value of the Item No. field.';
                 }
                 field("Posting Date"; Rec."Posting Date")
                 {
@@ -45,10 +41,6 @@ page 6248 "Sustainability Value Entries"
                 field("Document No."; Rec."Document No.")
                 {
                     ToolTip = 'Specifies the value of the Document No. field.';
-                }
-                field("Item No."; Rec."Item No.")
-                {
-                    ToolTip = 'Specifies the value of the Item No. field.';
                 }
                 field("Item Ledger Entry No."; Rec."Item Ledger Entry No.")
                 {
@@ -121,6 +113,14 @@ page 6248 "Sustainability Value Entries"
                 field("Capacity Ledger Entry No."; Rec."Capacity Ledger Entry No.")
                 {
                     ToolTip = 'Specifies the value of the Capacity Ledger Entry No. field.';
+                }
+                field("Type"; Rec."Type")
+                {
+                    ToolTip = 'Specifies the value of the Type field.';
+                }
+                field("No."; Rec."No.")
+                {
+                    ToolTip = 'Specifies the value of the No. field.';
                 }
                 field(Adjustment; Rec.Adjustment)
                 {

@@ -133,16 +133,10 @@ tableextension 8054 "Sales Line" extends "Sales Line"
             end;
         }
     }
-    var
-        BillingLineexist, IsBillingLineCached : Boolean;
+
     trigger OnDelete()
     begin
         DeleteSalesServiceCommitment();
-    end;
-
-    procedure InitCachedVar()
-    begin
-        IsBillingLineCached := false;
     end;
 
     procedure IsSalesDocumentTypeWithServiceCommitments(): Boolean
@@ -173,8 +167,6 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         if Rec.IsTemporary() then
             exit;
         if not Rec.IsSalesDocumentTypeWithServiceCommitments() then
-            exit;
-        if SalesServiceCommitment.IsEmpty() then
             exit;
 
         SalesServiceCommitment.FilterOnSalesLine(Rec);
@@ -211,9 +203,6 @@ tableextension 8054 "Sales Line" extends "Sales Line"
             (xSalesLine."Unit Cost" = SalesLine."Unit Cost") and
             (xSalesLine."Unit Cost (LCY)" = SalesLine."Unit Cost (LCY)")
         then
-            exit;
-
-        if SalesServiceCommitment.IsEmpty then
             exit;
 
         SalesLine.CalcFields("Service Commitments");
@@ -316,20 +305,13 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     var
         BillingLine: Record "Billing Line";
     begin
-        if not IsBillingLineCached then begin
-            BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
-            BillingLineexist := not BillingLine.IsEmpty();
-            IsBillingLineCached := true;
-        end;
-
-        exit(BillingLineexist);
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        exit(not BillingLine.IsEmpty());
     end;
 
     internal procedure IsContractRenewalQuote(): Boolean
     begin
-        if Rec."Document Type" <> Rec."Document Type"::Quote then
-            exit(false);
-        exit(Rec.IsContractRenewal());
+        exit((Rec."Document Type" = Rec."Document Type"::Quote) and Rec.IsContractRenewal());
     end;
 
     internal procedure IsContractRenewal(): Boolean

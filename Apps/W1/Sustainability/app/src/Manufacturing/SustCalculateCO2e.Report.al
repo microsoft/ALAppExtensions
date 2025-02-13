@@ -94,7 +94,6 @@ report 6214 "Sust. Calculate CO2e"
                 field(CapacityType; Type)
                 {
                     ApplicationArea = Manufacturing;
-                    Visible = not TypeVisible;
                     Caption = 'Type';
                     OptionCaption = 'Work Center,Machine Center,Both';
                     ToolTip = 'Specifies the value of the Type field.';
@@ -103,10 +102,9 @@ report 6214 "Sust. Calculate CO2e"
         }
     }
 
-    procedure Initialize(CapacityType: Integer; HideCapacityType: Boolean)
+    procedure Initialize(CapacityType: Integer)
     begin
         Type := CapacityType;
-        TypeVisible := HideCapacityType;
     end;
 
     local procedure CommitRecord(var CommitCounter: Integer)
@@ -210,5 +208,4 @@ report 6214 "Sust. Calculate CO2e"
         ProcessBarMsg: Label 'Processing: @1@@@@@@@', Comment = '1 - overall progress';
         UpdateCompleteMsg: Label 'CO2e per unit is updated on %1 out of %2 entries in %3.', Comment = '%1 - Records Updated, %2 - Total Record Count , %3 = Table Caption';
         RecordCount: Integer;
-        TypeVisible: Boolean;
 }

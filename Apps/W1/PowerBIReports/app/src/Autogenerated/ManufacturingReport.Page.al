@@ -5,13 +5,12 @@ using System.Integration.PowerBI;
 page 37063 "Manufacturing Report"
 {
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Manufacturing Report';
     AboutTitle = 'About Manufacturing Report';
     AboutText = 'The Manufacturing Report offers a consolidated view of all manufacturing report pages, conveniently embedded into a single page for easy access.';
+    Extensible = false;
 
     layout
     {
@@ -34,12 +33,30 @@ page 37063 "Manufacturing Report"
         }
     }
 
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
+                end;
+            }
+        }
+    }
+
     var
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

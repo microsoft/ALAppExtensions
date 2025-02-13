@@ -298,21 +298,4 @@ table 8016 "Usage Data Subscription"
         Rec.Validate("Service Commitment Entry No.", 0);
         Rec.Modify(true);
     end;
-
-    internal procedure FindForSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]): Boolean
-    begin
-        Rec.SetRange("Supplier No.", SupplierNo);
-        Rec.SetRange("Supplier Reference", SupplierReference);
-        exit(Rec.FindFirst());
-    end;
-
-    internal procedure UpdateServiceObjectNoForUsageDataGenericImport()
-    var
-        UsageDataGenericImport: Record "Usage Data Generic Import";
-    begin
-        UsageDataGenericImport.SetFilter("Processing Status", '<>%1', "Processing Status"::Ok);
-        UsageDataGenericImport.SetRange("Subscription ID", Rec."Supplier Reference");
-        UsageDataGenericImport.ModifyAll("Service Object No.", Rec."Service Object No.");
-        UsageDataGenericImport.ModifyAll("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
-    end;
 }

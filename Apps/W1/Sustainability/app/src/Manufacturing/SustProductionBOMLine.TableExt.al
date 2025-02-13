@@ -20,12 +20,6 @@ tableextension 6243 "Sust. Production BOM Line" extends "Production BOM Line"
                     Rec.TestField(Type, Rec.Type::Item);
             end;
         }
-        field(6211; "CO2e Last Date Modified"; Date)
-        {
-            Caption = 'CO2e Last Date Modified';
-            Editable = false;
-            DataClassification = CustomerContent;
-        }
     }
 
     var

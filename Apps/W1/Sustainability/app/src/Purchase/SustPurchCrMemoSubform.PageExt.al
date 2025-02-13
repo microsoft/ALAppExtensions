@@ -22,19 +22,19 @@ pageextension 6215 "Sust. Purch. Cr. Memo Subform" extends "Purch. Cr. Memo Subf
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission CO2 field.';
+                ToolTip = 'Specifies the value of the Emission CO2 Per Unit field.';
             }
             field("Emission CH4"; Rec."Emission CH4")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission CH4 field.';
+                ToolTip = 'Specifies the value of the Emission CH4 Per Unit field.';
             }
             field("Emission N2O"; Rec."Emission N2O")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the value of the Emission N2O field.';
+                ToolTip = 'Specifies the value of the Emission N2O Per Unit field.';
             }
         }
     }

@@ -140,7 +140,6 @@ pageextension 18440 "GST Service Order" extends "Service Order"
                     var
                         GSTServiceValidations: Codeunit "GST Service Validations";
                     begin
-                        CurrPage.SaveRecord();
                         GSTServiceValidations.CallTaxEngineOnServiceHeader(Rec);
                     end;
                 }

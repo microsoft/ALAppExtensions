@@ -44,14 +44,13 @@ codeunit 11355 "Contoso BE Localization"
                     Codeunit.Run(Codeunit::"Create Area BE");
                     Codeunit.Run(Codeunit::"Create Post Code BE");
                     Codeunit.Run(Codeunit::"Create Transaction Spec. BE");
+                    Codeunit.Run(Codeunit::"Create Company Information BE");
                     Codeunit.Run(Codeunit::"Create No. Series BE");
                     Codeunit.Run(Codeunit::"Create Shipping Data BE");
                     Codeunit.Run(Codeunit::"Create VAT Posting Group BE");
                     Codeunit.Run(Codeunit::"Create Column Layout Name BE");
                     Codeunit.Run(Codeunit::"Create UOM Translation BE");
                 end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create Company Information BE");
         end;
     end;
 
@@ -65,8 +64,6 @@ codeunit 11355 "Contoso BE Localization"
                     CreateVATPostingGrp.CreateVATPostingSetup();
                     Codeunit.Run(Codeunit::"Create Posting Group BE");
                     Codeunit.Run(Codeunit::"Create Gen. Jnl Template BE");
-                    Codeunit.Run(Codeunit::"Create VAT Statement BE");
-                    Codeunit.Run(Codeunit::"Create General Ledger Setup BE");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
@@ -74,6 +71,8 @@ codeunit 11355 "Contoso BE Localization"
                     Codeunit.Run(Codeunit::"Create Gen. Jnl Template BE");
                     Codeunit.Run(Codeunit::"Create Territory BE");
                     Codeunit.Run(Codeunit::"Create Column Layout BE");
+                    Codeunit.Run(Codeunit::"Create VAT Statement BE");
+                    Codeunit.Run(Codeunit::"Create General Ledger Setup BE");
                 end;
         end;
     end;
@@ -81,11 +80,8 @@ codeunit 11355 "Contoso BE Localization"
     local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateGenJnlTemplateBE: Codeunit "Create Gen. Jnl Template BE";
-        CreateCodeDocument: Codeunit "Create Coda Document";
     begin
         case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                CreateCodeDocument.CodedTransactions();
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Bank Account BE");
@@ -93,6 +89,8 @@ codeunit 11355 "Contoso BE Localization"
                 end;
             Enum::"Contoso Demo Data Level"::"Transactional Data":
                 Codeunit.Run(Codeunit::"Create Coda Document");
+            Enum::"Contoso Demo Data Level"::"Historical Data":
+                Codeunit.Run(Codeunit::"Create Gen. Journal Line BE");
         end;
     end;
 
@@ -136,7 +134,11 @@ codeunit 11355 "Contoso BE Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create Word Template BE");
+                begin
+                    Codeunit.Run(Codeunit::"Create Marketing Setup BE");
+                    Codeunit.Run(Codeunit::"Create Word Template BE");
+                end;
+
         end;
     end;
 
@@ -165,6 +167,7 @@ codeunit 11355 "Contoso BE Localization"
         CreateEmployeeBE: Codeunit "Create Employee BE";
         CreateCompanyInformationBE: Codeunit "Create Company Information BE";
         CreateCurrencyBE: Codeunit "Create Currency BE";
+        CreateGenJournalLineBE: Codeunit "Create Gen. Journal Line BE";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
@@ -180,6 +183,7 @@ codeunit 11355 "Contoso BE Localization"
                 begin
                     BindSubscription(CreateBankAccPostingGrpBE);
                     BindSubscription(CreateBankAccountBE);
+                    BindSubscription(CreateGenJournalLineBE);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 BindSubscription(CreateFAPostingGrpBE);
@@ -234,6 +238,7 @@ codeunit 11355 "Contoso BE Localization"
         CreateEmployeeBE: Codeunit "Create Employee BE";
         CreateCompanyInformationBE: Codeunit "Create Company Information BE";
         CreateCurrencyBE: Codeunit "Create Currency BE";
+        CreateGenJournalLineBE: Codeunit "Create Gen. Journal Line BE";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
@@ -250,6 +255,7 @@ codeunit 11355 "Contoso BE Localization"
                 begin
                     UnbindSubscription(CreateBankAccPostingGrpBE);
                     UnbindSubscription(CreateBankAccountBE);
+                    UnbindSubscription(CreateGenJournalLineBE);
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 UnbindSubscription(CreateFAPostingGrpBE);

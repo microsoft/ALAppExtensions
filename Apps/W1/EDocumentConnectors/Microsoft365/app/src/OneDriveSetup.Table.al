@@ -29,21 +29,18 @@ table 6381 "OneDrive Setup"
             var
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 DriveProcessing: Codeunit "Drive Processing";
-                DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
             begin
                 if Rec.Enabled then begin
                     if (Rec."Imp. Documents Folder" = '') or (Rec."Documents Folder" = '') then
                         Error(URLsMustBeSpecifiedErr);
                     FeatureTelemetry.LogUptake('0000OB9', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Used);
                     FeatureTelemetry.LogUsage('0000OBA', DriveProcessing.FeatureName(), 'OneDrive');
-                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
-                end else
-                    Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
+                end;
             end;
         }
         field(3; "Documents Folder"; Text[2048])
         {
-            Caption = 'Document Folder';
+            Caption = 'Documents Folder';
             DataClassification = CustomerContent;
             trigger OnValidate()
             var
@@ -57,7 +54,7 @@ table 6381 "OneDrive Setup"
         }
         field(4; "Imp. Documents Folder"; Text[2048])
         {
-            Caption = 'Archive Folder';
+            Caption = 'Imported Documents Folder';
             DataClassification = CustomerContent;
 
             trigger OnValidate()

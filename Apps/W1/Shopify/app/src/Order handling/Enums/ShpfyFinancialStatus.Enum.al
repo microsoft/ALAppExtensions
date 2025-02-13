@@ -42,10 +42,6 @@ enum 30117 "Shpfy Financial Status"
     {
         Caption = 'Voided';
     }
-    value(8; Expired)
-    {
-        Caption = 'Expired';
-    }
     value(99; Unknown)
     {
         Caption = 'Unknown';

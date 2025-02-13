@@ -8,119 +8,10 @@ codeunit 139895 "Usage Based Service Comm. Test"
     Subtype = Test;
     Access = Internal;
 
-    var
-        Item: Record Item;
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        LibrarySales: Codeunit "Library - Sales";
-
-    #region Tests
-
-    [Test]
-    procedure ExpectErrorOnCreateRecurringDiscountServiceCommitmentTemplate()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
-        asserterror ServiceCommitmentTemplate.Validate(Discount, true);
-    end;
-
-    [Test]
-    procedure ExpectErrorOnCreateServiceCommitmentTemplateWithRecurringDiscount()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ServiceCommitmentTemplate.Validate(Discount, true);
-        asserterror ServiceCommitmentTemplate.Validate("Usage Based Billing", true);
-    end;
-
-    [Test]
-    procedure ExpectErrorOnCreateRecurringDiscountServiceCommitmentPackageLine()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
-        asserterror ServiceCommitmentPackageLine.Validate(Discount, true);
-    end;
-
-    [Test]
-    procedure ExpectErrorOnCreateServiceCommitmentPackageLineWithRecurringDiscount()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
-        ServiceCommitmentPackageLine.Validate(Discount, true);
-        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Billing", true);
-    end;
-
-    [Test]
-    procedure ExpectErrorOnCreateUsageBasedSalesServiceCommitmentWithRecurringDiscount()
-    begin
-        // Service Commitment Package lines, which are discounts can only be assigned to Service Commitment Items.
-        SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
-        asserterror ServiceCommitmentTemplate.Validate(Discount, true);
-    end;
-
-    [Test]
-    procedure ErrorOnInsertUsageBasedFieldsToServiceCommitmentTemplateWhenInvoicingViaSales()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Sales;
-        ServiceCommitmentTemplate.Modify(false);
-        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Sales;
-        asserterror ServiceCommitmentTemplate.Validate("Usage Based Billing", true);
-        asserterror ServiceCommitmentTemplate.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
-    end;
-
-    [Test]
-    procedure ErrorOnInsertUsageBasedFieldsToServiceCommitmentPackageWhenInvoicingViaSales()
-    begin
-        Initialize();
-        ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
-        ServiceCommitmentPackageLine."Invoicing via" := Enum::"Invoicing Via"::Sales;
-        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Billing", true);
-        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
-    end;
-
-    [Test]
-    procedure ErrorOnInsertUsageBasedFieldsToSalesServiceCommitmentWhenInvoicingViaSales()
-    begin
-        SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
-        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
-        ServiceCommitmentPackageLine.Validate(Template);
-        Evaluate(ServiceCommitmentPackageLine."Billing Rhythm", '<1M>');
-        ServiceCommitmentPackageLine.Modify(false);
-        SetupSalesServiceCommitmentAndCreateSalesDocument();
-
-        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        if SalesServiceCommitment.FindSet() then
-            repeat
-                SalesServiceCommitment."Invoicing via" := Enum::"Invoicing Via"::Sales;
-                asserterror SalesServiceCommitment.Validate("Usage Based Billing", true);
-                asserterror SalesServiceCommitment.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
-            until SalesServiceCommitment.Next() = 0;
-    end;
-
     [Test]
     procedure TestTransferUsageBasedFieldsFromServiceCommitmentTemplateToPackageLine()
     begin
-        Initialize();
+        Reset();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
@@ -146,6 +37,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
             ServiceCommitment.TestField("Usage Based Pricing", ServiceCommitmentTemplate."Usage Based Pricing");
             ServiceCommitment.TestField("Pricing Unit Cost Surcharge %", ServiceCommitmentTemplate."Pricing Unit Cost Surcharge %");
         until ServiceCommitment.Next() = 0;
+
     end;
 
     [Test]
@@ -165,6 +57,50 @@ codeunit 139895 "Usage Based Service Comm. Test"
             SalesServiceCommitment.TestField("Usage Based Pricing", ServiceCommitmentPackageLine."Usage Based Pricing");
             SalesServiceCommitment.TestField("Pricing Unit Cost Surcharge %", ServiceCommitmentPackageLine."Pricing Unit Cost Surcharge %");
         until ServiceCommitment.Next() = 0;
+    end;
+
+    [Test]
+    procedure ErrorOnInsertUsageBasedFieldsToServiceCommitmentTemplateWhenInvoicingViaSales()
+    begin
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Sales;
+        ServiceCommitmentTemplate.Modify(false);
+        ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Sales;
+        asserterror ServiceCommitmentTemplate.Validate("Usage Based Billing", true);
+        asserterror ServiceCommitmentTemplate.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
+    end;
+
+    [Test]
+    procedure ErrorOnInsertUsageBasedFieldsToServiceCommitmentPackageWhenInvoicingViaSales()
+    begin
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
+        ServiceCommitmentPackageLine."Invoicing via" := Enum::"Invoicing Via"::Sales;
+        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Billing", true);
+        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
+    end;
+
+    [Test]
+    procedure ErrorOnInsertUsageBasedFieldsToSalesServiceCommitmentWhenInvoicingViaSales()
+    begin
+        SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
+        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
+        ServiceCommitmentPackageLine.Validate(Template);
+        Evaluate(ServiceCommitmentPackageLine."Billing Rhythm", '<1M>');
+        ServiceCommitmentPackageLine.Modify(false);
+        SetupSalesServiceCommitmentAndCreateSalesDocument();
+
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        if SalesServiceCommitment.FindSet() then
+            repeat
+                SalesServiceCommitment."Invoicing via" := Enum::"Invoicing Via"::Sales;
+                asserterror SalesServiceCommitment.Validate("Usage Based Billing", true);
+                asserterror SalesServiceCommitment.Validate("Usage Based Pricing", Enum::"Usage Based Pricing"::"Usage Quantity");
+            until SalesServiceCommitment.Next() = 0;
     end;
 
     [Test]
@@ -256,26 +192,64 @@ codeunit 139895 "Usage Based Service Comm. Test"
         SalesServiceCommitment.TestField("Pricing Unit Cost Surcharge %", 0);
     end;
 
-    #endregion Tests
-
-    #region Procedures
-
-    local procedure Initialize()
+    [Test]
+    procedure ExpectErrorOnCreateRecurringDiscountServiceCommitmentTemplate()
     begin
-        ClearAll();
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
+        asserterror ServiceCommitmentTemplate.Validate(Discount, true);
     end;
 
-    local procedure CreateAndPostSalesDocumentWithSalesServiceCommitments()
+    [Test]
+    procedure ExpectErrorOnCreateServiceCommitmentTemplateWithRecurringDiscount()
     begin
-        SetupSalesServiceCommitmentAndCreateSalesDocument();
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ServiceCommitmentTemplate.Validate(Discount, true);
+        asserterror ServiceCommitmentTemplate.Validate("Usage Based Billing", true);
     end;
 
-    local procedure SetupSalesServiceCommitmentAndCreateSalesDocument()
+    [Test]
+    procedure ExpectErrorOnCreateRecurringDiscountServiceCommitmentPackageLine()
     begin
-        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
+        asserterror ServiceCommitmentPackageLine.Validate(Discount, true);
+    end;
+
+    [Test]
+    procedure ExpectErrorOnCreateServiceCommitmentPackageLineWithRecurringDiscount()
+    begin
+        Reset();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
+        ServiceCommitmentPackageLine.Validate(Discount, true);
+        asserterror ServiceCommitmentPackageLine.Validate("Usage Based Billing", true);
+    end;
+
+    [Test]
+    procedure ExpectErrorOnCreateUsageBasedSalesServiceCommitmentWithRecurringDiscount()
+    begin
+        //Service Commitment Package lines, which are discounts can only be assigned to Service Commitment Items.
+        SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
+        asserterror ServiceCommitmentTemplate.Validate(Discount, true);
+    end;
+
+    local procedure UpdateServiceCommitmentPackageLineFields()
+    begin
+        Evaluate(ServiceCommitmentPackageLine."Billing Rhythm", '<1M>');
+        Evaluate(ServiceCommitmentPackageLine."Service Comm. Start Formula", '<CY>');
+        Evaluate(ServiceCommitmentPackageLine."Initial Term", '<12M>');
+        Evaluate(ServiceCommitmentPackageLine."Extension Term", '<12M>');
+        Evaluate(ServiceCommitmentPackageLine."Notice Period", '<1M>');
+        ServiceCommitmentPackageLine.Modify(false);
     end;
 
     local procedure SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine()
@@ -292,23 +266,42 @@ codeunit 139895 "Usage Based Service Comm. Test"
         UpdateServiceCommitmentPackageLineFields();
     end;
 
-    local procedure UpdateServiceCommitmentPackageLineFields()
+    local procedure Reset()
     begin
-        Evaluate(ServiceCommitmentPackageLine."Billing Rhythm", '<1M>');
-        Evaluate(ServiceCommitmentPackageLine."Service Comm. Start Formula", '<CY>');
-        Evaluate(ServiceCommitmentPackageLine."Initial Term", '<12M>');
-        Evaluate(ServiceCommitmentPackageLine."Extension Term", '<12M>');
-        Evaluate(ServiceCommitmentPackageLine."Notice Period", '<1M>');
-        ServiceCommitmentPackageLine.Modify(false);
+        ClearAll();
     end;
 
-    procedure UpdateServiceCommitmentTemplateWithUsageBasedFields(var ServiceCommitmentTemplate2: Record "Service Commitment Template"; UsageBasedPricing: Enum "Usage Based Pricing"; PricingUnitCostSurchargePercentage: Decimal)
+    procedure UpdateServiceCommitmentTemplateWithUsageBasedFields(var ServiceCommitmentTemplate2: Record "Service Commitment Template"; UsageBasedPricing: Enum "Usage Based Pricing"; PricingUnitCostSurcharPerc: Decimal)
     begin
         ServiceCommitmentTemplate2."Usage Based Billing" := true;
         ServiceCommitmentTemplate2."Usage Based Pricing" := UsageBasedPricing;
-        ServiceCommitmentTemplate2."Pricing Unit Cost Surcharge %" := PricingUnitCostSurchargePercentage;
+        ServiceCommitmentTemplate2."Pricing Unit Cost Surcharge %" := PricingUnitCostSurcharPerc;
         ServiceCommitmentTemplate2.Modify(false);
     end;
 
-    #endregion Procedures
+    local procedure CreateAndPostSalesDocumentWithSalesServiceCommitments()
+    begin
+        SetupSalesServiceCommitmentAndCreateSalesDocument();
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+    end;
+
+    local procedure SetupSalesServiceCommitmentAndCreateSalesDocument()
+    begin
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
+    end;
+
+    var
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        ServiceCommitment: Record "Service Commitment";
+        SalesServiceCommitment: Record "Sales Service Commitment";
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
 }

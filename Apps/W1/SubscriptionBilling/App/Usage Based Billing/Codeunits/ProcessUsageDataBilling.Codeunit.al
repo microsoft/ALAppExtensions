@@ -7,19 +7,6 @@ codeunit 8026 "Process Usage Data Billing"
     Access = Internal;
     TableNo = "Usage Data Import";
 
-    var
-        UsageDataImport: Record "Usage Data Import";
-        UsageDataSupplier: Record "Usage Data Supplier";
-        EssDateTimeMgt: Codeunit "Date Time Management";
-        ContractItemMgt: Codeunit "Contracts Item Management";
-        DoesNotExistErr: Label 'No data found for processing step %1.', Comment = '%1=Name of the processing step';
-        ProcessServiceCommitmentProcedureNameLbl: Label 'ProcessServiceCommitment', Locked = true;
-        UsageBasedPricingOptionNotImplementedErr: Label 'Unknown option %1 for %2.\\Object Type: %3 Object Name: %4, Procedure: %5', Comment = '%1=Format("Calculation Base Type"), %2 = Fieldcaption for "Calculation Base Type", %3 = Object Type, %4 = Object Name, %5 = Procedure Name';
-        CalculateCustomerUsageDataBillingPriceProcedureNameLbl: Label 'CalculateCustomerUsageDataBillingPrice', Locked = true;
-        CodeunitObjectLbl: Label 'Codeunit', Locked = true;
-        CurrentCodeunitNameLbl: Label 'Process Usage Data Billing', Locked = true;
-        NoContractFoundInUsageDataBillingErr: Label 'No contract (for Service Object %1) found for processing step %2.';
-
     trigger OnRun()
     begin
         UsageDataImport.Copy(Rec);
@@ -142,31 +129,26 @@ codeunit 8026 "Process Usage Data Billing"
         NewServiceObjectQuantity := ServiceObject."Quantity Decimal";
         UnitPrice := ServiceCommitment.Price;
 
-        FindUsageDataBilling(LastUsageDataBilling, false, UsageDataImport."Entry No.", ServiceCommitment);
+        FindUsageDataBilling(LastUsageDataBilling, false, ServiceCommitment);
         CurrencyCode := LastUsageDataBilling."Currency Code";
-        ChargeDate := LastUsageDataBilling.CalculateChargeEndDate();
+        ChargeDate := CalculateChargeDateFromLastUsageDataBilling(LastUsageDataBilling);
 
         case ServiceCommitment."Usage Based Pricing" of
             "Usage Based Pricing"::"Usage Quantity":
                 begin
-                    NewServiceObjectQuantity := CalculateTotalUsageBillingQuantity(LastUsageDataBilling, UsageDataImport."Entry No.", ServiceCommitment);
+                    NewServiceObjectQuantity := CalculateTotalUsageBillingQuantity(LastUsageDataBilling, ServiceCommitment);
                     if ServiceCommitment.Partner = Enum::"Service Partner"::Vendor then
-                        UnitCost := CalculateSumCostAmountFromUsageDataBilling(UsageDataImport."Entry No.", ServiceCommitment) / NewServiceObjectQuantity
+                        UnitCost := CalculateSumCostAmountFromUsageDataBilling(ServiceCommitment) / NewServiceObjectQuantity
                     else
-                        UnitPrice := CalculateSumAmountFromUsageDataBilling(UsageDataImport."Entry No.", ServiceCommitment) / NewServiceObjectQuantity
+                        UnitPrice := CalculateSumAmountFromUsageDataBilling(ServiceCommitment) / NewServiceObjectQuantity
                 end;
-            "Usage Based Pricing"::"Fixed Quantity":
-                begin
-                    UnitPrice := ServiceCommitment."Service Amount" / NewServiceObjectQuantity;
-                    if ServiceCommitment.Partner = Enum::"Service Partner"::Vendor then
-                        UnitCost := UnitPrice;
-                end;
+            "Usage Based Pricing"::"Fixed Quantity",
             "Usage Based Pricing"::"Unit Cost Surcharge":
                 if ServiceCommitment.Partner = Enum::"Service Partner"::Vendor then
-                    UnitCost := CalculateSumCostAmountFromUsageDataBilling(UsageDataImport."Entry No.", ServiceCommitment) / NewServiceObjectQuantity
+                    UnitCost := CalculateSumCostAmountFromUsageDataBilling(ServiceCommitment) / NewServiceObjectQuantity
                 else
                     if ServiceCommitment.Partner = Enum::"Service Partner"::Customer then
-                        UnitPrice := CalculateSumAmountFromUsageDataBilling(UsageDataImport."Entry No.", ServiceCommitment) / NewServiceObjectQuantity;
+                        UnitPrice := CalculateSumAmountFromUsageDataBilling(ServiceCommitment) / NewServiceObjectQuantity;
             else begin
                 IsHandled := false;
                 OnUsageBasedPricingElseCaseOnProcessServiceCommitment(UnitCost, NewServiceObjectQuantity, ServiceCommitment, LastUsageDataBilling, IsHandled);
@@ -188,6 +170,13 @@ codeunit 8026 "Process Usage Data Billing"
         OnAfterProcessServiceCommitment(ServiceCommitment);
     end;
 
+    local procedure CalculateChargeDateFromLastUsageDataBilling(LastUsageDataBilling: Record "Usage Data Billing"): Date
+    begin
+        if LastUsageDataBilling."Charge End Time" = 0T then
+            exit(CalcDate('<-1D>', LastUsageDataBilling."Charge End Date"));
+        exit(LastUsageDataBilling."Charge End Date");
+    end;
+
     internal procedure CalculateAmount(BillingBasePeriod: DateFormula; BaseAmount: Decimal; FromDate: Date; FromTime: Time; ToDate: Date; ToTime: Time) Amount: Decimal
     begin
         Amount := EssDateTimeMgt.CalculateProRatedAmount(BaseAmount, FromDate, FromTime, ToDate, ToTime, BillingBasePeriod);
@@ -206,11 +195,11 @@ codeunit 8026 "Process Usage Data Billing"
             CalculatedValue := ReferentValue / ChargeDuration * TotalDuration;
     end;
 
-    procedure CalculateSumCostAmountFromUsageDataBilling(UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Service Commitment"): Decimal
+    local procedure CalculateSumCostAmountFromUsageDataBilling(ServiceCommitment: Record "Service Commitment"): Decimal
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
-        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo, ServiceCommitment);
+        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImport, ServiceCommitment);
         UsageDataBilling.SetRange("Document Type", UsageDataBilling."Document Type"::None);
         UsageDataBilling.CalcSums("Cost Amount");
         exit(UsageDataBilling."Cost Amount");
@@ -242,7 +231,7 @@ codeunit 8026 "Process Usage Data Billing"
     begin
         SetCurrency(Currency, ServiceCommitment."Currency Code");
 
-        FindUsageDataBilling(FirstUsageDataBilling, true, UsageDataImport."Entry No.", ServiceCommitment);
+        FindUsageDataBilling(FirstUsageDataBilling, true, ServiceCommitment);
         ChargePeriodUnitPrice := EssDateTimeMgt.CalculateProRatedAmount(ServiceCommitment.Price, FirstUsageDataBilling."Charge Start Date", FirstUsageDataBilling."Charge Start Time", ChargeEndDate, ChargeEndTime, ServiceCommitment."Billing Base Period");
 
         SetRoundingPrecision(RoudingPrecision, UnitPrice, Currency);
@@ -334,13 +323,13 @@ codeunit 8026 "Process Usage Data Billing"
             Currency.InitRoundingPrecision();
     end;
 
-    local procedure FindUsageDataBilling(var FoundUsageDataBilling: Record "Usage Data Billing"; SortAscending: Boolean; UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Service Commitment")
+    local procedure FindUsageDataBilling(var FoundUsageDataBilling: Record "Usage Data Billing"; SortAscending: Boolean; ServiceCommitment: Record "Service Commitment")
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
         UsageDataBilling.SetCurrentKey("Charge End Date", "Charge End Time");
         UsageDataBilling.SetAscending("Charge End Date", SortAscending);
-        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo, ServiceCommitment);
+        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImport, ServiceCommitment);
         UsageDataBilling.SetRange("Document Type", UsageDataBilling."Document Type"::None);
         if UsageDataBilling.FindFirst() then
             FoundUsageDataBilling := UsageDataBilling;
@@ -365,17 +354,18 @@ codeunit 8026 "Process Usage Data Billing"
             UnitPrice := 0;
             Amount := 0;
         end else begin
+            Amount := Amount / (1 - ServiceCommitment."Discount %" / 100);
             Amount := CurrencyExchangeRate.ExchangeAmount(Amount, ServiceCommitment."Currency Code", UsageDataBilling."Currency Code", UsageDataBilling."Charge Start Date");
             Amount := EssDateTimeMgt.CalculateProRatedAmount(Amount, UsageDataBilling."Charge Start Date", UsageDataBilling."Charge Start Time", UsageDataBilling."Charge End Date", UsageDataBilling."Charge End Time", ServiceCommitment."Billing Base Period");
             UnitPrice := Amount / Quantity;
         end;
     end;
 
-    local procedure CalculateTotalUsageBillingQuantity(LastUsageDataBilling: Record "Usage Data Billing"; UsageDataImportEntryNo: Integer; var ServiceCommitment: Record "Service Commitment"): Decimal
+    local procedure CalculateTotalUsageBillingQuantity(LastUsageDataBilling: Record "Usage Data Billing"; var ServiceCommitment: Record "Service Commitment"): Decimal
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
-        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo, ServiceCommitment);
+        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImport, ServiceCommitment);
         UsageDataBilling.SetRange("Document Type", UsageDataBilling."Document Type"::None);
         UsageDataBilling.SetRange("Charge End Date", LastUsageDataBilling."Charge End Date");
         UsageDataBilling.SetRange("Charge End Time", LastUsageDataBilling."Charge End Time");
@@ -383,17 +373,17 @@ codeunit 8026 "Process Usage Data Billing"
         exit(UsageDataBilling.Quantity);
     end;
 
-    procedure CalculateSumAmountFromUsageDataBilling(UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Service Commitment"): Decimal
+    local procedure CalculateSumAmountFromUsageDataBilling(ServiceCommitment: Record "Service Commitment"): Decimal
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
-        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo, ServiceCommitment);
+        UsageDataBilling.FilterOnUsageDataImportAndServiceCommitment(UsageDataImport, ServiceCommitment);
         UsageDataBilling.SetRange("Document Type", UsageDataBilling."Document Type"::None);
         UsageDataBilling.CalcSums(Amount);
         exit(UsageDataBilling.Amount);
     end;
 
-    procedure SetRoundingPrecision(var RoudingPrecision: Decimal; UnitPrice: Decimal; Currency: Record Currency)
+    local procedure SetRoundingPrecision(var RoudingPrecision: Decimal; UnitPrice: Decimal; Currency: Record Currency)
     begin
         RoudingPrecision := EssDateTimeMgt.GetRoundingPrecision(EssDateTimeMgt.GetNumberOfDecimals(UnitPrice));
         if RoudingPrecision = 1 then begin
@@ -437,4 +427,17 @@ codeunit 8026 "Process Usage Data Billing"
     local procedure OnUpdateServiceCommitment(var ServiceCommitment: Record "Service Commitment"; UsageDataImportEntryNo: Integer; ServiceObjectQuantity: Decimal; ServiceCommitmentDuration: Decimal; ChargePeriodDuration: Decimal; CurrencyCode: Code[10])
     begin
     end;
+
+    var
+        UsageDataImport: Record "Usage Data Import";
+        UsageDataSupplier: Record "Usage Data Supplier";
+        EssDateTimeMgt: Codeunit "Date Time Management";
+        ContractItemMgt: Codeunit "Contracts Item Management";
+        DoesNotExistErr: Label 'No data found for processing step %1.', Comment = '%1=Name of the processing step';
+        ProcessServiceCommitmentProcedureNameLbl: Label 'ProcessServiceCommitment', Locked = true;
+        UsageBasedPricingOptionNotImplementedErr: Label 'Unknown option %1 for %2.\\Object Type: %3 Object Name: %4, Procedure: %5', Comment = '%1=Format("Calculation Base Type"), %2 = Fieldcaption for "Calculation Base Type", %3 = Object Type, %4 = Object Name, %5 = Procedure Name';
+        CalculateCustomerUsageDataBillingPriceProcedureNameLbl: Label 'CalculateCustomerUsageDataBillingPrice', Locked = true;
+        CodeunitObjectLbl: Label 'Codeunit', Locked = true;
+        CurrentCodeunitNameLbl: Label 'Process Usage Data Billing', Locked = true;
+        NoContractFoundInUsageDataBillingErr: Label 'No contract (for Service Object %1) found for processing step %2.';
 }

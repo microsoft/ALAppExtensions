@@ -491,32 +491,4 @@ codeunit 8059 "Contracts General Mgt."
         if not DocumentAttachment.IsEmpty() then
             DocumentAttachment.DeleteAll(false);
     end;
-
-    [EventSubscriber(ObjectType::Table, Database::Customer, OnBeforeDeleteEvent, '', false, false)]
-    local procedure CheckIfCustomerContractOrServiceObjectExistWhenDeleteCustomer(var Rec: Record Customer; RunTrigger: Boolean)
-    var
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
-        CustomerContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this customer.', Comment = '%1 = Table Caption, %2 = Customer No.';
-        ServiceObjectExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Service Object for this customer.', Comment = '%1 = Table Caption, %2 = Customer No.';
-    begin
-        CustomerContract.SetRange("Sell-to Customer No.", Rec."No.");
-        if not CustomerContract.IsEmpty() then
-            Error(CustomerContractExistErr, Rec.TableCaption, Rec."No.");
-
-        ServiceObject.SetRange("End-User Customer No.", Rec."No.");
-        if not ServiceObject.IsEmpty() then
-            Error(ServiceObjectExistErr, Rec.TableCaption, Rec."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::Vendor, OnBeforeDeleteEvent, '', false, false)]
-    local procedure CheckIfVendorContractExistWhenDeleteVendor(var Rec: Record Vendor; RunTrigger: Boolean)
-    var
-        VendorContract: Record "Vendor Contract";
-        VendorContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this vendor.', Comment = '%1 = Table Caption, %2 = Vendor No.';
-    begin
-        VendorContract.SetRange("Buy-from Vendor No.", Rec."No.");
-        if not VendorContract.IsEmpty() then
-            Error(VendorContractExistErr, Rec.TableCaption, Rec."No.");
-    end;
 }

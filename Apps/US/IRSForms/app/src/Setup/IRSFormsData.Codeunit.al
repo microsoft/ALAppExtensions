@@ -126,18 +126,6 @@ codeunit 10039 "IRS Forms Data"
 
     procedure AddFormInstructionLines(PeriodNo: Code[20])
     begin
-        AddNecFormInstructionLines(PeriodNo);
-        AddIntFormInstructionLines(PeriodNo);
-        AddMiscFormInstructionLines(PeriodNo);
-        AddDivFormInstructionLines(PeriodNo);
-    end;
-
-    local procedure AddNecFormInstructionLines(PeriodNo: Code[20])
-    var
-        IRS1099Form: Record "IRS 1099 Form";
-    begin
-        if not IRS1099Form.Get(PeriodNo, 'NEC') then
-            exit;
         AddFormInstructionLine(PeriodNo, 'NEC', 1, '', 'You received this form instead of Form W-2 because the payer did not consider you an employee and did not withhold income tax or social security and Medicare tax. If you believe you are an employee and cannot get the payer to correct this form, report the amount shown in box 1 on the line for “Wages, salaries, tips, etc.” of Form 1040, 1040-SR, or 1040-NR. You must also complete Form 8919 and attach it to your return. For more information, see Pub. 1779, Independent Contractor or Employee. If you are not an employee but the amount in box 1 is not self-employment (SE) income (for example, it is income from a sporadic activity or a hobby), report the amount shown in box 1 on the “Other income” line (on Schedule 1 (Form 1040)).');
         AddFormInstructionLine(PeriodNo, 'NEC', 2, 'Recipient’s taxpayer identification number (TIN).', 'For your protection, this form may show only the last four digits of your TIN (social security number (SSN), individual taxpayer identification number (ITIN), adoption taxpayer identification number (ATIN), or employer identification number (EIN)). However, the issuer has reported your complete TIN to the IRS.');
         AddFormInstructionLine(PeriodNo, 'NEC', 3, 'Account number.', 'May show an account or other unique number the payer assigned to distinguish your account.');
@@ -149,44 +137,7 @@ codeunit 10039 "IRS Forms Data"
         AddFormInstructionLine(PeriodNo, 'NEC', 9, 'Boxes 5-7.', 'State income tax withheld reporting boxes.');
         AddFormInstructionLine(PeriodNo, 'NEC', 10, 'Future developments.', 'For the latest information about developments related to Form 1099-NEC and its instructions, such as legislation enacted after they were published, go to www.irs.gov/Form1099NEC.');
         AddFormInstructionLine(PeriodNo, 'NEC', 11, 'Free File Program.', 'Go to www.irs.gov/FreeFile to see if you qualify for no-cost online federal tax preparation, e-filing, and direct deposit or payment options.');
-    end;
 
-    local procedure AddMiscFormInstructionLines(PeriodNo: Code[20])
-    var
-        IRS1099Form: Record "IRS 1099 Form";
-    begin
-        if not IRS1099Form.Get(PeriodNo, 'MISC') then
-            exit;
-        AddFormInstructionLine(PeriodNo, 'MISC', 1, 'Recipient’s taxpayer identification number (TIN).', 'For your protection, this form may show only the last four digits of your TIN (social security number (SSN), individual taxpayer identification number (ITIN), adoption taxpayer identification number (ATIN), or employer identification number (EIN)). However, the issuer has reported your complete TIN to the IRS.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 2, 'Account number.', 'May show an account or other unique number the payer assigned to distinguish your account.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 3, 'Amounts shown may be subject to self-employment (SE) tax.', 'Individuals should see the Instructions for Schedule SE (Form 1040). Corporations, fiduciaries, or partnerships must report the amounts on the appropriate line of their tax returns.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 4, 'Form 1099-MISC incorrect?', 'If this form is incorrect or has been issued in error, contact the payer. If you cannot get this form corrected, attach an explanation to your tax return and report your information correctly.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 5, 'Box 1.', 'Report rents from real estate on Schedule E (Form 1040). However, report rents on Schedule C (Form 1040) if you provided significant services to the tenant, sold real estate as a business, or rented personal property as a business. See Pub. 527.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 6, 'Box 2.', 'Report royalties from oil, gas, or mineral properties; copyrights; and patents on Schedule E (Form 1040). However, report payments for a working interest as explained in the Schedule E (Form 1040) instructions. For royalties on timber, coal, and iron ore, see Pub. 544.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 7, 'Box 3.', 'Generally, report this amount on the “Other income” line of Schedule 1 (Form 1040) and identify the payment. The amount shown may be payments received as the beneficiary of a deceased employee, prizes, awards, taxable damages, Indian gaming profits, or other taxable income. See Pub. 525. If it is trade or business income, report this amount on Schedule C or F (Form 1040).');
-        AddFormInstructionLine(PeriodNo, 'MISC', 8, 'Box 4.', 'Shows backup withholding or withholding on Indian gaming profits. Generally, a payer must backup withhold if you did not furnish your TIN. See Form W-9 and Pub. 505 for more information. Report this amount on your income tax return as tax withheld.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 9, 'Box 5.', 'Shows the amount paid to you as a fishing boat crew member by the operator, who considers you to be self-employed. Self-employed individuals must report this amount on Schedule C (Form 1040). See Pub. 334.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 10, 'Box 6.', 'For individuals, report on Schedule C (Form 1040).');
-        AddFormInstructionLine(PeriodNo, 'MISC', 11, 'Box 7.', 'If checked, consumer products totaling $5,000 or more were sold to you for resale, on a buy-sell, a deposit-commission, or other basis. Generally, report any income from your sale of these products on Schedule C (Form 1040).');
-        AddFormInstructionLine(PeriodNo, 'MISC', 12, 'Box 8.', 'Shows substitute payments in lieu of dividends or tax-exempt interest received by your broker on your behalf as a result of a loan of your securities. Report on the “Other income” line of Schedule 1 (Form 1040).');
-        AddFormInstructionLine(PeriodNo, 'MISC', 13, 'Box 9.', 'Report this amount on Schedule F (Form 1040).');
-        AddFormInstructionLine(PeriodNo, 'MISC', 14, 'Box 10.', 'Shows gross proceeds paid to an attorney in connection with legal services. Report only the taxable part as income on your return.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 15, 'Box 11.', 'Shows the amount of cash you received for the sale of fish if you are in the trade or business of catching fish.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 16, 'Box 12.', 'May show current year deferrals as a nonemployee under a nonqualified deferred compensation (NQDC) plan that is subject to the requirements of section 409A plus any earnings on current and prior year deferrals.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 17, 'Box 13.', 'If the FATCA filing requirement box is checked, the payer is reporting on this Form 1099 to satisfy its account reporting requirement under chapter 4 of the Internal Revenue Code. You may also have a filing requirement. See the Instructions for Form 8938.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 18, 'Box 14.', 'Shows your total compensation of excess golden parachute payments subject to a 20% excise tax. See your tax return instructions for where to report.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 19, 'Box 15.', 'Shows income as a nonemployee under an NQDC plan that does not meet the requirements of section 409A. Any amount included in box 12 that is currently taxable is also included in this box. Report this amount as income on your tax return. This income is also subject to a substantial additional tax to be reported on Form 1040, 1040-SR, or 1040-NR. See the instructions for your tax return.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 20, 'Boxes 16-18.', 'Show state or local income tax withheld from the payments.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 21, 'Future developments.', 'For the latest information about developments related to Form 1099-MISC and its instructions, such as legislation enacted after they were published, go to www.irs.gov/Form1099MISC.');
-        AddFormInstructionLine(PeriodNo, 'MISC', 22, 'Free File Program.', 'Go to www.irs.gov/FreeFile to see if you qualify for no-cost online federal tax preparation, e-filing, and direct deposit or payment options.');
-    end;
-
-    local procedure AddIntFormInstructionLines(PeriodNo: Code[20])
-    var
-        IRS1099Form: Record "IRS 1099 Form";
-    begin
-        if not IRS1099Form.Get(PeriodNo, 'INT') then
-            exit;
         AddFormInstructionLine(PeriodNo, 'INT', 1, '', 'The information provided may be different for covered and noncovered securities. For a description of covered securities, see the Instructions for Form 8949. For a taxable covered security acquired at a premium, unless you notified the payer in writing in accordance with Regulations section 1.6045-1(n)(5) that you did not want to amortize the premium under section 171, or for a tax-exempt covered security acquired at a premium, your payer must generally report either (1) a net amount of interest that reflects the offset of the amount of interest paid to you by the amount of premium amortization allocable to the payment(s), or (2) a gross amount for both the interest paid to you and the premium amortization allocable to the payment(s). If you did notify your payer that you did not want to amortize the premium on a taxable covered security, then your payer will only report the gross amount of interest paid to you. For a noncovered security acquired at a premium, your payer is only required to report the gross amount of interest paid to you.');
         AddFormInstructionLine(PeriodNo, 'INT', 2, 'Recipient’s taxpayer identification number (TIN).', 'For your protection, this form may show only the last four digits of your TIN (social security number (SSN), individual taxpayer identification number (ITIN), adoption taxpayer identification number (ATIN), or employer identification number (EIN)). However, the issuer has reported your complete TIN to the IRS.');
         AddFormInstructionLine(PeriodNo, 'INT', 3, 'FATCA filing requirement.', 'If the FATCA filing requirement box is checked, the payer is reporting on this Form 1099 to satisfy its chapter 4 account reporting requirement. You may also have a filing requirement. See the Instructions for Form 8938.');
@@ -209,14 +160,30 @@ codeunit 10039 "IRS Forms Data"
         AddFormInstructionLine(PeriodNo, 'INT', 20, 'Nominees.', 'If this form includes amounts belonging to another person(s), you are considered a nominee recipient. Complete a Form 1099-INT for each of the other owners showing the income allocable to each. File Copy A of the form with the IRS. Furnish Copy B to each owner. List yourself as the “payer” and the other owner(s) as the “recipient.” File Form(s) 1099-INT with Form 1096 with the Internal Revenue Service Center for your area. On Form 1096, list yourself as the “filer.” A spouse is not required to file a nominee return to show amounts owned by the other spouse');
         AddFormInstructionLine(PeriodNo, 'INT', 21, 'Future developments.', 'For the latest information about developments related to Form 1099-INT and its instructions, such as legislation enacted after they were published, go to www.irs.gov/Form1099INT.');
         AddFormInstructionLine(PeriodNo, 'INT', 22, 'Free File Program.', 'Go to www.irs.gov/FreeFile to see if you qualify for no-cost online federal tax preparation, e-filing, and direct deposit or payment options.');
-    end;
 
-    local procedure AddDivFormInstructionLines(PeriodNo: Code[20])
-    var
-        IRS1099Form: Record "IRS 1099 Form";
-    begin
-        if not IRS1099Form.Get(PeriodNo, 'DIV') then
-            exit;
+        AddFormInstructionLine(PeriodNo, 'MISC', 1, 'Recipient’s taxpayer identification number (TIN).', 'For your protection, this form may show only the last four digits of your TIN (social security number (SSN), individual taxpayer identification number (ITIN), adoption taxpayer identification number (ATIN), or employer identification number (EIN)). However, the issuer has reported your complete TIN to the IRS.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 2, 'Account number.', 'May show an account or other unique number the payer assigned to distinguish your account.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 3, 'Amounts shown may be subject to self-employment (SE) tax.', 'Individuals should see the Instructions for Schedule SE (Form 1040). Corporations, fiduciaries, or partnerships must report the amounts on the appropriate line of their tax returns.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 4, 'Form 1099-MISC incorrect?', 'If this form is incorrect or has been issued in error, contact the payer. If you cannot get this form corrected, attach an explanation to your tax return and report your information correctly.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 5, 'Box 1.', 'Report rents from real estate on Schedule E (Form 1040). However, report rents on Schedule C (Form 1040) if you provided significant services to the tenant, sold real estate as a business, or rented personal property as a business. See Pub. 527.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 6, 'Box 2.', 'Report royalties from oil, gas, or mineral properties; copyrights; and patents on Schedule E (Form 1040). However, report payments for a working interest as explained in the Schedule E (Form 1040) instructions. For royalties on timber, coal, and iron ore, see Pub. 544.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 7, 'Box 3.', 'Generally, report this amount on the “Other income” line of Schedule 1 (Form 1040) and identify the payment. The amount shown may be payments received as the beneficiary of a deceased employee, prizes, awards, taxable damages, Indian gaming profits, or other taxable income. See Pub. 525. If it is trade or business income, report this amount on Schedule C or F (Form 1040).');
+        AddFormInstructionLine(PeriodNo, 'MISC', 8, 'Box 4.', 'Shows backup withholding or withholding on Indian gaming profits. Generally, a payer must backup withhold if you did not furnish your TIN. See Form W-9 and Pub. 505 for more information. Report this amount on your income tax return as tax withheld.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 9, 'Box 5.', 'Shows the amount paid to you as a fishing boat crew member by the operator, who considers you to be self-employed. Self-employed individuals must report this amount on Schedule C (Form 1040). See Pub. 334.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 10, 'Box 6.', 'For individuals, report on Schedule C (Form 1040).');
+        AddFormInstructionLine(PeriodNo, 'MISC', 11, 'Box 7.', 'If checked, consumer products totaling $5,000 or more were sold to you for resale, on a buy-sell, a deposit-commission, or other basis. Generally, report any income from your sale of these products on Schedule C (Form 1040).');
+        AddFormInstructionLine(PeriodNo, 'MISC', 12, 'Box 8.', 'Shows substitute payments in lieu of dividends or tax-exempt interest received by your broker on your behalf as a result of a loan of your securities. Report on the “Other income” line of Schedule 1 (Form 1040).');
+        AddFormInstructionLine(PeriodNo, 'MISC', 13, 'Box 9.', 'Report this amount on Schedule F (Form 1040).');
+        AddFormInstructionLine(PeriodNo, 'MISC', 14, 'Box 10.', 'Shows gross proceeds paid to an attorney in connection with legal services. Report only the taxable part as income on your return.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 15, 'Box 11.', 'Shows the amount of cash you received for the sale of fish if you are in the trade or business of catching fish.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 16, 'Box 12.', 'May show current year deferrals as a nonemployee under a nonqualified deferred compensation (NQDC) plan that is subject to the requirements of section 409A plus any earnings on current and prior year deferrals.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 17, 'Box 13.', 'If the FATCA filing requirement box is checked, the payer is reporting on this Form 1099 to satisfy its account reporting requirement under chapter 4 of the Internal Revenue Code. You may also have a filing requirement. See the Instructions for Form 8938.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 18, 'Box 14.', 'Shows your total compensation of excess golden parachute payments subject to a 20% excise tax. See your tax return instructions for where to report.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 19, 'Box 15.', 'Shows income as a nonemployee under an NQDC plan that does not meet the requirements of section 409A. Any amount included in box 12 that is currently taxable is also included in this box. Report this amount as income on your tax return. This income is also subject to a substantial additional tax to be reported on Form 1040, 1040-SR, or 1040-NR. See the instructions for your tax return.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 20, 'Boxes 16-18.', 'Show state or local income tax withheld from the payments.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 21, 'Future developments.', 'For the latest information about developments related to Form 1099-MISC and its instructions, such as legislation enacted after they were published, go to www.irs.gov/Form1099MISC.');
+        AddFormInstructionLine(PeriodNo, 'MISC', 22, 'Free File Program.', 'Go to www.irs.gov/FreeFile to see if you qualify for no-cost online federal tax preparation, e-filing, and direct deposit or payment options.');
+
         AddFormInstructionLine(PeriodNo, 'DIV', 1, 'Recipient’s taxpayer identification number (TIN).', 'For your protection, this form may show only the last four digits of your TIN (SSN, ITIN, ATIN, or EIN). However, the issuer has reported your complete TIN to the IRS.');
         AddFormInstructionLine(PeriodNo, 'DIV', 2, 'Account number.', 'May show an account or other unique number the payer assigned to distinguish your account.');
         AddFormInstructionLine(PeriodNo, 'DIV', 3, 'Box 1a.', 'Shows total ordinary dividends that are taxable. Include this amount on the “Ordinary dividends” line of Form 1040 or 1040-SR. Also report it on Schedule B (Form 1040), if required.');

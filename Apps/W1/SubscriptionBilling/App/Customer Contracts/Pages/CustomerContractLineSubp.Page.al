@@ -439,13 +439,15 @@ page 8068 "Customer Contract Line Subp."
                     Image = DataEntry;
                     Scope = Repeater;
                     ToolTip = 'Shows the related usage data.';
-                    Enabled = UsageDataEnabled;
 
                     trigger OnAction()
                     var
                         UsageDataBilling: Record "Usage Data Billing";
                     begin
-                        UsageDataBilling.ShowForContractLine("Service Partner"::Customer, Rec."Contract No.", Rec."Line No.");
+                        UsageDataBilling.SetRange(Partner, "Service Partner"::Customer);
+                        UsageDataBilling.SetRange("Contract No.", Rec."Contract No.");
+                        UsageDataBilling.SetRange("Contract Line No.", Rec."Line No.");
+                        Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
                     end;
                 }
 
@@ -475,11 +477,8 @@ page 8068 "Customer Contract Line Subp."
     end;
 
     trigger OnAfterGetCurrRecord()
-    var
-        UsageDataBilling: Record "Usage Data Billing";
     begin
         UpdateEditableOnRow();
-        UsageDataEnabled := UsageDataBilling.ExistForContractLine("Service Partner"::Customer, Rec."Contract No.", Rec."Line No.");
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -493,7 +492,6 @@ page 8068 "Customer Contract Line Subp."
         NextBillingDateStyleExpr: Text;
         IsDiscountLine: Boolean;
         IsCommentLine: Boolean;
-        UsageDataEnabled: Boolean;
 
     protected var
         ServiceObject: Record "Service Object";

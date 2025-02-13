@@ -1,5 +1,4 @@
-﻿#if not CLEANSCHEMA29
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,7 +10,6 @@ enum 6143 "E-Document Integration"
 enum 6143 "E-Document Integration" implements "E-Document Integration"
 #endif
 {
-#if not CLEAN26
     ObsoleteTag = '26.0';
     ObsoleteState = Pending;
     ObsoleteReason = 'Use sender, receiver and action integration enums instead';
@@ -19,7 +17,7 @@ enum 6143 "E-Document Integration" implements "E-Document Integration"
     Extensible = true;
     Access = Public;
 
-
+#if not CLEAN26
     value(0; "No Integration")
     {
         ObsoleteReason = 'Use sender, receiver and action integration enums instead';
@@ -29,4 +27,3 @@ enum 6143 "E-Document Integration" implements "E-Document Integration"
     }
 #endif
 }
-#endif

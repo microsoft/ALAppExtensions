@@ -1,4 +1,3 @@
-#if not CLEAN26
 namespace Microsoft.Finance.PowerBIReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
@@ -15,9 +14,6 @@ query 36962 "G/L Entries - Income Statement"
     EntityName = 'incomeStatementGeneralLedgerEntry';
     EntitySetName = 'incomeStatementGeneralLedgerEntries';
     DataAccessIntent = ReadOnly;
-    ObsoleteState = Pending;
-    ObsoleteReason = 'This query has been replaced by the G/L Income Statement - PBI API query.';
-    ObsoleteTag = '26.0';
 
     elements
     {
@@ -81,4 +77,3 @@ query 36962 "G/L Entries - Income Statement"
             CurrQuery.SetFilter(sourceCode, '<>%1', SourceCodeText);
     end;
 }
-#endif

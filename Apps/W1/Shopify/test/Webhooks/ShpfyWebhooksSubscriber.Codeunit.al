@@ -42,25 +42,25 @@ codeunit 139613 "Shpfy Webhooks Subscriber"
     local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
         Uri: Text;
-        GraphQLQuery: Text;
-        GetWebhooksGQLTxt: Label '{"query":"{ webhookSubscriptions(', Locked = true;
-        CreateWebhookGQLTxt: Label '{"query":"mutation { webhookSubscriptionCreate', Locked = true;
-        DeleteWebhookGQLTxt: Label '{"query":"mutation { webhookSubscriptionDelete', Locked = true;
-        GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
+            'GET':
+                begin
+                    Uri := HttpRequestMessage.GetRequestUri();
+                    if Uri.Contains('webhooks.json') and Uri.Contains('?topic=') then
+                        HttpResponseMessage := GetEmptyWebhookResponse();
+                end;
             'POST':
                 begin
                     Uri := HttpRequestMessage.GetRequestUri();
-                    if Uri.EndsWith(GraphQLCmdTxt) then
-                        if HttpRequestMessage.Content.ReadAs(GraphQLQuery) then begin
-                            if GraphQLQuery.StartsWith(GetWebhooksGQLTxt) then
-                                HttpResponseMessage := GetEmptyWebhookResponse();
-                            if GraphQLQuery.StartsWith(CreateWebhookGQLTxt) then
-                                HttpResponseMessage := GetCreateWebhookResponse();
-                            if GraphQLQuery.StartsWith(DeleteWebhookGQLTxt) then
-                                HttpResponseMessage := GetDeleteWebhookResponse();
-                        end;
+                    if Uri.EndsWith('webhooks.json') then
+                        HttpResponseMessage := GetCreateWebhookResponse();
+                end;
+            'DELETE':
+                begin
+                    Uri := HttpRequestMessage.GetRequestUri();
+                    if Uri.Contains('webhooks/') and Uri.EndsWith('.json') then
+                        HttpResponseMessage := GetDeleteWebhookResponse();
                 end;
         end;
     end;

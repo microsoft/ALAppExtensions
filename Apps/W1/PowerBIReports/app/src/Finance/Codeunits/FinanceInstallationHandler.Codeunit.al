@@ -1,14 +1,30 @@
 namespace Microsoft.Finance.PowerBIReports;
 using Microsoft.Finance.GeneralLedger.Account;
 
+using Microsoft.Foundation.Company;
+
 codeunit 36953 "Finance Installation Handler"
 {
     Access = Internal;
-    InherentEntitlements = X;
-    InherentPermissions = X;
+    Subtype = Install;
     Permissions = tabledata "G/L Account Category" = r;
 
-    internal procedure SetupDefaultsForPowerBIReportsIfNotInitialized()
+    trigger OnInstallAppPerCompany()
+    var
+        FinanceAppInfo: ModuleInfo;
+    begin
+        if NavApp.GetCurrentModuleInfo(FinanceAppInfo) then
+            if FinanceAppInfo.DataVersion = Version.Create('0.0.0.0') then
+                InitializePowerBIAccountCategories();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]
+    local procedure OnCompanyInitialize()
+    begin
+        InitializePowerBIAccountCategories();
+    end;
+
+    local procedure InitializePowerBIAccountCategories()
     var
         PowerBIAccountCategory: Record "Account Category";
     begin
@@ -17,7 +33,7 @@ codeunit 36953 "Finance Installation Handler"
     end;
 
     [InherentPermissions(PermissionObjectType::TableData, Database::"Account Category", 'r')]
-    internal procedure RestorePowerBIAccountCategories()
+    procedure RestorePowerBIAccountCategories()
     begin
         InsertL1AccountCategories();
         InsertL2AccountCategories();

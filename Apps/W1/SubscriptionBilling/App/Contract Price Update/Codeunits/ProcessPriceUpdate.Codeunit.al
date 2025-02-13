@@ -36,8 +36,6 @@ codeunit 8013 "Process Price Update"
         PlannedServiceCommitment.Validate("Calculation Base Amount", ContractPriceUpdateLine."New Calculation Base");
         PlannedServiceCommitment.Validate(Price, ContractPriceUpdateLine."New Price");
         PlannedServiceCommitment.Validate("Service Amount", ContractPriceUpdateLine."New Service Amount");
-        PlannedServiceCommitment.Validate("Discount %", ContractPriceUpdateLine."Discount %");
-        PlannedServiceCommitment.Validate("Discount Amount", ContractPriceUpdateLine."Discount Amount");
         PlannedServiceCommitment."Next Price Update" := ContractPriceUpdateLine."Next Price Update";
         PlannedServiceCommitment."Type Of Update" := Enum::"Type Of Price Update"::"Price Update";
         PlannedServiceCommitment."Perform Update On" := ContractPriceUpdateLine."Perform Update On";

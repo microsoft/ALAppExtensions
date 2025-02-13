@@ -357,51 +357,16 @@ page 4000 "Hybrid Cloud Setup Wizard"
                         group("Para5.1.3.1")
                         {
                             ShowCaption = false;
+                            InstructionalText = 'If you have selected a company that does not exist in Business Central, it will automatically be created for you. This may take a few minutes.';
 
-                            group(MoveCompaniesIntoLiveTenants)
+                            field(Instruction; SetupAdditionalCompaniesInstructionTxt)
                             {
                                 ShowCaption = false;
-                                field(Instruction; SetupAdditionalCompaniesInstructionTxt)
-                                {
-                                    ShowCaption = false;
-                                    MultiLine = true;
-                                    Editable = false;
-                                    Enabled = false;
-                                    Style = Strong;
-                                    ApplicationArea = All;
-                                }
-                                field(LearnMore; LearnMoreTxt)
-                                {
-                                    ShowCaption = false;
-                                    Editable = false;
-                                    ApplicationArea = All;
-
-                                    trigger OnDrillDown()
-                                    begin
-                                        Hyperlink(CloudMigrationLiveTenantsUrlTxt);
-                                    end;
-                                }
-                            }
-                            group("Select Companies Information")
-                            {
-                                ShowCaption = false;
-                                InstructionalText = 'If you have selected a company that does not exist in Business Central, it will automatically be created for you. This may take a few minutes.';
-                            }
-                            group("MigrationInformation")
-                            {
-                                ShowCaption = false;
-                                InstructionalText = 'The estimated size of the company data is the size of the companies in the on-premises database. The actual size of the migrated data may vary. Per-database tables are excluded from the estimation.';
-                                field(SizeInstructions; LearnMoreDatabaseSizeLinkTxt)
-                                {
-                                    ShowCaption = false;
-                                    Editable = false;
-                                    ApplicationArea = All;
-
-                                    trigger OnDrillDown()
-                                    begin
-                                        Hyperlink(LearnMoreDatabaseSizeUrlTxt);
-                                    end;
-                                }
+                                MultiLine = true;
+                                Editable = false;
+                                Enabled = false;
+                                Style = Strong;
+                                ApplicationArea = All;
                             }
                         }
                     }
@@ -524,7 +489,6 @@ page 4000 "Hybrid Cloud Setup Wizard"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        SkipShowLiveCompaniesWarning: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000JMS', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSaas := EnvironmentInformation.IsSaaS();
@@ -541,11 +505,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
         end else
             ShowIntroStep();
 
-        OnSkipShowLiveCompaniesWarning(SkipShowLiveCompaniesWarning);
-        if not SkipShowLiveCompaniesWarning then
-            if not HybridReplicationSummary.IsEmpty() then
-                if not Confirm(ConfirmCloudMigrationExistingSystemQst) then
-                    Error('');
+        if not HybridReplicationSummary.IsEmpty() then
+            if not Confirm(ConfirmCloudMigrationExistingSystemQst) then
+                Error('');
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -645,10 +607,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         DelegatedAdminStepVisible: Boolean;
         ApprovalPageLinkTxt: Text;
         SetupAdditionalCompaniesInstructionTxt: Label 'Do not set up cloud migration to migrate additional companies for a production environment that is already in use for business. You risk overwriting or deleting data that is shared across companies.';
-        LearnMoreDatabaseSizeLinkTxt: Label 'Learn more about database size estimation';
-        LearnMoreDatabaseSizeUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2301442', Locked = true;
-        CloudMigrationLiveTenantsUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2262423', Locked = true;
-        LearnMoreTxt: Label 'Learn more';
+
 
     local procedure NextStep(Backwards: Boolean)
     var
@@ -849,11 +808,6 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
     [IntegrationEvent(false, false)]
     procedure OnSelectedProduct(ProductId: Text)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    procedure OnSkipShowLiveCompaniesWarning(var SkipShowLiveCompaniesWarning: Boolean)
     begin
     end;
 }

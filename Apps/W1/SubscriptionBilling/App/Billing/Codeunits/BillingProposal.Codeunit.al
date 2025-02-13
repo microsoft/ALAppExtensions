@@ -166,7 +166,6 @@ codeunit 8062 "Billing Proposal"
         if BillingTemplate.Filter.HasValue() then
             FilterText := BillingTemplate.ReadFilter(BillingTemplate.FieldNo(Filter));
 
-        OnCreateBillingProposalBeforeApplyFilterToContract(FilterText, BillingTemplate, BillingDate, BillingToDate);
         case BillingTemplate.Partner of
             "Service Partner"::Customer:
                 begin
@@ -341,7 +340,7 @@ codeunit 8062 "Billing Proposal"
 
         ServiceCommitmentNotEnded := ServiceCommitment."Service End Date" = 0D;
         if not ServiceCommitmentNotEnded then
-            ServiceCommitmentNotEnded := NewBillingFromDate2 <= ServiceCommitment."Service End Date";
+            ServiceCommitmentNotEnded := NewBillingFromDate2 < ServiceCommitment."Service End Date";
 
         if (NewBillingToDate <= BillingPeriodEnd) and ServiceCommitmentNotEnded then begin
             if not FindBillingLine(BillingLine2, ServiceCommitment, NewBillingFromDate2, NewBillingToDate2) then
@@ -573,7 +572,7 @@ codeunit 8062 "Billing Proposal"
                 begin
                     BillingLine.SetCurrentKey("Service Object No.", "Service Commitment Entry No.", "Billing to");
                     BillingLine.SetAscending("Billing to", false);
-                    BillingLine.SetRange(Partner, BillingTemplate.Partner);
+                    BillingLine.SetRange("Partner", BillingTemplate.Partner);
                     if BillingLine.FindSet() then
                         repeat
                             BillingLine.Delete(true);
@@ -999,11 +998,6 @@ codeunit 8062 "Billing Proposal"
 
     [InternalEvent(false, false)]
     local procedure OnCheckSkipServiceCommitmentOnElse(ServiceCommitment: Record "Service Commitment"; var SkipServiceCommitment: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnCreateBillingProposalBeforeApplyFilterToContract(var FilterText: Text; var BillingTemplate: Record "Billing Template"; BillingDate: Date; BillingToDate: Date)
     begin
     end;
 }

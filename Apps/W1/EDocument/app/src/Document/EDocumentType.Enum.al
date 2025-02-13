@@ -3,13 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.Processing.Import;
 
-enum 6121 "E-Document Type" implements IEDocumentFinishDraft
+enum 6121 "E-Document Type"
 {
     Extensible = true;
-    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Default Implementation";
-
     value(0; "None")
     {
     }
@@ -36,7 +33,6 @@ enum 6121 "E-Document Type" implements IEDocumentFinishDraft
     }
     value(8; "Purchase Invoice")
     {
-        Implementation = IEDocumentFinishDraft = "E-Doc. Create Purchase Invoice";
     }
     value(9; "Purchase Return Order")
     {

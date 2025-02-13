@@ -407,37 +407,28 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                     else
                         DocFooterText := '';
 
-                    Clear(ExchRateText);
-                    if "Currency Code" <> '' then begin
+                    if "Currency Code" = '' then
+                        "Currency Code" := "General Ledger Setup"."LCY Code";
+
+                    if (TempPurchAdvLetterEntry."Currency Factor" <> 0) and (TempPurchAdvLetterEntry."Currency Factor" <> 1) then begin
                         CurrencyExchangeRate.FindCurrency(TempPurchAdvLetterEntry."Posting Date", "Currency Code", 1);
                         CalculatedExchRate := Round(1 / TempPurchAdvLetterEntry."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                         ExchRateText :=
                           StrSubstNo(Text009Txt, CalculatedExchRate, "General Ledger Setup"."LCY Code",
                             CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
-                        if "Currency Code" = "General Ledger Setup"."LCY Code" then
-                            ExchRateText := '';
                     end else
                         CalculatedExchRate := 1;
-
-                    if "Currency Code" = '' then
-                        "Currency Code" := "General Ledger Setup"."LCY Code";
 
                     if UseFunctionalCurrency then begin
                         AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempPurchAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
                         if (AdditionalCurrencyFactor <> 0) and (AdditionalCurrencyFactor <> 1) then begin
-                            if CalculatedExchRate <> 1 then begin
-                                CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
-                                CalculatedExchRate := Round(((1 / "Currency Factor") / (1 / AdditionalCurrencyFactor)) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
-                            end else begin
-                                CurrencyExchangeRate."Exchange Rate Amount" := 1;
-                                CalculatedExchRate := Round(AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                            end;
+                            CurrencyExchangeRate.FindCurrency("Posting Date", "General Ledger Setup"."Additional Reporting Currency", 1);
+                            CalculatedExchRate := Round(1 / AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                             ExchRateText :=
                               StrSubstNo(Text009Txt, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                              CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
-                        end;
-                        if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
-                            ExchRateText := '';
+                               CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                        end else
+                            CalculatedExchRate := 1;
                     end;
 
                     FormatAddress.FormatAddr(VendAddr, "Pay-to Name", "Pay-to Name 2", "Pay-to Contact", "Pay-to Address", "Pay-to Address 2",

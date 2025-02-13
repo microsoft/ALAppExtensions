@@ -1,4 +1,4 @@
-codeunit 11189 "Create VAT Statement Name AT"
+codeunit 11189 "Create VAT Statement NameAT"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
@@ -6,9 +6,9 @@ codeunit 11189 "Create VAT Statement Name AT"
     trigger OnRun()
     var
         CreateVATStatement: Codeunit "Create VAT Statement";
-        ContosoVATStatement: Codeunit "Contoso VAT Statement";
+        ContosoVatStatmentES: Codeunit "Contoso Vat Statment ES";
     begin
-        ContosoVATStatement.InsertVATStatementName(CreateVATStatement.VATTemplateName(), StatementUstvaLbl, VATStatementGermanyDescLbl);
+        ContosoVatStatmentES.InsertVATStatementName(CreateVATStatement.VATTemplateName(), StatementUstvaLbl, VATStatementGermanyDescLbl);
     end;
 
     var

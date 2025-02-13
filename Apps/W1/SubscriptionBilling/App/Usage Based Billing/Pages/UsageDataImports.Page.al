@@ -99,7 +99,6 @@ page 8041 "Usage Data Imports"
                 var
                     UsageDataImport: Record "Usage Data Import";
                 begin
-                    UsageDataImport.SetView(Rec.GetView());
                     UsageDataImport.NewDataImport();
                     UsageDataImport.ImportFile();
                     CurrPage.SetRecord(UsageDataImport);
@@ -115,7 +114,6 @@ page 8041 "Usage Data Imports"
                 var
                     UsageDataImport: Record "Usage Data Import";
                 begin
-                    UsageDataImport.SetView(Rec.GetView());
                     UsageDataImport.NewDataImport();
                     CurrPage.SetRecord(UsageDataImport);
                 end;

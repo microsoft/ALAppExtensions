@@ -3119,14 +3119,14 @@ Cstr(Fields!EMailCaption.Value)
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="VALSpecLCYHeaderCaption2">
+                                          <Textbox Name="Textbox31">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VALSpecHeaderCZL.Value</Value>
+                                                    <Value />
                                                     <Style>
                                                       <FontFamily>Segoe UI</FontFamily>
                                                       <FontSize>8pt</FontSize>
@@ -3139,10 +3139,9 @@ Cstr(Fields!EMailCaption.Value)
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
-                                            <ZIndex>27</ZIndex>
+                                            <rd:DefaultName>Textbox31</rd:DefaultName>
                                             <Style>
-                                              <Border />
-                                              <VerticalAlign>Top</VerticalAlign>
+                                              <VerticalAlign>Bottom</VerticalAlign>
                                               <PaddingRight>5pt</PaddingRight>
                                             </Style>
                                           </Textbox>
@@ -5524,7 +5523,7 @@ Cstr(Fields!EMailCaption.Value)
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VALExchRateCZL.Value</Value>
+                                                    <Value>=First(Fields!VALExchRateCZL.Value)</Value>
                                                     <Style>
                                                       <FontFamily>Segoe UI</FontFamily>
                                                       <FontSize>8pt</FontSize>
@@ -5544,6 +5543,7 @@ Cstr(Fields!EMailCaption.Value)
                                             </Style>
                                           </Textbox>
                                           <ColSpan>2</ColSpan>
+                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                       <TablixCell />
@@ -6323,7 +6323,7 @@ Cstr(Fields!EMailCaption.Value)
                               </TablixRowHierarchy>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!VALSpecHeaderCZL.Value</FilterExpression>
+                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier_VATCounterCZL.Value</FilterExpression>
                                   <Operator>GreaterThanOrEqual</Operator>
                                   <FilterValues>
                                     <FilterValue>""</FilterValue>
@@ -6335,7 +6335,7 @@ Cstr(Fields!EMailCaption.Value)
                               <Width>18.14225cm</Width>
                               <ZIndex>6</ZIndex>
                               <Visibility>
-                                <Hidden>=IIF(Fields!VALSpecHeaderCZL.Value="",TRUE,FALSE)</Hidden>
+                                <Hidden>=IIF(Fields!VATAmtLineVATIdentifier_VATCounterCZL.Value&lt;&gt;"",False,True)</Hidden>
                               </Visibility>
                               <DataElementOutput>NoOutput</DataElementOutput>
                               <Style />

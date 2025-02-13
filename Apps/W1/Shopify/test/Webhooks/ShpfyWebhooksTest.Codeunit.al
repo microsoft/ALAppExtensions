@@ -17,8 +17,8 @@ codeunit 139612 "Shpfy Webhooks Test"
         WebhooksSubcriber: Codeunit "Shpfy Webhooks Subscriber";
         BulkOpSubscriber: Codeunit "Shpfy Bulk Op. Subscriber";
         SubscriptionId: Text;
-        BulkOperationTopicLbl: Label 'BULK_OPERATIONS_FINISH', Locked = true;
-        OrdersCreateTopicLbl: Label 'ORDERS_CREATE', Locked = true;
+        BulkOperationTopicLbl: Label 'bulk_operations/finish', Locked = true;
+        OrdersCreateTopicLbl: Label 'orders/create', Locked = true;
         IsInitialized: Boolean;
 
     local procedure Initialize()
@@ -28,7 +28,7 @@ codeunit 139612 "Shpfy Webhooks Test"
             exit;
         IsInitialized := true;
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        SubscriptionId := Format(Any.IntegerInRange(100000));
+        SubscriptionId := Any.AlphanumericText(10);
         UnbindSubscription(WebhooksSubcriber);
     end;
 
@@ -54,7 +54,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
 
@@ -79,7 +79,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -108,7 +108,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -139,7 +139,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled and a ready job queue entry
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -170,7 +170,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(BulkOperationTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         BindSubscription(BulkOpSubscriber);
@@ -224,7 +224,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record and a bulk operation
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(BulkOperationTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         BindSubscription(BulkOpSubscriber);
@@ -274,17 +274,16 @@ codeunit 139612 "Shpfy Webhooks Test"
         exit(JobQueueEntry.ID);
     end;
 
-    local procedure CreateShopifyWebhookCreateJson(): JsonObject
+    local procedure CreateShopifyWebhookCreateJson(Topic: Text): JsonObject
     var
         JData: JsonObject;
         JWebhook: JsonObject;
-        JWebhookSubscription: JsonObject;
-        JWebhookSubscriptionCreate: JsonObject;
     begin
-        JWebhook.Add('id', 'gid://shopify/WebhookSubscription/' + SubscriptionId);
-        JWebhookSubscription.Add('webhookSubscription', JWebhook);
-        JWebhookSubscriptionCreate.Add('webhookSubscriptionCreate', JWebhookSubscription);
-        JData.Add('data', JWebhookSubscriptionCreate);
+        JWebhook.Add('id', SubscriptionId);
+        JWebhook.Add('address', 'https://example.app/api/webhooks');
+        JWebhook.Add('topic', Topic);
+        JWebhook.Add('format', 'JSON');
+        JData.Add('webhook', JWebhook);
         exit(JData);
     end;
 
@@ -324,15 +323,11 @@ codeunit 139612 "Shpfy Webhooks Test"
 
     local procedure CreateShopifyEmptyWebhookJson(): JsonObject
     var
-        JResult: JsonObject;
         JData: JsonObject;
-        JWebhookSubscriptions: JsonObject;
         JWebhooks: JsonArray;
     begin
-        JWebhookSubscriptions.Add('edges', JWebhooks);
-        JData.Add('webhookSubscriptions', JWebhookSubscriptions);
-        JResult.Add('data', JData);
-        exit(JResult);
+        JData.Add('webhooks', JWebhooks);
+        exit(JData);
     end;
 
     local procedure GetShopDomain(ShopUrl: Text[250]): Text

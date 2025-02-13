@@ -13,8 +13,7 @@ codeunit 31169 "VAT Report Export CZL"
     trigger OnRun()
     begin
         case GetVATStatementXMLFormat(Rec) of
-            "VAT Statement XML Format CZL"::DPHDP3,
-            "VAT Statement XML Format CZL"::DPHDP3v3:
+            "VAT Statement XML Format CZL"::DPHDP3:
                 ExportVATReportDPHDP3(Rec);
         end;
     end;
@@ -57,9 +56,9 @@ codeunit 31169 "VAT Report Export CZL"
 
     local procedure GetVATStatementXMLFormat(VATReportHeader: Record "VAT Report Header"): Enum "VAT Statement XML Format CZL"
     var
-        VATStatementName: Record "VAT Statement Name";
+        VATStatementTemplate: Record "VAT Statement Template";
     begin
-        VATStatementName.Get(VATReportHeader."Statement Template Name", VATReportHeader."Statement Name");
-        exit(VATStatementName."XML Format CZL");
+        VATStatementTemplate.Get(VATReportHeader."Statement Template Name");
+        exit(VATStatementTemplate."XML Format CZL");
     end;
 }

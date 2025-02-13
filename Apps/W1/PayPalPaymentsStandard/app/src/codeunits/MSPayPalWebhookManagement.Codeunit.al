@@ -56,7 +56,7 @@ codeunit 1073 "MS - PayPal Webhook Management"
         Session.LogMessage('00008IP', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         FeatureTelemetry.LogUsage('0000LHW', MSPayPalStandardMgt.GetFeatureTelemetryName(), ProcessingWebhookNotificationTxt);
 
-        AccountID := Rec."Subscription ID";
+        AccountID := LOWERCASE(Rec."Subscription ID");
         WebhookSubscription.SetRange("Subscription ID", AccountID);
         WebhookSubscription.SetFilter("Created By", GetCreatedByFilterForWebhooks());
         if WebhookSubscription.IsEmpty() then begin

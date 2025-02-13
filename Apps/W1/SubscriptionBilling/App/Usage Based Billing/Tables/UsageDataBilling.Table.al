@@ -52,7 +52,7 @@ table 8006 "Usage Data Billing"
         field(8; "Service Object Description"; Text[100])
         {
             Caption = 'Service Object Description';
-            FieldClass = FlowField;
+            fieldClass = Flowfield;
             CalcFormula = lookup("Service Object".Description where("No." = field("Service Object No.")));
             Editable = false;
         }
@@ -153,7 +153,7 @@ table 8006 "Usage Data Billing"
         {
             Caption = 'Currency Code';
         }
-        field(28; "Usage Base Pricing"; Enum "Usage Based Pricing")
+        field(28; "Usage Base Pricing"; enum "Usage Based Pricing")
         {
             Caption = 'Usage Base Pricing';
         }
@@ -165,8 +165,8 @@ table 8006 "Usage Data Billing"
         {
             Caption = 'Billing Line Entry No.';
             TableRelation =
-            if (Partner = const(Customer), "Document Type" = filter(Invoice)) "Billing Line"."Entry No."
-                                                                                     where(Partner = const(Customer), "Document Type" = const(Invoice), "Document No." = field("Document No."))
+            if (Partner = const(Customer), "Document Type" = filter("Invoice")) "Billing Line"."Entry No."
+                                                                                     where(Partner = const(Customer), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."))
             else
             if (Partner = const(Customer), "Document Type" = filter("Credit Memo")) "Billing Line"."Entry No."
                                                                                      where(Partner = const(Customer), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."))
@@ -177,16 +177,16 @@ table 8006 "Usage Data Billing"
             if (Partner = const(Customer), "Document Type" = filter("Posted Credit Memo")) "Billing Line Archive"."Entry No."
                                                                                      where(Partner = const(Customer), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."))
             else
-            if (Partner = const(Vendor), "Document Type" = filter(Invoice)) "Billing Line"."Entry No."
-                                                                                     where(Partner = const(Vendor), "Document Type" = const(Invoice), "Document No." = field("Document No."))
-            else
-            if (Partner = const(Vendor), "Document Type" = filter("Credit Memo")) "Billing Line"."Entry No."
+            if (Partner = const(Customer), "Document Type" = filter("Invoice")) "Billing Line"."Entry No."
                                                                                      where(Partner = const(Vendor), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."))
             else
-            if (Partner = const(Vendor), "Document Type" = filter("Posted Invoice")) "Billing Line Archive"."Entry No."
+            if (Partner = const(Customer), "Document Type" = filter("Credit Memo")) "Billing Line"."Entry No."
+                                                                                     where(Partner = const(Vendor), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."))
+            else
+            if (Partner = const(Customer), "Document Type" = filter("Posted Invoice")) "Billing Line Archive"."Entry No."
                                                                                      where(Partner = const(Vendor), "Document Type" = const(Invoice), "Document No." = field("Document No."))
             else
-            if (Partner = const(Vendor), "Document Type" = filter("Posted Credit Memo")) "Billing Line Archive"."Entry No."
+            if (Partner = const(Customer), "Document Type" = filter("Posted Credit Memo")) "Billing Line Archive"."Entry No."
                                                                                      where(Partner = const(Vendor), "Document Type" = const("Credit Memo"), "Document No." = field("Document No."));
         }
         field(31; "Document Type"; Enum "Usage Based Billing Doc. Type")
@@ -299,9 +299,9 @@ table 8006 "Usage Data Billing"
         OnAfterInitFromUsageDataGenericImport(Rec, UsageDataGenericImport);
     end;
 
-    internal procedure FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Service Commitment")
+    internal procedure FilterOnUsageDataImportAndServiceCommitment(UsageDataImport: Record "Usage Data Import"; ServiceCommitment: Record "Service Commitment")
     begin
-        Rec.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
+        Rec.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         Rec.FilterOnServiceCommitment(ServiceCommitment);
     end;
 
@@ -472,12 +472,12 @@ table 8006 "Usage Data Billing"
     end;
 
     internal procedure SaveDocumentValues(UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20];
-                                                                      DocumentEntryNo: Integer;
+                                                                      DocumentLineNo: Integer;
                                                                       BillingLineEntryNo: Integer)
     begin
         Rec."Document Type" := UsageBasedBillingDocType;
         Rec."Document No." := DocumentNo;
-        Rec."Document Line No." := DocumentEntryNo;
+        Rec."Document Line No." := DocumentLineNo;
         Rec."Billing Line Entry No." := BillingLineEntryNo;
         Rec.Modify(false);
     end;
@@ -492,110 +492,6 @@ table 8006 "Usage Data Billing"
         exit(Rec.Partner = Rec.Partner::Customer);
     end;
 
-    internal procedure CalculateChargeEndDate(): Date
-    begin
-        if Rec."Charge End Time" = 0T then
-            exit(CalcDate('<-1D>', Rec."Charge End Date"));
-        exit(Rec."Charge End Date");
-    end;
-
-    local procedure FilterContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; EntryNo: Integer)
-    begin
-        Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Contract No.", ContractNo);
-        Rec.SetRange("Contract Line No.", EntryNo);
-    end;
-
-    local procedure FilterDocumentWithLine(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
-    begin
-        Rec.FilterOnDocumentTypeAndDocumentNo(DocumentType, DocumentNo);
-        Rec.SetRange("Document Line No.", EntryNo);
-    end;
-
-    local procedure FilterBillingLine(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20])
-    begin
-        Rec.SetRange("Service Object No.", ServiceObjectNo);
-        Rec.SetRange("Service Commitment Entry No.", ServCommEntryNo);
-        Rec.SetRange("Document Type", DocumentType);
-        Rec.SetRange("Document No.", DocumentNo);
-    end;
-
-    local procedure FilterServiceCommitmentLine(ServicePartner: Enum "Service Partner"; ServiceObjectNo: Code[20]; EntryNo: Integer)
-    begin
-        Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Service Object No.", ServiceObjectNo);
-        Rec.SetRange("Service Commitment Entry No.", EntryNo);
-    end;
-
-    internal procedure ShowForContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; EntryNo: Integer)
-    begin
-        FilterContractLine(ServicePartner, ContractNo, EntryNo);
-        Page.RunModal(Page::"Usage Data Billings", Rec);
-    end;
-
-    internal procedure ShowForDocuments(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
-    begin
-        FilterDocumentWithLine(DocumentType, DocumentNo, EntryNo);
-        Page.RunModal(Page::"Usage Data Billings", Rec);
-    end;
-
-    internal procedure ShowForSalesDocuments(DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; EntryNo: Integer)
-    begin
-        ShowForDocuments(UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
-    end;
-
-    internal procedure ShowForPurchaseDocuments(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; EntryNo: Integer)
-    begin
-        ShowForDocuments(UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
-    end;
-
-    internal procedure ShowForRecurringBilling(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Rec. Billing Document Type"; DocumentNo: Code[20])
-    begin
-        FilterBillingLine(ServiceObjectNo, ServCommEntryNo, UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo);
-        Page.RunModal(Page::"Usage Data Billings", Rec);
-    end;
-
-    internal procedure ShowForServiceCommitments(ServicePartner: Enum "Service Partner"; ServiceObjectNo: Code[20]; EntryNo: Integer)
-    begin
-        FilterServiceCommitmentLine(ServicePartner, ServiceObjectNo, EntryNo);
-        Page.RunModal(Page::"Usage Data Billings", Rec);
-    end;
-
-    internal procedure ExistForContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; EntryNo: Integer): Boolean
-    begin
-        FilterContractLine(ServicePartner, ContractNo, EntryNo);
-        exit(not Rec.IsEmpty());
-    end;
-
-    internal procedure ExistForDocuments(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
-    begin
-        FilterDocumentWithLine(DocumentType, DocumentNo, EntryNo);
-        exit(not Rec.IsEmpty());
-    end;
-
-    internal procedure ExistForSalesDocuments(DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
-    begin
-        exit(ExistForDocuments(UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
-    end;
-
-    internal procedure ExistForPurchaseDocuments(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
-    begin
-        exit(ExistForDocuments(UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
-    end;
-
-    internal procedure ExistForRecurringBilling(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Rec. Billing Document Type"; DocumentNo: Code[20]): Boolean
-    begin
-        FilterBillingLine(ServiceObjectNo, ServCommEntryNo, UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo);
-        exit(not Rec.IsEmpty());
-    end;
-
-    internal procedure ExistForServiceCommitments(ServicePartner: Enum "Service Partner"; ServiceObjectNo: Code[20]; EntryNo: Integer): Boolean
-    begin
-        FilterServiceCommitmentLine(ServicePartner, ServiceObjectNo, EntryNo);
-        exit(not Rec.IsEmpty());
-    end;
-
-
     [InternalEvent(false, false)]
     local procedure OnAfterInitFromUsageDataGenericImport(var UsageDataBilling: Record "Usage Data Billing"; UsageDataGenericImport: Record "Usage Data Generic Import")
     begin
@@ -603,5 +499,4 @@ table 8006 "Usage Data Billing"
 
     var
         EssDateTimeMgt: Codeunit "Date Time Management";
-        UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
 }

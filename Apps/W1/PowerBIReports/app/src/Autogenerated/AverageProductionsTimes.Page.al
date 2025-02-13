@@ -5,13 +5,12 @@ using System.Integration.PowerBI;
 page 37048 "Average Productions Times"
 {
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
-    PageType = UserControlHost;
-#pragma warning restore AS0035
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Average Productions Times';
     AboutTitle = 'About Average Productions Times';
     AboutText = 'View the average time spent for Setup, Run and Stop times per unit for each manufactured Item. Expand to see the times for each production order to determine why fluctuations occurred.';
+    Extensible = false;
 
     layout
     {
@@ -29,6 +28,26 @@ page 37048 "Average Productions Times"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
+                end;
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(FullScreen)
+            {
+                ApplicationArea = All;
+                Caption = 'Fullscreen';
+                ToolTip = 'Shows the Power BI element as full screen.';
+                Image = View;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

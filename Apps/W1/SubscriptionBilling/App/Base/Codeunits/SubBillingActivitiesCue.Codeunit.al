@@ -125,7 +125,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         DateFilterFrom: Text;
         DateFilterTo: Text;
     begin
-        GetDateFilterFormulas(CurrentMonth, DateFilterFrom, DateFilterTo);
+        GetDateFilters(CurrentMonth, DateFilterFrom, DateFilterTo);
         SalesInvLine.SetFilter("Contract No.", '<>%1', '');
         SalesInvLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         SalesInvLine.CalcSums(Amount);
@@ -144,7 +144,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         DateFilterFrom: Text;
         DateFilterTo: Text;
     begin
-        GetDateFilterFormulas(CurrentMonth, DateFilterFrom, DateFilterTo);
+        GetDateFilters(CurrentMonth, DateFilterFrom, DateFilterTo);
         PurchInvLine.SetFilter("Contract No.", '<>%1', '');
         PurchInvLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         PurchInvLine.CalcSums(Amount);
@@ -156,14 +156,14 @@ codeunit 8071 "Sub. Billing Activities Cue"
         exit(PurchInvLine.Amount - PurchCrMemoLine.Amount);
     end;
 
-    procedure GetDateFilterFormulas(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
+    local procedure GetDateFilters(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
     begin
         if CurrentMonth then begin
             DateFilterFrom := '<-CM>';
             DateFilterTo := '<CM>';
         end else begin
-            DateFilterFrom := '<-1M-CM>';
-            DateFilterTo := '<-1M+CM>';
+            DateFilterFrom := '<-CM-1M>';
+            DateFilterTo := '<CM-1M>';
         end;
     end;
 

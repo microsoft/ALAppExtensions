@@ -31,7 +31,6 @@ codeunit 139549 "Shpfy Metafields Helper"
         ShpfyMetafield.Namespace := Namespace;
         ShpfyMetafield.Name := Name;
         ShpfyMetafield.Value := Value;
-        ShpfyMetafield.Type := ShpfyMetafield.Type::single_line_text_field;
         ShpfyMetafield.Insert(true);
         exit(ShpfyMetafield.Id);
     end;

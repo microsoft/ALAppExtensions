@@ -9,14 +9,10 @@ enum 30153 "Shpfy Dispute Reason"
     {
         Caption = 'Unknown';
     }
-#pragma warning disable AS0082
-#pragma warning disable AS0125
-    value(1; "Bank Cannot Process")
+    value(1; "Bank Not Process")
     {
-        Caption = 'Bank Cannot Process';
+        Caption = 'Bank Not Process';
     }
-#pragma warning restore AS0125
-#pragma warning restore AS0082
     value(2; "Credit Not Processed")
     {
         Caption = 'Credit Not Processed';
@@ -57,14 +53,10 @@ enum 30153 "Shpfy Dispute Reason"
     {
         Caption = 'Product Unacceptable';
     }
-#pragma warning disable AS0082
-#pragma warning disable AS0125
-    value(12; "Subscription Cancelled")
+    value(12; "Subscription Canceled")
     {
-        Caption = 'Subscription Cancelled';
+        Caption = 'Subscription Canceled';
     }
-#pragma warning restore AS0125
-#pragma warning restore AS0082
     value(13; Unrecognized)
     {
         Caption = 'Unrecognized';

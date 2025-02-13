@@ -206,7 +206,6 @@ codeunit 10775 "Factura-E Import"
 
     local procedure ParseInvoice(var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; Path: Text; Value: Text; var LineNo: Integer)
     var
-        AmountInclVAT: Decimal;
         PathPrefixTxt: Label '/namespace:Facturae/Invoices/Invoice', Locked = true;
     begin
         case Path of
@@ -217,17 +216,12 @@ codeunit 10775 "Factura-E Import"
             PathPrefixTxt + '/Corrective/InvoiceNumber':
                 PurchaseHeader."Applies-to Doc. No." := CopyStr(Value, 1, MaxStrLen(PurchaseHeader."Applies-to Doc. No."));
             PathPrefixTxt + '/InvoiceHeader/InvoiceIssueData/IssueDate':
-                if Value <> '' then begin
+                if Value <> '' then
                     Evaluate(PurchaseHeader."Document Date", Value, 9);
-                    Evaluate(PurchaseHeader."Order Date", Value, 9);
-                end;
             PathPrefixTxt + '/InvoiceHeader/InvoiceIssueData/InvoiceCurrencyCode':
                 PurchaseHeader."Currency Code" := CopyStr(ISOCurrencyToRegularCode(Value), 1, MaxStrLen(PurchaseHeader."Currency Code"));
             PathPrefixTxt + '/InvoiceHeader/InvoiceIssueData/LanguageName':
                 PurchaseHeader."Language Code" := CopyStr(Value, 1, MaxStrLen(PurchaseHeader."Language Code"));
-            PathPrefixTxt + '/InvoiceTotals/GeneralDiscounts/Discount/DiscountAmount':
-                if Value <> '' then
-                    Evaluate(PurchaseHeader."Invoice Discount Value", Value, 9);
             PathPrefixTxt + '/Items/InvoiceLine':
                 begin
                     if PurchaseLine."Document Type" <> PurchaseLine."Document Type"::Quote then
@@ -256,14 +250,8 @@ codeunit 10775 "Factura-E Import"
             PathPrefixTxt + '/Items/InvoiceLine/DiscountsAndRebates/Discount/DiscountAmount':
                 if Value <> '' then
                     Evaluate(PurchaseLine."Line Discount Amount", Value, 9);
-            PathPrefixTxt + '/Items/TaxesOutputs/Tax/TaxAmount/TotalAmount':
-                if Value <> '' then begin
-                    Evaluate(AmountInclVAT, Value, 9);
-                    AmountInclVAT += PurchaseLine.Amount;
-                    PurchaseLine."Amount Including VAT" := AmountInclVAT;
-                end;
             PathPrefixTxt + '/Items/InvoiceLine/ArticleCode':
-                PurchaseLine."Item Reference No." := CopyStr(Value, 1, MaxStrLen(PurchaseLine."Item Reference No."));
+                PurchaseLine."No." := CopyStr(Value, 1, MaxStrLen(PurchaseLine."No."));
             PathPrefixTxt + '/Items/InvoiceLine/UnitPriceWithoutTax':
                 if Value <> '' then
                     Evaluate(PurchaseLine."Direct Unit Cost", Value, 9);

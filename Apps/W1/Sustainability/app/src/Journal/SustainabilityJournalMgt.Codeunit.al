@@ -152,14 +152,13 @@ codeunit 6211 "Sustainability Journal Mgt."
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainAccountCategory: Record "Sustain. Account Category";
-        EmissionScopeErr: Label 'The Emission Scope "%1" on the Account Category does not match the Emission Scope "%2" on the Journal Batch.', Comment = '%1 = Account Category Emission Scope, %2 = Journal Batch Emission Scope';
     begin
         SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
         SustainAccountCategory.TestField("Emission Scope");
 
         if SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name") then
-            if (SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" ") and (SustainabilityJnlBatch."Emission Scope" <> SustainAccountCategory."Emission Scope") then
-                Error(EmissionScopeErr, SustainabilityJnlBatch."Emission Scope", SustainAccountCategory."Emission Scope");
+            if SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" " then
+                SustainAccountCategory.TestField("Emission Scope", SustainabilityJnlBatch."Emission Scope", ErrorInfo.Create());
     end;
 
     var

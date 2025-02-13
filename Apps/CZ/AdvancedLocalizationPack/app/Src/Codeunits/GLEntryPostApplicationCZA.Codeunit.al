@@ -311,7 +311,6 @@ codeunit 31370 "G/L Entry Post Application CZA"
             DtldGLEntryNo := 0;
     end;
 
-#if not CLEAN26
     [Obsolete('The local SetAmountToApply procedure is used instead.', '26.0')]
     procedure SetAmountToApply()
     var
@@ -320,7 +319,6 @@ codeunit 31370 "G/L Entry Post Application CZA"
     begin
         SetAmountToApply(GLEntry, ApplyingAmount);
     end;
-#endif
 
     local procedure SetAmountToApply(var GLEntry: Record "G/L Entry"; var ApplyingAmount: Decimal)
     begin

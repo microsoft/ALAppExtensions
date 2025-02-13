@@ -51,7 +51,6 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
-                Visible = SustainabilityVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -71,10 +70,12 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
     end;
 
     local procedure VisibleSustainabilityControls()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.GetRecordOnce();
+        SustainabilitySetup.Get();
 
-        SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions" and SustainabilitySetup."Enable Value Chain Tracking";
+        SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions";
     end;
 
     local procedure RunCalculateCO2e()
@@ -83,12 +84,10 @@ pageextension 6231 "Sust. Work Center Card" extends "Work Center Card"
         CalculateCO2e: Report "Sust. Calculate CO2e";
     begin
         WorkCenter.SetFilter("No.", Rec."No.");
-        CalculateCO2e.Initialize(0, true);
         CalculateCO2e.SetTableView(WorkCenter);
         CalculateCO2e.Run();
     end;
 
     var
-        SustainabilitySetup: Record "Sustainability Setup";
         SustainabilityVisible: Boolean;
 }

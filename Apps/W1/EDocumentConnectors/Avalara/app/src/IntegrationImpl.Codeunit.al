@@ -46,6 +46,7 @@ codeunit 6372 "Integration Impl." implements IDocumentSender, IDocumentResponseH
         IsServiceIntegrationSetupRun := true;
     end;
 
+
     var
         AvalaraProcessing: Codeunit Processing;
 

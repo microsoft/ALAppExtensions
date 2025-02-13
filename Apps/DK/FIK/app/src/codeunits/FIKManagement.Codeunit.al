@@ -89,13 +89,10 @@ Codeunit 13650 FIKManagement
                 END;
             PaymentMethod.PaymentTypeValidation::"FIK 01", PaymentMethod.PaymentTypeValidation::"FIK 73":
                 ERROR(PmtReferenceErr, PaymentMethod.PaymentTypeValidation);
-            else begin
+            ELSE begin
                 OnEvaluateFIKCasePaymentTypeValidationElse(PaymentReference, PaymentMethod, Result, IsHandled);
                 if not IsHandled then
-                    if PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::Domestic then
-                        Result := true
-                    else
-                        ERROR(FIKPmtErr);
+                    ERROR(FIKPmtErr);
             end;
         END;
         IF NOT Result THEN

@@ -95,8 +95,6 @@ codeunit 8006 "Create Service Commitment"
         ServiceCommitment.CheckServiceDates(ServiceCommitment."Service Start Date", ServiceCommitment."Service End Date", ServiceCommitment."Next Billing Date");
         ServiceCommitment.SetCurrencyData(ImportedServiceCommitment."Currency Factor", ImportedServiceCommitment."Currency Factor Date", ImportedServiceCommitment."Currency Code");
 
-        ServiceCommitment."Usage Based Billing" := ImportedServiceCommitment."Usage Based Billing";
-        ServiceCommitment."Usage Based Pricing" := ImportedServiceCommitment."Usage Based Pricing";
         ServiceCommitment."Calculation Base Amount" := ImportedServiceCommitment."Calculation Base Amount";
         ServiceCommitment."Calculation Base %" := ImportedServiceCommitment."Calculation Base %";
         ServiceCommitment.CalculatePrice();
@@ -124,6 +122,8 @@ codeunit 8006 "Create Service Commitment"
         ServiceObject.Get(ServiceCommitment."Service Object No.");
         ServiceCommitment.SetDefaultDimensionFromItem(ServiceObject."Item No.");
         ServiceCommitment."Renewal Term" := ServiceCommitment."Initial Term";
+        ServiceCommitment."Usage Based Billing" := ImportedServiceCommitment."Usage Based Billing";
+        ServiceCommitment."Usage Based Pricing" := ImportedServiceCommitment."Usage Based Pricing";
         ServiceCommitment."Pricing Unit Cost Surcharge %" := ImportedServiceCommitment."Pricing Unit Cost Surcharge %";
         ServiceCommitment."Supplier Reference Entry No." := ImportedServiceCommitment."Supplier Reference Entry No.";
         OnBeforeServiceCommitmentModify(ServiceCommitment, ImportedServiceCommitment);

@@ -154,7 +154,7 @@ table 6227 "Sustainability Value Entry"
             Caption = 'Capacity Ledger Entry No.';
             TableRelation = "Capacity Ledger Entry";
         }
-        field(5832; Type; Enum "Sust. Value Type")
+        field(5832; Type; Enum "Capacity Type Journal")
         {
             Caption = 'Type';
         }
@@ -165,9 +165,7 @@ table 6227 "Sustainability Value Entry"
             else
             if (Type = const("Work Center")) "Work Center"
             else
-            if (Type = const(Resource)) Resource
-            else
-            if (Type = const(Item)) Item;
+            if (Type = const(Resource)) Resource;
         }
         field(5818; Adjustment; Boolean)
         {
@@ -260,26 +258,9 @@ table 6227 "Sustainability Value Entry"
         "Entry Type" := ValueEntry."Entry Type";
         "Dimension Set ID" := ValueEntry."Dimension Set ID";
         "Capacity Ledger Entry No." := ValueEntry."Capacity Ledger Entry No.";
+        Type := ValueEntry.Type;
+        "No." := ValueEntry."No.";
         Adjustment := ValueEntry.Adjustment;
-
-        case ValueEntry.Type of
-            ValueEntry.Type::" ":
-                Type := Type::" ";
-            ValueEntry.Type::"Machine Center":
-                Type := Type::"Machine Center";
-            ValueEntry.Type::"Work Center":
-                Type := Type::"Work Center";
-            ValueEntry.Type::Resource:
-                Type := Type::Resource;
-        end;
-
-        if ValueEntry."No." <> '' then
-            "No." := ValueEntry."No."
-        else begin
-            Type := Type::Item;
-            "No." := ValueEntry."Item No.";
-        end;
-
     end;
 
     procedure GetLastEntryNo(): Integer;

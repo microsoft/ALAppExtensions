@@ -29,28 +29,25 @@ pageextension 8074 "Posted Purch Cr. Memo Subform" extends "Posted Purch. Cr. Me
                 Image = DataEntry;
                 Scope = Repeater;
                 ToolTip = 'Shows the related usage data.';
-                Enabled = UsageDataEnabled;
 
                 trigger OnAction()
                 var
                     UsageDataBilling: Record "Usage Data Billing";
                 begin
-                    UsageDataBilling.ShowForDocuments("Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
+                    UsageDataBilling.FilterOnDocumentTypeAndDocumentNo("Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.");
+                    UsageDataBilling.SetRange("Document Line No.", Rec."Line No.");
+                    Page.RunModal(Page::"Usage Data Billings", UsageDataBilling);
                 end;
             }
         }
     }
 
     trigger OnAfterGetCurrRecord()
-    var
-        UsageDataBilling: Record "Usage Data Billing";
     begin
         IsConnectedToContractLine := ContractsGeneralMgt.HasConnectionToContractLine(Rec."Contract No.", Rec."Contract Line No.");
-        UsageDataEnabled := UsageDataBilling.ExistForDocuments("Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
     end;
 
     var
         ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
         IsConnectedToContractLine: Boolean;
-        UsageDataEnabled: Boolean;
 }

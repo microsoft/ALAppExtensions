@@ -36,8 +36,5 @@
   "target": "OnPrem",
   "features": [
     "NoImplicitWith"
-  ],
-  "resourceFolders": [
-    ".resources"
   ]
 }

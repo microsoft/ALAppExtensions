@@ -125,7 +125,6 @@ report 4411 "EXR Fixed Asset Details Excel"
         DataRetrieved = 'Data retrieved:';
         FixedAssetDetails = 'Fixed Asset Details', Comment = 'Max length: 31. Excel worksheet name.';
         AssetDescriptionLabel = 'Asset Description';
-        PostingDateFilterLabel = 'Posting Date Filter:';
     }
 
     var

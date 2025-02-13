@@ -172,27 +172,25 @@ codeunit 30273 "Shpfy Installer"
     [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
     local procedure ShpfyOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
     var
-        Shop: Record "Shpfy Shop";
+        ShpfyShop: Record "Shpfy Shop";
     begin
-        Shop.ChangeCompany(NewCompanyName);
-        Shop.ModifyAll(Enabled, false);
-    end;
-
-
-    [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
-    local procedure HandleOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
-    var
-        Shop: Record "Shpfy Shop";
-    begin
-        Shop.ChangeCompany(NewCompanyName);
-        Shop.ModifyAll(Enabled, false);
+        ShpfyShop.ChangeCompany(NewCompanyName);
+        if ShpfyShop.FindSet() then
+            repeat
+                ShpfyShop.Validate(Enabled, false);
+                ShpfyShop.Modify();
+            until ShpfyShop.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", 'OnClearCompanyConfig', '', false, false)]
     local procedure ShpfyOnClearCompanyConfiguration(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
     var
-        Shop: Record "Shpfy Shop";
+        ShpfyShop: Record "Shpfy Shop";
     begin
-        Shop.ModifyAll(Enabled, false);
+        if ShpfyShop.FindSet() then
+            repeat
+                ShpfyShop.Validate(Enabled, false);
+                ShpfyShop.Modify();
+            until ShpfyShop.Next() = 0;
     end;
 }

@@ -26,8 +26,8 @@ page 36951 "PowerBI Reports Setup"
                     field(Environment; Text.UpperCase(EnvironmentInformation.GetEnvironmentName()))
                     {
                         ApplicationArea = All;
-                        Caption = 'Environment name';
-                        ToolTip = 'Specifies the name for the environment  used to connect Business Central to a Power BI semantic model.';
+                        Caption = 'Environment';
+                        ToolTip = 'Specifies the environment used to connect Business Central to a Power BI semantic model.';
                         Editable = false;
                         MultiLine = false;
                         Style = Favorable;
@@ -36,7 +36,7 @@ page 36951 "PowerBI Reports Setup"
                     {
                         ApplicationArea = All;
                         Caption = 'Company Name';
-                        ToolTip = 'Specifies the name of the company used to connect Business Central to a Power BI semantic model. Note:  this parameter is case sensitive. )';
+                        ToolTip = 'Specifies the company used to connect Business Central to a Power BI semantic model.';
                         Editable = false;
                         MultiLine = false;
                         Style = Favorable;
@@ -197,8 +197,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Finance Report Name"; Format(Rec."Finance Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Finance App';
-                        ToolTip = 'Specifies where you have installed the Power BI Finance App.';
+                        Caption = 'Power BI Finance Report';
+                        ToolTip = 'Specifies the Finance Report Name from the Finance App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -214,13 +214,13 @@ page 36951 "PowerBI Reports Setup"
                     {
                         Caption = 'Start Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for Income Statement and G/L Budget Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the start date for Income Statement and G/L Budget Entries filter.';
                     }
                     field("Finance End Date"; Rec."Finance End Date")
                     {
                         Caption = 'End Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for Income Statement and G/L Budget Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the end date for Income Statement and G/L Budget Entries filter.';
                     }
                 }
                 group(CustomerLedgerFilters)
@@ -231,13 +231,13 @@ page 36951 "PowerBI Reports Setup"
                     {
                         Caption = 'Start Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for the Customer Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the start date for the Customer Ledger Entries filter.';
                     }
                     field("Cust. Ledger Entry End Date"; Rec."Cust. Ledger Entry End Date")
                     {
                         Caption = 'End Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for the Customer Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the end date for the Customer Ledger Entries filter.';
                     }
                 }
                 group(VendorLedgerFilters)
@@ -248,13 +248,13 @@ page 36951 "PowerBI Reports Setup"
                     {
                         Caption = 'Start Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for the Vendor Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the start date for the Vendor Ledger Entries filter.';
                     }
                     field("Vend. Ledger Entry End Date"; Rec."Vend. Ledger Entry End Date")
                     {
                         Caption = 'End Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for the Vendor Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the end date for the Vendor Ledger Entries filter.';
                     }
                 }
             }
@@ -268,8 +268,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Sales Report Name"; Format(Rec."Sales Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Sales App';
-                        ToolTip = 'Specifies where you have installed the Power BI Sales App.';
+                        Caption = 'Power BI Sales';
+                        ToolTip = 'Specifies the Sales Report Name from the Sales App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -281,22 +281,22 @@ page 36951 "PowerBI Reports Setup"
                 field("Item Sales Load Date Type"; Rec."Item Sales Load Date Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date filtering type for Item Sales report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
+                    ToolTip = 'Specifies the date type for Item Sales report filter.';
                 }
                 field("Item Sales Start Date"; Rec."Item Sales Start Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the start date for Item Sales report filter.';
                 }
                 field("Item Sales End Date"; Rec."Item Sales End Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the end date for Item Sales report filter.';
                 }
                 field("Item Sales Date Formula"; Rec."Item Sales Date Formula")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Sales report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ToolTip = 'Specifies the date formula for Item Sales report filter.';
                 }
             }
 
@@ -309,8 +309,9 @@ page 36951 "PowerBI Reports Setup"
                     field("Purchases Report Name"; Format(Rec."Purchases Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Purchases App';
-                        ToolTip = 'Specifies where you have installed the Power BI Purchases App.';
+                        Caption = 'Power BI Purchases';
+                        ToolTip = 'Specifies the Purchases Report Name from the Purchases App.';
+
                         trigger OnAssistEdit()
                         begin
                             SetupHelper.EnsureUserAcceptedPowerBITerms();
@@ -321,22 +322,22 @@ page 36951 "PowerBI Reports Setup"
                 field("Item Purch. Load Date Type"; Rec."Item Purch. Load Date Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date type for Item Purchases report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
+                    ToolTip = 'Specifies the date type for Item Purchases report filter.';
                 }
                 field("Item Purch. Start Date"; Rec."Item Purch. Start Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the start date for Item Purchases report filter.';
                 }
                 field("Item Purch. End Date"; Rec."Item Purch. End Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the end date for Item Purchases report filter.';
                 }
                 field("Item Purch. Date Formula"; Rec."Item Purch. Date Formula")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Purchases report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ToolTip = 'Specifies the date formula for Item Purchases report filter.';
                 }
             }
 
@@ -349,8 +350,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Inventory Report Name"; Format(Rec."Inventory Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Inventory App';
-                        ToolTip = 'Specifies where you have installed the Power BI Inventory App.';
+                        Caption = 'Power BI Inventory Report';
+                        ToolTip = 'Specifies the Inventory Report Name from the Inventory App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -361,8 +362,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Inventory Val. Report Name"; Format(Rec."Inventory Val. Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Inventory Valuation App';
-                        ToolTip = 'Specifies where you have installed the Power BI Inventory Valuation App.';
+                        Caption = 'Power BI Inventory Valuation Report';
+                        ToolTip = 'Specifies the Inventory Report Name from the Inventory Valuation App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -382,8 +383,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Projects Report Name"; Format(Rec."Projects Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Projects App';
-                        ToolTip = 'Specifies where you have installed the Power BI Projects App.';
+                        Caption = 'Power BI Projects Report';
+                        ToolTip = 'Specifies the Projects Report Name from the Projects App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -399,13 +400,13 @@ page 36951 "PowerBI Reports Setup"
                     {
                         Caption = 'Start Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for Projects Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the start date for Projects Ledger Entries filter.';
                     }
                     field("Job Ledger Entry End Date"; Rec."Job Ledger Entry End Date")
                     {
                         Caption = 'End Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for Projects Ledger Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the end date for Projects Ledger Entries filter.';
                     }
                 }
             }
@@ -419,8 +420,8 @@ page 36951 "PowerBI Reports Setup"
                     field("Manufacturing Report Name"; Format(Rec."Manufacturing Report Name"))
                     {
                         ApplicationArea = All;
-                        Caption = 'Power BI Manufacturing App';
-                        ToolTip = 'Specifies where you have installed the Power BI Manufacturing App.';
+                        Caption = 'Power BI Manufacturing Report';
+                        ToolTip = 'Specifies the Manufacturing Report Name from the Manufacturing App.';
 
                         trigger OnAssistEdit()
                         begin
@@ -432,22 +433,22 @@ page 36951 "PowerBI Reports Setup"
                 field("Manufacturing Load Date Type"; Rec."Manufacturing Load Date Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date type for Manufacturing report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
+                    ToolTip = 'Specifies the date type for Manufacturing report filter.';
                 }
                 field("Manufacturing Start Date"; Rec."Manufacturing Start Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the start date for Manufacturing report filter.';
                 }
                 field("Manufacturing End Date"; Rec."Manufacturing End Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ToolTip = 'Specifies the end date for Manufacturing report filter.';
                 }
                 field("Manufacturing Date Formula"; Rec."Manufacturing Date Formula")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Manufacturing report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ToolTip = 'Specifies the date formula for Manufacturing report filter.';
                 }
             }
 
@@ -476,9 +477,10 @@ page 36951 "PowerBI Reports Setup"
 
                 trigger OnAction()
                 var
+                    JobQueueDescLbl: Label 'Update Power BI Dimension Set Entries';
                     JobQueueCreatedMsg: Label 'Job Queue Entry created successfully. You can view or edit this entry on the Job Queue Entries page.';
                 begin
-                    Initialization.RestoreDimensionSetEntryCollectionJobQueueEntry();
+                    PBIManagement.InitialiseJobQueue(Codeunit::"Update Dim. Set Entries", JobQueueDescLbl);
                     Message(JobQueueCreatedMsg);
                 end;
             }
@@ -498,14 +500,6 @@ page 36951 "PowerBI Reports Setup"
                 RunObject = page "Account Categories";
                 Image = MapAccounts;
             }
-            action(CloseIncomeStatementSourceCodes)
-            {
-                ApplicationArea = All;
-                Caption = 'Close Income Statement Source Codes';
-                ToolTip = 'Setup your close income statement source codes in the Power BI Finance reports.';
-                Image = CodesList;
-                RunObject = page "PBI Close Income Stmt. SC.";
-            }
         }
 
         area(Promoted)
@@ -519,9 +513,6 @@ page 36951 "PowerBI Reports Setup"
                 {
                 }
                 actionref(AccountCategories_Promoted; AccountCategories)
-                {
-                }
-                actionref(CloseIncomeStatementSourceCodes_Promoted; CloseIncomeStatementSourceCodes)
                 {
                 }
             }
@@ -565,11 +556,11 @@ page 36951 "PowerBI Reports Setup"
 
     var
         EnvironmentInformation: Codeunit "Environment Information";
-        Initialization: Codeunit Initialization;
+        PBIManagement: Codeunit Initialization;
         TimeZoneSelection: Codeunit "Time Zone Selection";
         SetupHelper: Codeunit "Setup Helper";
-        ViewDeveloperDocLbl: Label 'Install Power BI apps for Business Central (documentation)';
-        DevDocUrlTxt: Label 'https://learn.microsoft.com/dynamics365/business-central/across-powerbi-install-business-central-apps', Locked = true;
+        ViewDeveloperDocLbl: Label 'Power BI Documentation';
+        DevDocUrlTxt: Label 'https://learn.microsoft.com/en-au/dynamics365/business-central/admin-powerbi#get-ready-to-use-power-bi', Locked = true;
         StandardCalendarVisible: Boolean;
         FiscalCalendarVisible: Boolean;
         WeeklyCalendarVisible: Boolean;

@@ -528,9 +528,6 @@ codeunit 30161 "Shpfy Import Order"
                 OrderHeader.B2B := false
         else
             OrderHeader.B2B := false;
-        if JsonHelper.GetJsonObject(JOrder, JObject, 'paymentTerms') then
-            if JsonHelper.GetJsonObject(JOrder, JObject, 'paymentTerms.paymentSchedules') then
-                OrderHeader."Due Date" := GetOrderDueDate(JsonHelper.GetJsonArray(JOrder, 'paymentTerms.paymentSchedules.nodes'));
         OrderHeader."Cancel Reason" := ConvertToCancelReason(JsonHelper.GetValueAsText(JOrder, 'cancelReason'));
         OrderHeader."Financial Status" := ConvertToFinancialStatus(JsonHelper.GetValueAsText(JOrder, 'displayFinancialStatus'));
         OrderHeader."Fulfillment Status" := ConvertToFulfillmentStatus(JsonHelper.GetValueAsText(JOrder, 'displayFulfillmentStatus'));
@@ -631,7 +628,6 @@ codeunit 30161 "Shpfy Import Order"
         OrderAttribute.SetRange("Order Id", ShopifyOrderId);
         if not OrderAttribute.IsEmpty() then
             OrderAttribute.DeleteAll();
-
         foreach JToken in JCustomAttributtes do begin
             Clear(OrderAttribute);
             OrderAttribute."Order Id" := ShopifyOrderId;
@@ -642,9 +638,7 @@ codeunit 30161 "Shpfy Import Order"
             else
 #endif
             OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
-
-            if not OrderAttribute.Insert() then
-                OrderAttribute.Modify();
+            OrderAttribute.Insert();
         end;
     end;
 
@@ -835,15 +829,6 @@ codeunit 30161 "Shpfy Import Order"
             exit(Enum::"Shpfy Order Fulfill. Status".FromInteger(Enum::"Shpfy Order Fulfill. Status".Ordinals().Get(Enum::"Shpfy Order Fulfill. Status".Names().IndexOf(Value))))
         else
             exit(Enum::"Shpfy Order Fulfill. Status"::" ");
-    end;
-
-    local procedure GetOrderDueDate(JPaymentSchedules: JsonArray): Date
-    var
-        JPaymentSchedule: JsonToken;
-    begin
-        if JPaymentSchedules.Count = 1 then
-            if JPaymentSchedules.Get(0, JPaymentSchedule) then
-                exit(JsonHelper.GetValueAsDate(JPaymentSchedule, 'dueAt'));
     end;
 
     local procedure ConvertToCancelReason(Value: Text): Enum "Shpfy Cancel Reason"

@@ -6,14 +6,13 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.History;
 
 report 10038 "IRS 1099 Propagate Vend. Setup"
 {
     Caption = 'IRS 1099 Propagate Vendor Form Box Setup';
     ProcessingOnly = true;
     ApplicationArea = BasicUS;
-    Permissions = TableData "Vendor Ledger Entry" = rm, tabledata "Purch. Inv. Header" = rm;
+    Permissions = TableData "Vendor Ledger Entry" = rm;
 
     dataset
     {
@@ -127,7 +126,6 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
     local procedure UpdateVendorLedgerEntries()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-        PurchInvHeader: Record "Purch. Inv. Header";
     begin
         VendorLedgerEntry.SetRange("Posting Date", StartingDate, EndingDate);
         VendorLedgerEntry.SetRange("Vendor No.", IRS1099VendorFormBoxSetup."Vendor No.");
@@ -140,12 +138,6 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
                 VendorLedgerEntry.CalcFields(Amount);
                 VendorLedgerEntry.Validate("IRS 1099 Reporting Amount", VendorLedgerEntry.Amount);
                 VendorLedgerEntry.Modify();
-                if PurchInvHeader.Get(VendorLedgerEntry."Document No.") then begin
-                    PurchInvHeader.Validate("IRS 1099 Reporting Period", IRS1099VendorFormBoxSetup."Period No.");
-                    PurchInvHeader.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
-                    PurchInvHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
-                    PurchInvHeader.Modify(true);
-                end;
             until VendorLedgerEntry.Next() = 0;
     end;
 
