@@ -34,7 +34,7 @@
         "includeSourceInSymbolFile": true
     },
     "application": "26.0.0.0",
-    "target": "Cloud",
+    "target": "OnPrem",
     "features": [
         "TranslationFile"
     ]
