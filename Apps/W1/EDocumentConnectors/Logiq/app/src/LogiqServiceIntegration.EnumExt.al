@@ -7,9 +7,9 @@ namespace Microsoft.EServices.EDocumentConnector.Logiq;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enumextension 6431 "Logiq Service Integration" extends "Service Integration"
+enumextension 6432 "Logiq Service Integration" extends "Service Integration"
 {
-    value(6430; "Logiq")
+    value(6432; "Logiq")
     {
         Caption = 'Logiq';
         Implementation = IDocumentSender = "Logiq Integration Impl.", IDocumentReceiver = "Logiq Integration Impl.";

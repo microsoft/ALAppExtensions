@@ -49,6 +49,10 @@ pageextension 8071 "Purch Invoice Subform" extends "Purch. Invoice Subform"
                     UsageDataBilling.ShowForPurchaseDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
                 end;
             }
+        }
+        addlast("F&unctions")
+        {
+
             action("Assign Contract Line")
             {
                 ApplicationArea = All;

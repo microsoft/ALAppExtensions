@@ -1,5 +1,7 @@
 namespace Microsoft.PowerBIReports;
+
 using System.Upgrade;
+
 codeunit 36957 "PowerBI Upgrade"
 {
     Access = Internal;
@@ -8,6 +10,8 @@ codeunit 36957 "PowerBI Upgrade"
     trigger OnUpgradePerCompany()
     begin
         TransferDimensionSetEntries();
+        InitialSetupUpgrade();
+        CloseIncomeSourceCodeUpgrade();
     end;
 
     local procedure TransferDimensionSetEntries()
@@ -29,9 +33,41 @@ codeunit 36957 "PowerBI Upgrade"
         UpgradeTag.SetUpgradeTag(TransferDimensionSetEntriesUpgradeTag());
     end;
 
+    local procedure InitialSetupUpgrade()
+    var
+        Initialization: Codeunit Initialization;
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(InitialSetupUpgradeTag()) then
+            exit;
+        Initialization.SetupDefaultsForPowerBIReportsIfNotInitialized();
+        UpgradeTag.SetUpgradeTag(InitialSetupUpgradeTag());
+    end;
+
+    local procedure CloseIncomeSourceCodeUpgrade()
+    var
+        Initialization: Codeunit Initialization;
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(CloseIncomeSourceCodeUpgradeTag()) then
+            exit;
+        Initialization.InitializeCloseIncomeSourceCodes();
+        UpgradeTag.SetUpgradeTag(CloseIncomeSourceCodeUpgradeTag());
+    end;
+
     local procedure TransferDimensionSetEntriesUpgradeTag(): Code[250]
     begin
         exit('MS-561310-POWERBI-TRANSFER-DIMENSION-SET-ENTRIES-20250110');
+    end;
+
+    local procedure InitialSetupUpgradeTag(): Code[250]
+    begin
+        exit('MS-GH-PY-364-POWERBI-INITIAL-SETUP-20241125');
+    end;
+
+    local procedure CloseIncomeSourceCodeUpgradeTag(): Code[250]
+    begin
+        exit('MS-GH-PY-529-POWERBI-CLSINCOME-UPGRADE-20250123');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]

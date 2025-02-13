@@ -6,11 +6,12 @@ page 37061 "Purchases Report"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Purchases Report';
     AboutTitle = 'About Purchases Report';
     AboutText = 'The Purchases Report offers a consolidated view of all purchases report pages, conveniently embedded into a single page for easy access.';
-    Extensible = false;
 
     layout
     {
@@ -33,30 +34,12 @@ page 37061 "Purchases Report"
         }
     }
 
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
-                end;
-            }
-        }
-    }
-
     var
         SetupHelper: Codeunit "Setup Helper";
         ReportId: Guid;
+#pragma warning disable AA0240
         ReportPageLbl: Label '', Locked = true;
+#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

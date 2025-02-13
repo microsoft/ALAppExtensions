@@ -23,12 +23,20 @@ codeunit 148004 "Library IRS 1099 Form Box"
 
     procedure CreateSingleFormInReportingPeriod(StartingDate: Date; EndingDate: Date): Code[20]
     var
+        FormNo: Code[20];
+    begin
+        FormNo := LibraryUtility.GenerateGUID();
+        CreateSpecificFormInReportingPeriod(StartingDate, EndingDate, FormNo);
+        exit(FormNo);
+    end;
+
+    procedure CreateSpecificFormInReportingPeriod(StartingDate: Date; EndingDate: Date; FormNo: Code[20])
+    var
         IRS1099Form: Record "IRS 1099 Form";
     begin
         IRS1099Form.Validate("Period No.", LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate));
-        IRS1099Form.Validate("No.", LibraryUtility.GenerateGUID());
+        IRS1099Form.Validate("No.", FormNo);
         IRS1099Form.Insert(true);
-        exit(IRS1099Form."No.");
     end;
 
     procedure CreateSingleFormBoxInReportingPeriod(ReportingDate: Date; FormNo: Code[20]): Code[20]
@@ -38,13 +46,21 @@ codeunit 148004 "Library IRS 1099 Form Box"
 
     procedure CreateSingleFormBoxInReportingPeriod(StartingDate: Date; EndingDate: Date; FormNo: Code[20]): Code[20]
     var
+        FormBoxNo: Code[20];
+    begin
+        FormBoxNo := LibraryUtility.GenerateGUID();
+        CreateSpecificFormBoxInReportingPeriod(StartingDate, EndingDate, FormNo, FormBoxNo);
+        exit(FormBoxNo);
+    end;
+
+    procedure CreateSpecificFormBoxInReportingPeriod(StartingDate: Date; EndingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20])
+    var
         IRS1099FormBox: Record "IRS 1099 Form Box";
     begin
         IRS1099FormBox.Validate("Period No.", LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate));
         IRS1099FormBox.Validate("Form No.", FormNo);
-        IRS1099FormBox.Validate("No.", LibraryUtility.GenerateGUID());
+        IRS1099FormBox.Validate("No.", FormBoxNo);
         IRS1099FormBox.Insert(true);
-        exit(IRS1099FormBox."No.");
     end;
 
     procedure CreateVendorNoWithFormBox(ReportingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20]): Code[20]

@@ -24,29 +24,31 @@ codeunit 36961 "Setup Helper"
         end;
     end;
 
-    procedure GetReportIdAndEnsureSetup(ReportName: Text; FieldId: Integer): Guid
+    procedure GetReportIdAndEnsureSetup(ReportName: Text; FieldId: Integer) ReportId: Guid
+    var
+        AssistedSetup: Page "PowerBI Assisted Setup";
+        FinanceAppNotSetupErr: Label 'Your %1 Report has not been setup in PowerBI Reports Setup. You need to set up this report in order to view it.', Comment = '%1 = report name';
+    begin
+        ReportId := GetReportId(FieldId);
+        if IsNullGuid(ReportId) then begin
+            if AssistedSetup.RunModal() = Action::OK then;
+            ReportId := GetReportId(FieldId);
+            if IsNullGuid(ReportId) then
+                Error(FinanceAppNotSetupErr, ReportName);
+        end;
+    end;
+
+    local procedure GetReportId(FieldId: Integer): Guid
     var
         PowerBiReportsSetup: Record "PowerBI Reports Setup";
-        AssistedSetup: Page "Assisted Setup";
-
         RecRef: RecordRef;
         FldRef: FieldRef;
-        FinanceAppNotSetupErr: Label 'Your %1 Report has not been setup in PowerBI Reports Setup. You need to set up this reports in order to view it.', Comment = '%1 = report name';
     begin
         if PowerBiReportsSetup.Get() then begin
             RecRef.Get(PowerBiReportsSetup.RecordId());
             FldRef := RecRef.Field(FieldId);
+            exit(FldRef.Value());
         end;
-        if IsNullGuid(FldRef.Value()) then begin
-            if AssistedSetup.RunModal() = Action::OK then;
-            if PowerBiReportsSetup.Get() then begin
-                RecRef.Get(PowerBiReportsSetup.RecordId());
-                FldRef := RecRef.Field(FieldId);
-            end;
-            if IsNullGuid(FldRef.Value()) then
-                Error(FinanceAppNotSetupErr, ReportName);
-        end;
-        exit(FldRef.Value());
     end;
 
     procedure LookupPowerBIReport(var ReportId: Guid; var ReportName: Text[200]): Boolean
@@ -106,7 +108,6 @@ codeunit 36961 "Setup Helper"
         PowerBiServiceMgt.InitializeAddinToken(PowerBIManagement);
         PowerBIManagement.SetLocale(Language.GetCurrentCultureName());
         PowerBIManagement.SetFiltersVisible(true);
-        PowerBIManagement.AddBottomPadding(true);
         PowerBIManagement.SetPageSelectionVisible(ReportPageTok = '');
 
         PowerBIManagement.EmbedPowerBIReport(

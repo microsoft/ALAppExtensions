@@ -80,6 +80,7 @@ codeunit 139511 "Intrastat IT Test"
                             Locked = true;
         DataExchangeXMLCSQP2Txt: Label '<TransformationRules><Code>GETAMOUNTSIGN</Code><Description>Get Amount Sign</Description><TransformationType>6</TransformationType><FindValue>^\d</FindValue><ReplaceValue>+</ReplaceValue><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>FIRSTCHAR</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="12" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to Integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="13" FieldID="8" Optional="true" TransformationRule="FIRSTCHAR"><TransformationRules><Code>FIRSTCHAR</Code><Description>First Character</Description><TransformationType>4</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>1</StartPosition><Length>1</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="14" FieldID="5" Optional="true" TransformationRule="TRIMALL"><TransformationRules><Code>TRIMALL</Code><Description>Removes all spaces</Description><TransformationType>5</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping></DataExchMapping></DataExchLineDef></DataExchDef></root>',
                             Locked = true;
+        AmountErr: Label 'Amount must be %1 in %2.', Comment = '%1= Amount Value, %2= Table Caption.';
 
     [Test]
     [Scope('OnPrem')]
@@ -2301,6 +2302,47 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportLine.TestField("Total Weight", IntrastatReportLine.Quantity * IntrastatReportLine."Net Weight");
     end;
 
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesRequestPageHandler')]
+    procedure IntrastatReportWithAmountIncludingItemCharge()
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        PostingDate: Date;
+        DocumentNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [SCENARIO 550618] Amount Including Item Charge  working in Intrastat Report Suggestion.
+        Initialize();
+
+        // [GIVEN] Create and Store Posting Date.
+        PostingDate := CalcDate('<' + Format(LibraryRandom.RandInt(5)) + 'Y>', WorkDate());
+
+        // [GIVEN] Create and Post Sales Invoice with Item and Item Charge.
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesInvoiceWithItemAndItemCharge(PostingDate);
+
+        // [GIVEN] Find Sales Invoice Line.
+        SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+        SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
+        SalesInvoiceLine.FindFirst();
+
+        // [WHEN] Create Intrastat Report and Run Suggest Lines.
+        CreateIntrastatReportAndSuggestLines(PostingDate, IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
+        Commit();
+
+        // [THEN] Amount should not include Item Charge Amount in Intrastat Report Line.        
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.SetRange("Document No.", DocumentNo);
+        IntrastatReportLine.FindFirst();
+        Assert.AreEqual(
+            SalesInvoiceLine.Amount,
+            IntrastatReportLine.Amount,
+            StrSubstNo(
+                AmountErr,
+                SalesInvoiceLine.Amount,
+                IntrastatReportLine.TableCaption()));
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -2857,6 +2899,13 @@ codeunit 139511 "Intrastat IT Test"
     [Scope('OnPrem')]
     procedure IntrastatReportGetLinesPageHandler(var IntrastatReportGetLines: TestRequestPage "Intrastat Report Get Lines")
     begin
+        IntrastatReportGetLines.OK().Invoke();
+    end;
+
+    [RequestPageHandler]
+    procedure IntrastatReportGetLinesRequestPageHandler(var IntrastatReportGetLines: TestRequestPage "Intrastat Report Get Lines")
+    begin
+        IntrastatReportGetLines.AmtInclItemCharges.SetValue(false);
         IntrastatReportGetLines.OK().Invoke();
     end;
 

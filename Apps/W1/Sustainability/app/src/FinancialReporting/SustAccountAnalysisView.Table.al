@@ -382,6 +382,114 @@ table 6225 "Sust. Account (Analysis View)"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(109; "Net Change (CO2e Emission)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                         "Business Unit Code" = field("Business Unit Filter"),
+                                                                         "Account No." = field("No."),
+                                                                         "Account Source" = field("Account Source"),
+                                                                         "Account No." = field(filter(Totaling)),
+                                                                         "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                         "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                         "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                         "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                         "Posting Date" = field("Date Filter")));
+            Caption = 'Net Change (CO2e Emission)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(110; "Bal. at Date (CO2e Emission)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                         "Business Unit Code" = field("Business Unit Filter"),
+                                                                         "Account No." = field("No."),
+                                                                         "Account Source" = field("Account Source"),
+                                                                         "Account No." = field(filter(Totaling)),
+                                                                         "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                         "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                         "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                         "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                         "Posting Date" = field(upperlimit("Date Filter"))));
+            Caption = 'Balance at Date (CO2e Emission)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(111; "Balance (CO2e Emission)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                                 "Business Unit Code" = field("Business Unit Filter"),
+                                                                                 "Account No." = field("No."),
+                                                                                 "Account Source" = field("Account Source"),
+                                                                                 "Account No." = field(filter(Totaling)),
+                                                                                 "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                                 "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                                 "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                                 "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                                 "Posting Date" = field("Date Filter")));
+            Caption = 'Balance (CO2e Emission)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(112; "Net Change (Carbon Fee)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                         "Business Unit Code" = field("Business Unit Filter"),
+                                                                         "Account No." = field("No."),
+                                                                         "Account Source" = field("Account Source"),
+                                                                         "Account No." = field(filter(Totaling)),
+                                                                         "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                         "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                         "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                         "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                         "Posting Date" = field("Date Filter")));
+            Caption = 'Net Change (Carbon Fee)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(113; "Balance at Date (Carbon Fee)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                         "Business Unit Code" = field("Business Unit Filter"),
+                                                                         "Account No." = field("No."),
+                                                                         "Account Source" = field("Account Source"),
+                                                                         "Account No." = field(filter(Totaling)),
+                                                                         "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                         "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                         "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                         "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                         "Posting Date" = field(upperlimit("Date Filter"))));
+            Caption = 'Balance at Date (Carbon Fee)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(114; "Balance (Carbon Fee)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
+                                                                                 "Business Unit Code" = field("Business Unit Filter"),
+                                                                                 "Account No." = field("No."),
+                                                                                 "Account Source" = field("Account Source"),
+                                                                                 "Account No." = field(filter(Totaling)),
+                                                                                 "Dimension 1 Value Code" = field("Dimension 1 Filter"),
+                                                                                 "Dimension 2 Value Code" = field("Dimension 2 Filter"),
+                                                                                 "Dimension 3 Value Code" = field("Dimension 3 Filter"),
+                                                                                 "Dimension 4 Value Code" = field("Dimension 4 Filter"),
+                                                                                 "Posting Date" = field("Date Filter")));
+            Caption = 'Balance (Carbon Fee)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
     }
 
     keys

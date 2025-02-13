@@ -41,7 +41,8 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -78,7 +79,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'DoImport.pdf');
+        EDocument.SetRange("File Name", 'DoImport.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -115,7 +116,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'DoImport.pdf');
+        EDocument.SetRange("File Name", 'DoImport.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -152,7 +153,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'DoImport.pdf');
+        EDocument.SetRange("File Name", 'DoImport.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -189,7 +190,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'DoImport.pdf');
+        EDocument.SetRange("File Name", 'DoImport.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -226,7 +227,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -263,7 +264,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] Two new e-documents are created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 2, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -273,7 +274,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
         TestInStream.ReadText(EDocDataStorageContentTxt);
         Assert.AreEqual('1', EDocDataStorageContentTxt, '');
         Clear(TestInStream);
-        EDocument.SetRange("File Id", 'AnotherProposal.pdf');
+        EDocument.SetRange("File Name", 'AnotherProposal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -310,7 +311,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] Two new e-documents are created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 2, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal.pdf');
+        EDocument.SetRange("File Name", 'Propsoal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -320,7 +321,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
         TestInStream.ReadText(EDocDataStorageContentTxt);
         Assert.AreEqual('1', EDocDataStorageContentTxt, '');
         Clear(TestInStream);
-        EDocument.SetRange("File Id", 'AnotherProposal.pdf');
+        EDocument.SetRange("File Name", 'AnotherProposal.pdf');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -405,7 +406,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal');
+        EDocument.SetRange("File Name", 'Propsoal');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -442,7 +443,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
 
         // [THEN] One new e-document is created with correct name and attachment
         Assert.AreEqual(InitialIncomingDocumentCount + 1, EDocument.Count(), '');
-        EDocument.SetRange("File Id", 'Propsoal');
+        EDocument.SetRange("File Name", 'Propsoal');
         Assert.IsTrue(EDocument.FindFirst(), '');
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
         Assert.IsTrue(EDocumentLog.FindFirst(), '');
@@ -489,8 +490,8 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
         ReceiveContext.GetTempBlob().CreateOutStream(LocalOutStream, TextEncoding::UTF8);
         LocalOutStream.WriteText(Format(EDocument."Index In Batch"));
 
-        DriveProcessing.UpdateEDocumentAfterDocumentDownload(EDocument, DocumentId, FileId);
-        DriveProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+        DriveProcessing.UpdateEDocumentAfterDocumentDownload(EDocument, DocumentId);
+        DriveProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
     end;
 
     internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)

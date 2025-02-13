@@ -77,6 +77,8 @@ codeunit 8063 "Sales Documents"
         if not (Rec."Document Type" in [Rec."Document Type"::Invoice, Rec."Document Type"::"Credit Memo"]) then
             exit;
 
+        Rec.InitCachedVar();
+
         if (not Rec.IsLineAttachedToBillingLine()) or
             (Rec."Recurring Billing from" = 0D) or
             (Rec."Recurring Billing to" = 0D)

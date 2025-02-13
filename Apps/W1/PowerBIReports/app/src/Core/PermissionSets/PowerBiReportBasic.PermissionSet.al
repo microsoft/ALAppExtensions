@@ -13,6 +13,7 @@ permissionset 36951 "PowerBi Report Basic"
     Caption = 'Power BI Core Basic', MaxLength = 30;
     Assignable = true;
     Permissions =
+        tabledata "PBI C. Income St. Source Code" = R,
         tabledata "PowerBI Flat Dim. Set Entry" = R,
         tabledata "PowerBI Reports Setup" = R,
         tabledata "Working Day" = R,
@@ -29,8 +30,8 @@ permissionset 36951 "PowerBi Report Basic"
         codeunit "Purchases Filter Helper" = X,
         codeunit "Sales Filter Helper" = X,
         codeunit "Update Dim. Set Entries" = X,
-        codeunit "Finance Installation Handler" = X,
         page "PowerBI Assisted Setup" = X,
+        page "PBI Close Income Stmt. SC." = X,
         page Customers = X,
         page "Date Setup" = X,
         page "General Ledger Setup - PBI API" = X,
@@ -53,6 +54,7 @@ permissionset 36951 "PowerBi Report Basic"
         query Bins = X,
         query "Calendar Entries" = X,
         query "Capacity Ledger Entries" = X,
+        query "Close Income Source - PBI API" = X,
         query "Customer Ledger Entries" = X,
         query "PowerBI Dimension Set Entries" = X,
         query "PowerBI Dimension Sets" = X,
@@ -61,8 +63,16 @@ permissionset 36951 "PowerBi Report Basic"
         query "G/L Accounts" = X,
         query "G/L Budget Entries - PBI API" = X,
         query "G/L Budgets" = X,
+#if not CLEAN25
+#pragma warning disable AL0432
         query "G/L Entries - Closing" = X,
+#pragma warning restore AL0432
+#endif
+#if not CLEAN26
+#pragma warning disable AL0432
         query "G/L Entries - Income Statement" = X,
+#pragma warning restore AL0432
+#endif
         query "G\L Entries - Balance Sheet" = X,
         query "Item Budget Entries - Purch." = X,
         query "Item Budget Entries - Sales" = X,

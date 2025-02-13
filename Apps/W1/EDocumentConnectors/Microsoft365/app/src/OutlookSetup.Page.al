@@ -40,13 +40,13 @@ page 6384 "Outlook Setup"
             }
             group(General)
             {
-                Caption = 'Shared Mailbox Details';
-                InstructionalText = 'Specify the e-mail address of the shared mailbox in which you receive document attachments.';
+                Caption = 'Mailbox Details';
+                InstructionalText = 'Specify the e-mail address of the Microsoft 365 mailbox in which you receive document attachments. You must have read and write access to the specified mailbox, and it must be in the same tenant in which your Businesss Central environment is hosted.';
 
                 field(Mailbox; MailboxName)
                 {
                     Caption = 'Account';
-                    ToolTip = 'Specifies the shared mailbox from which to download document attachments.';
+                    ToolTip = 'Specifies the Microsoft 365 mailbox from which to download document attachments.';
                     Editable = false;
                     ShowMandatory = true;
 
@@ -68,6 +68,8 @@ page 6384 "Outlook Setup"
                             EmailAccounts.GetAccount(TempEmailAccount);
                             TempOutlookSetup."Email Account ID" := TempEmailAccount."Account Id";
                             TempOutlookSetup."Email Connector" := TempEmailAccount.Connector;
+                            if Format(TempOutlookSetup."Email Connector") <> M365Lbl then
+                                Error(M365MailboxMustBeSpecifiedErr);
                         end;
 
                         if MailboxName <> TempEmailAccount."Email Address" then begin
@@ -96,14 +98,10 @@ page 6384 "Outlook Setup"
         }
     }
 
-    trigger OnAfterGetRecord()
-    begin
-        UpdateBasedOnEnable();
-    end;
-
     trigger OnOpenPage()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccountLocal: Record "Email Account" temporary;
+        EmailAccount: Codeunit "Email Account";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         DriveProcessing: Codeunit "Drive Processing";
     begin
@@ -115,11 +113,13 @@ page 6384 "Outlook Setup"
             FeatureTelemetry.LogUsage('0000OGY', DriveProcessing.FeatureName(), 'Outlook');
         end;
 
-        if not IsNullGuid(Rec."Email Account ID") then
-            if EmailAccount.Get(Rec."Email Account ID", Rec."Email Connector") then
-                MailboxName := EmailAccount."Email Address"
-            else
-                Error(MailboxMustBeSpecifiedErr);
+        if not IsNullGuid(Rec."Email Account ID") then begin
+            EmailAccount.GetAllAccounts(false, TempEmailAccountLocal);
+            TempEmailAccountLocal.SetRange("Account Id", Rec."Email Account ID");
+            TempEmailAccountLocal.SetRange(Connector, Rec."Email Connector");
+            if TempEmailAccountLocal.FindFirst() then
+                MailboxName := TempEmailAccountLocal."Email Address";
+        end;
 
         UpdateBasedOnEnable();
     end;
@@ -164,7 +164,9 @@ page 6384 "Outlook Setup"
         TempOutlookSetup: Record "Outlook Setup" temporary;
         EnableServiceQst: Label 'The %1 is not enabled. Are you sure you want to exit?', Comment = '%1 = page caption';
         DisableToConfigErr: Label 'You must disable the setup before making changes to the configuration.';
-        MailboxMustBeSpecifiedErr: label 'You must specify the e-mail address of the shared mailbox in which you receive e-mails with document attachments.';
+        MailboxMustBeSpecifiedErr: label 'You must specify the e-mail address of the Microsoft 365 mailbox in which you receive e-mails with document attachments.';
+        M365MailboxMustBeSpecifiedErr: label 'You must specify a Microsoft 365 mailbox.', Comment = 'Microsoft 365 is a name of a range of Microsoft offerings - do not translate it';
+        M365Lbl: label 'Microsoft 365', Locked = true;
         MailboxName: Text;
         LastSync: Text;
         ShowLastSync: Boolean;

@@ -19,14 +19,14 @@ codeunit 6182 "Sent Document Approval" implements IDocumentAction
     InherentPermissions = X;
 
     procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+    var
+        IDocumentSender: Interface IDocumentSender;
     begin
         ActionContext.Status().SetErrorStatus(Enum::"E-Document Service Status"::"Approval Error");
         ActionContext.Status().SetStatus(Enum::"E-Document Service Status"::"Approved");
-        ISentDocumentActions := EDocumentService."Sent Actions Integration";
-        exit(ISentDocumentActions.GetApprovalStatus(EDocument, EDocumentService, ActionContext));
+        IDocumentSender := EDocumentService."Service Integration V2";
+        if IDocumentSender is ISentDocumentActions then
+            exit((IDocumentSender as ISentDocumentActions).GetApprovalStatus(EDocument, EDocumentService, ActionContext));
     end;
-
-    var
-        ISentDocumentActions: Interface ISentDocumentActions;
 
 }

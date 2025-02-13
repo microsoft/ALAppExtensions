@@ -478,7 +478,7 @@ codeunit 13916 "Export XRechnung Document"
         PartyLegalEntityElement := XmlElement.Create('PartyLegalEntity', XmlNamespaceCAC);
         PartyLegalEntityElement.Add(XmlElement.Create('RegistrationName', XmlNamespaceCBC, CompanyInformation.Name));
         if CompanyInformation."Use GLN in Electronic Document" and (CompanyInformation.GLN <> '') then
-            PartyLegalEntityElement.Add(XmlElement.Create('CompanyID', XmlNamespaceCBC, XmlAttribute.Create('schemeID', '0094'), CompanyInformation.GLN))//ovo izmeni
+            PartyLegalEntityElement.Add(XmlElement.Create('CompanyID', XmlNamespaceCBC, XmlAttribute.Create('schemeID', '0094'), CompanyInformation.GLN))
         else
             PartyLegalEntityElement.Add(XmlElement.Create('CompanyID', XmlNamespaceCBC, XmlAttribute.Create('schemeID', '0198'), GetVATRegistrationNo(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code")));
         PartyElement.Add(PartyLegalEntityElement);
@@ -1021,12 +1021,12 @@ codeunit 13916 "Export XRechnung Document"
 
     procedure FormatDecimal(VarDecimal: Decimal): Text[30];
     begin
-        exit(Format(VarDecimal, 0, '<Precision,2:3><Sign><Integer><Decimals>'));
+        exit(Format(VarDecimal, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
     end;
 
     local procedure FormatFourDecimals(VarDecimal: Decimal): Text[30];
     begin
-        exit(Format(VarDecimal, 0, '<Precision,2:5><Sign><Integer><Decimals>'));
+        exit(Format(VarDecimal, 0, '<Precision,2:5><Sign><Integer><Decimals><Comma,.>'));
     end;
 
     procedure GetUoMCode(UoMCode: Code[10]): Text;

@@ -432,17 +432,20 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     else
                         DocFooterText := '';
 
-                    if "Currency Code" = '' then
-                        "Currency Code" := "General Ledger Setup"."LCY Code";
-
-                    if (TempSalesAdvLetterEntry."Currency Factor" <> 0) and (TempSalesAdvLetterEntry."Currency Factor" <> 1) then begin
+                    Clear(ExchRateText);
+                    if "Currency Code" <> '' then begin
                         CurrencyExchangeRate.FindCurrency(TempSalesAdvLetterEntry."Posting Date", "Currency Code", 1);
                         CalculatedExchRate := Round(1 / TempSalesAdvLetterEntry."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                         ExchRateText :=
                           StrSubstNo(ExchangeRateTxt, CalculatedExchRate, "General Ledger Setup"."LCY Code",
                             CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
+                        if "Currency Code" = "General Ledger Setup"."LCY Code" then
+                            ExchRateText := '';
                     end else
                         CalculatedExchRate := 1;
+
+                    if "Currency Code" = '' then
+                        "Currency Code" := "General Ledger Setup"."LCY Code";
 
                     if UseFunctionalCurrency then begin
                         AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempSalesAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
@@ -458,6 +461,8 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                               StrSubstNo(ExchangeRateTxt, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
                               CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
                         end;
+                        if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
+                            ExchRateText := '';
                     end;
 
                     FormatAddress.FormatAddr(CustAddr, "Bill-to Name", "Bill-to Name 2", "Bill-to Contact", "Bill-to Address", "Bill-to Address 2",

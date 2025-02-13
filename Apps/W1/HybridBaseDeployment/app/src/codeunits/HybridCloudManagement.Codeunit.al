@@ -101,6 +101,13 @@ codeunit 4001 "Hybrid Cloud Management"
         WarnManageCompaniesDescriptionTxt: Label 'Warning to the users to read the documentation before managing the companies during cloud migration.';
         GrantedConsentToDelegatedAdminLbl: Label 'The delegated admin has been granted consent to setup and run the cloud migration.', Locked = true;
         RevokedConsentToDelegatedAdminLbl: Label 'The consent granted to delegated admin for cloud migration has been revoked.', Locked = true;
+        CloudMigrationSetupLbl: Label 'Cloud migration setup completed by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
+        ReplicationRunStartedLbl: Label 'Replication run started by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
+        CloudMigrationDisabledLbl: Label 'Cloud migration setup disabled by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
+        CloudMigrationCompletedLbl: Label 'Cloud migration is completed.', Locked = true;
+        DataUpgradeStartedLbl: Label 'Data upgrade started by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
+        ConsentGrantedLbl: Label 'The delegated admin has been granted consent to run the cloud migration by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
+        ConsentRevokedLbl: Label 'The consent granted to delegated admin to run the cloud migration has been revoked by UserSecurityId %1.', Comment = '%1 - User Security ID', Locked = true;
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -640,6 +647,7 @@ codeunit 4001 "Hybrid Cloud Management"
         TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
         TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
         FeatureTelemetry.LogUsage('0000EUR', GetFeatureTelemetryName(), 'Completed Cloud Migration Setup.', TelemetryDimensions);
+        Session.LogAuditMessage(StrSubstNo(CloudMigrationSetupLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDimensions);
     end;
 
     local procedure SendTelemetryDisableCloudMigration(Reason: Text)
@@ -654,6 +662,7 @@ codeunit 4001 "Hybrid Cloud Management"
             TelemetryDimensions.Add('SourceProduct', IntelligentCloudSetup."Product ID");
 
         Session.LogMessage('0000IGC', DisabledCloudMigrationFromCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        Session.LogAuditMessage(StrSubstNo(CloudMigrationDisabledLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDimensions);
     end;
 
     local procedure GetDisabledReasonTelemetryText(): Text
@@ -824,6 +833,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
         FeatureTelemetry.LogUptake('0000JMV', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000JMY', GetFeatureTelemetryName(), 'Running data replication');
+        Session.LogAuditMessage(StrSubstNo(ReplicationRunStartedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDictionary);
     end;
 
     internal procedure GetReplicationTypeTelemetryText(var HybridReplicationSummary: Record "Hybrid Replication Summary"): Text
@@ -903,6 +913,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
         TelemetryDimensions.Add('MigrationDateTime', Format(IntelligentCloud.SystemModifiedAt, 0, 9));
         FeatureTelemetry.LogUsage('0000JMR', HybridCloudManagement.GetFeatureTelemetryName(), 'Tenant was cloud migrated', TelemetryDimensions);
+        Session.LogAuditMessage(CloudMigrationCompletedLbl, SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDimensions);
     end;
 
     procedure RestoreDefaultMigrationTableMappings(DeleteExisting: Boolean)
@@ -1071,6 +1082,7 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDAApproval := NewHybridDAApproval;
             TelemetryDictionary.Add('Category', GetTelemetryCategory());
             Session.LogMessage('0000MRL', GrantedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+            Session.LogAuditMessage(StrSubstNo(ConsentGrantedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
             exit;
         end;
 
@@ -1080,6 +1092,7 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDAApproval.Status := NewHybridDAApproval.Status::Granted;
             TelemetryDictionary.Add('Category', GetTelemetryCategory());
             Session.LogMessage('0000MRM', GrantedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+            Session.LogAuditMessage(StrSubstNo(ConsentGrantedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
             HybridDAApproval.Modify();
             exit;
         end;
@@ -1282,6 +1295,7 @@ codeunit 4001 "Hybrid Cloud Management"
 
         TelemetryDictionary.Add('Category', GetTelemetryCategory());
         Session.LogMessage('0000MRN', RevokedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+        Session.LogAuditMessage(StrSubstNo(ConsentRevokedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
     end;
 
     internal procedure CanSkipIRSetup(SqlServerType: Option; RuntimeNameTxt: Text): Boolean
@@ -1573,6 +1587,7 @@ codeunit 4001 "Hybrid Cloud Management"
             TelemetryDictionary.Add('SourceProduct', IntelligentCloudSetup."Product ID");
 
         Session.LogMessage('0000K0K', DataUpgradeScheduledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
+        Session.LogAuditMessage(StrSubstNo(DataUpgradeStartedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]

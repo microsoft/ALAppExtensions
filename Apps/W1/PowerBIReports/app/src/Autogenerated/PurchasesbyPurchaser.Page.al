@@ -6,11 +6,12 @@ page 37017 "Purchases by Purchaser"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Purchases by Purchaser';
     AboutTitle = 'About Purchases by Purchaser';
     AboutText = 'The Purchases by Purchaser report breaks down purchase amounts by individual purchasers, using a Treemap to visually compare spending contributions by item. A bar chart complements this, displaying purchase amounts for each purchaser. Making it easy to identify top spenders and track procurement patterns.';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 37017 "Purchases by Purchaser"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

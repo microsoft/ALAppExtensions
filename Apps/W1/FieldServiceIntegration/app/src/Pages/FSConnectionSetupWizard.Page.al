@@ -138,12 +138,14 @@ page 6613 "FS Connection Setup Wizard"
                         ApplicationArea = Suite;
                         ShowMandatory = true;
                         ToolTip = 'Specifies the project journal template in which project journal lines will be created and coupled to work order products and work order services.';
+                        Editable = EditableProjectSettings;
                     }
                     field("Job Journal Batch"; Rec."Job Journal Batch")
                     {
                         ApplicationArea = Suite;
                         ShowMandatory = true;
                         ToolTip = 'Specifies the project journal batch in which project journal lines will be created and coupled to work order products and work order services.';
+                        Editable = EditableProjectSettings;
                     }
                     field("Hour Unit of Measure"; Rec."Hour Unit of Measure")
                     {
@@ -155,11 +157,23 @@ page 6613 "FS Connection Setup Wizard"
                     {
                         ApplicationArea = Suite;
                         ToolTip = 'Specifies when to synchronize work order products and work order services.';
+                        Editable = EditableProjectSettings;
                     }
                     field("Line Post Rule"; Rec."Line Post Rule")
                     {
                         ApplicationArea = Suite;
                         ToolTip = 'Specifies when to post project journal lines that are coupled to work order products and work order services.';
+                        Editable = EditableProjectSettings;
+                    }
+                    field("Integration Type"; Rec."Integration Type")
+                    {
+                        ApplicationArea = Service;
+                        ToolTip = 'Specifies the type of integration between Business Central and Dynamics 365 Field Service.';
+
+                        trigger OnValidate()
+                        begin
+                            UpdateIntegrationTypeEditable();
+                        end;
                     }
                 }
                 group("Advanced Settings")
@@ -219,6 +233,7 @@ page 6613 "FS Connection Setup Wizard"
                     {
                         ApplicationArea = Suite;
                         Enabled = VirtualTableAppInstalled;
+                        Visible = false;
                         ToolTip = 'Specifies if the Field Service users will be able to pull information about inventory availability by location from Business Central. This is available only if Virtual Table app is installed.';
                     }
 
@@ -464,6 +479,7 @@ page 6613 "FS Connection Setup Wizard"
         VirtualTableAppInstalled: Boolean;
         [NonDebuggable]
         Password: Text;
+        EditableProjectSettings: Boolean;
         ConnectionNotSetUpQst: Label 'The %1 connection has not been set up.\\Are you sure you want to exit?', Comment = '%1 = CRM product name';
         CRMURLShouldNotBeEmptyErr: Label 'You must specify the URL of your %1 solution.', Comment = '%1 = CRM product name';
         CRMSynchUserCredentialsNeededErr: Label 'You must specify the credentials for the user account for synchronization with %1.', Comment = '%1 = CRM product name';
@@ -559,18 +575,22 @@ page 6613 "FS Connection Setup Wizard"
 
         EnableFSConnectionEnabled := Rec."Server Address" <> '';
         Rec."Authentication Type" := Rec."Authentication Type"::Office365;
+
         if FSConnectionSetup.Get() then begin
             EnableFSConnection := true;
             EnableFSConnectionEnabled := not FSConnectionSetup."Is Enabled";
             ImportSolution := true;
             if FSConnectionSetup."Is FS Solution Installed" then
                 ImportFSSolutionEnabled := false;
+            Rec."Integration Type" := FSConnectionSetup."Integration Type";
         end else begin
             if ImportFSSolutionEnabled then
                 ImportSolution := true;
             if EnableFSConnectionEnabled then
                 EnableFSConnection := true;
         end;
+
+        UpdateIntegrationTypeEditable();
     end;
 
     local procedure ShowItemAvailabilityStep()
@@ -659,6 +679,11 @@ page 6613 "FS Connection Setup Wizard"
             LanguageID := 1033; // Default to EN-US
         CultureName := Language.GetCultureName(LanguageID).ToLower();
         exit(Text.StrSubstNo(VTAppSourceLinkTxt, CultureName));
+    end;
+
+    local procedure UpdateIntegrationTypeEditable()
+    begin
+        EditableProjectSettings := Rec."Integration Type" = Rec."Integration Type"::Project;
     end;
 }
 
