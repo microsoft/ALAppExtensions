@@ -1,0 +1,7 @@
+[
+    {
+        "codeunitId": 139544,
+        "CodeunitName": "Trial Balance Excel Reports",
+        "Method": "ConsolidatedTrialBalanceExportsOnlyTheUsedDimensionValues"
+    }
+]

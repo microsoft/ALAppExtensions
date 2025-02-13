@@ -148,6 +148,15 @@ codeunit 148182 "Library - Sustainability"
         EmissionFee.Insert();
     end;
 
+    procedure UpdateValueChainTrackingInSustainabilitySetup(EnableValueChainTracking: Boolean)
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Enable Value Chain Tracking", EnableValueChainTracking);
+        SustainabilitySetup.Modify();
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";

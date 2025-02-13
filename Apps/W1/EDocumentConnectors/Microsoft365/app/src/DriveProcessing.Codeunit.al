@@ -31,13 +31,13 @@ codeunit 6381 "Drive Processing"
     begin
         FeatureTelemetry.LogUptake('0000OAY', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OB1', FeatureName(), Format(EDocumentService."Service Integration V2"));
-        if EDocument."Document Id" = '' then
+        if EDocument."Drive Item Id" = '' then
             Error(DocumentIdEmptyErr, EDocument."Entry No");
 
         SiteId := GetSiteId(EDocumentService."Service Integration V2");
         NewFolderId := GetImportedDocumentsFolderId(EDocumentService."Service Integration V2");
 
-        GraphClient.MoveDriveItem(SiteId, EDocument."Document Id", NewFolderId);
+        GraphClient.MoveDriveItem(SiteId, EDocument."Drive Item Id", NewFolderId);
     end;
 
     procedure GetSiteId(FolderSharedLink: Text[2048]): Text
@@ -91,7 +91,7 @@ codeunit 6381 "Drive Processing"
     begin
         FeatureTelemetry.LogUptake('0000OAZ', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OB2', FeatureName(), Format(EDocumentService."Service Integration V2"));
-        MyBCFilesLink := GetGraphSharesURL() + GetDocumentsSharedLink(EDocumentService."Service Integration V2") + '/driveItem/children?$top=100&$select=id,name,file,malware';
+        MyBCFilesLink := GetGraphSharesURL() + GetDocumentsSharedLink(EDocumentService."Service Integration V2") + '/driveItem/children?$top=100&$select=id,name,file,size,malware';
         if not GraphClient.GetDriveFolderInfo(MyBCFilesLink, FilesJson) then begin
             ErrorMessageTxt := GetLastErrorText() + GetLastErrorCallStack();
             ClearLastError();
@@ -135,20 +135,36 @@ codeunit 6381 "Drive Processing"
                 TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
                 Child := Children.GetObject(I);
                 Child.WriteTo(ChildTxt);
-                if not IgnoreDriveItem(ChildTxt.ToLower()) then begin
+                if not IgnoreDriveItem(Child, ChildTxt.ToLower()) then begin
                     OutStream.Write(ChildTxt);
                     Documents.Add(TempBlob);
                 end;
             end;
     end;
 
-    local procedure IgnoreDriveItem(ItemAsTxt: Text): Boolean
+    local procedure IgnoreDriveItem(Item: JSonObject; ItemAsTxt: Text): Boolean
+    var
+        SizeToken: JSonToken;
+        Size: BigInteger;
     begin
+        if Item.Get('size', SizeToken) then
+            if SizeToken.IsValue() then
+                Size := SizeToken.AsValue().AsBigInteger();
+
         if ItemAsTxt.Contains('"malware"') then
             exit(true);
 
         if not DelChr(ItemAsTxt, '=', ' ').Contains('"mimetype":"application/pdf"') then
             exit(true);
+
+        if Size > SizeThreshold() then
+            exit(true);
+    end;
+
+    internal procedure SizeThreshold(): Integer
+    begin
+        // 25 MB
+        exit(26214400)
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
@@ -185,19 +201,19 @@ codeunit 6381 "Drive Processing"
         TempDocumentSharing.Data.CreateInStream(DocumentInStream, TextEncoding::UTF8);
         CopyStream(DocumentOutStream, DocumentInStream);
 
-        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId, FileId);
-        UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId);
+        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
     end;
 
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext)
+    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text)
     begin
-        ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::"Ready For Processing");
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
     end;
 
-    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text; FileId: Text)
+    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text)
     begin
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
-        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
+        EDocument."Drive Item Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Drive Item Id"));
         EDocument.Modify();
     end;
 
@@ -230,7 +246,7 @@ codeunit 6381 "Drive Processing"
         Base64Value: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     if SharepointSetup.Get() then
                         if SharepointSetup.Enabled then
@@ -262,7 +278,7 @@ codeunit 6381 "Drive Processing"
         SiteId: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     CheckSetupEnabled(SharepointSetup);
                     CheckFolderSharedLinkNotEmpty(SharepointSetup."Documents Folder", SharepointSetup.TableCaption());
@@ -287,7 +303,7 @@ codeunit 6381 "Drive Processing"
         ImportedDocumentsFolderId: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     CheckSetupEnabled(SharepointSetup);
                     CheckFolderSharedLinkNotEmpty(SharepointSetup."Imp. Documents Folder", SharepointSetup.TableCaption());
@@ -332,5 +348,5 @@ codeunit 6381 "Drive Processing"
         NoContentErr: Label 'Empty content retrieved from the service for document id: %1.', Comment = '%1 - Document ID';
         IntegrationNotEnabledErr: Label '%1 must be enabled.', Comment = '%1 - a table caption, Sharepoint Document Import Setup';
         UnsupportedIntegrationTypeErr: Label 'You must choose a upported integration type.';
-        DocumentIdEmptyErr: Label 'Document Id is empty on e-document %1.', Comment = '%1 - an integer';
+        DocumentIdEmptyErr: Label 'Drive Item Id is empty on e-document %1.', Comment = '%1 - an integer';
 }

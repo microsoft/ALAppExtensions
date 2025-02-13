@@ -27,11 +27,13 @@ table 31274 "Posted Compensation Header CZC"
         field(5; "No."; Code[20])
         {
             Caption = 'No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(10; Description; Text[100])
         {
             Caption = 'Description';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(13; "Company Type"; Enum "Compensation Company Type CZC")

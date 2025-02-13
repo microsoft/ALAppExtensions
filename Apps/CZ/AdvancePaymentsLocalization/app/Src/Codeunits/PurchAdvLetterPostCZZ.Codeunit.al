@@ -1025,13 +1025,13 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine.Correction := true;
         AdvancePostingBufferCZZ.ReverseAmounts();
         GenJournalLine.CopyFromAdvancePostingBufferCZZ(AdvancePostingBufferCZZ);
-        if GenJournalLine."VAT Calculation Type" = GenJournalLine."VAT Calculation Type"::"Reverse Charge VAT" then
-            GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
         if (GenJournalLine."Currency Code" <> '') and
            (GenJournalLine."VAT Calculation Type" = GenJournalLine."VAT Calculation Type"::"Reverse Charge VAT")
         then
-            if VATEntry.Get(PurchAdvLetterEntryCZZ."VAT Entry No.") then
+            if VATEntry.Get(PurchAdvLetterEntryCZZ."VAT Entry No.") then begin
+                GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
                 GenJournalLine."VAT Amount (LCY)" := -VATEntry.Amount;
+            end;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
             OnPostAdvanceLetterEntryVATUsageUnapplyingOnBeforePost(
                 PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingBufferCZZ,

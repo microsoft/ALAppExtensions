@@ -205,7 +205,8 @@ page 31276 "Compensation Proposal CZC"
         FilteredCustLedgerEntry.SetRange(Open, true);
         FilteredCustLedgerEntry.SetRange(Prepayment, false);
         FilteredCustLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
-        FilteredCustLedgerEntry.SetRange("On Hold", '');
+        if not CompensationsSetupCZC."Including Entries with On Hold" then
+            FilteredCustLedgerEntry.SetRange("On Hold", '');
         FilteredCustLedgerEntry.SetFilter("Posting Date", '<=%1', PostingDate);
         OnApplyFilterOnAfterSetCustLedgerEntryFilter(PostingDate, FilteredCustLedgerEntry);
 
@@ -213,7 +214,8 @@ page 31276 "Compensation Proposal CZC"
         FilteredVendorLedgerEntry.SetRange(Open, true);
         FilteredVendorLedgerEntry.SetRange(Prepayment, false);
         FilteredVendorLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
-        FilteredVendorLedgerEntry.SetRange("On Hold", '');
+        if not CompensationsSetupCZC."Including Entries with On Hold" then
+            FilteredVendorLedgerEntry.SetRange("On Hold", '');
         FilteredVendorLedgerEntry.SetFilter("Posting Date", '<=%1', PostingDate);
         OnApplyFilterOnAfterSetVendLedgerEntryFilter(PostingDate, FilteredVendorLedgerEntry);
 

@@ -26,9 +26,6 @@ enum 139793 "PowerBI API Endpoints"
     value(8; "G/L Entries - Balance Sheet")
     {
     }
-    value(9; "G/L Entries - Closing")
-    {
-    }
     value(10; "Sales Lines - Outstanding")
     {
     }
@@ -156,6 +153,24 @@ enum 139793 "PowerBI API Endpoints"
     {
     }
     value(52; "Sales Line - Item Shipped")
+    {
+    }
+    value(53; "Manufacturing Setup")
+    {
+    }
+    value(54; "Production Orders")
+    {
+    }
+    value(55; "Routing Links")
+    {
+    }
+    value(56; Routings)
+    {
+    }
+    value(57; "Value Entries - Manuf.")
+    {
+    }
+    value(58; "Work Center Groups")
     {
     }
 }

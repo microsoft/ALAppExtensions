@@ -4,35 +4,40 @@ using Microsoft.eServices.EDocument;
 
 pageextension 6383 EDocumentListExt extends "E-Documents"
 {
-    layout
+    actions
     {
-        addafter("Entry No")
+        addlast(Processing)
         {
-            field("File Id"; Rec."File Id")
+            action(ViewMailMessage)
             {
-                ApplicationArea = All;
-                Caption = 'File Name';
-                ToolTip = 'Specifies the name of the attached file';
-                Visible = FileIdVisible;
-                Editable = false;
+                ApplicationArea = Basic, Suite;
+                Caption = 'View e-mail message';
+                ToolTip = 'View the source e-mail message.';
+                Image = Email;
+                Visible = EmailActionsVisible;
 
-                trigger OnDrillDown()
+                trigger OnAction()
                 var
-                    IntegrationImpl: Codeunit "Integration Impl.";
+                    OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
                 begin
-                    IntegrationImpl.PreviewContent(Rec);
+                    if (Rec."Mail Message Id" <> '') then
+                        HyperLink(StrSubstNo(OutlookIntegrationImpl.WebLinkText(), Rec."Mail Message Id"))
                 end;
             }
+        }
+        addafter(Promoted_ViewFile)
+        {
+            actionref(Promoted_ViewMailMessage; ViewMailMessage) { }
         }
     }
 
     trigger OnOpenPage()
     var
-        IntegrationImpl: Codeunit "Integration Impl.";
+        OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
     begin
-        IntegrationImpl.SetConditionalVisibilityFlag(FileIdVisible);
+        OutlookIntegrationImpl.SetConditionalVisibilityFlag(Rec, EmailActionsVisible);
     end;
 
     var
-        FileIdVisible: Boolean;
+        EmailActionsVisible: Boolean;
 }

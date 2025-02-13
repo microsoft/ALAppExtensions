@@ -329,6 +329,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         end;
         if not AddElement(XmlRootElem, XmlElemNew, 'Steuerfall', '', XmlNameSpace) then
             exit;
+        OnAddUseDataOnAfterAddSteuerfallElement(XMLRootElem, XMLElemNew, XMLNameSpace);
         XmlRootElem := XmlElemNew;
         if not AddElement(XmlRootElem, XmlElemNew, 'Umsatzsteuervoranmeldung', '', XmlNameSpace) then
             exit;
@@ -532,6 +533,11 @@ report 11016 "Create XML-File VAT Adv.Notif."
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetRecordOnAfterVATStmtNameSetFilters(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; var VATStatementName: Record "VAT Statement Name")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAddUseDataOnAfterAddSteuerfallElement(var XMLRootElem: XMLElement; XMLElemNew: XmlElement; XMLNameSpace: Text)
     begin
     end;
 }

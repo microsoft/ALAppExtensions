@@ -139,6 +139,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
     local procedure TransferPurchaseDocuments(PeriodNo: Code[20]; StartingDate: Date; EndingDate: Date)
     var
         PurchHeader: Record "Purchase Header";
+        PurchLine: Record "Purchase Line";
     begin
 #pragma warning disable AL0432
         PurchHeader.SetFilter(
@@ -147,12 +148,20 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         PurchHeader.SetFilter("IRS 1099 Code", '<>%1', '');
         if not PurchHeader.FindSet(true) then
             exit;
+        PurchLine.SetRange("IRS 1099 Liable", true);
         repeat
             if IsOld1099FormBoxTransferable(PurchHeader."IRS 1099 Code") then begin
                 PurchHeader."IRS 1099 Reporting Period" := PeriodNo;
                 PurchHeader."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchHeader."IRS 1099 Code");
                 PurchHeader."IRS 1099 Form Box No." := PurchHeader."IRS 1099 Code";
                 PurchHeader.Modify();
+                PurchLine.SetRange("Document Type", PurchHeader."Document Type");
+                PurchLine.SetRange("Document No.", PurchHeader."No.");
+                if PurchLine.FindSet(true) then
+                    repeat
+                        PurchLine."1099 Liable" := true;
+                        PurchLine.Modify();
+                    until PurchLine.Next() = 0;
             end;
         until PurchHeader.Next() = 0;
 #pragma warning restore AL0432

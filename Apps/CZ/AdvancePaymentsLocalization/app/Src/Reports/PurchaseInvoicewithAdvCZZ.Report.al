@@ -566,6 +566,9 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                             TotalAmountVAT += "Amount Including VAT" - Amount;
                             TotalAmountInclVAT += "Amount Including VAT";
                             TotalPaymentDiscountOnVAT += -("Line Amount" - "Inv. Discount Amount" - "Amount Including VAT");
+
+                            if FormatDocument.HideDocumentLine(HideLinesWithZeroQuantity, "Purch. Inv. Line", FieldNo(Quantity)) then
+                                CurrReport.Skip();
                         end;
 
                         trigger OnPreDataItem()
@@ -773,17 +776,28 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                             else
                                 VALSpecLCYHeader := VATAmtSpecificationLbl + Format(GeneralLedgerSetup."LCY Code");
 
+                            Clear(VALExchRate);
                             if not UseFunctionalCurrency then begin
                                 CurrencyExchangeRate.FindCurrency("Purch. Inv. Header"."Posting Date", "Purch. Inv. Header"."Currency Code", 1);
                                 CalculatedExchRate := Round(1 / "Purch. Inv. Header"."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                                 VALExchRate := StrSubstNo(ExchangeRateLbl, CalculatedExchRate, CurrencyExchangeRate."Exchange Rate Amount");
-                            end else
+                                if ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."LCY Code") or ("Purch. Inv. Header"."Currency Code" = '') then
+                                    VALSpecLCYHeader := '';
+                            end else begin
                                 if ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 0) and ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 1) then begin
                                     VALSpecLCYHeader := VATAmtSpecificationLbl + Format(GeneralLedgerSetup."Additional Reporting Currency");
-                                    CurrencyExchangeRate.FindCurrency("Purch. Inv. Header"."Posting Date", GeneralLedgerSetup."Additional Reporting Currency", 1);
-                                    CalculatedExchRate := Round(1 / "Purch. Inv. Header"."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                                    VALExchRate := StrSubstNo(ExchangeRateLbl, CalculatedExchRate, CurrencyExchangeRate."Exchange Rate Amount");
+                                    if CalculatedExchRate <> 1 then begin
+                                        CurrencyExchangeRate.FindCurrency("Purch. Inv. Header"."Posting Date", "Purch. Inv. Header"."Currency Code", 1);
+                                        CalculatedExchRate := Round(((1 / "Purch. Inv. Header"."VAT Currency Factor CZL") / (1 / "Purch. Inv. Header"."Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
+                                    end else begin
+                                        CurrencyExchangeRate."Exchange Rate Amount" := 1;
+                                        CalculatedExchRate := Round("Purch. Inv. Header"."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                                    end;
+                                    VALExchRate := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Inv. Header"."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                                 end;
+                                if (CalculatedExchRate = 1) or ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."Additional Reporting Currency") then
+                                    VALSpecLCYHeader := '';
+                            end;
                         end;
                     }
                     dataitem(Total; "Integer")
@@ -926,6 +940,12 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                         Enabled = LogInteractionEnable;
                         ToolTip = 'Specifies that interactions with the contact are logged.';
                     }
+                    field(HideLinesWithZeroQuantityControl; HideLinesWithZeroQuantity)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies if the lines with zero quantity are printed.';
+                        Caption = 'Hide lines with zero quantity';
+                    }
                 }
             }
         }
@@ -993,6 +1013,7 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
         VATAmtSpecificationLbl: Label 'VAT Amount Specification in ';
         LocalCurrencyLbl: Label 'Local Currency';
         ExchangeRateLbl: Label 'Exchange rate: %1/%2', Comment = '%1 = Calculated Exchange Rate, %2 = Exchange Rate Amount';
+        ExchRateAdditionalLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = Currency Code, %3 = Exchange Rate, %4 = Additional Reporting Currency';
         VATAmountTextLbl: Label '%1% VAT', Comment = '%1 = VAT %';
         VATAmountLbl: Label 'VAT Amount';
         PhoneNoCaptionLbl: Label 'Phone No.';
@@ -1076,6 +1097,7 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
         VALVATBaseLCY: Decimal;
         VALVATAmountLCY: Decimal;
         UseFunctionalCurrency: Boolean;
+        HideLinesWithZeroQuantity: Boolean;
 
     local procedure DocumentCaption(): Text[250]
     begin

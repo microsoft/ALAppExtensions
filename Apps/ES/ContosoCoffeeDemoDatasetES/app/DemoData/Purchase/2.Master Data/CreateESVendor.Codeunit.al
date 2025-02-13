@@ -5,8 +5,6 @@ codeunit 10812 "Create ES Vendor"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //Todo - Hard Coded Post Code to be replace with Post Code Codeuint.
-
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnBeforeOnInsert', '', false, false)]
     local procedure OnInsertRecord(var Vendor: Record Vendor; var IsHandled: Boolean)
     var

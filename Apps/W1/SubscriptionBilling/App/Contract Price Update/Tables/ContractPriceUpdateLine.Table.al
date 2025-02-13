@@ -231,8 +231,9 @@ table 8004 "Contract Price Update Line"
         Currency.InitRoundingPrecision();
         Rec."New Price" := Round(Rec."New Calculation Base" * Rec."New Calculation Base %" / 100, Currency."Unit-Amount Rounding Precision");
         Rec."New Service Amount" := Round((Rec."New Price" * Rec.Quantity), Currency."Amount Rounding Precision");
+        Rec."Discount Amount" := Round(Rec."Discount %" * Rec."New Service Amount" / 100, Currency."Amount Rounding Precision");
+        Rec."New Service Amount" := Rec."New Service Amount" - Rec."Discount Amount";
         Rec."Additional Service Amount" := Rec."New Service Amount" - Rec."Old Service Amount";
-        Rec."Discount Amount" := Rec."Discount %" * Rec."New Service Amount";
     end;
 
     internal procedure CalculateNewCalculationBaseAmount()
@@ -274,10 +275,13 @@ table 8004 "Contract Price Update Line"
     end;
 
     internal procedure UpdatePerformUpdateOn(ServiceCommitment: Record "Service Commitment"; PerformUpdateOnDate: Date)
+    var
+        DateTimeManagement: Codeunit "Date Time Management";
+        DateList: List of [Date];
     begin
-        if (ServiceCommitment."Next Billing Date" <= PerformUpdateOnDate) or ServiceCommitment.UnpostedDocumentExists() then
-            Rec."Perform Update On" := PerformUpdateOnDate
-        else
-            Rec."Perform Update On" := ServiceCommitment."Next Billing Date";
+        DateList.Add(ServiceCommitment."Next Billing Date");
+        DateList.Add(ServiceCommitment."Next Price Update");
+        DateList.Add(PerformUpdateOnDate);
+        Rec."Perform Update On" := DateTimeManagement.GetMaxDate(DateList);
     end;
 }

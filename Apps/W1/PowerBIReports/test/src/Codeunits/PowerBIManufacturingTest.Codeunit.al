@@ -12,6 +12,7 @@ using Microsoft.PowerBIReports;
 using Microsoft.Inventory.Journal;
 using Microsoft.Manufacturing.ProductionBOM;
 using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.Setup;
 using System.Text;
 using Microsoft.Inventory.Location;
 using System.TestLibraries.Security.AccessControl;
@@ -864,6 +865,292 @@ codeunit 139878 "PowerBI Manufacturing Test"
 
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure TestManufacturingSetup()
+    var
+        ManufacturingSetup: Record "Manufacturing Setup";
+        CapacityUnitOfMeasure: Record "Capacity Unit of Measure";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] "Show Capacity In" is set in Manufacturing Setup
+        LibManufacturing.CreateCapacityUnitOfMeasure(CapacityUnitOfMeasure, Enum::"Capacity Unit of Measure"::Minutes);
+        ManufacturingSetup.Get();
+        ManufacturingSetup.Validate("Show Capacity In", CapacityUnitOfMeasure.Code);
+        ManufacturingSetup.Modify(true);
+        Commit();
+
+        // [WHEN] Get request for manufacturing setup is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Manufacturing Setup");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the capacity unit of measure as specified in Manufacturing Setup 
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifyManufacturingSetup(Response, CapacityUnitOfMeasure);
+    end;
+
+    local procedure VerifyManufacturingSetup(Response: Text; CapacityUnitOfMeasure: Record "Capacity Unit of Measure")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.showCapacityIn == ''' + Format(CapacityUnitOfMeasure.Code) + ''')]'), 'Show Capacity In not found.');
+        Assert.AreEqual(CapacityUnitOfMeasure.Code, JsonMgt.GetValue('showCapacityIn'), 'Capacity Unit of Measure did not match.');
+    end;
+
+    [Test]
+    procedure TestGetProductionOrders()
+    var
+        Item: Record Item;
+        ProdOrder: Record "Production Order";
+        ProdOrder2: Record "Production Order";
+        Location: Record Location;
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Production orders are created
+        LibManufacturing.CreateItemManufacturing(
+            Item,
+            Item."Costing Method"::Standard,
+            LibRandom.RandDecInRange(1, 10, 2),
+            Item."Reordering Policy"::Order,
+            Item."Flushing Method"::Manual,
+            '', '');
+
+        LibWhse.CreateLocation(Location);
+        LibManufacturing.CreateProductionOrder(ProdOrder, ProdOrder.Status::Released, ProdOrder."Source Type"::Item, Item."No.", LibRandom.RandDecInRange(1, 10, 2));
+        ProdOrder.Validate("Location Code", Location.Code);
+        ProdOrder.Modify(true);
+        LibManufacturing.RefreshProdOrder(ProdOrder, false, true, true, true, false);
+
+        LibManufacturing.CreateProductionOrder(ProdOrder2, ProdOrder2.Status::Released, ProdOrder2."Source Type"::Item, Item."No.", LibRandom.RandDecInRange(1, 10, 2));
+        ProdOrder2.Validate("Location Code", Location.Code);
+        ProdOrder.Modify(true);
+        LibManufacturing.RefreshProdOrder(ProdOrder2, false, true, true, true, false);
+        Commit();
+
+        // [WHEN] Get request for production orders is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Production Orders");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddODataQueryParameter('$filter', 'status eq ''' + Format(ProdOrder.Status) + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the production order information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifyProductionOrder(Response, ProdOrder);
+        VerifyProductionOrder(Response, ProdOrder2);
+    end;
+
+    local procedure VerifyProductionOrder(Response: Text; ProdOrder: Record "Production Order")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(ProdOrder."No.") + ''')]'), 'Production order not found.');
+        Assert.AreEqual(ProdOrder."No.", JsonMgt.GetValue('no'), 'Production Order No. did not match.');
+        Assert.AreEqual(Format(ProdOrder.Status), JsonMgt.GetValue('status'), 'Status did not match.');
+    end;
+
+    [Test]
+    procedure TestGetRoutingLinks()
+    var
+        RoutingLink: Record "Routing Link";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Routing links are created
+        LibManufacturing.CreateRoutingLink(RoutingLink);
+
+        Commit();
+
+        // [WHEN] Get request for routing links is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Routing Links");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the routing link information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        if RoutingLink.FindSet() then
+            repeat
+                VerifyRoutingLinks(Response, RoutingLink);
+            until RoutingLink.Next() = 0;
+    end;
+
+    local procedure VerifyRoutingLinks(Response: Text; RoutingLink: Record "Routing Link")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.code == ''' + Format(RoutingLink.Code) + ''')]'), 'Routing link not found.');
+        Assert.AreEqual(RoutingLink.Code, JsonMgt.GetValue('code'), 'Routing Link Code did not match.');
+        Assert.AreEqual(RoutingLink.Description, JsonMgt.GetValue('description'), 'Description did not match.');
+    end;
+
+    [Test]
+    procedure TestGetRoutings()
+    var
+        RoutingHeader: Record "Routing Header";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Routing headers are created
+        LibManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Parallel);
+        LibManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+
+        Commit();
+
+        // [WHEN] Get request for routing headers is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::Routings);
+        UriBuilder.Init(TargetURL);
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the routing header information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        if RoutingHeader.FindSet() then
+            repeat
+                VerifyRoutingHeaders(Response, RoutingHeader);
+            until RoutingHeader.Next() = 0;
+    end;
+
+    local procedure VerifyRoutingHeaders(Response: Text; RoutingHeader: Record "Routing Header")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + Format(RoutingHeader."No.") + ''')]'), 'Routing header not found.');
+        Assert.AreEqual(RoutingHeader."No.", JsonMgt.GetValue('no'), 'Routing header no. did not match.');
+        Assert.AreEqual(Format(RoutingHeader.Type), JsonMgt.GetValue('type'), 'Type did not match.');
+        Assert.AreEqual(Format(RoutingHeader.Status), JsonMgt.GetValue('status'), 'Status did not match.');
+        Assert.AreEqual(RoutingHeader.Description, JsonMgt.GetValue('description'), 'Description did not match.');
+    end;
+
+    [Test]
+    procedure TestGetWorkCenterGroups()
+    var
+        WorkCenterGroup: Record "Work Center Group";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Work center groups are created
+        LibManufacturing.CreateWorkCenterGroup(WorkCenterGroup);
+        LibManufacturing.CreateWorkCenterGroup(WorkCenterGroup);
+
+        Commit();
+
+        // [WHEN] Get request for work center groups is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Work Center Groups");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the work center group information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        if WorkCenterGroup.FindSet() then
+            repeat
+                VerifyWorkCenterGroups(Response, WorkCenterGroup);
+            until WorkCenterGroup.Next() = 0;
+    end;
+
+    local procedure VerifyWorkCenterGroups(Response: Text; WorkCenterGroup: Record "Work Center Group")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.code == ''' + Format(WorkCenterGroup.Code) + ''')]'), 'Work center group not found.');
+        Assert.AreEqual(WorkCenterGroup.Code, JsonMgt.GetValue('code'), 'Code did not match.');
+        Assert.AreEqual(WorkCenterGroup.Name, JsonMgt.GetValue('name'), 'Name did not match.');
+    end;
+
+    [Test]
+    procedure TestGetManufacturingValueEntries()
+    var
+        Item: Record Item;
+        ProdOrder: Record "Production Order";
+        ItemJournalTemplate: Record "Item Journal Template";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ValueEntry: Record "Value Entry";
+        Location: Record Location;
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Manufacturing value entries are created
+        LibManufacturing.CreateItemManufacturing(
+            Item,
+            Item."Costing Method"::Standard,
+            LibRandom.RandDecInRange(1, 10, 2),
+            Item."Reordering Policy"::Order,
+            Item."Flushing Method"::Manual,
+            '', '');
+
+        LibWhse.CreateLocation(Location);
+        LibManufacturing.CreateProductionOrder(ProdOrder, ProdOrder.Status::Released, ProdOrder."Source Type"::Item, Item."No.", LibRandom.RandDecInRange(1, 10, 2));
+        ProdOrder.Validate("Location Code", Location.Code);
+        ProdOrder.Modify(true);
+        LibManufacturing.RefreshProdOrder(ProdOrder, false, true, true, true, false);
+
+        LibManufacturing.OutputJournalExplodeRouting(ProdOrder);
+        ItemJournalTemplate.SetRange(Type, ItemJournalTemplate.Type::Output);
+        ItemJournalTemplate.FindFirst();
+        ItemJournalBatch.SetRange("Journal Template Name", ItemJournalTemplate.Name);
+        ItemJournalBatch.FindFirst();
+
+        LibInv.UpdateInventoryPostingSetup(Location);
+
+        LibInv.CreateInventoryPostingGroup(InventoryPostingGroup);
+        LibInv.CreateInventoryPostingSetup(InventoryPostingSetup, Location.Code, InventoryPostingGroup.Code);
+        LibInv.PostItemJournalBatch(ItemJournalBatch);
+
+        ValueEntry.SetRange("Item Ledger Entry Type", Enum::"Item Ledger Entry Type"::Output);
+        ValueEntry.FindLast();
+
+        Commit();
+
+        // [WHEN] Get request for manufacturing value entries is made
+        TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Value Entries - Manuf.");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Format(Item."No.") + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the manufacturing value entry information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifyManufacturingValueEntry(Response, ValueEntry);
+    end;
+
+    local procedure VerifyManufacturingValueEntry(Response: Text; ValueEntry: Record "Value Entry")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(ValueEntry."Entry No.") + ')]'), 'Value entry not found.');
+        Assert.AreEqual(Format(ValueEntry."Entry No."), JsonMgt.GetValue('entryNo'), 'Entry No. did not match.');
+        Assert.AreEqual(Format(ValueEntry."Item No."), JsonMgt.GetValue('itemNo'), 'Item No. did not match.');
+        Assert.AreEqual(Format(ValueEntry."Cost Amount (Actual)" / 1.0, 0, 9), JsonMgt.GetValue('costAmountActual'), 'Cost Amount (Actual) did not match.');
+        Assert.AreEqual(Format(ValueEntry."Cost per Unit" / 1.0, 0, 9), JsonMgt.GetValue('costPerUnit'), 'Cost Per Unit did not match.');
+        Assert.AreEqual(Format(ValueEntry."Item Ledger Entry Quantity", 0, 9), JsonMgt.GetValue('itemLedgerEntryQuantity'), 'Item Ledger Entry Quantity did not match.');
+        Assert.AreEqual(Format(ValueEntry."Valued Quantity", 0, 9), JsonMgt.GetValue('valuedQuantity'), 'Valued Quantity did not match.');
+        Assert.AreEqual(ValueEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Location Code did not match.');
+        Assert.AreEqual(Format(ValueEntry."Item Ledger Entry Type"), JsonMgt.GetValue('itemLedgerEntryType'), 'Item Ledger Entry Type did not match.');
+        Assert.AreEqual(Format(ValueEntry."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Posting Date did not match.');
+        Assert.AreEqual(Format(ValueEntry.Type), JsonMgt.GetValue('type'), 'Type did not match.');
+        Assert.AreEqual(Format(ValueEntry."No."), JsonMgt.GetValue('no'), 'No. did not match.');
+        Assert.AreEqual(Format(ValueEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID did not match.');
+        Assert.AreEqual(Format(ValueEntry."Valuation Date", 0, 9), JsonMgt.GetValue('valuationDate'), 'Valuation Date did not match.');
     end;
 
     local procedure RecreatePBISetup()

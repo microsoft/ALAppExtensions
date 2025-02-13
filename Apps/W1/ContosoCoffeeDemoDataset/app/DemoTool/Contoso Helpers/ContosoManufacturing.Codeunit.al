@@ -206,6 +206,17 @@ codeunit 4763 "Contoso Manufacturing"
         end;
     end;
 
+    procedure InsertWorkCenter(No: Code[20]; Name: Text[30]; WorkCenterGroupCode: Code[10]; DirectUnitCost: Decimal; CapUnitOfMeasureCode: Text[10]; Capacity: Decimal; ShopCalendarCode: Code[10]; UnitCostCalc: Option Time,Units; GenProdPostGrp: Code[20]; SubcontractorNo: Code[20]; UseSpecificUnitCost: Boolean)
+    var
+        WorkCenter: Record "Work Center";
+    begin
+        InsertWorkCenter(No, Name, WorkCenterGroupCode, DirectUnitCost, CapUnitOfMeasureCode, Capacity, ShopCalendarCode, UnitCostCalc, GenProdPostGrp, SubcontractorNo);
+        if WorkCenter.Get(No) and UseSpecificUnitCost then begin
+            WorkCenter.Validate("Specific Unit Cost", UseSpecificUnitCost);
+            WorkCenter.Modify(true)
+        end;
+    end;
+
     procedure InsertWorkCenterGroup(WorkCenterGroupCode: Code[10]; Name: Text[30])
     var
         WorkCenterGroup: Record "Work Center Group";

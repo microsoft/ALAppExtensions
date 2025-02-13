@@ -1,6 +1,5 @@
 namespace Microsoft.SubscriptionBilling;
 
-using System.Reflection;
 using System.Globalization;
 using Microsoft.Sales.Customer;
 
@@ -35,6 +34,21 @@ table 8012 "Usage Data Customer"
         {
             Caption = 'Customer No.';
             TableRelation = Customer;
+            trigger OnValidate()
+            var
+                UsageDataSupplierReference: Record "Usage Data Supplier Reference";
+                UsageDataSubscription: Record "Usage Data Subscription";
+            begin
+                if "Customer No." <> '' then
+                    if "Supplier Reference" <> '' then begin
+                        UsageDataSupplierReference.CreateSupplierReference("Supplier No.", "Supplier Reference", "Usage Data Reference Type"::Customer);
+                        UsageDataSubscription.SetRange("Supplier No.", Rec."Supplier No.");
+                        UsageDataSubscription.SetRange("Customer Id", Rec."Supplier Reference");
+                        if not UsageDataSubscription.IsEmpty() then
+                            if Confirm(StrSubstNo(UpdateUsageDataSubscriptionQst, Rec.FieldCaption("Customer No."), UsageDataSubscription.TableCaption), true) then
+                                UsageDataSubscription.ModifyAll("Customer No.", "Customer No.");
+                    end;
+            end;
         }
         field(5; "Customer Name"; Text[100])
         {
@@ -58,7 +72,7 @@ table 8012 "Usage Data Customer"
             trigger OnLookup()
             var
                 Language: Record Language;
-                TypeHelper: Codeunit "Type Helper";
+                LanguageCU: Codeunit Language;
                 DotNet_CultureInfo: Codeunit DotNet_CultureInfo;
             begin
                 if Culture <> '' then begin
@@ -67,7 +81,7 @@ table 8012 "Usage Data Customer"
                 end;
 
                 if Page.RunModal(0, Language) = Action::LookupOK then
-                    Rec.Validate(Culture, TypeHelper.LanguageIDToCultureName(Language."Windows Language ID"));
+                    Rec.Validate(Culture, LanguageCU.GetCultureName(Language."Windows Language ID"));
             end;
         }
         field(9; "Supplier Reference Entry No."; Integer)
@@ -124,4 +138,6 @@ table 8012 "Usage Data Customer"
             Clustered = true;
         }
     }
+    var
+        UpdateUsageDataSubscriptionQst: Label 'Do you want to update %1 in %2?';
 }

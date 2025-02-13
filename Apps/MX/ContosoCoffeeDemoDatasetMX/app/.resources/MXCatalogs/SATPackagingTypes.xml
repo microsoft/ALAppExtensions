@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-TipoDeEmbalaje xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_TiposEmbalaje>
+		<Code>1A1</Code>
+		<Descripcion>Bidones (Tambores) de Acero 1 de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1A2</Code>
+		<Descripcion>Bidones (Tambores) de Acero 1 de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1B1</Code>
+		<Descripcion>Bidones (Tambores) de Aluminio de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1B2</Code>
+		<Descripcion>Bidones (Tambores) de Aluminio de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1D</Code>
+		<Descripcion>Bidones (Tambores) de Madera contrachapada</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1G</Code>
+		<Descripcion>Bidones (Tambores) de Cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1H1</Code>
+		<Descripcion>Bidones (Tambores) de Plástico de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1H2</Code>
+		<Descripcion>Bidones (Tambores) de Plástico de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1N1</Code>
+		<Descripcion>Bidones (Tambores) de Metal que no sea acero ni aluminio de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>1N2</Code>
+		<Descripcion>Bidones (Tambores) de Metal que no sea acero ni aluminio de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3A1</Code>
+		<Descripcion>Jerricanes (Porrones) de Acero de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3A2</Code>
+		<Descripcion>Jerricanes (Porrones) de Acero de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3B1</Code>
+		<Descripcion>Jerricanes (Porrones) de Aluminio de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3B2</Code>
+		<Descripcion>Jerricanes (Porrones) de Aluminio de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3H1</Code>
+		<Descripcion>Jerricanes (Porrones) de Plástico de tapa no desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>3H2</Code>
+		<Descripcion>Jerricanes (Porrones) de Plástico de tapa desmontable</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4A</Code>
+		<Descripcion>Cajas de Acero</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4B</Code>
+		<Descripcion>Cajas de Aluminio</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4C1</Code>
+		<Descripcion>Cajas de Madera natural ordinaria</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4C2</Code>
+		<Descripcion>Cajas de Madera natural de paredes a prueba de polvos (estancas a los pulverulentos)</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4D</Code>
+		<Descripcion>Cajas de Madera contrachapada</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4F</Code>
+		<Descripcion>Cajas de Madera reconstituida</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4G</Code>
+		<Descripcion>Cajas de Cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4H1</Code>
+		<Descripcion>Cajas de Plástico Expandido</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>4H2</Code>
+		<Descripcion>Cajas de Plástico Rígido</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5H1</Code>
+		<Descripcion>Sacos (Bolsas) de Tejido de plástico sin forro ni revestimientos interiores</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5H2</Code>
+		<Descripcion>Sacos (Bolsas) de Tejido de plástico a prueba de polvos (estancos a los pulverulentos)</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5H3</Code>
+		<Descripcion>Sacos (Bolsas) de Tejido de plástico resistente al agua</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5H4</Code>
+		<Descripcion>Sacos (Bolsas) de Película de plástico</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5L1</Code>
+		<Descripcion>Sacos (Bolsas) de Tela sin forro ni revestimientos interiores</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5L2</Code>
+		<Descripcion>Sacos (Bolsas) de Tela a prueba de polvos (estancos a los pulverulentos)</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5L3</Code>
+		<Descripcion>Sacos (Bolsas) de Tela resistentes al agua</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5M1</Code>
+		<Descripcion>Sacos (Bolsas) de Papel de varias hojas</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>5M2</Code>
+		<Descripcion>Sacos (Bolsas) de Papel de varias hojas, resistentes al agua</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HA1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con bidón (tambor) de acero</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HA2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con una jaula o caja de acero</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HB1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con un bidón (tambor) exterior de aluminio</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HB2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con una jaula o caja de aluminio</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HC</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con una caja de madera</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HD1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con un bidón (tambor) de madera contrachapada</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HD2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con una caja de madera contrachapada</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HG1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con un bidón (tambor) de cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HG2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con una caja de cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HH1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con un bidón (tambor) de plástico</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6HH2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de plástico, con caja de plástico rígido</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PA1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con un bidón (tambor) de acero</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PA2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con una jaula o una caja de acero</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PB1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con un bidón (tambor) exterior de aluminio</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PB2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con una jaula o una caja de aluminio</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PC</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con una caja de madera</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PD 1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con bidón (tambor) de madera contrachapada</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PD2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con canasta de mimbre</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PG1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con un bidón (tambor) de cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PG2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con una caja de cartón</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PH1</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con un envase y embalaje de plástico expandido</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>6PH2</Code>
+		<Descripcion>Envases y embalajes compuestos de Recipiente de vidrio, porcelana o de gres, con un envase y embalaje de plástico rígido</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>7H1</Code>
+		<Descripcion>Bultos de Plástico</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>7L1</Code>
+		<Descripcion>Bultos de Tela</Descripcion>
+	</c_TiposEmbalaje>
+	<c_TiposEmbalaje>
+		<Code>Z01</Code>
+		<Descripcion>No aplica </Descripcion>
+	</c_TiposEmbalaje>
+</data-set-TipoDeEmbalaje>

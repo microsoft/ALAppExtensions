@@ -69,8 +69,4 @@ page 30108 "Shpfy Customer Templates"
             }
         }
     }
-
-    trigger OnOpenPage()
-    begin
-    end;
 }

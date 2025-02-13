@@ -6,6 +6,7 @@ namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.ExtendedText;
 
 page 31161 "Cash Document Subform CZP"
 {
@@ -58,6 +59,7 @@ page 31161 "Cash Document Subform CZP"
                     trigger OnValidate()
                     begin
                         Rec.ShowShortcutDimCode(ShortcutDimCode);
+                        InsertExtendedText(false);
                     end;
                 }
                 field(Description; Rec.Description)
@@ -319,6 +321,53 @@ page 31161 "Cash Document Subform CZP"
                     ToolTip = 'Specifies the reason code on the entry.';
                     Visible = false;
                 }
+                field("Project No."; Rec."Project No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project.';
+                    Visible = false;
+
+                    trigger OnValidate()
+                    begin
+                        Rec.ShowShortcutDimCode(ShortcutDimCode);
+                    end;
+                }
+                field("Project Task No."; Rec."Project Task No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project task.';
+                    Visible = false;
+
+                    trigger OnValidate()
+                    begin
+                        if Rec.ProjectTaskIsSet() then
+                            Rec.ShowShortcutDimCode(ShortcutDimCode);
+                    end;
+                }
+                field("Project Planning Line No."; Rec."Project Planning Line No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the project planning line number that the usage should be linked to when the project journal is posted. You can only link to project planning lines that have the Apply Usage Link option enabled.';
+                    Visible = false;
+                }
+                field("Project Line Type"; Rec."Project Line Type")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the type of planning line to create when a project ledger entry is posted. If the field is empty, no planning lines are created.';
+                    Visible = false;
+                }
+                field("Project Quantity"; Rec."Project Quantity")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the quantity of the project line.';
+                    Visible = false;
+                }
+                field("Project Unit Price"; Rec."Project Unit Price")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the unit price of the project line.';
+                    Visible = false;
+                }
             }
             group(Control2)
             {
@@ -352,7 +401,7 @@ page 31161 "Cash Document Subform CZP"
                     Caption = 'Total Amount Incl. VAT';
                     Editable = false;
                     Style = Strong;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
                     ToolTip = 'Specifies the total amout incl. VAT.';
                 }
             }
@@ -396,6 +445,19 @@ page 31161 "Cash Document Subform CZP"
                     trigger OnAction()
                     begin
                         Rec.ApplyEntries();
+                    end;
+                }
+                action("Insert Ext. Texts CZP")
+                {
+                    AccessByPermission = TableData "Extended Text Header" = R;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Insert &Ext. Texts';
+                    Image = Text;
+                    ToolTip = 'Insert the extended item description that is set up for the item that is being processed on the line.';
+
+                    trigger OnAction()
+                    begin
+                        InsertExtendedText(true);
                     end;
                 }
             }
@@ -507,6 +569,22 @@ page 31161 "Cash Document Subform CZP"
         AccountTypeIsFilled := Rec."Account Type" <> Rec."Account Type"::" ";
     end;
 
+    procedure InsertExtendedText(Unconditionally: Boolean)
+    var
+        TransferExtendedTextCZP: Codeunit "Transfer Extended Text CZP";
+    begin
+        OnBeforeInsertExtendedText(Rec);
+        if TransferExtendedTextCZP.CashDeskCheckIfAnyExtText(Rec, Unconditionally) then begin
+            CurrPage.SaveRecord();
+            Commit();
+            TransferExtendedTextCZP.InsertCashDeskExtText(Rec);
+        end;
+        OnInsertExtendedTextOnAfterInsertCashDeskExtText(Rec);
+
+        if TransferExtendedTextCZP.MakeUpdate() then
+            CurrPage.Update(true);
+    end;
+
     local procedure SetDimensionsVisibility()
     var
         DimensionManagement: Codeunit DimensionManagement;
@@ -521,5 +599,15 @@ page 31161 "Cash Document Subform CZP"
         DimVisible8 := false;
         DimensionManagement.UseShortcutDims(DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8);
         Clear(DimensionManagement);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertExtendedText(var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertExtendedTextOnAfterInsertCashDeskExtText(CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
     end;
 }

@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Sales;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Setup;
@@ -37,8 +38,7 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
                     Rec.Validate("Sust. Account Category", SustainabilityAccount.Category);
                     Rec.Validate("Sust. Account Subcategory", SustainabilityAccount.Subcategory);
 
-                    if Rec.Type = Rec.Type::Item then
-                        UpdateCO2eInformation();
+                    UpdateCO2eInformation();
                 end;
 
                 CreateDimFromDefaultDim(FieldNo(Rec."Sust. Account No."));
@@ -174,11 +174,20 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
     local procedure UpdateCO2eInformation()
     var
         Item: Record Item;
+        Resource: Record Resource;
     begin
-        if not Item.Get(Rec."No.") then
-            exit;
-
-        Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+        case Rec.Type of
+            Rec.Type::Item:
+                begin
+                    Item.Get(Rec."No.");
+                    Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+                end;
+            Rec.Type::Resource:
+                begin
+                    Resource.Get(Rec."No.");
+                    Rec.Validate("CO2e per Unit", Resource."CO2e per Unit");
+                end;
+        end;
     end;
 
     var
