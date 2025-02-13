@@ -90,4 +90,29 @@ codeunit 5142 "Contoso Utilities"
         result.CreateOutStream(OutStr);
         CopyStream(OutStr, ObjInStream);
     end;
+
+    [Scope('OnPrem')]
+    procedure InsertBLOBFromFile(FilePath: Text; FileName: Text): Code[50]
+    var
+        MediaResources: Record "Media Resources";
+        BLOBInStream: InStream;
+        BLOBOutStream: OutStream;
+        MediaResourceCode: Code[50];
+    begin
+        MediaResourceCode := CopyStr(FileName, 1, MaxStrLen(MediaResourceCode));
+        if MediaResources.Get(MediaResourceCode) then
+            exit;
+
+        NavApp.GetResource(FilePath + FileName, BLOBInStream);
+
+        MediaResources.Init();
+        MediaResources.Validate(Code, MediaResourceCode);
+        MediaResources.Blob.CreateOutStream(BLOBOutStream);
+        CopyStream(BLOBOutStream, BLOBInStream);
+
+#pragma warning disable AS0059
+        MediaResources.Insert(true);
+#pragma warning restore AS0059
+        exit(MediaResourceCode);
+    end;
 }

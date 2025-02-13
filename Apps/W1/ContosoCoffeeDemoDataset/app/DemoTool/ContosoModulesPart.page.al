@@ -36,7 +36,8 @@ page 5548 "Contoso Modules Part"
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
         FeatureTelemetry.LogUptake('0000NFD', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
-        ContosoDemoTool.GetRefreshModules(Rec);
+        ContosoDemoTool.GetRefreshedModules(Rec);
+        Rec.ModifyAll(Install, true);
         FeatureTelemetry.LogUptake('0000NFE', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::"Set up");
     end;
 

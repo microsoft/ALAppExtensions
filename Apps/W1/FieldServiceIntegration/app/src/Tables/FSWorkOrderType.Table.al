@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6622 "FS Work Order Type"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'msdyn_workordertype';
     TableType = CRM;
@@ -217,6 +221,31 @@ table 6622 "FS Work Order Type"
             ExternalType = 'Boolean';
             Description = 'Select whether work orders of this type are taxable.';
             Caption = 'Taxable';
+            DataClassification = SystemMetadata;
+        }
+        field(40; Code; Text[10])
+        {
+            ExternalName = 'bcbi_code';
+            ExternalType = 'String';
+            Description = 'Type the code of the work order type.';
+            Caption = 'Code';
+            DataClassification = SystemMetadata;
+        }
+        field(41; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoservice';
+            ExternalType = 'Boolean';
+            Description = 'Select whether work orders of this type are integrated to service.';
+            Caption = 'Integrate To Service';
+            DataClassification = SystemMetadata;
+        }
+        field(50; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
             DataClassification = SystemMetadata;
         }
     }

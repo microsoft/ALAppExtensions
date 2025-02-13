@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Manufacturing;
 
+using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Manufacturing.WorkCenter;
@@ -106,7 +107,23 @@ tableextension 6247 "Sust. Prod. Order Routing Line" extends "Prod. Order Routin
 
     procedure UpdateSustainabilityEmission(var ProdOrderRoutingLine: Record "Prod. Order Routing Line")
     begin
-        ProdOrderRoutingLine."Total CO2e" := ProdOrderRoutingLine."CO2e per Unit" * ProdOrderRoutingLine."Input Quantity";
+        ProdOrderRoutingLine."Total CO2e" := ProdOrderRoutingLine."CO2e per Unit" * GetUnitCostPerOperation(ProdOrderRoutingLine);
+    end;
+
+    local procedure GetUnitCostPerOperation(var ProdOrderRoutingLine: Record "Prod. Order Routing Line"): Decimal
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+        CalendarMgt: Codeunit "Shop Calendar Management";
+    begin
+        if ProdOrderRoutingLine."Unit Cost Calculation" = ProdOrderRoutingLine."Unit Cost Calculation"::Time then
+            exit(
+                (ProdOrderRoutingLine."Run Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Run Time Unit of Meas. Code")) +
+                (ProdOrderRoutingLine."Setup Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Setup Time Unit of Meas. Code")) +
+                (ProdOrderRoutingLine."Move Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Move Time Unit of Meas. Code")) +
+                (ProdOrderRoutingLine."Wait Time" * CalendarMgt.QtyperTimeUnitofMeasure(ProdOrderRoutingLine."Work Center No.", ProdOrderRoutingLine."Wait Time Unit of Meas. Code")));
+
+        GetProdOrderLine(ProdOrderLine, ProdOrderRoutingLine);
+        exit(ProdOrderLine.Quantity * ProdOrderLine."Qty. per Unit of Measure");
     end;
 
     procedure UpdateEmissionPerUnit(var ProdOrderRoutingLine: Record "Prod. Order Routing Line")
@@ -115,10 +132,10 @@ tableextension 6247 "Sust. Prod. Order Routing Line" extends "Prod. Order Routin
     begin
         ProdOrderRoutingLine."CO2e Per Unit" := 0;
 
-        if (ProdOrderRoutingLine."Input Quantity" = 0) then
+        if (GetUnitCostPerOperation(ProdOrderRoutingLine) = 0) then
             exit;
 
-        Denominator := ProdOrderRoutingLine."Input Quantity";
+        Denominator := GetUnitCostPerOperation(ProdOrderRoutingLine);
         if ProdOrderRoutingLine."Total CO2e" <> 0 then
             ProdOrderRoutingLine."CO2e per Unit" := ProdOrderRoutingLine."Total CO2e" / Denominator;
     end;
@@ -180,6 +197,15 @@ tableextension 6247 "Sust. Prod. Order Routing Line" extends "Prod. Order Routin
         ProdOrderRoutingLine.Validate("Sust. Account Name", SustainabilityAccount.Name);
         ProdOrderRoutingLine.Validate("Sust. Account Category", SustainabilityAccount.Category);
         ProdOrderRoutingLine.Validate("Sust. Account Subcategory", SustainabilityAccount.Subcategory);
+    end;
+
+    local procedure GetProdOrderLine(var ProdOrderLine: Record "Prod. Order Line"; ProdOrderRoutingLine: Record "Prod. Order Routing Line")
+    begin
+        ProdOrderLine.SetRange(Status, ProdOrderRoutingLine.Status);
+        ProdOrderLine.SetRange("Prod. Order No.", ProdOrderRoutingLine."Prod. Order No.");
+        ProdOrderLine.SetRange("Routing No.", ProdOrderRoutingLine."Routing No.");
+        ProdOrderLine.SetRange("Routing Reference No.", ProdOrderRoutingLine."Routing Reference No.");
+        ProdOrderLine.FindFirst();
     end;
 
     var

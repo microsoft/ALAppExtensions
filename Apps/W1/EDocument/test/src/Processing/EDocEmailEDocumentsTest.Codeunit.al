@@ -189,7 +189,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
-        EDocumentService."Sent Actions Integration" := Enum::"Sent Document Actions"::Mock;
         EDocumentService.Modify();
         DocSendingProfile.Get(Customer."Document Sending Profile");
         DocSendingProfile."E-Mail" := DocSendingProfile."E-Mail"::"Yes (Prompt for Settings)";

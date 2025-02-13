@@ -114,7 +114,8 @@ page 5194 "Contoso Demo Tool"
         ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
         FeatureTelemetry.LogUptake('0000KZY', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
-        ContosoDemoTool.RefreshModules(Rec);
+        ContosoDemoTool.RefreshModules();
+        ContosoDemoTool.FilterModulesWithApplicationAreas(Rec);
         FeatureTelemetry.LogUptake('0000KZZ', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::"Set up");
     end;
 

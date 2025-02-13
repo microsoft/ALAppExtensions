@@ -13,6 +13,7 @@ page 6124 "E-Doc. Mapping Part"
     PageType = ListPart;
     SourceTable = "E-Doc. Mapping";
     UsageCategory = None;
+    DataCaptionExpression = DataCaptionExpression;
 
     layout
     {
@@ -81,6 +82,18 @@ page 6124 "E-Doc. Mapping Part"
 
     var
         ForImport: Boolean;
+        DataCaptionExpression: Text;
+        ImportDataCaptionTok: Label 'Import';
+        ExportDataCaptionTok: Label 'Export';
+
+    trigger OnAfterGetRecord()
+    begin
+        DataCaptionExpression := '';
+        if Rec."For Import" then
+            DataCaptionExpression := Rec.Code + ' - ' + ImportDataCaptionTok
+        else
+            DataCaptionExpression := Rec.Code + ' - ' + ExportDataCaptionTok;
+    end;
 
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean

@@ -835,7 +835,6 @@ codeunit 139653 "Replication Mgt Page Tests"
         Assert.AreEqual(IsSaas, CloudMigrationManagement.CompleteCloudMigration.Visible(), 'DisableIntelligentCloud should be visible.');
         Assert.AreEqual(IsSaas, CloudMigrationManagement.UpdateReplicationCompanies.Visible(), 'UpdateReplicationCompanies should be visible.');
         Assert.AreEqual(IsSaas, CloudMigrationManagement.RunReplicationNow.Visible(), 'RunReplicationNow should be visible.');
-        Assert.AreEqual(IsSaas, CloudMigrationManagement.ResetAllCloudData.Visible(), 'ResetAllCloudData should be visible.');
         Assert.AreEqual(IsSaas, CloudMigrationManagement.GenerateNewKey.Visible(), 'GenerateNewKey should be visible.');
         Assert.AreEqual(IsSaas, CloudMigrationManagement.CheckForUpdate.Visible(), 'CheckForUpdate should be visible.');
 

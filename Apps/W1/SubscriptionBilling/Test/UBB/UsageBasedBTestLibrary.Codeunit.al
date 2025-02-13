@@ -3,61 +3,119 @@ namespace Microsoft.SubscriptionBilling;
 using System.IO;
 using System.Globalization;
 using Microsoft.Finance.Currency;
+using Microsoft.Sales.Document;
 
 codeunit 139892 "Usage Based B. Test Library"
 {
     Access = Internal;
 
-    procedure ResetUsageBasedRecords()
     var
-        UsageDataBilling: Record "Usage Data Billing";
-        UsageDataGenericImport: Record "Usage Data Generic Import";
-        UsageDataBlob: Record "Usage Data Blob";
-        UsageDataImport: Record "Usage Data Import";
-        UsageDataSubscription: Record "Usage Data Subscription";
-        UsageDataCustomer: Record "Usage Data Customer";
-        UsageDataSupplierReference: Record "Usage Data Supplier Reference";
-        UsageDataSupplier: Record "Usage Data Supplier";
-        GenericImportSettings: Record "Generic Import Settings";
-        DataExchDef: Record "Data Exch. Def";
-        DataExchLineDef: Record "Data Exch. Line Def";
-        DataExchMapping: Record "Data Exch. Mapping";
-        DataExchFieldMapping: Record "Data Exch. Field Mapping";
-        DataExchColumnDef: Record "Data Exch. Column Def";
+        Currency: Record Currency;
+        CultureInfo: Codeunit DotNet_CultureInfo;
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryUtility: Codeunit "Library - Utility";
+        UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
+        i: Integer;
+
+    procedure CreateDataExchDefinition(var DataExchDef: Record "Data Exch. Def"; FileType: Option Xml,"Variable Text","Fixed Text",Json; DefinitionType: Enum "Data Exchange Definition Type";
+                                                                                                                                                             FileEncoding: Option "MS-DOS","UTF-8","UTF-16",WINDOWS;
+                                                                                                                                                             ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
+                                                                                                                                                             CustomColumnSeparator: Text[10];
+                                                                                                                                                             HeaderLines: Integer)
     begin
-        UsageDataBilling.Reset();
-        UsageDataBilling.DeleteAll(false);
-        UsageDataGenericImport.Reset();
-        UsageDataGenericImport.DeleteAll(false);
-        UsageDataBlob.Reset();
-        UsageDataBlob.DeleteAll(false);
-        UsageDataImport.Reset();
-        UsageDataImport.DeleteAll(false);
+        DataExchDef.Init();
+        DataExchDef.Code := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(DataExchDef.Code));
+        DataExchDef.Name := CopyStr(LibraryRandom.RandText(100), 1, MaxStrLen(DataExchDef.Name));
+        DataExchDef."File Type" := FileType;
+        DataExchDef.Type := DefinitionType;
+        DataExchDef."Reading/Writing XMLport" := Xmlport::"Data Exch. Import - CSV";
+        DataExchDef."File Encoding" := FileEncoding;
+        DataExchDef."Column Separator" := ColumnSeparator;
+        DataExchDef."Custom Column Separator" := CustomColumnSeparator;
+        DataExchDef."Header Lines" := HeaderLines;
+        DataExchDef.Insert(false);
+    end;
 
-        UsageDataSubscription.Reset();
-        UsageDataSubscription.DeleteAll(false);
-        UsageDataCustomer.Reset();
-        UsageDataCustomer.DeleteAll(false);
-        UsageDataSupplierReference.Reset();
-        UsageDataSupplierReference.DeleteAll(false);
-        UsageDataSupplier.Reset();
-        UsageDataSupplier.DeleteAll(false);
+    procedure CreateDataExchDefinitionLine(var DataExchLineDef: Record "Data Exch. Line Def"; DataExchDefCode: Code[20]; var RecordRef: RecordRef)
+    begin
+        DataExchLineDef.InsertRec(DataExchDefCode, CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(DataExchLineDef.Code)),
+                                  CopyStr(LibraryRandom.RandText(100), 1, MaxStrLen(DataExchLineDef.Name)), RecordRef.FieldCount());
+    end;
 
-        GenericImportSettings.Reset();
-        GenericImportSettings.DeleteAll(false);
+    procedure CreateDataExchColumnDefinition(var DataExchColumnDef: Record "Data Exch. Column Def"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
+    var
+        FieldRef: FieldRef;
+        DataType: Option Text,Date,Decimal,DateTime;
+    begin
+        for i := 1 to RecordRef.FieldCount() do // Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
+            if RecordRef.FieldExist(i) then begin
+                FieldRef := RecordRef.Field(i);
+                if FieldRef.Type in [FieldRef.Type::Text, FieldRef.Type::Decimal, FieldRef.Type::Date, FieldRef.Type::Code] then begin
+                    if FieldRef.Type <> FieldRef.Type::Code then
+                        Evaluate(DataType, Format(FieldRef.Type))
+                    else
+                        Evaluate(DataType, Format(FieldRef.Type::Text));
+                    DataExchColumnDef.InsertRecordForImport(DataExchDefCode, DataExchLineDefCode, i,
+                                                         CopyStr(FieldRef.Name, 1, MaxStrLen(DataExchColumnDef.Name)), '', true, DataType, '',
+                                                         CopyStr(CultureInfo.CurrentCultureName(), 1, MaxStrLen(DataExchColumnDef."Data Formatting Culture")));
+                end;
+            end;
+    end;
 
-        DataExchDef.Reset();
-        DataExchDef.DeleteAll(false);
-        DataExchColumnDef.Reset();
-        DataExchColumnDef.DeleteAll(false);
-        DataExchLineDef.Reset();
-        DataExchLineDef.DeleteAll(false);
-        DataExchMapping.Reset();
-        DataExchMapping.DeleteAll(false);
-        DataExchFieldMapping.Reset();
-        DataExchFieldMapping.DeleteAll(false);
-        GenericImportSettings.Reset();
-        GenericImportSettings.DeleteAll(false);
+    procedure CreateDataExchangeMapping(var DataExchMapping: Record "Data Exch. Mapping"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
+    begin
+        DataExchMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, RecordRef.Number, CopyStr(LibraryRandom.RandText(250), 1, MaxStrLen(DataExchMapping.Name)),
+                                    Codeunit::"Generic Import Mappings", 0, 0);
+    end;
+
+    procedure CreateDataExchangeFieldMapping(var DataExchFieldMapping: Record "Data Exch. Field Mapping"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
+    var
+        FieldRef: FieldRef;
+    begin
+        for i := 1 to RecordRef.FieldCount() do // Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
+            if RecordRef.FieldExist(i) then begin
+                FieldRef := RecordRef.Field(i);
+                if FieldRef.Type in [FieldRef.Type::Text, FieldRef.Type::Decimal, FieldRef.Type::Date, FieldRef.Type::Code] then
+                    DataExchFieldMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, RecordRef.Number, i, i, true, 1);
+            end;
+    end;
+
+    procedure CreateGenericImportSettings(var GenericImportSettings: Record "Generic Import Settings"; SupplierNo: Code[20]; CreateUsageDataCustomer: Boolean; CreateUsageDataSubscription: Boolean)
+    begin
+        GenericImportSettings.Init();
+        GenericImportSettings."Usage Data Supplier No." := SupplierNo;
+        GenericImportSettings."Create Customers" := CreateUsageDataCustomer;
+        GenericImportSettings."Create Subscriptions" := CreateUsageDataSubscription;
+        GenericImportSettings.Insert(true);
+    end;
+
+    procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
+    begin
+        UsageDataGenericImport.Init();
+        UsageDataGenericImport."Usage Data Import Entry No." := UsageDataImportEntryNo;
+        UsageDataGenericImport."Service Object No." := ServiceObjectNo;
+        UsageDataGenericImport."Customer ID" := CustomerNo;
+        UsageDataGenericImport."Subscription ID" := CopyStr(LibraryRandom.RandText(80), 1, MaxStrLen(UsageDataGenericImport."Subscription ID"));
+        UsageDataGenericImport."Billing Period Start Date" := BillingPeriodStartDate;
+        UsageDataGenericImport."Billing Period End Date" := BillingPeriodEndDate;
+        UsageDataGenericImport."Subscription Start Date" := SubscriptionStartDate;
+        UsageDataGenericImport."Subscription End Date" := SubscriptionEndDate;
+        UsageDataGenericImport.Cost := UnitCost;
+        UsageDataGenericImport.Quantity := Quantity;
+        UsageDataGenericImport."Cost Amount" := UnitCost * UsageDataGenericImport.Quantity;
+        UsageDataGenericImport."Entry No." := 0;
+        UsageDataGenericImport.Insert(false);
+    end;
+
+    procedure CreateSalesInvoiceAndAssignToBillingLine(var BillingLine: Record "Billing Line")
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+        BillingLine."Document Type" := BillingLine."Document Type"::Invoice;
+        BillingLine."Document No." := SalesHeader."No.";
     end;
 
     procedure CreateUsageDataSupplier(var UsageDataSupplier: Record "Usage Data Supplier"; UsageDataSupplierType: Enum "Usage Data Supplier Type"; UnitPriceFromImport: Boolean; VendorInvoicePer: Enum "Vendor Invoice Per")
@@ -89,15 +147,6 @@ codeunit 139892 "Usage Based B. Test Library"
         UsageDataImport.Insert(true);
     end;
 
-    procedure CreateGenericImportSettings(var GenericImportSettings: Record "Generic Import Settings"; SupplierNo: Code[20]; CreateUsageDataCustomer: Boolean; CreateUsageDataSubscription: Boolean)
-    begin
-        GenericImportSettings.Init();
-        GenericImportSettings."Usage Data Supplier No." := SupplierNo;
-        GenericImportSettings."Create Customers" := CreateUsageDataCustomer;
-        GenericImportSettings."Create Subscriptions" := CreateUsageDataSubscription;
-        GenericImportSettings.Insert(true);
-    end;
-
     procedure CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(var UsageDataBlob: Record "Usage Data Blob"; var RecordRef: RecordRef;
                                                                           ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer)
     begin
@@ -108,8 +157,8 @@ codeunit 139892 "Usage Based B. Test Library"
                                                                           ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer;
                                                                           BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
     var
-        OutStr: OutStream;
         FieldCount: Integer;
+        OutStr: OutStream;
     begin
         UsageDataBlob.Data.CreateOutStream(OutStr, TextEncoding::UTF8);
         FieldCount := RecordRef.FieldCount();
@@ -120,76 +169,13 @@ codeunit 139892 "Usage Based B. Test Library"
         UsageDataBlob.Modify(false);
     end;
 
-    procedure CreateDataExchDefinition(var DataExchDef: Record "Data Exch. Def"; FileType: Option Xml,"Variable Text","Fixed Text",Json; DefinitionType: Enum "Data Exchange Definition Type";
-                                                                                                                                                             FileEncoding: Option "MS-DOS","UTF-8","UTF-16",WINDOWS;
-                                                                                                                                                             ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
-                                                                                                                                                             CustomColumnSeparator: Text[10];
-                                                                                                                                                             HeaderLines: Integer)
-    begin
-        DataExchDef.Init();
-        DataExchDef.Code := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(DataExchDef.Code));
-        DataExchDef.Name := CopyStr(LibraryRandom.RandText(100), 1, MaxStrLen(DataExchDef.Name));
-        DataExchDef."File Type" := FileType;
-        DataExchDef.Type := DefinitionType;
-        DataExchDef."Reading/Writing XMLport" := XmlPort::"Data Exch. Import - CSV";
-        DataExchDef."File Encoding" := FileEncoding;
-        DataExchDef."Column Separator" := ColumnSeparator;
-        DataExchDef."Custom Column Separator" := CustomColumnSeparator;
-        DataExchDef."Header Lines" := HeaderLines;
-        DataExchDef.Insert(false);
-    end;
-
-    procedure CreateDataExchDefinitionLine(var DataExchLineDef: Record "Data Exch. Line Def"; DataExchDefCode: Code[20]; var RecordRef: RecordRef)
-    begin
-        DataExchLineDef.InsertRec(DataExchDefCode, CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(DataExchLineDef.Code)),
-                                  CopyStr(LibraryRandom.RandText(100), 1, MaxStrLen(DataExchLineDef.Name)), RecordRef.FieldCount());
-    end;
-
-    procedure CreateDataExchColumnDefinition(var DataExchColumnDef: Record "Data Exch. Column Def"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
-    var
-        FieldRef: FieldRef;
-        DataType: Option Text,Date,Decimal,DateTime;
-    begin
-        for i := 1 to RecordRef.FieldCount() do //Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
-            if RecordRef.FieldExist(i) then begin
-                FieldRef := RecordRef.Field(i);
-                if FieldRef.Type in [FieldRef.Type::Text, FieldRef.Type::Decimal, FieldRef.Type::Date, FieldRef.Type::Code] then begin
-                    if FieldRef.Type <> FieldRef.Type::Code then
-                        Evaluate(DataType, Format(FieldRef.Type))
-                    else
-                        Evaluate(DataType, Format(FieldRef.Type::Text));
-                    DataExchColumnDef.InsertRecordForImport(DataExchDefCode, DataExchLineDefCode, i,
-                                                         CopyStr(FieldRef.Name, 1, MaxStrLen(DataExchColumnDef.Name)), '', true, DataType, '',
-                                                         CopyStr(CultureInfo.CurrentCultureName(), 1, MaxStrLen(DataExchColumnDef."Data Formatting Culture")));
-                end;
-            end;
-    end;
-
-    procedure CreateDataExchangeMapping(var DataExchMapping: Record "Data Exch. Mapping"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
-    begin
-        DataExchMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, RecordRef.Number, CopyStr(LibraryRandom.RandText(250), 1, MaxStrLen(DataExchMapping.Name)),
-                                    Codeunit::"Generic Import Mappings", 0, 0);
-    end;
-
-    procedure CreateDataExchangeFieldMapping(var DataExchFieldMapping: Record "Data Exch. Field Mapping"; DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; var RecordRef: RecordRef)
-    var
-        FieldRef: FieldRef;
-    begin
-        for i := 1 to RecordRef.FieldCount() do //Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
-            if RecordRef.FieldExist(i) then begin
-                FieldRef := RecordRef.Field(i);
-                if FieldRef.Type in [FieldRef.Type::Text, FieldRef.Type::Decimal, FieldRef.Type::Date, FieldRef.Type::Code] then
-                    DataExchFieldMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, RecordRef.Number, i, i, true, 1);
-            end;
-    end;
-
     local procedure CreateOutStreamData(var OutStr: OutStream; var RecordRef: RecordRef; FieldCount: Integer;
                                                                           ServiceObjectNo: Code[20];
                                                                           BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
     var
         FieldRef: FieldRef;
     begin
-        for i := 1 to FieldCount do //Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
+        for i := 1 to FieldCount do // Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
             if RecordRef.FieldExist(i) then begin
                 FieldRef := RecordRef.Field(i);
                 case FieldRef.Type of
@@ -231,44 +217,137 @@ codeunit 139892 "Usage Based B. Test Library"
     var
         FieldRef: FieldRef;
     begin
-        for i := 1 to FieldCount do //Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
+        for i := 1 to FieldCount do // Skip Entry No. = FieldNo = 1 and "Usage Data Import Entry No." = 2
             if RecordRef.FieldExist(i) then begin
                 FieldRef := RecordRef.Field(i);
                 OutStr.WriteText(FieldRef.Name);
                 if i <> FieldCount then
                     OutStr.WriteText(';')
             end;
-        OutStr.WriteText(); //New line
+        OutStr.WriteText(); // New line
     end;
 
-    internal procedure ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDefCode: Code[20]; var GenericImportSettings: Record "Generic Import Settings")
+    procedure ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDefCode: Code[20]; var GenericImportSettings: Record "Generic Import Settings")
     begin
         GenericImportSettings."Data Exchange Definition" := DataExchDefCode;
         GenericImportSettings.Modify(false);
     end;
 
-    internal procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
+    procedure DeleteAllUsageBasedRecords()
+    var
+        DataExchColumnDef: Record "Data Exch. Column Def";
+        DataExchDef: Record "Data Exch. Def";
+        DataExchFieldMapping: Record "Data Exch. Field Mapping";
+        DataExchLineDef: Record "Data Exch. Line Def";
+        DataExchMapping: Record "Data Exch. Mapping";
+        GenericImportSettings: Record "Generic Import Settings";
+        UsageDataBilling: Record "Usage Data Billing";
+        UsageDataBlob: Record "Usage Data Blob";
+        UsageDataCustomer: Record "Usage Data Customer";
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+        UsageDataImport: Record "Usage Data Import";
+        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSupplier: Record "Usage Data Supplier";
+        UsageDataSupplierReference: Record "Usage Data Supplier Reference";
     begin
-        UsageDataGenericImport.Init();
-        UsageDataGenericImport."Usage Data Import Entry No." := UsageDataImportEntryNo;
-        UsageDataGenericImport."Service Object No." := ServiceObjectNo;
-        UsageDataGenericImport."Customer ID" := CustomerNo;
-        UsageDataGenericImport."Subscription ID" := CopyStr(LibraryRandom.RandText(80), 1, MaxStrLen(UsageDataGenericImport."Subscription ID"));
-        UsageDataGenericImport."Billing Period Start Date" := BillingPeriodStartDate;
-        UsageDataGenericImport."Billing Period End Date" := BillingPeriodEndDate;
-        UsageDataGenericImport."Subscription Start Date" := SubscriptionStartDate;
-        UsageDataGenericImport."Subscription End Date" := SubscriptionEndDate;
-        UsageDataGenericImport.Cost := UnitCost;
-        UsageDataGenericImport.Quantity := Quantity;
-        UsageDataGenericImport."Cost Amount" := UnitCost * UsageDataGenericImport.Quantity;
-        UsageDataGenericImport."Entry No." := 0;
-        UsageDataGenericImport.Insert(false);
+        UsageDataBilling.DeleteAll(false);
+        UsageDataGenericImport.DeleteAll(false);
+        UsageDataBlob.DeleteAll(false);
+        UsageDataImport.DeleteAll(false);
+
+        UsageDataSubscription.DeleteAll(false);
+        UsageDataCustomer.DeleteAll(false);
+        UsageDataSupplierReference.DeleteAll(false);
+        UsageDataSupplier.DeleteAll(false);
+
+        GenericImportSettings.DeleteAll(false);
+
+        DataExchDef.DeleteAll(false);
+        DataExchColumnDef.DeleteAll(false);
+        DataExchLineDef.DeleteAll(false);
+        DataExchMapping.DeleteAll(false);
+        DataExchFieldMapping.DeleteAll(false);
+        GenericImportSettings.DeleteAll(false);
     end;
 
+    procedure MockBillingLine(var BillingLine: Record "Billing Line")
+    begin
+        BillingLine.InitNewBillingLine();
+        BillingLine.Insert(false);
+    end;
+
+    procedure MockBillingLineWithServObjectNo(var BillingLine: Record "Billing Line")
+    begin
+        BillingLine.InitNewBillingLine();
+        BillingLine."Service Object No." := LibraryUtility.GenerateGUID();
+        BillingLine."Service Commitment Entry No." := LibraryRandom.RandInt(10000);
+        BillingLine.Insert(false);
+    end;
+
+    procedure MockCustomerContractLine(var CustomerContractLine: Record "Customer Contract Line")
     var
-        Currency: Record Currency;
-        LibraryERM: Codeunit "Library - ERM";
-        LibraryRandom: Codeunit "Library - Random";
-        CultureInfo: Codeunit DotNet_CultureInfo;
-        i: Integer;
+        CustomerContract: Record "Customer Contract";
+    begin
+        CustomerContract.Init();
+        CustomerContract.Insert(true);
+        CustomerContractLine.Init();
+        CustomerContractLine."Contract No." := CustomerContract."No.";
+        CustomerContractLine."Contract Line Type" := CustomerContractLine."Contract Line Type"::"Service Commitment";
+        CustomerContractLine.Insert(false);
+    end;
+
+    procedure MockServiceCommitmentLine(var ServiceCommitment: Record "Service Commitment")
+    var
+        ServiceObject: Record "Service Object";
+    begin
+        ServiceObject.Init();
+        ServiceObject.Insert(true);
+        ServiceCommitment.Init();
+        ServiceCommitment."Service Object No." := ServiceObject."No.";
+        ServiceCommitment."Entry No." := 0;
+        ServiceCommitment.Partner := ServiceCommitment.Partner::Customer;
+        ServiceCommitment.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForContractLine(var UsageDataBilling: Record "Usage Data Billing"; ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLine: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := ServicePartner;
+        UsageDataBilling."Contract No." := ContractNo;
+        UsageDataBilling."Contract Line No." := ContractLine;
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForDocuments(var UsageDataBilling: Record "Usage Data Billing"; DocType: Enum "Sales Document Type"; DocNo: Code[20]; DocLineNo: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := UsageDataBilling.Partner::Customer;
+        UsageDataBilling."Document Type" := UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocType);
+        UsageDataBilling."Document No." := DocNo;
+        UsageDataBilling."Document Line No." := DocLineNo;
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockUsageDataBillingForServiceCommitmentLine(var UsageDataBilling: Record "Usage Data Billing"; ServCommPartner: Enum "Service Partner"; ServCommServiceObjectNo: Code[20]; ServCommLineNo: Integer)
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := ServCommPartner;
+        UsageDataBilling."Service Object No." := ServCommServiceObjectNo;
+        UsageDataBilling."Service Commitment Entry No." := ServCommLineNo;
+        UsageDataBilling.Insert(false);
+    end;
+
+    procedure MockUsageDataForBillingLine(var UsageDataBilling: Record "Usage Data Billing"; BillingLine: Record "Billing Line")
+    begin
+        UsageDataBilling.Init();
+        UsageDataBilling.Partner := UsageDataBilling.Partner::Customer;
+        UsageDataBilling."Service Object No." := BillingLine."Service Object No.";
+        UsageDataBilling."Service Commitment Entry No." := BillingLine."Service Commitment Entry No.";
+        UsageDataBilling."Document Type" := UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(BillingLine."Document Type");
+        UsageDataBilling."Document No." := BillingLine."Document No.";
+        UsageDataBilling."Billing Line Entry No." := BillingLine."Entry No.";
+        UsageDataBilling."Billing Line Entry No." := BillingLine."Entry No.";
+        UsageDataBilling.Insert(false);
+    end;
+
 }

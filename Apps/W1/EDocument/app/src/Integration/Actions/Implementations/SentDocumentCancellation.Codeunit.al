@@ -19,14 +19,13 @@ codeunit 6183 "Sent Document Cancellation" implements IDocumentAction
     InherentPermissions = X;
 
     procedure InvokeAction(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+    var
+        IDocumentSender: Interface IDocumentSender;
     begin
         ActionContext.Status().SetErrorStatus(Enum::"E-Document Service Status"::"Cancel Error");
         ActionContext.Status().SetStatus(Enum::"E-Document Service Status"::"Canceled");
-        ISentDocumentActions := EDocumentService."Sent Actions Integration";
-        exit(ISentDocumentActions.GetCancellationStatus(EDocument, EDocumentService, ActionContext));
+        if IDocumentSender is ISentDocumentActions then
+            exit((IDocumentSender as ISentDocumentActions).GetCancellationStatus(EDocument, EDocumentService, ActionContext));
     end;
-
-    var
-        ISentDocumentActions: Interface ISentDocumentActions;
 
 }

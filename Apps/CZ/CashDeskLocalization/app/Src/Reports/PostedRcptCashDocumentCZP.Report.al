@@ -164,6 +164,9 @@ report 11736 "Posted Rcpt. Cash Document CZP"
                     {
                         IncludeCaption = true;
                     }
+                    column(AccountType_PostedCashDocumentLine; Format("Account Type", 0, 2))
+                    {
+                    }
 
                     trigger OnPreDataItem()
                     begin

@@ -16,10 +16,7 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
     end;
 
     procedure CreateSetupData()
-    var
-        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        ContosoCoffeeDemoDataSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Common CountryOrRegion");
         Codeunit.Run(Codeunit::"Create Common Unit Of Measure");
         Codeunit.Run(Codeunit::"Create Common No Series");

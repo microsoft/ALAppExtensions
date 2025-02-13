@@ -1,10 +1,22 @@
+#pragma warning disable AS0072
+#if not CLEANSCHEMA25
 namespace Microsoft.PowerBIReports;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 36950 "Dimension Set Entry"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Access = Internal;
+    ReplicateData = false;
     // IMPORTANT: do not change the caption - see slice 546954
     Caption = 'Dimension Set Entry', Comment = 'IMPORTANT: Use the same translation as in BaseApp''s table "Dimension Set Entry" id: "Table 3998843106 - Property 2879900210" ';
+    ObsoleteReason = 'Replaced by table 36954 "PowerBI Flat Dim. Set. Entry"';
+#pragma warning disable AS0115
+    ObsoleteState = Removed;
+#pragma warning restore AS0115
+    ObsoleteTag = '25.0';
 
     fields
     {
@@ -92,4 +104,5 @@ table 36950 "Dimension Set Entry"
         }
     }
 }
-
+#endif
+#pragma warning restore AS0072

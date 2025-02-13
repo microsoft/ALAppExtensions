@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 
-pageextension 6102 "E-Doc. Select Sending Options" extends "Select Sending Options"
+pageextension 6104 "E-Doc. Select Sending Options" extends "Select Sending Options"
 {
     layout
     {
