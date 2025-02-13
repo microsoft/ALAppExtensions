@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.Payments;
 
 using Microsoft.eServices.EDocument;
 
-table 6101 "E-Document Payment"
+table 6107 "E-Document Payment"
 {
     Caption = 'E-Document Payment';
     DataClassification = CustomerContent;

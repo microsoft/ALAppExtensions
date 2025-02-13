@@ -12,7 +12,7 @@ using System.Utilities;
 /// <summary>
 /// This codeunit is used to provide a default implementation for the "Document Payment Handler" interface.
 /// </summary>
-codeunit 6105 "Empty Payment Handler" implements IDocumentPaymentHandler
+codeunit 6121 "Empty Payment Handler" implements IDocumentPaymentHandler
 {
     Access = Internal;
     InherentEntitlements = X;

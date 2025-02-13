@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Payments;
 
-enum 6104 "E-Document Payment Progress"
+enum 6112 "E-Document Payment Progress"
 {
     Extensible = false;
 

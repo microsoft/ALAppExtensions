@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.Integration.Payments;
 
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-enum 6105 "Payment Integration" implements IDocumentPaymentHandler
+enum 6111 "Payment Integration" implements IDocumentPaymentHandler
 {
     Extensible = true;
     Access = Public;

@@ -8,7 +8,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Payments;
 
-codeunit 6116 "Send Payment"
+codeunit 6123 "Send Payment"
 {
     Access = Internal;
     InherentEntitlements = X;

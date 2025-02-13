@@ -9,7 +9,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Payments;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 
-codeunit 6117 "Payment Integration Management"
+codeunit 6122 "Payment Integration Management"
 {
     internal procedure ReceivePayments(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; PaymentContext: Codeunit PaymentContext)
     var
