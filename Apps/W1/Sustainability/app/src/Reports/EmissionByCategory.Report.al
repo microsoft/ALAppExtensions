@@ -21,6 +21,9 @@ report 6210 "Emission By Category"
             column(PeriodFilter; StrSubstNo(PeriodLbl, SustLedgDateFilter))
             {
             }
+            column(SustLedgDateFilter; SustLedgDateFilter)
+            {
+            }
             column(CompanyName; CompanyProperty.DisplayName())
             {
             }
@@ -123,6 +126,8 @@ report 6210 "Emission By Category"
     labels
     {
         EmissionByCategory = 'Emission By Category';
+        EmissionByCategoryPrint = 'Emission By Category (Print)', Comment = 'Max length: 31. Excel worksheet name.';
+        EmissionByCategoryAnalysis = 'Emission By Category (Analysis)', Comment = 'Max length: 31. Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
@@ -144,6 +149,15 @@ report 6210 "Emission By Category"
         AverageOfEmission_CH4 = 'Average of Emission CH4';
         AverageOfEmission_N2O = 'Average of Emission N2O';
         EmissionsPerDocument = 'Emissions Per Document';
+        DataRetrieved = 'Data retrieved:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
     trigger OnPreReport()
     var
