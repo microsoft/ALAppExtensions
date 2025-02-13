@@ -568,7 +568,7 @@ codeunit 6140 "E-Doc. Import"
         EInvoiceLine.Init();
         EInvoiceLine."E-Document Entry No." := EDocumentEntryNo;
         EInvoiceLine."Line No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("Line No.")).Value();
-        EInvoiceLine."No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value();
+        EInvoiceLine."No." := SourceDocumentLine.Field(PurchaseLine.FieldNo("Item Reference No.")).Value();
         EInvoiceLine."Description" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Description")).Value();
         EInvoiceLine."Unit of Measure Code" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value();
         EInvoiceLine."Quantity" := SourceDocumentLine.Field(PurchaseLine.FieldNo("Quantity")).Value();
