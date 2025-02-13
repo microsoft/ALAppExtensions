@@ -25,7 +25,7 @@ codeunit 139697 "Shpfy Sales Channel Subs."
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
         ProductCreateTok: Label '{"query":"mutation {productCreate(', locked = true;
-        VariantUpdateTok: Label '{"query":"mutation { productVariantUpdate(', locked = true;
+        VariantCreateTok: Label '{"query":"mutation { productVariantsBulkCreate(', locked = true;
         InventoryActivationTok: Label '{"query":"mutation inventoryBulkToggleActivation(', locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
@@ -45,8 +45,8 @@ codeunit 139697 "Shpfy Sales Channel Subs."
                                     HttpResponseMessage := GetCreateProductResponse();
                                 GraphQlQuery = GQLGetSalesChannels.GetGraphQL():
                                     HttpResponseMessage := GetSalesChannelsResponse();
-                                GraphQlQuery.Contains(VariantUpdateTok):
-                                    HttpResponseMessage := GetUpdateVariantResponse();
+                                GraphQlQuery.Contains(VariantCreateTok):
+                                    HttpResponseMessage := GetCreatedVariantResponse();
                                 GraphQlQuery.Contains(InventoryActivationTok):
                                     HttpResponseMessage := GetInventoryActivateResponse();
                             end;
@@ -78,15 +78,19 @@ codeunit 139697 "Shpfy Sales Channel Subs."
         exit(HttpResponseMessage);
     end;
 
-    local procedure GetUpdateVariantResponse(): HttpResponseMessage
+    local procedure GetCreatedVariantResponse(): HttpResponseMessage;
     var
+        Any: Codeunit Any;
+        NewVariantId: BigInteger;
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
         ResInStream: InStream;
     begin
-        NavApp.GetResource('Products/UpdatedVariantResponse.txt', ResInStream, TextEncoding::UTF8);
+        Any.SetDefaultSeed();
+        NewVariantId := Any.IntegerInRange(100000, 999999);
+        NavApp.GetResource('Products/CreatedVariantResponse.txt', ResInStream, TextEncoding::UTF8);
         ResInStream.ReadText(BodyTxt);
-        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(BodyTxt, NewVariantId));
         exit(HttpResponseMessage);
     end;
 

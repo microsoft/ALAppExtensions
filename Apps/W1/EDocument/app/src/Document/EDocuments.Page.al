@@ -110,6 +110,18 @@ page 6122 "E-Documents"
                 ToolTip = 'Opens E-Document Logs page.';
                 Image = Log;
             }
+            action(ViewFile)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'View file';
+                ToolTip = 'View the source file.';
+                Image = ViewDetails;
+
+                trigger OnAction()
+                begin
+                    Rec.ViewSourceFile();
+                end;
+            }
         }
         area(Promoted)
         {
@@ -124,6 +136,7 @@ page 6122 "E-Documents"
 #endif
             actionref(Promoted_ImportManuallyMultiple; ImportManuallyMultiple) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
+            actionref(Promoted_ViewFile; ViewFile) { }
         }
     }
 

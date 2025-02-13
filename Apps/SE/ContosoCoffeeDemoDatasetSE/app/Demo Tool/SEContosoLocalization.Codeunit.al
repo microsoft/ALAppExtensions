@@ -23,15 +23,19 @@ codeunit 11214 "SE Contoso Localization"
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateCompanyInformationSE: Codeunit "Create Company Information SE";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create Company Information SE");
                     Codeunit.Run(Codeunit::"Create Post Code SE");
+                    CreateCompanyInformationSE.UpdateCompanyRegistrationInformation();
                     Codeunit.Run(Codeunit::"Create Vat Posting Groups SE");
                     Codeunit.Run(Codeunit::"Create Posting Groups SE");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create Company Information SE");
         end;
     end;
 
@@ -46,13 +50,11 @@ codeunit 11214 "SE Contoso Localization"
                     CreateVatPostingGroupSE.UpdateVATPostingSetup();
                     CreatePostingGroupsSE.UpdateGenPostingSetup();
                     Codeunit.Run(Codeunit::"Create General Ledger Setup SE");
+                    Codeunit.Run(Codeunit::"Create VAT Statement SE");
+                    Codeunit.Run(Codeunit::"Create VAT Setup PostingGrp SE");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate SE");
-                    Codeunit.Run(Codeunit::"Create VAT Setup PostingGrp SE");
-                    Codeunit.Run(Codeunit::"Create VAT Statement SE");
-                end;
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate SE");
         end;
     end;
 
@@ -91,11 +93,12 @@ codeunit 11214 "SE Contoso Localization"
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Setup Data":
+                Codeunit.Run(Codeunit::"Create Inv. Posting Setup SE");
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Item Template SE");
                     Codeunit.Run(Codeunit::"Create Location SE");
-                    Codeunit.Run(Codeunit::"Create Inv. Posting Setup SE");
                 end;
         end;
     end;
@@ -109,11 +112,9 @@ codeunit 11214 "SE Contoso Localization"
         CreateCustPostingGroupSE: Codeunit "Create Cust. Posting Group SE";
         CreateReminderLevelSE: Codeunit "Create Reminder Level SE";
         CreateCustomerSE: Codeunit "Create Customer SE";
-        CreateCustomerTemplateSE: Codeunit "Create Customer Template SE";
         CreateSalesDimValueSE: Codeunit "Create Sales Dim Value SE";
         CreateShiptoAddressSE: Codeunit "Create Ship-to Address SE";
         CreateVendorSE: Codeunit "Create Vendor SE";
-        CreateVendorTemplateSE: Codeunit "Create Vendor Template SE";
         CreateVendorPostingGroupSE: Codeunit "Create Vendor Posting Group SE";
         CreatePurchDimValueSE: Codeunit "Create Purch. Dim. Value SE";
         CreateResourceSE: Codeunit "Create Resource SE";
@@ -140,7 +141,6 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Module"::Sales:
                 begin
                     BindSubscription(CreateCustomerSE);
-                    BindSubscription(CreateCustomerTemplateSE);
                     BindSubscription(CreateShiptoAddressSE);
                     BindSubscription(CreateSalesDimValueSE);
                     BindSubscription(CreateReminderLevelSE);
@@ -149,7 +149,6 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
                     BindSubscription(CreateVendorSE);
-                    BindSubscription(CreateVendorTemplateSE);
                     BindSubscription(CreatePurchDimValueSE);
                     BindSubscription(CreateVendorPostingGroupSE);
                 end;
@@ -174,11 +173,9 @@ codeunit 11214 "SE Contoso Localization"
         CreateCustPostingGroupSE: Codeunit "Create Cust. Posting Group SE";
         CreateReminderLevelSE: Codeunit "Create Reminder Level SE";
         CreateCustomerSE: Codeunit "Create Customer SE";
-        CreateCustomerTemplateSE: Codeunit "Create Customer Template SE";
         CreateSalesDimValueSE: Codeunit "Create Sales Dim Value SE";
         CreateShiptoAddressSE: Codeunit "Create Ship-to Address SE";
         CreateVendorSE: Codeunit "Create Vendor SE";
-        CreateVendorTemplateSE: Codeunit "Create Vendor Template SE";
         CreateVendorPostingGroupSE: Codeunit "Create Vendor Posting Group SE";
         CreatePurchDimValueSE: Codeunit "Create Purch. Dim. Value SE";
         CreateResourceSE: Codeunit "Create Resource SE";
@@ -205,7 +202,6 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Module"::Sales:
                 begin
                     UnBindSubscription(CreateCustomerSE);
-                    UnBindSubscription(CreateCustomerTemplateSE);
                     UnBindSubscription(CreateShiptoAddressSE);
                     UnBindSubscription(CreateSalesDimValueSE);
                     UnBindSubscription(CreateReminderLevelSE);
@@ -214,7 +210,6 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
                     UnBindSubscription(CreateVendorSE);
-                    UnBindSubscription(CreateVendorTemplateSE);
                     UnBindSubscription(CreatePurchDimValueSE);
                     UnBindSubscription(CreateVendorPostingGroupSE);
                 end;

@@ -10,7 +10,6 @@ report 30104 "Shpfy Sync Orders from Shopify"
     ProcessingOnly = true;
     UsageCategory = Tasks;
 
-
     dataset
     {
         dataitem(Shop; "Shpfy Shop")
@@ -21,7 +20,7 @@ report 30104 "Shpfy Sync Orders from Shopify"
             {
                 DataItemLink = "Shop Code" = field(Code);
                 DataItemLinkReference = Shop;
-                RequestFilterFields = "Fully Paid", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists", "Channel Name", "Order No.";
+                RequestFilterFields = "Fully Paid", "Financial Status", "Fulfillment Status", Confirmed, "Import Action", "Attribute Key Filter", "Attribute Key Exists", "Channel Name", "Order No.", "High Risk", "Sell-to Country/Region Code", "Ship-to Country/Region Code", "Bill-to Country/Region Code", "VAT Amount";
 
                 trigger OnPreDataItem()
                 var

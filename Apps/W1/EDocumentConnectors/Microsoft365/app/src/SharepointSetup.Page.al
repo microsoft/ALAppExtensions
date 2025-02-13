@@ -6,17 +6,18 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using System.Telemetry;
 
-page 6382 "Sharepoint Setup"
+page 6382 "SharePoint Setup"
 {
-    Permissions = tabledata "Sharepoint Setup" = rim;
+    Permissions = tabledata "SharePoint Setup" = rim;
     ApplicationArea = Basic, Suite;
+    PageType = StandardDialog;
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
     ShowFilter = false;
-    SourceTable = "Sharepoint Setup";
+    SourceTable = "SharePoint Setup";
     UsageCategory = Administration;
-    Caption = 'Sharepoint Document Import Setup';
+    Caption = 'SharePoint Document Import Setup';
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -35,17 +36,19 @@ page 6382 "Sharepoint Setup"
             group(General)
             {
                 Caption = 'Shared Links to Document Folders';
-                InstructionalText = 'Use the Sharepoint ''Copy Link'' feature to create the shared links and define who they work for, then paste them to the corresponding fields.';
+                InstructionalText = 'Use the SharePoint ''Copy Link'' feature to create the shared links and define who they work for, then paste them to the corresponding fields.';
 
-                field("Documents"; Rec."Documents Folder")
+                field("Incoming Documents"; Rec."Documents Folder")
                 {
+                    Caption = 'Document Folder';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the shared link of the folder from which to import documents.';
                 }
-                field("Imported Documents"; Rec."Imp. Documents Folder")
+                field("Archived Documents"; Rec."Imp. Documents Folder")
                 {
+                    Caption = 'Archive Folder';
                     ApplicationArea = Basic, Suite;
                     Editable = EditableByNotEnabled;
                     ShowMandatory = true;
@@ -70,7 +73,7 @@ page 6382 "Sharepoint Setup"
             Rec.Init();
             Rec.Insert(true);
             FeatureTelemetry.LogUptake('0000OBF', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
-            FeatureTelemetry.LogUsage('0000OBG', DriveProcessing.FeatureName(), 'Sharepoint');
+            FeatureTelemetry.LogUsage('0000OBG', DriveProcessing.FeatureName(), 'SharePoint');
         end;
         UpdateBasedOnEnable();
     end;

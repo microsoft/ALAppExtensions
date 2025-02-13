@@ -5,9 +5,9 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using System.Privacy;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument.Integration.Action;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6103 "E-Document Service"
 {
@@ -47,10 +47,10 @@ table 6103 "E-Document Service"
 
             trigger OnValidate()
             var
-                CustConcentMgt: Codeunit "Customer Consent Mgt.";
+                ConsentManagerDefaultImpl: Codeunit "Consent Manager Default Impl.";
             begin
                 if (xRec."Service Integration" = xRec."Service Integration"::"No Integration") and (Rec."Service Integration" <> xRec."Service Integration") then
-                    if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
+                    if not ConsentManagerDefaultImpl.ObtainPrivacyConsent() then
                         Rec."Service Integration" := xRec."Service Integration";
             end;
 #endif
@@ -238,17 +238,31 @@ table 6103 "E-Document Service"
 
             trigger OnValidate()
             var
-                CustConcentMgt: Codeunit "Customer Consent Mgt.";
+                ConsentManager: Interface IConsentManager;
             begin
-                if (xRec."Service Integration V2" = xRec."Service Integration V2"::"No Integration") and (Rec."Service Integration V2" <> xRec."Service Integration V2") then
-                    if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
+                if (xRec."Service Integration V2" = xRec."Service Integration V2"::"No Integration") and (Rec."Service Integration V2" <> xRec."Service Integration V2") then begin
+                    ConsentManager := Rec."Service Integration V2";
+                    if not ConsentManager.ObtainPrivacyConsent() then
                         Rec."Service Integration V2" := xRec."Service Integration V2";
+                end;
             end;
         }
-        field(28; "Sent Actions Integration"; Enum "Sent Document Actions")
+        field(29; "E-Document Structured Format"; Enum "E-Document Structured Format")
         {
-            Caption = 'Sent Actions For Service';
-            ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            Caption = 'Structured Data Format';
+            ToolTip = 'Specifies the format of the structured data.';
+            DataClassification = SystemMetadata;
+        }
+        field(31; "Import Process"; Enum "E-Document Import Process")
+        {
+            Caption = 'Import Process';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the import process for the document.';
+        }
+        field(32; "Automatic Processing"; Enum "Automatic Processing")
+        {
+            Caption = 'Automatic Processing';
+            ToolTip = 'Specifies if the processing of document should start immediately after downloading it.';
             DataClassification = SystemMetadata;
         }
     }
@@ -276,6 +290,38 @@ table 6103 "E-Document Service"
         EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
     end;
 
+    internal procedure GetPDFReaderService()
+    begin
+        if Rec.Get(AzureDocumentIntelligenceTok) then
+            exit;
+
+        Rec.Init();
+        Rec.Code := AzureDocumentIntelligenceTok;
+        Rec."Import Process" := "Import Process"::"Version 2.0";
+        Rec.Description := AzureDocumentIntelligenceServiceTxt;
+        Rec."Automatic Processing" := "Automatic Processing"::No;
+        Rec."E-Document Structured Format" := "E-Document Structured Format"::"Azure Document Intelligence";
+        Rec.Insert(true);
+    end;
+
+    internal procedure IsAutomaticProcessingEnabled(): Boolean
+    begin
+        exit("Automatic Processing" = "Automatic Processing"::Yes);
+    end;
+
+    internal procedure LastEDocumentLog(EDocumentServiceStatus: Enum "E-Document Service Status") EDocumentLog: Record "E-Document Log";
+    begin
+        EDocumentLog.SetRange("Service Code", Rec.Code);
+        EDocumentLog.SetRange(Status, EDocumentServiceStatus);
+        EDocumentLog.SetCurrentKey("Entry No.");
+        if EDocumentLog.FindLast() then;
+    end;
+
+    internal procedure GetDefaultImportParameters() EDocImportParameters: Record "E-Doc. Import Parameters"
+    begin
+        EDocImportParameters."Step to Run" := IsAutomaticProcessingEnabled() ? "Import E-Document Steps"::"Finish draft" : "Import E-Document Steps"::"Prepare draft";
+    end;
+
     internal procedure ToString(): Text
     begin
 #if not CLEAN26
@@ -287,8 +333,9 @@ table 6103 "E-Document Service"
 
     var
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+        AzureDocumentIntelligenceTok: Label 'MSEOCADI';
+        AzureDocumentIntelligenceServiceTxt: Label 'E-Document PDF Service - Process pdfs with Azure Document Intelligence';
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
-        ChooseIntegrationConsentTxt: Label 'By choosing this option, you consent to use third party systems. These systems may have their own terms of use, license, pricing and privacy, and they may not meet the same compliance and security standards as Microsoft Dynamics 365 Business Central. Your privacy is important to us.';
         ServiceInActiveFlowErr: Label 'The service is used in an active workflow. You cannot delete it.';
 }

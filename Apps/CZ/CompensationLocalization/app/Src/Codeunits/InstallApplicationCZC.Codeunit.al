@@ -53,20 +53,8 @@ codeunit 31270 "Install Application CZC"
 
     local procedure CopyData()
     begin
-        CopySourceCodeSetup();
         MoveIncomingDocument();
         InitCompensationSourceCode();
-    end;
-
-    local procedure CopySourceCodeSetup();
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-    begin
-        SourceCodeSetup.SetLoadFields(Credit);
-        if SourceCodeSetup.Get() then begin
-            SourceCodeSetup."Compensation CZC" := SourceCodeSetup.Credit;
-            SourceCodeSetup.Modify(false);
-        end;
     end;
 
     local procedure MoveIncomingDocument()

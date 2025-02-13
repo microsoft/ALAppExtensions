@@ -37,6 +37,21 @@ codeunit 10794 "Create ES VAT Posting Groups"
         ContosoPostingSetup.SetOverwriteData(false);
     end;
 
+    internal procedure RemoveVATPostingSetup()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+    begin
+        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Zero());
+        VATPostingSetup.DeleteAll();
+
+        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Reduced());
+        VATPostingSetup.DeleteAll();
+
+        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Standard());
+        VATPostingSetup.DeleteAll();
+    end;
+
     local procedure InsertVATProductPostingGroup()
     var
         ContosoPostingGroup: Codeunit "Contoso Posting Group";

@@ -43,7 +43,7 @@ codeunit 5129 "Contoso Unit of Measure"
         UnitOfMeasureTranslation: Record "Unit of Measure Translation";
         Exists: Boolean;
     begin
-        if UnitOfMeasureTranslation.Get(UnitOfMeasureCode) then begin
+        if UnitOfMeasureTranslation.Get(UnitOfMeasureCode, LanguageCode) then begin
             Exists := true;
 
             if not OverwriteData then

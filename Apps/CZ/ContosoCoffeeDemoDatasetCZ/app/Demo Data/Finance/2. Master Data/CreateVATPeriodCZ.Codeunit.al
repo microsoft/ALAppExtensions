@@ -2,7 +2,6 @@ codeunit 31214 "Create VAT Period CZ"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "VAT Period CZL" = ri;
 
     trigger OnRun()
     var
@@ -13,14 +12,10 @@ codeunit 31214 "Create VAT Period CZ"
 
     procedure InsertData(StartingDate: Date; EndingDate: Date)
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        ContosoVATStatementCZ: Codeunit "Contoso VAT Statement CZ";
     begin
         while StartingDate <= EndingDate do begin
-            VATPeriodCZL.Init();
-            VATPeriodCZL.Validate("Starting Date", StartingDate);
-            if (Date2DMY(StartingDate, 1) = 1) and (Date2DMY(StartingDate, 2) = 1) then
-                VATPeriodCZL."New VAT Year" := true;
-            VATPeriodCZL.Insert();
+            ContosoVATStatementCZ.InsertVATPeriod(StartingDate);
             StartingDate := CalcDate('<1M>', StartingDate);
         end;
     end;

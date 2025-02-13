@@ -13,7 +13,7 @@ codeunit 30355 "Shpfy GQL Fulfill Order" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { fulfillmentCreateV2 ( fulfillment: { lineItemsByFulfillmentOrder: [{ fulfillmentOrderId: \"gid://shopify/FulfillmentOrder/{{FulfillmentOrderId}}\" }] }) { fulfillment {id, status} userErrors {field, message}}}"}');
+        exit('{"query": "mutation { fulfillmentCreate ( fulfillment: { lineItemsByFulfillmentOrder: [{ fulfillmentOrderId: \"gid://shopify/FulfillmentOrder/{{FulfillmentOrderId}}\" }] }) { fulfillment {id, status} userErrors {field, message}}}"}');
     end;
 
     /// <summary>

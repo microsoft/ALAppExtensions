@@ -39,8 +39,6 @@ codeunit 6146 "Send Runner"
         this.TempBlob := SendContext.GetTempBlob();
         IEDocIntegration := this.EDocumentService."Service Integration";
         IEDocIntegration.Send(this.EDocument, this.TempBlob, this.IsAsyncValue, this.HttpRequestMessage, this.HttpResponseMessage);
-        SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
-        SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
     end;
 
     local procedure SendBatch()
@@ -48,8 +46,6 @@ codeunit 6146 "Send Runner"
         this.TempBlob := SendContext.GetTempBlob();
         IEDocIntegration := this.EDocumentService."Service Integration";
         IEDocIntegration.SendBatch(this.EDocument, this.TempBlob, this.IsAsyncValue, this.HttpRequestMessage, this.HttpResponseMessage);
-        SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
-        SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
     end;
 #endif
 
@@ -75,6 +71,16 @@ codeunit 6146 "Send Runner"
     begin
         exit(this.IsAsyncValue);
     end;
+
+#if not CLEAN26
+    procedure GetSendContext(var SendContext: Codeunit SendContext);
+    begin
+        // Need to set this
+        this.SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
+        this.SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
+        SendContext := this.SendContext;
+    end;
+#endif
 
     var
         EDocument: Record "E-Document";

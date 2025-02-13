@@ -23,6 +23,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
 
     internal procedure ConnectSubscriptionsToServiceObjects(var UsageDataSubscription: Record "Usage Data Subscription")
     var
+        UsageDataSubscription2: Record "Usage Data Subscription";
         ServiceObject: Record "Service Object";
         i: Integer;
         ProgressBox: Dialog;
@@ -31,6 +32,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         UsageDataSubscription.SetRange("Service Commitment Entry No.", 0);
         UsageDataSubscription.SetFilter("Connect to SO Method", '<>%1', "Connect To SO Method"::None);
         if UsageDataSubscription.FindSet(true) then begin
+            i := 0;
             TotalCount := UsageDataSubscription.Count;
             ProgressBox.Open(ProgressLbl);
             ProgressBox.Update(1, UsageDataSubscription.TableCaption);
@@ -38,22 +40,24 @@ codeunit 8029 "Usage Based Billing Mgmt."
                 if i mod 10 = 0 then
                     ProgressBox.Update(2, Round(i / TotalCount * 10000, 1));
 
-                TestUsageDataSubscription(UsageDataSubscription);
-                if UsageDataSubscription."Processing Status" <> "Processing Status"::Error then begin
-                    AskToProceedIfServiceObjectIsAssignedToMultipleSubscriptions(UsageDataSubscription);
-                    ServiceObject.Get(UsageDataSubscription."Connect to Service Object No.");
-                    ErrorIfServiceObjectItemIsBlocked(ServiceObject, UsageDataSubscription);
+                UsageDataSubscription2 := UsageDataSubscription;
+                TestUsageDataSubscription(UsageDataSubscription2);
+                if UsageDataSubscription2."Processing Status" <> "Processing Status"::Error then begin
+                    AskToProceedIfServiceObjectIsAssignedToMultipleSubscriptions(UsageDataSubscription2);
+                    ServiceObject.Get(UsageDataSubscription2."Connect to Service Object No.");
+                    ErrorIfServiceObjectItemIsBlocked(ServiceObject, UsageDataSubscription2);
                 end;
 
-                if UsageDataSubscription."Processing Status" <> "Processing Status"::Error then
-                    case UsageDataSubscription."Connect to SO Method" of
+                if UsageDataSubscription2."Processing Status" <> "Processing Status"::Error then
+                    case UsageDataSubscription2."Connect to SO Method" of
                         "Connect To SO Method"::"New Service Commitments":
-                            ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription);
+                            ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription2);
                         "Connect To SO Method"::"Existing Service Commitments":
-                            ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(UsageDataSubscription);
+                            ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(UsageDataSubscription2);
                     end;
                 i += 1;
-                UsageDataSubscription.Modify(false);
+                UsageDataSubscription2.Modify(false);
+                UsageDataSubscription2.UpdateServiceObjectNoForUsageDataGenericImport();
             until UsageDataSubscription.Next() = 0;
             ProgressBox.Close();
         end;

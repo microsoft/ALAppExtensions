@@ -10,7 +10,7 @@ codeunit 8024 "Usage Based Doc. Type Conv."
     var
         ConversionNotAllowedErr: Label 'Conversion of option %1 to %2 is not possible.';
 
-    internal procedure ConvertSalesDocTypeToUsageBasedBillingDocType(SalesDocumentType: Enum "Sales Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
+    procedure ConvertSalesDocTypeToUsageBasedBillingDocType(SalesDocumentType: Enum "Sales Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
     begin
         case SalesDocumentType of
             SalesDocumentType::Invoice:
@@ -22,7 +22,7 @@ codeunit 8024 "Usage Based Doc. Type Conv."
         end;
     end;
 
-    internal procedure ConvertPurchaseDocTypeToUsageBasedBillingDocType(PurchaseDocumentType: Enum "Purchase Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
+    procedure ConvertPurchaseDocTypeToUsageBasedBillingDocType(PurchaseDocumentType: Enum "Purchase Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
     begin
         case PurchaseDocumentType of
             PurchaseDocumentType::Invoice:
@@ -31,6 +31,20 @@ codeunit 8024 "Usage Based Doc. Type Conv."
                 UsageBasedBillingDocType := UsageBasedBillingDocType::"Credit Memo";
             else
                 Error(ConversionNotAllowedErr, PurchaseDocumentType, UsageBasedBillingDocType);
+        end;
+    end;
+
+    procedure ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(RecurringBillingDocumentType: Enum "Rec. Billing Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
+    begin
+        case RecurringBillingDocumentType of
+            RecurringBillingDocumentType::None:
+                UsageBasedBillingDocType := UsageBasedBillingDocType::None;
+            RecurringBillingDocumentType::Invoice:
+                UsageBasedBillingDocType := UsageBasedBillingDocType::Invoice;
+            RecurringBillingDocumentType::"Credit Memo":
+                UsageBasedBillingDocType := UsageBasedBillingDocType::"Credit Memo";
+            else
+                Error(ConversionNotAllowedErr, RecurringBillingDocumentType, UsageBasedBillingDocType);
         end;
     end;
 }

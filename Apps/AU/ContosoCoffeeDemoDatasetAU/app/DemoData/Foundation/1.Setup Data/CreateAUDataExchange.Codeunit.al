@@ -12,6 +12,29 @@ codeunit 17172 "Create AU Data Exchange"
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + OCRCreditMemoAU() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + PeppolCreditMemoAU() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + PeppolInvoiceAU() + '.xml');
+
+        DeleteW1DataExchanges();
+    end;
+
+    local procedure DeleteW1DataExchanges()
+    var
+        DataExchangeDef: Record "Data Exch. Def";
+        DataExchangeType: Record "Data Exchange Type";
+        CreateDataExchange: Codeunit "Create Data Exchange";
+    begin
+        DataExchangeDef.Get(CreateDataExchange.OCRInvoice());
+        DataExchangeDef.Delete(true);
+
+        DataExchangeDef.Get(CreateDataExchange.OCRCreditMemo());
+        DataExchangeDef.Delete(true);
+
+        DataExchangeDef.Get(CreateDataExchange.PeppolCreditMemo());
+        DataExchangeDef.Delete(true);
+
+        DataExchangeDef.Get(CreateDataExchange.PeppolInvoice());
+        DataExchangeDef.Delete(true);
+
+        DataExchangeType.DeleteAll();
     end;
 
     procedure OCRInvoiceAU(): Code[20]

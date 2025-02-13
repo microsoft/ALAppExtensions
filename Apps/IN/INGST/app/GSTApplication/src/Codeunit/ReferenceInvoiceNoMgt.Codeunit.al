@@ -143,7 +143,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         VendorLedgerEntries: Page "Vendor Ledger Entries";
         GSTDocumentType: Enum "GST Document Type";
         SalesDoctype: Enum "Sales Document Type";
+        IsHandled: Boolean;
     begin
+        OnUpdateReferenceInvoiceNoForVendor(ReferenceInvoiceNo, DocumentType, DocumentNo, IsHandled);
+        if IsHandled then
+            exit;
+
         PurchaseHeader.SetRange("Document Type", DocumentType);
         PurchaseHeader.SetRange("No.", DocumentNo);
         if PurchaseHeader.FindFirst() then begin
@@ -217,7 +222,12 @@ codeunit 18435 "Reference Invoice No. Mgt."
         CustomerLedgerEntries: Page "Customer Ledger Entries";
         GSTDocumentType: Enum "GST Document Type";
         PurchDocType: Enum "Purchase Document Type";
+        IsHandled: Boolean;
     begin
+        OnUpdateReferenceInvoiceNoforCustomer(ReferenceInvoiceNo, DocumentType, DocumentNo, IsHandled);
+        if IsHandled then
+            exit;
+
         SalesHeader.SetRange("Document Type", DocumentType);
         SalesHeader.SetRange("No.", DocumentNo);
         if not SalesHeader.FindFirst() then
@@ -4760,4 +4770,13 @@ codeunit 18435 "Reference Invoice No. Mgt."
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateReferenceInvoiceNoForVendor(var ReferenceInvoiceNo: Record "Reference Invoice No."; DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnUpdateReferenceInvoiceNoforCustomer(var ReferenceInvoiceNo: Record "Reference Invoice No."; DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
 }

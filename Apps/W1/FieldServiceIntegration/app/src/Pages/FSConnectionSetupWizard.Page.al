@@ -12,7 +12,11 @@ using System.Utilities;
 using Microsoft.Integration.D365Sales;
 using System.Globalization;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 page 6613 "FS Connection Setup Wizard"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     Caption = 'Dynamics 365 Field Service Integration Setup';
     PageType = NavigatePage;
