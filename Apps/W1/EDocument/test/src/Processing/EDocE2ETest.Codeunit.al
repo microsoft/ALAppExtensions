@@ -1399,23 +1399,21 @@ codeunit 139624 "E-Doc E2E Test"
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(this.EDocImplState);
 
-        // [GIVEN] Setup EDocument service to embed PDF to XML
+        // [GIVEN] EDocument Service is set to embed PDF to XML
         this.EDocumentService."Embed Invoice PDF to XML" := true;
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
         this.EDocumentService.Modify(false);
 
-        // [GIVEN] Team member post invoice
+        // [GIVEN] Posted Invoice by a Team Member
         this.LibraryLowerPermission.SetTeamMember();
         this.LibraryEDoc.PostInvoice(this.Customer);
 
-        // [WHEN] Get EDocument and run job queue to export it
+        // [WHEN] Export EDocument
         EDocument.FindLast();
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
-
-        // [THEN] Get xml file for this document
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Exported);
 
-        // [THEN] Check that PDF is embedded to XML
+        // [THEN] PDF is embedded in the XML
         CheckPDFEmbedToXML(DocumentBlob);
     end;
 
