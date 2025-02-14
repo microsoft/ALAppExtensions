@@ -8,6 +8,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using System.Utilities;
 using System.IO;
+using Microsoft.Purchases.Vendor;
 
 codeunit 6104 "Import E-Document Process"
 {
@@ -83,7 +84,6 @@ codeunit 6104 "Import E-Document Process"
         Name: Text[256];
         NewType: Enum "E-Doc. Data Storage Blob Type";
     begin
-        EDocument.Get(EDocument."Entry No");
         EDocument.TestField("Unstructured Data Entry No.");
         EDocumentDataStorage.Get(Edocument."Unstructured Data Entry No.");
         IBlobType := EDocumentDataStorage."Data Type";
@@ -117,7 +117,6 @@ codeunit 6104 "Import E-Document Process"
         FromBlob: Codeunit "Temp Blob";
         IStructuredFormatReader: Interface IStructuredFormatReader;
     begin
-        EDocument.Get(EDocument."Entry No");
         Edocument.TestField("Structured Data Entry No.");
         EDocumentDataStorage.Get(Edocument."Structured Data Entry No.");
 
@@ -134,10 +133,16 @@ codeunit 6104 "Import E-Document Process"
 
     local procedure PrepareDraft()
     var
+        EDocHeaderMapping: Record "E-Document Header Mapping";
+        Vendor: Record Vendor;
         IProcessStructuredData: Interface IProcessStructuredData;
     begin
         IProcessStructuredData := EDocument."Structured Data Process";
         EDocument."Document Type" := IProcessStructuredData.PrepareDraft(EDocument, EDocImportParameters);
+        EDocHeaderMapping := EDocument.GetEDocumentHeaderMapping();
+        EDocument."Bill-to/Pay-to No." := EDocHeaderMapping."Vendor No.";
+        if Vendor.Get(EDocHeaderMapping."Vendor No.") then
+            EDocument."Bill-to/Pay-to Name" := Vendor.Name;
         EDocument.Modify();
     end;
 
@@ -159,7 +164,9 @@ codeunit 6104 "Import E-Document Process"
         IEDocumentFinishDraft: Interface IEDocumentFinishDraft;
     begin
         IEDocumentFinishDraft := EDocument."Document Type";
-        IEDocumentFinishDraft.ApplyDraftToBC(EDocument, EDocImportParameters);
+        EDocument."Document Record ID" := IEDocumentFinishDraft.ApplyDraftToBC(EDocument, EDocImportParameters);
+        EDocument.Status := Enum::"E-Document Status"::Processed;
+        EDocument.Modify();
     end;
 
     local procedure UndoFinishDraft()

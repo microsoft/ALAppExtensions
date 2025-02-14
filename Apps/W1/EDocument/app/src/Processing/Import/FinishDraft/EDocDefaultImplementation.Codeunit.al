@@ -13,7 +13,7 @@ codeunit 6116 "E-Doc. Default Implementation" implements IEDocumentFinishDraft
 {
     Access = Internal;
 
-    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters")
+    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
     var
         NoMethodSpecifiedErr: Label 'The E-Document type %1 is not supported.', Comment = '%1 - Document type';
     begin

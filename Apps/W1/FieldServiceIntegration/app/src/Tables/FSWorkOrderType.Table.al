@@ -223,6 +223,31 @@ table 6622 "FS Work Order Type"
             Caption = 'Taxable';
             DataClassification = SystemMetadata;
         }
+        field(40; Code; Text[10])
+        {
+            ExternalName = 'bcbi_code';
+            ExternalType = 'String';
+            Description = 'Type the code of the work order type.';
+            Caption = 'Code';
+            DataClassification = SystemMetadata;
+        }
+        field(41; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoservice';
+            ExternalType = 'Boolean';
+            Description = 'Select whether work orders of this type are integrated to service.';
+            Caption = 'Integrate To Service';
+            DataClassification = SystemMetadata;
+        }
+        field(50; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

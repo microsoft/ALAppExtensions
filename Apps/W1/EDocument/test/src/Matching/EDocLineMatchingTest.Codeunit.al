@@ -461,7 +461,6 @@ codeunit 139659 "E-Doc. Line Matching Test"
         EDocImportedLine.Insert();
     end;
 
-#pragma warning disable AS0018
 #if not CLEAN26
 
     [Test]
@@ -529,7 +528,6 @@ codeunit 139659 "E-Doc. Line Matching Test"
     end;
 
 #endif
-#pragma warning restore AS0018
 
     [Test]
     procedure MatchDecimalQuantitySuccess()
