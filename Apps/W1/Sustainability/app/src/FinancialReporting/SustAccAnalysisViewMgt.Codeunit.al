@@ -63,11 +63,15 @@ codeunit 6239 "Sust. Acc. Analysis View Mgt."
             TempAnalysisViewEntry."Emission CO2" += UpdAnalysisViewEntryBuffer."Emission CO2";
             TempAnalysisViewEntry."Emission CH4" += UpdAnalysisViewEntryBuffer."Emission CH4";
             TempAnalysisViewEntry."Emission N2O" += UpdAnalysisViewEntryBuffer."Emission N2O";
+            TempAnalysisViewEntry."CO2e Emission" += UpdAnalysisViewEntryBuffer."CO2e Emission";
+            TempAnalysisViewEntry."Carbon Fee" += UpdAnalysisViewEntryBuffer."Carbon Fee";
             TempAnalysisViewEntry.Modify();
         end else begin
             TempAnalysisViewEntry."Emission CO2" := UpdAnalysisViewEntryBuffer."Emission CO2";
             TempAnalysisViewEntry."Emission CH4" := UpdAnalysisViewEntryBuffer."Emission CH4";
             TempAnalysisViewEntry."Emission N2O" := UpdAnalysisViewEntryBuffer."Emission N2O";
+            TempAnalysisViewEntry."CO2e Emission" := UpdAnalysisViewEntryBuffer."CO2e Emission";
+            TempAnalysisViewEntry."Carbon Fee" := UpdAnalysisViewEntryBuffer."Carbon Fee";
         end;
     end;
 
@@ -117,6 +121,8 @@ codeunit 6239 "Sust. Acc. Analysis View Mgt."
                     UpdAnalysisViewEntryBuffer."Emission CO2" := SustainabilityLedgerEntry."Emission CO2";
                     UpdAnalysisViewEntryBuffer."Emission CH4" := SustainabilityLedgerEntry."Emission CH4";
                     UpdAnalysisViewEntryBuffer."Emission N2O" := SustainabilityLedgerEntry."Emission N2O";
+                    UpdAnalysisViewEntryBuffer."CO2e Emission" := SustainabilityLedgerEntry."CO2e Emission";
+                    UpdAnalysisViewEntryBuffer."Carbon Fee" := SustainabilityLedgerEntry."Carbon Fee";
                     UpdAnalysisViewEntryBuffer.EntryNo := SustainabilityLedgerEntry."Entry No.";
                     UpdAnalysisViewEntryBuffer."Account Source" := UpdAnalysisViewEntryBuffer."Account Source"::"Sust. Account";
                     UpdAnalysisViewEntryBuffer.PostingDate := SustainabilityLedgerEntry."Posting Date";

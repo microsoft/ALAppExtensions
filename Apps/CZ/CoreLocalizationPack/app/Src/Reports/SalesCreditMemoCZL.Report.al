@@ -565,15 +565,18 @@ report 31190 "Sales Credit Memo CZL"
 
                 SalesCrMemoLine.CalcVATAmountLines("Sales Cr.Memo Header", TempVATAmountLine);
                 TempVATAmountLine.UpdateVATEntryLCYAmountsCZL("Sales Cr.Memo Header");
-                if ("Currency Factor" <> 0) and ("Currency Factor" <> 1) then begin
+                Clear(ExchRateText);
+                if "Currency Code" <> '' then begin
                     CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
                     CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText := StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
                                         CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
+                    if "Currency Code" = "General Ledger Setup"."LCY Code" then
+                        ExchRateText := '';
                 end else
                     CalculatedExchRate := 1;
 
-                if UseFunctionalCurrency then
+                if UseFunctionalCurrency then begin
                     if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
                         if CalculatedExchRate <> 1 then begin
                             CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
@@ -586,6 +589,9 @@ report 31190 "Sales Credit Memo CZL"
                           StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
                           CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
                     end;
+                    if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
+                        ExchRateText := '';
+                end;
 
                 if LogInteraction and not IsReportInPreviewMode() then
                     if "Bill-to Contact No." <> '' then

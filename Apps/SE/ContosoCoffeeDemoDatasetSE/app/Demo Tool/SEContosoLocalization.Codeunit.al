@@ -93,11 +93,12 @@ codeunit 11214 "SE Contoso Localization"
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Setup Data":
+                Codeunit.Run(Codeunit::"Create Inv. Posting Setup SE");
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Item Template SE");
                     Codeunit.Run(Codeunit::"Create Location SE");
-                    Codeunit.Run(Codeunit::"Create Inv. Posting Setup SE");
                 end;
         end;
     end;

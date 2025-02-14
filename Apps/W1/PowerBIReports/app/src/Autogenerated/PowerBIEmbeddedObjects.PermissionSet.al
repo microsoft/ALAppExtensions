@@ -29,7 +29,11 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Sales by Customer" = X,
         page "Sales by Salesperson" = X,
         page "Sales Actual vs. Budget Qty." = X,
+#if not CLEAN26
+#pragma warning disable AL0432
         page "Sales Actual vs. Budget Amt." = X,
+#pragma warning restore AL0432
+#endif
         page "Purchases Overview" = X,
         page "Purchases Decomposition" = X,
         page "Daily Purchases" = X,

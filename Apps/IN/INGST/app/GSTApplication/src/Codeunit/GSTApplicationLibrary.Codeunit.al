@@ -299,6 +299,8 @@ codeunit 18433 "GST Application Library"
         TotalInvoiceAmount: Decimal;
         AppliedAmount: Decimal;
         GSTRoundingPrecision: Decimal;
+        CreditMemoGstAmount: Decimal;
+        CreditMemoGstBaseAmount: Decimal;
         GSTRoudingType: Enum "GST Inv Rounding Type";
         Sign: Integer;
         OriginalDocumentType: Enum "Gen. Journal Document Type";
@@ -336,10 +338,13 @@ codeunit 18433 "GST Application Library"
                 if not IsHandled then
                     if Abs(TotalInvoiceAmount) > Abs(AmountToApply) then begin
                         GSTApplicationBuffer."Applied Base Amount" := Round(GSTApplicationBuffer."GST Base Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)), 0.01);
+                        Clear(CreditMemoGstAmount);
+                        Clear(CreditMemoGstBaseAmount);
+                        GetPurchaseCreditmemoGSTAmount(AccountNo, DocumentNo, GSTApplicationBuffer."GST Component Code", CreditMemoGstAmount, CreditMemoGstBaseAmount);
                         GSTApplicationBuffer."Applied Amount" := GSTApplicationRound(
                             GSTRoudingType,
                             GSTRoundingPrecision,
-                            GSTApplicationBuffer."GST Amount" * AmountToApply / (TotalInvoiceAmount + Abs(TDSTCS)));
+                            (GSTApplicationBuffer."GST Amount" - Abs(CreditMemoGstAmount)) * AmountToApply / (TotalInvoiceAmount - Abs(CreditMemoGstBaseAmount)));
                     end else begin
                         GSTApplicationBuffer."Applied Base Amount" := Round(GetInvoiceGSTComponentWise(GSTApplicationBuffer, OriginalDocumentType::Invoice, DocumentNo, true), 0.01);
                         GSTApplicationBuffer."Applied Amount" := GSTApplicationBuffer."GST Amount";
@@ -350,6 +355,22 @@ codeunit 18433 "GST Application Library"
                 Clear(AppliedAmount);
                 AppliedAmount := GSTApplicationBuffer."Applied Base Amount";
             until GSTApplicationBuffer.Next() = 0;
+    end;
+
+    local procedure GetPurchaseCreditmemoGSTAmount(AccountNo: Code[20]; RefernceDocumentNo: Code[20]; GstComponentCode: Code[30]; var GstAmount: Decimal; var GstBaseAmount: Decimal)
+    var
+        RefernceInvNo: Record "Reference Invoice No.";
+    begin
+        RefernceInvNo.Reset();
+        RefernceInvNo.LoadFields("Document No.", "Document Type", "Source Type", "Reference Invoice Nos.", "Source No.");
+        RefernceInvNo.SetRange("Document Type", RefernceInvNo."Document Type"::"Credit Memo");
+        RefernceInvNo.SetRange("Source Type", RefernceInvNo."Source Type"::Vendor);
+        RefernceInvNo.SetRange("Source No.", AccountNo);
+        RefernceInvNo.SetRange("Reference Invoice Nos.", RefernceDocumentNo);
+        if RefernceInvNo.FindSet() then
+            repeat
+                GetGSTAmountsFromDetailedGstLedgerEntry(RefernceInvNo, GstComponentCode, GstAmount, GstBaseAmount);
+            until RefernceInvNo.Next() = 0;
     end;
 
     procedure DeleteInvoiceApplicationBufferOffline(
@@ -1779,6 +1800,25 @@ codeunit 18433 "GST Application Library"
         GSTApplicationBufferFinal.SetRange("Original Document No.", GSTApplicationBufferStage."Original Document No.");
         GSTApplicationBufferFinal.SetRange("GST Group Code", GSTApplicationBufferStage."GST Group Code");
         GSTApplicationBufferFinal.SetRange("GST Component Code", GSTApplicationBufferStage."GST Component Code");
+    end;
+
+    local procedure GetGSTAmountsFromDetailedGstLedgerEntry(RefernceInvNo: Record "Reference Invoice No."; GstComponentCode: Code[30]; var GstAmount: Decimal; var GstBaseAmount: Decimal)
+    var
+        DetailedGstLedgerEntry: Record "Detailed GST Ledger Entry";
+    begin
+        DetailedGstLedgerEntry.Reset();
+        DetailedGstLedgerEntry.LoadFields("Document Type", "Document No.", "Source No.", "GST Component Code", "Reverse Charge", "GST Base Amount", "GST Amount");
+        DetailedGstLedgerEntry.SetRange("Document Type", DetailedGstLedgerEntry."Document Type"::"Credit Memo");
+        DetailedGstLedgerEntry.SetRange("Document No.", RefernceInvNo."Document No.");
+        DetailedGstLedgerEntry.SetRange("Source No.", RefernceInvNo."Source No.");
+        DetailedGstLedgerEntry.SetRange("GST Component Code", GstComponentCode);
+        DetailedGstLedgerEntry.SetRange("Reverse Charge", true);
+        DetailedGstLedgerEntry.SetFilter("GST Base Amount", '<>%1', 0);
+        if DetailedGstLedgerEntry.FindSet() then
+            repeat
+                GstAmount += DetailedGstLedgerEntry."GST Amount";
+                GstBaseAmount += DetailedGstLedgerEntry."GST Base Amount";
+            until DetailedGstLedgerEntry.Next() = 0;
     end;
 
     procedure GetDetailedGSTLedgerEntryInfo(

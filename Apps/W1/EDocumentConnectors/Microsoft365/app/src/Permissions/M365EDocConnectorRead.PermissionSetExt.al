@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
-using Microsoft.EServices.EDocumentConnector;
+using Microsoft.EServices.EDocument;
 
-permissionsetextension 6384 "M365 EDoc. Connector - Read" extends "EDocConnector - Read"
+permissionsetextension 6384 "M365 EDoc. Connector - Read" extends "E-Doc. Core - Read"
 {
     IncludedPermissionSets = M365EDocConnRead;
 }

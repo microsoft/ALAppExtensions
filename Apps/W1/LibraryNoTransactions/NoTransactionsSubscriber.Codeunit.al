@@ -74,6 +74,8 @@ codeunit 130630 "No Transactions Subscriber"
                 exit(true);
             'Isolated Storage':
                 exit(true);
+            'PowerBI Reports Setup':
+                exit(true);
             'Purchases & Payables Setup':
                 exit(true);
             'Report Selections':

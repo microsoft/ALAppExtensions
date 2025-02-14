@@ -197,21 +197,21 @@ codeunit 6385 "Outlook Processing"
                         CopyStream(DocumentOutStream, InStream);
                         if not ReceiveContext.GetTempBlob().HasValue() then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(NoContentErr, FileId));
-                        UpdateEDocumentAfterMailAttachmentDownload(Edocument, ExternalMessageId, FileId, AttachmentId);
-                        UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+                        UpdateEDocumentAfterMailAttachmentDownload(Edocument, ExternalMessageId, AttachmentId);
+                        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
                     end;
                 until (EmailMessage.Attachments_Next() = 0) or AttachmentFound;
     end;
 
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext)
+    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text)
     begin
-        ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::"Ready For Processing");
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
     end;
 
-    internal procedure UpdateEDocumentAfterMailAttachmentDownload(var EDocument: Record "E-Document"; ExternalMailMessageId: Text; FileId: Text; MailAttachmentId: Text)
+    internal procedure UpdateEDocumentAfterMailAttachmentDownload(var EDocument: Record "E-Document"; ExternalMailMessageId: Text; MailAttachmentId: Text)
     begin
         EDocument."Mail Message Id" := CopyStr(ExternalMailMessageId, 1, MaxStrLen(EDocument."Mail Message Id"));
-        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
         EDocument."Mail Message Attachment Id" := CopyStr(MailAttachmentId, 1, MaxStrLen(EDocument."Mail Message Attachment Id"));
         EDocument.Modify();
     end;

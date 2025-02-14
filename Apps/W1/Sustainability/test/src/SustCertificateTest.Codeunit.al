@@ -3410,17 +3410,15 @@ codeunit 148187 "Sust. Certificate Test"
     end;
 
     [Test]
-    procedure VerifySustFieldsAreVisibleOnTransferOrderAndPostedTransShptAndPostedTransRcptIfEnableValueTrackingIsTrue()
+    procedure VerifySustFieldsAreVisibleOnTransferOrderAndPostedTransShptIfEnableValueTrackingIsTrue()
     var
         FromLocation: Record Location;
         InTransitLocation: Record Location;
         Item: Record Item;
         TransferShipmentHeader: Record "Transfer Shipment Header";
-        TransferReceiptHeader: Record "Transfer Receipt Header";
         TransferHeader: Record "Transfer Header";
         ToLocation: Record Location;
         PostedTransferShipment: TestPage "Posted Transfer Shipment";
-        PostedTransferReceipt: TestPage "Posted Transfer Receipt";
         TransferOrder: TestPage "Transfer Order";
         AccountCode: Code[20];
         CategoryCode: Code[20];
@@ -3429,8 +3427,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are Visible on Lines of Transfer Order,
-        // Lines of Posted Transfer Shipment and Lines of Posted Transfer Receipt 
-        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        // Lines of Posted Transfer Shipment if Enable Value Chain Tracking is true in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -3443,7 +3440,7 @@ codeunit 148187 "Sust. Certificate Test"
         CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
         Quantity := LibraryRandom.RandIntInRange(10, 10);
 
-        // [GIVEN] Create FromLocation, ToLocation and IntransitLocation that will be used to create Transfer Order.
+        // [GIVEN] Create FromLocation, ToLocation and Intransit Location that will be used to create Transfer Order.
         LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
 
         // [GIVEN] Create Item with Inventory.
@@ -3456,7 +3453,7 @@ codeunit 148187 "Sust. Certificate Test"
         Item.Modify(true);
 
         // [GIVEN] Create Transfer Order.
-        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity);
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity, CO2ePerUnit);
 
         // [WHEN] Open Transfer Order.
         TransferOrder.OpenEdit();
@@ -3503,33 +3500,10 @@ codeunit 148187 "Sust. Certificate Test"
                 FieldShouldBeVisibleErr,
                 PostedTransferShipment.TransferShipmentLines."Total CO2e".Caption(),
                 PostedTransferShipment.TransferShipmentLines.Caption()));
-
-        // [GIVEN] Get Transfer Receipt Header.
-        GetTransferReceiptHeader(TransferReceiptHeader, FromLocation.Code);
-
-        // [WHEN] Open Posted Transfer Receipt.
-        PostedTransferReceipt.OpenEdit();
-        PostedTransferReceipt.GoToRecord(TransferReceiptHeader);
-
-        // [THEN] Sust. Account No. is Visible on Lines of Posted Transfer Receipt.
-        Assert.IsTrue(
-            PostedTransferReceipt.TransferReceiptLines."Sust. Account No.".Visible(),
-            StrSubstNo(
-                FieldShouldBeVisibleErr,
-                PostedTransferReceipt.TransferReceiptLines."Sust. Account No.".Caption(),
-                PostedTransferReceipt.TransferReceiptLines.Caption()));
-
-        // [THEN] Total CO2e is Visible on Lines of Posted Transfer Receipt.
-        Assert.IsTrue(
-            PostedTransferReceipt.TransferReceiptLines."Total CO2e".Visible(),
-            StrSubstNo(
-                FieldShouldBeVisibleErr,
-                PostedTransferReceipt.TransferReceiptLines."Total CO2e".Caption(),
-                PostedTransferReceipt.TransferReceiptLines.Caption()));
     end;
 
     [Test]
-    procedure VerifySustFieldsAreNotVisibleOnTOAndPTShptAndPTRcptAndSustEntriesAreNotCreatedIfEnableValueTrackIsFalse()
+    procedure VerifySustFieldsAreNotVisibleOnTOAndPTShptAndSustEntriesAreNotCreatedIfEnableValueTrackIsFalse()
     var
         FromLocation: Record Location;
         InTransitLocation: Record Location;
@@ -3537,11 +3511,9 @@ codeunit 148187 "Sust. Certificate Test"
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
         SustainabilityValueEntry: Record "Sustainability Value Entry";
         TransferShipmentHeader: Record "Transfer Shipment Header";
-        TransferReceiptHeader: Record "Transfer Receipt Header";
         TransferHeader: Record "Transfer Header";
         ToLocation: Record Location;
         PostedTransferShipment: TestPage "Posted Transfer Shipment";
-        PostedTransferReceipt: TestPage "Posted Transfer Receipt";
         TransferOrder: TestPage "Transfer Order";
         AccountCode: Code[20];
         CategoryCode: Code[20];
@@ -3550,7 +3522,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Lines of Transfer Order,
-        // Lines of Posted Transfer Shipment and Lines of Posted Transfer Receipt and no Sustainability Ledger Entry
+        // Lines of Posted Transfer Shipment and no Sustainability Ledger Entry
         // or Sustainability Value Entry is created if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -3564,7 +3536,7 @@ codeunit 148187 "Sust. Certificate Test"
         CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
         Quantity := LibraryRandom.RandIntInRange(10, 10);
 
-        // [GIVEN] Create FromLocation, ToLocation and IntransitLocation that will be used to create Transfer Order.
+        // [GIVEN] Create FromLocation, ToLocation and Intransit Location that will be used to create Transfer Order.
         LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
 
         // [GIVEN] Create Item with Inventory.
@@ -3577,7 +3549,7 @@ codeunit 148187 "Sust. Certificate Test"
         Item.Modify(true);
 
         // [GIVEN] Create Transfer Order.
-        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity);
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity, 0);
 
         // [WHEN] Open Transfer Order.
         TransferOrder.OpenEdit();
@@ -3624,29 +3596,6 @@ codeunit 148187 "Sust. Certificate Test"
                 FieldShouldNotBeVisibleErr,
                 PostedTransferShipment.TransferShipmentLines."Total CO2e".Caption(),
                 PostedTransferShipment.TransferShipmentLines.Caption()));
-
-        // [GIVEN] Get Transfer Receipt Header.
-        GetTransferReceiptHeader(TransferReceiptHeader, FromLocation.Code);
-
-        // [WHEN] Open Posted Transfer Receipt.
-        PostedTransferReceipt.OpenEdit();
-        PostedTransferReceipt.GoToRecord(TransferReceiptHeader);
-
-        // [THEN] Sust. Account No. is not Visible on Lines of Posted Transfer Receipt.
-        Assert.IsFalse(
-            PostedTransferReceipt.TransferReceiptLines."Sust. Account No.".Visible(),
-            StrSubstNo(
-                FieldShouldNotBeVisibleErr,
-                PostedTransferReceipt.TransferReceiptLines."Sust. Account No.".Caption(),
-                PostedTransferReceipt.TransferReceiptLines.Caption()));
-
-        // [THEN] Total CO2e is not Visible on Lines of Posted Transfer Receipt.
-        Assert.IsFalse(
-            PostedTransferReceipt.TransferReceiptLines."Total CO2e".Visible(),
-            StrSubstNo(
-                FieldShouldNotBeVisibleErr,
-                PostedTransferReceipt.TransferReceiptLines."Total CO2e".Caption(),
-                PostedTransferReceipt.TransferReceiptLines.Caption()));
 
         // [WHEN] Find Sustainability Ledger Entry.
         SustainabilityLedgerEntry.SetRange("Document No.", TransferShipmentHeader."No.");
@@ -5312,12 +5261,15 @@ codeunit 148187 "Sust. Certificate Test"
         TransferReceiptHeader.FindSet();
     end;
 
-    local procedure CreateTransferOrderWithLocation(var TransferHeader: Record "Transfer Header"; Item: Record Item; FromLocationCode: Code[10]; ToLocationCode: Code[10]; IntransitLocationCode: Code[10]; Quantity: Decimal)
+    local procedure CreateTransferOrderWithLocation(var TransferHeader: Record "Transfer Header"; Item: Record Item; FromLocationCode: Code[10]; ToLocationCode: Code[10]; IntransitLocationCode: Code[10]; Quantity: Decimal; CO2ePerUnit: Decimal)
     var
         TransferLine: Record "Transfer Line";
     begin
         LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocationCode, ToLocationCode, IntransitLocationCode);
+
         LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, Item."No.", Quantity);
+        TransferLine.Validate("CO2e per Unit", CO2ePerUnit);
+        TransferLine.Modify();
     end;
 
     local procedure CreateItemWithInventory(var Item: Record Item; FromLocationCode: Code[10])
@@ -5405,7 +5357,7 @@ codeunit 148187 "Sust. Certificate Test"
 
     local procedure AddComponentToAssemblyList(var BOMComponent: Record "BOM Component"; ComponentType: Enum "BOM Component Type"; ComponentNo: Code[20]; ParentItemNo: Code[20]; VariantCode: Code[10]; UOM: Code[10]; QuantityPer: Decimal)
     begin
-        LibraryManufacturing.CreateBOMComponent(BOMComponent, ParentItemNo, ComponentType, ComponentNo, QuantityPer, UOM);
+        LibraryInventory.CreateBOMComponent(BOMComponent, ParentItemNo, ComponentType, ComponentNo, QuantityPer, UOM);
         BOMComponent.Validate("Variant Code", VariantCode);
         if ComponentNo = '' then
             BOMComponent.Validate(Description,

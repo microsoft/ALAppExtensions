@@ -1109,27 +1109,7 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
 
         SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
-        SustainabilityLedgerEntry.FindFirst();
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission CO2",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission CH4",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission N2O",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            -TotalCO2e,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Carbon Fee",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
     end;
 
     [Test]
@@ -1181,7 +1161,7 @@ codeunit 148190 "Sust. Value Entry Test"
             LibraryInventory.CreateItemNo(),
             LibraryRandom.RandIntInRange(10, 10));
 
-        // [GIVEN] Save Quanity.
+        // [GIVEN] Save Quantity.
         Quantity := SalesLine.Quantity / 2;
 
         // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
@@ -1211,27 +1191,7 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
 
         SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
-        SustainabilityLedgerEntry.FindFirst();
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission CO2",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission CH4",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission N2O",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            -TotalCO2e,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Carbon Fee",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
     end;
 
     [Test]
@@ -1344,7 +1304,7 @@ codeunit 148190 "Sust. Value Entry Test"
         AccountCode: Code[20];
         PostedNo: Code[20];
     begin
-        // [SCENARIO 537481] Verify Sustainability related entries When Purchase Document is partially posted.
+        // [SCENARIO 537481] Verify Sustainability related entries When Sales Document is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -1376,7 +1336,7 @@ codeunit 148190 "Sust. Value Entry Test"
             LibraryInventory.CreateItemNo(),
             LibraryRandom.RandInt(10));
 
-        // [GIVEN] Save Quanity.
+        // [GIVEN] Save Quantity.
         Quantity := SalesLine.Quantity / 2;
 
         // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
@@ -1439,16 +1399,7 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), TotalCO2e, SustainabilityValueEntry.TableCaption()));
 
         SustainabilityLedgerEntry.SetRange("Document No.", PostedNo);
-        SustainabilityLedgerEntry.FindFirst();
-        Assert.RecordCount(SustainabilityLedgerEntry, 1);
-        Assert.AreEqual(
-            -TotalCO2e,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), -TotalCO2e, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Carbon Fee",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
     end;
 
     [Test]
@@ -1536,6 +1487,8 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, SalesLine.FieldCaption("Posted Total CO2e"), -TotalCO2e, SalesLine.TableCaption()));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
     procedure VerifySustainabilityFieldsInSalesOrderStatistics()
@@ -1629,6 +1582,100 @@ codeunit 148190 "Sust. Value Entry Test"
         OpenSalesOrderStatistics(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#endif
+    [Test]
+    [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]
+    procedure VerifySustainabilityFieldsInSalesOrderStatisticsNM()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TotalCO2e: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 537481] Verify Sustainability Fields in Sales Order Statistics.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "Total CO2e".
+        TotalCO2e := LibraryRandom.RandIntInRange(100, 100);
+
+        // [GIVEN] Create a Sales Header.
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Create a Sales Line.
+        LibrarySales.CreateSalesLine(
+            SalesLine,
+            SalesHeader,
+            "Sales Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Unit Price", "Qty. to Ship", "Sustainability Account No.", "Total CO2e" in the Sales line.
+        SalesLine.Validate("Unit Price", LibraryRandom.RandIntInRange(10, 200));
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(5, 5));
+        SalesLine.Validate("Sust. Account No.", AccountCode);
+        SalesLine.Validate("Total CO2e", TotalCO2e);
+        SalesLine.Modify();
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" before posting of Sales order.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Shipping.
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Shipping.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Sales Document with Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with only Invoicing.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Update "External Document No." in Sales line.
+        SalesHeader.Validate("External Document No.", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify();
+
+        // [GIVEN] Update "Qty. to Ship" in Sales line.
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        SalesLine.Validate("Qty. to Ship", LibraryRandom.RandIntInRange(2, 2));
+        SalesLine.Modify();
+
+        // [GIVEN] Post a Sales Document with Shipping and Invoicing.
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(TotalCO2e);
+        LibraryVariableStorage.Enqueue(SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(7, 7) * -1);
+
+        // [VERIFY] Verify Sustainability fields in Page "Sales Order Statistics" after partially posting of Sales order with Shipping and Invoicing.
+        OpenSalesOrderStatisticsNM(SalesHeader."No.");
+        LibraryVariableStorage.Clear();
+    end;
 
     [Test]
     procedure VerifySustainabilityFieldsInPostedSalesInvoiceStatisticsWhenSalesDocumentIsPartiallyPosted()
@@ -1704,7 +1751,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
     [Test]
-    [HandlerFunctions('GLPostingPreviewHandler')]
+    [HandlerFunctions('GLPostingPreviewHandlerForSales')]
     procedure VerifySustainabilityValueEntryShouldBeCreatedDuringPreviewPostingOfSalesOrder()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -1715,7 +1762,7 @@ codeunit 148190 "Sust. Value Entry Test"
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
     begin
-        // [SCENARIO 537481] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created during Preview Posting of Sales order.
+        // [SCENARIO 537481] Verify Sustainability Value Entry should be created during Preview Posting of Sales order.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -1810,7 +1857,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
     [Test]
-    [HandlerFunctions('NavigateFindEntriesHandler')]
+    [HandlerFunctions('NavigateFindEntriesHandlerForSales')]
     procedure VerifySustainabilityValueEntryShouldBeShownWhenNavigatingPostedSalesInvoice()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -1823,7 +1870,7 @@ codeunit 148190 "Sust. Value Entry Test"
         AccountCode: Code[20];
         PostedPurchInvNo: Code[20];
     begin
-        // [SCENARIO 537481] Verify Sustainability Value Entry and Sustainability Ledger Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
+        // [SCENARIO 537481] Verify Sustainability Value Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandlerForSales handler.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -1856,7 +1903,7 @@ codeunit 148190 "Sust. Value Entry Test"
         // [WHEN] Post a Sales Document.
         PostedPurchInvNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [VERIFY] Verify Sustainability Value Entry and Sustainability Ledger Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
+        // [VERIFY] Verify Sustainability Value Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandlerForSales handler.
         SalesInvoiceHeader.Get(PostedPurchInvNo);
         SalesInvoiceHeader.Navigate();
     end;
@@ -2576,7 +2623,7 @@ codeunit 148190 "Sust. Value Entry Test"
 
     [Test]
     [HandlerFunctions('ProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
-    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionjournalIsPosted()
+    procedure VerifyValueEntryShouldBeUpdatedWhenProductionJournalIsPosted()
     var
         ProdItem: Record Item;
         CompItem: Record Item;
@@ -2593,7 +2640,7 @@ codeunit 148190 "Sust. Value Entry Test"
         SubcategoryCode: Code[20];
         AccountCode: array[3] of Code[20];
     begin
-        // [SCENARIO 537479] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        // [SCENARIO 537479] Verify Sustainability Value Entry should be created When Production Journal is posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -2654,26 +2701,26 @@ codeunit 148190 "Sust. Value Entry Test"
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
         LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
 
-        // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
+        // [THEN] Verify Sustainability Ledger Entry should not be created When Production Journal is posted.
         SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
-        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
 
         SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
         Assert.RecordCount(SustainabilityValueEntry, 2);
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Component.
         FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
     end;
 
     [Test]
     [HandlerFunctions('ProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
-    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculation()
+    procedure VerifyValueEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculation()
     var
         ProdItem: Record Item;
         CompItem: Record Item;
@@ -2691,7 +2738,7 @@ codeunit 148190 "Sust. Value Entry Test"
         SubcategoryCode: Code[20];
         AccountCode: array[3] of Code[20];
     begin
-        // [SCENARIO 560223] Verify Sustainability Ledger Entry should be created When Production Journal is posted using Unit Cost Calculation as Units.
+        // [SCENARIO 560223] Verify Sustainability Value Entry should be created When Production Journal is posted using Unit Cost Calculation as Units.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -2755,18 +2802,18 @@ codeunit 148190 "Sust. Value Entry Test"
 
         // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
         SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
-        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
 
         SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
         Assert.RecordCount(SustainabilityValueEntry, 3);
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Component.
         FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
 
         // [THEN] Verify Sustainability Value Entry should be created for Production Order Routing Line.
@@ -2776,7 +2823,7 @@ codeunit 148190 "Sust. Value Entry Test"
 
     [Test]
     [HandlerFunctions('ProductionJournalModalPageHandlerForRunAndSetupTime,ConfirmHandler,MessageHandler')]
-    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculationAsTime()
+    procedure VerifyValueEntryShouldBeUpdatedWhenProductionJournalIsPostedWithUnitCostCalculationAsTime()
     var
         ProdItem: Record Item;
         CompItem: Record Item;
@@ -2794,7 +2841,7 @@ codeunit 148190 "Sust. Value Entry Test"
         SubcategoryCode: Code[20];
         AccountCode: array[3] of Code[20];
     begin
-        // [SCENARIO 560223] Verify Sustainability Ledger Entry should be created When Production Journal is posted using Unit Cost Calculation as Time.
+        // [SCENARIO 560223] Verify Sustainability Value Entry should be created When Production Journal is posted using Unit Cost Calculation as Time.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -2858,18 +2905,18 @@ codeunit 148190 "Sust. Value Entry Test"
 
         // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
         SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
-        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
 
         SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
         Assert.RecordCount(SustainabilityValueEntry, 3);
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", ProdOrderLine."Total CO2e");
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Line.
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", ProdOrderLine."Total CO2e");
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Component.
         FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -ProdOrderComponent."Total CO2e");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ProdOrderComponent."Total CO2e");
 
         // [THEN] Verify Sustainability Value Entry should be created for Production Order Routing Line.
@@ -2879,7 +2926,7 @@ codeunit 148190 "Sust. Value Entry Test"
 
     [Test]
     [HandlerFunctions('PartiallyPostProductionJournalModalPageHandler,ConfirmHandler,MessageHandler')]
-    procedure VerifyLedgerEntryShouldBeUpdatedWhenProductionjournalIsPartiallyPosted()
+    procedure VerifyValueEntryShouldBeUpdatedWhenProductionJournalIsPartiallyPosted()
     var
         ProdItem: Record Item;
         CompItem: Record Item;
@@ -2896,7 +2943,7 @@ codeunit 148190 "Sust. Value Entry Test"
         SubcategoryCode: Code[20];
         AccountCode: array[3] of Code[20];
     begin
-        // [SCENARIO 537479] Verify Sustainability Ledger Entry should be created When Production Journal is partially posted.
+        // [SCENARIO 537479] Verify Sustainability Value Entry should be created When Production Journal is partially posted.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
@@ -2959,20 +3006,200 @@ codeunit 148190 "Sust. Value Entry Test"
 
         // [THEN] Verify Sustainability Ledger Entry should be created When Production Journal is posted.
         SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
-        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
 
         SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
         Assert.RecordCount(SustainabilityValueEntry, 2);
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Line.
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Line.
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.", 5 * ProdOrderLine."CO2e per Unit");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderLine."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderLine."Item No.", 5 * ProdOrderLine."CO2e per Unit");
 
-        // [THEN] Verify Sustainability Value Entry and Sustainability Ledger Entry should be created for Production Order Component.
+        // [THEN] Verify Sustainability Value Entry should be created for Production Order Component.
         FindProdOrderComponent(ProdOrderComponent, ProductionOrder, CompItem."No.");
-        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.", -5 * ProdOrderComponent."CO2e per Unit");
+        VerifySustLedgerEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Sust. Account No.");
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -5 * ProdOrderComponent."CO2e per Unit");
+    end;
+
+    [Test]
+    procedure VerifyTypeAndNoFieldInSustValueEntryForItemWhenPurchaseDocumentIsPosted()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        AccountCode: Code[20];
+        EmissionCO2PerUnit: Decimal;
+        EmissionCH4PerUnit: Decimal;
+        EmissionN2OPerUnit: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        PostedInvNo: Code[20];
+    begin
+        // [SCENARIO 563733] Verify Type and No. in Sustainability Value Entry for item When Purchase Document is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2PerUnit := LibraryRandom.RandIntInRange(100, 100);
+        EmissionCH4PerUnit := LibraryRandom.RandIntInRange(200, 200);
+        EmissionN2OPerUnit := LibraryRandom.RandIntInRange(300, 300);
+
+        // [GIVEN] Create an item with "Replenishment System" and "Default Sust. Account".
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Replenishment System", Item."Replenishment System"::Purchase);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update "Emission CO2 Per Unit" ,"Emission CH4 Per Unit" ,"Emission N2O Per Unit" in Purchase Line.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
+        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
+        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post Purchase Document with Receiving and Invoicing.
+        PostedInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for item When Purchase Document is posted.
+        SustainabilityValueEntry.SetRange("Document No.", PostedInvNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.AreEqual(
+            SustainabilityValueEntry.Type::Item,
+            SustainabilityValueEntry.Type,
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption(Type), SustainabilityValueEntry.Type::Item, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            Item."No.",
+            SustainabilityValueEntry."No.",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("No."), Item."No.", SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('ProductionJournalModalPageHandlerForRunAndSetupTime,ConfirmHandler,MessageHandler')]
+    procedure VerifyTypeAndNoFieldInSustValueEntryForWorkAndMachineCenterInProductionOrder()
+    var
+        ProdItem: Record Item;
+        CompItem: Record Item;
+        RoutingHeader: Record "Routing Header";
+        WorkCenter: Record "Work Center";
+        MachineCenter: Record "Machine Center";
+        ProductionOrder: Record "Production Order";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ExpectedCO2ePerUnit: array[2] of Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: array[3] of Code[20];
+    begin
+        // [SCENARIO 563733] Verify Type and No. in Sustainability Value Entry for Item, Machine Center and Work Center When Production Journal is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account for Work and Machine Center.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(1, 1));
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenterWithCalendar(WorkCenter);
+        WorkCenter.Validate("Unit Cost Calculation", WorkCenter."Unit Cost Calculation"::Time);
+        WorkCenter.Validate("Default Sust. Account", AccountCode[1]);
+        WorkCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        WorkCenter.Modify();
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenterWithCalendar(MachineCenter, WorkCenter."No.", LibraryRandom.RandIntInRange(1, 1));
+        MachineCenter.Validate("Default Sust. Account", AccountCode[1]);
+        MachineCenter.Validate("CO2e per Unit", LibraryRandom.RandInt(10));
+        MachineCenter.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Routing.
+        ExpectedCO2ePerUnit[1] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Routing Header.
+        RoutingHeader.Get(CreateRoutingWithWorkAndMachineCenter(WorkCenter, MachineCenter, ExpectedCO2ePerUnit[1]));
+
+        // [GIVEN] Create Production and Component Item.
+        CreateItems(ProdItem, CompItem);
+
+        // [GIVEN] Create a Sustainability Account for Comp Item.
+        CreateSustainabilityAccount(AccountCode[2], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(2, 2));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Component Item.
+        CompItem.Validate("Default Sust. Account", AccountCode[2]);
+        CompItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        CompItem.Modify();
+
+        // [GIVEN] Post Inventory for Component Item.
+        PostInventoryForItem(CompItem."No.");
+
+        // [GIVEN] Create a Sustainability Account for Production Item.
+        CreateSustainabilityAccount(AccountCode[3], CategoryCode, SubcategoryCode, LibraryRandom.RandIntInRange(3, 3));
+
+        // [GIVEN] Update "Default Sust. Account","CO2e per Unit" in Production Item.
+        ProdItem.Validate("Default Sust. Account", AccountCode[3]);
+        ProdItem.Validate("CO2e per Unit", LibraryRandom.RandInt(100));
+        ProdItem.Modify();
+
+        // [GIVEN] Save Expected "CO2e per Unit" for Production BOM.
+        ExpectedCO2ePerUnit[2] := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, ExpectedCO2ePerUnit[2]);
+
+        // [GIVEN] Update "Production BOM No.","Routing No." in Production Item.
+        ProdItem.Validate("Production BOM No.", ProductionBOMHeader."No.");
+        ProdItem.Validate("Routing No.", RoutingHeader."No.");
+        ProdItem.Modify();
+
+        // [GIVEN] Create and Refresh Production Order.
+        CreateAndRefreshProductionOrder(ProductionOrder, ProductionOrder.Status::Released, ProdItem."No.", LibraryRandom.RandIntInRange(10, 10));
+
+        // [WHEN] Post Production Journal.
+        FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
+        LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for Item, Machine Center and Work Center When Production Journal is posted.
+        Assert.RecordCount(SustainabilityValueEntry, 4);
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for Work Center When Production Journal is posted.
+        SustainabilityValueEntry.SetRange("Document No.", ProductionOrder."No.");
+        SustainabilityValueEntry.SetRange(Type, SustainabilityValueEntry.Type::"Work Center");
+        SustainabilityValueEntry.SetRange("No.", WorkCenter."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for Machine Center When Production Journal is posted.
+        SustainabilityValueEntry.SetRange(Type, SustainabilityValueEntry.Type::"Machine Center");
+        SustainabilityValueEntry.SetRange("No.", MachineCenter."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for Production item When Production Journal is posted.
+        SustainabilityValueEntry.SetRange(Type, SustainabilityValueEntry.Type::Item);
+        SustainabilityValueEntry.SetRange("No.", ProdItem."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+
+        // [THEN] Verify Type and No. in Sustainability Value Entry for Component item When Production Journal is posted.
+        SustainabilityValueEntry.SetRange(Type, SustainabilityValueEntry.Type::Item);
+        SustainabilityValueEntry.SetRange("No.", CompItem."No.");
+        Assert.RecordCount(SustainabilityValueEntry, 1);
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
@@ -3028,15 +3255,6 @@ codeunit 148190 "Sust. Value Entry Test"
         PurchaseOrder.OpenEdit();
         PurchaseOrder.FILTER.SetFilter("No.", No);
         PurchaseOrder.Statistics.Invoke();
-    end;
-
-    local procedure OpenPurchaseCrMemoStatistics(No: Code[20])
-    var
-        PurchaseCreditMemo: TestPage "Purchase Credit Memo";
-    begin
-        PurchaseCreditMemo.OpenEdit();
-        PurchaseCreditMemo.FILTER.SetFilter("No.", No);
-        PurchaseCreditMemo.Statistics.Invoke();
     end;
 
     local procedure VerifyPostedPurchaseInvoiceStatistics(No: Code[20])
@@ -3110,6 +3328,8 @@ codeunit 148190 "Sust. Value Entry Test"
         CorrectPostedSalesInvoice.CancelPostedInvoice(SalesInvoiceHeader);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     local procedure OpenSalesOrderStatistics(No: Code[20])
     var
         SalesOrder: TestPage "Sales Order";
@@ -3117,6 +3337,15 @@ codeunit 148190 "Sust. Value Entry Test"
         SalesOrder.OpenEdit();
         SalesOrder.FILTER.SetFilter("No.", No);
         SalesOrder.Statistics.Invoke();
+    end;
+#endif
+    local procedure OpenSalesOrderStatisticsNM(No: Code[20])
+    var
+        SalesOrder: TestPage "Sales Order";
+    begin
+        SalesOrder.OpenEdit();
+        SalesOrder.FILTER.SetFilter("No.", No);
+        SalesOrder.SalesOrderStatistics.Invoke();
     end;
 
     local procedure VerifyPostedSalesInvoiceStatistics(No: Code[20])
@@ -3208,6 +3437,32 @@ codeunit 148190 "Sust. Value Entry Test"
         if CO2ePerUnit <> 0 then begin
             RoutingLine.Validate("CO2e per Unit", CO2ePerUnit);
             RoutingLine.Modify();
+        end;
+
+        RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
+        RoutingHeader.Modify(true);
+
+        exit(RoutingHeader."No.");
+    end;
+
+    local procedure CreateRoutingWithWorkAndMachineCenter(var WorkCenter: Record "Work Center"; var MachineCenter: Record "Machine Center"; CO2ePerUnit: Decimal): Code[20]
+    var
+        RoutingHeader: Record "Routing Header";
+        RoutingLine1: Record "Routing Line";
+        RoutingLine2: Record "Routing Line";
+    begin
+        LibraryManufacturing.CreateRoutingHeader(RoutingHeader, RoutingHeader.Type::Serial);
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine1, '', Format(LibraryRandom.RandInt(100)), RoutingLine1.Type::"Work Center", WorkCenter."No.");
+        if CO2ePerUnit <> 0 then begin
+            RoutingLine1.Validate("CO2e per Unit", CO2ePerUnit);
+            RoutingLine1.Modify();
+        end;
+
+        // Create Routing Line with Machine Center
+        LibraryManufacturing.CreateRoutingLine(RoutingHeader, RoutingLine2, '', Format(LibraryRandom.RandInt(100)), RoutingLine2.Type::"Machine Center", MachineCenter."No.");
+        if CO2ePerUnit <> 0 then begin
+            RoutingLine2.Validate("CO2e per Unit", CO2ePerUnit);
+            RoutingLine2.Modify();
         end;
 
         RoutingHeader.Validate(Status, RoutingHeader.Status::Certified);
@@ -3323,22 +3578,13 @@ codeunit 148190 "Sust. Value Entry Test"
             StrSubstNo(ValueMustBeEqualErr, ProductionOrderRoutingLine.FieldCaption("Posted Total CO2e"), PostedTotalCO2e, ProductionOrderRoutingLine.TableCaption()));
     end;
 
-    local procedure VerifySustLedgerEntryForProductionOrder(ProductionOrder: Record "Production Order"; AccountCode: Code[20]; ExpectedCO2eEmission: Decimal)
+    local procedure VerifySustLedgerEntryForProductionOrder(ProductionOrder: Record "Production Order"; AccountCode: Code[20])
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
     begin
         SustainabilityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
         SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
-        SustainabilityLedgerEntry.FindFirst();
-
-        Assert.AreEqual(
-            ExpectedCO2eEmission,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), ExpectedCO2eEmission, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Carbon Fee",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
     end;
 
     local procedure VerifySustValueEntryForProductionOrder(ProductionOrder: Record "Production Order"; ItemNo: Code[20]; ExpectedCO2eEmission: Decimal)
@@ -3409,6 +3655,18 @@ codeunit 148190 "Sust. Value Entry Test"
 
     [PageHandler]
     [Scope('OnPrem')]
+    procedure GLPostingPreviewHandlerForSales(var GLPostingPreview: TestPage "G/L Posting Preview")
+    begin
+        GLPostingPreview.Filter.SetFilter("Table ID", Format(Database::"Sustainability Value Entry"));
+        GLPostingPreview."No. of Records".AssertEquals(1);
+
+        GLPostingPreview.Filter.SetFilter("Table ID", Format(Database::"Sustainability Ledger Entry"));
+        GLPostingPreview."No. of Records".AssertEquals('');
+        GLPostingPreview.OK().Invoke();
+    end;
+
+    [PageHandler]
+    [Scope('OnPrem')]
     procedure GLPostingPreviewHandlerForOnlyReceived(var GLPostingPreview: TestPage "G/L Posting Preview")
     begin
         GLPostingPreview.Filter.SetFilter("Table ID", Format(Database::"Sustainability Value Entry"));
@@ -3433,6 +3691,18 @@ codeunit 148190 "Sust. Value Entry Test"
 
     [PageHandler]
     [Scope('OnPrem')]
+    procedure NavigateFindEntriesHandlerForSales(var Navigate: TestPage Navigate)
+    begin
+        Navigate.Filter.SetFilter("Table ID", Format(Database::"Sustainability Ledger Entry"));
+        Navigate."No. of Records".AssertEquals('');
+
+        Navigate.Filter.SetFilter("Table ID", Format(Database::"Sustainability Value Entry"));
+        Navigate."No. of Records".AssertEquals(1);
+        Navigate.OK().Invoke();
+    end;
+
+    [PageHandler]
+    [Scope('OnPrem')]
     procedure NavigateFindEntriesHandlerForOnlyReceived(var Navigate: TestPage Navigate)
     begin
         Navigate.Filter.SetFilter("Table ID", Format(Database::"Sustainability Value Entry"));
@@ -3443,9 +3713,25 @@ codeunit 148190 "Sust. Value Entry Test"
         Navigate."No. of Records".AssertEquals('');
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure SalesOrderStatisticsPageHandler(var SalesOrderStatisticsPage: TestPage "Sales Order Statistics")
+    var
+        TotalCO2e: Variant;
+        PostedTotalCO2e: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(TotalCO2e);
+        LibraryVariableStorage.Dequeue(PostedTotalCO2e);
+
+        SalesOrderStatisticsPage."Total CO2e".AssertEquals(TotalCO2e);
+        SalesOrderStatisticsPage."Posted Total CO2e".AssertEquals(PostedTotalCO2e);
+    end;
+#endif
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure SalesOrderStatisticsPageHandlerNM(var SalesOrderStatisticsPage: TestPage "Sales Order Statistics")
     var
         TotalCO2e: Variant;
         PostedTotalCO2e: Variant;

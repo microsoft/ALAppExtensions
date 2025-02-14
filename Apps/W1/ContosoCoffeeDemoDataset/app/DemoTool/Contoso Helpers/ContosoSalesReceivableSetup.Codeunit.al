@@ -44,6 +44,7 @@ codeunit 5269 "Contoso Sales Receivable Setup"
             SalesReceivablesSetup.Validate("VAT Bus. Posting Gr. (Price)", VATBusPostingGrPrice);
         SalesReceivablesSetup.Validate("Report Output Type", ReportOutputType);
         SalesReceivablesSetup.Validate("Document Default Line Type", DocumentDefaultLineType);
+        SalesReceivablesSetup.Validate("Allow Multiple Posting Groups", AllowMultiplePostingGroups);
         SalesReceivablesSetup.Validate("Check Multiple Posting Groups", CheckMultiplePostingGroups);
         SalesReceivablesSetup.Validate("Auto Post Non-Invt. via Whse.", AutoPostNonInvtviaWhse);
         SalesReceivablesSetup.Validate("Posted Return Receipt Nos.", PostedReturnReceiptNos);

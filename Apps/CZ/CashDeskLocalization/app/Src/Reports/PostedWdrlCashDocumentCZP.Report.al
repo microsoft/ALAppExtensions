@@ -164,6 +164,9 @@ report 11737 "Posted Wdrl. Cash Document CZP"
                     {
                         IncludeCaption = true;
                     }
+                    column(AccountType_PostedCashDocumentLine; Format("Account Type", 0, 2))
+                    {
+                    }
 
                     trigger OnPreDataItem()
                     begin

@@ -26,6 +26,15 @@ pageextension 6223 "Sust. Analysis View Entries" extends "Analysis View Entries"
                 Caption = 'Emission N2O';
                 ToolTip = 'Specifies the value of the Emission N2O field.';
             }
+            field("CO2e Emission"; Rec."CO2e Emission")
+            {
+                ApplicationArea = All;
+            }
+            field("Carbon Fee"; Rec."Carbon Fee")
+            {
+                ApplicationArea = All;
+            }
+
         }
     }
 }
