@@ -2778,8 +2778,9 @@ codeunit 139628 "E-Doc. Receive Test"
         Initialize();
         BindSubscription(EDocImplState);
 
-        // [GIVEN] e-Document service to receive one single purchase order
-        CreateEDocServiceToReceivePurchaseOrder(EDocService);
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::Mock);
+        SetDefaultEDocServiceValues(EDocService);
         // [GIVEN] Vendor with VAT Posting Setup
         CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
         // [GIVEN] Item with item reference
@@ -2794,7 +2795,6 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [THEN] E-Invoice preview fast tab is visible and not editable
         Assert.IsFalse(EDocumentPage.EInvoicePreview.Editable(), 'E-Invoice preview fast tab should not be editable');
-
         // [THEN] E-Invoice lines are created
         EDocument.FindLast();
         EInvoiceLine.SetRange("E-Document Entry No.", EDocument."Entry No");
@@ -2812,6 +2812,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."VAT Registration No." := 'GB123456789';
         DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         DocumentVendor.Modify(false);
     end;
