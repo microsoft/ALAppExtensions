@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-using Microsoft.EServices.EDocumentConnector;
+using System.Security.AccessControl;
 
-permissionsetextension 6390 "Cont. EDoc. Connector - Read" extends "EDocConnector - Read"
+permissionsetextension 6390 "Cont. EDoc. Connector - Read" extends "D365 READ"
 {
     IncludedPermissionSets = ContEDocConnRead;
 }

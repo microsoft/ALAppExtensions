@@ -22,7 +22,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// it validates that the e-Document logs contain the correct status entries.
     /// Requires MockService to be running.
     /// </summary>
+
     [Test]
+    [HandlerFunctions('PurchaseOrderListPageHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
@@ -867,7 +869,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
         EDocumentService.Validate("Auto Import", true);
-        EDocumentService.Validate("Sent Actions Integration", Enum::"Sent Document Actions"::Continia);
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
         EDocumentService.Modify();
@@ -918,9 +919,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [Then] E-Document Service Status is correct
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(EDocServiceStatus), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(EDocLogList.Count), EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(EDocServiceStatus), EDocumentPage."Outbound E-Doc. Factbox".Status.Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(EDocLogList.Count), EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         LibraryEDocument.AssertEDocumentLogs(EDocument, EDocumentService, EDocLogList);
 
@@ -933,6 +934,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
             Assert.AreEqual(ErrorMessage, EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         end;
         EDocumentPage.Close();
+    end;
+
+    [ModalPageHandler]
+    procedure PurchaseOrderListPageHandler(var PurchaseOrderListPage: TestPage "Purchase Order List")
+    begin
+        PurchaseOrderListPage.OK().Invoke();
     end;
 
     local procedure GetEDocumentErrorOrWarningsCount(EDocument: Record "E-Document"): Integer

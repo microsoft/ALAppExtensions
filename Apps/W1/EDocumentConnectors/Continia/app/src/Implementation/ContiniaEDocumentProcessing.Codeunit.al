@@ -26,7 +26,7 @@ codeunit 6391 "Continia EDocument Processing"
             EDocumentServiceStatus.Status::Exported:
                 ApiRequests.SendDocument(EDocument, SendContext);
             EDocumentServiceStatus.Status::"Sending Error":
-                if EDocument."Document Id" = '' then
+                if EDocument."Continia Document Id" = '' then
                     ApiRequests.SendDocument(EDocument, SendContext);
         end;
 
@@ -50,7 +50,7 @@ codeunit 6391 "Continia EDocument Processing"
         Success: Boolean;
         StatusDescription: Text;
     begin
-        Evaluate(DocumentGuid, EDocument."Document Id");
+        Evaluate(DocumentGuid, EDocument."Continia Document Id");
 
         ApiRequests.SetSuppressError(true);
         Success := ApiRequests.GetBusinessResponses(DocumentGuid, ActionContext);
@@ -230,7 +230,7 @@ codeunit 6391 "Continia EDocument Processing"
         DocumentInfoXml.SelectSingleNode('document', CurrentEDocumentNode);
 
         CurrentEDocumentNode.SelectSingleNode('document_id', XMLDocumentIdNode);
-        EDocument."Document Id" := CopyStr(XMLDocumentIdNode.AsXmlElement().InnerText, 1, MaxStrLen(EDocument."Document Id"));
+        EDocument."Continia Document Id" := CopyStr(XMLDocumentIdNode.AsXmlElement().InnerText, 1, MaxStrLen(EDocument."Continia Document Id"));
         EDocument.Modify();
 
         CurrentEDocumentNode.SelectSingleNode('xml_document', XmlDocNode);
@@ -247,7 +247,7 @@ codeunit 6391 "Continia EDocument Processing"
         DocumentId: Guid;
     begin
         // Mark document as processed in Continia Online
-        Evaluate(DocumentId, EDocument."Document Id");
+        Evaluate(DocumentId, EDocument."Continia Document Id");
         ApiRequests.MarkDocumentAsProcessed(DocumentId, ReceiveContext);
     end;
 
@@ -256,7 +256,7 @@ codeunit 6391 "Continia EDocument Processing"
         ApiRequests: Codeunit "Continia Api Requests";
         DocumentId: Guid;
     begin
-        Evaluate(DocumentId, EDocument."Document Id");
+        Evaluate(DocumentId, EDocument."Continia Document Id");
         exit(ApiRequests.CancelDocument(DocumentId, ActionContext));
     end;
 

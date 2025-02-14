@@ -776,7 +776,7 @@ codeunit 6393 "Continia Api Requests"
             exit;
         if not EDocument.Get(EDocEntryNo) then
             exit;
-        EDocument."Document Id" := DocumentId;
+        EDocument."Continia Document Id" := DocumentId;
         EDocument.Modify();
     end;
 
@@ -818,7 +818,7 @@ codeunit 6393 "Continia Api Requests"
         HttpResponse: HttpResponseMessage;
         Success: Boolean;
     begin
-        Evaluate(DocumentGuid, EDocument."Document Id");
+        Evaluate(DocumentGuid, EDocument."Continia Document Id");
         Success := ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(DocumentGuid), HttpRequest, HttpResponse);
         SendContext.Http().SetHttpRequestMessage(HttpRequest);
         SendContext.Http().SetHttpResponseMessage(HttpResponse);
@@ -829,11 +829,6 @@ codeunit 6393 "Continia Api Requests"
 
             XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
             ResponseXmlDoc.SelectSingleNode('/technical_response', TechnicalResponseNode);
-
-            if TechnicalResponseNode.SelectSingleNode('document_receipt_id', DocumentReceiptIdNode) then begin
-                Evaluate(EDocument."Filepart Id", DocumentReceiptIdNode.AsXmlElement().InnerText);
-                EDocument.Modify();
-            end;
 
             if not TechnicalResponseNode.SelectSingleNode('document_status', DocumentStatusNode) then
                 exit(false);
@@ -909,22 +904,6 @@ codeunit 6393 "Continia Api Requests"
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequest);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
         exit(Success);
-    end;
-
-    internal procedure ApproveDocument(DocumentGuid: Guid): Boolean
-    var
-        HttpRequest: HttpRequestMessage;
-        HttpResponse: HttpResponseMessage;
-    begin
-        exit(PerformActionOnDocument(DocumentGuid, 'ApproveEnum', HttpRequest, HttpResponse));
-    end;
-
-    internal procedure RejectDocument(DocumentGuid: Guid): Boolean
-    var
-        HttpRequest: HttpRequestMessage;
-        HttpResponse: HttpResponseMessage;
-    begin
-        exit(PerformActionOnDocument(DocumentGuid, 'RejectEnum', HttpRequest, HttpResponse));
     end;
 
     internal procedure PerformActionOnDocument(DocumentGuid: Guid; Action: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
