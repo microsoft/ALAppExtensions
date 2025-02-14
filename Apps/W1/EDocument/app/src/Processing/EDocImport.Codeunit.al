@@ -896,7 +896,6 @@ codeunit 6140 "E-Doc. Import"
         DocTypeIsNotSupportedErr: Label 'Document type %1 is not supported.', Comment = '%1 - Document Type';
         FailedToFindVendorErr: Label 'No vendor is set for Edocument';
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
-        DocNotCreatedQst: Label 'Failed to create new %1 from E-Document. Do you want to open E-Document and see the reported errors?', Comment = '%1 - E-Document Document Type';
         EDocumentAlreadyExistErr: Label 'E-Document with %1 %2, %3 %4 and %5 %6 already exists.', Comment = '%1 - Incoming E-Document No. field caption, %2 - Incoming E-Document No. value, %3 - Bill-to/Pay-to No. field caption, %4 - Bill-to/Pay-to No. value, %5 - Document Date field caption, %6 - Document Date value.';
         DuplicatesMsg: Label '%1 of %2 uploaded documents were not imported because they already exist in the system.', Comment = '%1 - Not processed documents, %2 - Total documents';
         DocsImportedMsg: Label 'Document(s) imported successfully.';
