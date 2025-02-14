@@ -4,8 +4,14 @@ codeunit 139501 "E-Doc. Manual Import Test"
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
+    trigger OnRun()
+    begin
+        IsInitialized := false;
+    end;
+
     var
         PurchaseHeader: Record "Purchase Header";
+        VATPostingSetup: Record "VAT Posting Setup";
         LibraryERM: Codeunit "Library - ERM";
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryPurchase: Codeunit "Library - Purchase";
@@ -13,6 +19,7 @@ codeunit 139501 "E-Doc. Manual Import Test"
         Assert: Codeunit Assert;
         EDocReceiveFiles: Codeunit "E-Doc. Receive Files";
         LibraryRandom: Codeunit "Library - Random";
+        IsInitialized: Boolean;
 
     [Test]
     procedure ManuallyCreateEDocumentFromStream()
@@ -20,7 +27,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         EDocService: Record "E-Document Service";
         EDocument: Record "E-Document";
         Item: Record Item;
-        VATPostingSetup: Record "VAT Posting Setup";
         DocumentVendor: Record Vendor;
         TempBlob: Codeunit "Temp Blob";
         DocumentInStream: InStream;
@@ -32,9 +38,9 @@ codeunit 139501 "E-Doc. Manual Import Test"
         // [GIVEN] e-Document service to receive one single purchase invoice
         CreateEDocServiceToReceivePurchaseInvoice(EDocService);
         // [GIVEN] Vendor with VAT Posting Setup
-        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        CreateVendorWithVatPostingSetup(DocumentVendor);
         // [GIVEN] Item with item reference
-        CreateItemWithReference(Item, VATPostingSetup);
+        CreateItemWithReference(Item);
         // [GIVEN] Incoming PEPPOL document stream
         CreateIncomingPEPPOLBlob(DocumentVendor, TempBlob);
         TempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
@@ -54,7 +60,6 @@ codeunit 139501 "E-Doc. Manual Import Test"
         EDocService: Record "E-Document Service";
         EDocument: Record "E-Document";
         Item: Record Item;
-        VATPostingSetup: Record "VAT Posting Setup";
         DocumentVendor: Record Vendor;
         TempBlob: Codeunit "Temp Blob";
         DocumentInStream: InStream;
@@ -67,9 +72,9 @@ codeunit 139501 "E-Doc. Manual Import Test"
         // [GIVEN] e-Document service to receive one single purchase invoice
         CreateEDocServiceToReceivePurchaseInvoice(EDocService);
         // [GIVEN] Vendor with VAT Posting Setup
-        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        CreateVendorWithVatPostingSetup(DocumentVendor);
         // [GIVEN] Item with item reference
-        CreateItemWithReference(Item, VATPostingSetup);
+        CreateItemWithReference(Item);
         // [GIVEN] Incoming PEPPOL document stream (creating two streams from same blob for two imports)
         CreateIncomingPEPPOLBlob(DocumentVendor, TempBlob);
         TempBlob.CreateInStream(DocumentInStream, TextEncoding::UTF8);
@@ -166,6 +171,12 @@ codeunit 139501 "E-Doc. Manual Import Test"
         DocumentAttachment.DeleteAll(false);
 
         EDocument.DeleteAll(false);
+
+        if IsInitialized then
+            exit;
+
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
+        IsInitialized := true;
     end;
 
     local procedure GetLastServiceStatus(EDocument: Record "E-Document"): Enum "E-Document Service Status"
@@ -185,17 +196,16 @@ codeunit 139501 "E-Doc. Manual Import Test"
         exit(not ErrorMessage.IsEmpty());
     end;
 
-    local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
+    local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor)
     begin
         LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
-        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
         DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
         DocumentVendor."VAT Registration No." := 'GB123456789';
         DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         DocumentVendor.Modify(false);
     end;
 
-    local procedure CreateItemWithReference(var Item: Record Item; var VATPostingSetup: Record "VAT Posting Setup")
+    local procedure CreateItemWithReference(var Item: Record Item)
     var
         ItemReference: Record "Item Reference";
         GenProductPostingGroup: Record "Gen. Product Posting Group";
