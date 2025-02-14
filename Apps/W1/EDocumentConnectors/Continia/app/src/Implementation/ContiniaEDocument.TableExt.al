@@ -6,7 +6,7 @@ tableextension 6391 "Continia E-Document" extends "E-Document"
         {
             DataClassification = CustomerContent;
             Caption = 'Continia Document Id';
-            ToolTip = 'Specifies the unique identifier in the Continia E-Document network.';
+            ToolTip = 'Specifies the unique identifier in the Continia Delivery Network.';
         }
     }
 
