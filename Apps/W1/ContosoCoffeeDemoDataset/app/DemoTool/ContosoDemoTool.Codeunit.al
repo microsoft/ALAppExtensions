@@ -7,6 +7,10 @@ codeunit 5193 "Contoso Demo Tool"
     var
         SelectedModulesGeneratedErr: Label 'All the selected modules have already been generated.';
         LanguageConfirmationMsg: Label 'The demo data will be created with %1, which is different than the language used before (%2). Do you want to continue? \\ The differences in the language could cause issues with the demo data.', Comment = '%1 = Language Name, %2 = Language Name';
+        StartGeneratingDemoDataMsg: Label 'Starting demo data module %1, for level %2', Locked = true;
+        EndGeneratingDemoDataMsg: Label 'Finishing demo data module %1, for level %2', Locked = true;
+        SortedDependencyModulesMsg: Label 'Finish building sorted dependency for selected modules: %1', Locked = true;
+        ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
 
     internal procedure CreateNewCompanyDemoData(var ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary; IsSetup: Boolean)
     var
@@ -54,9 +58,15 @@ codeunit 5193 "Contoso Demo Tool"
     var
         ContosoModuleDependency: Codeunit "Contoso Module Dependency";
         SortedModulesList: List of [Enum "Contoso Demo Data Module"];
+        Module: Enum "Contoso Demo Data Module";
+        SortedModules: Text;
     begin
         // Find dependencies and sort modules based on it
         ContosoModuleDependency.BuildSortedDependencyList(SortedModulesList, DemoDataModulesList);
+
+        foreach Module in SortedModulesList do
+            SortedModules += Format(Module) + ', ';
+        Session.LogMessage('0000OL8', StrSubstNo(SortedDependencyModulesMsg, SortedModules), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
 
         // Run each demo layer for each module
         GenerateDemoData(SortedModulesList, Enum::"Contoso Demo Data Level"::"Setup Data");
@@ -68,16 +78,20 @@ codeunit 5193 "Contoso Demo Tool"
         end;
     end;
 
-    internal procedure GetRefreshModules(var ContosoDemoDataModule2: Record "Contoso Demo Data Module")
+    internal procedure GetRefreshedModules(var TempContosoDemoDataModule: Record "Contoso Demo Data Module" temporary)
     var
         ContosoDemoDataModule: Record "Contoso Demo Data Module";
     begin
-        RefreshModules(ContosoDemoDataModule);
+        RefreshModules();
+        Clear(TempContosoDemoDataModule);
+
         if ContosoDemoDataModule.FindSet() then
             repeat
-                ContosoDemoDataModule2.TransferFields(ContosoDemoDataModule);
-                ContosoDemoDataModule2.Insert();
+                TempContosoDemoDataModule.TransferFields(ContosoDemoDataModule);
+                TempContosoDemoDataModule.Insert();
             until ContosoDemoDataModule.Next() = 0;
+
+        FilterModulesWithApplicationAreas(TempContosoDemoDataModule);
     end;
 
     /// <summary>
@@ -85,12 +99,16 @@ codeunit 5193 "Contoso Demo Tool"
     /// Modules are then filtered based on the application areas.
     /// </summary>
     /// <param name="ContosoDemoDataModule">All available demo data modules basing on the current Application Area</param>
-    internal procedure RefreshModules(var ContosoDemoDataModule: Record "Contoso Demo Data Module")
+    internal procedure RefreshModules()
     var
+        ContosoDemoDataModule: Record "Contoso Demo Data Module";
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         ContosoModuleDependency: codeunit "Contoso Module Dependency";
         ModuleProvider: Interface "Contoso Demo Data Module";
         Dependency, Module : Enum "Contoso Demo Data Module";
     begin
+        ContosoCoffeeDemoDataSetup.InitRecord();
+
         foreach Module in Enum::"Contoso Demo Data Module".Ordinals() do begin
             ModuleProvider := Module;
 
@@ -104,8 +122,6 @@ codeunit 5193 "Contoso Demo Tool"
             foreach Dependency in ModuleProvider.GetDependencies() do
                 ContosoModuleDependency.AddDependency(Module, Dependency);
         end;
-
-        FilterModulesWithApplicationAreas(ContosoDemoDataModule);
     end;
 
     internal procedure FilterModulesWithApplicationAreas(var ContosoDemoDataModule: Record "Contoso Demo Data Module")
@@ -143,6 +159,7 @@ codeunit 5193 "Contoso Demo Tool"
             ContosoDemoDataModule.Get(Module);
 
             if not IsModuleGenerated(ContosoDemoDataModule, ContosoDemoDataLevel) then begin
+                Session.LogMessage('0000OL6', StrSubstNo(StartGeneratingDemoDataMsg, ContosoDemoDataModule.Module, ContosoDemoDataLevel), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
 
                 OnBeforeGeneratingDemoData(Module, ContosoDemoDataLevel);
 
@@ -166,6 +183,8 @@ codeunit 5193 "Contoso Demo Tool"
                 end;
 
                 OnAfterGeneratingDemoData(Module, ContosoDemoDataLevel);
+
+                Session.LogMessage('0000OL7', StrSubstNo(EndGeneratingDemoDataMsg, ContosoDemoDataModule.Module, ContosoDemoDataLevel), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ContosoCoffeeDemoDatasetFeatureNameTok);
             end;
 
         end;
@@ -213,7 +232,7 @@ codeunit 5193 "Contoso Demo Tool"
     var
         ContosoDemoDataModule: Record "Contoso Demo Data Module";
     begin
-        RefreshModules(ContosoDemoDataModule);
+        RefreshModules();
 
         // clearing any filter on the record, so that all modules are included during build
         ContosoDemoDataModule.Reset();
@@ -229,7 +248,7 @@ codeunit 5193 "Contoso Demo Tool"
     var
         ContosoDemoDataModule: Record "Contoso Demo Data Module";
     begin
-        RefreshModules(ContosoDemoDataModule);
+        RefreshModules();
 
         // clearing any filter on the record, so that all modules are included during build
         ContosoDemoDataModule.Reset();
@@ -286,13 +305,9 @@ codeunit 5193 "Contoso Demo Tool"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Company Setup", 'OnSetupNewCompanyWithDemoData', '', false, false)]
     local procedure OnSetupNewCompanyWithDemoData(NewCompanyName: Text[30]; NewCompanyData: Enum "Company Demo Data Type")
     var
-        TempContosoDemoDataModule: Record "Contoso Demo Data Module" temporary;
-        ContosoDemoTool: Codeunit "Contoso Demo Tool";
+        ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary;
         CompanyCreationContoso: Codeunit "Company Creation Contoso";
     begin
-        ContosoDemoTool.RefreshModules(TempContosoDemoDataModule);
-        TempContosoDemoDataModule.ModifyAll(Install, true);
-
-        CompanyCreationContoso.CreateContosoDemodataInCompany(TempContosoDemoDataModule, NewCompanyName, NewCompanyData);
+        CompanyCreationContoso.CreateContosoDemodataInCompany(ContosoDemoDataModule, NewCompanyName, NewCompanyData);
     end;
 }

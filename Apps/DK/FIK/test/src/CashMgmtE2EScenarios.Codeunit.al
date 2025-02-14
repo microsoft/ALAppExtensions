@@ -190,6 +190,37 @@ codeunit 148031 "Cash Mgmt E2E Scenarios"
         Assert.IsFalse(ImpGenJournalLine.IsApplied(), 'Gen jnl. line should not be applied.');
     end;
 
+    [Test]
+    procedure ApplyDomesticFIKToInvoiceWithCopyInvNoToPmtRef();
+    var
+        Vendor: Record Vendor;
+        InvGenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        PmtGenJournalBatch: Record "Gen. Journal Batch";
+        PaymentMethod: Record "Payment Method";
+        PmtGenJournalLine: Record "Gen. Journal Line";
+    begin
+        // [GIVEN] "Copy Invoice No. To Payment Reference" is enabled in Purchase & Payables setup
+        SetCopyInvNoToPmtRef(true);
+
+        // [GIVEN] A vendor with domestic payment method
+        LibraryPaymentExportDK.CreateVendorWithBankAccount(Vendor);
+        LibraryPaymentExportDK.AddPaymentTypeInfoToVendor(Vendor, PaymentMethod.PaymentTypeValidation::Domestic, '');
+        LibraryERM.SelectGenJnlBatch(GenJournalBatch);
+        // [GIVEN] Posted invoice
+        PostVendorInvoice(Vendor, InvGenJournalLine, GenJournalBatch);
+
+        // [GIVEN] Payment journal line with "Payment Reference" = "X"
+        LibraryPaymentExportDK.CreateGenJournalBatch(PmtGenJournalBatch, GenJournalBatch."Bal. Account Type"::"Bank Account", LibraryERM.CreateBankAccountNo(), true);
+        LibraryPaymentExportDK.CreateVendorPmtJnlLine(PmtGenJournalLine, PmtGenJournalBatch, Vendor."No.");
+        PmtGenJournalLine.Validate("Payment Reference", LibraryUtility.GenerateGUID());
+        PmtGenJournalLine.Modify(true);
+        // [WHEN] Apply payment to posted invoice
+        ApplyVendorInvoiceToPmt(InvGenJournalLine, PmtGenJournalLine);
+        // [THEN] Payment is applied to the invoice
+        PmtGenJournalLine.TestField("Applies-to Doc. No.");
+    end;
+
     local procedure ApplyVendorInvoiceToPmt(var GenJournalLine: Record "Gen. Journal Line"; var PmtGenJournalLine: Record "Gen. Journal Line");
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
@@ -432,6 +463,15 @@ codeunit 148031 "Cash Mgmt E2E Scenarios"
         DataExchDef.GET(DataExchDefCode);
         DataExchDef."Ext. Data Handling Codeunit" := CODEUNIT::"ERM PE Source test mock";
         DataExchDef.MODIFY();
+    end;
+
+    local procedure SetCopyInvNoToPmtRef(NewValue: Boolean);
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Copy Inv. No. To Pmt. Ref.", NewValue);
+        PurchasesPayablesSetup.Modify();
     end;
 
     [RequestPageHandler]

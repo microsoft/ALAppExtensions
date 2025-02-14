@@ -1719,6 +1719,8 @@ codeunit 18917 "TCS On Sales Documents"
         VerifyTCSEntry(DocumentNo, true, true, true);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
     procedure SalesOrderWithGLAccountVerifyStatistics()
@@ -1748,6 +1750,7 @@ codeunit 18917 "TCS On Sales Documents"
         VerifyStatisticsForTCS(SalesHeader);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
     procedure SalesOrderWithItemVerifyStatistics()
@@ -1777,6 +1780,7 @@ codeunit 18917 "TCS On Sales Documents"
         VerifyStatisticsForTCS(SalesHeader);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('TaxRatePageHandler,InvoiceStatisticsPageHandler')]
     procedure SalesInvoiceWithGLAccountVerifyStatistics()
@@ -1806,6 +1810,7 @@ codeunit 18917 "TCS On Sales Documents"
         VerifyStatisticsForTCSWithInvoice(SalesHeader);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('TaxRatePageHandler,InvoiceStatisticsPageHandler')]
     procedure SalesInvoiceWithItemVerifyStatistics()
@@ -1833,6 +1838,122 @@ codeunit 18917 "TCS On Sales Documents"
 
         // [THEN] Statistics Verified
         VerifyStatisticsForTCSWithInvoice(SalesHeader);
+    end;
+#endif
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandlerNM')]
+    procedure SalesOrderWithGLAccountVerifyStatisticsNM()
+    var
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        // [SCENARIO] [355124] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order with G/L Account.
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer without PAN, TCS Setup and Tax Accounting Period
+        LibraryTCS.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        LibraryTCS.UpdateCustomerWithPANWithoutConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created Sales Order with G/L Account
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"G/L Account",
+            false);
+
+        // [THEN] Statistics Verified
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandlerNM')]
+    procedure SalesOrderWithItemVerifyStatisticsNM()
+    var
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        // [SCENARIO] [355126] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order with Item.
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer without PAN, TCS Setup and Tax Accounting Period
+        LibraryTCS.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        LibraryTCS.UpdateCustomerWithPANWithoutConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created Sales Order with Item
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        // [THEN] Statistics Verified
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,InvoiceStatisticsPageHandlerNM')]
+    procedure SalesInvoiceWithGLAccountVerifyStatisticsNM()
+    var
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        // [SCENARIO] [355125] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Invoice with G/L Account.
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer without PAN, TCS Setup and Tax Accounting Period
+        LibraryTCS.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        LibraryTCS.UpdateCustomerWithPANWithoutConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created Sales Invoice with G/L Account
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Invoice,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"G/L Account",
+            false);
+
+        // [THEN] Statistics Verified
+        VerifyStatisticsForTCSWithInvoiceNM(SalesHeader);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,InvoiceStatisticsPageHandlerNM')]
+    procedure SalesInvoiceWithItemVerifyStatisticsNM()
+    var
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        // [SCENARIO] [355127] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Invoice with Item.
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer without PAN, TCS Setup and Tax Accounting Period
+        LibraryTCS.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        LibraryTCS.UpdateCustomerWithPANWithoutConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created Sales Invoice with Item
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Invoice,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        // [THEN] Statistics Verified
+        VerifyStatisticsForTCSWithInvoiceNM(SalesHeader);
     end;
 
     [Test]
@@ -3622,6 +3743,8 @@ codeunit 18917 "TCS On Sales Documents"
             exit(SalesInvoiceHeader."Currency Factor");
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     local procedure VerifyStatisticsForTCS(SalesHeader: Record "Sales Header")
     var
         SalesLine: Record "Sales Line";
@@ -3653,6 +3776,7 @@ codeunit 18917 "TCS On Sales Documents"
             StrSubstNo(AmountErr, ActualAmount, ExpectedTCSAmount));
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     local procedure VerifyStatisticsForTCSWithInvoice(SalesHeader: Record "Sales Header")
     var
         SalesLine: Record "Sales Line";
@@ -3677,6 +3801,68 @@ codeunit 18917 "TCS On Sales Documents"
         SalesOrders.OpenEdit();
         SalesOrders.GoToRecord(SalesHeader);
         SalesOrders.Statistics.Invoke();
+
+        Evaluate(ActualAmount, Storage.Get(StatsTCSAmountLbl));
+
+        Assert.AreNearlyEqual(ExpectedTCSAmount, ActualAmount, LibraryTCS.GetTCSRoundingPrecision(),
+            StrSubstNo(AmountErr, ActualAmount, ExpectedTCSAmount));
+    end;
+#endif
+    local procedure VerifyStatisticsForTCSNM(SalesHeader: Record "Sales Header")
+    var
+        SalesLine: Record "Sales Line";
+        SalesOrders: TestPage "Sales Order List";
+        ExpectedTCSAmount, ActualAmount, TCSPercentage, SurchargePercentage, eCessPercentage, SHECessPercentage : Decimal;
+    begin
+        Evaluate(TCSPercentage, Storage.Get(TCSPercentageLbl));
+        Evaluate(SurchargePercentage, Storage.Get(SurchargePercentageLbl));
+        Evaluate(eCessPercentage, Storage.Get(ECessPercentageLbl));
+        Evaluate(SHECessPercentage, Storage.Get(SHECessPercentageLbl));
+
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindSet();
+        repeat
+            ExpectedTCSAmount += SalesLine."Amount" * TCSPercentage / 100;
+        until SalesLine.Next() = 0;
+        ExpectedTCSAmount += ExpectedTCSAmount * SurchargePercentage / 100;
+        ExpectedTCSAmount += ExpectedTCSAmount * eCessPercentage / 100 + ExpectedTCSAmount * SHECessPercentage / 100;
+        ExpectedTCSAmount := LibraryTCS.RoundTCSAmount(ExpectedTCSAmount);
+
+        SalesOrders.OpenEdit();
+        SalesOrders.GoToRecord(SalesHeader);
+        SalesOrders.SalesOrderStatistics.Invoke();
+
+        Evaluate(ActualAmount, Storage.Get(StatsTCSAmountLbl));
+
+        Assert.AreNearlyEqual(ExpectedTCSAmount, ActualAmount, LibraryTCS.GetTCSRoundingPrecision(),
+            StrSubstNo(AmountErr, ActualAmount, ExpectedTCSAmount));
+    end;
+
+    local procedure VerifyStatisticsForTCSWithInvoiceNM(SalesHeader: Record "Sales Header")
+    var
+        SalesLine: Record "Sales Line";
+        SalesOrders: TestPage "Sales Invoice List";
+        ExpectedTCSAmount, ActualAmount, TCSPercentage, SurchargePercentage, eCessPercentage, SHECessPercentage : Decimal;
+    begin
+        Evaluate(TCSPercentage, Storage.Get(TCSPercentageLbl));
+        Evaluate(SurchargePercentage, Storage.Get(SurchargePercentageLbl));
+        Evaluate(eCessPercentage, Storage.Get(ECessPercentageLbl));
+        Evaluate(SHECessPercentage, Storage.Get(SHECessPercentageLbl));
+
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindSet();
+        repeat
+            ExpectedTCSAmount += SalesLine."Amount" * TCSPercentage / 100;
+        until SalesLine.Next() = 0;
+        ExpectedTCSAmount += ExpectedTCSAmount * SurchargePercentage / 100;
+        ExpectedTCSAmount += ExpectedTCSAmount * eCessPercentage / 100 + ExpectedTCSAmount * SHECessPercentage / 100;
+        ExpectedTCSAmount := LibraryTCS.RoundTCSAmount(ExpectedTCSAmount);
+
+        SalesOrders.OpenEdit();
+        SalesOrders.GoToRecord(SalesHeader);
+        SalesOrders.SalesStatistics.Invoke();
 
         Evaluate(ActualAmount, Storage.Get(StatsTCSAmountLbl));
 
@@ -3977,6 +4163,8 @@ codeunit 18917 "TCS On Sales Documents"
         Storage.Set(SurchargeThresholdAmountLbl, Format(LibraryRandom.RandIntInRange(4000, 6000)));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [ModalPageHandler]
     procedure InvoiceStatisticsPageHandler(var SalesStatistics: TestPage "Sales Statistics");
     var
@@ -3986,8 +4174,27 @@ codeunit 18917 "TCS On Sales Documents"
         Storage.Set(StatsTCSAmountLbl, Amount);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [ModalPageHandler]
     procedure StatisticsPageHandler(var SalesStatistics: TestPage "Sales Order Statistics")
+    var
+        Amount: Text;
+    begin
+        Amount := SalesStatistics."TCS Amount".Value;
+        Storage.Set(StatsTCSAmountLbl, Amount);
+    end;
+#endif
+    [PageHandler]
+    procedure InvoiceStatisticsPageHandlerNM(var SalesStatistics: TestPage "Sales Statistics");
+    var
+        Amount: Text;
+    begin
+        Amount := SalesStatistics."TCS Amount".Value;
+        Storage.Set(StatsTCSAmountLbl, Amount);
+    end;
+
+    [PageHandler]
+    procedure StatisticsPageHandlerNM(var SalesStatistics: TestPage "Sales Order Statistics")
     var
         Amount: Text;
     begin

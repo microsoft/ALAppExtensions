@@ -18,7 +18,7 @@ codeunit 13702 "Create Company Information DK"
         CompanyInformation: Record "Company Information";
     begin
         CompanyInformation.Get();
-        CompanyInformation.Validate("VAT Registration No.", VATRegistrationNo);
+        CompanyInformation."VAT Registration No." := VATRegistrationNo;
         CompanyInformation.Validate(City, City);
         CompanyInformation.Validate("Post Code", PostcodeLbl);
         CompanyInformation.Validate("Ship-to City", City);

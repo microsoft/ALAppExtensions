@@ -143,7 +143,18 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
 
     procedure UpdateSustainabilityEmission(var ItemJournalLine: Record "Item Journal Line")
     begin
-        ItemJournalLine."Total CO2e" := ItemJournalLine."CO2e per Unit" * ItemJournalLine."Qty. per Unit of Measure" * ItemJournalLine.Quantity;
+        if (ItemJournalLine."Operation No." <> '') and
+           (ItemJournalLine."No." <> '') and
+           (ItemJournalLine."Unit Cost Calculation" = ItemJournalLine."Unit Cost Calculation"::Time)
+        then
+            ItemJournalLine."Total CO2e" := ItemJournalLine."CO2e per Unit" * GetTotalTimePerOperation(ItemJournalLine)
+        else
+            ItemJournalLine."Total CO2e" := ItemJournalLine."CO2e per Unit" * ItemJournalLine."Qty. per Unit of Measure" * ItemJournalLine.Quantity;
+    end;
+
+    local procedure GetTotalTimePerOperation(var ItemJournalLine: Record "Item Journal Line"): Decimal
+    begin
+        exit((ItemJournalLine."Run Time" + ItemJournalLine."Setup Time" + ItemJournalLine."Stop Time") * ItemJournalLine."Qty. per Cap. Unit of Measure");
     end;
 
     local procedure ClearEmissionInformation(var ItemJournalLine: Record "Item Journal Line")
@@ -157,10 +168,30 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
     begin
         ItemJournalLine."CO2e Per Unit" := 0;
 
+        if (ItemJournalLine."Operation No." <> '') and
+           (ItemJournalLine."No." <> '') and
+           (ItemJournalLine."Unit Cost Calculation" = ItemJournalLine."Unit Cost Calculation"::Time)
+        then begin
+            UpdateEmissionPerUnitForOperation(ItemJournalLine);
+            exit;
+        end;
+
         if (ItemJournalLine."Qty. per Unit of Measure" = 0) or (ItemJournalLine.Quantity = 0) then
             exit;
 
         Denominator := ItemJournalLine."Qty. per Unit of Measure" * ItemJournalLine.Quantity;
+        if ItemJournalLine."Total CO2e" <> 0 then
+            ItemJournalLine."CO2e per Unit" := ItemJournalLine."Total CO2e" / Denominator;
+    end;
+
+    local procedure UpdateEmissionPerUnitForOperation(var ItemJournalLine: Record "Item Journal Line")
+    var
+        Denominator: Decimal;
+    begin
+        if (GetTotalTimePerOperation(ItemJournalLine) = 0) then
+            exit;
+
+        Denominator := GetTotalTimePerOperation(ItemJournalLine);
         if ItemJournalLine."Total CO2e" <> 0 then
             ItemJournalLine."CO2e per Unit" := ItemJournalLine."Total CO2e" / Denominator;
     end;

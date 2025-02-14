@@ -28,6 +28,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
+            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(2; "No. Series"; Code[20])

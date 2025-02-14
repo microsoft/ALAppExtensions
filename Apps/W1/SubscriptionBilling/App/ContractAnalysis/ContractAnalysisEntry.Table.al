@@ -298,6 +298,7 @@ table 8019 "Contract Analysis Entry"
         Rec."Partner No." := ServiceCommitment.GetPartnerNoFromContract();
         Rec."Dimension Set ID" := ServiceCommitment."Dimension Set ID";
         Rec."Usage Based Billing" := ServiceCommitment."Usage Based Billing";
+        OnAfterInitFromServiceCommitment(Rec, ServiceCommitment);
     end;
 
     internal procedure CalculateMonthlyRecurringRevenue(ServiceCommitment: Record "Service Commitment")
@@ -364,5 +365,10 @@ table 8019 "Contract Analysis Entry"
                 'Q':
                     exit(ServiceAmountLCY / (PeriodCount * 3));
             end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitFromServiceCommitment(var ContractAnalysisEntry: Record "Contract Analysis Entry"; ServiceCommitment: Record "Service Commitment")
+    begin
     end;
 }

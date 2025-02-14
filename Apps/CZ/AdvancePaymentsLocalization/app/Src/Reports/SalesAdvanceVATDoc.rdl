@@ -2185,7 +2185,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, Fields!ExchRateText.Value, " ")</Value>
+                                                    <Value>=Fields!ExchRateText.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Normal</FontWeight>
@@ -2462,7 +2462,6 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <PaddingBottom>2pt</PaddingBottom>
                                             </Style>
                                           </Textbox>
-                                          <rd:Selected>true</rd:Selected>
                                         </CellContents>
                                       </TablixCell>
                                     </TablixCells>
@@ -2889,12 +2888,12 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   <TablixMember />
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                 </TablixMembers>
@@ -2903,7 +2902,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 <TablixMembers>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, False, True)</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember />
@@ -2928,7 +2927,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <DataSetName>DataSet_Result</DataSetName>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier.Value</FilterExpression>
+                                  <FilterExpression>=Fields!ExchRateText.Value</FilterExpression>
                                   <Operator>GreaterThan</Operator>
                                   <FilterValues>
                                     <FilterValue>""</FilterValue>

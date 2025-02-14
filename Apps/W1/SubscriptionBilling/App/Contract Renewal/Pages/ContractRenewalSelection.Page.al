@@ -507,7 +507,6 @@ page 8006 "Contract Renewal Selection"
         ServiceObject: Record "Service Object";
         ConfirmManagement: Codeunit "Confirm Management";
         RenewalTerm: DateFormula;
-        LineCheckText: Text[250];
         AddVendorServices: Boolean;
         RenewalTermEnabled: Boolean;
         SalesQuoteCreated: Boolean;
@@ -516,4 +515,5 @@ page 8006 "Contract Renewal Selection"
         TempServiceCommitment: Record "Service Commitment" temporary;
         TempServiceCommitmentVend: Record "Service Commitment" temporary;
         LineFormatStyleExpression: Text;
+        LineCheckText: Text[250];
 }

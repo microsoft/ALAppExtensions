@@ -6,7 +6,11 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
 
+#pragma warning disable AS0130
+#pragma warning disable PTE0025
 table 6611 "FS Bookable Resource Booking"
+#pragma warning restore AS0130
+#pragma warning restore PTE0025
 {
     ExternalName = 'bookableresourcebooking';
     TableType = CRM;
@@ -615,6 +619,32 @@ table 6611 "FS Bookable Resource Booking"
             ExternalName = 'msdyn_crewname';
             ExternalType = 'String';
             ExternalAccess = Read;
+        }
+        field(110; BookingStatus; Guid)
+        {
+            ExternalName = 'bookingstatus';
+            ExternalType = 'Lookup';
+            ExternalAccess = Read;
+            Description = 'Unique identifier of the booking status.';
+            Caption = 'Booking Status';
+            TableRelation = "FS Booking Status".BookingStatusId;
+            DataClassification = SystemMetadata;
+        }
+        field(120; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
+        field(121; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
+            DataClassification = SystemMetadata;
         }
     }
     keys

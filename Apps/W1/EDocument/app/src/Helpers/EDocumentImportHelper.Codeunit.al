@@ -5,6 +5,9 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Bank.Reconciliation;
+#if not CLEAN26
+using Microsoft.eServices.EDocument.Processing.Import;
+#endif
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -269,9 +272,8 @@ codeunit 6109 "E-Document Import Helper"
         if (CompanyInformation.GLN = '') and (CompanyInformation."VAT Registration No." = '') then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), MissingCompanyInfoSetupErr);
 
-        if EDocument."Receiving Company GLN" <> '' then
-            if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
-                EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
+        if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
+            EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
 
         if not (ExtractVatRegNo(CompanyInformation."VAT Registration No.", '') in ['', ExtractVatRegNo(EDocument."Receiving Company VAT Reg. No.", '')]) then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo("VAT Registration No."), StrSubstNo(InvalidCompanyInfoVATRegNoErr, EDocument."Receiving Company VAT Reg. No."));
@@ -571,16 +573,21 @@ codeunit 6109 "E-Document Import Helper"
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(VendorNotFoundErr, EDocument."Bill-to/Pay-to Name"));
     end;
 
+#if not CLEAN26
     /// <summary>
     /// Use it to process imported E-Document
     /// </summary>
     /// <param name="EDocument">The E-Document record.</param>
     /// <param name="CreateJnlLine">If processing should create journal line</param>
+    [Obsolete('Use codeunit 6140 "E-Doc. Import"''s method ProcessIncomingEDocument', '26.0')]
     procedure ProcessDocument(var EDocument: Record "E-Document"; CreateJnlLine: Boolean)
     var
+        EDocImportParameters: Record "E-Doc. Import Parameters";
     begin
-        EDocumentImport.ProcessDocument(EDocument, CreateJnlLine);
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        EDocumentImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
     end;
+#endif
 
     /// <summary>
     /// Use it to set hide dialogs when importing E-Document.
@@ -589,6 +596,26 @@ codeunit 6109 "E-Document Import Helper"
     procedure SetHideDialogs(Hide: Boolean)
     begin
         EDocumentImport.SetHideDialogs(Hide);
+    end;
+
+    /// <summary>
+    /// Use it to find attachment file extension when importing E-Document.
+    /// </summary>
+    procedure DetermineFileType(MimeType: Text): Text
+    begin
+        case MimeType of
+            'image/jpeg':
+                exit('jpeg');
+            'image/png':
+                exit('png');
+            'application/pdf':
+                exit('pdf');
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.oasis.opendocument.spreadsheet':
+                exit('xlsx');
+            else
+                exit('');
+        end;
     end;
 
     local procedure TryFindLeastBlockedVendorNoByVendorBankAcc(var VendorBankAccount: record "Vendor Bank Account"): Code[20]
