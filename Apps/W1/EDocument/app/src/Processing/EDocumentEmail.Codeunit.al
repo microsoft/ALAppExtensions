@@ -98,9 +98,9 @@ codeunit 6106 "E-Document Email"
     local procedure CreateSourceLists(
         ToCust: Code[20];
         var SourceReference: RecordRef;
-        SourceTableIDs: List of [Integer];
-        SourceIDs: List of [Guid];
-        SourceRelationTypes: List of [Integer])
+        var SourceTableIDs: List of [Integer];
+        var SourceIDs: List of [Guid];
+        var SourceRelationTypes: List of [Integer])
     var
         Customer: Record Customer;
     begin
