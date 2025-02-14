@@ -215,7 +215,8 @@ codeunit 6103 "E-Document Subscription"
         if IsNullGuid(Rec."E-Document Link") then
             exit;
 
-        EDocument.GetBySystemId(Rec."E-Document Link");
+        if not EDocument.GetBySystemId(Rec."E-Document Link") then
+            exit;
 
         EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
         EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
@@ -339,5 +340,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
-        ConfirmDeleteQst: Label 'This purchase document is created from E-Document. Do you want to proceed with deletion?';
+        ConfirmDeleteQst: Label 'This purchase document is created from an E-Document. Do you want to proceed with deletion?';
 }

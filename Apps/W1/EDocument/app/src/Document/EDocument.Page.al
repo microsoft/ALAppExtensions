@@ -475,8 +475,6 @@ page 6121 "E-Document"
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
                 actionref(Preview_promoteed; ViewFile) { }
-                actionref(DeleteRelatedDocument_Promoted; DeleteRelatedDocument) { }
-
             }
             group(Category_Troubleshoot)
             {
