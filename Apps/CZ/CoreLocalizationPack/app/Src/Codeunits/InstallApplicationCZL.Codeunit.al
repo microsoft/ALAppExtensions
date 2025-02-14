@@ -239,7 +239,6 @@ codeunit 11748 "Install Application CZL"
         CopyVATStatementTemplate();
         CopyVATStatementLine();
         CopyAccScheduleLine();
-        CopySourceCodeSetup();
         InitUnreliablePayerServiceSetup();
         InitVATCtrlReportSections();
         InitStatutoryReportingSetup();
@@ -467,19 +466,6 @@ codeunit 11748 "Install Application CZL"
             AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Constant CZL";
     end;
 
-    local procedure CopySourceCodeSetup();
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-    begin
-        SourceCodeSetup.SetLoadFields("Sales VAT Delay", "Purchase VAT Delay");
-        if SourceCodeSetup.Get() then begin
-            SourceCodeSetup."Sales VAT Delay CZL" := SourceCodeSetup."Sales VAT Delay";
-            SourceCodeSetup."Purchase VAT Delay CZL" := SourceCodeSetup."Purchase VAT Delay";
-            SourceCodeSetup.Modify(false);
-        end;
-
-    end;
-
     local procedure ModifyGenJournalTemplate()
     var
         GenJournalTemplate: Record "Gen. Journal Template";
@@ -642,14 +628,7 @@ codeunit 11748 "Install Application CZL"
 
     local procedure InitVATCtrlReportSections()
     var
-        XA1Tok: Label 'A1', Locked = true;
-        XA2Tok: Label 'A2', Locked = true;
-        XA3Tok: Label 'A3', Locked = true;
-        XA4Tok: Label 'A4', Locked = true;
-        XA5Tok: Label 'A5', Locked = true;
-        XB1Tok: Label 'B1', Locked = true;
-        XB2Tok: Label 'B2', Locked = true;
-        XB3Tok: Label 'B3', Locked = true;
+        VATCtrlReportSectionCZL: Record "VAT Ctrl. Report Section CZL";
         XReverseChargeSalesTxt: Label 'Reverse charge sales';
         XReverseChargePurchaseTxt: Label 'Reverse charge purchase';
         XEUPurchaseTxt: Label 'EU purchase';
@@ -659,14 +638,14 @@ codeunit 11748 "Install Application CZL"
         XDomesticPurchaseAbove10ThousandTxt: Label 'Domestic purchase above 10 thousand';
         XDomesticPurchaseBelow10ThousandTxt: Label 'Domestic purchase below 10 thousand';
     begin
-        InsertVATCtrlReportSection(XA1Tok, XReverseChargeSalesTxt, 0, '');
-        InsertVATCtrlReportSection(XA2Tok, XEUPurchaseTxt, 1, '');
-        InsertVATCtrlReportSection(XA3Tok, XSalesOfInvestmentGoldTxt, 0, '');
-        InsertVATCtrlReportSection(XA4Tok, XDomesticSalesAbove10ThousandTxt, 0, XA5Tok);
-        InsertVATCtrlReportSection(XA5Tok, XDomesticSalesBelow10ThousandTxt, 2, '');
-        InsertVATCtrlReportSection(XB1Tok, XReverseChargePurchaseTxt, 1, '');
-        InsertVATCtrlReportSection(XB2Tok, XDomesticPurchaseAbove10ThousandTxt, 1, XB3Tok);
-        InsertVATCtrlReportSection(XB3Tok, XDomesticPurchaseBelow10ThousandTxt, 2, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.ReverseChargeSalesSection(), XReverseChargeSalesTxt, 0, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.EUPurchaseSection(), XEUPurchaseTxt, 1, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.SalesOfInvestmentGoldSection(), XSalesOfInvestmentGoldTxt, 0, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.DomesticSalesAbove10ThousandSection(), XDomesticSalesAbove10ThousandTxt, 0, VATCtrlReportSectionCZL.DomesticSalesBelow10ThousandSection());
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.DomesticSalesBelow10ThousandSection(), XDomesticSalesBelow10ThousandTxt, 2, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.ReverseChargePurchaseSection(), XReverseChargePurchaseTxt, 1, '');
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.DomesticPurchaseAbove10ThousandSection(), XDomesticPurchaseAbove10ThousandTxt, 1, VATCtrlReportSectionCZL.DomesticPurchaseBelow10ThousandSection());
+        InsertVATCtrlReportSection(VATCtrlReportSectionCZL.DomesticPurchaseBelow10ThousandSection(), XDomesticPurchaseBelow10ThousandTxt, 2, '');
     end;
 
     local procedure InsertVATCtrlReportSection(VATCtrlReportCode: Code[20]; VATCtrlReportDescription: Text[50]; GroupBy: Option; SimplifiedTaxDocSectCode: Code[20])

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-CustomsDocuments xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<CustomsDocument>
+		<Code>01</Code>
+		<Descripcion>Pedimento</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>02</Code>
+		<Descripcion>Autorización de importación temporal</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>03</Code>
+		<Descripcion>Autorización de importación temporal de embarcaciones</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>04</Code>
+		<Descripcion>Autorización de importación temporal de mercancías, destinadas al mantenimiento y reparación de las mercancías importadas temporalmente</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>05</Code>
+		<Descripcion>Autorización para la importación de vehículos especialmente construidos o transformados, equipados con dispositivos o aparatos diversos para cumplir con contrato derivado de licitación pública</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>06</Code>
+		<Descripcion>Aviso de exportación temporal</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>07</Code>
+		<Descripcion>Aviso de traslado de mercancías de empresas con Programa IMMEX, RFE u Operador Económico Autorizado</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>08</Code>
+		<Descripcion>Aviso para el traslado de autopartes ubicadas en la franja o región fronteriza a la industria terminal automotriz o manufacturera de vehículos de autotransporte en el resto del territorio nacional</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>09</Code>
+		<Descripcion>Constancia de importación temporal, retorno o transferencia de contenedores</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>10</Code>
+		<Descripcion>Constancia de transferencia de mercancías</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>11</Code>
+		<Descripcion>Autorización de donación de mercancías al Fisco Federal que se encuentren en el extranjero</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>12</Code>
+		<Descripcion>Cuaderno ATA</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>13</Code>
+		<Descripcion>Listas de intercambio</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>14</Code>
+		<Descripcion>Permiso de Importación Temporal</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>15</Code>
+		<Descripcion>Permiso de importación temporal de casa rodante</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>16</Code>
+		<Descripcion>Permiso de importación temporal de embarcaciones</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>17</Code>
+		<Descripcion>Solicitud de donación de mercancías en casos de emergencias o desastres naturales</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>18</Code>
+		<Descripcion>Aviso de consolidado</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>19</Code>
+		<Descripcion>Aviso de cruce de mercancias</Descripcion>
+	</CustomsDocument>
+	<CustomsDocument>
+		<Code>20</Code>
+		<Descripcion>Otro</Descripcion>
+	</CustomsDocument>
+</data-set-CustomsDocuments>

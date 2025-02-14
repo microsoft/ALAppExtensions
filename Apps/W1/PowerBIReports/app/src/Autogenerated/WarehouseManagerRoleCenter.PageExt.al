@@ -88,7 +88,7 @@ pageextension 36962 "Warehouse Manager Role Center" extends "Warehouse Manager R
                     ApplicationArea = Basic, Suite;
                     Caption = 'Bin Contents (Power BI)';
                     Image = "PowerBI";
-                    RunObject = page "Bin Contents";
+                    RunObject = page "PowerBI Bin Contents";
                 }
                 action("Bin Contents by Item Tracking (Power BI)")
                 {

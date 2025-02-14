@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
@@ -59,7 +58,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] IRS Reporting "X" with "Starting Date" = 01.01.2024 and "Ending Date" = 31.12.2024
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -122,7 +121,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] MISC form with two boxes - MISC-01 and MISC-02
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -135,13 +134,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         for i := 1 to ArrayLen(FormBoxNo) do begin
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
             PurchaseHeader.Validate("Posting Date", PostingDate);
-            LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
             PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
             PurchaseHeader.Validate("IRS 1099 Form No.", FormNo);
             PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i]);
             PurchaseHeader.Modify(true);
+            LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
             LibraryERM.FindVendorLedgerEntry(
                 VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -197,7 +196,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] A single vendor
         VendNo := LibraryPurchase.CreateVendorNo();
@@ -213,13 +212,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                 // [GIVEN] Purchase invoice is posted for the vendor and NEC-02
                 LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
                 PurchaseHeader.Validate("Posting Date", PostingDate);
-                LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                    PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                    LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
                 PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
                 PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[i]);
                 PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j]);
                 PurchaseHeader.Modify(true);
+                LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                    PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                    LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
                 LibraryERM.FindVendorLedgerEntry(
                     VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -276,7 +275,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] Forms MISC and NEC with two boxes each (MISC-01, MISC-02, NEC-01, NEC-02)
         for i := 1 to ArrayLen(FormNo) do
@@ -297,13 +296,13 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-02
                     LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo[i]);
                     PurchaseHeader.Validate("Posting Date", PostingDate);
-                    LibraryPurchase.CreatePurchaseLineWithUnitCost(
-                        PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
-                        LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
                     PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(PostingDate));
                     PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[j]);
                     PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j, k]);
                     PurchaseHeader.Modify(true);
+                    LibraryPurchase.CreatePurchaseLineWithUnitCost(
+                        PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+                        LibraryRandom.RandInt(100), LibraryRandom.RandDec(100, 2));
 
                     LibraryERM.FindVendorLedgerEntry(
                         VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -359,7 +358,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 #if not CLEAN25
         BindSubscription(IRSFormsEnableFeature);
 #endif
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] Form box MISC-01 is created for the period "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -429,7 +428,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 
         Initialize();
         // [GIVEN] Form box MISC-01
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate, FormNo);
@@ -472,7 +471,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
 
         Initialize();
         // [GIVEN] Form box MISC-01 is created for the period "X"
-        PostingDate := GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate, FormNo);
@@ -531,16 +530,6 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         IsInitialized := true;
         Commit();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"IRS 1099 Form Calc. Tests");
-    end;
-
-    local procedure GetPostingDate(): Date
-    var
-        GLEntry: Record "G/L Entry";
-    begin
-        GLEntry.SetCurrentKey("Posting Date", "G/L Account No.", "Dimension Set ID");
-        if GLEntry.FindLast() then
-            exit(CalcDate('<1Y>', GLEntry."Posting Date"));
-        exit(WorkDate());
     end;
 
     local procedure CreateVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; PostingDate: Date; DocumentType: Enum "Gen. Journal Document Type"; VendorNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; Amount: Decimal)

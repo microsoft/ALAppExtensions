@@ -153,14 +153,14 @@ codeunit 6237 "Acc. Sch. Line Mgmt. Helper"
                         case AmountType of
                             AmountType::CO2e:
                                 begin
-                                    SustLedgEntry.CalcSums("Emission CO2");
-                                    ColValue := SustLedgEntry."Emission CO2";
+                                    SustLedgEntry.CalcSums("CO2e Emission");
+                                    ColValue := SustLedgEntry."CO2e Emission";
                                     Balance := ColValue;
                                 end;
                             AmountType::"Carbon Fee":
                                 begin
-                                    SustLedgEntry.CalcSums("Emission CH4", "Emission N2O");
-                                    ColValue := SustLedgEntry."Emission CH4" + SustLedgEntry."Emission N2O";
+                                    SustLedgEntry.CalcSums("Carbon Fee");
+                                    ColValue := SustLedgEntry."Carbon Fee";
                                     Balance := ColValue;
                                 end;
                         end;
@@ -170,14 +170,14 @@ codeunit 6237 "Acc. Sch. Line Mgmt. Helper"
                         case AmountType of
                             AmountType::CO2e:
                                 begin
-                                    AnalysisViewEntry.CalcSums("Emission CO2");
-                                    ColValue := AnalysisViewEntry."Emission CO2";
+                                    AnalysisViewEntry.CalcSums("CO2e Emission");
+                                    ColValue := AnalysisViewEntry."CO2e Emission";
                                     Balance := ColValue;
                                 end;
                             AmountType::"Carbon Fee":
                                 begin
-                                    AnalysisViewEntry.CalcSums("Emission CH4", "Emission N2O");
-                                    ColValue := AnalysisViewEntry."Emission CH4" + AnalysisViewEntry."Emission N2O";
+                                    AnalysisViewEntry.CalcSums("Carbon Fee");
+                                    ColValue := AnalysisViewEntry."Carbon Fee";
                                     Balance := ColValue;
                                 end;
                         end;

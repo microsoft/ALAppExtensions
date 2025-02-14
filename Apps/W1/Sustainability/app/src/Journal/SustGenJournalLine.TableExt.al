@@ -140,9 +140,10 @@ tableextension 6224 "Sust. Gen. Journal Line" extends "Gen. Journal Line"
         if (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::" ", GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::"Credit Memo"]) then
             GenJournalLine.TestField("Sust. Account No.")
         else
-            GenJournalLine.TestField("Sust. Account No.", '');
+            Error(InvalidDocumentTypeErr, GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name", GenJournalLine."Line No.");
     end;
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
+        InvalidDocumentTypeErr: Label 'You can only specify Sustainability Accounts for lines of type blank, invoice and credit memo for Journal Template Name=%1 ,Journal Batch Name=%2 ,Line No.=%3.', Comment = '%1 = Journal Template Name , %2 = Journal Batch Name , %3 = Line No.';
 }

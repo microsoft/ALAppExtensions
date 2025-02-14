@@ -71,6 +71,8 @@ table 30102 "Shpfy Shop"
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                    if Rec.Enabled then
+                        Session.LogAuditMessage(StrSubstNo(ShopifyConsentProvidedLbl, UserSecurityId(), CompanyName()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
@@ -751,6 +753,30 @@ table 30102 "Shpfy Shop"
             Caption = 'Weight Unit';
             DataClassification = CustomerContent;
         }
+        field(130; "Product Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Product/Variant Metafields to Shopify';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(131; "Customer Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Customer Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(132; "Company Metafields To Shopify"; Boolean)
+        {
+            Caption = 'Sync Company Metafields';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
+        field(133; "Order Attributes To Shopify"; Boolean)
+        {
+            Caption = 'Sync Business Central Doc. No. as Attribute';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -801,6 +827,7 @@ table 30102 "Shpfy Shop"
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
         BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
+        ShopifyConsentProvidedLbl: Label 'Shopify - consent provided by UserSecurityId %1 for company %2.', Comment = '%1 - User Security ID, %2 - Company name', Locked = true;
 
     [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: SecretText

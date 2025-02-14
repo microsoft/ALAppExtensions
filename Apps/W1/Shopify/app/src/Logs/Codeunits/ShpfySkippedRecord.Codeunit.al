@@ -8,6 +8,11 @@ codeunit 30313 "Shpfy Skipped Record"
     Access = Internal;
     Permissions = tabledata "Shpfy Skipped Record" = rimd;
 
+    var
+        NotificationSent: Boolean;
+        SkippedRecordsLbl: Label 'Some records were skipped during the synchronization.';
+        ViewSkippedRecordsLbl: Label 'View Skipped Records';
+
     /// <summary>
     /// Creates log entry for skipped record.
     /// </summary>
@@ -28,6 +33,8 @@ codeunit 30313 "Shpfy Skipped Record"
         SkippedRecord.Validate("Record ID", RecordId);
         SkippedRecord.Validate("Skipped Reason", SkippedReason);
         SkippedRecord.Insert(true);
+
+        SendSkippedNotification();
     end;
 
     /// <summary>
@@ -41,4 +48,27 @@ codeunit 30313 "Shpfy Skipped Record"
         LogSkippedRecord(0, RecordId, SkippedReason, Shop);
     end;
 
+    local procedure SendSkippedNotification()
+    var
+        SkippedNotification: Notification;
+    begin
+        if not GuiAllowed then
+            exit;
+
+        if NotificationSent then
+            exit;
+
+        SkippedNotification.Id := CreateGuid();
+        SkippedNotification.Message := SkippedRecordsLbl;
+        SkippedNotification.Scope := NotificationScope::LocalScope;
+        SkippedNotification.AddAction(ViewSkippedRecordsLbl, Codeunit::"Shpfy Skipped Record", 'ViewSkippedRecords');
+        SkippedNotification.Send();
+
+        NotificationSent := true;
+    end;
+
+    internal procedure ViewSkippedRecords(SkippedNotification: Notification)
+    begin
+        Page.Run(Page::"Shpfy Skipped Records");
+    end;
 }

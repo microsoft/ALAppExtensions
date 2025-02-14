@@ -45,7 +45,6 @@ table 6164 "E-Doc. Order Match"
 #endif
         }
 #endif
-#pragma warning disable AS0005, AS0125
         field(6; "E-Document Direct Unit Cost"; Decimal)
         {
             Caption = 'E-Document Unit Cost';
@@ -74,10 +73,13 @@ table 6164 "E-Doc. Order Match"
         {
             Caption = 'Fully Matched';
         }
-#pragma warning restore AS0005, AS0125
         field(13; "Precise Quantity"; Decimal)
         {
             Caption = 'Quantity';
+        }
+        field(14; "Learn Matching Rule"; Boolean)
+        {
+            Caption = 'Learn Matching Rule';
         }
     }
 

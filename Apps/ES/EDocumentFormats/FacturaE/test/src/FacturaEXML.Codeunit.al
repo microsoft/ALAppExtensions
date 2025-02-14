@@ -22,6 +22,7 @@ codeunit 148001 "Factura-E XML"
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryUtility: Codeunit "Library - Utility";
         FacturaE: Codeunit "Factura-E";
         IsInitialized: Boolean;
         WrongValueForPathErr: Label 'Wrong value for path %1', Locked = true;
@@ -83,8 +84,6 @@ codeunit 148001 "Factura-E XML"
     [Test]
     procedure ExportInvoice_FileHeader()
     var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer: Record Customer;
@@ -97,7 +96,7 @@ codeunit 148001 "Factura-E XML"
         LibrarySales.CreateCustomerWithAddressAndContactInfo(Customer);
 
         // [GIVEN] Create invoice for customer with a line
-        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
+        CreateAndPostSalesInvoiceWithExtraLines(SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
 
         // [WHEN] Export invoice
         ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
@@ -109,8 +108,6 @@ codeunit 148001 "Factura-E XML"
     [Test]
     procedure ExportInvoice_InvoiceLines()
     var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer: Record Customer;
@@ -123,7 +120,7 @@ codeunit 148001 "Factura-E XML"
         LibrarySales.CreateCustomerWithAddressAndContactInfo(Customer);
 
         // [GIVEN] Create invoice for customer with a line
-        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
+        CreateAndPostSalesInvoiceWithExtraLines(SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
 
         // [WHEN] Export invoice
         ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
@@ -135,8 +132,6 @@ codeunit 148001 "Factura-E XML"
     [Test]
     procedure ExportInvoice_InvoiceHeader()
     var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer: Record Customer;
@@ -149,7 +144,7 @@ codeunit 148001 "Factura-E XML"
         LibrarySales.CreateCustomerWithAddressAndContactInfo(Customer);
 
         // [GIVEN] Create invoice for customer with a line
-        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
+        CreateAndPostSalesInvoiceWithExtraLines(SalesInvoiceHeader, SalesInvoiceLine, Customer, 0);
 
         // [WHEN] Export invoice
         ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
@@ -161,8 +156,6 @@ codeunit 148001 "Factura-E XML"
     [Test]
     procedure ExportInvoice_MultipleInvoiceLines()
     var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer: Record Customer;
@@ -177,7 +170,7 @@ codeunit 148001 "Factura-E XML"
 
         // [GIVEN] Create invoice for customer with a lot of lines
         NumberOfLines := LibraryRandom.RandIntInRange(10, 20);
-        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, SalesInvoiceHeader, SalesInvoiceLine, Customer, NumberOfLines);
+        CreateAndPostSalesInvoiceWithExtraLines(SalesInvoiceHeader, SalesInvoiceLine, Customer, NumberOfLines);
 
         // [WHEN] Export invoice
         ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
@@ -275,6 +268,78 @@ codeunit 148001 "Factura-E XML"
         VerifyCorrectiveNode(TempXMLBuffer, SalesCrMemoHeader);
     end;
 
+    [Test]
+    procedure ExportInvoice_ReferenceNoIsExported()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        Customer: Record Customer;
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        ReferenceNo: Code[10];
+    begin
+        // [SCENARIO 561820] Export invoice with Reference No in item line
+        Initialize();
+
+        // [GIVEN] Buyer with contact data exists
+        LibrarySales.CreateCustomerWithAddressAndContactInfo(Customer);
+
+        // [GIVEN] Create invoice for customer with a line
+        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, Customer, 0);
+
+        // [GIVEN] Line has Reference No in it
+        ReferenceNo := LibraryUtility.GenerateGUID();
+        UpdateReferenceNoOnLines(SalesHeader, ReferenceNo);
+
+        // [GIVEN] Post invoice
+        PostSalesInvoice(SalesHeader, SalesInvoiceHeader, SalesInvoiceLine);
+
+        // [WHEN] Export invoice
+        ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
+
+        // [THEN] Check Article Code node
+        VerifyArticleCode(TempXMLBuffer, ReferenceNo);
+    end;
+
+    [Test]
+    procedure ExportInvoice_InvoiceDiscount()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        Customer: Record Customer;
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        DiscountAmount: Decimal;
+    begin
+        // [SCENARIO 560487] Export invoice with Invoice Discount exports Discount to invoice instead of line
+        Initialize();
+
+        // [GIVEN] Buyer with contact data exists
+        LibrarySales.CreateCustomerWithAddressAndContactInfo(Customer);
+
+        // [GIVEN] Create invoice for customer with a line
+        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, Customer, 0);
+
+        // [GIVEN] Invoice discount is allowed on line
+        UpdateAllowInvoiceDiscOnLines(SalesHeader, true);
+
+        // [GIVEN] Invoice has discount amount X
+        DiscountAmount := LibraryRandom.RandDec(Round(SalesLine.Amount, 1, '<'), 2);
+        SalesLine.Validate("Inv. Discount Amount", DiscountAmount);
+        SalesLine.Modify(true);
+
+        // [GIVEN] Post invoice
+        PostSalesInvoice(SalesHeader, SalesInvoiceHeader, SalesInvoiceLine);
+
+        // [WHEN] Export invoice
+        ExportInvoice(SalesInvoiceHeader, SalesInvoiceLine, TempXMLBuffer);
+
+        // [THEN] Check invoice discount node is exported correctly
+        VerifyInvoiceDiscount(TempXMLBuffer, DiscountAmount);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Factura-E XML");
@@ -286,13 +351,29 @@ codeunit 148001 "Factura-E XML"
         end;
     end;
 
-    local procedure CreateSalesInvoiceWithExtraLines(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; Customer: Record "Customer"; ExtraLines: Integer)
+    local procedure CreateAndPostSalesInvoiceWithExtraLines(var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; Customer: Record "Customer"; ExtraLines: Integer)
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        CreateSalesInvoiceWithExtraLines(SalesHeader, SalesLine, Customer, ExtraLines);
+        PostSalesInvoice(SalesHeader, SalesInvoiceHeader, SalesInvoiceLine);
+    end;
+
+    local procedure CreateSalesInvoiceWithExtraLines(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; Customer: Record "Customer"; ExtraLines: Integer)
     var
         i: Integer;
     begin
         LibrarySales.CreateSalesInvoiceForCustomerNo(SalesHeader, Customer."No.");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.FindFirst();
         for i := 1 to ExtraLines do
             AddLineToSalesHeader(SalesHeader, SalesLine);
+    end;
+
+    local procedure PostSalesInvoice(SalesHeader: Record "Sales Header"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line")
+    begin
         SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, false, true));
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesInvoiceLine.FindSet();
@@ -317,6 +398,32 @@ codeunit 148001 "Factura-E XML"
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", GLAccountNo, LibraryRandom.RandInt(10));
         SalesLine.Validate("Unit Price", -LibraryRandom.RandDec(100, 2));
         SalesLine.Modify();
+    end;
+
+    local procedure UpdateReferenceNoOnLines(SalesHeader: Record "Sales Header"; ReferenceNo: Code[10])
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        if SalesLine.FindSet() then
+            repeat
+                SalesLine."Item Reference No." := ReferenceNo;
+                SalesLine.Modify();
+            until SalesLine.Next() = 0;
+    end;
+
+    local procedure UpdateAllowInvoiceDiscOnLines(SalesHeader: Record "Sales Header"; NewAllowInvoiceDisc: Boolean)
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        if SalesLine.FindSet() then
+            repeat
+                SalesLine."Allow Invoice Disc." := NewAllowInvoiceDisc;
+                SalesLine.Modify();
+            until SalesLine.Next() = 0;
     end;
 
     local procedure VerifySeller(var TempXMLBuffer: Record "XML Buffer" temporary; CompanyInformation: Record "Company Information")
@@ -393,6 +500,15 @@ codeunit 148001 "Factura-E XML"
         Assert.AreEqual(SalesInvoiceLine."Amount Including VAT" - SalesInvoiceLine.Amount, Amount, StrSubstNo(WrongValueForPathErr, Path));
     end;
 
+    local procedure VerifyArticleCode(var TempXMLBuffer: Record "XML Buffer" temporary; ReferenceNo: Code[10])
+    var
+        LineTok: Label '/namespace:Facturae/Invoices/Invoice/Items/InvoiceLine', Locked = true;
+        Path: Text;
+    begin
+        Path := LineTok + '/ArticleCode';
+        Assert.AreEqual(ReferenceNo, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(WrongValueForPathErr, Path));
+    end;
+
     local procedure VerifyInvoiceHeader(var TempXMLBuffer: Record "XML Buffer" temporary; SalesInvoiceHeader: Record "Sales Invoice Header")
     var
         InvoiceHeaderTok: Label '/namespace:Facturae/Invoices/Invoice', Locked = true;
@@ -440,6 +556,17 @@ codeunit 148001 "Factura-E XML"
         // Correction Method
         Path := CorrectiveTok + '/CorrectionMethod';
         Assert.AreEqual('02', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(WrongValueForPathErr, Path));
+    end;
+
+    local procedure VerifyInvoiceDiscount(var TempXMLBuffer: Record "XML Buffer" temporary; ExpectedInvoiceDiscount: Decimal)
+    var
+        CorrectiveTok: Label '/namespace:Facturae/Invoices/Invoice/InvoiceTotals', Locked = true;
+        Path: Text;
+        ActualInvoiceDiscount: Decimal;
+    begin
+        Path := CorrectiveTok + '/GeneralDiscounts/Discount/DiscountAmount';
+        Evaluate(ActualInvoiceDiscount, GetNodeByPathWithError(TempXMLBuffer, Path));
+        Assert.AreEqual(ExpectedInvoiceDiscount, ActualInvoiceDiscount, StrSubstNo(WrongValueForPathErr, Path));
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary)

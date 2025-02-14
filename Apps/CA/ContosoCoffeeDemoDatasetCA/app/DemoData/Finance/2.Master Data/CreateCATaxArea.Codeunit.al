@@ -31,15 +31,14 @@ codeunit 27019 "Create CA Tax Area"
         ContosoCATax.InsertTaxAreaTranslation(PrinceEdwardIsland(), CreateLanguage.FRC(), PETaxAreaTranslationLbl);
         ContosoCATax.InsertTaxAreaTranslation(Quebec(), CreateLanguage.FRC(), QCTaxAreaTranslationLbl);
 
-        UpdateTaxAreaOnCompanyInformation(Ontario());
     end;
 
-    local procedure UpdateTaxAreaOnCompanyInformation(TaxAreaCode: Code[20])
+    internal procedure UpdateTaxAreaOnCompanyInformation()
     var
         CompanyInformation: Record "Company Information";
     begin
         CompanyInformation.Get();
-        CompanyInformation.Validate("Tax Area Code", TaxAreaCode);
+        CompanyInformation.Validate("Tax Area Code", Ontario());
         CompanyInformation.Modify(true);
     end;
 

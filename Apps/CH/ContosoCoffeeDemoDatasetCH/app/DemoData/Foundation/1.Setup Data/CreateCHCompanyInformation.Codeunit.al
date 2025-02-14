@@ -3,7 +3,6 @@ codeunit 11590 "Create CH Company Information"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //TODO: Post Code hardcoded.
     trigger OnRun()
     begin
         UpdateCompanyInformation();

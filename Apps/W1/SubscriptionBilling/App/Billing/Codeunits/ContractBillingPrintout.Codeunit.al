@@ -38,6 +38,7 @@ codeunit 8064 "Contract Billing Printout"
                     UsageDataBilling.SetRange("Document No.", SalesInvoiceHeader."No.");
                     UsageDataBilling.SetRange("Contract No.", SalesInvoiceLine."Contract No.");
                     UsageDataBilling.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+                    UsageDataBilling.SetAutoCalcFields("Service Object Description");
                     if UsageDataBilling.FindSet() then
                         repeat
                             EntryNo += 1;
@@ -46,7 +47,7 @@ codeunit 8064 "Contract Billing Printout"
                             TempJobLedgerEntryBuffer."Document No." := SalesInvoiceLine."Document No.";
                             TempJobLedgerEntryBuffer."Ledger Entry No." := SalesInvoiceLine."Line No.";
                             TempJobLedgerEntryBuffer."Document Date" := UsageDataBilling."Charge Start Date";
-                            TempJobLedgerEntryBuffer."Posting Date" := UsageDataBilling."Charge End Date";
+                            TempJobLedgerEntryBuffer."Posting Date" := CalcDate('<-1D>', UsageDataBilling."Charge End Date");
                             TempJobLedgerEntryBuffer.Quantity := UsageDataBilling.Quantity;
                             TempJobLedgerEntryBuffer.Description := UsageDataBilling."Service Object Description";
                             TempJobLedgerEntryBuffer."External Document No." := UsageDataBilling."Contract No.";

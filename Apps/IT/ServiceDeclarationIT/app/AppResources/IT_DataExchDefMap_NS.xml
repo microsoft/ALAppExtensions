@@ -107,7 +107,7 @@
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
         </DataExchFieldMapping>
-        <DataExchFieldMapping ColumnNo="12" FieldID="12225" TransformationRule="FIRSTCHAR">
+        <DataExchFieldMapping ColumnNo="12" FieldID="12225" Optional="true" TransformationRule="FIRSTCHAR">
           <TransformationRules>
             <Code>FIRSTCHAR</Code>
             <Description>First Character</Description>

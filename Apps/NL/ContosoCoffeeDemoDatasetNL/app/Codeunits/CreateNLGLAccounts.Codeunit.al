@@ -58,15 +58,14 @@ codeunit 11499 "Create NL GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '3420');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '3430');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '5311');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '5312');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '5313');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '5314');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '5315');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '5316');
 
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '');
-
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '0504');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '0555');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -111,6 +110,7 @@ codeunit 11499 "Create NL GL Accounts"
     local procedure ModifyGLAccountforNL()
     var
         CreateGLAccount: Codeunit "Create G/L Account";
+        CreateMfgAccount: Codeunit "Create Mfg GL Account";
     begin
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.BalanceSheetName(), '0000');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.AssetsName(), '0001');
@@ -136,9 +136,10 @@ codeunit 11499 "Create NL GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesofResourcesName(), '6200');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.InterestIncomeName(), '6330');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.JobSalesName(), '6410');
-        ContosoGLAccount.AddAccountForLocalization(MaterialVarianceName(), '5312');
-        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceName(), '5313');
-        ContosoGLAccount.AddAccountForLocalization(SubcontractedVarianceName(), '5314');
+        ContosoGLAccount.AddAccountForLocalization(CreateMfgAccount.MaterialVarianceName(), '5312');
+        ContosoGLAccount.AddAccountForLocalization(CreateMfgAccount.CapacityVarianceName(), '5313');
+        ContosoGLAccount.AddAccountForLocalization(CreateMfgAccount.SubcontractedVarianceName(), '5314');
+        ContosoGLAccount.AddAccountForLocalization(CreateMfgAccount.WIPAccountFinishedGoodsName(), '0555');
         ContosoGLAccount.AddAccountForLocalization(IntangibleFixedAssetsName(), '0002');
         ContosoGLAccount.AddAccountForLocalization(DevelopmentExpenditureName(), '0010');
         ContosoGLAccount.AddAccountForLocalization(TenancySiteLeaseholdandsimilarrightsName(), '0020');

@@ -8,9 +8,12 @@ using System.Telemetry;
 using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using Microsoft.eServices.EDocument.Service;
+using Microsoft.Foundation.Attachment;
 
 page 6121 "E-Document"
 {
@@ -157,6 +160,8 @@ page 6121 "E-Document"
                 Caption = 'Service Status';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
+                Visible = false;
+                Enabled = false;
             }
 #if not CLEAN24
             group(EDocServiceStatus)
@@ -184,6 +189,33 @@ page 6121 "E-Document"
                 ObsoleteState = Pending;
             }
 #endif
+        }
+        area(FactBoxes)
+        {
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                UpdatePropagation = Both;
+                SubPageLink = "E-Document Entry No." = field("Entry No"),
+                              "E-Document Attachment" = const(true);
+            }
+            part(InboundEDocFactbox; "Inbound E-Doc. Factbox")
+            {
+                Caption = 'Details';
+                SubPageLink = "E-Document Entry No" = field("Entry No");
+                ShowFilter = false;
+                Enabled = Rec.Direction = Rec.Direction::Incoming;
+                Visible = Rec.Direction = Rec.Direction::Incoming;
+            }
+            part("Outbound E-Doc. Factbox"; "Outbound E-Doc. Factbox")
+            {
+                Caption = 'Details';
+                SubPageLink = "E-Document Entry No" = field("Entry No");
+                ShowFilter = false;
+                Enabled = Rec.Direction = Rec.Direction::Outgoing;
+                Visible = Rec.Direction = Rec.Direction::Outgoing;
+            }
         }
     }
     actions
@@ -269,6 +301,18 @@ page 6121 "E-Document"
                         end
                     end;
                 }
+                action(ViewFile)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View file';
+                    ToolTip = 'View the source file.';
+                    Image = ViewDetails;
+
+                    trigger OnAction()
+                    begin
+                        Rec.ViewSourceFile();
+                    end;
+                }
             }
             group(Incoming)
             {
@@ -282,7 +326,7 @@ page 6121 "E-Document"
 
                     trigger OnAction()
                     begin
-                        EDocImport.GetBasicInfo(Rec);
+                        EDocImport.V1_GetBasicInfo(Rec);
                     end;
                 }
                 action(CreateDocument)
@@ -293,8 +337,11 @@ page 6121 "E-Document"
                     Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
+                    var
+                        EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
-                        EDocImport.ProcessDocument(Rec, false);
+                        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+                        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
@@ -307,8 +354,11 @@ page 6121 "E-Document"
                     Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
+                    var
+                        EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
-                        EDocImport.ProcessDocument(Rec, true);
+                        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+                        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
@@ -415,6 +465,7 @@ page 6121 "E-Document"
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
+                actionref(Preview_promoteed; ViewFile) { }
 
             }
             group(Category_Troubleshoot)
@@ -467,7 +518,7 @@ page 6121 "E-Document"
         {
             action(MatchToOrderCopilotEnabled)
             {
-                Caption = 'Match Purchase Order With Copilot';
+                Caption = 'Match Purchase Order';
                 ToolTip = 'Match E-document lines to Purchase Order.';
                 Image = SparkleFilled;
                 Visible = ShowMapToOrder and CopilotVisible;
@@ -510,7 +561,7 @@ page 6121 "E-Document"
         ResetActionVisiability();
         SetIncomingDocActions();
 
-        EDocImport.ProcessEDocPendingOrderMatch(Rec);
+        EDocImport.V1_ProcessEDocPendingOrderMatch(Rec);
     end;
 
     local procedure SetStyle()

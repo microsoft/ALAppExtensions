@@ -136,7 +136,6 @@ page 8002 "Extend Contract"
                     Editable = ExtendCustomerContract;
                     Enabled = false;
                 }
-
                 field("Contract Type"; CustomerContract."Contract Type")
                 {
                     Caption = 'Contract Type';
@@ -158,10 +157,11 @@ page 8002 "Extend Contract"
                     trigger OnValidate()
                     begin
                         ValidateItemNo();
+                        ItemDescription := ContractItemMgt.GetItemTranslation(ItemNo, '', SellToCustomerNo);
                         CurrPage.Update();
                     end;
                 }
-                field(ItemDescription; Item.Description)
+                field(ItemDescription; ItemDescription)
                 {
                     Caption = 'Description';
                     ToolTip = 'Specifies the item description for the service commitment item to be created.';
@@ -249,8 +249,10 @@ page 8002 "Extend Contract"
         SetGlobalsFromParameters();
 
         if ItemNo <> '' then
-            if not Item.Get(ItemNo) then
+            if not Item.Get(ItemNo) then begin
                 Clear(ItemNo);
+                Clear(ItemDescription);
+            end;
         if CustomerContractNo <> '' then
             if not CustomerContract.Get(CustomerContractNo) then
                 Clear(CustomerContractNo);
@@ -298,7 +300,7 @@ page 8002 "Extend Contract"
         if ProvisionStartDate = 0D then
             Error(ProvisionStartDateEmptyErr);
 
-        ServiceObject.InsertFromItemNoAndSelltoCustomerNo(ServiceObject, ItemNo, QuantityDecimal, CustomerContract."Sell-to Customer No.", ProvisionStartDate);
+        ServiceObject.InsertFromItemNoAndCustomerContract(ServiceObject, ItemNo, QuantityDecimal, ProvisionStartDate, CustomerContract);
         ServiceObject.SetUnitPriceAndUnitCostFromExtendContract(UnitPrice, UnitCostLCY);
         ExtendContractMgt.ExtendContract(ServiceObject, TempServiceCommitmentPackage, ExtendCustomerContract, CustomerContract, ExtendVendorContract, VendorContract, false, SupplierReferenceEntryNo);
         ServiceObject.ResetCalledFromExtendContract();
@@ -350,6 +352,7 @@ page 8002 "Extend Contract"
         else begin
             CustomerContract.Get(CustomerContractNo);
             SellToCustomerNo := CustomerContract."Sell-to Customer No.";
+            ItemDescription := ContractItemMgt.GetItemTranslation(ItemNo, '', SellToCustomerNo);
         end;
         ContractItemMgt.GetSalesPriceForItem(UnitPrice, ItemNo, QuantityDecimal, CustomerContract."Currency Code", CustomerContract."Sell-to Customer No.", CustomerContract."Bill-to Customer No.");
     end;
@@ -599,7 +602,8 @@ page 8002 "Extend Contract"
         SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Service Commitment. The Subscription is already connected to Service Object %1. If necessary, detach the Subscription(s) from the Service Commitment(s).';
         OpenItemCardTxt: Label 'Open Item Card.';
         ItemMissingServCommPackageTxt: Label 'No Service Commitment Package is available for this item.';
-        AssignServCommPackageToItemTxt: Label ' In order to extend the contract properly, please make sure that at least one package is assigned.';
+        AssignServCommPackageToItemTxt: Label 'In order to extend the contract properly, please make sure that at least one package is assigned.';
+        ItemDescription: Text[100];
 
     protected var
         ItemNo: Code[20];
