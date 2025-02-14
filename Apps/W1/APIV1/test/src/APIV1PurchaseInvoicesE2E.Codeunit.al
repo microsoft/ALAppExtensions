@@ -13,6 +13,7 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
     var
         TempIgnoredFieldsForComparison: Record 2000000041 temporary;
         Assert: Codeunit "Assert";
+        LibraryERM: Codeunit "Library - ERM";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryGraphDocumentTools: Codeunit "Library - Graph Document Tools";
         LibraryRandom: Codeunit "Library - Random";
@@ -25,6 +26,10 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         CannotFindDraftInvoiceErr: Label 'Cannot find the draft invoice.';
         CannotFindPostedInvoiceErr: Label 'Cannot find the posted invoice.';
         InvoiceStatusErr: Label 'The invoice status is incorrect.';
+        PaymentDiscountErr: Label 'Payment Discount % must have value.';
+        PurchaseInvoiceErr: Label 'Could not find Purchase invoice number.';
+        UnpostedInvoiceExistErr: Label 'The unposted invoice should exist.';
+
 
     local procedure Initialize()
     begin
@@ -395,6 +400,49 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         VerifyPostedPurchaseInvoice(PurchInvHeader."Draft Invoice SystemId", TempPurchInvEntityAggregate.Status::Open.AsInteger());
     end;
 
+    [Test]
+    procedure TestPurchaseInvoiceWithPaymentDiscount()
+    var
+        PaymentTerms: Record "Payment Terms";
+        PurchaseHeader: Record "Purchase Header";
+        Vendor: Record "Vendor";
+        InvoiceJSON, ResponseText, TargetURL : Text;
+        InvoiceNumber, VendorNo : Text;
+    begin
+        // [Scenario 560682] Bug with the Payment Discount validation of the created Purchase Invoice via API Endpoint
+        Initialize();
+
+        // [GIVEN] Create Vendor and Payment Terms Code and assign Payment Terms Code on Vendor
+        VendorNo := LibraryPurchase.CreateVendor(Vendor);
+
+        // [GIVEN] Create Payment Terms with Discount %. 
+        CreatePaymentTermsWithDiscount(PaymentTerms);
+
+        // [GIVEN] Assign Payment Terms Code on Vendor 
+        Vendor.Validate("Payment Terms Code", PaymentTerms.Code);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Invoice Json with Vendor No and Invoice Date
+        InvoiceJSON := CreateInvoiceJSON('vendorNumber', VendorNo, 'invoiceDate', WorkDate());
+        COMMIT();
+
+        // [WHEN] We POST the JSON to the Web Service
+        TargetURL := LibraryGraphMgt.CreateTargetURL('', PAGE::"APIV1 - Purchase Invoices", InvoiceServiceNameTxt);
+        LibraryGraphMgt.PostToWebService(TargetURL, InvoiceJSON, ResponseText);
+
+        // [THEN] The Response Text should contain the Invoice ID and the integration record table should map the PurchaseInvoiceId with the ID
+        Assert.IsTrue(
+          LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, 'number', InvoiceNumber), PurchaseInvoiceErr);
+
+        // [THEN] The Invoice should exist in the tables with Payment Discount %
+        PurchaseHeader.RESET();
+        PurchaseHeader.SETRANGE("Document Type", PurchaseHeader."Document Type"::Invoice);
+        PurchaseHeader.SETRANGE("No.", InvoiceNumber);
+        PurchaseHeader.SETRANGE("Buy-from Vendor No.", VendorNo);
+        Assert.IsTrue(PurchaseHeader.FINDFIRST(), UnpostedInvoiceExistErr);
+        Assert.IsTrue(PurchaseHeader."Payment Discount %" <> 0, PaymentDiscountErr);
+    end;
+
     local procedure CreatePurchaseInvoices(var InvoiceID1: Text; var InvoiceID2: Text)
     var
         PurchaseHeader: Record "Purchase Header";
@@ -492,4 +540,16 @@ codeunit 139729 "APIV1 - Purchase Invoices E2E"
         Assert.AreEqual(Status, PurchInvEntityAggregate.Status, InvoiceStatusErr);
     end;
 
+    local procedure CreatePaymentTermsWithDiscount(var PaymentTerms: Record "Payment Terms")
+    var
+        DateCalculation: DateFormula;
+    begin
+        LibraryERM.CreatePaymentTerms(PaymentTerms);
+        Evaluate(DateCalculation, '1M');
+        PaymentTerms.Validate("Due Date Calculation", DateCalculation);
+        Evaluate(DateCalculation, '8D');
+        PaymentTerms.Validate("Discount Date Calculation", DateCalculation);
+        PaymentTerms.Validate("Discount %", 2);
+        PaymentTerms.Modify(true);
+    end;
 }

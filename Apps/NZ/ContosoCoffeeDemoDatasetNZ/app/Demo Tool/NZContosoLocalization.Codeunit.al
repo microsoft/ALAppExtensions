@@ -19,18 +19,6 @@ codeunit 17142 "NZ Contoso Localization"
                 InventoryModule(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::CRM:
                 CRMModule(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::Bank:
-                BankModule(ContosoDemoDataLevel);
-        end;
-    end;
-
-    local procedure BankModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Transactional Data":
-                Codeunit.Run(Codeunit::"Create NZ Gen. Journal Line");
-            Enum::"Contoso Demo Data Level"::"Historical Data":
-                Codeunit.Run(Codeunit::"Create NZ Bank Acc. Reco.");
         end;
     end;
 
@@ -58,16 +46,15 @@ codeunit 17142 "NZ Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create NZ Company Information");
                     Codeunit.Run(Codeunit::"Create NZ No. Series");
                     Codeunit.Run(Codeunit::"Create NZ County");
                     Codeunit.Run(Codeunit::"Create NZ Post Code");
                     Codeunit.Run(Codeunit::"Create NZ Shipping Agent");
-                    Codeunit.Run(Codeunit::"Create NZ Source Code");
-                    Codeunit.Run(Codeunit::"Create NZ Source Code Setup");
                     Codeunit.Run(Codeunit::"Create NZ VAT Posting Group");
                     Codeunit.Run(Codeunit::"Create NZ Posting Groups");
                 end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                Codeunit.Run(Codeunit::"Create NZ Company Information");
         end;
     end;
 
@@ -108,15 +95,11 @@ codeunit 17142 "NZ Contoso Localization"
                     CreateNZGLAccounts.AddCategoriesToGLAccounts();
                     CreateNZVATPostingGroup.UpdateVATPostingSetup();
                     CreateNZPostingGroups.InsertGenPostingSetup();
-                    Codeunit.Run(Codeunit::"Create NZ Acc Schedule Name");
                     Codeunit.Run(Codeunit::"Create NZ VAT Setup PostingGrp");
                     Codeunit.Run(Codeunit::"Create NZ Gen. Journ. Template");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create NZ Currency Ex. Rate");
-                    Codeunit.Run(Codeunit::"Create NZ Financial Report");
-                end;
+                Codeunit.Run(Codeunit::"Create NZ Currency Ex. Rate");
         end;
     end;
 
@@ -141,7 +124,6 @@ codeunit 17142 "NZ Contoso Localization"
         CreateNZPostingGroups: Codeunit "Create NZ Posting Groups";
         CreateNZVATPostingGroup: Codeunit "Create NZ VAT Posting Group";
         CreateNZAccScheduleLine: Codeunit "Create NZ Acc. Schedule Line";
-        CreaateNZGenJournalBatch: Codeunit "Create NZ Gen. Journal Batch";
         CreateNZVATStatement: Codeunit "Create NZ VAT Statement";
         CreateNZSalesDimValue: Codeunit "Create NZ Sales Dim Value";
         CreateNZPurchDimValue: Codeunit "Create NZ Purch. Dim. Value";
@@ -164,7 +146,6 @@ codeunit 17142 "NZ Contoso Localization"
                     BindSubscription(CreateNZVATSetupPostingGrp);
                     BindSubscription(CreateNZCurrency);
                     BindSubscription(CreateNZCurrencyExRate);
-                    BindSubscription(CreaateNZGenJournalBatch);
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
@@ -214,7 +195,6 @@ codeunit 17142 "NZ Contoso Localization"
         CreateNZVATPostingGroup: Codeunit "Create NZ VAT Posting Group";
         CreateNZAccScheduleLine: Codeunit "Create NZ Acc. Schedule Line";
         CreateNZVATStatement: Codeunit "Create NZ VAT Statement";
-        CreaateNZGenJournalBatch: Codeunit "Create NZ Gen. Journal Batch";
         CreateNZSalesDimValue: Codeunit "Create NZ Sales Dim Value";
         CreateNZPurchDimValue: Codeunit "Create NZ Purch. Dim. Value";
     begin
@@ -257,7 +237,6 @@ codeunit 17142 "NZ Contoso Localization"
                     UnbindSubscription(CreateNZVATStatement);
                     UnbindSubscription(CreateNZCurrency);
                     UnbindSubscription(CreateNZCurrencyExRate);
-                    UnbindSubscription(CreaateNZGenJournalBatch);
                 end;
         end;
     end;

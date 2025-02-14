@@ -133,7 +133,6 @@ table 8057 "Service Object"
                     RecallModifyAddressNotification(GetModifyBillToCustomerAddressNotificationId());
             end;
         }
-
         field(5; "Bill-to Name"; Text[100])
         {
             Caption = 'Bill-to Name';
@@ -322,10 +321,11 @@ table 8057 "Service Object"
             trigger OnValidate()
             var
                 Item: Record Item;
+                ContractsItemManagement: Codeunit "Contracts Item Management";
             begin
                 if "Item No." <> '' then begin
                     Item.Get("Item No.");
-                    Description := Item.Description;
+                    Description := ContractsItemManagement.GetItemTranslation("Item No.", '', "End-User Customer No.");
                     Validate("Unit of Measure", Item."Sales Unit of Measure");
                     if "Serial No." <> '' then
                         Validate("Quantity Decimal", 1);
@@ -420,7 +420,6 @@ table 8057 "Service Object"
             Caption = 'Customer Name 2';
             DataClassification = EndUserIdentifiableInformation;
         }
-
         field(81; "End-User Address"; Text[100])
         {
             Caption = 'Address';
@@ -545,7 +544,6 @@ table 8057 "Service Object"
                 ModifyBillToCustomerAddress();
             end;
         }
-
         field(88; "End-User Post Code"; Code[20])
         {
             Caption = 'Post Code';
@@ -621,7 +619,6 @@ table 8057 "Service Object"
                 PostCode.LookupPostCode(ShipToCity, "Ship-to Post Code", ShipToCounty, "Ship-to Country/Region Code");
                 "Ship-to City" := CopyStr(ShipToCity, 1, MaxStrLen("Ship-to City"));
                 "Ship-to County" := CopyStr(ShipToCounty, 1, MaxStrLen("Ship-to County"));
-
             end;
 
             trigger OnValidate()
@@ -1680,6 +1677,8 @@ table 8057 "Service Object"
                                     ServiceCommitment."Calculation Base Amount" := Item."Unit Cost";
                         end;
                         ServiceCommitment."Billing Base Period" := ServiceCommPackageLine."Billing Base Period";
+                        ServiceCommitment."Usage Based Billing" := ServiceCommPackageLine."Usage Based Billing";
+                        ServiceCommitment."Usage Based Pricing" := ServiceCommPackageLine."Usage Based Pricing";
                         ServiceCommitment.Validate("Price Binding Period", ServiceCommPackageLine."Price Binding Period");
                         ServiceCommitment.SetLCYFields(ServiceCommitment.Price, ServiceCommitment."Service Amount", ServiceCommitment."Discount Amount", ServiceCommitment."Calculation Base Amount");
                         ServiceCommitment.Validate("Calculation Base %", ServiceCommPackageLine."Calculation Base %");
@@ -1687,8 +1686,6 @@ table 8057 "Service Object"
                         ServiceCommitment.Validate(Discount, ServiceCommPackageLine.Discount);
                         ServiceCommitment."Period Calculation" := ServiceCommPackageLine."Period Calculation";
                         ServiceCommitment.SetDefaultDimensionFromItem(Rec."Item No.");
-                        ServiceCommitment."Usage Based Billing" := ServiceCommPackageLine."Usage Based Billing";
-                        ServiceCommitment."Usage Based Pricing" := ServiceCommPackageLine."Usage Based Pricing";
                         ServiceCommitment."Pricing Unit Cost Surcharge %" := ServiceCommPackageLine."Pricing Unit Cost Surcharge %";
                         OnBeforeInsertServiceCommitmentFromServiceCommitmentPackageLine(ServiceCommitment, ServiceCommPackageLine);
                         ServiceCommitment.Insert(false);
@@ -1806,8 +1803,8 @@ table 8057 "Service Object"
     begin
         CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
         CustomerContractLine.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
-        CustomerContractLine.SetRange("Closed", false);
-        CustomerContractLine.ModifyAll("Closed", true, true);
+        CustomerContractLine.SetRange(Closed, false);
+        CustomerContractLine.ModifyAll(Closed, true, true);
     end;
 
     local procedure CloseOpenVendorContractLines(ServiceCommitment: Record "Service Commitment")
@@ -1916,9 +1913,10 @@ table 8057 "Service Object"
         ServiceCommitment.SetFilter("Contract No.", '%1', '');
     end;
 
-    procedure InsertFromItemNoAndSelltoCustomerNo(var ServiceObject: Record "Service Object"; ItemNo: Code[20]; SourceQuantity: Decimal; SellToCustomerNo: Code[20]; ProvisionStartDate: Date)
+    procedure InsertFromItemNoAndCustomerContract(var ServiceObject: Record "Service Object"; ItemNo: Code[20]; SourceQuantity: Decimal; ProvisionStartDate: Date; CustomerContract: Record "Customer Contract")
     var
         Item: Record Item;
+        ContractsItemManagement: Codeunit "Contracts Item Management";
     begin
         if ItemNo = '' then
             exit;
@@ -1926,12 +1924,15 @@ table 8057 "Service Object"
         ServiceObject.Init();
         ServiceObject.SetHideValidationDialog(true);
         ServiceObject."Item No." := ItemNo;
-        ServiceObject.Description := Item.Description;
+        ServiceObject.Description := ContractsItemManagement.GetItemTranslation(ItemNo, '', CustomerContract."Sell-to Customer No.");
         ServiceObject."Unit of Measure" := Item."Base Unit of Measure";
         ServiceObject."Quantity Decimal" := SourceQuantity;
-        ServiceObject.Validate("End-User Customer No.", SellToCustomerNo);
+        ServiceObject.Validate("End-User Customer No.", CustomerContract."Sell-to Customer No.");
+        ServiceObject.Validate("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
+        ServiceObject.Validate("Ship-to Code", CustomerContract."Ship-to Code");
         ServiceObject.Validate("Provision Start Date", ProvisionStartDate);
         ServiceObject.Insert(true);
+        OnAfterInsertFromItemNoAndCustomerContract(ServiceObject, CustomerContract);
     end;
 
     internal procedure SetUnitPriceAndUnitCostFromExtendContract(NewUnitPrice: Decimal; NewUnitCost: Decimal)
@@ -2000,7 +2001,41 @@ table 8057 "Service Object"
             else
                 exit(StrSubstNo(RecalculateLinesQst, ChangedFieldName));
         end;
+    end;
 
+    procedure SetPrimaryAttributeValueAndCaption(var PrimaryAttributeValue: Text[250]; var PrimaryAttributeValueCaption: Text)
+    var
+        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
+        TempItemAttributeValue: Record "Item Attribute Value" temporary;
+        ItemAttributeValue: Record "Item Attribute Value";
+    begin
+        PrimaryAttributeValue := '';
+        PrimaryAttributeValueCaption := PrimaryAttributeTxt;
+        if Rec."No." = '' then
+            exit;
+
+        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+        ItemAttributeValueMapping.SetRange("No.", Rec."No.");
+        if ItemAttributeValueMapping.FindSet() then
+            repeat
+                ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID");
+                TempItemAttributeValue.TransferFields(ItemAttributeValue);
+                TempItemAttributeValue.Primary := ItemAttributeValueMapping.Primary;
+                TempItemAttributeValue.Insert(false);
+            until ItemAttributeValueMapping.Next() = 0;
+        TempItemAttributeValue.SetRange(Primary, true);
+        if not TempItemAttributeValue.IsEmpty() then begin
+            TempItemAttributeValue.FindFirst();
+            PrimaryAttributeValue := TempItemAttributeValue.GetValueInCurrentLanguage();
+            PrimaryAttributeValueCaption := TempItemAttributeValue.GetAttributeNameInCurrentLanguage();
+        end;
+    end;
+
+    procedure GetPrimaryAttributeValue() PrimaryAttributeValue: Text[250]
+    var
+        PrimaryAttributeValueCaption: Text;
+    begin
+        Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
     end;
 
     [InternalEvent(false, false)]
@@ -2208,39 +2243,8 @@ table 8057 "Service Object"
     begin
     end;
 
-    internal procedure SetPrimaryAttributeValueAndCaption(var PrimaryAttributeValue: Text[250]; var PrimaryAttributeValueCaption: Text)
-    var
-        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
-        TempItemAttributeValue: Record "Item Attribute Value" temporary;
-        ItemAttributeValue: Record "Item Attribute Value";
+    [IntegrationEvent(false, false)]
+    procedure OnAfterInsertFromItemNoAndCustomerContract(var ServiceObject: Record "Service Object"; CustomerContract: Record "Customer Contract")
     begin
-        PrimaryAttributeValue := '';
-        PrimaryAttributeValueCaption := PrimaryAttributeTxt;
-        if Rec."No." = '' then
-            exit;
-
-        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
-        ItemAttributeValueMapping.SetRange("No.", Rec."No.");
-        if ItemAttributeValueMapping.FindSet() then
-            repeat
-                ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID");
-                TempItemAttributeValue.TransferFields(ItemAttributeValue);
-                TempItemAttributeValue.Primary := ItemAttributeValueMapping.Primary;
-                TempItemAttributeValue.Insert(false);
-            until ItemAttributeValueMapping.Next() = 0;
-        TempItemAttributeValue.SetRange(Primary, true);
-        if not TempItemAttributeValue.IsEmpty() then begin
-            TempItemAttributeValue.FindFirst();
-            PrimaryAttributeValue := TempItemAttributeValue.GetValueInCurrentLanguage();
-            PrimaryAttributeValueCaption := TempItemAttributeValue.GetAttributeNameInCurrentLanguage();
-        end;
     end;
-
-    internal procedure GetPrimaryAttributeValue() PrimaryAttributeValue: Text[250]
-    var
-        PrimaryAttributeValueCaption: Text;
-    begin
-        Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
-    end;
-
 }

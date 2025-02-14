@@ -111,7 +111,7 @@ codeunit 31140 "VAT Statement Handler CZL"
         Parantheses, i, OperatorNo, VATStmtLineID : Integer;
         Operator: Char;
         LeftOperand, RightOperand : Text;
-        LineTotalAmount, LineTotalBase : Decimal; 
+        LineTotalAmount, LineTotalBase : Decimal;
         LeftAmount, RightAmount : Decimal;
         LeftBase, RightBase : Decimal;
         ResultAmount, ResultBase : Decimal;
@@ -175,12 +175,14 @@ codeunit 31140 "VAT Statement Handler CZL"
                         begin
                             if RightAmount = 0 then begin
                                 ResultAmount := 0;
-                                Error(DivideByZeroErr);
+                                if LeftAmount <> 0 then
+                                    Error(DivideByZeroErr);
                             end else
                                 ResultAmount := LeftAmount / RightAmount;
                             if RightBase = 0 then begin
                                 ResultBase := 0;
-                                Error(DivideByZeroErr);
+                                if LeftBase <> 0 then
+                                    Error(DivideByZeroErr);
                             end else
                                 ResultBase := LeftBase / RightBase;
                         end;

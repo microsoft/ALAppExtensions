@@ -7,7 +7,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 using System.TestLibraries.Utilities;
 using System.TestTools.AITestToolkit;
 
-codeunit 139778 "Bank Rec. With AI Prompt Inj1"
+codeunit 133575 "Bank Rec. With AI Prompt Inj1"
 {
     Subtype = Test;
     TestPermissions = Disabled;

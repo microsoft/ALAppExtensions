@@ -53,7 +53,13 @@ codeunit 4410 "Trial Balance"
     end;
 
     local procedure InsertDimensionFiltersFromDimensionValues(var DimensionValue: Record "Dimension Value"; var DimensionFilters: List of [Code[20]])
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeInsertDimensionFiltersFromDimensionValues(DimensionValue, DimensionFilters, IsHandled);
+        if IsHandled then
+            exit;
         DimensionFilters.Add('');
         if not DimensionValue.FindSet() then
             exit;
@@ -162,5 +168,10 @@ codeunit 4410 "Trial Balance"
         DimensionValue.FindFirst();
         InsertedDimensionValues.Copy(DimensionValue);
         InsertedDimensionValues.Insert();
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeInsertDimensionFiltersFromDimensionValues(var DimensionValue: Record "Dimension Value"; var DimensionFilters: List of [Code[20]]; var IsHandled: Boolean)
+    begin
     end;
 }

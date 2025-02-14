@@ -34,13 +34,16 @@ report 30113 "Shpfy Add Company to Shopify"
             end;
 
             trigger OnAfterGetRecord()
+            var
+                SyncCustomer: Record Customer;
             begin
                 if GuiAllowed then begin
                     CurrCustomerNo := Customer."No.";
                     ProcessDialog.Update();
                 end;
 
-                CompanyExport.Run(Customer);
+                SyncCustomer.SetRange("No.", Customer."No.");
+                CompanyExport.Run(SyncCustomer);
             end;
 
             trigger OnPostDataItem()

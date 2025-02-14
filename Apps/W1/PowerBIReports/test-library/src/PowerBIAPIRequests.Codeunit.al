@@ -37,7 +37,7 @@ codeunit 139792 "PowerBI API Requests"
     begin
         case PowerBIEndpoint of
             PowerBIEndpoint::"Vendor Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Vendor Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Vendor Ledg. Entries - PBI API"));
             PowerBIEndpoint::"Customer Ledger Entries":
                 exit(GetQueryUrlFromObjectId(Query::"Customer Ledger Entries"));
             PowerBIEndpoint::"G/L Accounts":
@@ -47,13 +47,11 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"G/L Budgets":
                 exit(GetQueryUrlFromObjectId(Query::"G/L Budgets"));
             PowerBIEndpoint::"G/L Budget Entries":
-                exit(GetQueryUrlFromObjectId(Query::"G/L Budget Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"G/L Budget Entries - PBI API"));
             PowerBIEndpoint::"G/L Entries - Income Statement":
-                exit(GetQueryUrlFromObjectId(Query::"G/L Entries - Income Statement"));
+                exit(GetQueryUrlFromObjectId(Query::"G/L Income Statement - PBI API"));
             PowerBIEndpoint::"G/L Entries - Balance Sheet":
                 exit(GetQueryUrlFromObjectId(Query::"G\L Entries - Balance Sheet"));
-            PowerBIEndpoint::"G/L Entries - Closing":
-                exit(GetQueryUrlFromObjectId(Query::"G/L Entries - Closing"));
             PowerBIEndpoint::"Sales Lines - Outstanding":
                 exit(GetQueryUrlFromObjectId(Query::"Sales Lines - Outstanding"));
             PowerBIEndpoint::"Purchase Lines - Outstanding":
@@ -65,7 +63,7 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"Service Lines - Order":
                 exit(GetQueryUrlFromObjectId(Query::"Service Lines - Order"));
             PowerBIEndpoint::"Item Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Item Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Item Ledger Entries - PBI API"));
             PowerBIEndpoint::"Warehouse Activity Lines":
                 exit(GetQueryUrlFromObjectId(Query::"Warehouse Activity Lines"));
             PowerBIEndpoint::"Warehouse Entries":
@@ -117,7 +115,7 @@ codeunit 139792 "PowerBI API Requests"
             PowerBIEndpoint::"Job Planning Lines":
                 exit(GetQueryUrlFromObjectId(Query::"Job Planning Lines"));
             PowerBIEndpoint::"Job Ledger Entries":
-                exit(GetQueryUrlFromObjectId(Query::"Job Ledger Entries"));
+                exit(GetQueryUrlFromObjectId(Query::"Job Ledger Entries - PBI API"));
             PowerBIEndpoint::"Purch. Lines - Job Outstanding":
                 exit(GetQueryUrlFromObjectId(Query::"Purch. Lines - Job Outstanding"));
             PowerBIEndpoint::"Purch. Lines - Job Received":
@@ -140,6 +138,18 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetQueryUrlFromObjectId(Query::"Value Entries - Sales"));
             PowerBIEndpoint::"Sales Line - Item Shipped":
                 exit(GetQueryUrlFromObjectId(Query::"Sales Line - Item Shipped"));
+            PowerBIEndpoint::"Manufacturing Setup":
+                exit(GetQueryUrlFromObjectId(Query::"Manufacturing Setup - PBI API"));
+            PowerBIEndpoint::"Production Orders":
+                exit(GetQueryUrlFromObjectId(Query::"Prod. Orders - PBI API"));
+            PowerBIEndpoint::"Routing Links":
+                exit(GetQueryUrlFromObjectId(Query::"Routing Links - PBI API"));
+            PowerBIEndpoint::Routings:
+                exit(GetQueryUrlFromObjectId(Query::"Routings - PBI API"));
+            PowerBIEndpoint::"Value Entries - Manuf.":
+                exit(GetQueryUrlFromObjectId(Query::"Manuf. Value Entries - PBI API"));
+            PowerBIEndpoint::"Work Center Groups":
+                exit(GetQueryUrlFromObjectId(Query::"Work Center Groups - PBI API"));
         end;
     end;
 
