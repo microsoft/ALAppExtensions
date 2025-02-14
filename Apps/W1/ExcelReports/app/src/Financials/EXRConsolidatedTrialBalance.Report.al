@@ -111,6 +111,8 @@ report 4410 "EXR Consolidated Trial Balance"
     labels
     {
         DataRetrieved = 'Data retrieved:';
+        ConsolidatedTrialBalance = 'Consolidated Trial Balance';
+        ConsolidatedTrialBalPrint = 'Consolidated Trial Bal. (Print)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
         TrialBalanceLCY = 'Trial Balance (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
         TrialBalanceACY = 'Trial Balance (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
         TrialBalanceLCYByBusinessUnit = 'Trial Balance by Business Unit (LCY)';
@@ -120,6 +122,14 @@ report 4410 "EXR Consolidated Trial Balance"
         UntilDate = 'Until:';
         ByBusinessUnitLCY = 'By Business Unit (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
         ByBusinessUnitACY = 'By Business Unit (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()
