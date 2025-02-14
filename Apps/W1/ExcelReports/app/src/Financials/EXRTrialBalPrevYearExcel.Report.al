@@ -102,7 +102,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
                 {
                     Caption = 'Options';
                     // Used to set the date filter on the report header across multiple languages
-                    field(PostingDateFilter; TrialBalancePostingDateFilter)
+                    field(PostingDateFilter; DateFilter)
                     {
                         ApplicationArea = All;
                         Caption = 'FA Posting Date Filter';
@@ -115,7 +115,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
 
         trigger OnClosePage()
         begin
-            TrialBalancePostingDateFilter := TrialBalancePreviousYearData.GetFilter("Date Filter");
+            DateFilter := TrialBalancePreviousYearData.GetFilter("Date Filter");
         end;
     }
     rendering
@@ -162,7 +162,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
-        TrialBalancePostingDateFilter: Text;
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";
