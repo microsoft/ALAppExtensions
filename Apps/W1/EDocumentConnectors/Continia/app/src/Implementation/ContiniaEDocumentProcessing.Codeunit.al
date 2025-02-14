@@ -26,7 +26,7 @@ codeunit 6391 "Continia EDocument Processing"
             EDocumentServiceStatus.Status::Exported:
                 ApiRequests.SendDocument(EDocument, SendContext);
             EDocumentServiceStatus.Status::"Sending Error":
-                if EDocument."Continia Document Id" = '' then
+                if IsNullGuid(EDocument."Continia Document Id") then
                     ApiRequests.SendDocument(EDocument, SendContext);
         end;
 
@@ -46,14 +46,11 @@ codeunit 6391 "Continia EDocument Processing"
     var
         ApiRequests: Codeunit "Continia Api Requests";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        DocumentGuid: Guid;
         Success: Boolean;
         StatusDescription: Text;
     begin
-        Evaluate(DocumentGuid, EDocument."Continia Document Id");
-
         ApiRequests.SetSuppressError(true);
-        Success := ApiRequests.GetBusinessResponses(DocumentGuid, ActionContext);
+        Success := ApiRequests.GetBusinessResponses(EDocument."Continia Document Id", ActionContext);
         if not Success then
             exit(false);
 
@@ -230,7 +227,7 @@ codeunit 6391 "Continia EDocument Processing"
         DocumentInfoXml.SelectSingleNode('document', CurrentEDocumentNode);
 
         CurrentEDocumentNode.SelectSingleNode('document_id', XMLDocumentIdNode);
-        EDocument."Continia Document Id" := CopyStr(XMLDocumentIdNode.AsXmlElement().InnerText, 1, MaxStrLen(EDocument."Continia Document Id"));
+        Evaluate(EDocument."Continia Document Id", XMLDocumentIdNode.AsXmlElement().InnerText);
         EDocument.Modify();
 
         CurrentEDocumentNode.SelectSingleNode('xml_document', XmlDocNode);
@@ -244,20 +241,16 @@ codeunit 6391 "Continia EDocument Processing"
     internal procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         ApiRequests: Codeunit "Continia Api Requests";
-        DocumentId: Guid;
     begin
         // Mark document as processed in Continia Online
-        Evaluate(DocumentId, EDocument."Continia Document Id");
-        ApiRequests.MarkDocumentAsProcessed(DocumentId, ReceiveContext);
+        ApiRequests.MarkDocumentAsProcessed( EDocument."Continia Document Id", ReceiveContext);
     end;
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext) Success: Boolean
     var
         ApiRequests: Codeunit "Continia Api Requests";
-        DocumentId: Guid;
     begin
-        Evaluate(DocumentId, EDocument."Continia Document Id");
-        exit(ApiRequests.CancelDocument(DocumentId, ActionContext));
+        exit(ApiRequests.CancelDocument(EDocument."Continia Document Id", ActionContext));
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnAfterValidateEvent, "Service Integration V2", true, true)]

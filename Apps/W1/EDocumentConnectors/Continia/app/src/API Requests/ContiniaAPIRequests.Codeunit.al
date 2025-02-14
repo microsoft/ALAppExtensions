@@ -802,7 +802,6 @@ codeunit 6393 "Continia Api Requests"
     var
         ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        DocumentGuid: Guid;
         SuccessfulStatusTok: Label 'SuccessEnum', Locked = true;
         ErrorStatusTok: Label 'ErrorEnum', Locked = true;
         DocumentStatus: Text;
@@ -818,8 +817,7 @@ codeunit 6393 "Continia Api Requests"
         HttpResponse: HttpResponseMessage;
         Success: Boolean;
     begin
-        Evaluate(DocumentGuid, EDocument."Continia Document Id");
-        Success := ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(DocumentGuid), HttpRequest, HttpResponse);
+        Success := ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(EDocument."Continia Document Id"), HttpRequest, HttpResponse);
         SendContext.Http().SetHttpRequestMessage(HttpRequest);
         SendContext.Http().SetHttpResponseMessage(HttpResponse);
         if Success then begin
@@ -837,7 +835,7 @@ codeunit 6393 "Continia Api Requests"
             case DocumentStatus of
                 SuccessfulStatusTok:
                     begin
-                        MarkDocumentAsProcessed(DocumentGuid);
+                        MarkDocumentAsProcessed(EDocument."Continia Document Id");
                         exit(true);
                     end;
                 ErrorStatusTok:
@@ -845,7 +843,7 @@ codeunit 6393 "Continia Api Requests"
                         if TechnicalResponseNode.SelectSingleNode('error_code', ErrorCodeNode) and TechnicalResponseNode.SelectSingleNode('error_message', ErrorMessageNode) then
                             EDocumentDescription := StrSubstNo('%1 - %2', ErrorCodeNode.AsXmlElement().InnerText, ErrorMessageNode.AsXmlElement().InnerText);
                         EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, EDocumentDescription);
-                        MarkDocumentAsProcessed(DocumentGuid);
+                        MarkDocumentAsProcessed(EDocument."Continia Document Id");
                         exit(false);
                     end;
             end;
