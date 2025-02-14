@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-using Microsoft.EServices.EDocumentConnector;
+using System.Security.AccessControl;
 
-permissionsetextension 6391 "Cont. EDoc. Connector - Edit" extends "EDocConnector - Edit"
+permissionsetextension 6391 "Cont. EDoc. Connector - Edit" extends "D365 BASIC"
 {
     IncludedPermissionSets = ContEDocConnEdit;
 }

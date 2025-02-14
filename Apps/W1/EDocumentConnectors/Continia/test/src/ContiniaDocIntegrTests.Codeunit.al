@@ -22,6 +22,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// it validates that the e-Document logs contain the correct status entries.
     /// Requires MockService to be running.
     /// </summary>
+
     [Test]
     procedure SubmitDocument()
     var
@@ -44,7 +45,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -100,7 +101,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [Then] E-Document is in Error
         Assert.AreEqual(Enum::"E-Document Status"::Error, EDocument.Status, 'E-Document should be set to error state when service is down.');
         // [Then] Document Id has not been set
-        Assert.AreEqual('', EDocument."Document Id", 'Document Id on E-Document should not be set.');
+        Assert.IsTrue(IsNullGuid(EDocument."Continia Document Id"), 'Document Id on E-Document should not be set.');
 
         // [Then] eDocument Service Status has "Sending Error" and has correct logs
         Clear(EDocLogList);
@@ -138,7 +139,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then]  E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -213,7 +214,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -291,7 +292,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -395,7 +396,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -476,7 +477,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -555,7 +556,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -635,7 +636,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -715,7 +716,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -848,6 +849,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         CompanyInformation: Record "Company Information";
         ContiniaConnectionSetup: Record "Continia Connection Setup";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        PurchaseHeader: Record "Purchase Header";
     begin
         LibraryPermission.SetOutsideO365Scope();
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
@@ -859,6 +861,8 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         ApiUrlMockSubscribers.SetCoApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
         ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
 
+        PurchaseHeader.DeleteAll();
+
         if IsInitialized then
             exit;
         ConnectorLibrary.EnableConnectorHttpTraffic();
@@ -867,7 +871,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
         EDocumentService.Validate("Auto Import", true);
-        EDocumentService.Validate("Sent Actions Integration", Enum::"Sent Document Actions"::Continia);
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
         EDocumentService.Modify();
@@ -918,9 +921,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [Then] E-Document Service Status is correct
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(EDocServiceStatus), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(EDocLogList.Count), EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(EDocServiceStatus), EDocumentPage."Outbound E-Doc. Factbox".Status.Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(EDocLogList.Count), EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         LibraryEDocument.AssertEDocumentLogs(EDocument, EDocumentService, EDocLogList);
 
@@ -951,9 +954,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
     end;
 
-    local procedure MockServiceDocumentId(): Text
+    local procedure MockServiceDocumentId() DocumentId: Guid
     begin
-        exit(UpperCase('{3fa85f64-5717-4562-b3fc-2c963f66afa6}'));
+        Evaluate(DocumentId, '{3fa85f64-5717-4562-b3fc-2c963f66afa6}');
     end;
 
     [ModalPageHandler]

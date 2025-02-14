@@ -776,7 +776,7 @@ codeunit 6393 "Continia Api Requests"
             exit;
         if not EDocument.Get(EDocEntryNo) then
             exit;
-        EDocument."Document Id" := DocumentId;
+        EDocument."Continia Document Id" := DocumentId;
         EDocument.Modify();
     end;
 
@@ -802,7 +802,6 @@ codeunit 6393 "Continia Api Requests"
     var
         ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        DocumentGuid: Guid;
         SuccessfulStatusTok: Label 'SuccessEnum', Locked = true;
         ErrorStatusTok: Label 'ErrorEnum', Locked = true;
         DocumentStatus: Text;
@@ -818,8 +817,7 @@ codeunit 6393 "Continia Api Requests"
         HttpResponse: HttpResponseMessage;
         Success: Boolean;
     begin
-        Evaluate(DocumentGuid, EDocument."Document Id");
-        Success := ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(DocumentGuid), HttpRequest, HttpResponse);
+        Success := ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(EDocument."Continia Document Id"), HttpRequest, HttpResponse);
         SendContext.Http().SetHttpRequestMessage(HttpRequest);
         SendContext.Http().SetHttpResponseMessage(HttpResponse);
         if Success then begin
@@ -830,11 +828,6 @@ codeunit 6393 "Continia Api Requests"
             XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
             ResponseXmlDoc.SelectSingleNode('/technical_response', TechnicalResponseNode);
 
-            if TechnicalResponseNode.SelectSingleNode('document_receipt_id', DocumentReceiptIdNode) then begin
-                Evaluate(EDocument."Filepart Id", DocumentReceiptIdNode.AsXmlElement().InnerText);
-                EDocument.Modify();
-            end;
-
             if not TechnicalResponseNode.SelectSingleNode('document_status', DocumentStatusNode) then
                 exit(false);
 
@@ -842,7 +835,7 @@ codeunit 6393 "Continia Api Requests"
             case DocumentStatus of
                 SuccessfulStatusTok:
                     begin
-                        MarkDocumentAsProcessed(DocumentGuid);
+                        MarkDocumentAsProcessed(EDocument."Continia Document Id");
                         exit(true);
                     end;
                 ErrorStatusTok:
@@ -850,7 +843,7 @@ codeunit 6393 "Continia Api Requests"
                         if TechnicalResponseNode.SelectSingleNode('error_code', ErrorCodeNode) and TechnicalResponseNode.SelectSingleNode('error_message', ErrorMessageNode) then
                             EDocumentDescription := StrSubstNo('%1 - %2', ErrorCodeNode.AsXmlElement().InnerText, ErrorMessageNode.AsXmlElement().InnerText);
                         EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, EDocumentDescription);
-                        MarkDocumentAsProcessed(DocumentGuid);
+                        MarkDocumentAsProcessed(EDocument."Continia Document Id");
                         exit(false);
                     end;
             end;
@@ -909,22 +902,6 @@ codeunit 6393 "Continia Api Requests"
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequest);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
         exit(Success);
-    end;
-
-    internal procedure ApproveDocument(DocumentGuid: Guid): Boolean
-    var
-        HttpRequest: HttpRequestMessage;
-        HttpResponse: HttpResponseMessage;
-    begin
-        exit(PerformActionOnDocument(DocumentGuid, 'ApproveEnum', HttpRequest, HttpResponse));
-    end;
-
-    internal procedure RejectDocument(DocumentGuid: Guid): Boolean
-    var
-        HttpRequest: HttpRequestMessage;
-        HttpResponse: HttpResponseMessage;
-    begin
-        exit(PerformActionOnDocument(DocumentGuid, 'RejectEnum', HttpRequest, HttpResponse));
     end;
 
     internal procedure PerformActionOnDocument(DocumentGuid: Guid; Action: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
