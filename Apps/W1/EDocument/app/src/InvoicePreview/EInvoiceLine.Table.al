@@ -1,4 +1,4 @@
-table 6100 "E-Invoice Line"
+table 6107 "E-Invoice Line"
 {
     Access = Internal;
     Caption = 'E-Invoice Line';
