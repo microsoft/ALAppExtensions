@@ -242,8 +242,8 @@ report 4402 "EXR Aged Accounts Rec Excel"
     }
     labels
     {
-        ByPeriodLCY = 'By period (LCY)';
-        BalanceLCY = 'Balance (LCY)';
+        ByPeriodLCY = 'By Period (LCY)', Comment = 'Max length: 31. Excel worksheet name.';
+        BalanceLCY = 'Balance (LCY)', Comment = 'Max length: 31. Excel worksheet name.';
         AgedAccountsReceivableByPeriodLCY = 'Aged Accounts Receivable by Period (LCY)';
         OpenAmountsInLCY = 'Open amounts in LCY';
         ByPeriodFCY = 'By Period (FCY)';
@@ -260,10 +260,22 @@ report 4402 "EXR Aged Accounts Rec Excel"
         DocumentDateMonth = 'Document Date (Month)';
         DocumentDateQuarter = 'Document Date (Quarter)';
         DocumentDateYear = 'Document Date (Year)';
-        DueByCurrencies = 'Due by Currencies';
+        DueByCurrencies = 'Due by Currencies', Comment = 'Max length: 31. Excel worksheet name.';
         OpenByFCY = 'Open by (FCY)';
         DataRetrieved = 'Data retrieved:';
         CurrencyCodeDisplay = 'Currency Code';
+        AgedAsOf = 'Aged as of:';
+        AgedAccountsReceivable = 'Aged Accounts Receivable';
+        AgedAccountsReceivablePrint = 'Aged Accounts Rec. (Print)', Comment = 'Max length: 31. Excel worksheet name.';
+        AgedBy = 'Aged by:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     var
