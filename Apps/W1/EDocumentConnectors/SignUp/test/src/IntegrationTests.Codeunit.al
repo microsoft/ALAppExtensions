@@ -5,14 +5,15 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 
+using System.Threading;
+using System.Environment.Configuration;
+using System.Apps;
 using Microsoft.eServices.EDocument;
 using Microsoft.Inventory.Item;
 using Microsoft.EServices.EDocument.Service.Participant;
 using Microsoft.Foundation.Company;
-//using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
 
 codeunit 148195 IntegrationTests
@@ -36,25 +37,26 @@ codeunit 148195 IntegrationTests
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value', Locked = true;
 
+    #region tests
+
     /// <summary>
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('ExternalHttpRequestHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
         JobQueueEntry: Record "Job Queue Entry";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
-        // Steps:
         // Pending response -> Sent 
         this.Initialize();
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -75,9 +77,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has "Pending Response"
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(2, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -106,9 +109,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has Sent
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(3, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -130,6 +134,7 @@ codeunit 148195 IntegrationTests
     var
         EDocument: Record "E-Document";
         JobQueueEntry: Record "Job Queue Entry";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
@@ -140,7 +145,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -163,9 +168,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(2, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
@@ -177,9 +183,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
         this.IntegrationHelpers.SetAPICode('/signup/200/response-pending');
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -196,9 +202,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(3, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -212,9 +219,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
         this.IntegrationHelpers.SetAPIWith200Code();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -231,9 +238,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(4, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -257,6 +265,7 @@ codeunit 148195 IntegrationTests
     var
         EDocument: Record "E-Document";
         JobQueueEntry: Record "Job Queue Entry";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
@@ -267,7 +276,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -290,9 +299,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(2, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -305,9 +315,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
         this.IntegrationHelpers.SetAPICode('/signup/200/response-error');
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -324,9 +334,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has sending error
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Sending Error", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(3, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -362,9 +373,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(4, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -378,9 +390,9 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
 
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCOEdit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
         this.IntegrationHelpers.SetAPIWith200Code();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -398,9 +410,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('5', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Pending Response", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(5, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -423,6 +436,7 @@ codeunit 148195 IntegrationTests
     procedure SubmitDocumentServiceDown()
     var
         EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
@@ -431,7 +445,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUpEDCORead');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -453,9 +467,10 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), this.IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), this.IncorrectValueErr);
-        this.Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), this.IncorrectValueErr);
+        EDocumentServiceStatus := this.GetEDocumentServiceStatus(EDocument."Entry No");
+        this.Assert.AreEqual(this.EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Service Status"::"Sending Error", EDocumentServiceStatus.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(2, this.LogsCount(EDocumentServiceStatus), this.IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -520,6 +535,21 @@ codeunit 148195 IntegrationTests
         this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
     end;
 
+    #endregion
+
+    #region handlers
+
+    [ModalPageHandler]
+    internal procedure EDocServicesPageHandler(var EDocumentServicesPage: TestPage "E-Document Services")
+    begin
+        EDocumentServicesPage.Filter.SetFilter(Code, this.EDocumentService.Code);
+        EDocumentServicesPage.OK().Invoke();
+    end;
+
+    #endregion
+
+    #region local methods
+
     local procedure Initialize()
     var
         SignUpConnectionSetup: Record "SignUp Connection Setup";
@@ -527,6 +557,7 @@ codeunit 148195 IntegrationTests
         ServiceParticipant: Record "Service Participant";
         SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
+        this.AllowEDocConnectorHttpRequests();
         this.LibraryLowerPermissions.SetOutsideO365Scope();
 
         SignUpConnectionSetup.DeleteAll();
@@ -539,8 +570,8 @@ codeunit 148195 IntegrationTests
 
         this.CreateDefaultMetadataProfile();
         this.LibraryEDocument.SetupStandardVAT();
-        this.LibraryEDocument.SetupStandardSalesScenario(this.Customer, this.EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::"ExFlow E-Invoicing PTE");
-        this.LibraryEDocument.SetupStandardPurchaseScenario(this.Vendor, this.EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::"ExFlow E-Invoicing PTE");
+        this.LibraryEDocument.SetupStandardSalesScenario(this.Customer, this.EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::"ExFlow E-Invoicing");
+        this.LibraryEDocument.SetupStandardPurchaseScenario(this.Vendor, this.EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::"ExFlow E-Invoicing");
         this.EDocumentService."Auto Import" := true;
         this.EDocumentService."Import Minutes between runs" := 5;
         this.EDocumentService."Import Start Time" := Time();
@@ -612,18 +643,49 @@ codeunit 148195 IntegrationTests
         exit(158);
     end;
 
-    [ModalPageHandler]
-    internal procedure EDocServicesPageHandler(var EDocumentServicesPage: TestPage "E-Document Services")
+    local procedure AllowEDocConnectorHttpRequests()
+    var
+        ModuleInfo: ModuleInfo;
     begin
-        EDocumentServicesPage.Filter.SetFilter(Code, this.EDocumentService.Code);
-        EDocumentServicesPage.OK().Invoke();
+        if not NavApp.GetModuleInfo('b56171bd-9a8e-47ad-a527-99f476d5af83', ModuleInfo) then
+            exit;
+
+        this.AllowOutboundHttpRequests(ModuleInfo);
     end;
 
-    [StrMenuHandler]
-    internal procedure ExternalHttpRequestHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    local procedure AllowOutboundHttpRequests(ModuleInfo: ModuleInfo)
     var
-        ExternalHttpRequestChoice: Option " ","Allow Always","Allow Once","Block Always","Block Once";
+        NavAppSetting: Record "NAV App Setting";
+        ExtensionManagement: Codeunit "Extension Management";
     begin
-        Choice := ExternalHttpRequestChoice::"Allow Always";
+        if not NavAppSetting.Get(ModuleInfo.Id) then begin
+            NavAppSetting.Init();
+            NavAppSetting.Validate("App ID", ModuleInfo.Id);
+            NavAppSetting.Insert(true);
+        end;
+
+        if NavAppSetting."Allow HttpClient Requests" then
+            exit;
+
+        ExtensionManagement.ConfigureExtensionHttpClientRequestsAllowance(ModuleInfo.PackageId, true);
     end;
+
+    local procedure GetEDocumentServiceStatus(EntryNo: Integer) EDocumentServiceStatus: Record "E-Document Service Status"
+    begin
+        EDocumentServiceStatus.SetLoadFields("E-Document Service Code", Status);
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EntryNo);
+        if EDocumentServiceStatus.FindFirst() then
+            ;
+    end;
+
+    local procedure LogsCount(EDocumentServiceStatus: Record "E-Document Service Status"): Integer
+    var
+        EDocumentLog: Record "E-Document Log";
+    begin
+        EDocumentLog.SetRange("Service Code", EDocumentServiceStatus."E-Document Service Code");
+        EDocumentLog.SetRange("E-Doc. Entry No", EDocumentServiceStatus."E-Document Entry No");
+        exit(EDocumentLog.Count());
+    end;
+
+    #endregion
 }
