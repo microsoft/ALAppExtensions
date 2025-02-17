@@ -162,14 +162,14 @@ report 4412 "EXR Fixed Asset Analysis Excel"
     labels
     {
         DataRetrieved = 'Data retrieved:';
-        FixedAssetAnalysis = 'Fixed Asset Analysis', Comment = 'Max length: 31. Excel worksheet name.';
-        FixedAssetAnalysisPrint = 'Fixed Asset Analysis (Print)', Comment = 'Max length: 31. Excel worksheet name.';
+        FixedAssetAnalysis = 'Fixed Asset Analysis', MaxLength = 31; Comment = 'Excel worksheet name.';
+        FixedAssetAnalysisPrint = 'Fixed Asset Analysis (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
         BeforeStartingDateLabel = 'Before Starting Date';
         AtEndingDateLabel = 'At Ending Date';
         NetChangeLabel = 'Net Change';
         DepreciationBook = 'Depreciation Book';
         Period = 'Period:';
-        BookValue = 'Book Value', Comment = 'Max length: 31. Excel worksheet name.';
+        BookValue = 'Book Value', MaxLength = 31; Comment = 'Excel worksheet name.';
         AcquisitionDateLabel = 'Acquisition Date';
         DisposalDateLabel = 'Disposal Date';
         BookValueAnalysis = 'Book Value Analysis';
