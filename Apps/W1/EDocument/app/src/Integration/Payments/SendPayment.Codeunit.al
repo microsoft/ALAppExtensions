@@ -6,7 +6,6 @@ namespace Microsoft.eServices.EDocument.Integration.Payments;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
-using Microsoft.eServices.EDocument.Payments;
 
 codeunit 6123 "Send Payment"
 {
