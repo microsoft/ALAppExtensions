@@ -20,6 +20,9 @@ report 6212 "Total Emissions"
             column(PeriodFilter; StrSubstNo(PeriodLbl, SustLedgDateFilter))
             {
             }
+            column(SustLedgDateFilter; SustLedgDateFilter)
+            {
+            }
             column(CompanyName; CompanyProperty.DisplayName())
             {
             }
@@ -125,6 +128,7 @@ report 6212 "Total Emissions"
     labels
     {
         TotalEmissionsCaption = 'Total Emissions';
+        TotalEmissionsPrint = 'Total Emissions (Print)', Comment = 'Max length: 31. Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
@@ -140,6 +144,18 @@ report 6212 "Total Emissions"
         TotalEmissionOfCO2 = 'Total Emission of CO2';
         TotalEmissionOfCH4 = 'Total Emission of CH4';
         TotalEmissionOfN2O = 'Total Emission of N2O';
+        TotalEmissionsLabel = 'Total Emissions';
+        UnitofMeasureLabel = 'Unit of Measure';
+        DataRetrieved = 'Data retrieved:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        CompanyNameLabel = 'Company Name';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()
