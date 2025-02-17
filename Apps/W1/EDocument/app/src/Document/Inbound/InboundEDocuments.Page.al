@@ -231,9 +231,11 @@ page 6105 "Inbound E-Documents"
     local procedure NewFromFile()
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocImport.UploadDocument(EDocument);
+        EDocImport.ChooseEDocumentService(EDocumentService);
+        EDocImport.UploadDocument(EDocument, EDocumentService);
         if EDocument."Entry No" = 0 then
             exit;
     end;

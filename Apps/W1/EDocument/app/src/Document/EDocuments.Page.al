@@ -60,15 +60,40 @@ page 6122 "E-Documents"
     {
         area(Processing)
         {
+#if not CLEAN26
             action(ImportManually)
             {
                 Caption = 'New From File';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Functionality moved to "Import Files" action.';
 
                 trigger OnAction()
                 begin
                     NewFromFile();
+                end;
+            }
+#endif
+            fileuploadaction(ImportManuallyMultiple)
+            {
+                Caption = 'Import Files';
+                ToolTip = 'Create electronic documents by uploading single or multiple files.';
+                Image = Import;
+                AllowedFileExtensions = '.xml';
+                AllowMultipleFiles = true;
+
+                trigger OnAction(Files: List of [FileUpload])
+                var
+                    EDocumentService: Record "E-Document Service";
+                    EDocImport: Codeunit "E-Doc. Import";
+                begin
+                    if EDocImport.ChooseEDocumentService(EDocumentService) then begin
+                        EDocImport.UploadDocuments(Files, EDocumentService);
+                        CurrPage.Update(false);
+                    end;
                 end;
             }
             action(EDocumentServices)
@@ -100,7 +125,16 @@ page 6122 "E-Documents"
         }
         area(Promoted)
         {
-            actionref(Promoted_ImportManually; ImportManually) { }
+#if not CLEAN26
+            actionref(Promoted_ImportManually; ImportManually)
+            {
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Functionality moved to "Import Files" action.';
+            }
+#endif
+            actionref(Promoted_ImportManuallyMultiple; ImportManuallyMultiple) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
             actionref(Promoted_ViewFile; ViewFile) { }
         }
@@ -109,12 +143,10 @@ page 6122 "E-Documents"
     local procedure NewFromFile()
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        EDocImport.UploadDocument(EDocument);
-        if EDocument."Entry No" <> 0 then begin
-            EDocImport.ProcessIncomingEDocument(EDocument, EDocument.GetEDocumentService().GetDefaultImportParameters());
-            Page.Run(Page::"E-Document", EDocument);
-        end;
+        if EDocImport.ChooseEDocumentService(EDocumentService) then
+            EDocImport.UploadDocument(EDocument, EDocumentService);
     end;
 }

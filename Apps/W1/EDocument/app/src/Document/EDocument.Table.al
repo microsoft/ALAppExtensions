@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
 using System.IO;
@@ -230,6 +231,61 @@ table 6121 "E-Document"
         }
     }
 
+    trigger OnDelete()
+    begin
+        if (Rec.Status = Rec.Status::Processed) then
+            Error(this.DeleteProcessedNotAllowedErr);
+
+        if (Rec."Document Record ID".TableNo <> 0) then
+            Error(this.DeleteLinkedNotAllowedErr);
+
+        if (not Rec.IsDuplicate()) then
+            Error(this.DeleteUniqueNotAllowedErr);
+
+        this.DeleteRelatedRecords();
+    end;
+
+    internal procedure IsDuplicate(): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", Rec."Document Date");
+        EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
+        exit(not EDocument.IsEmpty());
+    end;
+
+    local procedure DeleteRelatedRecords()
+    var
+        DocumentAttachment: Record "Document Attachment";
+        EDocMappingLog: Record "E-Doc. Mapping Log";
+        EDocumentIntegrationLog: Record "E-Document Integration Log";
+        EDocumentLog: Record "E-Document Log";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        if not EDocumentLog.IsEmpty() then
+            EDocumentLog.DeleteAll(true);
+
+        EDocumentIntegrationLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        if not EDocumentIntegrationLog.IsEmpty() then
+            EDocumentIntegrationLog.DeleteAll(true);
+
+        EDocumentServiceStatus.SetRange("E-Document Entry No", Rec."Entry No");
+        if not EDocumentServiceStatus.IsEmpty() then
+            EDocumentServiceStatus.DeleteAll(true);
+
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        DocumentAttachment.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not DocumentAttachment.IsEmpty() then
+            DocumentAttachment.DeleteAll(true);
+
+        EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
+        if not EDocMappingLog.IsEmpty() then
+            EDocMappingLog.DeleteAll(true);
+    end;
+
     internal procedure PreviewContent()
     var
         EDocDataStorage: Record "E-Doc. Data Storage";
@@ -345,6 +401,9 @@ table 6121 "E-Document"
 
     var
         ToStringLbl: Label '%1,%2,%3,%4', Locked = true;
+        DeleteLinkedNotAllowedErr: Label 'The E-Document is linked to sales or purchase document and cannot be deleted.';
+        DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
+        DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted.';
         NoFileErr: label 'No previewable attachment exists for this %2.', Comment = '%1 - a table caption';
         NoFileContentErr: label 'Previewing file %1 failed. The file was found in table %2, but it has no content.', Comment = '%1 - a file name; %2 - a table caption';
 }
