@@ -1460,6 +1460,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocService."Verify Totals" := false;
         EDocService."Use Batch Processing" := false;
         EDocService."Validate Receiving Company" := false;
+        EDocService."Create Journal Lines" := false;
         EDocService.Modify(false);
     end;
 
