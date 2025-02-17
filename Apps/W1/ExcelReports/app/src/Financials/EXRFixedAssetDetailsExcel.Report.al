@@ -136,8 +136,8 @@ report 4411 "EXR Fixed Asset Details Excel"
     {
         DataRetrieved = 'Data retrieved:';
         FixedAssetDetails = 'Fixed Asset Details';
-        FixedAssetDetailsPrint = 'Fixed Asset Details (Print)', Comment = 'Max length: 31. Excel worksheet name.';
-        FixedAssetDetailsAnalysis = 'Fixed Asset Details (Analysis)', Comment = 'Max length: 31. Excel worksheet name.';
+        FixedAssetDetailsPrint = 'Fixed Asset Details (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        FixedAssetDetailsAnalysis = 'Fixed Asset Details (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
         AssetDescriptionLabel = 'Asset Description';
         PostingDateFilterLabel = 'Posting Date Filter:';
         // About the report labels
