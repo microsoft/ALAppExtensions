@@ -395,6 +395,19 @@ page 6121 "E-Document"
                         EDocOrderMatch.RunMatching(Rec);
                     end;
                 }
+                action(DeleteRelatedDocument)
+                {
+                    Caption = 'Delete Related Document';
+                    ToolTip = 'Delete the related purchase document.';
+                    Image = Delete;
+                    Visible = IsIncomingDoc and IsProcessed;
+
+                    trigger OnAction()
+                    begin
+                        if Confirm(StrSubstNo(this.ConfirmDeleteRelatedDocQst, this.RecordLinkTxt)) then
+                            this.EDocumentHelper.DeleteRelatedRecord(Rec);
+                    end;
+                }
             }
             group(Troubleshoot)
             {
@@ -462,7 +475,6 @@ page 6121 "E-Document"
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
                 actionref(Preview_promoteed; ViewFile) { }
-
             }
             group(Category_Troubleshoot)
             {
@@ -651,5 +663,6 @@ page 6121 "E-Document"
         ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
+        ConfirmDeleteRelatedDocQst: Label 'Do you want to delete the related document %1?', Comment = '%1 - related record ID';
 
 }
