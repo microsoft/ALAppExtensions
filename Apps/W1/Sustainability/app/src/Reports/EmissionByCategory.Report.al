@@ -126,8 +126,8 @@ report 6210 "Emission By Category"
     labels
     {
         EmissionByCategory = 'Emission By Category';
-        EmissionByCategoryPrint = 'Emission By Category (Print)', Comment = 'Max length: 31. Excel worksheet name.';
-        EmissionByCategoryAnalysis = 'Emission By Category (Analysis)', Comment = 'Max length: 31. Excel worksheet name.';
+        EmissionByCategoryPrint = 'Emission By Category (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        EmissionByCategoryAnalysis = 'Emission By Category (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
