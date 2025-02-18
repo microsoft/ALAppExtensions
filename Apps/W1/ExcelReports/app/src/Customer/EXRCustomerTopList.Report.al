@@ -112,11 +112,11 @@ report 4409 "EXR Customer Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopCustomerListLabel = 'Top Customer List';
-        TopCustomerListPrint = 'Top Customer List (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TopCustomerListAnalysis = 'Top Customer List (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TopCustomerListPrint = 'Top Customer List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TopCustomerListAnalysis = 'Top Customer List (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
