@@ -183,7 +183,7 @@ report 4412 "EXR Fixed Asset Analysis Excel"
         BookValueAfter = 'Book Value After';
         BookValueBefore = 'Book Value Before';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
