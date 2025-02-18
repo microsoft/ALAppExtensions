@@ -133,14 +133,14 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         DataRetrieved = 'Data retrieved:';
         TrialBalanceLCY = 'Trial Balance (LCY)';
         TrialBalanceACY = 'Trial Balance (ACY)';
-        TrialBalanceLCYPrint = 'Trial Balance (LCY) (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TrialBalanceLCYAnalysis = 'Trial Balance (LCY) (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TrialBalanceACYAnalysis = 'Trial Balance (ACY) (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalanceLCYPrint = 'Trial Balance (LCY) (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCYAnalysis = 'Trial Balance (LCY) (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACYAnalysis = 'Trial Balance (ACY) (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         TrialBalancevsLastPeriodACY = 'Trial Balance vs. Last Period (Additional Reporting Currency)';
         TrialBalancevsLastPeriod = 'Trial Balance vs. Last Period';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
