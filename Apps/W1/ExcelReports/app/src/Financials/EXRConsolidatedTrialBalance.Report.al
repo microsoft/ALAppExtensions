@@ -112,18 +112,18 @@ report 4410 "EXR Consolidated Trial Balance"
     {
         DataRetrieved = 'Data retrieved:';
         ConsolidatedTrialBalance = 'Consolidated Trial Balance';
-        ConsolidatedTrialBalPrint = 'Consolidated Trial Bal. (Print)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
-        TrialBalanceLCY = 'Trial Balance (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
-        TrialBalanceACY = 'Trial Balance (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        ConsolidatedTrialBalPrint = 'Consolidated Trial Bal. (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalanceLCY = 'Trial Balance (LCY)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalanceACY = 'Trial Balance (ACY)', MaxLength = 31; Comment = 'Excel worksheet name.';
         TrialBalanceLCYByBusinessUnit = 'Trial Balance by Business Unit (LCY)';
         TrialBalanceACYByBusinessUnit = 'Trial Balance by Business Unit (ACY)';
         BlankBU = '(Blank)';
         Period = 'Period:';
         UntilDate = 'Until:';
-        ByBusinessUnitLCY = 'By Business Unit (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
-        ByBusinessUnitACY = 'By Business Unit (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        ByBusinessUnitLCY = 'By Business Unit (LCY)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        ByBusinessUnitACY = 'By Business Unit (ACY)', MaxLength = 31; Comment = 'Excel worksheet name.';
         // About the report labels
-        AboutTheReportLabel = 'About the report', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
