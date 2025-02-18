@@ -140,7 +140,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         TrialBalancevsLastPeriod = 'Trial Balance vs. Last Period';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
