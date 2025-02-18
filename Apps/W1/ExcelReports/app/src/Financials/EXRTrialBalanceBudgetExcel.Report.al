@@ -115,11 +115,11 @@ report 4406 "EXR Trial BalanceBudgetExcel"
         NetBudgetLabel = 'Net Budget';
         BalanceBudgetLabel = 'Budget Balance';
         TrialBalancevsBudget = 'Trial Balance vs. Budget';
-        TrialBalanceBudgetPrint = 'Trial Balance Budget (Print)', Comment = 'Max length: 31. Excel worksheet name.';
-        TrialBalanceBudgetAnalysis = 'Trial Balance Budget (Analysis)', Comment = 'Max length: 31. Excel worksheet name.';
+        TrialBalanceBudgetPrint = 'Trial Balance Budget (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalanceBudgetAnalysis = 'Trial Balance Budget (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
