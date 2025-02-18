@@ -126,8 +126,8 @@ report 6210 "Emission By Category"
     labels
     {
         EmissionByCategory = 'Emission By Category';
-        EmissionByCategoryPrint = 'Emission By Category (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        EmissionByCategoryAnalysis = 'Emission By Category (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        EmissionByCategoryPrint = 'Emission By Category (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EmissionByCategoryAnalysis = 'Emission By Category (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
@@ -136,22 +136,22 @@ report 6210 "Emission By Category"
         SumOfEmission_CH4 = 'Sum of Emission CH4';
         SumOfEmission_N2O = 'Sum of Emission N2O';
         AccountCategoryDescription = 'Account Category Description';
-        CategoryDetails = 'Category Details', MaxLength = 31; Comment = 'Excel worksheet name.';
+        CategoryDetails = 'Category Details', MaxLength = 31, Comment = 'Excel worksheet name.';
         AccountName = 'Account Name';
         DocumentType = 'Document Type';
         CountryRegionCode = 'Country/Region Code';
         EmissionScope = 'Emission Scope';
         AccountCategory = 'Account Category';
         AccountNo = 'Account No.';
-        AverageEmissions = 'Average Emissions', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AverageEmissions = 'Average Emissions', MaxLength = 31, Comment = 'Excel worksheet name.';
         AverageEmissionsperCategory = 'Average Emissions per Category';
         AverageOfEmission_CO2 = 'Average of Emission CO2';
         AverageOfEmission_CH4 = 'Average of Emission CH4';
         AverageOfEmission_N2O = 'Average of Emission N2O';
-        EmissionsPerDocument = 'Emissions Per Document', MaxLength = 31; Comment = 'Excel worksheet name.';
+        EmissionsPerDocument = 'Emissions Per Document', MaxLength = 31, Comment = 'Excel worksheet name.';
         DataRetrieved = 'Data retrieved:';
         // About the report labels
-        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
