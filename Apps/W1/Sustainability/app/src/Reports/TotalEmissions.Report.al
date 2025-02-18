@@ -128,13 +128,13 @@ report 6212 "Total Emissions"
     labels
     {
         TotalEmissionsCaption = 'Total Emissions';
-        TotalEmissionsPrint = 'Total Emissions (Print)', Comment = 'Max length: 31. Excel worksheet name.';
+        TotalEmissionsPrint = 'Total Emissions (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
-        EmissionsPerScopes = 'Emissions Per Scopes';
-        EmissionsThroughPeriod = 'Emissions Through Period';
-        EmissionsSplit = 'Emissions Split';
+        EmissionsPerScopes = 'Emissions Per Scopes', MaxLength = 31; Comment = 'Excel worksheet name.';
+        EmissionsThroughPeriod = 'Emissions Through Period', MaxLength = 31; Comment = 'Excel worksheet name.';
+        EmissionsSplit = 'Emissions Split', MaxLength = 31; Comment = 'Excel worksheet name.';
         SumOfEmission_CO2 = 'Sum of Emission CO2';
         SumOfEmission_CH4 = 'Sum of Emission CH4';
         SumOfEmission_N2O = 'Sum of Emission N2O';
@@ -148,7 +148,7 @@ report 6212 "Total Emissions"
         UnitofMeasureLabel = 'Unit of Measure';
         DataRetrieved = 'Data retrieved:';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         CompanyNameLabel = 'Company Name';
