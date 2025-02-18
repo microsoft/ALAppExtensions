@@ -128,12 +128,12 @@ report 4408 "EXR Trial Bal by Period Excel"
     {
         DataRetrieved = 'Data retrieved:';
         TrialBalanceByPeriod = 'Trial Balance by Period';
-        TrialBalanceByPeriodPrint = 'Trial Bal. by Period (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TrialBalanceByPeriodAnalysis = 'Trial Bal. by Period (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalanceByPeriodPrint = 'Trial Bal. by Period (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceByPeriodAnalysis = 'Trial Bal. by Period (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         YearPeriodStart = 'Year';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
