@@ -122,12 +122,12 @@ report 4405 "EXR Trial Balance Excel"
         TrialBalanceACYSheet = 'Trial Balance (ACY)';
         TrialBalanceACY = 'Trial Balance (Additional Reporting Currency)';
         DataRetrieved = 'Data retrieved:';
-        TrialBalancePrint = 'Trial Balance List (Print)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TrialBalanceLCYAnalysis = 'Trial Balance LCY (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
-        TrialBalanceACYSheetAnalysis = 'Trial Balance ACY (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
+        TrialBalancePrint = 'Trial Balance List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCYAnalysis = 'Trial Balance LCY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACYSheetAnalysis = 'Trial Balance ACY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
