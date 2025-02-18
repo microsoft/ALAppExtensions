@@ -141,7 +141,7 @@ report 4411 "EXR Fixed Asset Details Excel"
         AssetDescriptionLabel = 'Asset Description';
         PostingDateFilterLabel = 'Posting Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
