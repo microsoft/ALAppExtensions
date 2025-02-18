@@ -116,7 +116,7 @@ report 4409 "EXR Customer Top List"
         TopCustomerListAnalysis = 'Top Customer List (Analysis)', MaxLength = 31; Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
         // About the report labels
-        AboutTheReportLabel = 'About the report';
+        AboutTheReportLabel = 'About the report', MaxLength = 31; Comment = 'Excel worksheet name.';
         EnvironmentLabel = 'Environment';
         CompanyLabel = 'Company';
         UserLabel = 'User';
