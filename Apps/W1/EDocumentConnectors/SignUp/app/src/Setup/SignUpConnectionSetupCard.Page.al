@@ -64,49 +64,49 @@ page 6440 "SignUp Connection Setup Card"
                         this.SignUpAuthentication.StorageSet(Rec."Client Tenant", this.ClientTenant);
                     end;
                 }
-                field(RootID; this.RootID)
+                field(MarketplaceID; this.MarketplaceID)
                 {
-                    Caption = 'Root App ID';
-                    ToolTip = 'Specifies the root app id token.';
+                    Caption = 'Marketplace App ID';
+                    ToolTip = 'Specifies the Marketplace app id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
                     Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
-                        this.SignUpAuthentication.StorageSet(Rec."Root App ID", this.RootID);
+                        this.SignUpAuthentication.StorageSet(Rec."Marketplace App ID", this.MarketplaceID);
                     end;
                 }
-                field(RootSecret; this.RootSecret)
+                field(MarketplaceSecret; this.MarketplaceSecret)
                 {
-                    Caption = 'Root Secret';
-                    ToolTip = 'Specifies the root secret token.';
+                    Caption = 'Marketplace Secret';
+                    ToolTip = 'Specifies the Marketplace secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
                     Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
-                        this.SaveSecret(Rec."Root Secret", this.RootSecret)
+                        this.SaveSecret(Rec."Marketplace Secret", this.MarketplaceSecret);
                     end;
                 }
-                field(RootTenant; this.RootTenant)
+                field(MarketplaceTenant; this.MarketplaceTenant)
                 {
-                    Caption = 'Root Tenant ID';
-                    ToolTip = 'Specifies the root tenant id token.';
+                    Caption = 'Marketplace Tenant ID';
+                    ToolTip = 'Specifies the Marketplace tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
                     Visible = this.FieldsVisible;
 
                     trigger OnValidate()
                     begin
-                        this.SignUpAuthentication.StorageSet(Rec."Root Tenant", this.RootTenant);
+                        this.SignUpAuthentication.StorageSet(Rec."Marketplace Tenant", this.MarketplaceTenant);
                     end;
                 }
-                field(RootUrl; Rec."Root Market URL")
+                field(MarketplaceUrl; Rec."Marketplace URL")
                 {
-                    Caption = 'Root URL';
-                    ToolTip = 'Specifies the root url token.';
+                    Caption = 'Marketplace URL';
+                    ToolTip = 'Specifies the Marketplace url token.';
                     ApplicationArea = Basic, Suite;
                     Visible = this.FieldsVisible;
                 }
@@ -131,7 +131,7 @@ page 6440 "SignUp Connection Setup Card"
     {
         area(processing)
         {
-            action(InitOnboarding01)
+            action(InitOnboardingAction)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open Onboarding';
@@ -140,10 +140,11 @@ page 6440 "SignUp Connection Setup Card"
 
                 trigger OnAction()
                 begin
-                    this.SignUpAuthentication.CreateClientCredentials();
+                    if IsNullGuid(Rec."Client ID") or IsNullGuid(Rec."Client Secret") then
+                        this.SignUpAuthentication.CreateClientCredentials();
                     CurrPage.Update();
                     this.SetPageVariables();
-                    Hyperlink(this.SignUpAuthentication.GetRootOnboardingUrl());
+                    Hyperlink(this.SignUpAuthentication.GetMarketplaceOnboardingUrl());
                     this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
@@ -151,7 +152,7 @@ page 6440 "SignUp Connection Setup Card"
 
         area(Promoted)
         {
-            actionref(InitOnboarding01_Promoted; InitOnboarding01) { }
+            actionref(InitOnboarding01_Promoted; InitOnboardingAction) { }
         }
     }
 
@@ -161,26 +162,28 @@ page 6440 "SignUp Connection Setup Card"
     begin
         this.FieldsVisible := not EnvironmentInformation.IsSaaSInfrastructure();
         this.SignUpAuthentication.InitConnectionSetup();
-        if Rec.Get() then
-            ;
-        this.SetPageVariables();
         this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        this.SetPageVariables();
     end;
 
     local procedure SetPageVariables()
     begin
         if not IsNullGuid(Rec."Client ID") then
-            this.ClientID := this.MaskTxt;
+            this.ClientID := Rec."Client ID";
         if not IsNullGuid(Rec."Client Secret") then
-            this.ClientSecret := this.MaskTxt;
+            this.ClientSecret := Rec."Client Secret";
         if not IsNullGuid(Rec."Client Tenant") then
-            this.ClientTenant := this.MaskTxt;
-        if not IsNullGuid(Rec."Root App ID") then
-            this.RootID := this.MaskTxt;
-        if not IsNullGuid(Rec."Root Secret") then
-            this.RootSecret := this.MaskTxt;
-        if not IsNullGuid(Rec."Root Tenant") then
-            this.RootTenant := this.MaskTxt;
+            this.ClientTenant := Rec."Client Tenant";
+        if not IsNullGuid(Rec."Marketplace App ID") then
+            this.MarketplaceID := Rec."Marketplace App ID";
+        if not IsNullGuid(Rec."Marketplace Secret") then
+            this.MarketplaceSecret := Rec."Marketplace Secret";
+        if not IsNullGuid(Rec."Marketplace Tenant") then
+            this.MarketplaceTenant := Rec."Marketplace Tenant";
     end;
 
     [NonDebuggable]
@@ -193,8 +196,7 @@ page 6440 "SignUp Connection Setup Card"
         SignUpAuthentication: Codeunit "SignUp Authentication";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
-        ClientID, ClientSecret, ClientTenant, RootID, RootSecret, RootTenant : Text;
+        ClientID, ClientSecret, ClientTenant, MarketplaceID, MarketplaceSecret, MarketplaceTenant : Text;
         FieldsVisible: Boolean;
         ExternalServiceTok: Label 'E-Document - SignUp', Locked = true;
-        MaskTxt: Label '*', Locked = true;
 }

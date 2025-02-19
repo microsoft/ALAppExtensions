@@ -23,17 +23,17 @@ codeunit 6442 "SignUp Authentication"
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         AuthTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
-        ProdRootTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true;
+        ProdMarketplaceTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true;
         ProdClientTenantIdTxt: Label 'eef4ab2c-2b10-4380-bf4b-214157971162', Locked = true;
         ProdServiceAPITxt: Label 'https://edoc.exflow.io', Locked = true;
-        ErrorTokenLbl: Label 'Unable to fetch a root token.';
+        ErrorTokenLbl: Label 'Unable to fetch Marketplace token.';
         ErrorUnableToCreateClientCredentialsLbl: Label 'Unable to create client credentials.';
         ClientIdTxt: Label 'clientId', Locked = true;
         ClientSecretTxt: Label 'clientSecret', Locked = true;
-        SignupRootUrlTxt: Label 'signup-root-url', Locked = true;
-        SignUpRootIdTxt: Label 'signup-root-id', Locked = true;
-        SignUpRootSecretTxt: Label 'signup-root-secret', Locked = true;
-        SignUpRootTenantTxt: Label 'signup-root-tenant', Locked = true;
+        SignupMarketplaceUrlTxt: Label 'signup-marketplace-url', Locked = true;
+        SignUpMarketplaceIdTxt: Label 'signup-marketplace-id', Locked = true;
+        SignUpMarketplaceSecretTxt: Label 'signup-marketplace-secret', Locked = true;
+        SignUpMarketplaceTenantTxt: Label 'signup-marketplace-tenant', Locked = true;
         SignUpClientTenantTxt: Label 'signup-client-tenant', Locked = true;
         SignUpServiceAPITxt: Label 'signup-service-api', Locked = true;
         SignUpAccessTokenKeyTxt: Label '{E45BB975-E67B-4A87-AC24-D409A5EF8301}', Locked = true;
@@ -55,7 +55,7 @@ codeunit 6442 "SignUp Authentication"
 
         this.SignUpConnectionSetup."Authentication URL" := this.AuthURLTxt;
         this.SignUpConnectionSetup."Service URL" := this.GetServiceApi();
-        this.StorageSet(this.SignUpConnectionSetup."Root Tenant", this.GetRootTenant());
+        this.StorageSet(this.SignUpConnectionSetup."Marketplace Tenant", this.GetMarketplaceTenant());
         this.StorageSet(this.SignUpConnectionSetup."Client Tenant", this.GetClientTenant());
         this.SignUpConnectionSetup.Insert();
     end;
@@ -64,9 +64,9 @@ codeunit 6442 "SignUp Authentication"
     /// The method returns the onboarding URL.
     /// </summary>
     /// <returns>Onboarding URL</returns>
-    procedure GetRootOnboardingUrl(): Text
+    procedure GetMarketplaceOnboardingUrl(): Text
     begin
-        exit(this.GetRootUrl() + '/supm/landingpage?EntraTenantId=' + this.GetBCInstanceIdentifier());
+        exit(this.GetMarketplaceUrl() + '/supm/landingpage?EntraTenantId=' + this.GetBCInstanceIdentifier());
     end;
 
     /// <summary>
@@ -103,12 +103,12 @@ codeunit 6442 "SignUp Authentication"
     end;
 
     /// <summary>
-    /// The method returns the root bearer authentication token.
+    /// The method returns the Marketplace bearer authentication token.
     /// </summary>
-    /// <returns>Root bearer authentication token</returns>   
-    procedure GetRootBearerAuthToken(): SecretText;
+    /// <returns>Marketplace bearer authentication token</returns>   
+    procedure GetMarketplaceBearerAuthToken(): SecretText;
     begin
-        exit(SecretStrSubstNo(this.BearerTxt, this.GetRootAuthToken()));
+        exit(SecretStrSubstNo(this.BearerTxt, this.GetMarketplaceAuthToken()));
     end;
 
     /// <summary>
@@ -120,13 +120,18 @@ codeunit 6442 "SignUp Authentication"
     procedure StorageSet(var TokenKey: Guid; Value: Text): Boolean
     var
         ModuleDataScope: DataScope;
+        DeleteOk: Boolean;
     begin
         ModuleDataScope := ModuleDataScope::Module;
         this.ValidateValueKey(TokenKey);
 
         if Value = '' then begin
-            if IsolatedStorage.Contains(TokenKey, ModuleDataScope) then
-                exit(IsolatedStorage.Delete(TokenKey, ModuleDataScope))
+            if IsolatedStorage.Contains(TokenKey, ModuleDataScope) then begin
+                DeleteOk := IsolatedStorage.Delete(TokenKey, ModuleDataScope);
+                if DeleteOk then
+                    Clear(TokenKey);
+                exit(DeleteOk);
+            end;
         end else
             exit(IsolatedStorage.Set(TokenKey, Value, ModuleDataScope));
     end;
@@ -149,26 +154,29 @@ codeunit 6442 "SignUp Authentication"
     procedure GetBCInstanceIdentifier() Identifier: Text
     var
         AADTenantID, AADDomainName : Text;
+        NullGuid: Guid;
     begin
         if this.GetAADTenantInformation(AADTenantID, AADDomainName) then
-            Identifier := AADTenantID;
+            Identifier := AADTenantID
+        else
+            Identifier := NullGuid;
     end;
 
     /// <summary>
-    /// The method returns the root URL.
+    /// The method returns the Marketplace URL.
     /// </summary>
     /// <returns></returns>
     [NonDebuggable]
-    procedure GetRootUrl() ReturnValue: Text
+    procedure GetMarketplaceUrl() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignupRootUrlTxt, ReturnValue) then
+        if this.FetchSecretFromKeyVault(this.SignupMarketplaceUrlTxt, ReturnValue) then
             exit;
 
-        if not this.SignUpConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.Get() then
             exit;
 
-        this.SignUpConnectionSetup.TestField("Root Market URL");
-        ReturnValue := this.SignUpConnectionSetup."Root Market URL";
+        this.SignUpConnectionSetup.TestField("Marketplace URL");
+        ReturnValue := this.SignUpConnectionSetup."Marketplace URL";
     end;
 
     #endregion
@@ -190,9 +198,9 @@ codeunit 6442 "SignUp Authentication"
         exit(this.StorageGet(this.SignUpAccessTokenKeyTxt, DataScope::Module));
     end;
 
-    local procedure GetRootAuthToken() ReturnValue: SecretText;
+    local procedure GetMarketplaceAuthToken() ReturnValue: SecretText;
     begin
-        if not this.GetRootAccessToken(ReturnValue) then
+        if not this.GetMarketplaceAccessToken(ReturnValue) then
             Error(this.ErrorTokenLbl);
     end;
 
@@ -200,7 +208,7 @@ codeunit 6442 "SignUp Authentication"
     begin
         Clear(this.SignUpConnectionSetup);
 
-        this.SignUpConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.Get();
         this.StorageSet(this.SignUpConnectionSetup."Client ID", ClientId);
         this.StorageSet(this.SignUpConnectionSetup."Client Secret", ClientSecret);
         this.SignUpConnectionSetup.Modify();
@@ -235,16 +243,16 @@ codeunit 6442 "SignUp Authentication"
     end;
 
     [NonDebuggable]
-    local procedure GetRootAccessToken(var AccessToken: SecretText): Boolean
+    local procedure GetMarketplaceAccessToken(var AccessToken: SecretText): Boolean
     var
         ModuleDataScope: DataScope;
     begin
         ModuleDataScope := ModuleDataScope::Module;
-        this.SignUpConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.Get();
 
-        exit(this.GetAccessToken(AccessToken, this.GetRootId(),
-                                                this.GetRootSecret(),
-                                                this.StorageGetText(this.SignUpConnectionSetup."Root Tenant", ModuleDataScope)));
+        exit(this.GetAccessToken(AccessToken, this.GetMarketplaceId(),
+                                                this.GetMarketplaceSecret(),
+                                                this.StorageGetText(this.SignUpConnectionSetup."Marketplace Tenant", ModuleDataScope)));
     end;
 
     [NonDebuggable]
@@ -253,7 +261,7 @@ codeunit 6442 "SignUp Authentication"
         ModuleDataScope: DataScope;
     begin
         ModuleDataScope := ModuleDataScope::Module;
-        this.SignUpConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.Get();
 
         exit(this.GetAccessToken(AccessToken, this.StorageGetText(this.SignUpConnectionSetup."Client ID", ModuleDataScope),
                                                 this.StorageGet(this.SignUpConnectionSetup."Client Secret", ModuleDataScope),
@@ -268,7 +276,7 @@ codeunit 6442 "SignUp Authentication"
         Response: Text;
     begin
         Clear(AccessToken);
-        this.SignUpConnectionSetup.GetSetup();
+        this.SignUpConnectionSetup.Get();
         this.SignUpConnectionSetup.TestField("Authentication URL");
 
         HttpRequestMessage := this.PrepareRequest(SecretStrSubstNo(this.AuthTemplateTxt, TypeHelper.UriEscapeDataString(ClientId), ClientSecret, TypeHelper.UriEscapeDataString(ClientId)),
@@ -313,12 +321,18 @@ codeunit 6442 "SignUp Authentication"
     end;
 
     local procedure StorageSet(var TokenKey: Guid; Value: SecretText; TokenDataScope: DataScope): Boolean
+    var
+        DeleteOk: Boolean;
     begin
         this.ValidateValueKey(TokenKey);
 
         if Value.IsEmpty() then begin
-            if IsolatedStorage.Contains(TokenKey, TokenDataScope) then
-                exit(IsolatedStorage.Delete(TokenKey, TokenDataScope))
+            if IsolatedStorage.Contains(TokenKey, TokenDataScope) then begin
+                DeleteOk := IsolatedStorage.Delete(TokenKey, TokenDataScope);
+                if DeleteOk then
+                    Clear(TokenKey);
+                exit(DeleteOk);
+            end;
         end else
             exit(IsolatedStorage.Set(TokenKey, Value, TokenDataScope));
     end;
@@ -375,36 +389,36 @@ codeunit 6442 "SignUp Authentication"
     end;
 
     [NonDebuggable]
-    local procedure GetRootId() ReturnValue: Text
+    local procedure GetMarketplaceId() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpRootIdTxt, ReturnValue) then
+        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceIdTxt, ReturnValue) then
             exit;
 
-        if not this.SignUpConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.Get() then
             exit;
 
-        this.SignUpConnectionSetup.TestField("Root App ID");
-        ReturnValue := this.StorageGetText(this.SignUpConnectionSetup."Root App ID", DataScope::Module);
+        this.SignUpConnectionSetup.TestField("Marketplace App ID");
+        ReturnValue := this.StorageGetText(this.SignUpConnectionSetup."Marketplace App ID", DataScope::Module);
     end;
 
-    local procedure GetRootSecret() ReturnValue: SecretText
+    local procedure GetMarketplaceSecret() ReturnValue: SecretText
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpRootSecretTxt, ReturnValue) then
+        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceSecretTxt, ReturnValue) then
             exit;
 
-        if not this.SignUpConnectionSetup.GetSetup() then
+        if not this.SignUpConnectionSetup.Get() then
             exit;
 
-        this.SignUpConnectionSetup.TestField("Root Secret");
-        ReturnValue := this.StorageGet(this.SignUpConnectionSetup."Root Secret", DataScope::Module);
+        this.SignUpConnectionSetup.TestField("Marketplace Secret");
+        ReturnValue := this.StorageGet(this.SignUpConnectionSetup."Marketplace Secret", DataScope::Module);
     end;
 
     [NonDebuggable]
-    local procedure GetRootTenant() ReturnValue: Text
+    local procedure GetMarketplaceTenant() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpRootTenantTxt, ReturnValue) then
+        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceTenantTxt, ReturnValue) then
             exit;
-        ReturnValue := this.ProdRootTenantIdTxt;
+        ReturnValue := this.ProdMarketplaceTenantIdTxt;
     end;
 
     local procedure GetClientTenant() ReturnValue: Text

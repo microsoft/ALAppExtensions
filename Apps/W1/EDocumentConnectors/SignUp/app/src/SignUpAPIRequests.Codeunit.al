@@ -219,7 +219,7 @@ codeunit 6441 "SignUp API Requests"
     begin
         this.InitRequest(HttpRequestMessage, HttpResponseMessage);
 
-        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, SignUpAuthentication.GetRootUrl() + '/api/Registration/init?EntraTenantId=' + SignUpAuthentication.GetBCInstanceIdentifier() + '&EnvironmentName=' + this.GetEnvironmentName());
+        HttpRequestMessage := this.PrepareRequestMsg("Http Request Type"::POST, SignUpAuthentication.GetMarketplaceUrl() + '/api/Registration/init?EntraTenantId=' + SignUpAuthentication.GetBCInstanceIdentifier() + '&EnvironmentName=' + this.GetEnvironmentName());
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage, true));
     end;
 
@@ -297,15 +297,15 @@ codeunit 6441 "SignUp API Requests"
         exit(this.SendRequest(HttpRequestMessage, HttpResponseMessage, false));
     end;
 
-    local procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
+    local procedure SendRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; MarketplaceRequest: Boolean): Boolean
     var
         SignUpAuthentication: Codeunit "SignUp Authentication";
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
     begin
         HttpRequestMessage.GetHeaders(HttpHeaders);
-        if RootRequest then
-            HttpHeaders.Add(this.AuthorizationTxt, SignUpAuthentication.GetRootBearerAuthToken())
+        if MarketplaceRequest then
+            HttpHeaders.Add(this.AuthorizationTxt, SignUpAuthentication.GetMarketplaceBearerAuthToken())
         else
             HttpHeaders.Add(this.AuthorizationTxt, SignUpAuthentication.GetBearerAuthToken());
         exit(HttpClient.Send(HttpRequestMessage, HttpResponseMessage));

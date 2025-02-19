@@ -7,14 +7,14 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 enum 6440 "SignUp Environment Type"
 {
     Access = Internal;
-    Caption = 'Environment Type', Locked = true;
+    Caption = 'Environment Type';
 
     value(0; Production)
     {
-        Caption = 'Production', Locked = true;
+        Caption = 'Production';
     }
     value(1; Test)
     {
-        Caption = 'Test', Locked = true;
+        Caption = 'Test';
     }
 }

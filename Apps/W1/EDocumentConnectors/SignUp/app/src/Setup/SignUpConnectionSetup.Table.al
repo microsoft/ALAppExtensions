@@ -13,10 +13,10 @@ table 6440 "SignUp Connection Setup"
 
     fields
     {
-        field(1; PK; Code[10])
+        field(1; "Primary Key"; Code[10])
         {
-            Caption = 'PK', Locked = true;
-            ToolTip = 'PK', Locked = true;
+            Caption = 'Primary Key', Locked = true;
+            ToolTip = 'Primary Key', Locked = true;
         }
         field(2; "Authentication URL"; Text[2048])
         {
@@ -49,30 +49,30 @@ table 6440 "SignUp Connection Setup"
                     Rec."Service URL" := CopyStr(Rec."Service URL".TrimEnd('/'), 1, MaxStrLen(Rec."Service URL"));
             end;
         }
-        field(7; "Root App ID"; Guid)
+        field(7; "Marketplace App ID"; Guid)
         {
-            Caption = 'Root App ID';
-            ToolTip = 'Specifies the root app ID.';
+            Caption = 'Marketplace App ID';
+            ToolTip = 'Specifies the Marketplace app ID.';
         }
-        field(8; "Root Secret"; Guid)
+        field(8; "Marketplace Secret"; Guid)
         {
-            Caption = 'Root App Secret';
-            ToolTip = 'Specifies the root application secret.';
+            Caption = 'Marketplace App Secret';
+            ToolTip = 'Specifies the Marketplace application secret.';
         }
-        field(9; "Root Tenant"; Guid)
+        field(9; "Marketplace Tenant"; Guid)
         {
-            Caption = 'Root App Tenant';
-            ToolTip = 'Specifies the root application tenant.';
+            Caption = 'Marketplace App Tenant';
+            ToolTip = 'Specifies the Marketplace application tenant.';
         }
-        field(10; "Root Market URL"; Text[2048])
+        field(10; "Marketplace URL"; Text[2048])
         {
-            Caption = 'Root Market URL';
-            ToolTip = 'Specifies the root market URL.';
+            Caption = 'Marketplace URL';
+            ToolTip = 'Specifies the Marketplace URL.';
 
             trigger OnValidate()
             begin
-                if Rec."Root Market URL" <> '' then
-                    Rec."Root Market URL" := CopyStr(Rec."Root Market URL".TrimEnd('/'), 1, MaxStrLen("Root Market URL"));
+                if Rec."Marketplace URL" <> '' then
+                    Rec."Marketplace URL" := CopyStr(Rec."Marketplace URL".TrimEnd('/'), 1, MaxStrLen("Marketplace URL"));
             end;
         }
         field(11; "Client Tenant"; Guid)
@@ -84,17 +84,9 @@ table 6440 "SignUp Connection Setup"
 
     keys
     {
-        key(Key1; PK)
+        key(Key1; "Primary Key")
         {
             Clustered = true;
         }
     }
-
-    procedure GetSetup(): Boolean
-    begin
-        if not IsNullGuid(Rec.SystemId) then
-            exit(true);
-
-        exit(Rec.Get());
-    end;
 }

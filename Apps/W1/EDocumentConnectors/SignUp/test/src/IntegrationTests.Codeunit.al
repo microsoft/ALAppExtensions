@@ -56,7 +56,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -145,7 +145,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -183,9 +183,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
         this.IntegrationHelpers.SetAPICode('/signup/200/response-pending');
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -219,9 +219,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
         this.IntegrationHelpers.SetAPIWith200Code();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -276,7 +276,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -315,9 +315,9 @@ codeunit 148195 IntegrationTests
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
         this.IntegrationHelpers.SetAPICode('/signup/200/response-error');
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -390,9 +390,9 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
 
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Edit');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
         this.IntegrationHelpers.SetAPIWith200Code();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -445,7 +445,7 @@ codeunit 148195 IntegrationTests
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
-        this.LibraryLowerPermissions.AddPermissionSet('SignUp EDCO Read');
+        this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         // [When] Posting invoice and EDocument is created
         this.LibraryEDocument.PostInvoice(this.Customer);

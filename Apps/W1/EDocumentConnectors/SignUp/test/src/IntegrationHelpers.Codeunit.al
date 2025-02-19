@@ -28,9 +28,9 @@ codeunit 148196 IntegrationHelpers
         SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
         SignUpConnectionSetup.Get();
-        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root App ID", this.DummyId());
-        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root Secret", this.DummyId());
-        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Root Tenant", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Marketplace App ID", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Marketplace Secret", this.DummyId());
+        SignUpAuthentication.StorageSet(SignUpConnectionSetup."Marketplace Tenant", this.DummyId());
         SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client ID", this.DummyId());
         SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client Secret", this.DummyId());
         SignUpAuthentication.StorageSet(SignUpConnectionSetup."Client Tenant", this.ClientTenantId());
