@@ -274,7 +274,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB, ES, LV, DE, RO, IE, US
+            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB, ES, LV, DE, RO, IE, US, EE, CZ, PL
         ***************************************************/
 
         AppId := '74689c09-2ed3-4e69-a2e8-c9310a271b9a';
@@ -283,7 +283,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Bank statement import & reconciliation.';
         AppProviderSupportURL := 'https://bankfeed.com/banks/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
-        AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO,IE,US';
+        AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO,IE,US,EE,CZ,PL';
         AppWorksOn := 'W1,DK,GB,ES,DE,US';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
@@ -293,6 +293,9 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Bankas izrakstu importēšana un saskaņošana.', 1062);
         AddDescriptionTranslation(AppId, 'Import und Abgleich von Kontoauszügen.', 1031);
         AddDescriptionTranslation(AppId, 'Import și reconciliere extras de cont bancar.', 1048);
+        AddDescriptionTranslation(AppId, 'Pangaväljavõtte import ja vastavusse viimine.', 1061);
+        AddDescriptionTranslation(AppId, 'Import a odsouhlasení bankovního výpisu.', 1029);
+        AddDescriptionTranslation(AppId, 'Import i uzgadnianie wyciągów bankowych.', 1045);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
