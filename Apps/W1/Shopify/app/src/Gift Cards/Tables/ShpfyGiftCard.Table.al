@@ -5,7 +5,6 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 table 30110 "Shpfy Gift Card"
 {
-    Access = Internal;
     Caption = 'Shopify Gift Card';
     DataClassification = SystemMetadata;
 
@@ -29,6 +28,11 @@ table 30110 "Shpfy Gift Card"
         field(4; "Order Line Id"; BigInteger)
         {
             Caption = 'Order Line Id';
+            DataClassification = SystemMetadata;
+        }
+        field(4; "Expiration Date"; Date)
+        {
+            Caption = 'Expiration Date';
             DataClassification = SystemMetadata;
         }
         field(101; "Known Used Amount"; Decimal)

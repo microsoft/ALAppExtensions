@@ -46,15 +46,29 @@ codeunit 30125 "Shpfy Gift Cards"
             GiftCard."Order Line Id" := Id;
             if (Id > 0) then begin
                 OrderLine.SetRange("Line Id", Id);
-                if OrderLine.FindFirst() then
+                if OrderLine.FindFirst() then begin
                     GiftCard.Amount := OrderLine."Unit Price";
+                    OrderLine."Gift Card Id" := GiftCard.Id;
+                    OrderLine.Modify(false);
+                end;
+
             end;
             Mask := JsonHelper.GetValueAsText(JToken, 'masked_code');
             GiftCard."Last Characters" := CopyStr(CopyStr(Mask, StrLen(Mask) - (MaxStrLen(GiftCard."Last Characters") - 1)), 1, MaxStrLen(GiftCard."Last Characters"));
+
+            OnAfterAddSoldGiftCards(JGiftCards, GiftCard, OrderLine);
+
             if IsNew then
                 GiftCard.Insert()
             else
                 GiftCard.Modify();
+
         end;
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterAddSoldGiftCards(JGiftCards: JsonArray; var GiftCard: Record "Shpfy Gift Card"; var OrderLine: Record "Shpfy Order Line")
+    begin
+    end;
+
 }
