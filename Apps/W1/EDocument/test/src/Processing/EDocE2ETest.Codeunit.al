@@ -14,14 +14,12 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
-        AttachmentName: Text[250];
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Incorrect value found';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
         SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
         DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
-        XMLFileLbl: Label '%1 %2.xml', Locked = true;
 
     [Test]
     procedure CreateEDocumentBeforeAfterEventsSuccessful()
