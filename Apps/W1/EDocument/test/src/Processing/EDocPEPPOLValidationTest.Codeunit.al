@@ -9,8 +9,10 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryEDoc: Codeunit "Library - E-Document";
+        LibrarySales: Codeunit "Library - Sales";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
+        Any: Codeunit Any;
         IsInitialized: Boolean;
 
 
@@ -24,9 +26,7 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         Initialize();
 
         // [GIVEN] VAT Posting Setup with zero VAT amount category and non-zero VAT %
-        VATPostingSetup."Tax Category" := 'Z';
-        VATPostingSetup."VAT %" := 10;
-        VATPostingSetup.Modify(false);
+        SetVatPostingSetupTaxCategory('Z', 10);
 
         // [WHEN] Posting invoice
         asserterror SalesInvoiceHeader := LibraryEDoc.PostInvoice(Customer);
@@ -46,9 +46,7 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         Initialize();
 
         // [GIVEN] VAT Posting Setup with zero VAT amount category and zero VAT %
-        VATPostingSetup."Tax Category" := 'Z';
-        VATPostingSetup."VAT %" := 0;
-        VATPostingSetup.Modify(false);
+        SetVatPostingSetupTaxCategory('Z', 0);
 
         // [WHEN] Posting invoice
         SalesInvoiceHeader := LibraryEDoc.PostInvoice(Customer);
@@ -60,7 +58,67 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         Assert.IsFalse(EDocument.IsEmpty(), 'No E-Document created');
     end;
 
+    [Test]
+    procedure PostInvoiceWithOutsideVatScopeAndTwoDifferentVatAmountLines()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        ItemWithTaxGroup: Record Item;
+    begin
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Post invoice with outside VAT scope and two different VAT amount lines
+        Initialize();
 
+        // [GIVEN] VAT Posting Setup with outside VAT scope
+        SetVatPostingSetupTaxCategory('O', 0);
+        // [GIVEN] Item
+        LibraryEDoc.GetGenericItem(Item);
+        // [GIVEN] Second item with different Tax Group code than first item
+        CreateItemWithTaxGroup(ItemWithTaxGroup, Any.AlphanumericText(20));
+        // [GIVEN] Sales invoice with both items
+        LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Invoice);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, ItemWithTaxGroup."No.", 1);
+
+        // [WHEN] Posting invoice
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, false, true);
+
+        // [THEN] Error is raised
+        Assert.ExpectedError('There can be only one tax subtotal present on invoice used with "Not subject to VAT" (O) tax category.');
+    end;
+
+    [Test]
+    procedure PostInvoiceWithOutsideVatScopeAndTwoDifferentItemsNoCustomTaxGroup()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        SecondItem: Record Item;
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Post invoice with outside VAT scope and two items without different Tax Group
+        Initialize();
+
+        // [GIVEN] VAT Posting Setup with outside VAT scope
+        SetVatPostingSetupTaxCategory('O', 0);
+        // [GIVEN] First item
+        LibraryEDoc.GetGenericItem(Item);
+        // [GIVEN] Second item without custom Tax Group
+        CreateItemWithTaxGroup(SecondItem, Item."Tax Group Code");
+        // [GIVEN] Sales invoice with both items
+        LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Invoice);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, SecondItem."No.", 1);
+
+        // [WHEN] Posting invoice
+        SalesInvoiceHeader := LibraryEDoc.PostInvoice(Customer);
+
+        // [THEN] Invoice is posted successfully and E-Document created
+        Assert.RecordIsNotEmpty(SalesInvoiceHeader);
+        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
+        Assert.IsFalse(EDocument.IsEmpty(), 'No E-Document created');
+    end;
 
     local procedure Initialize()
     var
@@ -91,4 +149,18 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         IsInitialized := true;
     end;
 
+    local procedure CreateItemWithTaxGroup(var Item: Record Item; TaxGroupCode: Code[20])
+    begin
+        LibraryEDoc.CreateGenericItem(Item);
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item."Tax Group Code" := TaxGroupCode;
+        Item.Modify(false);
+    end;
+
+    local procedure SetVatPostingSetupTaxCategory(TaxCategryCode: Code[10]; VATPercent: Decimal)
+    begin
+        VATPostingSetup."Tax Category" := TaxCategryCode;
+        VATPostingSetup."VAT %" := VATPercent;
+        VATPostingSetup.Modify(false);
+    end;
 }
