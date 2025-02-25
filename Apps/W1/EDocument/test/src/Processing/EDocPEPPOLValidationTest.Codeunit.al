@@ -59,6 +59,46 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
     end;
 
     [Test]
+    procedure PostInvoiceWithStandardVatAmountCategoryAndNonZeroVat()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Post invoice with standard VAT amount category and non-zero VAT %
+        Initialize();
+
+        // [GIVEN] VAT Posting Setup with standard VAT amount category and non-zero VAT %
+        SetVatPostingSetupTaxCategory('S', 25);
+
+        // [WHEN] Posting invoice
+        SalesInvoiceHeader := LibraryEDoc.PostInvoice(Customer);
+
+        // [THEN] Invoice is posted successfully
+        Assert.RecordIsNotEmpty(SalesInvoiceHeader);
+        // [THEN] E-Document is created
+        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
+        Assert.IsFalse(EDocument.IsEmpty(), 'No E-Document created');
+    end;
+
+    [Test]
+    procedure TestPostInvoiceWithStandardVatAmountCategoryAndZeroVat()
+    begin
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Attempt to post invoice with standard VAT category and 0% VAT should fail
+        Initialize();
+
+        // [GIVEN] VAT Posting Setup with standard VAT amount category and zero VAT %
+        SetVatPostingSetupTaxCategory('S', 0);
+
+        // [WHEN] Posting invoice
+        asserterror LibraryEDoc.PostInvoice(Customer);
+
+        // [THEN] Error is raised
+        Assert.ExpectedError('Line should have greater VAT than 0% for tax category S');
+    end;
+
+    [Test]
     procedure PostInvoiceWithOutsideVatScopeAndTwoDifferentVatAmountLines()
     var
         SalesHeader: Record "Sales Header";
