@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL Company (ID 30302) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL CreateCompLocTaxId (ID 30369) implements Interface Shpfy IGraphQL.
 /// </summary>
-codeunit 30302 "Shpfy GQL Company" implements "Shpfy IGraphQL"
+codeunit 30369 "Shpfy GQL CreateCompLocTaxId" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
@@ -13,7 +13,7 @@ codeunit 30302 "Shpfy GQL Company" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {name id note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}');
+        exit('{"query":"mutation {companyLocationCreateTaxRegistration(locationId: \"gid://shopify/CompanyLocation/{{LocationId}}\", taxId: \"{{TaxId}}\") {companyLocation {id, name, taxRegistrationId}, userErrors {field, message}}}"}');
     end;
 
     /// <summary>
@@ -22,6 +22,6 @@ codeunit 30302 "Shpfy GQL Company" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(10);
+        exit(4);
     end;
 }

@@ -65,8 +65,9 @@ codeunit 30284 "Shpfy Company Export"
                     ShopifyCompany.Insert();
 
                     if Shop."Auto Create Catalog" then
-                        CatalogAPI.CreateCatalog(ShopifyCompany);
+                        CatalogAPI.CreateCatalog(ShopifyCompany, Customer);
 
+                    CompanyLocation.Default := true;
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
                     CompanyLocation.Insert();
                 end;
@@ -93,7 +94,9 @@ codeunit 30284 "Shpfy Company Export"
         TaxArea: Record "Shpfy Tax Area";
         TempShopifyCompany: Record "Shpfy Company" temporary;
         TempCompanyLocation: Record "Shpfy Company Location" temporary;
+        TaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
         CountyCodeTooLongErr: Text;
+        PaymentTermsId: BigInteger;
     begin
         TempShopifyCompany := ShopifyCompany;
         TempCompanyLocation := CompanyLocation;
@@ -148,6 +151,12 @@ codeunit 30284 "Shpfy Company Export"
         end;
 
         CompanyLocation."Phone No." := Customer."Phone No.";
+
+        TaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
+        CompanyLocation."Tax Registration Id" := TaxRegistrationIdMapping.GetTaxRegistrationId(Customer);
+
+        if GetShopifyPaymentTermsIdFromCustomer(Customer, PaymentTermsId) then
+            CompanyLocation."Shpfy Payment Terms Id" := PaymentTermsId;
 
         if HasDiff(ShopifyCompany, TempShopifyCompany) or HasDiff(CompanyLocation, TempCompanyLocation) then begin
             ShopifyCompany."Last Updated by BC" := CurrentDateTime;
@@ -216,5 +225,17 @@ codeunit 30284 "Shpfy Company Export"
     internal procedure SetCreateCompanies(NewCustomers: Boolean)
     begin
         CreateCustomers := NewCustomers;
+    end;
+
+    local procedure GetShopifyPaymentTermsIdFromCustomer(Customer: Record Customer; var PaymentTermsId: BigInteger): Boolean
+    var
+        ShopifyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShopifyPaymentTerms.SetRange("Shop Code", Shop.Code);
+        ShopifyPaymentTerms.SetRange("Payment Terms Code", Customer."Payment Terms Code");
+        if ShopifyPaymentTerms.FindFirst() then begin
+            PaymentTermsId := ShopifyPaymentTerms.Id;
+            exit(true);
+        end;
     end;
 }
