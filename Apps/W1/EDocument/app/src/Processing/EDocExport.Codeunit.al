@@ -60,8 +60,9 @@ codeunit 6102 "E-Doc. Export"
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
-        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
+        EDocExport: Codeunit "E-Doc. Export";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         IsDocumentTypeSupported: Boolean;
     begin
         EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
@@ -84,10 +85,16 @@ codeunit 6102 "E-Doc. Export"
             OnAfterCreateEDocument(EDocument, SourceDocumentHeader);
 
             EDocumentLog.InsertLog(EDocument, Enum::"E-Document Service Status"::Created);
-            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
 
-            EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+            if EDocumentService.FindSet() then
+                repeat
+                    EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
+                    if (not EDocumentService."Use Batch Processing") or (EDocument."Send E-Document via Email") then
+                        EDocExport.ExportEDocument(EDocument, EDocumentService);
+                until EDocumentService.Next() = 0;
+
+            EDocumentBackgroundJobs.StartEdocumentCreatedFlow(EDocument);
         end;
     end;
 
@@ -189,6 +196,8 @@ codeunit 6102 "E-Doc. Export"
         SalesHeader: Record "Sales Header";
         PurchHeader: Record "Purchase Header";
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         SalesDocumentType: Enum "Sales Document Type";
         PurchDocumentType: Enum "Purchase Document Type";
         RemainingAmount, InterestAmount, AdditionalFee, VATAmount : Decimal;
@@ -219,9 +228,17 @@ codeunit 6102 "E-Doc. Export"
                                 end;
                             end;
                         Database::"Sales Invoice Header":
-                            EDocument."Document Type" := EDocument."Document Type"::"Sales Invoice";
+                            begin
+                                EDocument."Send E-Document via Email" :=
+                                    SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Send E-Document via Email")).Value();
+                                EDocument."Document Type" := EDocument."Document Type"::"Sales Invoice";
+                            end;
                         Database::"Sales Cr.Memo Header":
-                            EDocument."Document Type" := EDocument."Document Type"::"Sales Credit Memo";
+                            begin
+                                EDocument."Send E-Document via Email" :=
+                                    SourceDocumentHeader.Field(SalesCrMemoHeader.FieldNo("Send E-Document via Email")).Value();
+                                EDocument."Document Type" := EDocument."Document Type"::"Sales Credit Memo";
+                            end;
                         Database::"Service Header":
                             EDocument."Document Type" := EDocument."Document Type"::"Service Order";
                         Database::"Service Invoice Header":
@@ -330,6 +347,7 @@ codeunit 6102 "E-Doc. Export"
         EDocumentProcessing.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBF', EDocTelemetryCreateScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
+        EDocumentCreate.SetCreateSingleDocument(EDocument."Send E-Document via Email");
         EDocumentCreate.SetSource(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         if not EDocumentCreate.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
@@ -466,6 +484,12 @@ codeunit 6102 "E-Doc. Export"
         end;
 
         exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
+    end;
+
+    internal procedure CheckAndCreateEDocument(SourceDocumentHeader: RecordRef)
+    begin
+        this.CheckEDocument(SourceDocumentHeader, "E-Document Processing Phase"::Create);
+        this.CreateEDocument(SourceDocumentHeader);
     end;
 
     var

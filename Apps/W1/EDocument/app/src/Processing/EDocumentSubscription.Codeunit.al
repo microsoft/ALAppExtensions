@@ -168,11 +168,29 @@ codeunit 6103 "E-Document Subscription"
         ExchServiceEnabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
-    local procedure BeforeSendEDocument(Sender: Record "Document Sending Profile"; RecordVariant: Variant; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnBeforeSend, '', false, false)]
+    local procedure BeforeSendEDocument(
+        Sender: Record "Document Sending Profile";
+        RecordVariant: Variant;
+        var IsHandled: Boolean;
+        ReportUsage: Integer;
+        DocumentNoFieldNo: Integer;
+        DocName: Text[150];
+        CustomerFieldNo: Integer)
     begin
         if Sender."Electronic Document" <> Sender."Electronic Document"::"Extended E-Document Service Flow" then
             exit;
+
+        if (Sender."E-Mail" <> Sender."E-Mail"::No) and
+            ((Sender."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"E-Document") or
+            (Sender."E-Mail Attachment" = Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document")) then
+            Sender.TrySendToEMailGroupedMultipleSelection(
+                Enum::"Report Selection Usage".FromInteger(ReportUsage),
+                RecordVariant,
+                DocumentNoFieldNo,
+                DocName,
+                CustomerFieldNo,
+                true);
 
         IsHandled := true;
     end;
@@ -301,6 +319,49 @@ codeunit 6103 "E-Document Subscription"
             UpdateToPostedPurchaseEDocument(EDocument, PostedRecord, PostedDocumentNo, DocumentType);
             RemoveEDocumentLinkFromPurchaseDocument(OpenRecord);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforePostAndSend, '', false, false)]
+    local procedure SetSendEDocViaEmailOnBeforePostAndSend(var SalesHeader: Record "Sales Header")
+    begin
+        SalesHeader.Validate("Send E-Document via Email", true);
+        SalesHeader.Modify(false);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforeValidateElectronicFormats, '', false, false)]
+    local procedure OnBeforeValidateElectronicFormats(DocumentSendingProfile: Record "Document Sending Profile"; var IsHandled: Boolean)
+    begin
+        // If the document sending profile is set to use the extended e-document service flow,  
+        // then legacy electonic documents does not need to be set up for email sending.
+        if DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow" then
+            IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnAfterSendToEMail, '', false, false)]
+    local procedure OnAfterSendToEMail(
+        var DocumentSendingProfile: Record "Document Sending Profile";
+        ReportUsage: Enum "Report Selection Usage";
+        RecordVariant: Variant;
+        DocNo: Code[20];
+        DocName: Text[150];
+        ToCust: Code[20];
+        DocNoFieldNo: Integer;
+        ShowDialog: Boolean)
+    var
+        EDocumentEmail: Codeunit "E-Document Email";
+    begin
+        if DocumentSendingProfile."E-Mail Attachment" in
+            [Enum::"Document Sending Profile Attachment Type"::"E-Document",
+            Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document"]
+        then
+            EDocumentEmail.SendEDocumentEmail(
+                DocumentSendingProfile,
+                ReportUsage,
+                RecordVariant,
+                DocNo,
+                DocName,
+                ToCust,
+                ShowDialog);
     end;
 
     var
