@@ -11,6 +11,7 @@ using System.Automation;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Microsoft.eServices.EDocument.Payments;
 using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6121 "E-Document"
@@ -218,7 +219,16 @@ table 6121 "E-Document"
             Caption = 'Structured Data Process';
             ToolTip = 'Specifies the structured data process to run on the E-Document data.';
         }
+        field(38; "Paid Amount"; Decimal)
+        {
+            Caption = 'Paid Amount';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = sum("E-Document Payment".Amount where("E-Document Entry No." = field("Entry No")));
+            ToolTip = 'Specifies the amount that has already been paid.';
+        }
     }
+
     keys
     {
         key(Key1; "Entry No")

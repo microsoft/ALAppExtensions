@@ -39,6 +39,14 @@ page 6133 "E-Document Service"
                     Caption = 'Service Integration';
                     ToolTip = 'Specifies integration code for the electronic export setup.';
                 }
+                field("Payment Integration"; Rec."Payment Integration")
+                {
+                    Visible = false;
+                }
+                field("Calculate Payment VAT"; Rec."Calculate Payment VAT")
+                {
+                    Visible = false;
+                }
 
             }
             group(ImportProcessing)
@@ -51,19 +59,6 @@ page 6133 "E-Document Service"
                     {
                         Caption = 'Automatic Import';
                         ToolTip = 'Specifies whether to automatically import documents from the service.';
-                    }
-                    group(Importsettings)
-                    {
-                        ShowCaption = false;
-                        Visible = Rec."Auto Import";
-                        field("Import Start Time"; Rec."Import Start Time")
-                        {
-                            ToolTip = 'Specifies import jos starting time.';
-                        }
-                        field("Import Minutes between runs"; Rec."Import Minutes between runs")
-                        {
-                            ToolTip = 'Specifies the number of minutes between running import job.';
-                        }
                     }
                 }
                 field("Automatic Processing"; Rec."Automatic Import Processing")
@@ -136,44 +131,42 @@ page 6133 "E-Document Service"
                     ShowCaption = false;
                     field("Use Batch Processing"; Rec."Use Batch Processing")
                     {
-                        Caption = 'Batch Exporting';
-                        ToolTip = 'Specifies if service uses batch processing for export.';
+                        ToolTip = 'Specifies whether to automatically import documents from the service.';
                     }
-                    group(BatchSettings)
+                    group(Importsettings)
                     {
-                        Caption = 'Batch Settings';
-                        Visible = Rec."Use Batch Processing";
-
-                        field("Batch Mode"; Rec."Batch Mode")
+                        ShowCaption = false;
+                        Visible = Rec."Auto Import";
+                        field("Import Start Time"; Rec."Import Start Time")
                         {
-                            ToolTip = 'Specifies the mode of batch processing used for export.';
+                            ToolTip = 'Specifies import jos starting time.';
                         }
-
-                        group(ThresholdSettings)
+                        field("Import Minutes between runs"; Rec."Import Minutes between runs")
                         {
-                            ShowCaption = false;
-                            Visible = Rec."Batch Mode" = Enum::"E-Document Batch Mode"::Threshold;
-                            field("Batch Threshold"; Rec."Batch Threshold")
-                            {
-                                ToolTip = 'Specifies the threshold of batch processing used for export.';
-                            }
-                        }
-                        group(RecurrentSettings)
-                        {
-                            ShowCaption = false;
-                            Visible = Rec."Batch Mode" = Enum::"E-Document Batch Mode"::Recurrent;
-                            field("Batch Start Time"; Rec."Batch Start Time")
-                            {
-                                ToolTip = 'Specifies the start time of batch processing job.';
-                            }
-                            field("Batch Minutes between runs"; Rec."Batch Minutes between runs")
-                            {
-                                ToolTip = 'Specifies the number of minutes between batch processing jobs.';
-                            }
+                            ToolTip = 'Specifies the number of minutes between running import job.';
                         }
                     }
                 }
+            }
+            group(Payment)
+            {
+                Caption = 'Payment Settings';
+                Visible = false;
 
+                field("Auto Sync Payments"; Rec."Auto Sync Payments")
+                {
+                }
+                group(PaymentSyncSettings)
+                {
+                    ShowCaption = false;
+                    Visible = Rec."Auto Sync Payments";
+                    field("Payment Sync Start Time"; Rec."Payment Sync Start Time")
+                    {
+                    }
+                    field("Payment Sync Min between runs"; Rec."Payment Sync Min between runs")
+                    {
+                    }
+                }
             }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {

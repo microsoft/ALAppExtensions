@@ -776,6 +776,18 @@ codeunit 139629 "Library - E-Document"
     end;
 #endif
 
+    procedure CreateTestPaymentServiceForEDoc(var EDocService: Record "E-Document Service"; ServiceIntegration: Enum "Service Integration"; PaymentIntegration: Enum "Payment Integration")
+    begin
+        if not EDocService.Get('TESTPAYMENT') then begin
+            EDocService.Init();
+            EDocService.Code := 'TESTPAYMENT';
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration V2" := ServiceIntegration;
+            EDocService."Payment Integration" := PaymentIntegration;
+            EDocService.Insert(true);
+        end;
+    end;
+
     procedure CreateDirectMapping(var EDocMapping: Record "E-Doc. Mapping"; EDocService: Record "E-Document Service"; FindValue: Text; ReplaceValue: Text)
     begin
         CreateDirectMapping(EDocMapping, EDocService, FindValue, ReplaceValue, 0, 0);

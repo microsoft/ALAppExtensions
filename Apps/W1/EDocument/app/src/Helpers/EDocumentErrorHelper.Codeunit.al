@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.eServices.EDocument.Payments;
 
 codeunit 6115 "E-Document Error Helper"
 {
@@ -103,6 +104,19 @@ codeunit 6115 "E-Document Error Helper"
         LogErrorToTelemetry(EDocument, Message);
         ErrorMessage.SetContext(EDocument);
         ErrorMessage.LogSimpleMessage(ErrorMessage."Message Type"::Error, Message);
+    end;
+
+    /// <summary>
+    /// Use it to clear errors for E-Document related to payments.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record.</param>
+    procedure ClearPaymentErrorMessages(EDocument: Record "E-Document")
+    var
+        ErrorMessage: Record "Error Message";
+    begin
+        ErrorMessage.SetRange("Context Record ID", EDocument.RecordId());
+        ErrorMessage.SetRange("Table Number", Database::"E-Document Payment");
+        ErrorMessage.DeleteAll(false);
     end;
 
     internal procedure GetTelemetryImplErrLbl(): Text

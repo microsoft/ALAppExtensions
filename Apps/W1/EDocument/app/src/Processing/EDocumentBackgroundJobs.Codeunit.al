@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using System.Threading;
+using Microsoft.eServices.EDocument.Integration.Payments;
 
 codeunit 6133 "E-Document Background Jobs"
 {
@@ -104,6 +105,39 @@ codeunit 6133 "E-Document Background Jobs"
         Telemetry.LogMessage('0000LC5', EDocumentJobTelemetryLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
     end;
 
+    procedure ScheduleRecurrentPaymentSyncJob(var EDocumentService: Record "E-Document Service")
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+    begin
+        if EDocumentService.Code = '' then
+            exit;
+
+        if not this.IsRecurrentJobScheduledForAService(EDocumentService."Payment Sync Recurrent Job Id") then begin
+            JobQueueEntry.ScheduleRecurrentJobQueueEntryWithFrequency(
+                JobQueueEntry."Object Type to Run"::Codeunit,
+                Codeunit::"Sync Payments Job",
+                EDocumentService.RecordId,
+                EDocumentService."Payment Sync Min between runs",
+                EDocumentService."Payment Sync Start Time");
+
+            EDocumentService."Payment Sync Recurrent Job Id" := JobQueueEntry.ID;
+            EDocumentService.Modify(false);
+
+            JobQueueEntry."Rerun Delay (sec.)" := 600;
+            JobQueueEntry."No. of Attempts to Run" := 0;
+            JobQueueEntry."Job Queue Category Code" := this.JobQueueCategoryTok;
+            JobQueueEntry.Modify(false);
+        end else begin
+            JobQueueEntry.Get(EDocumentService."Payment Sync Recurrent Job Id");
+            JobQueueEntry."Starting Time" := EDocumentService."Payment Sync Start Time";
+            JobQueueEntry."No. of Minutes between Runs" := EDocumentService."Payment Sync Min between runs";
+            JobQueueEntry."No. of Attempts to Run" := 0;
+            JobQueueEntry.Modify(false);
+            if not JobQueueEntry.IsReadyToStart() then
+                JobQueueEntry.Restart();
+        end;
+    end;
+
     procedure HandleRecurrentBatchJob(var EDocumentService: Record "E-Document Service")
     begin
         if (EDocumentService."Use Batch Processing") and (EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent) then begin
@@ -122,6 +156,16 @@ codeunit 6133 "E-Document Background Jobs"
             ScheduleRecurrentImportJob(EDocumentService);
         end else
             RemoveJob(EDocumentService."Import Recurrent Job Id");
+    end;
+
+    procedure HandleRecurrentPaymentSyncJob(var EDocumentService: Record "E-Document Service")
+    begin
+        if EDocumentService."Auto Sync Payments" then begin
+            EDocumentService.TestField("Payment Sync Start Time");
+            EDocumentService.TestField("Payment Sync Min between runs");
+            this.ScheduleRecurrentPaymentSyncJob(EDocumentService);
+        end else
+            this.RemoveJob(EDocumentService."Payment Sync Recurrent Job Id");
     end;
 
     procedure RemoveJob(JobId: Guid)
