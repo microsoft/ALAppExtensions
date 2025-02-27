@@ -8,6 +8,18 @@ using Microsoft.eServices.EDocument;
 
 pageextension 6140 "E-Doc. Fin. Charge Memo" extends "Finance Charge Memo"
 {
+    layout
+    {
+        addlast(General)
+        {
+            field("Your Reference"; Rec."Your Reference")
+            {
+                ApplicationArea = All;
+                Caption = 'Your Reference';
+                ToolTip = 'Your Reference';
+            }
+        }
+    }
     actions
     {
         addafter("&Issuing")

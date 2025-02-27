@@ -60,6 +60,8 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
                 GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream);
             EDocument."Document Type"::"Sales Credit Memo", EDocument."Document Type"::"Service Credit Memo":
                 GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream);
+            EDocument."Document Type"::"Issued Reminder", EDocument."Document Type"::"Issued Finance Charge Memo":
+                GenerateReminderXMLFile(SourceDocumentHeader, DocOutStream);
             else
                 EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
         end;
@@ -105,6 +107,15 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesCrMemoPEPPOLBIS30.Initialize(VariantRec);
         SalesCrMemoPEPPOLBIS30.SetDestination(OutStr);
         SalesCrMemoPEPPOLBIS30.Export();
+    end;
+
+    local procedure GenerateReminderXMLFile(VariantRec: Variant; var OutStr: OutStream)
+    var
+        ReminderPEPPOLBIS30: XMLport "Reminder - PEPPOL BIS 3.0";
+    begin
+        ReminderPEPPOLBIS30.Initialize(VariantRec);
+        ReminderPEPPOLBIS30.SetDestination(OutStr);
+        ReminderPEPPOLBIS30.Export();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
