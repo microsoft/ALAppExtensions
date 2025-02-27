@@ -18,18 +18,10 @@ query 37010 "Routings - PBI API"
     {
         dataitem(routing; "Routing Header")
         {
-            column(no; "No.")
-            {
-            }
-            column(type; Type)
-            {
-            }
-            column(status; Status)
-            {
-            }
-            column(description; Description)
-            {
-            }
+            column(no; "No.") { }
+            column(type; Type) { }
+            column(status; Status) { }
+            column(description; Description) { }
         }
     }
 }

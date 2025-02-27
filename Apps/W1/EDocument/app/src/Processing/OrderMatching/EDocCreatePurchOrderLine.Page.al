@@ -25,6 +25,7 @@ page 6171 "E-Doc. Create Purch Order Line"
                 trigger OnValidate()
                 begin
                     SetEDocumentMatchingValues();
+                    CheckAndShowCannotSaveMatchNotification();
                 end;
             }
             field("No."; Rec."No.")
@@ -41,7 +42,6 @@ page 6171 "E-Doc. Create Purch Order Line"
             {
                 Caption = 'Description';
                 ToolTip = 'Specifies the description of what was received.';
-                Editable = false;
             }
             field("Unit Of Measure Code"; Rec."Unit Of Measure Code")
             {
@@ -93,6 +93,11 @@ page 6171 "E-Doc. Create Purch Order Line"
             {
                 Caption = 'Learn matching rule';
                 Tooltip = 'Specifies whether a matching rule should be created. Item references are created for Items and Text To Account mappings are created for G/L Accounts.';
+
+                trigger OnValidate()
+                begin
+                    CheckAndShowCannotSaveMatchNotification();
+                end;
             }
         }
     }
@@ -101,11 +106,14 @@ page 6171 "E-Doc. Create Purch Order Line"
         TempPurchaseLine: Record "Purchase Line" temporary;
         TempEDocImportedLine: Record "E-Doc. Imported Line" temporary;
         SaveMatch: Boolean;
+        CannotSaveMatchNotificationSent: Boolean;
         TotalAmount: Decimal;
         IncomingEDocumentLineTotalAmount: Decimal;
         StyleTxt: Text;
         UnitCostRecalculatedMsg: Label 'The unit cost has been recalculated in order to maintain the total unit price from the incoming line.';
         QuantityZeroErr: Label 'The Quantity must be greater than 0.';
+        CannotSaveMatchNotificationMsg: Label 'Matching rules can only be created for lines of type Item and G/L Account.';
+        SelectPurchaseLineTypeErr: Label 'You must select a line type.';
 
     trigger OnOpenPage()
     begin
@@ -120,6 +128,8 @@ page 6171 "E-Doc. Create Purch Order Line"
         if CloseAction <> CloseAction::LookupOK then
             exit(true);
 
+        if Rec.Type = Enum::"Purchase Line Type"::" " then
+            Error(SelectPurchaseLineTypeErr);
         Rec.TestField("No.");
 
         if SaveMatch then begin
@@ -137,7 +147,6 @@ page 6171 "E-Doc. Create Purch Order Line"
     var
         Currency: Record Currency;
     begin
-        Rec.Description := TempEDocImportedLine.Description;
         Rec."Unit of Measure Code" := CopyStr(TempEDocImportedLine."Unit of Measure Code", 1, MaxStrLen(Rec."Unit of Measure Code"));
         Rec.Quantity := TempEDocImportedLine.Quantity;
         Rec."Direct Unit Cost" := TempEDocImportedLine."Direct Unit Cost";
@@ -146,6 +155,25 @@ page 6171 "E-Doc. Create Purch Order Line"
         Currency.Initialize(Rec."Currency Code");
         TotalAmount := Round(Rec."Direct Unit Cost" * Rec.Quantity * (1 - Rec."Line Discount %" / 100), Currency."Amount Rounding Precision");
         IncomingEDocumentLineTotalAmount := TempEDocImportedLine."Direct Unit Cost" * TempEDocImportedLine.Quantity * (1 - TempEDocImportedLine."Line Discount %" / 100);
+    end;
+
+    local procedure CheckAndShowCannotSaveMatchNotification()
+    var
+        CannotSaveMatchNotification: Notification;
+    begin
+        if CannotSaveMatchNotificationSent then
+            exit;
+
+        if not SaveMatch then
+            exit;
+
+        if Rec.Type in [Enum::"Purchase Line Type"::" ", Enum::"Purchase Line Type"::"G/L Account", Enum::"Purchase Line Type"::Item] then
+            exit;
+
+        CannotSaveMatchNotification.Message := CannotSaveMatchNotificationMsg;
+        CannotSaveMatchNotification.Send();
+
+        CannotSaveMatchNotificationSent := true;
     end;
 
     internal procedure SetSharedTable(var TempPurchaseLineToSet: Record "Purchase Line" temporary)

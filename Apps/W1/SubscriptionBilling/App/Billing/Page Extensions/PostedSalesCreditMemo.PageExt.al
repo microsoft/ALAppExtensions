@@ -8,7 +8,7 @@ pageextension 8069 "Posted Sales Credit Memo" extends "Posted Sales Credit Memo"
     {
         addlast("Invoice Details")
         {
-            field("Contract Detail Overview"; Rec."Contract Detail Overview")
+            field("Contract Detail Overview"; Rec."Sub. Contract Detail Overview")
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;

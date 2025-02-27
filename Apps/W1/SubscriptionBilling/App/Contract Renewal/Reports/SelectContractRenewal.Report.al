@@ -4,13 +4,13 @@ using System.Text;
 
 report 8000 "Select Contract Renewal"
 {
-    Caption = 'Select Services for Contract Renewal';
+    Caption = 'Select Subscriptions for Contract Renewal';
     ProcessingOnly = true;
     UsageCategory = None;
 
     dataset
     {
-        dataitem(CustomerContractFilter; "Customer Contract")
+        dataitem(CustomerContractFilter; "Customer Subscription Contract")
         {
             RequestFilterFields = "No.", "Contract Type";
 
@@ -19,18 +19,18 @@ report 8000 "Select Contract Renewal"
                 CurrReport.Break();
             end;
         }
-        dataitem(CustomerContractLineFilter; "Customer Contract Line")
+        dataitem(CustomerContractLineFilter; "Cust. Sub. Contract Line")
         {
-            DataItemTableView = sorting("Contract No.") where(Closed = const(false));
+            DataItemTableView = sorting("Subscription Contract No.") where(Closed = const(false));
 
             trigger OnPreDataItem()
             begin
                 CurrReport.Break();
             end;
         }
-        dataitem(ServiceCommitmentFilter; "Service Commitment")
+        dataitem(ServiceCommitmentFilter; "Subscription Line")
         {
-            RequestFilterFields = "Service Object No.", "Service Start Date";
+            RequestFilterFields = "Subscription Header No.", "Subscription Line Start Date";
 
             trigger OnPreDataItem()
             begin
@@ -52,8 +52,8 @@ report 8000 "Select Contract Renewal"
                     field(ServiceEndDatePeriodFilterCtrl; ServiceEndDatePeriodFilter)
                     {
                         ApplicationArea = All;
-                        Caption = 'Service End Date Period';
-                        ToolTip = 'This Date Filter is used to select then Contract Lines based on the Service End Date of the Service Commitments.';
+                        Caption = 'Subscription Line End Date Period';
+                        ToolTip = 'This Date Filter is used to select then Contract Lines based on the Subscription Line End Date of the Subscription Lines.';
 
                         trigger OnValidate()
                         var
@@ -65,8 +65,8 @@ report 8000 "Select Contract Renewal"
                     field(AddVendorServicesCtrl; AddVendorServices)
                     {
                         ApplicationArea = All;
-                        Caption = 'Add Vendor Contract Lines';
-                        ToolTip = 'Selecting this Option will also select and add the related Vendor Contract Lines.';
+                        Caption = 'Add Vendor Subscription Contract Lines';
+                        ToolTip = 'Selecting this Option will also select and add the related Vendor Subscription Contract Lines.';
                     }
                 }
             }
@@ -81,13 +81,13 @@ report 8000 "Select Contract Renewal"
     local procedure ProcessSelection()
     begin
         CustomerContractFilter.SetLoadFields("No.");
-        CustomerContractLineFilter.SetLoadFields("Contract No.", "Line No.");
+        CustomerContractLineFilter.SetLoadFields("Subscription Contract No.", "Line No.");
         if CustomerContractFilter.FindSet() then
             repeat
                 CustomerContractLineFilter.FilterGroup(2);
-                CustomerContractLineFilter.SetRange("Contract No.", CustomerContractFilter."No.");
+                CustomerContractLineFilter.SetRange("Subscription Contract No.", CustomerContractFilter."No.");
                 CustomerContractLineFilter.FilterGroup(0);
-                CustomerContractLineFilter.SetRange("Planned Serv. Comm. exists", false);
+                CustomerContractLineFilter.SetRange("Planned Sub. Line exists", false);
                 if CustomerContractLineFilter.FindSet() then
                     repeat
                         InsertFromCustContrLine(CustomerContractLineFilter);
@@ -96,21 +96,21 @@ report 8000 "Select Contract Renewal"
         Processed := true;
     end;
 
-    internal procedure InsertFromCustContrLine(var CustomerContractLine: Record "Customer Contract Line")
+    internal procedure InsertFromCustContrLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
-        ServiceCommitment: Record "Service Commitment";
-        ContractRenewalLine: Record "Contract Renewal Line";
+        ServiceCommitment: Record "Subscription Line";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
         EmptyDateFormula: DateFormula;
     begin
         ServiceCommitment.Reset();
         if ServiceCommitmentFilter.GetFilters() <> '' then
             ServiceCommitment.Copy(ServiceCommitmentFilter);
         ServiceCommitment.FilterGroup(2);
-        ServiceCommitment.SetRange("Contract No.", CustomerContractLine."Contract No.");
-        ServiceCommitment.SetRange("Contract Line No.", CustomerContractLine."Line No.");
-        ServiceCommitment.SetFilter("Service End Date", '<>%1', 0D);
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContractLine."Subscription Contract No.");
+        ServiceCommitment.SetRange("Subscription Contract Line No.", CustomerContractLine."Line No.");
+        ServiceCommitment.SetFilter("Subscription Line End Date", '<>%1', 0D);
         if ServiceEndDatePeriodFilter <> '' then
-            ServiceCommitment.SetFilter("Service End Date", ServiceEndDatePeriodFilter);
+            ServiceCommitment.SetFilter("Subscription Line End Date", ServiceEndDatePeriodFilter);
         if not UseRequestPage() then
             ServiceCommitment.SetFilter("Renewal Term", '<>%1', EmptyDateFormula);
         ServiceCommitment.FilterGroup(0);
@@ -122,20 +122,20 @@ report 8000 "Select Contract Renewal"
         end;
     end;
 
-    local procedure AddVendorService(ServiceCommitment: Record "Service Commitment")
+    local procedure AddVendorService(ServiceCommitment: Record "Subscription Line")
     var
-        ServiceCommitmentVend: Record "Service Commitment";
-        ContractRenewalLine: Record "Contract Renewal Line";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ServiceCommitmentVend: Record "Subscription Line";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         if AddVendorServices then begin
             ContractRenewalMgt.FilterServCommVendFromServCommCust(ServiceCommitment, ServiceCommitmentVend);
             if ServiceCommitmentVend.FindSet() then
                 repeat
                     if ContractRenewalLine.InitFromServiceCommitment(ServiceCommitmentVend) then begin
-                        ContractRenewalLine."Linked to Ser. Comm. Entry No." := ServiceCommitment."Entry No.";
-                        ContractRenewalLine."Linked to Contract No." := ServiceCommitment."Contract No.";
-                        ContractRenewalLine."Linked to Contract Line No." := ServiceCommitment."Contract Line No.";
+                        ContractRenewalLine."Linked to Sub. Line Entry No." := ServiceCommitment."Entry No.";
+                        ContractRenewalLine."Linked to Sub. Contract No." := ServiceCommitment."Subscription Contract No.";
+                        ContractRenewalLine."Linked to Sub. Contr. Line No." := ServiceCommitment."Subscription Contract Line No.";
                         ContractRenewalLine.Insert(false);
                     end;
                 until ServiceCommitmentVend.Next() = 0;

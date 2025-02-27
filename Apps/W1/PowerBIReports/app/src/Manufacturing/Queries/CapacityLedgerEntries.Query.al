@@ -18,30 +18,14 @@ query 36984 "Capacity Ledger Entries"
     {
         dataitem(CapacityLedgerEntry; "Capacity Ledger Entry")
         {
-            column(orderType; "Order Type")
-            {
-            }
-            column(orderNo; "Order No.")
-            {
-            }
-            column(orderLineNo; "Order Line No.")
-            {
-            }
-            column(type; Type)
-            {
-            }
-            column(no; "No.")
-            {
-            }
-            column(description; Description)
-            {
-            }
-            column(postingDate; "Posting Date")
-            {
-            }
-            column(itemNo; "Item No.")
-            {
-            }
+            column(orderType; "Order Type") { }
+            column(orderNo; "Order No.") { }
+            column(orderLineNo; "Order Line No.") { }
+            column(type; Type) { }
+            column(no; "No.") { }
+            column(description; Description) { }
+            column(postingDate; "Posting Date") { }
+            column(itemNo; "Item No.") { }
             column(setupTime; "Setup Time")
             {
                 Method = Sum;
@@ -74,24 +58,14 @@ query 36984 "Capacity Ledger Entries"
             {
                 Method = Sum;
             }
-            column(routingNo; "Routing No.")
-            {
-            }
-            column(routingReferenceNo; "Routing Reference No.")
-            {
-            }
-            column(operationNo; "Operation No.")
-            {
-            }
-            column(workCenterGroupCode; "Work Center Group Code")
-            {
-            }
-            column(scrapCode; "Scrap Code")
-            {
-            }
-            column(dimensionSetID; "Dimension Set ID")
-            {
-            }
+            column(routingNo; "Routing No.") { }
+            column(routingReferenceNo; "Routing Reference No.") { }
+            column(operationNo; "Operation No.") { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(scrapCode; "Scrap Code") { }
+            column(dimensionSetID; "Dimension Set ID") { }
+            column(workCenterNo; "Work Center No.") { }
+            column(workShiftCode; "Work Shift Code") { }
         }
     }
 

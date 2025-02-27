@@ -32,7 +32,7 @@ page 8044 "Usage Data Suppliers"
                 }
                 field("Unit Price from Import"; Rec."Unit Price from Import")
                 {
-                    ToolTip = 'Defines whether the sales price from the usage data should be used. If yes, the pricing is overridden on the basis of the service.';
+                    ToolTip = 'Defines whether the sales price from the usage data should be used. If yes, the pricing is overridden on the basis of the Subscription Line.';
                 }
                 field("Vendor Invoice per"; Rec."Vendor Invoice per")
                 {

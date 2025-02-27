@@ -2,7 +2,7 @@
   "id": "672777d5-ab26-4369-b334-6f04256efffd",
   "name": "_Exclude_Onboarding Signals",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Adding first party Onboarding Signals",
   "description": "Adding Microsoft Onboarding Signals and Providing an example how Onboarding Signals can be added.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -21,7 +21,7 @@
     }
   ],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 20370,

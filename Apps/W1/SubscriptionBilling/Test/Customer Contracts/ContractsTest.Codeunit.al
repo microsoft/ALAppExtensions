@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
@@ -39,7 +40,7 @@ codeunit 148155 "Contracts Test"
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         DocumentsCount: Integer;
         ContractsFilter: Text;
     begin
@@ -62,7 +63,7 @@ codeunit 148155 "Contracts Test"
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
-        BillingLine.SetFilter("Contract No.", ContractsFilter);
+        BillingLine.SetFilter("Subscription Contract No.", ContractsFilter);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
 
         DocumentsCount := CountCreatedSalesDocuments(BillingLine);
@@ -74,17 +75,17 @@ codeunit 148155 "Contracts Test"
     procedure CheckContractLineTypeForCommentOnCustomerContractLine()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceObject: Record "Subscription Header";
         CustomerContractPage: TestPage "Customer Contract";
         DescriptionText: Text;
         DescriptionText2: Text;
     begin
-        // [SCENARIO] Create Customer Contract. Add Description and check if the ContractLineType for that line is Comment
+        // [SCENARIO] Create Customer Subscription Contract. Add Description and check if the ContractLineType for that line is Comment
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         CreateCustomerContractSetup(Customer, ServiceObject, CustomerContract);
 
         DescriptionText := LibraryRandom.RandText(100);
@@ -100,13 +101,13 @@ codeunit 148155 "Contracts Test"
         CustomerContractPage.Lines."Service Commitment Description".SetValue(DescriptionText2);
         CustomerContractPage.Close();
 
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Comment);
-        CustomerContractLine.SetRange("Service Object Description", DescriptionText);
+        CustomerContractLine.SetRange("Subscription Description", DescriptionText);
         Assert.RecordIsNotEmpty(CustomerContractLine);
 
-        CustomerContractLine.SetRange("Service Object Description");
-        CustomerContractLine.SetRange("Service Commitment Description", DescriptionText2);
+        CustomerContractLine.SetRange("Subscription Description");
+        CustomerContractLine.SetRange("Subscription Line Description", DescriptionText2);
         CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Comment);
         CustomerContractLine.FindFirst();
         Assert.RecordIsNotEmpty(CustomerContractLine);
@@ -118,16 +119,16 @@ codeunit 148155 "Contracts Test"
     var
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         PostedDocumentNo: Code[20];
         CustomerContractPage: TestPage "Customer Contract";
     begin
         Initialize();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate());
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
@@ -161,7 +162,7 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure CheckDetailOverviewOnCreditMemoFromCancelledPostedInvoice()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         PostedDocumentNo: Code[20];
@@ -174,7 +175,7 @@ codeunit 148155 "Contracts Test"
             PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
             SalesInvoiceHeader.Get(PostedDocumentNo);
             CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-            SalesHeader.TestField("Contract Detail Overview", CustomerContract."Detail Overview");
+            SalesHeader.TestField("Sub. Contract Detail Overview", CustomerContract."Detail Overview");
         end;
     end;
 
@@ -182,7 +183,7 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure CheckDetailOverviewOnCreditMemoFromCopiedPostedInvoice()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         CopyDocMgt: Codeunit "Copy Document Mgt.";
@@ -200,7 +201,7 @@ codeunit 148155 "Contracts Test"
             SalesHeader."Document Type" := SalesHeader."Document Type"::"Credit Memo";
             SalesHeader.Insert(true);
             CopyDocMgt.CopySalesDoc(Enum::"Sales Document Type From"::"Posted Invoice", SalesInvoiceHeader."No.", SalesHeader);
-            SalesHeader.TestField("Contract Detail Overview", CustomerContract."Detail Overview");
+            SalesHeader.TestField("Sub. Contract Detail Overview", CustomerContract."Detail Overview");
         end;
     end;
 
@@ -208,17 +209,17 @@ codeunit 148155 "Contracts Test"
     procedure CheckServiceCommitmentsWithoutCustomerContract()
     var
         Customer: Record Customer;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         ServCommWOCustContract: TestPage "Serv. Comm. WO Cust. Contract";
     begin
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
 
         ServCommWOCustContract.OpenEdit();
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             if ServiceCommitment."Invoicing via" = Enum::"Invoicing Via"::Contract then
@@ -230,20 +231,20 @@ codeunit 148155 "Contracts Test"
 
     [Test]
     [HandlerFunctions('ServCommWOCustContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckServiceCommitmentAssignmentToCustomerContract()
+    procedure CheckServiceCommitmentAssignmentToCustomerContractForServiceObjectWithItem()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         InvoicingViaNotManagedErr: Label 'Invoicing via %1 not managed', Locked = true;
         CustomerContractPage: TestPage "Customer Contract";
     begin
-        // [SCENARIO] Check that proper Service Commitments are assigned to Customer Contract Lines
+        // [SCENARIO] Check that proper Subscription Lines are assigned to Customer Subscription Contract Lines
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
 
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
@@ -251,24 +252,25 @@ codeunit 148155 "Contracts Test"
         CustomerContractPage.GoToRecord(CustomerContract);
         CustomerContractPage.GetServiceCommitmentsAction.Invoke();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
-            CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-            CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
-            CustomerContractLine.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
-            CustomerContractLine.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+            CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+            CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
+            CustomerContractLine.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+            CustomerContractLine.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
             case ServiceCommitment."Invoicing via" of
                 Enum::"Invoicing Via"::Contract:
                     begin
-                        Assert.IsTrue(CustomerContractLine.FindFirst(), 'Service Commitment not assigned to expected Customer Contract Line.');
-                        CustomerContractLine.TestField("Contract No.", ServiceCommitment."Contract No.");
-                        CustomerContractLine.TestField("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
+                        Assert.IsTrue(CustomerContractLine.FindFirst(), 'Service Commitment not assigned to expected Customer Subscription Contract Line.');
+                        CustomerContractLine.TestField("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+                        CustomerContractLine.TestField("Contract Line Type", Enum::"Contract Line Type"::Item);
+                        CustomerContractLine.TestField("No.", ServiceObject."Source No.");
                     end;
                 Enum::"Invoicing Via"::Sales:
                     begin
-                        Assert.IsTrue(CustomerContractLine.IsEmpty(), 'Service Commitment is assigned to Customer Contract Line but it is not expected.');
-                        ServiceCommitment.TestField("Contract No.", '');
+                        Assert.IsTrue(CustomerContractLine.IsEmpty(), 'Service Commitment is assigned to Customer Subscription Contract Line but it is not expected.');
+                        ServiceCommitment.TestField("Subscription Contract No.", '');
                     end;
                 else
                     Error(InvoicingViaNotManagedErr, Format(ServiceCommitment."Invoicing via"));
@@ -278,21 +280,58 @@ codeunit 148155 "Contracts Test"
 
     [Test]
     [HandlerFunctions('ServCommWOCustContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckServiceCommitmentAssignmentToCustomerContractForServiceObjectWithGLAccount()
+    var
+        Customer: Record Customer;
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        CustomerContractPage: TestPage "Customer Contract";
+    begin
+        // [SCENARIO] Create a Subscription for G/L Account and make sure that its Subscription Lines can be assigned to a contract
+
+        // [GIVEN] A Subscription for G/L Account has been created with Subscription Lines included
+        SetupServiceObjectForNewGLAccountWithServiceCommitment(Customer, ServiceObject);
+
+        // [WHEN] A Contract has been created and Subscription Lines are assigned on a contract
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        CustomerContractPage.OpenEdit();
+        CustomerContractPage.GoToRecord(CustomerContract);
+        CustomerContractPage.GetServiceCommitmentsAction.Invoke();
+
+        // [THEN] A new Contract Line has been created for previously created Subscription Line
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.FindFirst();
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"G/L Account");
+        CustomerContractLine.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        CustomerContractLine.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
+        Assert.IsTrue(CustomerContractLine.FindFirst(), 'Service Commitment not assigned to expected Customer Subscription Contract Line.');
+        CustomerContractLine.TestField("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+        CustomerContractLine.TestField("Contract Line Type", Enum::"Contract Line Type"::"G/L Account");
+        CustomerContractLine.TestField("No.", ServiceObject."Source No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('ServCommWOCustContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckServiceCommitmentAssignmentToCustomerContractWithShipToCode()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        ServiceObject2: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject2: Record "Subscription Header";
         ShipToAddress: Record "Ship-to Address";
         CustomerContractPage: TestPage "Customer Contract";
     begin
-        // [SCENARIO] Check that proper Service Commitments are assigned to Customer Contract Lines
+        // [SCENARIO] Check that proper Subscription Lines are assigned to Customer Subscription Contract Lines
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject2, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject2, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ShipToAddress.SetRange("Customer No.", Customer."No.");
         ShipToAddress.FindFirst();
@@ -306,10 +345,10 @@ codeunit 148155 "Contracts Test"
         CustomerContractPage.GoToRecord(CustomerContract);
         CustomerContractPage.GetServiceCommitmentsAction.Invoke();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
         Assert.RecordIsEmpty(ServiceCommitment);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject2."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject2."No.");
         Assert.RecordIsNotEmpty(ServiceCommitment);
     end;
 
@@ -320,14 +359,14 @@ codeunit 148155 "Contracts Test"
         Currency: Record Currency;
         CurrExchRate: Record "Currency Exchange Rate";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
         CustomerContractPage: TestPage "Customer Contract";
     begin
         Initialize();
         Currency.InitRoundingPrecision();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
         CustomerContractPage.OpenEdit();
@@ -344,12 +383,12 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckServiceObjectDescriptionInCustomerContractLines()
     var
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         TestCustomerContractLinesServiceObjectDescription(CustomerContract."No.", ServiceObject.Description);
 
         ServiceObject.Description := CopyStr(LibraryRandom.RandText(100), 1, MaxStrLen(ServiceObject.Description));
@@ -361,7 +400,7 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckTransferOfDetailOverviewToSalesInvoice()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         PostedDocumentNo: Code[20];
@@ -371,10 +410,10 @@ codeunit 148155 "Contracts Test"
 
         for i := 0 to 2 do begin
             CreateContractWithDetailOverviewAndSalesInvoice(i, SalesHeader, CustomerContract);
-            SalesHeader.TestField("Contract Detail Overview", CustomerContract."Detail Overview");
+            SalesHeader.TestField("Sub. Contract Detail Overview", CustomerContract."Detail Overview");
             PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
             SalesInvoiceHeader.Get(PostedDocumentNo);
-            SalesInvoiceHeader.TestField("Contract Detail Overview", CustomerContract."Detail Overview");
+            SalesInvoiceHeader.TestField("Sub. Contract Detail Overview", CustomerContract."Detail Overview");
         end;
     end;
 
@@ -384,21 +423,21 @@ codeunit 148155 "Contracts Test"
     var
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesLine: Record "Sales Line";
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         ReferenceNoLbl: Label 'Reference No.: %1', Locked = true;
         CustomerReference: Text;
     begin
         Initialize();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         CustomerReference := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Customer Reference")), 1, MaxStrLen(ServiceObject."Customer Reference"));
         ServiceObject."Customer Reference" := CopyStr(CustomerReference, 1, MaxStrLen(ServiceObject."Customer Reference"));
         ServiceObject.Modify(false);
 
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
@@ -411,28 +450,31 @@ codeunit 148155 "Contracts Test"
     end;
 
     [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,ConfirmHandler,MessageHandler')]
     procedure CheckValueChangesOnCustomerContractLines()
     var
         Currency: Record Currency;
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        OldServiceCommitment: Record "Service Commitment";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        OldServiceCommitment: Record "Subscription Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         BillingRhythmValue: DateFormula;
+        BillingBasePeriod: DateFormula;
         ExpectedDate: Date;
         ExpectedDecimalValue: Decimal;
         MaxServiceAmount: Decimal;
-        SrvCommFieldNotTransferredErr: Label 'Service Commitment field "%1" not transferred from Customer Contract Line.', Locked = true;
+        SrvCommFieldNotTransferredErr: Label 'Subscription Line field "%1" not transferred from Customer Subscription Contract Line.', Locked = true;
+        NotTransferredMisspelledTok: Label 'Subscription Line field "%1" not transfered from Customer Subscription Contract Line.', Locked = true;
         CustomerContractPage: TestPage "Customer Contract";
         DescriptionText: Text;
+        ServiceObjectQuantity: Decimal;
     begin
-        // [SCENARIO] Assign Service Commitments to Customer Contract Lines. Change values on Customer Contract Lines and check that Service Commitment has changed values.
+        // [SCENARIO] Assign Subscription Lines to Customer Subscription Contract Lines. Change values on Customer Subscription Contract Lines and check that Subscription Line has changed values.
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         Currency.InitRoundingPrecision();
         CreateCustomerContractSetup(Customer, ServiceObject, CustomerContract);
 
@@ -440,27 +482,42 @@ codeunit 148155 "Contracts Test"
         CustomerContractPage.GoToRecord(CustomerContract);
 
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
         CustomerContractLine.FindFirst();
         CustomerContractPage.Lines.GoToRecord(CustomerContractLine);
 
+        ServiceObjectQuantity := LibraryRandom.RandDecInDecimalRange(1, 100, 2);
+        CustomerContractPage.Lines."Service Object Quantity".SetValue(ServiceObjectQuantity);
+        ServiceObject.Get(CustomerContractLine."Subscription Header No.");
+        Assert.AreEqual(ServiceObject.Quantity, ServiceObjectQuantity, 'Service Object Quantity not transferred from Customer Subscription Contract Line.');
+
         DescriptionText := LibraryRandom.RandText(100);
         CustomerContractPage.Lines."Service Object Description".SetValue(DescriptionText);
-        ServiceObject.Get(CustomerContractLine."Service Object No.");
-        Assert.AreEqual(ServiceObject.Description, DescriptionText, 'Service Object Description not transferred from Customer Contract Line.');
+        ServiceObject.Get(CustomerContractLine."Subscription Header No.");
+        Assert.AreEqual(ServiceObject.Description, DescriptionText, 'Service Object Description not transferred from Customer Subscription Contract Line.');
 
-        OldServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
+        OldServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
 
-        ExpectedDate := CalcDate('<-1D>', OldServiceCommitment."Service Start Date");
+        ExpectedDate := CalcDate('<-1D>', OldServiceCommitment."Subscription Line Start Date");
         CustomerContractPage.Lines."Service Start Date".SetValue(ExpectedDate);
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
-        Assert.AreEqual(ExpectedDate, ServiceCommitment."Service Start Date", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Service Start Date")));
+        Assert.AreEqual(ExpectedDate, ServiceCommitment."Subscription Line Start Date", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Subscription Line Start Date")));
 
         ExpectedDate := CalcDate('<1D>', WorkDate());
         CustomerContractPage.Lines."Service End Date".SetValue(ExpectedDate);
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
-        Assert.AreEqual(ExpectedDate, ServiceCommitment."Service End Date", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Service End Date")));
+        Assert.AreEqual(ExpectedDate, ServiceCommitment."Subscription Line End Date", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Subscription Line End Date")));
+
+        ExpectedDate := CalcDate('<1D>', WorkDate());
+        CustomerContractPage.Lines."Cancellation Possible Until".SetValue(ExpectedDate);
+        ServiceCommitment.Get(OldServiceCommitment."Entry No.");
+        Assert.AreEqual(ExpectedDate, ServiceCommitment."Cancellation Possible Until", StrSubstNo(NotTransferredMisspelledTok, ServiceCommitment.FieldCaption("Cancellation Possible Until")));
+
+        ExpectedDate := CalcDate('<1D>', WorkDate());
+        CustomerContractPage.Lines."Term Until".SetValue(ExpectedDate);
+        ServiceCommitment.Get(OldServiceCommitment."Entry No.");
+        Assert.AreEqual(ExpectedDate, ServiceCommitment."Term Until", StrSubstNo(NotTransferredMisspelledTok, ServiceCommitment.FieldCaption("Term Until")));
 
         ExpectedDecimalValue := LibraryRandom.RandDecInDecimalRange(1, 100, 2);
         while ExpectedDecimalValue = OldServiceCommitment."Discount %" do
@@ -469,7 +526,7 @@ codeunit 148155 "Contracts Test"
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
         Assert.AreEqual(ExpectedDecimalValue, ServiceCommitment."Discount %", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Discount %")));
 
-        MaxServiceAmount := Round((OldServiceCommitment.Price * ServiceObject."Quantity Decimal"), Currency."Amount Rounding Precision");
+        MaxServiceAmount := Round((OldServiceCommitment.Price * ServiceObject.Quantity), Currency."Amount Rounding Precision");
         ExpectedDecimalValue := LibraryRandom.RandDecInDecimalRange(1, MaxServiceAmount, 2);
         while ExpectedDecimalValue = OldServiceCommitment."Discount Amount" do
             ExpectedDecimalValue := LibraryRandom.RandDecInDecimalRange(1, MaxServiceAmount, 2);
@@ -478,11 +535,11 @@ codeunit 148155 "Contracts Test"
         Assert.AreEqual(ExpectedDecimalValue, ServiceCommitment."Discount Amount", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Discount Amount")));
 
         ExpectedDecimalValue := LibraryRandom.RandDecInDecimalRange(1, MaxServiceAmount, 2);
-        while ExpectedDecimalValue = OldServiceCommitment."Service Amount" do
+        while ExpectedDecimalValue = OldServiceCommitment.Amount do
             ExpectedDecimalValue := LibraryRandom.RandDecInDecimalRange(1, MaxServiceAmount, 2);
         CustomerContractPage.Lines."Service Amount".SetValue(ExpectedDecimalValue);
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
-        Assert.AreEqual(ExpectedDecimalValue, ServiceCommitment."Service Amount", StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption("Service Amount")));
+        Assert.AreEqual(ExpectedDecimalValue, ServiceCommitment.Amount, StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption(Amount)));
 
         ExpectedDecimalValue := LibraryRandom.RandDec(10000, 2);
         while ExpectedDecimalValue = OldServiceCommitment."Calculation Base Amount" do
@@ -503,6 +560,11 @@ codeunit 148155 "Contracts Test"
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
         Assert.AreEqual(DescriptionText, ServiceCommitment.Description, StrSubstNo(SrvCommFieldNotTransferredErr, ServiceCommitment.FieldCaption(Description)));
 
+        Evaluate(BillingBasePeriod, '<3M>');
+        CustomerContractPage.Lines."Billing Base Period".SetValue(BillingBasePeriod);
+        ServiceCommitment.Get(OldServiceCommitment."Entry No.");
+        Assert.AreEqual(BillingBasePeriod, ServiceCommitment."Billing Base Period", StrSubstNo(NotTransferredMisspelledTok, ServiceCommitment.FieldCaption("Billing Base Period")));
+
         Evaluate(BillingRhythmValue, '<3M>');
         CustomerContractPage.Lines."Billing Rhythm".SetValue(BillingRhythmValue);
         ServiceCommitment.Get(OldServiceCommitment."Entry No.");
@@ -513,14 +575,14 @@ codeunit 148155 "Contracts Test"
     procedure ContractCheckShipToAddressSetFromFirstServiceCommitment()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         ShipToAddress: Record "Ship-to Address";
     begin
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         LibrarySales.CreateShipToAddress(ShipToAddress, Customer."No.");
 
@@ -531,7 +593,7 @@ codeunit 148155 "Contracts Test"
         ServiceObject.Modify(false);
         Assert.IsFalse(CustomerContract.IsShipToAddressEqualToServiceObjectShipToAddress(ServiceObject), 'Ship-To Address should NOT be returned as identical between Contract and Service Object.');
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, ServiceCommitment.Partner::Customer);
         ServiceCommitment.FindFirst();
         ServiceCommitment.SetRecFilter();
@@ -545,44 +607,49 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ContractLineDisconnectServiceOnTypeChange()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        EntryNo: Integer;
     begin
-        // Test: Service Commitment should be disconnected from the contract when the line type changes
+        // Test: Subscription Line should be disconnected from the contract when the line type changes
         Initialize();
 
         SetupNewContract(false, ServiceObject, CustomerContract);
 
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
-        CustomerContractLine.SetFilter("Service Object No.", '<>%1', '');
-        CustomerContractLine.SetFilter("Service Commitment Entry No.", '<>%1', 0);
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
+        CustomerContractLine.SetFilter("Subscription Header No.", '<>%1', '');
+        CustomerContractLine.SetFilter("Subscription Line Entry No.", '<>%1', 0);
         CustomerContractLine.FindFirst();
-        asserterror CustomerContractLine.Validate("Contract Line Type", CustomerContractLine."Contract Line Type"::Comment);
+        EntryNo := CustomerContractLine."Subscription Line Entry No.";
+        CustomerContractLine.Validate("Contract Line Type", CustomerContractLine."Contract Line Type"::Comment);
+        ServiceCommitment.Get(EntryNo);
+        ServiceCommitment.TestField("Subscription Contract No.", '');
     end;
 
     [Test]
     procedure ExpectCustomerContractDocumentAttachmentsAreDeleted()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         DocumentAttachment: Record "Document Attachment";
         i: Integer;
         RandomNoOfAttachments: Integer;
     begin
         Initialize();
 
-        // Service Object has Document Attachments created
-        // [WHEN] Service Object is deleted
+        // Subscription has Document Attachments created
+        // [WHEN] Subscription is deleted
         // expect that Document Attachments are deleted
         ContractTestLibrary.CreateCustomerContract(CustomerContract, '');
         CustomerContract.TestField("No.");
         RandomNoOfAttachments := LibraryRandom.RandInt(10);
         for i := 1 to RandomNoOfAttachments do
-            ContractTestLibrary.InsertDocumentAttachment(Database::"Customer Contract", CustomerContract."No.");
+            ContractTestLibrary.InsertDocumentAttachment(Database::"Customer Subscription Contract", CustomerContract."No.");
 
-        DocumentAttachment.SetRange("Table ID", Database::"Customer Contract");
+        DocumentAttachment.SetRange("Table ID", Database::"Customer Subscription Contract");
         DocumentAttachment.SetRange("No.", CustomerContract."No.");
         Assert.AreEqual(RandomNoOfAttachments, DocumentAttachment.Count(), 'Actual number of Document Attachment(s) is incorrect.');
 
@@ -595,10 +662,10 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure ExpectErrorIfBillingRhythmIsEmptyInServiceCommPackage()
     var
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentTemplate2: Record "Service Commitment Template";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceCommitmentTemplate2: Record "Sub. Package Line Template";
         EmptyDateFormula: DateFormula;
     begin
         Initialize();
@@ -627,15 +694,15 @@ codeunit 148155 "Contracts Test"
     var
         Customer: Record Customer;
         Customer2: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        TempServiceCommitment: Record "Service Commitment" temporary;
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        TempServiceCommitment: Record "Subscription Line" temporary;
+        ServiceObject: Record "Subscription Header";
         ServCommWOCustContractPage: TestPage "Serv. Comm. WO Cust. Contract";
     begin
-        // [SCENARIO] try to assign Service Commitment to wrong Contract No (different Customer No.)
+        // [SCENARIO] try to assign Subscription Line to wrong Contract No (different Customer No.)
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ContractTestLibrary.CreateCustomer(Customer2);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer2."No.");
@@ -654,17 +721,17 @@ codeunit 148155 "Contracts Test"
     var
         Currency: Record Currency;
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         CustomerContractPage: TestPage "Customer Contract";
     begin
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             Currency.Get(LibraryERM.CreateCurrencyWithRandomExchRates());
@@ -680,13 +747,13 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectErrorOnMergeTextLine()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
         SetupNewContract(false, ServiceObject, CustomerContract);
-        CreateContractCommentLine(CustomerContract."No.", CustomerContractLine);
+        ContractTestLibrary.InsertCustomerContractCommentLine(CustomerContract, CustomerContractLine);
         CustomerContractLine.Reset();
         asserterror CustomerContractLine.MergeContractLines(CustomerContractLine);
     end;
@@ -695,13 +762,13 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler')]
     procedure ExpectErrorOnModifyServiceStartDateWhenBillingLineArchiveExist()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         CreateAndPostBillingProposal(WorkDate(), ServiceObject."No.");
         asserterror UpdateServiceStartDateFromCustomerContractSubpage(CustomerContract."No.", CustomerContractLine, ServiceCommitment);
     end;
@@ -710,24 +777,24 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectErrorOnMergeContractLinesWithDifferenceCustomerReference()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
-        ServiceObject2: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject2: Record "Subscription Header";
     begin
         Initialize();
 
         ContractTestLibrary.InitContractsApp();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', false);
         ServiceObject."Customer Reference" := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Customer Reference")), 1, MaxStrLen(ServiceObject."Customer Reference"));
         ServiceObject.Modify(false);
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject2, '', false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject2, '', false);
         ServiceObject2."Customer Reference" := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject2."Customer Reference")), 1, MaxStrLen(ServiceObject2."Customer Reference"));
         ServiceObject2.Modify(false);
 
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         asserterror CustomerContractLine.MergeContractLines(CustomerContractLine);
     end;
 
@@ -736,16 +803,16 @@ codeunit 148155 "Contracts Test"
     procedure ExpectErrorOnMergeCustomerContractLineWithBillingProposal()
     var
         BillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
-        ServiceObject2: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject2: Record "Subscription Header";
     begin
         Initialize();
 
         SetupNewContract(false, ServiceObject, CustomerContract);
         CreateTwoEqualServiceObjectsWithServiceCommitments(ServiceObject, ServiceObject2);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject2, false);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject2, false);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         asserterror CustomerContractLine.MergeContractLines(CustomerContractLine);
     end;
@@ -754,17 +821,17 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectErrorOnMergeCustomerContractLineWithDifferentNextBillingDate()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        ServiceObject1: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject1: Record "Subscription Header";
     begin
         Initialize();
 
         SetupNewContract(false, ServiceObject, CustomerContract);
         CreateTwoEqualServiceObjectsWithServiceCommitments(ServiceObject, ServiceObject1);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject1, false);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject1, false);
         CustomerContractLine.FindFirst();
         CustomerContractLine.GetServiceCommitment(ServiceCommitment);
         ServiceCommitment."Next Billing Date" := CalcDate('<1D>', ServiceCommitment."Next Billing Date");
@@ -777,20 +844,20 @@ codeunit 148155 "Contracts Test"
     procedure ExpectErrorWhenDeleteCustomerIfExistInCustomerContract()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         CustomerContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this customer.', Locked = true;
     begin
-        // [SCENARIO] Customer cannot be deleted if exist in Customer Contract
+        // [SCENARIO] Customer cannot be deleted if exist in Customer Subscription Contract
         Initialize();
 
-        // [GIVEN] Create Customer and Customer Contract
+        // [GIVEN] Create Customer and Customer Subscription Contract
         ContractTestLibrary.CreateCustomer(Customer);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
         // [WHEN] Delete Customer
         asserterror Customer.Delete(true);
 
-        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Customer Contract
+        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Customer Subscription Contract
         Assert.ExpectedError(StrSubstNo(CustomerContractExistErr, Customer.TableCaption, Customer."No."));
     end;
 
@@ -799,22 +866,22 @@ codeunit 148155 "Contracts Test"
     var
         Customer: Record Customer;
         Item: Record Item;
-        ServiceObject: Record "Service Object";
-        ServiceObjectExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Service Object for this customer.', Locked = true;
+        ServiceObject: Record "Subscription Header";
+        ServiceObjectExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Subscription for this customer.', Locked = true;
     begin
-        // [SCENARIO] Customer cannot be deleted if exist in Service Object
+        // [SCENARIO] Customer cannot be deleted if exist in Subscription
         Initialize();
 
-        // [GIVEN] Create Customer and Service Object
+        // [GIVEN] Create Customer and Subscription
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, false);
         ServiceObject.Validate("End-User Customer No.", Customer."No.");
         ServiceObject.Modify(false);
 
         // [WHEN] Delete Customer
         asserterror Customer.Delete(true);
 
-        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Service Object
+        // [THEN] Error is displayed that it is not possible to delete Customer if exist in Subscription
         Assert.ExpectedError(StrSubstNo(ServiceObjectExistErr, Customer.TableCaption, Customer."No."));
     end;
 
@@ -822,20 +889,20 @@ codeunit 148155 "Contracts Test"
     procedure ExpectErrorWhenDeleteVendorIfExistInVendorContract()
     var
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         VendorContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this vendor.', Locked = true;
     begin
-        // [SCENARIO] Vendor cannot be deleted if exist in Vendor Contract
+        // [SCENARIO] Vendor cannot be deleted if exist in Vendor Subscription Contract
         Initialize();
 
-        // [GIVEN] Create Vendor and Vendor Contract
+        // [GIVEN] Create Vendor and Vendor Subscription Contract
         ContractTestLibrary.CreateVendor(Vendor);
         ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
 
         // [WHEN] Delete Vendor
         asserterror Vendor.Delete(true);
 
-        // [THEN] Error is displayed that it is not possible to delete Vendor if exist in Vendor Contract
+        // [THEN] Error is displayed that it is not possible to delete Vendor if exist in Vendor Subscription Contract
         Assert.ExpectedError(StrSubstNo(VendorContractExistErr, Vendor.TableCaption, Vendor."No."));
     end;
 
@@ -843,20 +910,20 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectNextBillingDateInCustomerContractToBeFromFirstServiceCOmmitment()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         NextBillingTo: Date;
     begin
-        // Create CustomerContract with Harmonized billing contract type
-        // Expect Harmonized billing fields in Cust. Contract to be filled after adding service commitments
+        // Create Customer Contract with Harmonized billing contract type
+        // Expect Harmonized billing fields in Cust. Contract to be filled after adding Subscription Lines
         Initialize();
 
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
         ContractType.HarmonizedBillingCustContracts := true;
         ContractType.Modify(false);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, true);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, true);
         CustomerContract.FindEarliestServiceCommitment(ServiceCommitment, 0);
         CustomerContract.TestField("Billing Base Date", ServiceCommitment."Next Billing Date");
         CustomerContract.TestField("Default Billing Rhythm", ServiceCommitment."Billing Rhythm");
@@ -871,28 +938,28 @@ codeunit 148155 "Contracts Test"
     procedure ExpectNoClosedCustomerContractLines()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        CustomerContractLine2: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        CustomerContractLine2: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         ContractTestLibrary.InsertCustomerContractCommentLine(CustomerContract, CustomerContractLine2);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
         if ServiceCommitment.FindSet() then
             repeat
-                ServiceCommitment."Service Start Date" := CalcDate('<1D>', Today);
-                ServiceCommitment."Service End Date" := CalcDate('<2D>', Today);
+                ServiceCommitment."Subscription Line Start Date" := CalcDate('<1D>', Today);
+                ServiceCommitment."Subscription Line End Date" := CalcDate('<2D>', Today);
                 ServiceCommitment.Modify(false);
             until ServiceCommitment.Next() = 0;
         CustomerContract.UpdateServicesDates();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", "Contract Line Type"::"Service Commitment");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
         CustomerContractLine.SetRange(Closed, false);
         Assert.RecordIsNotEmpty(CustomerContractLine);
     end;
@@ -900,7 +967,7 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure DeleteRelatedTranslationsWhenDeletingContractType()
     var
-        ContractType: Record "Contract Type";
+        ContractType: Record "Subscription Contract Type";
         FieldTranslation: Record "Field Translation";
         LanguageMgt: Codeunit Language;
     begin
@@ -923,6 +990,78 @@ codeunit 148155 "Contracts Test"
     end;
 
     [Test]
+    procedure ManuallyCreateContractLineForItem()
+    var
+        Customer: Record Customer;
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+    begin
+        // [SCENARIO] Manually create contract lines for Item and expect Subscription to be created
+
+        // [GIVEN] A Customer Subscription Contract has been created
+        ClearAll();
+        ContractTestLibrary.InitContractsApp();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        // [WHEN] A Customer Subscription Contract Line has been manually created and Item No. is entered.
+        ContractTestLibrary.InsertCustomerContractItemLine(CustomerContract, CustomerContractLine);
+
+        // [THEN] Subscription has been created with a single Subscription Line
+        ServiceObject.Get(CustomerContractLine."Subscription Header No.");
+        ServiceObject.TestField(Quantity, 1);
+        ServiceObject.TestField(ServiceObject.Type, ServiceObject.Type::Item);
+        ServiceObject.TestField("End-User Customer No.", CustomerContract."Sell-to Customer No.");
+        ServiceObject.TestField("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
+        ServiceObject.TestField("Created in Contract line", true);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        Assert.RecordCount(ServiceCommitment, 1);
+        ServiceCommitment.FindFirst();
+        ServiceCommitment.TestField("Invoicing via", ServiceCommitment."Invoicing via"::Contract);
+        ServiceCommitment.TestField("Created in Contract line", true);
+        ServiceCommitment.TestField("Subscription Contract No.", CustomerContractLine."Subscription Contract No.");
+        ServiceCommitment.TestField("Subscription Contract Line No.", CustomerContractLine."Line No.");
+    end;
+
+    [Test]
+    procedure ManuallyCreateContractLineForGLAccount()
+    var
+        Customer: Record Customer;
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+    begin
+        // [SCENARIO] Manually create contract lines for G/L Account and expect Subscription to be created
+
+        // [GIVEN] A Customer Subscription Contract has been created
+        ClearAll();
+        ContractTestLibrary.DeleteAllContractRecords();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
+
+        // [WHEN] A Customer Subscription Contract Line has been manually created and G/L Account No. is entered.
+        ContractTestLibrary.InsertCustomerContractGLAccountLine(CustomerContract, CustomerContractLine);
+
+        // [THEN] Subscription has been created with a single Subscription Line
+        ServiceObject.Get(CustomerContractLine."Subscription Header No.");
+        ServiceObject.TestField(Quantity, 1);
+        ServiceObject.TestField(ServiceObject.Type, ServiceObject.Type::"G/L Account");
+        ServiceObject.TestField("End-User Customer No.", CustomerContract."Sell-to Customer No.");
+        ServiceObject.TestField("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
+        ServiceObject.TestField("Created in Contract line", true);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        Assert.RecordCount(ServiceCommitment, 1);
+        ServiceCommitment.FindFirst();
+        ServiceCommitment.TestField("Invoicing via", ServiceCommitment."Invoicing via"::Contract);
+        ServiceCommitment.TestField("Created in Contract line", true);
+        ServiceCommitment.TestField("Subscription Contract No.", CustomerContractLine."Subscription Contract No.");
+        ServiceCommitment.TestField("Subscription Contract Line No.", CustomerContractLine."Line No.");
+    end;
+
+    [Test]
     procedure SalesDocShowsNoSubtotalForServCommItem()
     var
         Item: Record Item;
@@ -932,7 +1071,7 @@ codeunit 148155 "Contracts Test"
     begin
         Initialize();
 
-        // [GIVEN] Sales Document with Sales Line and Item with "Service Commitment Option" = "Service Commitment Item"
+        // [GIVEN] Sales Document with Sales Line and Item with "Subscription Option" = "Subscription Item"
         LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Quote, '');
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), true);
@@ -954,18 +1093,18 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ConfirmHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestChangeOfHarmonizedBillingFieldInContractType()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
     begin
-        // Create CustomerContract with Harmonized billing contract type
-        // Expect Harmonized billing fields in Cust. Contract to be filled after adding service commitments
+        // Create Customer Contract with Harmonized billing contract type
+        // Expect Harmonized billing fields in Cust. Contract to be filled after adding Subscription Lines
         Initialize();
 
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
         ContractType.HarmonizedBillingCustContracts := true;
         ContractType.Modify(false);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, true);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, true);
         CustomerContract.TestField("Billing Base Date");
         CustomerContract.TestField("Default Billing Rhythm");
         CustomerContract.TestField("Next Billing From");
@@ -985,18 +1124,19 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestCreateContractAnalysisEntries()
     var
-        ContractAnalysisEntry: Record "Contract Analysis Entry";
+        ContractAnalysisEntry: Record "Sub. Contr. Analysis Entry";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         // [SCENARIO] Try to create Contract Analysis Entry and test the values
         Initialize();
 
         // [GIVEN]
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false, true);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractAnalysisEntry.DeleteAll(false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false, true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
 
         // [WHEN]
         Report.Run(Report::"Create Contract Analysis");
@@ -1005,30 +1145,31 @@ codeunit 148155 "Contracts Test"
         Assert.RecordIsNotEmpty(ContractAnalysisEntry);
         if ContractAnalysisEntry.FindSet() then
             repeat
-                ServiceCommitment.Get(ContractAnalysisEntry."Service Commitment Entry No.");
-                ServiceCommitment.CalcFields("Item No.", "Service Object Description", "Quantity Decimal");
-                ContractAnalysisEntry.TestField("Service Object No.", ServiceCommitment."Service Object No.");
-                ContractAnalysisEntry.TestField("Service Object Item No.", ServiceCommitment."Item No.");
-                ContractAnalysisEntry.TestField("Service Object Description", ServiceCommitment."Service Object Description");
-                ContractAnalysisEntry.TestField("Service Commitment Entry No.", ServiceCommitment."Entry No.");
-                ContractAnalysisEntry.TestField("Package Code", ServiceCommitment."Package Code");
+                ServiceCommitment.Get(ContractAnalysisEntry."Subscription Line Entry No.");
+                ServiceCommitment.CalcFields("Source Type", "Source No.", "Subscription Description", Quantity);
+                ContractAnalysisEntry.TestField("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+                ContractAnalysisEntry.TestField("Sub. Header Source Type", ServiceCommitment."Source Type");
+                ContractAnalysisEntry.TestField("Sub. Header Source No.", ServiceCommitment."Source No.");
+                ContractAnalysisEntry.TestField("Subscription Description", ServiceCommitment."Subscription Description");
+                ContractAnalysisEntry.TestField("Subscription Line Entry No.", ServiceCommitment."Entry No.");
+                ContractAnalysisEntry.TestField("Subscription Package Code", ServiceCommitment."Subscription Package Code");
                 ContractAnalysisEntry.TestField(Template, ServiceCommitment.Template);
                 ContractAnalysisEntry.TestField(Description, ServiceCommitment.Description);
-                ContractAnalysisEntry.TestField("Service Start Date", ServiceCommitment."Service Start Date");
-                ContractAnalysisEntry.TestField("Service End Date", ServiceCommitment."Service End Date");
+                ContractAnalysisEntry.TestField("Subscription Line Start Date", ServiceCommitment."Subscription Line Start Date");
+                ContractAnalysisEntry.TestField("Subscription Line End Date", ServiceCommitment."Subscription Line End Date");
                 ContractAnalysisEntry.TestField("Next Billing Date", ServiceCommitment."Next Billing Date");
                 ContractAnalysisEntry.TestField("Calculation Base Amount", ServiceCommitment."Calculation Base Amount");
                 ContractAnalysisEntry.TestField("Calculation Base %", ServiceCommitment."Calculation Base %");
                 ContractAnalysisEntry.TestField(Price, ServiceCommitment.Price);
                 ContractAnalysisEntry.TestField("Discount %", ServiceCommitment."Discount %");
                 ContractAnalysisEntry.TestField("Discount Amount", ServiceCommitment."Discount Amount");
-                ContractAnalysisEntry.TestField("Service Amount", ServiceCommitment."Service Amount");
+                ContractAnalysisEntry.TestField(Amount, ServiceCommitment.Amount);
                 ContractAnalysisEntry.TestField("Analysis Date", Today());
                 ContractAnalysisEntry.TestField("Billing Base Period", ServiceCommitment."Billing Base Period");
                 ContractAnalysisEntry.TestField("Invoicing Item No.", ServiceCommitment."Invoicing Item No.");
                 ContractAnalysisEntry.TestField(Partner, ServiceCommitment.Partner);
-                ContractAnalysisEntry.TestField("Contract No.", ServiceCommitment."Contract No.");
-                ContractAnalysisEntry.TestField("Contract Line No.", ServiceCommitment."Contract Line No.");
+                ContractAnalysisEntry.TestField("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+                ContractAnalysisEntry.TestField("Subscription Contract Line No.", ServiceCommitment."Subscription Contract Line No.");
                 ContractAnalysisEntry.TestField("Notice Period", ServiceCommitment."Notice Period");
                 ContractAnalysisEntry.TestField("Initial Term", ServiceCommitment."Initial Term");
                 ContractAnalysisEntry.TestField("Extension Term", ServiceCommitment."Extension Term");
@@ -1037,15 +1178,17 @@ codeunit 148155 "Contracts Test"
                 ContractAnalysisEntry.TestField("Term Until", ServiceCommitment."Term Until");
                 ContractAnalysisEntry.TestField("Price (LCY)", ServiceCommitment."Price (LCY)");
                 ContractAnalysisEntry.TestField("Discount Amount (LCY)", ServiceCommitment."Discount Amount (LCY)");
-                ContractAnalysisEntry.TestField("Service Amount (LCY)", ServiceCommitment."Service Amount (LCY)");
+                ContractAnalysisEntry.TestField("Amount (LCY)", ServiceCommitment."Amount (LCY)");
                 ContractAnalysisEntry.TestField("Currency Code", ServiceCommitment."Currency Code");
                 ContractAnalysisEntry.TestField("Currency Factor", ServiceCommitment."Currency Factor");
                 ContractAnalysisEntry.TestField("Currency Factor Date", ServiceCommitment."Currency Factor Date");
                 ContractAnalysisEntry.TestField("Calculation Base Amount (LCY)", ServiceCommitment."Calculation Base Amount (LCY)");
                 ContractAnalysisEntry.TestField(Discount, ServiceCommitment.Discount);
-                ContractAnalysisEntry.TestField("Quantity Decimal", ServiceCommitment."Quantity Decimal");
+                ContractAnalysisEntry.TestField(Quantity, ServiceCommitment.Quantity);
                 ContractAnalysisEntry.TestField("Renewal Term", ServiceCommitment."Renewal Term");
                 ContractAnalysisEntry.TestField("Dimension Set ID", ServiceCommitment."Dimension Set ID");
+                ContractAnalysisEntry.TestField("Unit Cost", ServiceCommitment."Unit Cost");
+                ContractAnalysisEntry.TestField("Unit Cost (LCY)", ServiceCommitment."Unit Cost (LCY)");
             until ContractAnalysisEntry.Next() = 0;
     end;
 
@@ -1056,21 +1199,21 @@ codeunit 148155 "Contracts Test"
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
-        // Create customer contract with two service commitments with different Service Start Date and Billing Rhythm
-        // Expect the same Next Billing Date for both service commitments after Billing proposal
+        // Create Customer Subscription Contract with two Subscription Lines with different Subscription Line Start Date and Billing Rhythm
+        // Expect the same Next Billing Date for both Subscription Lines after Billing proposal
         // Expect that Next Billing to and Billing from in Contract will be recalculated
         Initialize();
 
         ContractTestLibrary.CreateCustomer(Customer);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         CreateAndAssignHarmonizationCustomerContractType(CustomerContract);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, true);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, true);
         ServiceCommitment.FindLast();
-        ServiceCommitment.Validate("Service Start Date", CalcDate('<-1M>', ServiceCommitment."Service Start Date"));
+        ServiceCommitment.Validate("Subscription Line Start Date", CalcDate('<-1M>', ServiceCommitment."Subscription Line Start Date"));
         Evaluate(ServiceCommitment."Billing Rhythm", '2M');
         ServiceCommitment.Validate("Billing Rhythm");
         ServiceCommitment.Modify(false);
@@ -1083,21 +1226,22 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestDailyPricesInMonthlyRecurringRevenueInContractAnalysis()
     var
-        ContractAnalysisEntry: Record "Contract Analysis Entry";
+        ContractAnalysisEntry: Record "Sub. Contr. Analysis Entry";
         Currency: Record Currency;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         AmountArray: array[4] of Decimal;
-        ExpectedResultArray: array[4] of Decimal;
+        ExpectedResultAmountArray, ExpectedUnitCostLCYArray : array[4] of Decimal;
         RoundedExpectedResult: Decimal;
         RoundedResult: Decimal;
+        UnitCostLCY: Decimal;
         i: Integer;
         BillingBasePeriodArray: array[4] of Text;
     begin
         // [SCENARIO] Try to create Contract Analysis Entry and test the values
-        // Setup multiple customer service commitments with different options
-        // To make the calculation clearer set the service amount to 1
+        // Setup multiple customer Subscription Lines with different options
+        // To make the calculation clearer set the Amount to 1
         // Expected result will be Daily price * number of days in current month regardless of Billing Base Period
         Initialize();
         ContractAnalysisEntry.DeleteAll(false);
@@ -1108,40 +1252,47 @@ codeunit 148155 "Contracts Test"
         BillingBasePeriodArray[2] := '<2D>';
         BillingBasePeriodArray[3] := '<1W>';
         BillingBasePeriodArray[4] := '<2W>';
-        AmountArray[1] := 1;
-        AmountArray[2] := 1;
-        AmountArray[3] := 1;
-        AmountArray[4] := 1;
-        ExpectedResultArray[1] := 1;
-        ExpectedResultArray[2] := 1 / 2;
-        ExpectedResultArray[3] := 1 / 7; // 1W
-        ExpectedResultArray[4] := 1 / 14; // 2W
+        for i := 1 to 4 do
+            AmountArray[i] := 280;
 
-        SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray, AmountArray, 4, ServiceObject);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '');
+        UnitCostLCY := 140;
+
+        ExpectedResultAmountArray[1] := AmountArray[1];
+        ExpectedResultAmountArray[2] := AmountArray[2] / 2;
+        ExpectedResultAmountArray[3] := AmountArray[3] / 7; //1W
+        ExpectedResultAmountArray[4] := AmountArray[4] / 14; //2W
+
+        SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray, AmountArray, UnitCostLCY, 4, ServiceObject);
+
+        ExpectedUnitCostLCYArray[1] := (UnitCostLCY * ServiceObject.Quantity) / 1;
+        ExpectedUnitCostLCYArray[2] := (UnitCostLCY * ServiceObject.Quantity) / 2;
+        ExpectedUnitCostLCYArray[3] := (UnitCostLCY * ServiceObject.Quantity) / 7;
+        ExpectedUnitCostLCYArray[4] := (UnitCostLCY * ServiceObject.Quantity) / 14;
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '');
 
         // [WHEN]
         Report.Run(Report::"Create Contract Analysis");
 
-        // [THEN]
+        //[THEN]: Test Customer Subscription Contract Analysis Entry for Expected values
         Currency.InitRoundingPrecision();
-        ContractAnalysisEntry.SetRange("Service Object No.", ServiceObject."No.");
+        ContractAnalysisEntry.SetRange("Subscription Header No.", ServiceObject."No.");
         Assert.RecordIsNotEmpty(ContractAnalysisEntry);
         ContractAnalysisEntry.FindSet();
         for i := 1 to 4 do begin
             RoundedResult := Round(ContractAnalysisEntry."Monthly Recurr. Revenue (LCY)", Currency."Amount Rounding Precision");
-            RoundedExpectedResult := Round(ExpectedResultArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
+            RoundedExpectedResult := Round(ExpectedResultAmountArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
             Assert.AreEqual(RoundedExpectedResult, RoundedResult, 'Monthly Recurr. Revenue (LCY) was not calculated correctly');
 
             RoundedResult := Round(ContractAnalysisEntry."Monthly Recurring Cost (LCY)", Currency."Amount Rounding Precision");
-            RoundedExpectedResult := Round(ExpectedResultArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
+            RoundedExpectedResult := Round(ExpectedUnitCostLCYArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
             Assert.AreEqual(RoundedExpectedResult, RoundedResult, 'Monthly Recurring Cost (LCY) was not calculated correctly');
             ContractAnalysisEntry.Next();
         end;
-        // Test Vendor Service Commitment in Contract Analysis Entry
+        //[THEN]: Test Vendor Subscription Contract Analysis Entry for Expected values
         ContractAnalysisEntry.TestField("Monthly Recurr. Revenue (LCY)", 0);
-        ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedResultArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM>', ContractAnalysisEntry."Analysis Date")));
+        ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedResultAmountArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")));
     end;
 
     [Test]
@@ -1149,23 +1300,23 @@ codeunit 148155 "Contracts Test"
     procedure TestDeleteServiceCommitmentLinkedToContractLineNotClosed()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
-        // Test: Service Commitment cannot be deleted if an open contract line exists
+        // Test: Subscription Line cannot be deleted if an open contract line exists
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
         ServiceCommitment.FindFirst();
 
-        CustomerContractLine.Get(ServiceCommitment."Contract No.", ServiceCommitment."Contract Line No.");
+        CustomerContractLine.Get(ServiceCommitment."Subscription Contract No.", ServiceCommitment."Subscription Contract Line No.");
         CustomerContractLine.TestField(Closed, false);
         asserterror ServiceCommitment.Delete(true);
     end;
@@ -1175,46 +1326,46 @@ codeunit 148155 "Contracts Test"
     procedure TestDeleteServiceCommitmentLinkedToContractLineIsClosed()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
-        // Test: A closed Contract Line is deleted when deleting the Service Commitment
+        // Test: A closed Contract Line is deleted when deleting the Subscription Line
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
         ServiceCommitment.FindFirst();
 
-        CustomerContractLine.Get(ServiceCommitment."Contract No.", ServiceCommitment."Contract Line No.");
+        CustomerContractLine.Get(ServiceCommitment."Subscription Contract No.", ServiceCommitment."Subscription Contract Line No.");
         CustomerContractLine.TestField(Closed, false);
         CustomerContractLine.Closed := true;
         CustomerContractLine.Modify(false);
         ServiceCommitment.Delete(true);
 
-        asserterror CustomerContractLine.Get(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        asserterror CustomerContractLine.Get(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestEqualServiceStartDateAndNextBillingDate()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         UpdateServiceStartDateFromCustomerContractSubpage(CustomerContract."No.", CustomerContractLine, ServiceCommitment);
         CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        ServiceCommitment.TestField("Next Billing Date", ServiceCommitment."Service Start Date");
+        ServiceCommitment.TestField("Next Billing Date", ServiceCommitment."Subscription Line Start Date");
     end;
 
     [Test]
@@ -1222,12 +1373,12 @@ codeunit 148155 "Contracts Test"
     procedure TestMergeCustomerContractLines()
     var
         Currency: Record Currency;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        NewServiceObject: Record "Service Object";
-        ServiceObject: Record "Service Object";
-        ServiceObject1: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        NewServiceObject: Record "Subscription Header";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject1: Record "Subscription Header";
         ExpectedServiceAmount: Decimal;
     begin
         Initialize();
@@ -1236,53 +1387,54 @@ codeunit 148155 "Contracts Test"
         SetupNewContract(false, ServiceObject, CustomerContract);
         CreateTwoEqualServiceObjectsWithServiceCommitments(ServiceObject, ServiceObject1);
         ExpectedServiceAmount := GetTotalServiceAmountFromServiceCommitments(Currency, ServiceObject."No.", ServiceObject1);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject1, false);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject1, false);
 
         CustomerContractLine.Reset();
         CustomerContractLine.MergeContractLines(CustomerContractLine);
         CustomerContractLine.FindLast();
-        TestNewServiceObject(ServiceObject, ServiceObject1, NewServiceObject, CustomerContractLine."Service Object No.");
-        ServiceCommitment.SetRange("Service Object No.", NewServiceObject."No.");
+        TestNewServiceObject(ServiceObject, ServiceObject1, NewServiceObject, CustomerContractLine."Subscription Header No.");
+        ServiceCommitment.SetRange("Subscription Header No.", NewServiceObject."No.");
         ServiceCommitment.FindFirst();
-        ServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        ServiceCommitment.TestField(Amount, ExpectedServiceAmount);
         Assert.RecordCount(ServiceCommitment, 1);
 
-        // Expect two closed Customer Contract Lines
+        // Expect two closed Customer Subscription Contract Lines
         CustomerContractLine.Reset();
         CustomerContractLine.SetRange(Closed, true);
         Assert.RecordCount(CustomerContractLine, 2);
 
-        // Expect one open Customer Contract Line created from New service object
+        // Expect one open Customer Subscription Contract Line created from New Subscription
         CustomerContractLine.Reset();
         CustomerContractLine.SetRange(Closed, false);
         Assert.RecordCount(CustomerContractLine, 1);
         CustomerContractLine.FindFirst();
-        CustomerContractLine.TestField("Service Object No.", NewServiceObject."No.");
-        CustomerContractLine.TestField("Service Commitment Entry No.");
+        CustomerContractLine.TestField("Subscription Header No.", NewServiceObject."No.");
+        CustomerContractLine.TestField("Subscription Line Entry No.");
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestMonthlyRecurringRevenueInContractAnalysis()
     var
-        ContractAnalysisEntry: Record "Contract Analysis Entry";
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
-        AmountArray: array[7] of Decimal;
+        ContractAnalysisEntry: Record "Sub. Contr. Analysis Entry";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
+        AmountArray, ExpectedUnitCostLCYArray : array[7] of Decimal;
+        UnitCostLCY: Decimal;
         i: Integer;
         BillingBasePeriodArray: array[7] of Text;
     begin
         // [SCENARIO] Try to create Contract Analysis Entry and test the values
-        // Setup multiple customer service commitments with different options
-        // 1. Service Amount = 1200 Billing base period = 12M; MRR = 100
-        // 2. Service Amount = 200 Billing base period = 2M; MRR = 100
-        // 3. Service Amount = 100 Billing base period = 1M; MRR = 100
-        // 4. Service Amount = 1200 Billing base period = 1Y; MRR = 100
-        // 5. Service Amount = 2400 Billing base period = 2Y; MRR = 100
-        // 6. Service Amount = 300 Billing base period = 1Q; MRR = 100
-        // 7. Service Amount = 600 Billing base period = 2Q; MRR = 100
-        // Add Vendor Service Commitment with Billing base period 2Q and Service Amount = 600 Expected for Customer Service Commitment MRC = 100
+        // Setup multiple customer Subscription Lines with different options
+        //1. Amount = 1200 Billing base period = 12M; MRR = 100, UnitCostLCY = 140
+        //2. Amount = 200 Billing base period = 2M; MRR = 100, UnitCostLCY = 140
+        //3. Amount = 100 Billing base period = 1M; MRR = 100, UnitCostLCY = 140
+        //4. Amount = 1200 Billing base period = 1Y; MRR = 100, UnitCostLCY = 140
+        //5. Amount = 2400 Billing base period = 2Y; MRR = 100, UnitCostLCY = 140
+        //6. Amount = 300 Billing base period = 1Q; MRR = 100, UnitCostLCY = 140
+        //7. Amount = 600 Billing base period = 2Q; MRR = 100, UnitCostLCY = 140
+        // Add Vendor Subscription Line with Billing base period 2Q and Amount = 600 Expected for Customer Subscription Line MRC = 100
         Initialize();
         ContractAnalysisEntry.DeleteAll(false);
 
@@ -1303,22 +1455,34 @@ codeunit 148155 "Contracts Test"
         AmountArray[6] := 300;
         AmountArray[7] := 600;
 
-        SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray, AmountArray, 7, ServiceObject);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '');
+        UnitCostLCY := 140;
+
+        SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray, AmountArray, UnitCostLCY, 7, ServiceObject);
+
+        ExpectedUnitCostLCYArray[1] := (UnitCostLCY * ServiceObject.Quantity) / 12;
+        ExpectedUnitCostLCYArray[2] := (UnitCostLCY * ServiceObject.Quantity) / 2;
+        ExpectedUnitCostLCYArray[3] := (UnitCostLCY * ServiceObject.Quantity) / 1;
+        ExpectedUnitCostLCYArray[4] := (UnitCostLCY * ServiceObject.Quantity) / 12;
+        ExpectedUnitCostLCYArray[5] := (UnitCostLCY * ServiceObject.Quantity) / 24;
+        ExpectedUnitCostLCYArray[6] := (UnitCostLCY * ServiceObject.Quantity) / 3;
+        ExpectedUnitCostLCYArray[7] := (UnitCostLCY * ServiceObject.Quantity) / 6;
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '');
 
         // [WHEN]
         Report.Run(Report::"Create Contract Analysis");
 
-        // [THEN]
-        ContractAnalysisEntry.SetRange("Service Object No.", ServiceObject."No.");
+        //[THEN]: Test Customer Subscription Contract Analysis Entry for Expected values
+        ContractAnalysisEntry.SetRange("Subscription Header No.", ServiceObject."No.");
         Assert.RecordIsNotEmpty(ContractAnalysisEntry);
         ContractAnalysisEntry.FindFirst();
         for i := 1 to ArrayLen(AmountArray) do begin
             ContractAnalysisEntry.TestField("Monthly Recurr. Revenue (LCY)", 100);
-            ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", 100);
+            ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedUnitCostLCYArray[i]);
             ContractAnalysisEntry.Next();
         end;
+        //[THEN]: Test Vendor Subscription Contract Analysis Entry for Expected values
         ContractAnalysisEntry.TestField("Monthly Recurr. Revenue (LCY)", 0);
         ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", 100);
     end;
@@ -1330,14 +1494,14 @@ codeunit 148155 "Contracts Test"
         Currency: Record Currency;
         CurrExchRate: Record "Currency Exchange Rate";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
         CustomerContractPage: TestPage "Customer Contract";
     begin
         Initialize();
         Currency.InitRoundingPrecision();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
         CustomerContractPage.OpenEdit();
@@ -1361,14 +1525,14 @@ codeunit 148155 "Contracts Test"
         Currency: Record Currency;
         CurrExchRate: Record "Currency Exchange Rate";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
         CustomerContractPage: TestPage "Customer Contract";
     begin
         Initialize();
         Currency.InitRoundingPrecision();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
 
         CustomerContractPage.OpenEdit();
@@ -1385,10 +1549,10 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure TestTransferOfDefaultWithoutContractDeferralsFromContractType()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
-        // Create CustomerContract with contract type
+        // Create Customer Contract with contract type
         // Create new Contract Type with field "Def. Without Contr. Deferrals" = true
         // Check that the field value has been transferred
         Initialize();
@@ -1413,51 +1577,51 @@ codeunit 148155 "Contracts Test"
     procedure UpdatingServiceDatesWillNotCloseCustomerContractLinesWhenLineIsNotInvoicedCompletely()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        CustomerContractLine2: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        CustomerContractLine2: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
-        // [SCENARIO] Test if the customer contract line will be closed in case of different constellations
+        // [SCENARIO] Test if the Customer Subscription Contract line will be closed in case of different constellations
         Initialize();
 
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, false);
 
-        // [GIVEN] Create a customer contract with service commitments
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        // [GIVEN] Create a Customer Subscription Contract with Subscription Lines
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
         ContractTestLibrary.InsertCustomerContractCommentLine(CustomerContract, CustomerContractLine2);
 
-        // [GIVEN] Make sure that Service End Date is filled, to fullfil the requirement for close of the customer contract line
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
-        ServiceCommitment.SetRange("Service Object Customer No.", Customer."No.");
+        // [GIVEN] Make sure that Subscription Line End Date is filled, to fullfil the requirement for close of the Customer Subscription Contract line
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Sub. Header Customer No.", Customer."No.");
         if ServiceCommitment.FindSet() then
             repeat
-                // Try to avoid service start and end date to be in the future
-                ServiceCommitment."Service End Date" := Today() - 1;
-                ServiceCommitment."Service Start Date" :=
-                    LibraryUtility.GenerateRandomDate(CalcDate('-' + Format(ServiceCommitment."Billing Rhythm"), ServiceCommitment."Service End Date"), ServiceCommitment."Service End Date");
-                ServiceCommitment."Next Billing Date" := ServiceCommitment."Service Start Date";
+                // Try to avoid Subscription Line start and end date to be in the future
+                ServiceCommitment."Subscription Line End Date" := Today() - 1;
+                ServiceCommitment."Subscription Line Start Date" :=
+                    LibraryUtility.GenerateRandomDate(CalcDate('-' + Format(ServiceCommitment."Billing Rhythm"), ServiceCommitment."Subscription Line End Date"), ServiceCommitment."Subscription Line End Date");
+                ServiceCommitment."Next Billing Date" := ServiceCommitment."Subscription Line Start Date";
                 ServiceCommitment.Modify(false);
             until ServiceCommitment.Next() = 0;
 
-        // [WHEN] Try to update service dates
+        // [WHEN] Try to update Subscription Line dates
         ContractTestLibrary.CustomerContractUpdateServicesDates(CustomerContract);
 
-        // [THEN] Expect that customer contract line is not closed and not invoiced
+        // [THEN] Expect that Customer Subscription Contract line is not closed and not invoiced
         VerifyServiceCommitmentClosureAndInvoicing(ServiceCommitment, false, false);
 
-        // [WHEN] Invoice the contract and check closing of service commitments
-        CreateAndPostBillingProposal(ServiceCommitment."Service Start Date", ServiceObject."No."); // CreateCustomerBillingDocsContractPageHandler
+        // [WHEN] Invoice the contract and check closing of Subscription Lines
+        CreateAndPostBillingProposal(ServiceCommitment."Subscription Line Start Date", ServiceObject."No."); // CreateCustomerBillingDocsContractPageHandler
         ContractTestLibrary.CustomerContractUpdateServicesDates(CustomerContract);
         VerifyServiceCommitmentClosureAndInvoicing(ServiceCommitment, true, true);
 
-        // [THEN] Expect that all customer contract lines are closed and invoiced
+        // [THEN] Expect that all Customer Subscription Contract lines are closed and invoiced
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Service Object No.", ServiceObject."No.");
-        CustomerContractLine.SetRange("Contract Line Type", "Contract Line Type"::"Service Commitment");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Header No.", ServiceObject."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
         CustomerContractLine.SetRange(Closed, false);
         Assert.RecordIsEmpty(CustomerContractLine);
     end;
@@ -1465,7 +1629,7 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure UT_CheckContractInitValues()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
         ContractTestLibrary.CreateCustomerContract(CustomerContract, '');
@@ -1477,7 +1641,7 @@ codeunit 148155 "Contracts Test"
     procedure UT_CheckNewContractFromCustomer()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
         ContractTestLibrary.CreateCustomer(Customer);
@@ -1491,7 +1655,7 @@ codeunit 148155 "Contracts Test"
     var
         Customer: Record Customer;
         Customer2: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
 
@@ -1515,8 +1679,8 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure UT_DeleteAssignedContractTypeError()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
@@ -1526,8 +1690,8 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure UT_ExpectErrorIfBillingBaseDateIsEmptyInCustomerContractHeader()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
 
@@ -1542,9 +1706,9 @@ codeunit 148155 "Contracts Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure UT_ExpectErrorOnMergeOneCustomerContractLine()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
         SetupNewContract(false, ServiceObject, CustomerContract);
@@ -1556,13 +1720,13 @@ codeunit 148155 "Contracts Test"
     procedure UT_ExpectErrorOnModifyServiceStartDateWhenBillingLineExist()
     var
         BillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         asserterror UpdateServiceStartDateFromCustomerContractSubpage(CustomerContract."No.", CustomerContractLine, ServiceCommitment);
     end;
@@ -1607,8 +1771,8 @@ codeunit 148155 "Contracts Test"
     [Test]
     procedure UT_RemoveAndDeleteAssignedContractType()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         Initialize();
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
@@ -1638,6 +1802,7 @@ codeunit 148155 "Contracts Test"
         LibraryERMCountryData.UpdateSalesReceivablesSetup();
         LibraryERMCountryData.UpdateGeneralLedgerSetup();
         LibraryERMCountryData.UpdateJournalTemplMandatory(false);
+        ContractTestLibrary.InitSourceCodeSetup();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contracts Test");
 
         IsInitialized := true;
@@ -1649,9 +1814,9 @@ codeunit 148155 "Contracts Test"
         MonthEndDate := CalcDate(DateFilterTo, ReferenceDate);
     end;
 
-    local procedure CreateAndAssignHarmonizationCustomerContractType(var CustomerContract: Record "Customer Contract")
+    local procedure CreateAndAssignHarmonizationCustomerContractType(var CustomerContract: Record "Customer Subscription Contract")
     var
-        ContractType: Record "Contract Type";
+        ContractType: Record "Subscription Contract Type";
     begin
         ContractTestLibrary.CreateContractType(ContractType);
         ContractType.HarmonizedBillingCustContracts := true;
@@ -1669,7 +1834,7 @@ codeunit 148155 "Contracts Test"
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, BillingDate);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
-        BillingLine.SetRange("Service Object No.", ServiceObjectNo);
+        BillingLine.SetRange("Subscription Header No.", ServiceObjectNo);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
 
         // Post Sales Document
@@ -1679,19 +1844,7 @@ codeunit 148155 "Contracts Test"
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
     end;
 
-    local procedure CreateContractCommentLine(CustomerContractNo: Code[20]; var CustomerContractLine: Record "Customer Contract Line")
-    var
-        RecRef: RecordRef;
-    begin
-        RecRef.GetTable(CustomerContractLine);
-        CustomerContractLine.Init();
-        CustomerContractLine."Contract No." := CustomerContractNo;
-        CustomerContractLine."Line No." := LibraryUtility.GetNewLineNo(RecRef, CustomerContractLine.FieldNo("Line No."));
-        CustomerContractLine."Contract Line Type" := CustomerContractLine."Contract Line Type"::Comment;
-        CustomerContractLine.Insert(true);
-    end;
-
-    local procedure CreateContractWithDetailOverviewAndSalesInvoice(i: Integer; var SalesHeader: Record "Sales Header"; var CustomerContract: Record "Customer Contract")
+    local procedure CreateContractWithDetailOverviewAndSalesInvoice(i: Integer; var SalesHeader: Record "Sales Header"; var CustomerContract: Record "Customer Subscription Contract")
     var
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
@@ -1699,7 +1852,7 @@ codeunit 148155 "Contracts Test"
     begin
         CreateCustomerContractWithDetailOverview(ContractsFilter, Enum::"Contract Detail Overview".FromInteger(i), '', CustomerContract);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
@@ -1707,45 +1860,45 @@ codeunit 148155 "Contracts Test"
         SalesHeader.Get(SalesHeader."Document Type"::Invoice, BillingLine."Document No.");
     end;
 
-    local procedure CreateCustomerContractSetup(var Customer: Record Customer; var ServiceObject: Record "Service Object"; var CustomerContract: Record "Customer Contract")
+    local procedure CreateCustomerContractSetup(var Customer: Record Customer; var ServiceObject: Record "Subscription Header"; var CustomerContract: Record "Customer Subscription Contract")
     var
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        TempServiceCommitment: Record "Subscription Line" temporary;
     begin
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ContractTestLibrary.FillTempServiceCommitment(TempServiceCommitment, ServiceObject, CustomerContract);
         CustomerContract.CreateCustomerContractLinesFromServiceCommitments(TempServiceCommitment);
     end;
 
-    local procedure CreateCustomerContractWithDetailOverview(var ContractsFilter: Text; DetailOverview: Enum "Contract Detail Overview"; CustomerNo: Code[20]; var CustomerContract: Record "Customer Contract")
+    local procedure CreateCustomerContractWithDetailOverview(var ContractsFilter: Text; DetailOverview: Enum "Contract Detail Overview"; CustomerNo: Code[20]; var CustomerContract: Record "Customer Subscription Contract")
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         TextMgmt: Codeunit "Text Management";
     begin
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, CustomerNo, true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, CustomerNo, true);
         CustomerContract."Detail Overview" := DetailOverview;
         CustomerContract.Modify(false);
         TextMgmt.AppendText(ContractsFilter, CustomerContract."No.", '|');
     end;
 
-    local procedure CreateTwoEqualServiceObjectsWithServiceCommitments(var ServiceObject: Record "Service Object"; var ServiceObject1: Record "Service Object")
+    local procedure CreateTwoEqualServiceObjectsWithServiceCommitments(var ServiceObject: Record "Subscription Header"; var ServiceObject1: Record "Subscription Header")
     var
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitment2: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitment2: Record "Subscription Line";
     begin
         ServiceObject1 := ServiceObject;
         ServiceObject1."No." := IncStr(ServiceObject."No.");
         ServiceObject1.Insert(false);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         if ServiceCommitment.FindSet() then begin
-            ServiceCommitment."Service Start Date" := CalcDate('<-2M>', Today);
-            ServiceCommitment."Next Billing Date" := ServiceCommitment."Service Start Date";
-            ServiceCommitment.Validate("Service Start Date");
+            ServiceCommitment."Subscription Line Start Date" := CalcDate('<-2M>', Today);
+            ServiceCommitment."Next Billing Date" := ServiceCommitment."Subscription Line Start Date";
+            ServiceCommitment.Validate("Subscription Line Start Date");
             ServiceCommitment.Modify(false);
             repeat
                 ServiceCommitment2 := ServiceCommitment;
                 ServiceCommitment2."Entry No." := 0;
-                ServiceCommitment2."Contract No." := '';
-                ServiceCommitment2."Service Object No." := ServiceObject1."No.";
+                ServiceCommitment2."Subscription Contract No." := '';
+                ServiceCommitment2."Subscription Header No." := ServiceObject1."No.";
                 ServiceCommitment2.Insert(false);
             until ServiceCommitment.Next() = 0;
         end;
@@ -1770,33 +1923,36 @@ codeunit 148155 "Contracts Test"
         exit(DocumentsCount);
     end;
 
-    local procedure GetTotalServiceAmountFromServiceCommitments(Currency: Record Currency; ServiceObjectNo: Code[20]; ServiceObject1: Record "Service Object"): Decimal
+    local procedure GetTotalServiceAmountFromServiceCommitments(Currency: Record Currency; ServiceObjectNo: Code[20]; ServiceObject1: Record "Subscription Header"): Decimal
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObjectNo, ServiceObject1."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo, ServiceObject1."No.");
         ServiceCommitment.FindFirst();
-        exit(Round(ServiceCommitment.Price * ServiceObject1."Quantity Decimal" * 2, Currency."Amount Rounding Precision"));
+        exit(Round(ServiceCommitment.Price * ServiceObject1.Quantity * 2, Currency."Amount Rounding Precision"));
     end;
 
-    local procedure SetupNewContract(CreateAdditionalLine: Boolean; var ServiceObject: Record "Service Object"; var CustomerContract: Record "Customer Contract")
+    local procedure SetupNewContract(CreateAdditionalLine: Boolean; var ServiceObject: Record "Subscription Header"; var CustomerContract: Record "Customer Subscription Contract")
     begin
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', CreateAdditionalLine);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', CreateAdditionalLine);
     end;
 
-    local procedure SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray: array[4] of Text; AmountArray: array[4] of Decimal; NoOfRecords: Integer; var ServiceObject: Record "Service Object")
+    local procedure SetupServiceObjectWithCustomerServiceCommitments(BillingBasePeriodArray: array[7] of Text; AmountArray: array[7] of Decimal; ItemUnitCost: Decimal; NoOfRecords: Integer; var ServiceObject: Record "Subscription Header")
     var
         Customer: Record Customer;
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
         i: Integer;
     begin
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, false);
+        Item."Unit Cost" := ItemUnitCost;
+        Item.Modify(false);
+
         ServiceObject.Validate("End-User Customer Name", Customer.Name);
         ServiceObject.Modify(false);
 
@@ -1811,35 +1967,36 @@ codeunit 148155 "Contracts Test"
 
         ContractTestLibrary.CreateServiceCommitmentPackageLine(ServiceCommitmentPackage.Code, ServiceCommitmentTemplate.Code, ServiceCommPackageLine, BillingBasePeriodArray[i], BillingBasePeriodArray[i], Enum::"Service Partner"::Vendor);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Source No."));
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         for i := 1 to NoOfRecords do begin
             ServiceCommitment.Validate("Calculation Base %", 100);
             ServiceCommitment.Validate("Calculation Base Amount", AmountArray[i]);
-            ServiceCommitment.Validate("Service Amount", AmountArray[i]);
+            ServiceCommitment.Validate(Amount, AmountArray[i]);
+            ServiceCommitment.CalculateUnitCost();
             ServiceCommitment.Modify(false);
             ServiceCommitment.Next();
         end;
-        // +1 to make sure that vendor service commitment is  updated as well with the value of the last cust. service commitment
+        // +1 to make sure that vendor Subscription Line is  updated as well with the value of the last cust. Subscription Line
         ServiceCommitment.Validate("Calculation Base %", 100);
         ServiceCommitment.Validate("Calculation Base Amount", AmountArray[i]);
-        ServiceCommitment.Validate("Service Amount", AmountArray[i]);
+        ServiceCommitment.Validate(Amount, AmountArray[i]);
         ServiceCommitment.Modify(false);
     end;
 
-    local procedure SetupServiceObjectWithServiceCommitment(var Customer: Record Customer; var ServiceObject: Record "Service Object"; SNSpecificTracking: Boolean; AddVendorServiceCommitment: Boolean)
+    local procedure SetupServiceObjectForNewItemWithServiceCommitment(var Customer: Record Customer; var ServiceObject: Record "Subscription Header"; SNSpecificTracking: Boolean; AddVendorServiceCommitment: Boolean)
     var
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentTemplate2: Record "Service Commitment Template";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceCommitmentTemplate2: Record "Sub. Package Line Template";
     begin
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, SNSpecificTracking);
         ServiceObject.Validate("End-User Customer Name", Customer.Name);
         ServiceObject.Modify(false);
 
@@ -1882,16 +2039,27 @@ codeunit 148155 "Contracts Test"
         end;
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Source No."));
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
     end;
 
-    local procedure SetupServiceObjectWithServiceCommitment(var Customer: Record Customer; var ServiceObject: Record "Service Object"; SNSpecificTracking: Boolean)
+    local procedure SetupServiceObjectForNewItemWithServiceCommitment(var Customer: Record Customer; var ServiceObject: Record "Subscription Header"; SNSpecificTracking: Boolean)
     begin
-        SetupServiceObjectWithServiceCommitment(Customer, ServiceObject, SNSpecificTracking, false);
+        SetupServiceObjectForNewItemWithServiceCommitment(Customer, ServiceObject, SNSpecificTracking, false);
     end;
 
-    local procedure TestHarmonizationForCustomerContract(var CustomerContract: Record "Customer Contract"; var BillingLine: Record "Billing Line"; var ServiceCommitment: Record "Service Commitment")
+    local procedure SetupServiceObjectForNewGLAccountWithServiceCommitment(var Customer: Record Customer; var ServiceObject: Record "Subscription Header")
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        ClearAll();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateServiceObjectForGLAccountWithServiceCommitments(ServiceObject, GLAccount, 1, 0, '<1Y>', '<1M>');
+        ServiceObject.Validate("End-User Customer Name", Customer.Name);
+        ServiceObject.Modify(false);
+    end;
+
+    local procedure TestHarmonizationForCustomerContract(var CustomerContract: Record "Customer Subscription Contract"; var BillingLine: Record "Billing Line"; var ServiceCommitment: Record "Subscription Line")
     begin
         BillingLine.FindLast();
         ServiceCommitment.FindSet();
@@ -1907,42 +2075,46 @@ codeunit 148155 "Contracts Test"
 
     local procedure TestCustomerContractLinesServiceObjectDescription(CustomerContractNo: Code[20]; ServiceObjectDescription: Text[100])
     var
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
-        CustomerContractLine.SetRange("Contract No.", CustomerContractNo);
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContractNo);
         CustomerContractLine.FindSet();
         repeat
-            CustomerContractLine.TestField("Service Object Description", ServiceObjectDescription);
+            CustomerContractLine.TestField("Subscription Description", ServiceObjectDescription);
         until CustomerContractLine.Next() = 0;
     end;
 
-    local procedure TestNewServiceObject(ServiceObject: Record "Service Object"; ServiceObject1: Record "Service Object"; var NewServiceObject: Record "Service Object"; ServiceObjectNo: Code[20])
+    local procedure TestNewServiceObject(ServiceObject: Record "Subscription Header"; ServiceObject1: Record "Subscription Header"; var NewServiceObject: Record "Subscription Header"; ServiceObjectNo: Code[20])
     begin
         NewServiceObject.Get(ServiceObjectNo);
         NewServiceObject.TestField(Description, ServiceObject.Description);
-        NewServiceObject.TestField("Item No.", ServiceObject."Item No.");
+        NewServiceObject.TestField(Type, NewServiceObject.Type::Item);
+        NewServiceObject.TestField("Source No.", ServiceObject."Source No.");
         NewServiceObject.TestField("End-User Customer No.", ServiceObject."End-User Customer No.");
-        NewServiceObject.TestField("Quantity Decimal", ServiceObject."Quantity Decimal" + ServiceObject1."Quantity Decimal");
+        NewServiceObject.TestField(Quantity, ServiceObject.Quantity + ServiceObject1.Quantity);
     end;
 
-    local procedure TestServiceCommitmentUpdateOnCurrencyChange(CurrencyFactorDate: Date; CurrencyFactor: Decimal; RecalculatePrice: Boolean; CustomerCurrencyCode: Code[10]; Currency: Record Currency; CurrExchRate: Record "Currency Exchange Rate"; ServiceObjectNo: Code[20]; CustomerContract: Record "Customer Contract")
+    local procedure TestServiceCommitmentUpdateOnCurrencyChange(CurrencyFactorDate: Date; CurrencyFactor: Decimal; RecalculatePrice: Boolean; CustomerCurrencyCode: Code[10]; Currency: Record Currency; CurrExchRate: Record "Currency Exchange Rate"; ServiceObjectNo: Code[20]; CustomerContract: Record "Customer Subscription Contract")
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObjectNo);
-        ServiceCommitment.SetRange("Contract No.", CustomerContract."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo);
+        ServiceCommitment.SetRange("Subscription Contract No.", CustomerContract."No.");
         ServiceCommitment.FindSet(false);
         repeat
             ServiceCommitment.TestField("Currency Code", CustomerContract."Currency Code");
             ServiceCommitment.TestField("Currency Factor Date", CurrencyFactorDate);
             ServiceCommitment.TestField("Currency Factor", CurrencyFactor);
 
-            if RecalculatePrice then begin // if currency code is changed to '', amounts and amounts in lcy in service commitments should be the same
-                Assert.AreNearlyEqual(Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, CustomerCurrencyCode, ServiceCommitment."Price (LCY)", CurrencyFactor), Currency."Unit-Amount Rounding Precision"), ServiceCommitment.Price, 0.01, 'Price is not almost equal');
+            if RecalculatePrice then begin // if currency code is changed to '', amounts and amounts in lcy in Subscription Lines should be the same
+                Currency.Get(CustomerCurrencyCode);
+                ServiceCommitment.TestField(
+                    Price,
+                    Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, CustomerCurrencyCode, ServiceCommitment."Price (LCY)", CurrencyFactor), Currency."Unit-Amount Rounding Precision"));
 
                 ServiceCommitment.TestField(
-                    "Service Amount",
-                    Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, CustomerCurrencyCode, ServiceCommitment."Service Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
+                    Amount,
+                    Round(CurrExchRate.ExchangeAmtLCYToFCY(CurrencyFactorDate, CustomerCurrencyCode, ServiceCommitment."Amount (LCY)", CurrencyFactor), Currency."Amount Rounding Precision"));
 
                 ServiceCommitment.TestField(
                     "Discount Amount",
@@ -1950,7 +2122,7 @@ codeunit 148155 "Contracts Test"
             end
             else begin
                 ServiceCommitment.TestField(Price, ServiceCommitment."Price (LCY)");
-                ServiceCommitment.TestField("Service Amount", ServiceCommitment."Service Amount (LCY)");
+                ServiceCommitment.TestField(Amount, ServiceCommitment."Amount (LCY)");
                 ServiceCommitment.TestField("Discount Amount", ServiceCommitment."Discount Amount (LCY)");
             end;
         until ServiceCommitment.Next() = 0;
@@ -1985,15 +2157,15 @@ codeunit 148155 "Contracts Test"
             until SalesLine.Next() = 0;
     end;
 
-    local procedure UpdateServiceStartDateFromCustomerContractSubpage(CustomerContractNo: Code[20]; var CustomerContractLine: Record "Customer Contract Line"; var ServiceCommitment: Record "Service Commitment")
+    local procedure UpdateServiceStartDateFromCustomerContractSubpage(CustomerContractNo: Code[20]; var CustomerContractLine: Record "Cust. Sub. Contract Line"; var ServiceCommitment: Record "Subscription Line")
     var
         NewServiceStartDate: Date;
         CustomerContractSubpage: TestPage "Customer Contract Line Subp.";
     begin
-        CustomerContractLine.SetRange("Contract No.", CustomerContractNo);
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContractNo);
         CustomerContractLine.FindFirst();
         CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        NewServiceStartDate := CalcDate('<1M>', ServiceCommitment."Service Start Date");
+        NewServiceStartDate := CalcDate('<1M>', ServiceCommitment."Subscription Line Start Date");
 
         CustomerContractSubpage.OpenEdit();
         CustomerContractSubpage.GoToRecord(CustomerContractLine);
@@ -2001,14 +2173,14 @@ codeunit 148155 "Contracts Test"
         CustomerContractSubpage.Close();
     end;
 
-    local procedure VerifyServiceCommitmentClosureAndInvoicing(var SourceServiceCommitment: Record "Service Commitment"; ExpectedClosedValue: Boolean; IsContractLineInvoiced: Boolean)
+    local procedure VerifyServiceCommitmentClosureAndInvoicing(var SourceServiceCommitment: Record "Subscription Line"; ExpectedClosedValue: Boolean; IsContractLineInvoiced: Boolean)
     begin
         SourceServiceCommitment.SetRange(Closed, true);
         if SourceServiceCommitment.FindSet() then
             repeat
-                Assert.AreEqual(ExpectedClosedValue, SourceServiceCommitment.Closed, 'Customer contract line should not be closed');
+                Assert.AreEqual(ExpectedClosedValue, SourceServiceCommitment.Closed, 'Customer Subscription Contract line should not be closed');
                 if IsContractLineInvoiced then // Double check that contract line is invoiced
-                    SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Service End Date"));
+                    SourceServiceCommitment.TestField("Next Billing Date", CalcDate('<+1D>', SourceServiceCommitment."Subscription Line End Date"));
             until SourceServiceCommitment.Next() = 0;
     end;
 

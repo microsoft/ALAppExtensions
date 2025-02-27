@@ -10,7 +10,7 @@ page 8048 "Vend. Contract Deferrals API"
     EntityName = 'vendorContractDeferrals';
     EntitySetName = 'vendorContractDeferrals';
     PageType = API;
-    SourceTable = "Vendor Contract Deferral";
+    SourceTable = "Vend. Sub. Contract Deferral";
     ODataKeyFields = SystemId;
     Editable = false;
     DataAccessIntent = ReadOnly;
@@ -24,7 +24,7 @@ page 8048 "Vend. Contract Deferrals API"
                 field(systemId; Rec.SystemId)
                 {
                 }
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
                 field(documentType; Rec."Document Type")
@@ -33,7 +33,7 @@ page 8048 "Vend. Contract Deferrals API"
                 field(documentNo; Rec."Document No.")
                 {
                 }
-                field(contractType; Rec."Contract Type")
+                field(contractType; Rec."Subscription Contract Type")
                 {
                 }
                 field(released; Rec."Released")
@@ -78,13 +78,13 @@ page 8048 "Vend. Contract Deferrals API"
                 field(numberOfDays; Rec."Number of Days")
                 {
                 }
-                field(contractLineNo; Rec."Contract Line No.")
+                field(contractLineNo; Rec."Subscription Contract Line No.")
                 {
                 }
-                field(serviceObjectDescription; Rec."Service Object Description")
+                field(serviceObjectDescription; Rec."Subscription Description")
                 {
                 }
-                field(serviceCommitmentDescription; Rec."Service Commitment Description")
+                field(serviceCommitmentDescription; Rec."Subscription Line Description")
                 {
                 }
                 field(discount; Rec.Discount)
