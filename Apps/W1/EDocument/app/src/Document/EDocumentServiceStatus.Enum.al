@@ -28,4 +28,5 @@ enum 6106 "E-Document Service Status"
     value(17; "Order Linked") { Caption = 'Order linked'; }
     value(18; "Pending") { Caption = 'Pending Document Link'; }
     value(19; "Approval Error") { Caption = 'Approval error'; }
+    value(21; "Imported Document Deleted") { Caption = 'Imported document deleted'; }
 }
