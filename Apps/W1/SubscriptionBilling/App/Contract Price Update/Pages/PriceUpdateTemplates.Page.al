@@ -25,34 +25,34 @@ page 8026 "Price Update Templates"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or vendor contracts.';
+                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
                 }
-                field("Contract Filter"; Rec."Contract Filter".HasValue())
+                field("Contract Filter"; Rec."Subscription Contract Filter".HasValue())
                 {
                     Caption = 'Contract Filter';
                     ToolTip = 'Shows if a filters has been defined for the template.';
 
                     trigger OnDrillDown()
                     begin
-                        Rec.EditFilter(Rec.FieldNo("Contract Filter"));
+                        Rec.EditFilter(Rec.FieldNo("Subscription Contract Filter"));
                     end;
                 }
-                field("Service Commitment Filter"; Rec."Service Commitment Filter".HasValue())
+                field("Service Commitment Filter"; Rec."Subscription Line Filter".HasValue())
                 {
-                    Caption = 'Service Commitment Filter';
+                    Caption = 'Subscription Line Filter';
                     ToolTip = 'Shows if a filters has been defined for the template.';
                     trigger OnDrillDown()
                     begin
-                        Rec.EditFilter(Rec.FieldNo("Service Commitment Filter"));
+                        Rec.EditFilter(Rec.FieldNo("Subscription Line Filter"));
                     end;
                 }
-                field("Service Object Filter"; Rec."Service Object Filter".HasValue())
+                field("Service Object Filter"; Rec."Subscription Filter".HasValue())
                 {
-                    Caption = 'Service Object Filter';
+                    Caption = 'Subscription Filter';
                     ToolTip = 'Shows if a filters has been defined for the template.';
                     trigger OnDrillDown()
                     begin
-                        Rec.EditFilter(Rec.FieldNo("Service Object Filter"));
+                        Rec.EditFilter(Rec.FieldNo("Subscription Filter"));
                     end;
                 }
                 field("Price Update Method"; Rec."Price Update Method")

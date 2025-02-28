@@ -20,6 +20,8 @@ codeunit 30301 "Shpfy Company Import"
             exit;
         end;
 
+        CompanyApi.UpdateShopifyCompanyLocation(ShopifyCompany);
+
         Commit();
         if CompanyMapping.FindMapping(ShopifyCompany, TempShopifyCustomer) then begin
             if Shop."Shopify Can Update Companies" then begin
@@ -68,6 +70,7 @@ codeunit 30301 "Shpfy Company Import"
     begin
         Shop := ShopifyShop;
         CompanyApi.SetShop(Shop);
+        CompanyMapping.SetShop(Shop);
     end;
 
     internal procedure SetShop(ShopCode: Code[20])

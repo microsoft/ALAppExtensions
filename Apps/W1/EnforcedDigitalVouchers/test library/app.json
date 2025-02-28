@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "The app is to test the Digital Vouchers feature",
   "description": "The app is to test the Digital Vouchers feature",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
@@ -16,7 +16,7 @@
       "id": "e2ae191d-8829-44c3-a373-3749a2742d4e",
       "name": "Enforced Digital Vouchers",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
@@ -32,6 +32,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "OnPrem"
 }

@@ -5,8 +5,8 @@ page 8009 "Imported Service Commitments"
     PageType = Worksheet;
     ApplicationArea = All;
     UsageCategory = Administration;
-    SourceTable = "Imported Service Commitment";
-    Caption = 'Imported Service Commitments';
+    SourceTable = "Imported Subscription Line";
+    Caption = 'Imported Subscription Lines';
 
     layout
     {
@@ -14,60 +14,61 @@ page 8009 "Imported Service Commitments"
         {
             repeater(ImportedServiceCommitments)
             {
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the Service Object, the Service Commitment will be created for.';
+                    ToolTip = 'Specifies the Subscription, the Subscription Line will be created for.';
                     ShowMandatory = true;
                 }
-                field("Service Object Line No."; Rec."Service Commitment Entry No.")
+                field("Service Object Line No."; Rec."Subscription Line Entry No.")
                 {
-                    ToolTip = 'Specifies the line number of the Service Commitment. If empty, a Line No. will be assigned automatically.';
+                    ToolTip = 'Specifies the line number of the Subscription Line. If empty, a Line No. will be assigned automatically.';
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Specifies whether the service will will be calculated as a credit (Purchase Invoice) or as debit (Sales Invoice).';
+                    ToolTip = 'Specifies whether the Subscription Line will will be calculated as a credit (Purchase Invoice) or as debit (Sales Invoice).';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the contract in which service commitments will be created as contract lines. Service commitments with Invoicing via = Sales cannot be called into a Contract.';
+                    ToolTip = 'Specifies the number of the contract in which Subscription Lines will be created as contract lines. Subscription Lines with Invoicing via = Sales cannot be called into a Contract.';
                 }
-                field("Contract Line No."; Rec."Contract Line No.")
+                field("Contract Line No."; Rec."Subscription Contract Line No.")
                 {
                     ToolTip = 'Specifies the Line No. of the contract line. If empty a Line No. will be assigned automatically.';
                 }
-                field("Contract Line Type"; Rec."Contract Line Type")
+                field("Contract Line Type"; Rec."Sub. Contract Line Type")
                 {
                     ToolTip = 'Specifies the contract line type.';
+                    ValuesAllowed = Comment, Item, "G/L Account";
                 }
-                field("Package Code"; Rec."Package Code")
+                field("Package Code"; Rec."Subscription Package Code")
                 {
-                    ToolTip = 'Specifies the code of the service commitment package. If a vendor contract line has the same Service Object No. and Package Code as a customer contract line, the customer contract dimension value is copied to the vendor contract line.';
+                    ToolTip = 'Specifies the code of the Subscription Package. If a Vendor Subscription Contract line has the same Subscription No. and Package Code as a Customer Subscription Contract line, the Customer Subscription Contract dimension value is copied to the Vendor Subscription Contract line.';
                 }
                 field("Template Code"; Rec."Template Code")
                 {
-                    ToolTip = 'Specifies the code of the service commitment template.';
+                    ToolTip = 'Specifies the code of the Subscription Package Line Template.';
                     Visible = false;
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                     ShowMandatory = true;
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
                 field("Next Billing Date"; Rec."Next Billing Date")
                 {
                     ToolTip = 'Specifies the date of the next billing possible.';
                 }
-                field(Quantity; Rec."Quantity Decimal")
+                field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of service object.';
+                    ToolTip = 'Number of units of Subscription.';
                 }
                 field("Calculation Base Amount"; Rec."Calculation Base Amount")
                 {
@@ -75,70 +76,70 @@ page 8009 "Imported Service Commitments"
                 }
                 field("Calculation Base %"; Rec."Calculation Base %")
                 {
-                    ToolTip = 'Specifies the percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                 }
                 field("Discount %"; Rec."Discount %")
                 {
-                    ToolTip = 'Specifies the percent of the discount for the service.';
+                    ToolTip = 'Specifies the percent of the discount for the Subscription Line.';
                 }
                 field("Discount Amount"; Rec."Discount Amount")
                 {
-                    ToolTip = 'Specifies the amount of the discount for the service.';
+                    ToolTip = 'Specifies the amount of the discount for the Subscription Line.';
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
-                    ToolTip = 'Specifies for which period the Service Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Service Amount refers to.';
+                    ToolTip = 'Specifies for which period the Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Amount refers to.';
                     ShowMandatory = true;
                 }
                 field("Invoicing via"; Rec."Invoicing via")
                 {
-                    ToolTip = 'Specifies whether the service commitment is invoiced via a contract. Service commitments with invoicing via sales are not charged. Only the items are billed.';
+                    ToolTip = 'Specifies whether the Subscription Line is invoiced via a contract. Subscription Lines with invoicing via sales are not charged. Only the items are billed.';
                 }
                 field("Invoicing Item No."; Rec."Invoicing Item No.")
                 {
-                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic service commmitment.';
+                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic Subscription Line.';
                 }
                 field("Notice Period"; Rec."Notice Period")
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the service commitment ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
+                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the Subscription Line ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
                 }
                 field("Initial Term"; Rec."Initial Term")
                 {
-                    ToolTip = 'Specifies a date formula for calculating the minimum term of the service commitment. If the minimum term is filled and no extension term is entered, the end of service commitment is automatically set to the end of the initial term.';
+                    ToolTip = 'Specifies a date formula for calculating the minimum term of the Subscription Line. If the minimum term is filled and no extension term is entered, the end of Subscription Line is automatically set to the end of the initial term.';
                 }
                 field("Extension Term"; Rec."Extension Term")
                 {
-                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of service is automatically set to the end of the initial term or notice period.';
+                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of Subscription Line is automatically set to the end of the initial term or notice period.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for hythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Date formula for Rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                     ShowMandatory = true;
                 }
                 field("Discount Amount (LCY)"; Rec."Discount Amount (LCY)")
                 {
-                    ToolTip = 'Specifies the discount amount in client currency that is granted on the service.';
+                    ToolTip = 'Specifies the discount amount in client currency that is granted on the Subscription Line.';
                     Visible = false;
                 }
-                field("Service Amount (LCY)"; Rec."Service Amount (LCY)")
+                field("Service Amount (LCY)"; Rec."Amount (LCY)")
                 {
-                    ToolTip = 'Specifies the amount in client currency for the service including discount.';
+                    ToolTip = 'Specifies the amount in client currency for the Subscription Line including discount.';
                     Visible = false;
                 }
                 field("Currency Code"; Rec."Currency Code")
                 {
-                    ToolTip = 'Specifies the currency of amounts in the service.';
+                    ToolTip = 'Specifies the currency of amounts in the Subscription Line.';
                     Visible = false;
                 }
                 field("Currency Factor"; Rec."Currency Factor")
                 {
-                    ToolTip = 'Specifies the currency factor valid for the service, which is used to convert amounts to the client currency.';
+                    ToolTip = 'Specifies the currency factor valid for the Subscription Line, which is used to convert amounts to the client currency.';
                     Visible = false;
                 }
                 field("Currency Factor Date"; Rec."Currency Factor Date")
@@ -176,13 +177,13 @@ page 8009 "Imported Service Commitments"
                     Visible = false;
                 }
 
-                field("Service Commitment created"; Rec."Service Commitment created")
+                field("Service Commitment created"; Rec."Subscription Line created")
                 {
-                    ToolTip = 'Specifies whether the Service Commitment has been created.';
+                    ToolTip = 'Specifies whether the Subscription Line has been created.';
                 }
-                field("Contract Line created"; Rec."Contract Line created")
+                field("Contract Line created"; Rec."Sub. Contract Line created")
                 {
-                    ToolTip = 'Specifies whether a contract line has been created for the Service Commitment.';
+                    ToolTip = 'Specifies whether a contract line has been created for the Subscription Line.';
                 }
                 field("Error Text"; Rec."Error Text")
                 {
@@ -229,8 +230,8 @@ page 8009 "Imported Service Commitments"
             action(CreateServiceCommitments)
             {
                 ApplicationArea = All;
-                Caption = 'Create Service Commitments';
-                ToolTip = 'Creates Service Commitments and Contract lines.';
+                Caption = 'Create Subscription Lines';
+                ToolTip = 'Creates Subscription Lines and Contract lines.';
                 Image = CreateBinContent;
 
                 trigger OnAction()

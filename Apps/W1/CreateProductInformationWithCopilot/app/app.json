@@ -2,7 +2,7 @@
   "id": "93a71c5e-237e-47e8-835b-1a7f9e844f1b",
   "name": "Create Product Information With Copilot",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Create product information with Copilot (Preview) can assist with finding substitution items, and create or update product information based on the result.",
   "description": "Create product information with Copilot (Preview) can assist with finding substitution items, and create or update product information based on the result.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -14,7 +14,7 @@
   "dependencies": [],
   "screenshots": [],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "OnPrem",
   "idRanges": [
     {

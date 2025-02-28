@@ -68,7 +68,7 @@ page 6221 "Sustainability Setup"
                 }
                 field("G/L Account Emissions"; Rec."G/L Account Emissions")
                 {
-                    ToolTip = 'Specifies the value of the G/L Account Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account on the G/L Account card.';
                 }
                 field("Item Emissions"; Rec."Item Emissions")
                 {

@@ -12,11 +12,11 @@ codeunit 139895 "Usage Based Service Comm. Test"
         Item: Record Item;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        SalesServiceCommitment: Record "Sales Subscription Line";
+        ServiceCommitmentPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
@@ -68,7 +68,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure ExpectErrorOnCreateUsageBasedSalesServiceCommitmentWithRecurringDiscount()
     begin
-        // Service Commitment Package lines, which are discounts can only be assigned to Service Commitment Items.
+        // Subscription Package Lines, which are discounts can only be assigned to Subscription Items.
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         asserterror ServiceCommitmentTemplate.Validate(Discount, true);
     end;
@@ -295,14 +295,14 @@ codeunit 139895 "Usage Based Service Comm. Test"
     local procedure UpdateServiceCommitmentPackageLineFields()
     begin
         Evaluate(ServiceCommitmentPackageLine."Billing Rhythm", '<1M>');
-        Evaluate(ServiceCommitmentPackageLine."Service Comm. Start Formula", '<CY>');
+        Evaluate(ServiceCommitmentPackageLine."Sub. Line Start Formula", '<CY>');
         Evaluate(ServiceCommitmentPackageLine."Initial Term", '<12M>');
         Evaluate(ServiceCommitmentPackageLine."Extension Term", '<12M>');
         Evaluate(ServiceCommitmentPackageLine."Notice Period", '<1M>');
         ServiceCommitmentPackageLine.Modify(false);
     end;
 
-    procedure UpdateServiceCommitmentTemplateWithUsageBasedFields(var ServiceCommitmentTemplate2: Record "Service Commitment Template"; UsageBasedPricing: Enum "Usage Based Pricing"; PricingUnitCostSurchargePercentage: Decimal)
+    procedure UpdateServiceCommitmentTemplateWithUsageBasedFields(var ServiceCommitmentTemplate2: Record "Sub. Package Line Template"; UsageBasedPricing: Enum "Usage Based Pricing"; PricingUnitCostSurchargePercentage: Decimal)
     begin
         ServiceCommitmentTemplate2."Usage Based Billing" := true;
         ServiceCommitmentTemplate2."Usage Based Pricing" := UsageBasedPricing;

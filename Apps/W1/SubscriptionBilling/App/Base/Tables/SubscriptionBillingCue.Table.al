@@ -7,7 +7,7 @@ using Microsoft.Projects.Project.Job;
 
 table 8070 "Subscription Billing Cue"
 {
-    Caption = 'Subscription & Recurring Billing Activities Cue';
+    Caption = 'Subscription Billing Activities Cue';
     Access = Internal;
     fields
     {
@@ -16,47 +16,47 @@ table 8070 "Subscription Billing Cue"
             DataClassification = CustomerContent;
             Caption = 'Primary Key';
         }
-        field(2; "Customer Contract Invoices"; Integer)
+        field(2; "Cust. Sub. Contr. Invoices"; Integer)
         {
             CalcFormula = count("Sales Header" where("Document Type" = filter(Invoice), "Recurring Billing" = filter(true)));
-            Caption = 'Customer Contract Invoices';
+            Caption = 'Customer Subscription Contract Invoices';
             Editable = false;
             FieldClass = FlowField;
         }
-        field(3; "Customer Contract Credit Memos"; Integer)
+        field(3; "Cust. Sub. Contr. Credit Memos"; Integer)
         {
             CalcFormula = count("Sales Header" where("Document Type" = filter("Credit Memo"), "Recurring Billing" = filter(true)));
-            Caption = 'Customer Contract Credit Memos';
+            Caption = 'Customer Subscription Contract Credit Memos';
             Editable = false;
             FieldClass = FlowField;
         }
-        field(4; "Vendor Contract Invoices"; Integer)
+        field(4; "Vend. Sub. Contr. Invoices"; Integer)
         {
             CalcFormula = count("Purchase Header" where("Document Type" = filter(Invoice), "Recurring Billing" = filter(true)));
-            Caption = 'Vendor Contract Invoices';
+            Caption = 'Vendor Subscription Contract Invoices';
             Editable = false;
             FieldClass = FlowField;
         }
-        field(5; "Vendor Contract Credit Memos"; Integer)
+        field(5; "Vend. Contr. Credit Memos"; Integer)
         {
             CalcFormula = count("Purchase Header" where("Document Type" = filter("Credit Memo"), "Recurring Billing" = filter(true)));
-            Caption = 'Vendor Contract Credit Memos';
+            Caption = 'Vendor Subscription Contract Credit Memos';
             Editable = false;
             FieldClass = FlowField;
         }
-        field(6; "Serv. Comm. wo Cust. Contract"; Integer)
+        field(6; "Sub. L. wo Cust. Sub. Contract"; Integer)
         {
-            CalcFormula = count("Service Commitment"
-                                where("Invoicing via" = filter(Contract), "Contract No." = filter(''), Partner = filter(Customer)));
-            Caption = 'Service Commitments without Customer Contract';
+            CalcFormula = count("Subscription Line"
+                                where("Invoicing via" = filter(Contract), "Subscription Contract No." = filter(''), Partner = filter(Customer)));
+            Caption = 'Subscription Lines wo Customer Subscription Contract';
             Editable = false;
             FieldClass = FlowField;
         }
-        field(7; "Serv. Comm. wo Vend. Contract"; Integer)
+        field(7; "Sub. L. wo Vend. Sub. Contract"; Integer)
         {
-            CalcFormula = count("Service Commitment"
-                                where("Invoicing via" = filter(Contract), "Contract No." = filter(''), Partner = filter(Vendor)));
-            Caption = 'Service Commitments without Vendor Contract';
+            CalcFormula = count("Subscription Line"
+                                where("Invoicing via" = filter(Contract), "Subscription Contract No." = filter(''), Partner = filter(Vendor)));
+            Caption = 'Subscription Lines wo Vendor Subscription Contract';
             Editable = false;
             FieldClass = FlowField;
         }

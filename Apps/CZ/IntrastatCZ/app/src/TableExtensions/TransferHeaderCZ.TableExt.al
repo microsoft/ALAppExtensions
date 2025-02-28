@@ -17,6 +17,8 @@ tableextension 31329 "Transfer Header CZ" extends "Transfer Header"
         }
     }
 
+#if not CLEAN26
+    [Obsolete('Pending removal. Use CheckIntrastatMandatoryFields from Intrastat Core extension instead.', '26.0')]
     procedure CheckIntrastatMandatoryFieldsCZ()
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
@@ -34,4 +36,5 @@ tableextension 31329 "Transfer Header CZ" extends "Transfer Header"
                 TestField("Shipment Method Code");
         end;
     end;
+#endif
 }

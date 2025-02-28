@@ -2,9 +2,9 @@ namespace Microsoft.SubscriptionBilling;
 
 page 8010 "Serv. Object Attr. Values"
 {
-    Caption = 'Service Object Attribute Values';
+    Caption = 'Subscription Attribute Values';
     PageType = StandardDialog;
-    SourceTable = "Service Object";
+    SourceTable = "Subscription Header";
     layout
     {
         area(content)

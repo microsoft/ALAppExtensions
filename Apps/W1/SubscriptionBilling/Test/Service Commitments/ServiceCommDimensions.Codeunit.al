@@ -17,6 +17,7 @@ codeunit 148160 "Service Comm. Dimensions"
 
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+        ServiceContractSetup: Record "Subscription Contract Setup";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         DimMgt: Codeunit DimensionManagement;
@@ -28,7 +29,7 @@ codeunit 148160 "Service Comm. Dimensions"
         LibrarySales: Codeunit "Library - Sales";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         IsInitialized: Boolean;
-        DimensionSetEntryValueErr: Label 'Service Commitment should have Dimension "%1" with value "%2".', Locked = true;
+        DimensionSetEntryValueErr: Label 'Subscription Line should have Dimension "%1" with value "%2".', Locked = true;
 
     #region Tests
 
@@ -39,20 +40,20 @@ codeunit 148160 "Service Comm. Dimensions"
         BillingLine: Record "Billing Line";
         VendorBillingTemplate: Record "Billing Template";
         DimensionValue: Record "Dimension Value";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
         Initialize();
 
         ContractTestLibrary.CreateVendorContractAndCreateContractLinesAndBillingProposal(VendorContract, ServiceObject, '', VendorBillingTemplate);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
 
         LibraryDimension.CreateDimensionValue(DimensionValue, GeneralLedgerSetup."Global Dimension 1 Code");
         ServiceCommitment.ModifyAll("Shortcut Dimension 1 Code", DimensionValue.Code, true);
 
-        BillingLine.SetRange("Contract No.", VendorContract."No.");
+        BillingLine.SetRange("Subscription Contract No.", VendorContract."No.");
         BillingLine.FindFirst();
         BillingLine.TestField("Update Required", true);
     end;
@@ -63,20 +64,20 @@ codeunit 148160 "Service Comm. Dimensions"
     var
         BillingLine: Record "Billing Line";
         CustomerBillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         DimensionValue: Record "Dimension Value";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
         ContractTestLibrary.CreateCustomerContractAndCreateContractLinesAndBillingProposal(CustomerContract, ServiceObject, '', CustomerBillingTemplate);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         LibraryDimension.CreateDimensionValue(DimensionValue, GeneralLedgerSetup."Global Dimension 1 Code");
         ServiceCommitment.ModifyAll("Shortcut Dimension 1 Code", DimensionValue.Code, true);
 
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         BillingLine.FindFirst();
         BillingLine.TestField("Update Required", true);
     end;
@@ -86,12 +87,12 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure CheckCustomerContractDeferralsDimension()
     var
         BillingLine: Record "Billing Line";
-        CustomerContract: Record "Customer Contract";
-        CustomerContractDeferral: Record "Customer Contract Deferral";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
@@ -108,7 +109,7 @@ codeunit 148160 "Service Comm. Dimensions"
         CustomerContractDeferral.FindFirst();
         CustomerContractDeferral.TestField("Dimension Set ID", SalesLine."Dimension Set ID");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         ServiceCommitment.FindFirst();
         ContractTestLibrary.AppendRandomDimensionValueToDimensionSetID(ServiceCommitment."Dimension Set ID");
@@ -125,10 +126,10 @@ codeunit 148160 "Service Comm. Dimensions"
         BillingLine: Record "Billing Line";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
-        VendorContractDeferral: Record "Vendor Contract Deferral";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
+        VendorContractDeferral: Record "Vend. Sub. Contract Deferral";
     begin
         Initialize();
 
@@ -145,7 +146,7 @@ codeunit 148160 "Service Comm. Dimensions"
         VendorContractDeferral.FindFirst();
         VendorContractDeferral.TestField("Dimension Set ID", PurchaseLine."Dimension Set ID");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindFirst();
         ContractTestLibrary.AppendRandomDimensionValueToDimensionSetID(ServiceCommitment."Dimension Set ID");
@@ -160,47 +161,47 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectCustContractDimensionSyncOnContractsIfEqualServiceTemplate()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
         DimensionSetEntry: Record "Dimension Set Entry";
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         DimSetEntryNotExpectedErr: Label 'Dimension set entry is not expected.', Locked = true;
     begin
         Initialize();
 
-        // [WHEN] Auto Insert Customer Contract Dimension Value is enabled
+        // [WHEN] Auto Insert Customer Subscription Contract Dimension Value is enabled
         ContractTestLibrary.SetAutomaticDimensions(true);
 
-        // [WHEN] Customer Contract dimension value is created
+        // [WHEN] Customer Subscription Contract dimension value is created
         ContractTestLibrary.InsertCustomerContractDimensionCode();
 
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindSet();
         repeat
             DimensionSetEntry.SetRange("Dimension Set ID", ServiceCommitment."Dimension Set ID");
-            DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Dimension Code Cust. Contr.");
+            DimensionSetEntry.SetRange("Dimension Code", ServiceContractSetup."Dimension Code Cust. Contr.");
             DimensionSetEntry.FindFirst();
             DimensionSetEntry.TestField("Dimension Value Code", CustomerContract."No.");
         until ServiceCommitment.Next() = 0;
 
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.DeleteAll(true);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindSet();
         repeat
             DimensionSetEntry.SetRange("Dimension Set ID", ServiceCommitment."Dimension Set ID");
-            DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Dimension Code Cust. Contr.");
+            DimensionSetEntry.SetRange("Dimension Code", ServiceContractSetup."Dimension Code Cust. Contr.");
             if not DimensionSetEntry.IsEmpty() then
                 Error(DimSetEntryNotExpectedErr);
         until ServiceCommitment.Next() = 0;
@@ -210,16 +211,16 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectEqualServiceCommitmentAndItemDimensionSetIDOnCreateServiceObject()
     var
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         ItemDimSetID: Integer;
     begin
         Initialize();
 
         CreateServiceObjectItemWithDimensions(ItemDimSetID, Item);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", ItemDimSetID);
     end;
@@ -230,13 +231,13 @@ codeunit 148160 "Service Comm. Dimensions"
         Item: Record Item;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
-        ContractTestLibrary.CreateServiceObjectItemWithServiceCommitments(Item);
+        ContractTestLibrary.CreateItemForServiceObjectWithServiceCommitments(Item);
         ServiceCommPackageLine.FindFirst();
         repeat
             ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Customer, Item."No.");
@@ -245,9 +246,9 @@ codeunit 148160 "Service Comm. Dimensions"
         until ServiceCommPackageLine.Next() = 0;
         CreateAndPostSalesOrder(SalesHeader, SalesLine, '', Item."No.");
 
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", SalesLine."Dimension Set ID");
     end;
@@ -257,27 +258,27 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectEqualItemAndServiceCommitmentDimensionSetIDOnDeleteCustomerContractLine()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         ItemDimSetID: Integer;
     begin
         Initialize();
 
         CreateServiceObjectItemWithDimensions(ItemDimSetID, Item);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
 
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
 
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.DeleteAll(true);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", ItemDimSetID);
     end;
@@ -287,24 +288,24 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectEqualItemAndServiceCommitmentDimensionSetIDOnDeleteVendorContractLine()
     var
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
-        VendorContractLine: Record "Vendor Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
+        VendorContractLine: Record "Vend. Sub. Contract Line";
         ItemDimSetID: Integer;
     begin
         Initialize();
 
         CreateServiceObjectItemWithDimensions(ItemDimSetID, Item);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
 
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '');
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '');
         VendorContract.Modify(false);
 
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.DeleteAll(true);
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", ItemDimSetID);
@@ -315,10 +316,10 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectEqualDimensionSetIDSalesLineAndCustContractLine()
     var
         BillingLine: Record "Billing Line";
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         SalesLine: Record "Sales Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         DimSetIDArray: array[10] of Integer;
         NewDimSetID: Integer;
     begin
@@ -327,9 +328,9 @@ codeunit 148160 "Service Comm. Dimensions"
         CreateSalesBillingDocuments(BillingLine, ServiceObject, CustomerContract);
         BillingLine.FindLast();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", BillingLine."Contract No.");
-        ServiceCommitment.SetRange("Contract Line No.", BillingLine."Contract Line No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", BillingLine."Subscription Contract No.");
+        ServiceCommitment.SetRange("Subscription Contract Line No.", BillingLine."Subscription Contract Line No.");
         ServiceCommitment.FindFirst();
         DimSetIDArray[2] := ServiceCommitment."Dimension Set ID";
 
@@ -349,9 +350,9 @@ codeunit 148160 "Service Comm. Dimensions"
     var
         BillingLine: Record "Billing Line";
         PurchaseLine: Record "Purchase Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         DimSetIDArray: array[10] of Integer;
         NewDimSetID: Integer;
     begin
@@ -360,9 +361,9 @@ codeunit 148160 "Service Comm. Dimensions"
         CreatePurchaseBillingDocuments(BillingLine, ServiceObject, VendorContract);
         BillingLine.FindLast();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Contract No.", BillingLine."Contract No.");
-        ServiceCommitment.SetRange("Contract Line No.", BillingLine."Contract Line No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Contract No.", BillingLine."Subscription Contract No.");
+        ServiceCommitment.SetRange("Subscription Contract Line No.", BillingLine."Subscription Contract Line No.");
         ServiceCommitment.FindFirst();
         DimSetIDArray[2] := ServiceCommitment."Dimension Set ID";
 
@@ -378,20 +379,20 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure ExpectErrorOnMergeCustomerContractLineWithDifferentServiceCommitments()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
         Item: Record Item;
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
     begin
         Initialize();
 
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
 
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         CustomerContractLine.Reset();
         asserterror CustomerContractLine.MergeContractLines(CustomerContractLine);
     end;
@@ -410,28 +411,28 @@ codeunit 148160 "Service Comm. Dimensions"
         ServiceObjectItem: Record Item;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
     begin
-        // Test: When using a Invoicing Item, Dimensions on the Service commitment should be merged between Service Object Item and Invoicing Item.
+        // Test: When using a Invoicing Item, Dimensions on the Subscription Line should be merged between Subscription Item and Invoicing Item.
         // Invoicing Item Dimensions should be prioritized
         Initialize();
 
         // Create Invoicing Item + Dimensions
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(InvoicingItem, InvoicingItem."Service Commitment Option"::"Invoicing Item");
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(InvoicingItem, InvoicingItem."Subscription Option"::"Invoicing Item");
         ContractTestLibrary.CreateDefaultDimensionValueForTable(DimensionValueA1, Database::Item, InvoicingItem."No."); // Dimension A1
         ContractTestLibrary.CreateDefaultDimensionValueForTable(DimensionValueB1, Database::Item, InvoicingItem."No."); // Dimension B1
 
-        // Create Service Object Item + Dimensions
-        ContractTestLibrary.CreateServiceObjectItem(ServiceObjectItem, false);
+        // Create Subscription Item + Dimensions
+        ContractTestLibrary.CreateItemForServiceObject(ServiceObjectItem, false);
         LibraryDimension.CreateDimensionValue(DimensionValueA2, DimensionValueA1."Dimension Code"); // Dimension A2
         LibraryDimension.CreateDefaultDimension(DefaultDimension, Database::Item, ServiceObjectItem."No.", DimensionValueA2."Dimension Code", DimensionValueA2.Code);
         ContractTestLibrary.CreateDefaultDimensionValueForTable(DimensionValueC1, Database::Item, InvoicingItem."No."); // Dimension C1
 
-        // Create Service Commitment including Invoicing Item
+        // Create Subscription Line including Invoicing Item
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Customer, Item."No.");
@@ -442,10 +443,10 @@ codeunit 148160 "Service Comm. Dimensions"
         CreateAndPostSalesOrder(SalesHeader, SalesLine, '', ServiceObjectItem."No.");
 
         ServiceObject.Reset();
-        ServiceObject.SetRange("Item No.", ServiceObjectItem."No.");
+        ServiceObject.FilterOnItemNo(ServiceObjectItem."No.");
         ServiceObject.FindFirst();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
 
         ServiceCommitment.TestField("Dimension Set ID");
@@ -471,13 +472,13 @@ codeunit 148160 "Service Comm. Dimensions"
         SalesWithServiceCommitmentItem: Record Item;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
         Index: Integer;
     begin
-        // [SCENARIO] When Service Commitment is created by shipping a Sales Order with "Sales with Service Commitment" type Item,
-        // Service Commitment Dimensions should be assigned first from Invoicing item and then from Sales Line.
+        // [SCENARIO] When Subscription Line is created by shipping a Sales Order with "Sales with Subscription" type Item,
+        // Subscription Line Dimensions should be assigned first from Invoicing item and then from Sales Line.
         Initialize();
 
         // Dimensions with Values created:
@@ -504,7 +505,7 @@ codeunit 148160 "Service Comm. Dimensions"
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(InvoicingItem, Enum::"Item Service Commitment Type"::"Invoicing Item");
         LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
 
-        // [GIVEN] Service Commitment Package with "InvoicingItem" item
+        // [GIVEN] Subscription Package with "InvoicingItem" item
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', Enum::"Service Partner"::Customer, InvoicingItem."No.", Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(SalesWithServiceCommitmentItem, ServiceCommitmentPackage.Code);
@@ -519,20 +520,20 @@ codeunit 148160 "Service Comm. Dimensions"
         // [WHEN] Sales Order is shipped
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Service Object is created with Dimension "Dim1" with value "B"
-        // [THEN] Service Commitment created with Dimension "Dim1" and value "B"
+        // [THEN] Subscription is created with Dimension "Dim1" with value "B"
+        // [THEN] Subscription Line created with Dimension "Dim1" and value "B"
         FindServiceCommitment(SalesHeader."Sell-to Customer No.", ServiceCommitment);
         DimensionSetEntry.Get(ServiceCommitment."Dimension Set ID", SSCDimension.Code);
         Assert.AreEqual(SSCDimensionValues[2].Code, DimensionSetEntry."Dimension Value Code", 'Service Commitment should have Dimension "Dim1" with value "B" inherited from Sales Line.');
 
-        // Expected Dimensions and Values for Service Commitment:
+        // Expected Dimensions and Values for Subscription Line:
         //
         // | Dimension | Dimension Value |
         // |-----------|-----------------|
         // | Dim1      | B               |
         // | Dim2      | X               |
 
-        // [THEN] Service Commitment created with Dimension "Dim2" and value "X"
+        // [THEN] Subscription Line created with Dimension "Dim2" and value "X"
         DimensionSetEntry.Get(ServiceCommitment."Dimension Set ID", InvoicingItemDimension.Code);
         Assert.AreEqual(InvoicingItemDimensionValue.Code, DimensionSetEntry."Dimension Value Code", 'Service Commitment should have Dimension "Dim2" with value "X" from Invoicing Item.');
     end;
@@ -549,13 +550,13 @@ codeunit 148160 "Service Comm. Dimensions"
         ServiceCommitmentItem: Record Item;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
         Index: Integer;
     begin
-        // [SCENARIO] When Service Commitment is created by shipping a Sales Order with "Service Commitment" type Item,
-        // Service Commitment Dimensions should be taken first from Sales Line Item and then from Sales Line.
+        // [SCENARIO] When Subscription Line is created by shipping a Sales Order with "Subscription Line" type Item,
+        // Subscription Line Dimensions should be taken first from Sales Line Item and then from Sales Line.
         Initialize();
 
         // Dimensions with Values created:
@@ -585,7 +586,7 @@ codeunit 148160 "Service Comm. Dimensions"
         LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, ServiceCommitmentItem."No.", ItemDimensions[1].Code, ItemDimensionValues[1].Code);
         LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, ServiceCommitmentItem."No.", ItemDimensions[2].Code, ItemDimensionValues[2].Code);
 
-        // [GIVEN] Service Commitment Package with "ServiceCommitmentItem" item
+        // [GIVEN] Subscription Package with "ServiceCommitmentItem" item
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '', 100, '', Enum::"Service Partner"::Customer, '', Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(ServiceCommitmentItem, ServiceCommitmentPackage.Code);
@@ -603,7 +604,7 @@ codeunit 148160 "Service Comm. Dimensions"
         // [WHEN] Sales Order is shipped
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // Expected Dimensions and Values for Service Commitment:
+        // Expected Dimensions and Values for Subscription Line:
         //
         // | Dimension | Dimension Values |
         // |-----------|------------------|
@@ -611,12 +612,12 @@ codeunit 148160 "Service Comm. Dimensions"
         // | Dim2      | B                |
         // | Dim3      | C                |
 
-        // [THEN] Service Commitment created with Dimension "Dim1" and value "A" and Dimension "Dim2" and value "B"
+        // [THEN] Subscription Line created with Dimension "Dim1" and value "A" and Dimension "Dim2" and value "B"
         FindServiceCommitment(SalesHeader."Sell-to Customer No.", ServiceCommitment);
         for Index := 1 to ArrayLen(ItemDimensions) do
             VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", ItemDimensions[Index].Code, ItemDimensionValues[Index].Code);
 
-        // [THEN] Service Commitment created with Dimension "Dim3" and value "C"
+        // [THEN] Subscription Line created with Dimension "Dim3" and value "C"
         VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", SalesLineDimension.Code, SalesLineDimensionValue.Code);
     end;
 
@@ -630,13 +631,13 @@ codeunit 148160 "Service Comm. Dimensions"
         InvoicingItemDimensionValue: Record "Dimension Value";
         InvoicingItem: Record Item;
         Item: Record Item;
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceObject: Record "Subscription Header";
         Index: Integer;
     begin
-        // [SCENARIO] When Service Commitment is created manually, Service Commitment dimensions are taken from Invoicing Item of the Service Commitment Package and then from Item
+        // [SCENARIO] When Subscription Line is created manually, Subscription Line dimensions are taken from Invoicing Item of the Subscription Package and then from Item
         Initialize();
 
         // Dimensions with Values created:
@@ -664,7 +665,7 @@ codeunit 148160 "Service Comm. Dimensions"
         LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", Dimension.Code, DimensionValues[2].Code);
         LibraryDimension.CreateDefaultDimensionItem(DefaultDimension, InvoicingItem."No.", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
 
-        // [GIVEN] Service Commitment Package with "Item" and "Invoicing Item" in package line
+        // [GIVEN] Subscription Package with "Item" and "Invoicing Item" in package line
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommitmentPackage.SetRecFilter();
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(
@@ -672,17 +673,17 @@ codeunit 148160 "Service Comm. Dimensions"
                 Enum::"Invoicing Via"::Contract, Enum::"Calculation Base Type"::"Item Price", '', '<1M>', false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
 
-        // [WHEN] Assign Service Commitment Package to Service Object
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.", false);
+        // [WHEN] Assign Subscription Package to Subscription
+        ContractTestLibrary.CreateServiceObject(ServiceObject, "Service Object Type"::Item, Item."No.", false);
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
 
-        // [THEN] Service Commitment created with Dimension "Dim1" and value "B" from Invoicing Item and "Dim2" and value "X" from Invoicing Item
+        // [THEN] Subscription Line created with Dimension "Dim1" and value "B" from Invoicing Item and "Dim2" and value "X" from Invoicing Item
         // | Dimension | Dimension Values |
         // |-----------|------------------|
         // | Dim1      | B                |
         // | Dim2      | X                |
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", Dimension.Code, DimensionValues[2].Code);
         VerifyDimensionSetValue(ServiceCommitment."Dimension Set ID", InvoicingItemDimension.Code, InvoicingItemDimensionValue.Code);
@@ -693,10 +694,10 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure TestTransferDimensionsFromCustContractHeaderToServiceCommitment()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         DimSetIDArray: array[10] of Integer;
         ItemDimSetID: Integer;
         NewDimSetID: Integer;
@@ -704,17 +705,17 @@ codeunit 148160 "Service Comm. Dimensions"
         Initialize();
 
         CreateServiceObjectItemWithDimensions(ItemDimSetID, Item);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
         DimSetIDArray[2] := ItemDimSetID;
 
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         DimSetIDArray[1] := CustomerContract."Dimension Set ID";
         NewDimSetID := DimMgt.GetCombinedDimensionSetID(DimSetIDArray, ServiceCommitment."Shortcut Dimension 1 Code", ServiceCommitment."Shortcut Dimension 2 Code");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", NewDimSetID);
     end;
@@ -724,22 +725,22 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure TestTransferDimensionsFromJobToCustContractHeader()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         Item: Record Item;
         Job: Record Job;
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         DimSetIDArray: array[10] of Integer;
         NewDimSetID: Integer;
         DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
         Initialize();
 
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
 
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         DimSetIDArray[1] := CustomerContract."Dimension Set ID";
 
         LibraryJob.CreateJob(Job);
@@ -761,38 +762,38 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure TestTransferDimensionsFromServiceCommPackageToVendorServiceComm()
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContract2: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContract2: Record "Customer Subscription Contract";
         DimensionSetEntry: Record "Dimension Set Entry";
         Item: Record Item;
         ServiceObjectItem: Record Item;
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
         Initialize();
 
-        // [WHEN] Auto Insert Customer Contract Dimension Value is enabled
+        // [WHEN] Auto Insert Customer Subscription Contract Dimension Value is enabled
         ContractTestLibrary.SetAutomaticDimensions(true);
 
-        // [WHEN] Customer Contract dimension value is created
+        // [WHEN] Customer Subscription Contract dimension value is created
         ContractTestLibrary.InsertCustomerContractDimensionCode();
 
-        // Create Service Commitment Template with two packages
-        // Assign packages to different customer and vendor contracts
-        // Expect the customer contract dimension to be assigned only to vendor service commitment from the same package
+        // Create Subscription Package Line Template with two packages
+        // Assign packages to different customer and Vendor Subscription Contracts
+        // Expect the Customer Subscription Contract dimension to be assigned only to vendor Subscription Line from the same package
 
-        ContractTestLibrary.CreateServiceObjectItem(ServiceObjectItem, false);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, ServiceObjectItem, false);
+        ContractTestLibrary.CreateItemForServiceObject(ServiceObjectItem, false);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, ServiceObjectItem, false);
         ContractTestLibrary.CreateCustomer(Customer);
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
 
-        // Create Service Commitment Package with two lines (Vendor + Customer)
+        // Create Subscription Package with two lines (Vendor + Customer)
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         CreateServiceCommitmentPackageWithTwoLines(ServiceCommitmentTemplate, ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(ServiceObjectItem, ServiceCommitmentPackage.Code, true);
@@ -802,8 +803,8 @@ codeunit 148160 "Service Comm. Dimensions"
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(ServiceObjectItem, ServiceCommitmentPackage.Code, true);
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
 
-        // Assign first service commitment to customer contract
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        // Assign first Subscription Line to Customer Subscription Contract
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         ServiceCommitment.FindFirst();
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
@@ -811,24 +812,24 @@ codeunit 148160 "Service Comm. Dimensions"
 
         ContractTestLibrary.CreateVendor(Vendor);
         ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
-        ContractTestLibrary.AssignServiceObjectToVendorContract(VendorContract, ServiceObject, false);
+        ContractTestLibrary.AssignServiceObjectForItemToVendorContract(VendorContract, ServiceObject, false);
 
-        // Assign second service commitment to separate contract
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        // Assign second Subscription Line to separate contract
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
-        ServiceCommitment.SetFilter("Contract No.", '%1', '');
+        ServiceCommitment.SetFilter("Subscription Contract No.", '%1', '');
         ServiceCommitment.FindFirst();
         ContractTestLibrary.CreateCustomerContract(CustomerContract2, Customer."No.");
-        ServiceCommitment."Contract No." := CustomerContract."No.";
+        ServiceCommitment."Subscription Contract No." := CustomerContract."No.";
         CustomerContract.CreateCustomerContractLineFromServiceCommitment(ServiceCommitment, CustomerContract2."No.");
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindSet();
         repeat
             DimensionSetEntry.SetRange("Dimension Set ID", ServiceCommitment."Dimension Set ID");
-            DimensionSetEntry.SetRange("Dimension Code", GeneralLedgerSetup."Dimension Code Cust. Contr.");
+            DimensionSetEntry.SetRange("Dimension Code", ServiceContractSetup."Dimension Code Cust. Contr.");
             DimensionSetEntry.FindFirst();
             DimensionSetEntry.TestField("Dimension Value Code", CustomerContract."No.");
         until ServiceCommitment.Next() = 0;
@@ -839,27 +840,27 @@ codeunit 148160 "Service Comm. Dimensions"
     procedure TestTransferDimensionsFromVendContractHeaderToServiceCommitment()
     var
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         DimSetIDArray: array[10] of Integer;
         NewDimSetID: Integer;
     begin
         Initialize();
 
         CreateServiceObjectItemWithDimensions(DimSetIDArray[2], Item);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 1);
 
         ContractTestLibrary.CreateVendor(Vendor);
         ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
         ContractTestLibrary.AppendRandomDimensionValueToDimensionSetID(VendorContract."Dimension Set ID");
         VendorContract.Modify(false);
-        ContractTestLibrary.AssignServiceObjectToVendorContract(VendorContract, ServiceObject, false);
+        ContractTestLibrary.AssignServiceObjectForItemToVendorContract(VendorContract, ServiceObject, false);
         DimSetIDArray[1] := VendorContract."Dimension Set ID";
         NewDimSetID := DimMgt.GetCombinedDimensionSetID(DimSetIDArray, ServiceCommitment."Shortcut Dimension 1 Code", ServiceCommitment."Shortcut Dimension 2 Code");
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindFirst();
         ServiceCommitment.TestField("Dimension Set ID", NewDimSetID);
@@ -875,6 +876,7 @@ codeunit 148160 "Service Comm. Dimensions"
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.InsertCustomerContractDimensionCode();
 
+        ServiceContractSetup.Get();
         GeneralLedgerSetup.Get();
 
         if IsInitialized then
@@ -910,7 +912,7 @@ codeunit 148160 "Service Comm. Dimensions"
         LibrarySales.PostSalesDocument(NewSalesHeader, true, true);
     end;
 
-    local procedure CreatePurchaseBillingDocuments(var BillingLine: Record "Billing Line"; var ServiceObject: Record "Service Object"; var VendorContract: Record "Vendor Contract")
+    local procedure CreatePurchaseBillingDocuments(var BillingLine: Record "Billing Line"; var ServiceObject: Record "Subscription Header"; var VendorContract: Record "Vendor Subscription Contract")
     var
         VendorBillingTemplate: Record "Billing Template";
         Vendor: Record Vendor;
@@ -927,13 +929,13 @@ codeunit 148160 "Service Comm. Dimensions"
     var
         DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
-        ContractTestLibrary.CreateServiceObjectItem(Item, false);
+        ContractTestLibrary.CreateItemForServiceObject(Item, false);
         ContractTestLibrary.CreateDefaultDimensionValueForTable(Database::Item, Item."No.");
         DimMgt.AddDimSource(DefaultDimSource, Database::Item, Item."No.");
         ItemDimSetID := DimMgt.GetDefaultDimID(DefaultDimSource, '', Item."Global Dimension 1 Code", Item."Global Dimension 2 Code", 0, Database::Item);
     end;
 
-    local procedure CreateSalesBillingDocuments(var BillingLine: Record "Billing Line"; var ServiceObject: Record "Service Object"; var CustomerContract: Record "Customer Contract")
+    local procedure CreateSalesBillingDocuments(var BillingLine: Record "Billing Line"; var ServiceObject: Record "Subscription Header"; var CustomerContract: Record "Customer Subscription Contract")
     var
         CustomerBillingTemplate: Record "Billing Template";
         Customer: Record Customer;
@@ -946,7 +948,7 @@ codeunit 148160 "Service Comm. Dimensions"
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
     end;
 
-    local procedure CreateServiceCommitmentPackageWithTwoLines(ServiceCommitmentTemplate: Record "Service Commitment Template"; var ServiceCommitmentPackage: Record "Service Commitment Package"; ServiceCommPackageLine: Record "Service Comm. Package Line")
+    local procedure CreateServiceCommitmentPackageWithTwoLines(ServiceCommitmentTemplate: Record "Sub. Package Line Template"; var ServiceCommitmentPackage: Record "Subscription Package"; ServiceCommPackageLine: Record "Subscription Package Line")
     begin
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Customer, '');
@@ -955,13 +957,13 @@ codeunit 148160 "Service Comm. Dimensions"
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<12M>', 10, '12M', '<1M>', Enum::"Service Partner"::Vendor, '');
     end;
 
-    local procedure FindServiceCommitment(CustomerNo: Code[20]; var ServiceCommitment: Record "Service Commitment")
+    local procedure FindServiceCommitment(CustomerNo: Code[20]; var ServiceCommitment: Record "Subscription Line")
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
     begin
         ServiceObject.SetRange("End-User Customer No.", CustomerNo);
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
     end;
 

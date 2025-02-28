@@ -67,6 +67,10 @@ codeunit 5214 "Create Sustain. Subcategory"
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteLandFillOrganic(), WasteLandfillOrganicLbl, 0.47681, 0.05002, 0, false);
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteLandFillPlastic(), WasteLandfillPlasticLbl, 1.80842, 0.07126, 0, false);
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteRecycled(), WasteRecycledLbl, 0.28906, 0.02209, 0, false);
+
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit1(), Credit(), CreditLbl, 0, 0, 0, true);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit2(), Credit(), CreditLbl, 0, 0, 0, true);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit3(), Credit(), CreditLbl, 0, 0, 0, true);
     end;
 
     procedure CompanyCarMedium(): Code[20]
@@ -295,6 +299,11 @@ codeunit 5214 "Create Sustain. Subcategory"
         exit(WasteRecycledTok);
     end;
 
+    procedure Credit(): Code[20]
+    begin
+        exit(CreditTok);
+    end;
+
     var
         CompanyCarMediumTok: Label 'COMPCAR-M', MaxLength = 20;
         CompanyCarMediumLbl: Label 'Company Car - Medium', MaxLength = 100;
@@ -386,4 +395,6 @@ codeunit 5214 "Create Sustain. Subcategory"
         WasteLandfillPlasticLbl: Label 'Landfill Plastic Waste', MaxLength = 100;
         WasteRecycledTok: Label 'WASTE-RC', MaxLength = 20;
         WasteRecycledLbl: Label 'Recycled Waste', MaxLength = 100;
+        CreditTok: Label 'CREDIT', MaxLength = 20;
+        CreditLbl: Label 'Carbon Credit', MaxLength = 100;
 }

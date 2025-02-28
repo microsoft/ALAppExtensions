@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Document;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 /// <summary>
 /// Dealing with the creation of the purchase invoice after the draft has been populated.
@@ -19,7 +21,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseHeader: Record "Purchase Header";
         IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseInvoice;
     begin
-        IEDocumentFinishPurchaseDraft := EDocImportParameters."Finish Purchase Draft Impl.";
+        IEDocumentFinishPurchaseDraft := EDocImportParameters."Processing Customizations";
         PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseInvoice(EDocument);
         PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
         PurchaseHeader.TestField("No.");
@@ -72,6 +74,9 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 PurchaseLine.Description := EDocumentPurchaseLine.Description;
                 PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
                 PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
+                PurchaseLine.Validate("Deferral Code", EDocumentLineMapping."Deferral Code");
+                PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentLineMapping."Shortcut Dimension 1 Code");
+                PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentLineMapping."Shortcut Dimension 2 Code");
                 PurchaseLine.Insert();
             until EDocumentPurchaseLine.Next() = 0;
     end;

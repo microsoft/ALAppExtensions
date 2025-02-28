@@ -135,7 +135,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         EDocServiceStatus := Enum::"E-Document Service Status"::"Pending Batch";
         EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Pending Batch");
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
 
         if EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent then
             exit;
@@ -183,7 +183,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
                 EDocServiceStatus := Enum::"E-Document Service Status"::"Export Error";
                 EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
                 EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-                EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+                EDocumentProcessing.ModifyEDocumentStatus(EDocument);
             until EDocument.Next() = 0;
             exit;
         end;
@@ -193,7 +193,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
             EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
             EDocumentLog.ModifyDataStorageEntryNo(EDocLog, EDocDataStorageEntryNo);
             EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument);
 
             TempEDocMappingLogs.SetRange("E-Doc Entry No.", EDocument."Entry No");
             if TempEDocMappingLogs.FindSet() then

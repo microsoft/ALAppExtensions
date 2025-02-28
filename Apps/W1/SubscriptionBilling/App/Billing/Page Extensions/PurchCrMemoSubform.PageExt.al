@@ -50,7 +50,7 @@ pageextension 8072 "Purch Cr. Memo Subform" extends "Purch. Cr. Memo Subform"
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IsConnectedToBillingLine: Boolean;
         UsageDataEnabled: Boolean;
 }
