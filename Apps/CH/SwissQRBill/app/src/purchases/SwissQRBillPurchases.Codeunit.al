@@ -413,7 +413,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
             if not Confirm(PurchDocAlreadyQRImportedQst) then
                 exit;
 
-        if SwissQRBillIncomingDoc.QRBillImportDecodeToPurchase(TempIncomingDocument, FromFile) then
+        if SwissQRBillIncomingDoc.QRBillImportDecodeToPurchase(TempIncomingDocument, FromFile, PurchaseHeader."Document Type".AsInteger(), PurchaseHeader."No.") then
             ImportToPurchaseDoc(PurchaseHeader, TempIncomingDocument);
     end;
 

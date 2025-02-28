@@ -56,10 +56,20 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     internal procedure QRBillImportDecodeToPurchase(var IncomingDocument: Record "Incoming Document"; FromFile: Boolean) Result: Boolean
     var
+        DocumentType: Integer;
+        DocumentNo: Code[20];
+    begin
+        DocumentType := -1;
+        DocumentNo := '';
+        Result := QRBillImportDecodeToPurchase(IncomingDocument, FromFile, DocumentType, DocumentNo);
+    end;
+
+    internal procedure QRBillImportDecodeToPurchase(var IncomingDocument: Record "Incoming Document"; FromFile: Boolean; DocumentType: Integer; DocumentNo: Code[20]) Result: Boolean
+    var
         DecodeResult: Boolean;
         DecodeErrorLogged: Boolean;
     begin
-        Result := QRBillImportDecode(IncomingDocument, FromFile, DecodeResult, DecodeErrorLogged);
+        Result := QRBillImportDecode(IncomingDocument, FromFile, DecodeResult, DecodeErrorLogged, DocumentType, DocumentNo);
         Result := Result and DecodeResult;
     end;
 
@@ -218,13 +228,28 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     local procedure QRBillImportDecode(var IncomingDocument: Record "Incoming Document"; FromFile: Boolean; var DecodeResult: Boolean; var DecodeErrorLogged: Boolean) Result: Boolean
     var
-        TempSwissQRBillBuffer: Record "Swiss QR-Bill Buffer" temporary;
-        SwissQRBillDecode: Codeunit "Swiss QR-Bill Decode";
+        DocumentType: Integer;
+        DocumentNo: Code[20];
+    begin
+        DocumentType := -1;
+        DocumentNo := '';
+        Result := QRBillImportDecode(IncomingDocument, FromFile, DecodeResult, DecodeErrorLogged, DocumentType, DocumentNo)
+    end;
+
+    local procedure QRBillImportDecode(var IncomingDocument: Record "Incoming Document"; FromFile: Boolean; var DecodeResult: Boolean; var DecodeErrorLogged: Boolean; DocumentType: Integer; DocumentNo: Code[20]) Result: Boolean
+    var
+        TempQRBillBuffer: Record "LOGPAQRBill Buffer" temporary;
+        LOGPAQRBillDecode: Codeunit "LOGPAQRBill Decode";
+        QRBillImportHandled: Boolean;
         QRCodeText: Text;
         FileName: Text;
     begin
-        if not QRBillImport(QRCodeText, FileName, FromFile) then
-            exit(false);
+        QRBillImportHandled := false;
+        OnQRBillImportDecodeBeforeQRBillImport(QRBillImportHandled, DocumentType, DocumentNo, IncomingDocument, FromFile, DecodeResult, QRCodeText, DecodeErrorLogged);
+
+        if not QRBillImportHandled then
+            if not QRBillImport(QRCodeText, FileName, FromFile) then
+                exit(false);
 
         if not IncomingDocument.IsTemporary() then begin
             if IncomingDocument."Entry No." = 0 then
@@ -697,6 +722,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     [IntegrationEvent(false, false)]
     local procedure OnUpdatePurchDocFromIncDocOnBeforeModify(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnQRBillImportDecodeBeforeQRBillImport(var QRBillImportHandled: Boolean; DocumentType: Integer; DocumentNo: Code[20]; var IncomingDocument: Record "Incoming Document"; FromFile: Boolean; var DecodeResult: Boolean; var QRCodeText: Text; var DecodeErrorLogged: Boolean)
     begin
     end;
 }
