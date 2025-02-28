@@ -82,6 +82,29 @@ report 4405 "EXR Trial Balance Excel"
         SaveValues = true;
         AboutTitle = 'Trial Balance Excel';
         AboutText = 'This report contains aggregated general ledger data for the trial balance with debit/credit columns for net change and balance. A report is shown for both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. The aggregation is for the period specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the G/L Account.';
+                        Visible = false;
+                    }
+                }
+            }
+        }
+        trigger OnClosePage()
+        begin
+            DateFilter := GLAccounts.GetFilter("Date Filter");
+        end;
     }
     rendering
     {
@@ -99,6 +122,18 @@ report 4405 "EXR Trial Balance Excel"
         TrialBalanceACYSheet = 'Trial Balance (ACY)';
         TrialBalanceACY = 'Trial Balance (Additional Reporting Currency)';
         DataRetrieved = 'Data retrieved:';
+        TrialBalancePrint = 'Trial Balance List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCYAnalysis = 'Trial Balance LCY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACYSheetAnalysis = 'Trial Balance ACY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()
@@ -114,6 +149,7 @@ report 4405 "EXR Trial Balance Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";
