@@ -96,6 +96,14 @@ report 4411 "EXR Fixed Asset Details Excel"
                         Caption = 'Include Inactive Fixed Assets';
                         ToolTip = 'Specifies if you want to include inactive fixed assets in the report.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(PostingDateFilter; FAPostingDateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'FA Posting Date Filter';
+                        ToolTip = 'Specifies the Posting Date Filter to of fixed asset ledger entries to include in the report.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -109,6 +117,10 @@ report 4411 "EXR Fixed Asset Details Excel"
             DepreciationBookCode := FASetup."Default Depr. Book";
         end;
 
+        trigger OnClosePage()
+        begin
+            FAPostingDateFilter := FixedAssetData.GetFilter("FA Posting Date Filter");
+        end;
     }
     rendering
     {
@@ -123,19 +135,29 @@ report 4411 "EXR Fixed Asset Details Excel"
     labels
     {
         DataRetrieved = 'Data retrieved:';
-        FixedAssetDetails = 'Fixed Asset Details', Comment = 'Max length: 31. Excel worksheet name.';
+        FixedAssetDetails = 'Fixed Asset Details';
+        FixedAssetDetailsPrint = 'Fixed Asset Details (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        FixedAssetDetailsAnalysis = 'Fixed Asset Details (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         AssetDescriptionLabel = 'Asset Description';
         PostingDateFilterLabel = 'Posting Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
         DepreciationBookCode: Code[20];
         PrintReversedEntries, IncludeInactive : Boolean;
+        FAPostingDateFilter: Text;
 
     trigger OnPreReport()
     begin
         ExcelReportsTelemetry.LogReportUsage(Report::"EXR Fixed Asset Details Excel");
     end;
-
 }
