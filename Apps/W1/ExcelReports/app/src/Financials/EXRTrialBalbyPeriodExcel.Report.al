@@ -91,6 +91,14 @@ report 4408 "EXR Trial Bal by Period Excel"
                         Caption = 'Period Length';
                         ToolTip = 'Specifies the period for which data is shown in the report. For example, enter "1M" for one month, "30D" for thirty days, "3Q" for three quarters, or "5Y" for five years.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the EXR Trial Bal. by Period Report.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -98,6 +106,11 @@ report 4408 "EXR Trial Bal by Period Excel"
         trigger OnOpenPage()
         begin
             Evaluate(PeriodLength, '<1M>');
+        end;
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TrialBalanceByPeriod.GetFilter("Date Filter");
         end;
     }
 
@@ -115,7 +128,18 @@ report 4408 "EXR Trial Bal by Period Excel"
     {
         DataRetrieved = 'Data retrieved:';
         TrialBalanceByPeriod = 'Trial Balance by Period';
+        TrialBalanceByPeriodPrint = 'Trial Bal. by Period (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceByPeriodAnalysis = 'Trial Bal. by Period (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         YearPeriodStart = 'Year';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
     trigger OnPreReport()
     var
@@ -137,6 +161,7 @@ report 4408 "EXR Trial Bal by Period Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";
