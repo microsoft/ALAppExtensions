@@ -1,11 +1,13 @@
 namespace Microsoft.PowerBIReports.Test;
 
 using Microsoft.Finance.PowerBIReports;
+using Microsoft.PowerBIReports;
 using Microsoft.Sales.PowerBIReports;
 using Microsoft.Manufacturing.PowerBIReports;
 using Microsoft.Projects.PowerBIReports;
 using Microsoft.Purchases.PowerBIReports;
 using Microsoft.Inventory.PowerBIReports;
+using Microsoft.Sustainability.PowerBIReports;
 
 codeunit 139792 "PowerBI API Requests"
 {
@@ -16,6 +18,8 @@ codeunit 139792 "PowerBI API Requests"
         ManufacturingFilterHelper: Codeunit "Manuf. Filter Helper";
         ProjectFilterHelper: Codeunit "Project Filter Helper";
         PurchasesFilterHelper: Codeunit "Purchases Filter Helper";
+        SustainabilityFilterHelper: Codeunit "PBI Sustain. Filter Helper";
+
     begin
         case Scenario of
             Scenario::"Finance Date":
@@ -30,6 +34,8 @@ codeunit 139792 "PowerBI API Requests"
                 exit(ProjectFilterHelper.GenerateJobLedgerDateFilter());
             Scenario::"Purchases Date":
                 exit(PurchasesFilterHelper.GenerateItemPurchasesReportDateFilter());
+            Scenario::"Sustainability Date":
+                exit(SustainabilityFilterHelper.GenerateSustainabilityReportDateFilter());
         end;
     end;
 
@@ -150,6 +156,24 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetQueryUrlFromObjectId(Query::"Manuf. Value Entries - PBI API"));
             PowerBIEndpoint::"Work Center Groups":
                 exit(GetQueryUrlFromObjectId(Query::"Work Center Groups - PBI API"));
+            PowerBIEndpoint::"Employee Ledger Entry":
+                exit(GetQueryUrlFromObjectId(Query::"EmployeeLedgerEntry - PBI API"));
+            PowerBIEndpoint::"Sustainability Ledger Entry":
+                exit(GetQueryUrlFromObjectId(Query::"Sust Ledger Entries - PBI API"));
+            PowerBIEndpoint::"Sales Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Line - PBI API"));
+            PowerBIEndpoint::"Opportunity":
+                exit(GetQueryUrlFromObjectId(Query::"Opportunity - PBI API"));
+            PowerBIEndpoint::"Opportunity Entries":
+                exit(GetQueryUrlFromObjectId(Query::"Opportunity Entries - PBI API"));
+            PowerBIEndpoint::Contacts:
+                exit(GetPageUrlFromObjectId(Page::"Contacts - PBI API"));
+            PowerBIEndpoint::"Item Categories":
+                exit(GetPageUrlFromObjectId(Page::"Item Category - PBI API"));
+            PowerBIEndpoint::"Return Reason Codes":
+                exit(GetPageUrlFromObjectId(Page::"Return Reason Code - PBI API"));
+            PowerBIEndpoint::"Inv. Adj. Ent Order":
+                exit(GetQueryUrlFromObjectId(Query::"Inv. Adj. Ent Order - PBI API"));
         end;
     end;
 
@@ -160,4 +184,10 @@ codeunit 139792 "PowerBI API Requests"
         exit(LibGraphMgt.CreateQueryTargetURL(ObjectId, ''));
     end;
 
+    local procedure GetPageUrlFromObjectId(ObjectId: Integer): Text
+    var
+        LibGraphMgt: Codeunit "Library - Graph Mgt";
+    begin
+        exit(LibGraphMgt.CreateTargetURL('', ObjectId, ''));
+    end;
 }

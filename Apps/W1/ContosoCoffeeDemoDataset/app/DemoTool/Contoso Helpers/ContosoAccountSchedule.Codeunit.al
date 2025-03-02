@@ -49,6 +49,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertAccScheduleLine(ScheduleName: Code[10]; LineNo: Integer; RowNo: Code[10]; Description: Text[100]; Totaling: Text[250]; TotalingType: Enum "Acc. Schedule Line Totaling Type"; Show: Enum "Acc. Schedule Line Show"; Dimension1Totaling: Text[250]; Bold: Boolean; Italic: Boolean; Underline: Boolean; ShowOppositeSign: Boolean; RowType: Integer)
+    begin
+        InsertAccScheduleLine(ScheduleName, LineNo, RowNo, Description, Totaling, TotalingType, Show, Dimension1Totaling, Bold, Italic, Underline, ShowOppositeSign, RowType, Enum::"Account Schedule Amount Type"::"Net Amount");
+    end;
+
+    procedure InsertAccScheduleLine(ScheduleName: Code[10]; LineNo: Integer; RowNo: Code[10]; Description: Text[100]; Totaling: Text[250]; TotalingType: Enum "Acc. Schedule Line Totaling Type"; Show: Enum "Acc. Schedule Line Show"; Dimension1Totaling: Text[250]; Bold: Boolean; Italic: Boolean; Underline: Boolean; ShowOppositeSign: Boolean; RowType: Integer; NetAmountType: Enum "Account Schedule Amount Type")
     var
         AccScheduleLine: Record "Acc. Schedule Line";
         Exists: Boolean;
@@ -79,6 +84,7 @@ codeunit 5239 "Contoso Account Schedule"
         AccScheduleLine.Validate(Underline, Underline);
         AccScheduleLine.Validate("Show Opposite Sign", ShowOppositeSign);
         AccScheduleLine.Validate("Row Type", RowType);
+        AccScheduleLine.Validate("Amount Type", NetAmountType);
 
         if Exists then
             AccScheduleLine.Modify(true)

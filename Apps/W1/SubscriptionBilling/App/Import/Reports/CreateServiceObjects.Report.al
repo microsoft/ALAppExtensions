@@ -5,13 +5,13 @@ report 8001 "Create Service Objects"
     ApplicationArea = All;
     UsageCategory = None;
     ProcessingOnly = true;
-    Caption = 'Create Service Objects';
+    Caption = 'Create Subscriptions';
 
     dataset
     {
-        dataitem(ImportedServiceObjectDataItem; "Imported Service Object")
+        dataitem(ImportedServiceObjectDataItem; "Imported Subscription Header")
         {
-            DataItemTableView = where("Service Object created" = const(false));
+            DataItemTableView = where("Subscription Header created" = const(false));
 
             trigger OnPreDataItem()
             begin
@@ -28,7 +28,7 @@ report 8001 "Create Service Objects"
 
                 ClearLastError();
                 ImportedServiceObject := ImportedServiceObjectDataItem;
-                if not Codeunit.Run(Codeunit::"Create Service Object", ImportedServiceObject) then begin
+                if not Codeunit.Run(Codeunit::"Create Subscription Header", ImportedServiceObject) then begin
                     ImportedServiceObject."Error Text" := CopyStr(GetLastErrorText, 1, MaxStrLen(ImportedServiceObject."Error Text"));
                     ImportedServiceObject.Modify(false);
                 end;
@@ -62,7 +62,7 @@ report 8001 "Create Service Objects"
     end;
 
     var
-        ImportedServiceObject: Record "Imported Service Object";
+        ImportedServiceObject: Record "Imported Subscription Header";
         Window: Dialog;
         NoOfRecords: Integer;
         Counter: Integer;

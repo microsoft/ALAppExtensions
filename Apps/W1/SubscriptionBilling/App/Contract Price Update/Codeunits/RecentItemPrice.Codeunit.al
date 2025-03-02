@@ -6,8 +6,8 @@ codeunit 8011 "Recent Item Price" implements "Contract Price Update"
 
     var
         PriceUpdateTemplate: Record "Price Update Template";
-        ServiceCommitment: Record "Service Commitment";
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
+        ServiceCommitment: Record "Subscription Line";
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
         PriceUpdateManagement: Codeunit "Price Update Management";
         IncludeServiceCommitmentUpToDate: Date;
         PerformUpdateOnDate: Date;
@@ -34,7 +34,7 @@ codeunit 8011 "Recent Item Price" implements "Contract Price Update"
                     ContractPriceUpdateLine."Price Update Template Code" := PriceUpdateTemplate.Code;
                     ContractPriceUpdateLine.UpdatePerformUpdateOn(ServiceCommitment, PerformUpdateOnDate);
                     ContractPriceUpdateLine.UpdateFromServiceCommitment(ServiceCommitment);
-                    ContractPriceUpdateLine.UpdateFromContract(ServiceCommitment.Partner, ServiceCommitment."Contract No.");
+                    ContractPriceUpdateLine.UpdateFromContract(ServiceCommitment.Partner, ServiceCommitment."Subscription Contract No.");
                     CalculateNewPrice(PriceUpdateTemplate."Update Value %", ContractPriceUpdateLine);
                     ContractPriceUpdateLine."Next Price Update" := CalcDate(PriceUpdateTemplate."Price Binding Period", ContractPriceUpdateLine."Perform Update On");
                     if ContractPriceUpdateLine.ShouldContractPriceUpdateLineBeInserted() then
@@ -45,7 +45,7 @@ codeunit 8011 "Recent Item Price" implements "Contract Price Update"
             until ServiceCommitment.Next() = 0;
     end;
 
-    internal procedure CalculateNewPrice(UpdatePercentValue: Decimal; var NewContractPriceUpdateLine: Record "Contract Price Update Line")
+    internal procedure CalculateNewPrice(UpdatePercentValue: Decimal; var NewContractPriceUpdateLine: Record "Sub. Contr. Price Update Line")
     begin
         NewContractPriceUpdateLine."New Calculation Base %" := NewContractPriceUpdateLine."Old Calculation Base %";
         NewContractPriceUpdateLine.CalculateNewCalculationBaseAmount();

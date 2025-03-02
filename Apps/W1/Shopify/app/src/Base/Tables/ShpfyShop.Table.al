@@ -47,11 +47,7 @@ table 30102 "Shpfy Shop"
                 AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
                 if ("Shopify URL" <> '') then begin
-                    if not "Shopify URL".ToLower().StartsWith('https://') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
-
-                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+                    AuthenticationMgt.CorrectShopUrl("Shopify URL");
 
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
@@ -776,6 +772,11 @@ table 30102 "Shpfy Shop"
             Caption = 'Sync Business Central Doc. No. as Attribute';
             DataClassification = SystemMetadata;
             InitValue = true;
+        }
+        field(134; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
+        {
+            Caption = 'Company Tax Id Mapping';
+            DataClassification = CustomerContent;
         }
         field(200; "Shop Id"; Integer)
         {

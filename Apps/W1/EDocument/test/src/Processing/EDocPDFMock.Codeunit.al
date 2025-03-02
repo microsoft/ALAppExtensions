@@ -28,6 +28,7 @@ codeunit 139782 "E-Doc PDF Mock" implements IBlobType, IBlobToStructuredDataConv
     begin
         if not EDocumentPurchaseHeader.Get(EDocument."Entry No") then begin
             EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
+            EDocumentPurchaseHeader."Vendor VAT Id" := '1111111111234';
             EDocumentPurchaseHeader.Insert();
         end;
         exit(Enum::"E-Doc. Structured Data Process"::"Purchase Document");

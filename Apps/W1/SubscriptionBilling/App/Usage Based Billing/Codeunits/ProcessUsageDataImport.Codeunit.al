@@ -21,7 +21,7 @@ codeunit 8027 "Process Usage Data Import"
             repeat
                 UsageDataSupplier.Get(UsageDataImport."Supplier No.");
                 UsageDataImport."Processing Status" := Enum::"Processing Status"::None;
-                if Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport) then begin
+                if Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport) then begin
                     if UsageDataImport."Processing Status" <> Enum::"Processing Status"::Error then
                         UsageDataImport.Validate("Processing Status", Enum::"Processing Status"::Ok);
                 end else begin

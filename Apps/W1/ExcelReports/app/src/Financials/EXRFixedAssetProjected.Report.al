@@ -62,6 +62,11 @@ report 4413 "EXR Fixed Asset Projected"
             trigger OnAfterGetRecord()
             begin
                 Clear(GlobalFADepreciationBook);
+                Clear(CalculateDepreciation);
+                Clear(DepreciationCalculation);
+                Clear(FADateCalculation);
+                Clear(CalculateDisposal);
+                Clear(TableDeprCalculation);
                 GlobalFADepreciationBook.SetAutoCalcFields("Book Value", "Custom 1");
                 if not GlobalFADepreciationBook.Get(FixedAssetData."No.", GlobalDepreciationBook.Code) then;
 

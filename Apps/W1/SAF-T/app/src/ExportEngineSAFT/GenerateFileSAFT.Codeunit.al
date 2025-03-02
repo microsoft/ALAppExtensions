@@ -1198,9 +1198,9 @@ codeunit 5289 "Generate File SAF-T"
                     XmlHelper.FinalizeXmlNode();        // close previous Transaction node
                 ExportGLEntryTransactionInfo(GLEntry, CurrentTransactionID);
                 PrevTransactionID := GetSAFTTransactionID(GLEntry);
-                SAFTDataMgt.GetFCYData(CurrencyCode, ExchangeRate, GLEntry, AuditFileExportHeader."Export Currency Information");
             end;
 
+            SAFTDataMgt.GetFCYData(CurrencyCode, ExchangeRate, GLEntry, AuditFileExportHeader."Export Currency Information");
             ExportGLEntryLine(GLEntry, CurrencyCode, ExchangeRate);
         until not GLEntrySAFT.Read();
 
@@ -2746,6 +2746,7 @@ codeunit 5289 "Generate File SAF-T"
         GLEntry."VAT Bus. Posting Group" := GLEntrySAFT.VAT_Bus__Posting_Group;
         GLEntry."VAT Prod. Posting Group" := GLEntrySAFT.VAT_Prod__Posting_Group;
         GLEntry."Last Modified DateTime" := GLEntrySAFT.Last_Modified_DateTime;
+        GLEntry.Amount := GLEntrySAFT.Amount;
         GLEntry."Debit Amount" := GLEntrySAFT.Debit_Amount;
         GLEntry."Credit Amount" := GLEntrySAFT.Credit_Amount;
     end;

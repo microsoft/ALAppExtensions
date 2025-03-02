@@ -3,9 +3,9 @@ namespace Microsoft.SubscriptionBilling;
 page 8057 "Service Commitment Packages"
 {
     ApplicationArea = All;
-    Caption = 'Service Commitment Packages';
+    Caption = 'Subscription Packages';
     PageType = List;
-    SourceTable = "Service Commitment Package";
+    SourceTable = "Subscription Package";
     UsageCategory = Administration;
     CardPageId = "Service Commitment Package";
     Editable = false;
@@ -18,15 +18,15 @@ page 8057 "Service Commitment Packages"
                 field("Code"; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment package.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package.';
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                 }
                 field("Price Group"; Rec."Price Group")
                 {
-                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of services.';
+                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of Subscription Lines.';
                 }
             }
         }
@@ -45,9 +45,9 @@ page 8057 "Service Commitment Packages"
             }
             action(CopyServiceCommitmentPackage)
             {
-                Caption = 'Copy Service Commitment Package';
+                Caption = 'Copy Subscription Package';
                 Image = Copy;
-                ToolTip = 'Creates a copy of the current service commitment package.';
+                ToolTip = 'Creates a copy of the current Subscription Package.';
                 trigger OnAction()
                 begin
                     Rec.CopyServiceCommitmentPackage();

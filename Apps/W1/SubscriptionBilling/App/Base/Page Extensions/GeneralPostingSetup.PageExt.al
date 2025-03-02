@@ -8,30 +8,26 @@ pageextension 8070 "General Posting Setup" extends "General Posting Setup"
     {
         addlast(Control1)
         {
-            field(CustomerContractAccount; Rec."Customer Contract Account")
+            field(CustomerContractAccount; Rec."Cust. Sub. Contract Account")
             {
                 ApplicationArea = All;
-                Caption = 'Customer Contract Account';
-                ToolTip = 'Specifies the G/L account to which customer contract revenue (Subscription Billing) is posted.';
+                ToolTip = 'Specifies the G/L account to which Customer Subscription Contract revenue is posted.';
 
             }
-            field(CustContrDeferralAccount; Rec."Cust. Contr. Deferral Account")
+            field(CustContrDeferralAccount; Rec."Cust. Sub. Contr. Def Account")
             {
                 ApplicationArea = All;
-                Caption = 'Customer Contract Deferral Account';
-                ToolTip = 'Specifies the G/L account to which customer contract revenue (Subscription Billing) is accrued.';
+                ToolTip = 'Specifies the G/L account to which Customer Subscription Contract revenue is accrued.';
             }
-            field(VendorContractAccount; Rec."Vendor Contract Account")
+            field(VendorContractAccount; Rec."Vend. Sub. Contract Account")
             {
                 ApplicationArea = All;
-                Caption = 'Vendor Contract Account';
-                ToolTip = 'Specifies the G/L account to which vendor contract costs (Subscription Billing) are posted.';
+                ToolTip = 'Specifies the G/L account to which Vendor Subscription Contract costs are posted.';
             }
-            field(VendContrDeferralAccount; Rec."Vend. Contr. Deferral Account")
+            field(VendContrDeferralAccount; Rec."Vend. Sub. Contr. Def. Account")
             {
                 ApplicationArea = All;
-                Caption = 'Vendor Contract Deferral Account';
-                ToolTip = 'Specifies the G/L account to which vendor contract costs (Subscription Billing) are accrued.';
+                ToolTip = 'Specifies the G/L account to which Vendor Subscription Contract costs are accrued.';
             }
         }
     }

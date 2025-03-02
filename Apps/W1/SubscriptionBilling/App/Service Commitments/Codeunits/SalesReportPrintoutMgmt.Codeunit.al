@@ -12,9 +12,9 @@ codeunit 8073 "Sales Report Printout Mgmt."
     SingleInstance = true;
 
     var
-        ReportFormatting: Codeunit "Report Formatting";
-        RecurringServicesTotalLbl: Label 'Recurring Services (* Part of Recurring Billing)';
-        RecurringServicesPerLineLbl: Label 'Recurring Services*';
+        ReportFormattingGlobal: Codeunit "Report Formatting";
+        RecurringServicesTotalLbl: Label 'Recurring Subscriptions (* Part of Recurring Billing)';
+        RecurringServicesPerLineLbl: Label 'Recurring Subscriptions*';
         TotalTextTok: Label 'TotalText', Locked = true;
 
     [InternalEvent(false, false)]
@@ -25,8 +25,8 @@ codeunit 8073 "Sales Report Printout Mgmt."
     internal procedure ExcludeItemFromTotals(var SalesLine: Record "Sales Line"; var TotalSubTotal: Decimal; var TotalInvDiscAmount: Decimal; var TotalAmount: Decimal; var TotalAmountVAT: Decimal; var TotalAmountInclVAT: Decimal)
     var
         Item: Record Item;
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
-        ContractsItemManagement: Codeunit "Contracts Item Management";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
+        ContractsItemManagement: Codeunit "Sub. Contracts Item Management";
         IsHandled: Boolean;
         IncludeLineInTotals: Boolean;
     begin
@@ -77,7 +77,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
                 ServCommGroup.SetRange("Value Long", ServCommGroupPerPeriod."Value Long");
                 if ServCommGroup.IsEmpty then begin
                     ServCommGroup.Reset();
-                    ReportFormatting.AddValueToBuffer(ServCommGroup, '', '', ServCommGroupPerPeriod."Value Long");
+                    ReportFormattingGlobal.AddValueToBuffer(ServCommGroup, '', '', ServCommGroupPerPeriod."Value Long");
                 end else
                     ServCommGroup.Reset();
             until ServCommGroupPerPeriod.Next() = 0;
@@ -87,7 +87,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
 
     procedure FillServiceCommitmentsGroupPerPeriod(var SalesHeader: Record "Sales Header"; var GroupPerPeriod: Record "Name/Value Buffer")
     var
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
         TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
         FormatDocument: Codeunit "Format Document";
         TotalText: Text[50];
@@ -98,14 +98,14 @@ codeunit 8073 "Sales Report Printout Mgmt."
     begin
         FormatDocument.SetTotalLabels(SalesHeader.GetCurrencySymbol(), TotalText, TotalInclVATText, TotalExclVATText);
         SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
-        OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader, TempSalesServiceCommitmentBuff, GroupPerPeriod, UniqueRhythmDictionary, TotalText, TotalInclVATText, TotalExclVATText, IsHandled);
+        OnBeforeFillSubscriptionLinesGroupPerPeriod(SalesHeader, TempSalesServiceCommitmentBuff, GroupPerPeriod, UniqueRhythmDictionary, TotalText, TotalInclVATText, TotalExclVATText, IsHandled);
         if not IsHandled then
             FillServiceCommitmentsGroupPerPeriod(TempSalesServiceCommitmentBuff, GroupPerPeriod, UniqueRhythmDictionary, SalesHeader."Currency Code", TotalInclVATText, TotalExclVATText);
     end;
 
     procedure FillServiceCommitmentsForLine(var SalesHeader: Record "Sales Header"; var SalesLineServiceCommitments: Record "Sales Line"; var SalesLineServiceCommitmentsCaption: Record "Name/Value Buffer")
     var
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
         SalesLine: Record "Sales Line";
     begin
         SalesServiceCommitment.SetRange("Document Type", SalesHeader."Document Type");
@@ -125,8 +125,8 @@ codeunit 8073 "Sales Report Printout Mgmt."
                 SalesLineServiceCommitments.Insert(false);
             until SalesServiceCommitment.Next() = 0;
             // Adds captions for Line Details
-            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, TotalTextTok, RecurringServicesTotalLbl);
-            ReportFormatting.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName(Description), RecurringServicesPerLineLbl);
+            ReportFormattingGlobal.AddValueToBuffer(SalesLineServiceCommitmentsCaption, TotalTextTok, RecurringServicesTotalLbl);
+            ReportFormattingGlobal.AddValueToBuffer(SalesLineServiceCommitmentsCaption, SalesLineServiceCommitments.FieldName(Description), RecurringServicesPerLineLbl);
         end;
     end;
 
@@ -134,7 +134,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
     var
         Currency: Record Currency;
         AutoFormat: Codeunit "Auto Format";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         ReportFormatting: Codeunit "Report Formatting";
         RhythmIdentifier: Code[20];
         AutoFormatType: Enum "Auto Format";
@@ -174,7 +174,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(SalesHeader: Record "Sales Header"; var TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; TotalText: Text[50]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50]; var IsHandled: Boolean)
+    local procedure OnBeforeFillSubscriptionLinesGroupPerPeriod(SalesHeader: Record "Sales Header"; var TempSalesSubscriptionLineBuff: Record "Sales Service Commitment Buff." temporary; var GroupPerPeriod: Record "Name/Value Buffer"; var UniqueRhythmDictionary: Dictionary of [Code[20], Text]; TotalText: Text[50]; TotalInclVATText: Text[50]; TotalExclVATText: Text[50]; var IsHandled: Boolean)
     begin
     end;
 

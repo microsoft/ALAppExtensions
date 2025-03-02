@@ -25,7 +25,7 @@ page 8066 "Billing Templates"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or vendor contracts.';
+                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
                 }
                 field(HasContractFilterField; Rec.Filter.HasValue)
                 {
@@ -34,15 +34,15 @@ page 8066 "Billing Templates"
                 }
                 field("Billing Date Formula"; Rec."Billing Date Formula")
                 {
-                    ToolTip = 'Specifies the formula for the date filter, which is used to filter billable service commitments ("Next Billing Date").';
+                    ToolTip = 'Specifies the formula for the date filter, which is used to filter billable Subscription Lines ("Next Billing Date").';
                 }
                 field("Billing to Date Formula"; Rec."Billing to Date Formula")
                 {
-                    ToolTip = 'Specifies the optional formula for the date filter, for the maximum date up to which the service commitments are to be billed.';
+                    ToolTip = 'Specifies the optional formula for the date filter, for the maximum date up to which the Subscription Lines are to be billed.';
                 }
                 field("My Suggestions Only"; Rec."My Suggestions Only")
                 {
-                    ToolTip = 'Specifies whether the service commitments which are to be billed are filtered only for myself.';
+                    ToolTip = 'Specifies whether the Subscription Lines which are to be billed are filtered only for myself.';
                 }
                 field("Group by"; Rec."Group by")
                 {

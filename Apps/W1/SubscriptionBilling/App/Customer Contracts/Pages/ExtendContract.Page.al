@@ -1,14 +1,13 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Sales.Document;
 using Microsoft.Sales.Customer;
 using Microsoft.Inventory.Item.Catalog;
 
 page 8002 "Extend Contract"
 {
     ApplicationArea = All;
-    Caption = 'Extend Contract';
+    Caption = 'Extend Subscription Contract';
     LinksAllowed = false;
     PageType = Card;
     UsageCategory = Tasks;
@@ -24,8 +23,8 @@ page 8002 "Extend Contract"
 
                 field(ExtendVendorContract; ExtendVendorContract)
                 {
-                    Caption = 'Extend Vendor Contract';
-                    ToolTip = 'Specifies whether Vendor Contract should be extended with provided service commitment.';
+                    Caption = 'Extend Vendor Subscription Contract';
+                    ToolTip = 'Specifies whether Vendor Subscription Contract should be extended with provided Subscription Line.';
 
                     trigger OnValidate()
                     begin
@@ -48,13 +47,13 @@ page 8002 "Extend Contract"
                 {
                     ApplicationArea = All;
                     Caption = 'Subscription';
-                    ToolTip = 'Specifies the subscription for which the Service Object and Service Commitments are created.';
+                    ToolTip = 'Specifies the subscription for which the Subscription and Subscription Lines are created.';
                     Editable = false;
 
                     trigger OnAssistEdit()
                     var
-                        UsageDataSubscription: Record "Usage Data Subscription";
-                        UsageDataCustomer: Record "Usage Data Customer";
+                        UsageDataSubscription: Record "Usage Data Supp. Subscription";
+                        UsageDataCustomer: Record "Usage Data Supp. Customer";
                     begin
                         if SubscriptionEntryNo <> 0 then
                             UsageDataSubscription.Get(SubscriptionEntryNo);
@@ -71,10 +70,10 @@ page 8002 "Extend Contract"
                 }
                 field(VendorContractNo; VendorContractNo)
                 {
-                    Caption = 'Vendor Contract No.';
-                    ToolTip = 'Specifies the vendor contract that will be extended.';
+                    Caption = 'Vendor Subscription Contract No.';
+                    ToolTip = 'Specifies the Vendor Subscription Contract that will be extended.';
                     Editable = ExtendVendorContract;
-                    TableRelation = "Vendor Contract";
+                    TableRelation = "Vendor Subscription Contract";
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
@@ -89,7 +88,7 @@ page 8002 "Extend Contract"
                 field("Buy-from Vendor Name"; VendorContract."Buy-from Vendor Name")
                 {
                     Caption = 'Buy-from Vendor Name';
-                    ToolTip = 'Specifies to which vendor the selected vendor contract is created.';
+                    ToolTip = 'Specifies to which vendor the selected Vendor Subscription Contract is created.';
                     Editable = false;
                     Enabled = false;
                 }
@@ -99,8 +98,8 @@ page 8002 "Extend Contract"
                 Caption = 'Customer';
                 field(ExtendCustomerContract; ExtendCustomerContract)
                 {
-                    Caption = 'Extend Customer Contract';
-                    ToolTip = 'Specifies whether Customer Contract should be extended with provided Service Commitment.';
+                    Caption = 'Extend Customer Subscription Contract';
+                    ToolTip = 'Specifies whether Customer Subscription Contract should be extended with provided Subscription Line.';
 
                     trigger OnValidate()
                     begin
@@ -110,13 +109,13 @@ page 8002 "Extend Contract"
                 field("Customer Name"; CustomerContract."Sell-to Customer Name")
                 {
                     Caption = 'Customer Name';
-                    ToolTip = 'Specifies the customer to whom the customer contract to be extended is created.';
+                    ToolTip = 'Specifies the customer to whom the Customer Subscription Contract to be extended is created.';
                     Editable = false;
                 }
                 field(CustomerContractNo; CustomerContractNo)
                 {
-                    Caption = 'Customer Contract No.';
-                    ToolTip = 'Specifies the customer contract to be extended.';
+                    Caption = 'Customer Subscription Contract No.';
+                    ToolTip = 'Specifies the Customer Subscription Contract to be extended.';
                     Editable = ExtendCustomerContract;
 
                     trigger OnLookup(var Text: Text): Boolean
@@ -132,14 +131,14 @@ page 8002 "Extend Contract"
                 field("Sell-to Customer Name"; CustomerContract."Sell-to Customer Name")
                 {
                     Caption = 'Sell-to Customer Name';
-                    ToolTip = 'Specifies the customer to whom the customer contract to be extended is created.';
+                    ToolTip = 'Specifies the customer to whom the Customer Subscription Contract to be extended is created.';
                     Editable = ExtendCustomerContract;
                     Enabled = false;
                 }
                 field("Contract Type"; CustomerContract."Contract Type")
                 {
                     Caption = 'Contract Type';
-                    ToolTip = 'Shows the contract type of the selected customer contract.';
+                    ToolTip = 'Shows the Subscription Contract Type of the selected Customer Subscription Contract.';
                     Editable = false;
                     Enabled = false;
                     Visible = false;
@@ -151,8 +150,8 @@ page 8002 "Extend Contract"
                 field(ItemNo; ItemNo)
                 {
                     Caption = 'Item No.';
-                    ToolTip = 'Specifies the item number for the service commitment to be created.';
-                    TableRelation = Item where("Service Commitment Option" = const("Service Commitment Item"));
+                    ToolTip = 'Specifies the item number for the Subscription Line to be created.';
+                    TableRelation = Item where("Subscription Option" = const("Service Commitment Item"));
 
                     trigger OnValidate()
                     begin
@@ -164,13 +163,13 @@ page 8002 "Extend Contract"
                 field(ItemDescription; ItemDescription)
                 {
                     Caption = 'Description';
-                    ToolTip = 'Specifies the item description for the service commitment item to be created.';
+                    ToolTip = 'Specifies the item description for the Subscription Item to be created.';
                     Editable = false;
                 }
                 field(AdditionalServiceCommitments; StrSubstNo(NoOfSelectedPackagesLbl, SelectedServiceCommitmentPackages, TotalServiceCommitmentPackage))
                 {
-                    Caption = 'Additional Service Commitments';
-                    ToolTip = 'Specifies if services (in addition to those marked as "Default") have been selected. AssistEdit allows the selection of additional services.';
+                    Caption = 'Additional Subscription Lines';
+                    ToolTip = 'Specifies if Subscription Lines (in addition to those marked as "Default") have been selected. AssistEdit allows the selection of additional Subscription Lines.';
                     Editable = false;
 
                     trigger OnAssistEdit()
@@ -182,7 +181,7 @@ page 8002 "Extend Contract"
                 field(Quantity; QuantityDecimal)
                 {
                     Caption = 'Quantity';
-                    ToolTip = 'Specifies the quantity for the service commitment item to be created.';
+                    ToolTip = 'Specifies the quantity for the Subscription Item to be created.';
 
                     trigger OnValidate()
                     begin
@@ -194,6 +193,7 @@ page 8002 "Extend Contract"
                 {
                     Caption = 'Unit Cost (LCY)';
                     ToolTip = 'Specifies the cost price in customer currency for the selected item.';
+                    DecimalPlaces = 2 : 5;
                     Editable = false;
                 }
                 field(UnitPrice; UnitPrice)
@@ -206,7 +206,7 @@ page 8002 "Extend Contract"
                 field(ProvisionStartDate; ProvisionStartDate)
                 {
                     Caption = 'Provision Start Date';
-                    ToolTip = 'Specifies the date on which the service commitment item and services will be provided.';
+                    ToolTip = 'Specifies the date on which the Subscription Item and Subscription Lines will be provided.';
                 }
             }
         }
@@ -219,7 +219,7 @@ page 8002 "Extend Contract"
             action("Perform Extension")
             {
                 Caption = 'Perform Extension';
-                ToolTip = 'Performs the creation of a service object and the extension of the contracts as specified.';
+                ToolTip = 'Performs the creation of a Subscription and the extension of the contracts as specified.';
                 Image = AddAction;
                 Visible = not IsLookupMode;
 
@@ -281,13 +281,13 @@ page 8002 "Extend Contract"
 
     local procedure ExtendContract()
     var
-        ServiceObject: Record "Service Object";
-        ServiceCommitment: Record "Service Commitment";
+        ServiceObject: Record "Subscription Header";
+        ServiceCommitment: Record "Subscription Line";
     begin
         if SupplierReferenceEntryNo <> 0 then begin
             ServiceCommitment.SetRange("Supplier Reference Entry No.", SupplierReferenceEntryNo);
             if ServiceCommitment.FindFirst() then
-                Error(SubscriptionIsLinkedToServiceCommitmentErr, ServiceCommitment."Service Object No.");
+                Error(SubscriptionIsLinkedToServiceCommitmentErr, ServiceCommitment."Subscription Header No.");
         end;
         if ExtendCustomerContract then
             CustomerContract.TestField("No.");
@@ -376,13 +376,15 @@ page 8002 "Extend Contract"
 
     internal procedure ValidateItemNo()
     begin
-        if ItemNo = Item."No." then
-            exit;
-
         if ItemNo = '' then begin
+            UnitPrice := 0;
+            UnitCostLCY := 0;
             Clear(Item);
             exit;
         end;
+
+        if ItemNo = Item."No." then
+            exit;
 
         FillTempServiceCommitmentPackage();
 
@@ -396,7 +398,7 @@ page 8002 "Extend Contract"
 
     local procedure ErrorIfItemServCommPackageMissingForItem()
     var
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         ItemPackageMissingErrorInfo: ErrorInfo;
     begin
         ItemServCommitmentPackage.SetRange("Item No.", Item."No.");
@@ -423,12 +425,12 @@ page 8002 "Extend Contract"
 
     local procedure ValidateSubscriptionEntryNo()
     var
-        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
-        UsageDataCustomer: Record "Usage Data Customer";
+        UsageDataCustomer: Record "Usage Data Supp. Customer";
         ItemVendor: Record "Item Vendor";
-        ServiceCommitment: Record "Service Commitment";
-        SubscriptionAlreadyConnectedErr: Label 'This Subscription is already connected to Service Object %1 Service Commitment %2. Contract extension is not possible.', Comment = '%1 = ServiceCommitment."Service Object No.",  %2 = ServiceCommitment."Line No."';
+        ServiceCommitment: Record "Subscription Line";
+        SubscriptionAlreadyConnectedErr: Label 'This Subscription is already connected to Subscription %1 Subscription Line %2. Contract extension is not possible.', Comment = '%1 = SubscriptionLine."Subscription No.",  %2 = SubscriptionLine."Line No."';
     begin
         SubscriptionDescription := '';
         if SubscriptionEntryNo <> 0 then begin
@@ -457,26 +459,16 @@ page 8002 "Extend Contract"
                 end;
 
             if (UsageDataSupplierNo <> '') and (UsageDataSubscription."Supplier Reference Entry No." <> 0) then
-                if GenericUsageDataImport.GetServiceCommitmentForSubscription(UsageDataSupplierNo, UsageDataSubscription."Supplier Reference", ServiceCommitment) then
-                    Error(SubscriptionAlreadyConnectedErr, ServiceCommitment."Service Object No.", ServiceCommitment."Entry No.");
+                if ImportAndProcessUsageData.GetServiceCommitmentForSubscription(UsageDataSupplierNo, UsageDataSubscription."Supplier Reference", ServiceCommitment) then
+                    Error(SubscriptionAlreadyConnectedErr, ServiceCommitment."Subscription Header No.", ServiceCommitment."Entry No.");
 
             SupplierReferenceEntryNo := UsageDataSubscription."Supplier Reference Entry No.";
         end;
     end;
 
     local procedure GetItemCost()
-    var
-        TempSalesLine: Record "Sales Line" temporary;
     begin
-        UnitCostLCY := 0;
-        if (VendorContract."No." = '') or (ItemNo = '') then
-            exit;
-
-        TempSalesLine.Type := "Sales Line Type"::Item;
-        TempSalesLine."No." := ItemNo;
-        TempSalesLine.Quantity := QuantityDecimal;
-        TempSalesLine."Unit of Measure Code" := Item."Base Unit of Measure";
-        UnitCostLCY := Item."Last Direct Cost" * TempSalesLine."Qty. per Unit of Measure";
+        UnitCostLCY := ContractItemMgt.CalculateUnitCost(ItemNo);
     end;
 
     local procedure GetAdditionalServiceCommitments()
@@ -488,10 +480,10 @@ page 8002 "Extend Contract"
         CountSelectedServiceCommitmentPackages();
     end;
 
-    local procedure FilterNonStandardServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Service Commitment Package")
+    local procedure FilterNonStandardServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Subscription Package")
     var
         Cust: Record Customer;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         PackageFilter: Text;
     begin
         if SellToCustomerNo <> '' then begin
@@ -524,7 +516,7 @@ page 8002 "Extend Contract"
 
     local procedure FillTempServiceCommitmentPackage()
     var
-        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommitmentPackage: Record "Subscription Package";
     begin
         TempServiceCommitmentPackage.Reset();
         TempServiceCommitmentPackage.DeleteAll(false);
@@ -551,7 +543,7 @@ page 8002 "Extend Contract"
         ExtendCustomerContractParam := NewExtendCustomerContract;
     end;
 
-    local procedure LookupUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Subscription")
+    local procedure LookupUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     begin
         if Page.RunModal(0, UsageDataSubscription) = Action::LookupOK then begin
             SubscriptionEntryNo := UsageDataSubscription."Entry No.";
@@ -571,14 +563,14 @@ page 8002 "Extend Contract"
     end;
 
     var
-        CustomerContract: Record "Customer Contract";
-        VendorContract: Record "Vendor Contract";
+        CustomerContract: Record "Customer Subscription Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         Item: Record Item;
-        TempServiceCommitmentPackage: Record "Service Commitment Package" temporary;
+        TempServiceCommitmentPackage: Record "Subscription Package" temporary;
         UsageDataSupplier: Record "Usage Data Supplier";
-        ContractItemMgt: Codeunit "Contracts Item Management";
-        ExtendContractMgt: Codeunit "Extend Contract Mgt.";
-        GenericUsageDataImport: Codeunit "Generic Usage Data Import";
+        ContractItemMgt: Codeunit "Sub. Contracts Item Management";
+        ExtendContractMgt: Codeunit "Extend Sub. Contract Mgt.";
+        ImportAndProcessUsageData: Codeunit "Import And Process Usage Data";
         CustomerContractNo: Code[20];
         VendorContractNo: Code[20];
         UnitPrice: Decimal;
@@ -599,9 +591,9 @@ page 8002 "Extend Contract"
         SubscriptionEntryNo: Integer;
         SubscriptionEntryNoParam: Integer;
         SupplierReferenceEntryNo: Integer;
-        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Service Commitment. The Subscription is already connected to Service Object %1. If necessary, detach the Subscription(s) from the Service Commitment(s).';
+        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Subscription Line. The Subscription is already connected to Subscription %1. If necessary, detach the Subscription(s) from the Subscription Line(s).';
         OpenItemCardTxt: Label 'Open Item Card.';
-        ItemMissingServCommPackageTxt: Label 'No Service Commitment Package is available for this item.';
+        ItemMissingServCommPackageTxt: Label 'No Subscription Package is available for this item.';
         AssignServCommPackageToItemTxt: Label 'In order to extend the contract properly, please make sure that at least one package is assigned.';
         ItemDescription: Text[100];
 

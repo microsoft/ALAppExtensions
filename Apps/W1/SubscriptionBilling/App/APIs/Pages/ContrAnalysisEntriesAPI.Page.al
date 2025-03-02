@@ -10,7 +10,7 @@ page 8087 "Contr. Analysis Entries API"
     EntityName = 'contractAnalysisEntries';
     EntitySetName = 'contractAnalysisEntries';
     PageType = API;
-    SourceTable = "Contract Analysis Entry";
+    SourceTable = "Sub. Contr. Analysis Entry";
     ODataKeyFields = SystemId;
     Editable = false;
     DataAccessIntent = ReadOnly;
@@ -24,19 +24,31 @@ page 8087 "Contr. Analysis Entries API"
                 field(systemId; Rec.SystemId)
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
+#if not CLEAN26
                 field(serviceObjectItemNo; Rec."Service Object Item No.")
                 {
+                    ObsoleteReason = 'Replaced by field Service Object Source No.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
-                field(serviceObjectDescription; Rec."Service Object Description")
+#endif
+                field(serviceObjectSourceType; Rec."Sub. Header Source Type")
                 {
                 }
-                field(serviceCommitmentLineNo; Rec."Service Commitment Entry No.")
+                field(serviceObjectSourceNo; Rec."Sub. Header Source No.")
                 {
                 }
-                field(packageCode; Rec."Package Code")
+                field(serviceObjectDescription; Rec."Subscription Description")
+                {
+                }
+                field(serviceCommitmentLineNo; Rec."Subscription Line Entry No.")
+                {
+                }
+                field(packageCode; Rec."Subscription Package Code")
                 {
                 }
                 field(template; Rec.Template)
@@ -45,10 +57,10 @@ page 8087 "Contr. Analysis Entries API"
                 field(description; Rec.Description)
                 {
                 }
-                field(serviceStartDate; Rec."Service Start Date")
+                field(serviceStartDate; Rec."Subscription Line Start Date")
                 {
                 }
-                field(serviceEndDate; Rec."Service End Date")
+                field(serviceEndDate; Rec."Subscription Line End Date")
                 {
                 }
                 field(nextBillingDate; Rec."Next Billing Date")
@@ -60,6 +72,12 @@ page 8087 "Contr. Analysis Entries API"
                 field(calculationBasePerc; Rec."Calculation Base %")
                 {
                 }
+                field(unitCost; Rec."Unit Cost")
+                {
+                }
+                field(unitCostLCY; Rec."Unit Cost (LCY)")
+                {
+                }
                 field(price; Rec."Price")
                 {
                 }
@@ -69,7 +87,7 @@ page 8087 "Contr. Analysis Entries API"
                 field(discountAmount; Rec."Discount Amount")
                 {
                 }
-                field(serviceAmount; Rec."Service Amount")
+                field(serviceAmount; Rec.Amount)
                 {
                 }
                 field(analysisDate; Rec."Analysis Date")
@@ -93,10 +111,10 @@ page 8087 "Contr. Analysis Entries API"
                 field(partnerNo; Rec."Partner No.")
                 {
                 }
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
-                field(contractLineNo; Rec."Contract Line No.")
+                field(contractLineNo; Rec."Subscription Contract Line No.")
                 {
                 }
                 field(noticePeriod; Rec."Notice Period")
@@ -123,7 +141,7 @@ page 8087 "Contr. Analysis Entries API"
                 field(discountAmountLCY; Rec."Discount Amount (LCY)")
                 {
                 }
-                field(serviceAmountLCY; Rec."Service Amount (LCY)")
+                field(serviceAmountLCY; Rec."Amount (LCY)")
                 {
                 }
                 field(currencyCode; Rec."Currency Code")
@@ -141,7 +159,7 @@ page 8087 "Contr. Analysis Entries API"
                 field(discount; Rec.Discount)
                 {
                 }
-                field(quantityDecimal; Rec."Quantity Decimal")
+                field(quantityDecimal; Rec.Quantity)
                 {
                 }
                 field(renewalTerm; Rec."Renewal Term")
