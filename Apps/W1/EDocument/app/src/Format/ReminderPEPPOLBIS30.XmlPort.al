@@ -1300,6 +1300,8 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
         SalesLine.Description := RecRef.Field(this.IssuedReminderLine.FieldNo(Description)).Value;
         SalesLine."Unit Price" := RecRef.Field(this.IssuedReminderLine.FieldNo(Amount)).Value;
         SalesLine."VAT Prod. Posting Group" := RecRef.Field(this.IssuedReminderLine.FieldNo("VAT Prod. Posting Group")).Value;
+
+        //Reminder/Finance Charge Memo Line does not have the "VAT Bus. Posting Group" field, copying from header instead
         SalesLine."VAT Bus. Posting Group" := DocRecRef.Field(this.IssuedReminderHeader.FieldNo("VAT Bus. Posting Group")).Value;
     end;
 
