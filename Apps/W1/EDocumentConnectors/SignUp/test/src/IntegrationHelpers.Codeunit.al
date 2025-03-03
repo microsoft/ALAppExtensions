@@ -1,7 +1,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 
-codeunit 148196 IntegrationHelpers
+codeunit 148194 IntegrationHelpers
 {
     internal procedure SetAPIWith200Code()
     begin
@@ -42,7 +42,7 @@ codeunit 148196 IntegrationHelpers
 
     internal procedure SetMockServiceUrl(Path: Text): Text[250]
     begin
-        exit('http://localhost:8080' + Path);
+        exit('https://localhost:8080' + Path);
     end;
 
     local procedure ClientTenantId(): Text

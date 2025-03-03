@@ -288,7 +288,7 @@ codeunit 6132 "E-Document Log"
 
 #if not CLEAN26
     [IntegrationEvent(false, false)]
-    [Obsolete('Obsoleted as consumer must not be able to cancel E-Document status being set', '26.0')]
+    [Obsolete('Obsoleted. Use interface IEDocumentStatus to indicate e-document status from service status', '26.0')]
     internal procedure OnUpdateEDocumentStatus(var EDocument: Record "E-Document"; var IsHandled: Boolean)
     begin
     end;

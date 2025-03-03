@@ -12,7 +12,6 @@ page 6163 "E-Doc. PO Match Prop. Sub"
     SourceTableTemporary = true;
     DeleteAllowed = true;
     InsertAllowed = false;
-    ModifyAllowed = false;
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -26,22 +25,26 @@ page 6163 "E-Doc. PO Match Prop. Sub"
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the E-Document line number.';
+                    Editable = false;
                 }
                 field(Description; Rec."E-Document Description")
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the E-Document line description.';
+                    Editable = false;
                     StyleExpr = StyleTxt;
                 }
                 field("Quantity to Apply"; Rec."Matched Quantity")
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the quantity that will be applied to purchase order line.';
+                    Editable = false;
                 }
                 field("AI Proposal"; Rec."AI Proposal")
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the action proposed by the AI.';
+                    Editable = false;
 
                     trigger OnDrillDown()
                     begin
@@ -53,7 +56,7 @@ page 6163 "E-Doc. PO Match Prop. Sub"
                 field("Learn Matching Rule"; Rec."Learn Matching Rule")
                 {
                     ApplicationArea = All;
-                    Tooltip = 'Specifies whether a matching rule should be created for this proposal. Item references are created for Items and Text To Account mappings are created for G/L Accounts.';
+                    Tooltip = 'Specifies whether a matching rule should be created for this proposal. Item references are created for Items and Text To Account Mappings are created for G/L Accounts.';
 
                     trigger OnValidate()
                     begin

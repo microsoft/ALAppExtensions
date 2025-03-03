@@ -14,12 +14,12 @@ codeunit 139692 "Contract Renewal Test"
     Access = Internal;
 
     var
-        TempContractRenewalLine: Record "Contract Renewal Line" temporary;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        TempContractRenewalLine: Record "Sub. Contract Renewal Line" temporary;
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         Assert: Codeunit Assert;
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         AddVendorServices: Boolean;
@@ -76,7 +76,7 @@ codeunit 139692 "Contract Renewal Test"
         SalesHeader.TestField("Bill-to Customer No.", CustomerContract."Bill-to Customer No.");
 
         FilterSalesLineOnDocumentAndServiceObject(SalesLine, SalesHeader."Document Type", SalesHeader."No.");
-        SalesLine.SetAutoCalcFields("Service Commitments");
+        SalesLine.SetAutoCalcFields("Subscription Lines");
         SalesLine.FindSet();
         repeat
             TestCreateRenewalSalesLine(SalesLine);
@@ -93,10 +93,10 @@ codeunit 139692 "Contract Renewal Test"
     [Test]
     procedure CheckCreateMultipleContractRenewalQuotes()
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
         SalesHeader: Record "Sales Header";
         SelectContractRenewal: Report "Select Contract Renewal";
-        CreateContractRenewal: Codeunit "Create Contract Renewal";
+        CreateContractRenewal: Codeunit "Create Sub. Contract Renewal";
         NoOfSalesQuotes: array[2] of Integer;
     begin
         // Test: Create multiple Contract Renewal Quotes
@@ -172,7 +172,7 @@ codeunit 139692 "Contract Renewal Test"
     begin
         Initialize();
         // Test: Copying a Contract Renewal Quote will be allowed
-        // No Service object lines will be copied
+        // No Subscription lines will be copied
         CreateFakeContractRenewalQuote(SalesHeader);
 
         SalesHeader2.Init();
@@ -193,26 +193,26 @@ codeunit 139692 "Contract Renewal Test"
         SalesHeader: Record "Sales Header";
         SalesOrderHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommitment: Record "Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
+        ServiceCommitment: Record "Subscription Line";
         LibrarySales: Codeunit "Library - Sales";
         NewRenewalTerm: DateFormula;
         SalesQuoteNo: Code[20];
         OriginalServiceEndDate: Date;
-        EndDateErr: Label 'The new Service End Date should be %1 + %2', Locked = true;
+        EndDateErr: Label 'The new Subscription Line End Date should be %1 + %2', Locked = true;
     begin
         Initialize();
-        // Test: End Date of Service Commitment should be calculated according new Renewal Term
-        // Create only one service commitment with initial term 1Y and subsequent term 1Y
+        // Test: End Date of Subscription Line should be calculated according new Renewal Term
+        // Create only one Subscription Line with initial term 1Y and subsequent term 1Y
         CreateBaseData(false, true, 1, 0); // ExchangeRateSelectionModalPageHandler, MessageHandler
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindLast();
         ServiceCommitment."Extension Term" := ServiceCommitment."Initial Term";
         ServiceCommitment.Modify(false);
 
-        OriginalServiceEndDate := ServiceCommitment."Service End Date";
+        OriginalServiceEndDate := ServiceCommitment."Subscription Line End Date";
 
         Evaluate(NewRenewalTerm, '<3M>');
         UpdateContractLinesWithNewRenewalTerm(NewRenewalTerm);
@@ -235,33 +235,33 @@ codeunit 139692 "Contract Renewal Test"
         LibrarySales.PostSalesDocument(SalesOrderHeader, true, true);
 
         ServiceCommitment.Get(ServiceCommitment."Entry No.");
-        Assert.AreEqual(CalcDate(NewRenewalTerm, OriginalServiceEndDate), ServiceCommitment."Service End Date", StrSubstNo(EndDateErr, OriginalServiceEndDate, NewRenewalTerm));
+        Assert.AreEqual(CalcDate(NewRenewalTerm, OriginalServiceEndDate), ServiceCommitment."Subscription Line End Date", StrSubstNo(EndDateErr, OriginalServiceEndDate, NewRenewalTerm));
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckInsertRenewalLineFromServComm()
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
-        ServiceCommitment: Record "Service Commitment";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
+        ServiceCommitment: Record "Subscription Line";
     begin
         Initialize();
-        // Test: Values of Contract Renewal Lines should match with their source (Service Commitments)
+        // Test: Values of Contract Renewal Lines should match with their source (Subscription Lines)
         CreateBaseData();
 
         ServiceObject.TestField("No.");
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, ServiceCommitment.Partner::Customer);
         ServiceCommitment.FindSet();
         repeat
             ContractRenewalLine.InitFromServiceCommitment(ServiceCommitment);
-            ContractRenewalLine.TestField("Contract No.", ServiceCommitment."Contract No.");
-            ContractRenewalLine.TestField("Contract Line No.", ServiceCommitment."Contract Line No.");
-            ContractRenewalLine.TestField("Linked to Contract No.", ServiceCommitment."Contract No.");
-            ContractRenewalLine.TestField("Linked to Contract Line No.", ServiceCommitment."Contract Line No.");
-            ContractRenewalLine.TestField("Service Object No.", ServiceCommitment."Service Object No.");
-            ContractRenewalLine.TestField("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+            ContractRenewalLine.TestField("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+            ContractRenewalLine.TestField("Subscription Contract Line No.", ServiceCommitment."Subscription Contract Line No.");
+            ContractRenewalLine.TestField("Linked to Sub. Contract No.", ServiceCommitment."Subscription Contract No.");
+            ContractRenewalLine.TestField("Linked to Sub. Contr. Line No.", ServiceCommitment."Subscription Contract Line No.");
+            ContractRenewalLine.TestField("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+            ContractRenewalLine.TestField("Subscription Line Entry No.", ServiceCommitment."Entry No.");
         until ServiceCommitment.Next() = 0;
     end;
 
@@ -269,23 +269,23 @@ codeunit 139692 "Contract Renewal Test"
     [Test]
     procedure CheckNoOfCreatedRenewalLinesFromContract()
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
-        ServiceCommitment: Record "Service Commitment";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
+        ServiceCommitment: Record "Subscription Line";
     begin
         Initialize();
-        // Test: Check if Service Commitments (Partner Customer, Customer + Vendor) are inserted as Contract Renewal Lines
+        // Test: Check if Subscription Lines (Partner Customer, Customer + Vendor) are inserted as Contract Renewal Lines
         CreateBaseData();
         Commit(); // close transaction before report is called
 
         ServiceObject.TestField("No.");
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, ServiceCommitment.Partner::Customer);
 
         AddVendorServices := false;
         CreateContractRenewalLinesFromContract();
         ContractRenewalLine.Reset();
-        ContractRenewalLine.SetRange("Linked to Contract No.", CustomerContract."No.");
+        ContractRenewalLine.SetRange("Linked to Sub. Contract No.", CustomerContract."No.");
         Assert.AreEqual(ServiceCommitment.Count(), ContractRenewalLine.Count(), 'No. of Renewal Lines (Partner: Customer) does not match the no. of Service commitments.');
 
         DeleteAllContractRenewalLines();
@@ -300,7 +300,7 @@ codeunit 139692 "Contract Renewal Test"
     [Test]
     procedure CheckSortingInRenewalQuote()
     var
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
         SalesQuoteNo: Code[20];
     begin
         Initialize();
@@ -344,7 +344,7 @@ codeunit 139692 "Contract Renewal Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler,ContractRenewalSelectionHandler')]
     procedure CheckServCommSelectionPageAcceptChanges()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         EmptyDateFormula: DateFormula;
         RenewalTermCust: DateFormula;
         RenewalTermVend: DateFormula;
@@ -355,15 +355,15 @@ codeunit 139692 "Contract Renewal Test"
         Initialize();
         // Test: Renewal Term is
         // a) changeable from the Contract Renewal Action,
-        // b) transferred back into the Service Commitments and
-        // c) synchronized to the Vendor Service Commitment
+        // b) transferred back into the Subscription Lines and
+        // c) synchronized to the Vendor Subscription Line
         CreateBaseData();
 
         ServiceCommitment.Reset();
         Assert.AreEqual(3, ServiceCommitment.Count(), 'Setup-Failure: Three Service Commitments should have been created.');
         ServiceCommitment.ModifyAll("Renewal Term", EmptyDateFormula, false); // Make sure not Renewal Term is set
 
-        // Enter values through the page, accept the lookup; changes should Should be written back into the Service Commitments on Page Close (LookupOk)
+        // Enter values through the page, accept the lookup; changes should Should be written back into the Subscription Lines on Page Close (LookupOk)
         CustomerContract.TestField("No.");
         CustomerContractPage.OpenEdit();
         CustomerContractPage.GoToRecord(CustomerContract);
@@ -482,11 +482,11 @@ codeunit 139692 "Contract Renewal Test"
     [Test]
     procedure PostContractRenewalAndVerifyResult()
     var
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         SalesHeader: Record "Sales Header";
         SalesOrderHeader: Record "Sales Header";
-        ServiceCommitment: Record "Service Commitment";
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        ServiceCommitment: Record "Subscription Line";
+        TempServiceCommitment: Record "Subscription Line" temporary;
         LibrarySales: Codeunit "Library - Sales";
     begin
         Initialize();
@@ -501,23 +501,23 @@ codeunit 139692 "Contract Renewal Test"
         FindSalesOrderFromQuote(SalesOrderHeader, SalesHeader."No.");
         LibrarySales.PostSalesDocument(SalesOrderHeader, true, true);
 
-        // No. of planned commitments should be zero; Renewals should be equal to the Service commitments and update on posting
+        // No. of planned Subscription Lines should be zero; Renewals should be equal to the Subscription Lines and update on posting
         PlannedServiceCommitment.Reset();
-        PlannedServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        PlannedServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         Assert.AreEqual(0, PlannedServiceCommitment.Count(), 'No. of planned commitments should be zero.');
 
         TempContractRenewalLine.Reset();
         if TempContractRenewalLine.FindSet() then
             repeat
-                TempContractRenewalLine.TestField("Service Object No.");
-                TempContractRenewalLine.TestField("Service Commitment Entry No.");
-                TempServiceCommitment.Get(TempContractRenewalLine."Service Commitment Entry No.");
-                ServiceCommitment.Get(TempContractRenewalLine."Service Commitment Entry No.");
+                TempContractRenewalLine.TestField("Subscription Header No.");
+                TempContractRenewalLine.TestField("Subscription Line Entry No.");
+                TempServiceCommitment.Get(TempContractRenewalLine."Subscription Line Entry No.");
+                ServiceCommitment.Get(TempContractRenewalLine."Subscription Line Entry No.");
 
-                // Service Date should be updated
+                // Subscription Line Date should be updated
                 TempContractRenewalLine.TestField("Renewal Term");
-                TempServiceCommitment.TestField("Service End Date");
-                ServiceCommitment.TestField("Service End Date", CalcDate(TempContractRenewalLine."Renewal Term", TempServiceCommitment."Service End Date"));
+                TempServiceCommitment.TestField("Subscription Line End Date");
+                ServiceCommitment.TestField("Subscription Line End Date", CalcDate(TempContractRenewalLine."Renewal Term", TempServiceCommitment."Subscription Line End Date"));
                 // Remaining values should be unchanged
                 ServiceCommitment.TestField("Calculation Base Amount", TempServiceCommitment."Calculation Base Amount");
                 ServiceCommitment.TestField("Calculation Base %", TempServiceCommitment."Calculation Base %");
@@ -535,11 +535,11 @@ codeunit 139692 "Contract Renewal Test"
     [Test]
     procedure PostModifiedContractRenewalWithFinalInvoiceAndVerifyResult()
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         SalesHeader: Record "Sales Header";
         SalesOrderHeader: Record "Sales Header";
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         BillingProposal: Codeunit "Billing Proposal";
         LibrarySales: Codeunit "Library - Sales";
         ReferenceDate: Date;
@@ -552,7 +552,7 @@ codeunit 139692 "Contract Renewal Test"
         SalesHeader.SetRecFilter();
         ApplyDiscountToSalesServiceCommitments(SalesHeader);
 
-        // No. of planned commitments should be zero
+        // No. of planned Subscription Lines should be zero
         PlannedServiceCommitment.Reset();
         Assert.AreEqual(0, PlannedServiceCommitment.Count(), 'No. of planned commitments should be zero.');
 
@@ -560,27 +560,27 @@ codeunit 139692 "Contract Renewal Test"
         FindSalesOrderFromQuote(SalesOrderHeader, SalesHeader."No.");
         LibrarySales.PostSalesDocument(SalesOrderHeader, true, true);
 
-        // Planned commitment(s) should be greater than zero (should not auto-update due to changed discount %)
+        // Planned Subscription Line(s) should be greater than zero (should not auto-update due to changed discount %)
         PlannedServiceCommitment.Reset();
         Assert.RecordIsNotEmpty(PlannedServiceCommitment);
 
-        // Create + Post final contract invoice to update the services
+        // Create + Post final contract invoice to update the Subscription Lines
         CustomerContract.TestField("No.");
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
         // Find highest End Date
         ReferenceDate := 0D;
         CustomerContractLine.FindSet();
         repeat
-            CustomerContractLine.TestField("Service Object No.");
-            CustomerContractLine.TestField("Service Commitment Entry No.");
-            PlannedServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
+            CustomerContractLine.TestField("Subscription Header No.");
+            CustomerContractLine.TestField("Subscription Line Entry No.");
+            PlannedServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
             PlannedServiceCommitment.TestField("Type Of Update", Enum::"Type Of Price Update"::"Contract Renewal");
-            ServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
-            ServiceCommitment.TestField("Service End Date");
-            if ReferenceDate < ServiceCommitment."Service End Date" then
-                ReferenceDate := ServiceCommitment."Service End Date";
+            ServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
+            ServiceCommitment.TestField("Subscription Line End Date");
+            if ReferenceDate < ServiceCommitment."Subscription Line End Date" then
+                ReferenceDate := ServiceCommitment."Subscription Line End Date";
         until CustomerContractLine.Next() = 0;
         // Create a billing proposal for the contract
         BillingProposal.CreateBillingProposalForContract(Enum::"Service Partner"::Customer, CustomerContract."No.", '', '',
@@ -605,7 +605,7 @@ codeunit 139692 "Contract Renewal Test"
         CreateBaseData();
         BaseCalculationPercentage := LibraryRandom.RandDecInDecimalRange(80, 100, 2);
         CalculationBaseAmount := LibraryRandom.RandDecInDecimalRange(80, 100, 2);
-        // [WHEN] We run the action Contract Renewal Quote and change the values on service object, values are tested in a ContractRenewalSelectionModalPageHandler
+        // [WHEN] We run the action Contract Renewal Quote and change the values on Subscription, values are tested in a ContractRenewalSelectionModalPageHandler
         ContractRenewalMgt.StartContractRenewalFromContract(CustomerContract);
     end;
 
@@ -662,7 +662,7 @@ codeunit 139692 "Contract Renewal Test"
         FindSalesOrderFromQuote(SalesOrderHeader, SalesHeader."No.");
 
         FilterSalesLineOnDocumentAndServiceObject(SalesLine, SalesOrderHeader."Document Type", SalesOrderHeader."No.");
-        SalesLine.SetAutoCalcFields("Service Commitments");
+        SalesLine.SetAutoCalcFields("Subscription Lines");
         SalesLine.FindSet();
         repeat
             TestCreateRenewalSalesLine(SalesLine);
@@ -676,13 +676,12 @@ codeunit 139692 "Contract Renewal Test"
     local procedure Initialize()
     begin
         ClearAll();
-        ContractTestLibrary.DeleteAllContractRecords();
         ContractTestLibrary.InitContractsApp();
     end;
 
     local procedure ApplyDiscountToSalesServiceCommitments(var SalesHeader: Record "Sales Header")
     var
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
         DiscountAsInt: Integer;
     begin
         SalesServiceCommitment.Reset();
@@ -698,9 +697,9 @@ codeunit 139692 "Contract Renewal Test"
         until SalesServiceCommitment.Next() = 0;
     end;
 
-    local procedure BufferServiceCommitments(var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure BufferServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary)
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
         TempServiceCommitment.Reset();
         if not TempServiceCommitment.IsEmpty() then
@@ -708,7 +707,7 @@ codeunit 139692 "Contract Renewal Test"
         TempContractRenewalLine.Reset();
         if TempContractRenewalLine.FindSet() then
             repeat
-                ServiceCommitment.Get(TempContractRenewalLine."Service Commitment Entry No.");
+                ServiceCommitment.Get(TempContractRenewalLine."Subscription Line Entry No.");
                 TempServiceCommitment := ServiceCommitment;
                 TempServiceCommitment.Insert(false);
             until TempContractRenewalLine.Next() = 0;
@@ -729,40 +728,40 @@ codeunit 139692 "Contract Renewal Test"
         Customer: Record Customer;
         Vendor: Record Vendor;
         Item: Record Item;
-        ServiceCommitment: Record "Service Commitment";
-        ContractType: Record "Contract Type";
+        ServiceCommitment: Record "Subscription Line";
+        ContractType: Record "Subscription Contract Type";
         NewInvoicingVia: Enum "Invoicing Via";
     begin
         if not KeepContractRenewalData then
             DeleteAllContractRenewalData();
         Clear(CustomerContract);
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
-        // 1 Service Object, 2 Customer- & 1 Vendor-related service commitment
+        // 1 Subscription, 2 Customer- & 1 Vendor-related Subscription Line
         Clear(ServiceObject);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, NewInvoicingVia::Contract, SNSpecific, Item, NoOfNewCustomerServCommLines, NoOfNewVendorServCommLines);
+        ContractTestLibrary.CreateServiceObjectForItemWithServiceCommitments(ServiceObject, NewInvoicingVia::Contract, SNSpecific, Item, NoOfNewCustomerServCommLines, NoOfNewVendorServCommLines);
 
-        // Set Start- / End-Date for Services
+        // Set Start- / End-Date for Subscription Lines
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
-            ServiceCommitment."Service Start Date" := CalcDate('<-CY>', WorkDate());
-            ServiceCommitment.Validate("Service End Date", CalcDate('<+CY>', WorkDate()));
+            ServiceCommitment."Subscription Line Start Date" := CalcDate('<-CY>', WorkDate());
+            ServiceCommitment.Validate("Subscription Line End Date", CalcDate('<+CY>', WorkDate()));
             Evaluate(ServiceCommitment."Initial Term", '<1Y>');
             ServiceCommitment.Validate("Initial Term");
             ServiceCommitment.Modify(false);
         until ServiceCommitment.Next() = 0;
 
-        // Link Service Object
+        // Link Subscription
         ServiceObject.SetHideValidationDialog(true);
         ServiceObject.Validate("End-User Customer No.", CustomerContract."Sell-to Customer No.");
         ServiceObject.Modify(false);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler, MessageHandler
 
         if NoOfNewVendorServCommLines > 0 then begin
             Clear(VendorContract);
             ContractTestLibrary.CreateVendorContractWithContractType(VendorContract, ContractType);
-            ContractTestLibrary.AssignServiceObjectToVendorContract(VendorContract, ServiceObject, false);
+            ContractTestLibrary.AssignServiceObjectForItemToVendorContract(VendorContract, ServiceObject, false);
 
             VendorContract.TestField("Buy-from Vendor No.");
             Vendor.Get(VendorContract."Buy-from Vendor No.");
@@ -776,7 +775,7 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure CreateContractRenewalLinesFromContract()
     var
-        CustomerContract2: Record "Customer Contract";
+        CustomerContract2: Record "Customer Subscription Contract";
         SelectContractRenewal: Report "Select Contract Renewal";
     begin
         CustomerContract.TestField("No.");
@@ -790,8 +789,8 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure CreateSalesQuoteFromContract(): Code[20]
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
-        CreateContractRenewal: Codeunit "Create Contract Renewal";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
+        CreateContractRenewal: Codeunit "Create Sub. Contract Renewal";
     begin
         DeleteAllContractRenewalData();
         Commit(); // close transaction before report is called
@@ -799,7 +798,7 @@ codeunit 139692 "Contract Renewal Test"
         CreateContractRenewalLinesFromContract();
         CustomerContract.TestField("No.");
         ContractRenewalLine.Reset();
-        ContractRenewalLine.SetRange("Linked to Contract No.", CustomerContract."No.");
+        ContractRenewalLine.SetRange("Linked to Sub. Contract No.", CustomerContract."No.");
 
         // Buffer Source lines (Contract Renewal Lines are deleted after creating the Sales Quote)
         TempContractRenewalLine.Reset();
@@ -827,7 +826,7 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure DeleteAllContracts()
     var
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
         CustomerContract.Reset();
         if not CustomerContract.IsEmpty() then
@@ -840,9 +839,9 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure DeleteAllContractRenewalData()
     var
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
     begin
         DeleteAllContractRenewalLines();
 
@@ -867,7 +866,7 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure DeleteAllContractRenewalLines()
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
     begin
         ContractRenewalLine.Reset();
         if not ContractRenewalLine.IsEmpty() then
@@ -891,18 +890,18 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure ReSortContractLines()
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
+        TempServiceCommitment: Record "Subscription Line" temporary;
     begin
         // Expected: 2 Contract Lines, not bundled; delete the first and move it to the end of the contract
         CustomerContract.TestField("No.");
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.FindFirst();
-        CustomerContractLine.TestField("Service Object No.");
-        CustomerContractLine.TestField("Service Commitment Entry No.");
-        ServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
+        CustomerContractLine.TestField("Subscription Header No.");
+        CustomerContractLine.TestField("Subscription Line Entry No.");
+        ServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
         CustomerContractLine.Delete(true);
 
         TempServiceCommitment := ServiceCommitment;
@@ -914,7 +913,7 @@ codeunit 139692 "Contract Renewal Test"
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
+        SalesServiceCommitment: Record "Sales Subscription Line";
         TempSalesServiceCommitmentBuff: Record "Sales Service Commitment Buff." temporary;
         DateFormulaManagement: Codeunit "Date Formula Management";
         SalesQuoteNo: Code[20];
@@ -935,8 +934,8 @@ codeunit 139692 "Contract Renewal Test"
             SalesServiceCommitment.FindFirst();
             SalesServiceCommitment.TestField("Initial Term", NewRenewalTerm);
             SalesServiceCommitment.TestField("Billing Rhythm");
-            PriceRatio := DateFormulaManagement.CalculateRenewalTermRatioByBillingRhythm(SalesServiceCommitment."Agreed Serv. Comm. Start Date", SalesServiceCommitment."Initial Term", SalesServiceCommitment."Billing Rhythm");
-            ExpectedCalculatedLineAmount += SalesServiceCommitment."Service Amount" * PriceRatio;
+            PriceRatio := DateFormulaManagement.CalculateRenewalTermRatioByBillingRhythm(SalesServiceCommitment."Agreed Sub. Line Start Date", SalesServiceCommitment."Initial Term", SalesServiceCommitment."Billing Rhythm");
+            ExpectedCalculatedLineAmount += SalesServiceCommitment.Amount * PriceRatio;
         until SalesLine.Next() = 0;
 
         SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
@@ -947,13 +946,13 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure TestCreateRenewalSalesLine(SalesLine: Record "Sales Line")
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommitment: Record "Service Commitment";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        SalesServiceCommitment: Record "Sales Subscription Line";
+        ServiceCommitment: Record "Subscription Line";
     begin
         SalesLine.TestField("No.", ServiceObject."No.");
         SalesLine.TestField("Unit of Measure Code", ServiceObject."Unit of Measure");
-        SalesLine.TestField(Quantity, ServiceObject."Quantity Decimal");
+        SalesLine.TestField(Quantity, ServiceObject.Quantity);
         SalesLine.TestField(Description, ServiceObject.Description);
         SalesLine.TestField("Exclude from Doc. Total", true);
         SalesLine.TestField("VAT Prod. Posting Group");
@@ -962,32 +961,33 @@ codeunit 139692 "Contract Renewal Test"
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
         SalesServiceCommitment.SetRange(Process, Enum::Process::"Contract Renewal");
         SalesServiceCommitment.FindFirst();
-        ServiceCommitment.Get(SalesServiceCommitment."Service Commitment Entry No.");
-        CustomerContractLine.Get(ServiceCommitment."Contract No.", ServiceCommitment."Contract Line No.");
+        ServiceCommitment.Get(SalesServiceCommitment."Subscription Line Entry No.");
+        CustomerContractLine.Get(ServiceCommitment."Subscription Contract No.", ServiceCommitment."Subscription Contract Line No.");
         SalesLine.TestField("Unit Price", ServiceCommitment.Price);
+        SalesLine.TestField("Unit Cost (LCY)", ServiceCommitment."Unit Cost (LCY)");
         TempContractRenewalLine.Reset();
-        TempContractRenewalLine.SetRange("Linked to Contract No.", ServiceCommitment."Contract No.");
-        TempContractRenewalLine.SetRange("Linked to Contract Line No.", ServiceCommitment."Contract Line No.");
-        Assert.AreEqual(TempContractRenewalLine.Count(), SalesLine."Service Commitments", 'The no. of Sales Service Commitments should match the number of Contract Renewal lines for that Service Commitment.');
+        TempContractRenewalLine.SetRange("Linked to Sub. Contract No.", ServiceCommitment."Subscription Contract No.");
+        TempContractRenewalLine.SetRange("Linked to Sub. Contr. Line No.", ServiceCommitment."Subscription Contract Line No.");
+        Assert.AreEqual(TempContractRenewalLine.Count(), SalesLine."Subscription Lines", 'The no. of Sales Service Commitments should match the number of Contract Renewal lines for that Service Commitment.');
     end;
 
     local procedure UpdateContractLinesWithNewRenewalTerm(NewRenewalTerm: DateFormula)
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
     begin
-        // Create Customer Contract Lines and Update Renewal Term for Service Commitments
+        // Create Customer Subscription Contract Lines and Update Renewal Term for Subscription Lines
         CustomerContract.TestField("No.");
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", CustomerContractLine."Contract Line Type"::"Service Commitment");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::Item);
         // Find highest End Date
         CustomerContractLine.FindSet();
         repeat
-            CustomerContractLine.TestField("Service Object No.");
-            CustomerContractLine.TestField("Service Commitment Entry No.");
-            ServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
-            ServiceCommitment.TestField("Service End Date");
+            CustomerContractLine.TestField("Subscription Header No.");
+            CustomerContractLine.TestField("Subscription Line Entry No.");
+            ServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
+            ServiceCommitment.TestField("Subscription Line End Date");
             ServiceCommitment."Renewal Term" := NewRenewalTerm;
             ServiceCommitment.Modify(false);
         until CustomerContractLine.Next() = 0;
@@ -1010,7 +1010,7 @@ codeunit 139692 "Contract Renewal Test"
         EmptyDateFormula: DateFormula;
         NewRenewalTerm: DateFormula;
     begin
-        // Set a renewal Term for both Service Commitments and Add Vendor Services; close with Ok
+        // Set a renewal Term for both Subscription Lines and Add Vendor Subscription Lines; close with Ok
         Evaluate(NewRenewalTerm, '<1Y>');
         ContractRenewalSelection.AddVendorServicesCtrl.SetValue(true);
 

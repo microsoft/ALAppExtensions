@@ -133,7 +133,7 @@ reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Orde
         ServiceCommitmentForLine.DeleteAll(false);
         TempServiceCommitmentForLineCaption.Reset();
         TempServiceCommitmentForLineCaption.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
+        OnBeforeFillSubscriptionLinesForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
         SalesReportPrintoutMgmt.FillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
     end;
 
@@ -143,17 +143,17 @@ reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Orde
         ServiceCommitmentsGroup.DeleteAll(false);
         ServiceCommitmentsGroupPerPeriod.Reset();
         ServiceCommitmentsGroupPerPeriod.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
+        OnBeforeFillSubscriptionLinesGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
         SalesReportPrintoutMgmt.FillServiceCommitmentsGroups(Header, ServiceCommitmentsGroupPerPeriod, ServiceCommitmentsGroup);
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsForLine(Header: Record "Sales Header"; var ServiceCommitmentForLine: Record "Sales Line"; var ServiceCommitmentForLineCaption: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesForLine(Header: Record "Sales Header"; var SubscriptionLineForLine: Record "Sales Line"; var SubscriptionLineForLineCaption: Record "Name/Value Buffer")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(Header: Record "Sales Header"; var ServiceCommitmentsGroupPerPeriod: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesGroupPerPeriod(Header: Record "Sales Header"; var SubscriptionLinesGroupPerPeriod: Record "Name/Value Buffer")
     begin
     end;
 }

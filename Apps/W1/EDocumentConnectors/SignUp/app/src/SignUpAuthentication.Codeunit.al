@@ -20,6 +20,8 @@ codeunit 6442 "SignUp Authentication"
     var
         SignUpConnectionSetup: Record "SignUp Connection Setup";
         SignUpHelpersImpl: Codeunit "SignUp Helpers";
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         AuthTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
@@ -169,8 +171,9 @@ codeunit 6442 "SignUp Authentication"
     [NonDebuggable]
     procedure GetMarketplaceUrl() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignupMarketplaceUrlTxt, ReturnValue) then
-            exit;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignupMarketplaceUrlTxt, ReturnValue) then
+                exit;
 
         if not this.SignUpConnectionSetup.Get() then
             exit;
@@ -391,8 +394,9 @@ codeunit 6442 "SignUp Authentication"
     [NonDebuggable]
     local procedure GetMarketplaceId() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceIdTxt, ReturnValue) then
-            exit;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignUpMarketplaceIdTxt, ReturnValue) then
+                exit;
 
         if not this.SignUpConnectionSetup.Get() then
             exit;
@@ -403,8 +407,9 @@ codeunit 6442 "SignUp Authentication"
 
     local procedure GetMarketplaceSecret() ReturnValue: SecretText
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceSecretTxt, ReturnValue) then
-            exit;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignUpMarketplaceSecretTxt, ReturnValue) then
+                exit;
 
         if not this.SignUpConnectionSetup.Get() then
             exit;
@@ -416,15 +421,18 @@ codeunit 6442 "SignUp Authentication"
     [NonDebuggable]
     local procedure GetMarketplaceTenant() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpMarketplaceTenantTxt, ReturnValue) then
-            exit;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignUpMarketplaceTenantTxt, ReturnValue) then
+                exit;
         ReturnValue := this.ProdMarketplaceTenantIdTxt;
     end;
 
     local procedure GetClientTenant() ReturnValue: Text
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpClientTenantTxt, ReturnValue) then
-            exit;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignUpClientTenantTxt, ReturnValue) then
+                exit;
+
         ReturnValue := this.ProdClientTenantIdTxt;
     end;
 
@@ -432,30 +440,13 @@ codeunit 6442 "SignUp Authentication"
     var
         KeyVaultReturn: Text;
     begin
-        if this.FetchSecretFromKeyVault(this.SignUpServiceAPITxt, KeyVaultReturn) then begin
-            ReturnValue := CopyStr(KeyVaultReturn, 1, MaxStrLen(ReturnValue));
-            exit;
-        end;
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if AzureKeyVault.GetAzureKeyVaultSecret(this.SignUpServiceAPITxt, KeyVaultReturn) then begin
+                ReturnValue := CopyStr(KeyVaultReturn, 1, MaxStrLen(ReturnValue));
+                exit;
+            end;
+
         ReturnValue := this.ProdServiceAPITxt;
-    end;
-
-    local procedure FetchSecretFromKeyVault(KeyName: Text; var KeyValue: SecretText): Boolean
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if EnvironmentInformation.IsSaaSInfrastructure() then
-            exit(AzureKeyVault.GetAzureKeyVaultSecret(KeyName, KeyValue));
-    end;
-
-    [NonDebuggable]
-    local procedure FetchSecretFromKeyVault(KeyName: Text; var KeyValue: Text): Boolean
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if EnvironmentInformation.IsSaaSInfrastructure() then
-            exit(AzureKeyVault.GetAzureKeyVaultSecret(KeyName, KeyValue));
     end;
 
     local procedure GetAADTenantInformation(var AADTenantID: Text; var AADDomainName: Text): Boolean

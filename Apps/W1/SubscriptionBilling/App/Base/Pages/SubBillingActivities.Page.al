@@ -76,64 +76,64 @@ page 8085 "Sub. Billing Activities"
             cuegroup("Open Posted Documents Customer")
             {
                 Caption = 'Open Posting Documents Customer';
-                field("Customer Contract Invoices"; Rec."Customer Contract Invoices")
+                field("Customer Contract Invoices"; Rec."Cust. Sub. Contr. Invoices")
                 {
                     Caption = 'Contract Invoices';
                     DrillDownPageId = "Sales Invoice List";
                     Editable = false;
-                    ToolTip = 'Shows Open Customer Contract Invoices.';
+                    ToolTip = 'Shows Open Customer Subscription Contract Invoices.';
                 }
-                field("Customer Contract Credit Memos"; Rec."Customer Contract Credit Memos")
+                field("Customer Contract Credit Memos"; Rec."Cust. Sub. Contr. Credit Memos")
                 {
                     Caption = 'Contract Credit Memos';
                     DrillDownPageId = "Sales Credit Memos";
                     Editable = false;
-                    ToolTip = 'Shows Open Customer Contract Credit Memos.';
+                    ToolTip = 'Shows Open Customer Subscription Contract Credit Memos.';
                 }
             }
             cuegroup("Open Posted Documents Vendor")
             {
                 Caption = 'Open Posting Documents Vendor';
-                field("Vendor Contract Invoices"; Rec."Vendor Contract Invoices")
+                field("Vendor Contract Invoices"; Rec."Vend. Sub. Contr. Invoices")
                 {
                     Caption = 'Contract Invoices';
                     DrillDownPageId = "Purchase Invoices";
                     Editable = false;
-                    ToolTip = 'Shows Open Vendor Contract Invoices.';
+                    ToolTip = 'Shows Open Vendor Subscription Contract Invoices.';
                 }
-                field("Vendor Contract Credit Memos"; Rec."Vendor Contract Credit Memos")
+                field("Vendor Contract Credit Memos"; Rec."Vend. Contr. Credit Memos")
                 {
                     Caption = 'Contract Credit Memos';
                     DrillDownPageId = "Purchase Credit Memos";
                     Editable = false;
-                    ToolTip = 'Shows Open Vendor Contract Credit Memos.';
+                    ToolTip = 'Shows Open Vendor Subscription Contract Credit Memos.';
                 }
             }
             cuegroup("Service Commitments without Customer Contract")
             {
-                Caption = 'Service Commitments without Contract';
-                field("Serv. Comm. wo Cust. Contract"; Rec."Serv. Comm. wo Cust. Contract")
+                Caption = 'Subscription Lines without Contract';
+                field("Serv. Comm. wo Cust. Contract"; Rec."Sub. L. wo Cust. Sub. Contract")
                 {
                     Caption = 'Customer';
                     DrillDownPageId = "Serv. Comm. WO Cust. Contract";
                     Editable = false;
-                    ToolTip = 'Shows Service Commitments without Customer Contract.';
+                    ToolTip = 'Shows Subscription Lines without Customer Contract.';
                 }
-                field("Serv. Comm. wo Vend. Contract"; Rec."Serv. Comm. wo Vend. Contract")
+                field("Serv. Comm. wo Vend. Contract"; Rec."Sub. L. wo Vend. Sub. Contract")
                 {
                     Caption = 'Vendor';
                     DrillDownPageId = "Serv. Comm. WO Vend. Contract";
                     Editable = false;
-                    ToolTip = 'Shows Service Commitments without Vendor Contract.';
+                    ToolTip = 'Shows Subscription Lines without Vendor Subscription Contract.';
                 }
             }
             cuegroup(Overdue)
             {
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Lines';
                 field(OverdueField; Rec.Overdue)
                 {
                     Editable = false;
-                    ToolTip = 'Shows overdue Service Commitments.';
+                    ToolTip = 'Shows overdue Subscription Lines.';
                     trigger OnDrillDown()
                     begin
                         SubBillingActivitiesCue.DrillDownOverdueServiceCommitments();
@@ -143,7 +143,7 @@ page 8085 "Sub. Billing Activities"
                 {
                     DrillDownPageId = "Billing Lines";
                     Editable = false;
-                    ToolTip = 'Shows Billing Lines for Service Commitments that have not been called into Posting Documents, yet.';
+                    ToolTip = 'Shows Billing Lines for Subscription Lines that have not been called into Posting Documents, yet.';
                 }
             }
             cuegroup("Balances")
@@ -153,22 +153,22 @@ page 8085 "Sub. Billing Activities"
                 field("Revenue current Month"; Rec."Revenue current Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Contracts in current Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Subscription Contracts in current Month.';
                 }
                 field("Cost current Month"; Rec."Cost current Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in current Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Subscription Contracts in current Month.';
                 }
                 field("Revenue previous Month"; Rec."Revenue previous Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Contracts in previous Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Customer Subscription Contracts in previous Month.';
                 }
                 field("Cost previous Month"; Rec."Cost previous Month")
                 {
                     Image = Cash;
-                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Contracts in previous Month.';
+                    ToolTip = 'Balance between posted Contract Invoices and Contract Credit Memos for Vendor Subscription Contracts in previous Month.';
                 }
             }
         }
@@ -220,7 +220,7 @@ page 8085 "Sub. Billing Activities"
 
     trigger OnAfterGetRecord()
     var
-        ServiceContractSetup: Record "Service Contract Setup";
+        ServiceContractSetup: Record "Subscription Contract Setup";
     begin
         if not ServiceContractSetup.Get() then begin
             ServiceContractSetup.Init();

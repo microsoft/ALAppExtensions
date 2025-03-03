@@ -21,7 +21,7 @@ codeunit 6443 "SignUp Connection"
         SignUpHelpersImpl: Codeunit "SignUp Helpers";
         UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
         EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
-        FourZeroThreeErr: Label 'You do not have a valid subscription.';
+        NoValidSubscriptionErr: Label 'You do not have a valid subscription.';
         MetadataProfileLbl: Label 'metadataProfile', Locked = true;
         ProfileIdLbl: Label 'profileId', Locked = true;
         CommonNameLbl: Label 'commonName', Locked = true;
@@ -75,7 +75,7 @@ codeunit 6443 "SignUp Connection"
 
         if not HttpResponseMessage.IsSuccessStatusCode() then
             if HttpResponseMessage.HttpStatusCode = 403 then
-                Error(this.FourZeroThreeErr)
+                Error(this.NoValidSubscriptionErr)
             else
                 exit;
 
@@ -126,7 +126,7 @@ codeunit 6443 "SignUp Connection"
         this.SignUpAPIRequests.FetchMetaDataProfiles(HttpRequestMessage, HttpResponseMessage);
         if not HttpResponseMessage.IsSuccessStatusCode() then begin
             if HttpResponseMessage.HttpStatusCode = 403 then
-                Message(this.FourZeroThreeErr)
+                Message(this.NoValidSubscriptionErr)
             else
                 Message(HttpResponseMessage.ReasonPhrase);
             exit;
@@ -155,7 +155,7 @@ codeunit 6443 "SignUp Connection"
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.EnvironmentBlocksErr)
         else
             if HttpResponseMessage.HttpStatusCode = 403 then
-                EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.FourZeroThreeErr)
+                EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, this.NoValidSubscriptionErr)
             else
                 EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(this.UnsuccessfulResponseErr, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase));
     end;

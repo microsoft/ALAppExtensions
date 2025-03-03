@@ -8,10 +8,10 @@ pageextension 8077 "Sales Line FactBox" extends "Sales Line FactBox"
     {
         addafter("Required Quantity")
         {
-            field("Service Commitments"; Rec."Service Commitments")
+            field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the sales line.';
+                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
             }
         }
     }

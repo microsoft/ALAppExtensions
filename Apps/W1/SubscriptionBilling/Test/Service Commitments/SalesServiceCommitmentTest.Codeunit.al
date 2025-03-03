@@ -35,12 +35,12 @@ codeunit 139915 "Sales Service Commitment Test"
         Location: Record Location;
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        SalesServiceCommitment: Record "Sales Subscription Line";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryAssembly: Codeunit "Library - Assembly";
@@ -56,8 +56,8 @@ codeunit 139915 "Sales Service Commitment Test"
         LibraryWarehouse: Codeunit "Library - Warehouse";
         SerialNo: array[10] of Code[50];
         NoOfServiceObjects: Integer;
-        NotCreatedProperlyErr: Label 'Service commitments are not created properly.';
-        SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Service Commitment cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Service Commitment.', Locked = true;
+        NotCreatedProperlyErr: Label 'Subscription Lines are not created properly.';
+        SalesServiceCommitmentCannotBeDeletedErr: Label 'The Sales Subscription Line cannot be deleted, because it is the last line with Process Contract Renewal. Please delete the Sales line in order to delete the Sales Subscription Line.', Locked = true;
 
     #region Tests
 
@@ -66,7 +66,7 @@ codeunit 139915 "Sales Service Commitment Test"
     var
         SalesHeader2: Record "Sales Header";
         SalesLine2: Record "Sales Line";
-        SalesServiceCommitment2: Record "Sales Service Commitment";
+        SalesServiceCommitment2: Record "Sales Subscription Line";
         CopyDocMgt: Codeunit "Copy Document Mgt.";
     begin
         Initialize();
@@ -96,7 +96,7 @@ codeunit 139915 "Sales Service Commitment Test"
     [Test]
     procedure CheckCreateServCommitmentsFromSalesServiceCommitment()
     var
-        TempSalesServiceCommitment: Record "Sales Service Commitment" temporary;
+        TempSalesServiceCommitment: Record "Sales Subscription Line" temporary;
         i: Integer;
         MaxAdditionalServiceCommitmentPackageLine: Integer;
         SalesServiceCommCount: Integer;
@@ -116,15 +116,16 @@ codeunit 139915 "Sales Service Commitment Test"
             TempSalesServiceCommitment.Insert(false);
         until SalesServiceCommitment.Next() = 0;
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         Assert.RecordCount(ServiceCommitment, SalesServiceCommCount);
         ServiceCommitment.FindSet();
         TempSalesServiceCommitment.FindSet();
         repeat
             TestServiceCommitmentValues(ServiceCommitment, TempSalesServiceCommitment);
             TestServiceCommitmentPriceCalculation(ServiceCommitment);
+            VerifyServiceCommitmentUnitCostFromSalesServiceCommitment(ServiceCommitment, TempSalesServiceCommitment);
             TempSalesServiceCommitment.Next();
         until ServiceCommitment.Next() = 0;
     end;
@@ -138,8 +139,8 @@ codeunit 139915 "Sales Service Commitment Test"
         InitServiceObjectCount: Integer;
         CustomerReference: Text;
     begin
-        // Create Item as Sales with Service Commitment
-        // Ship Item -  Service Object created
+        // Create Item as Sales with Subscription
+        // Ship Item -  Subscription created
         // Invoice Item - nothing happens
         Initialize();
 
@@ -158,12 +159,14 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesLine."Variant Code" := CopyStr(LibraryRandom.RandText(MaxStrLen(SalesLine."Variant Code")), 1, MaxStrLen(SalesLine."Variant Code"));
         SalesLine.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         InitServiceObjectCount := ServiceObject.Count;
         ServiceObject.FindFirst();
-        ServiceObject.TestField("Item No.", Item."No.");
+        ServiceObject.TestField(Type, ServiceObject.Type::Item);
+        ServiceObject.TestField("Source No.", Item."No.");
         ServiceObject.TestField(Description, SalesLine.Description);
-        ServiceObject.TestField("Quantity Decimal", Abs(SalesLine."Qty. to Ship"));
+        ServiceObject.TestField(Quantity, Abs(SalesLine."Qty. to Ship"));
         ServiceObject.TestField("Unit of Measure", SalesLine."Unit of Measure Code");
         ServiceObject.TestField("Provision Start Date", SalesLine."Shipment Date");
         ServiceObject.TestField("End-User Contact No.", SalesHeader."Sell-to Contact No.");
@@ -179,7 +182,7 @@ codeunit 139915 "Sales Service Commitment Test"
         FetchSalesLine.Validate("Qty. to Invoice", 1);
         FetchSalesLine.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         Assert.RecordCount(ServiceObject, InitServiceObjectCount);
     end;
 
@@ -223,9 +226,9 @@ codeunit 139915 "Sales Service Commitment Test"
         Item2: Record Item;
     begin
         Initialize();
-        // sales service commitments created for this item
+        // Sales Subscription Lines created for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
-        // no sales service commitments for this item
+        // no Sales Subscription Lines for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item2, Enum::"Item Service Commitment Type"::"Sales without Service Commitment", ServiceCommitmentPackage.Code);
 
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
@@ -241,7 +244,7 @@ codeunit 139915 "Sales Service Commitment Test"
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
         SalesServiceCommitment.FindSet();
-        // change Sales Line Item No. to one without service commitments
+        // change Sales Line Item No. to one without Subscription Lines
         SalesLine.Validate("No.", Item2."No.");
         SalesLine.Modify(false);
 
@@ -257,15 +260,15 @@ codeunit 139915 "Sales Service Commitment Test"
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
         LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), 2);
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        Clear(SalesServiceCommitment."Service Comm. Start Formula");
-        SalesServiceCommitment.ModifyAll("Agreed Serv. Comm. Start Date", WorkDate(), false);
+        Clear(SalesServiceCommitment."Sub. Line Start Formula");
+        SalesServiceCommitment.ModifyAll("Agreed Sub. Line Start Date", WorkDate(), false);
         SalesServiceCommitment.FindFirst();
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
-        Assert.AreEqual(SalesServiceCommitment."Agreed Serv. Comm. Start Date", ServiceCommitment."Service Start Date", NotCreatedProperlyErr);
+        Assert.AreEqual(SalesServiceCommitment."Agreed Sub. Line Start Date", ServiceCommitment."Subscription Line Start Date", NotCreatedProperlyErr);
     end;
 
     [Test]
@@ -276,16 +279,16 @@ codeunit 139915 "Sales Service Commitment Test"
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
         LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        SalesServiceCommitment.ModifyAll(SalesServiceCommitment."Agreed Serv. Comm. Start Date", 0D, false);
+        SalesServiceCommitment.ModifyAll(SalesServiceCommitment."Agreed Sub. Line Start Date", 0D, false);
         SalesServiceCommitment.FindFirst();
-        Evaluate(SalesServiceCommitment."Service Comm. Start Formula", '');
+        Evaluate(SalesServiceCommitment."Sub. Line Start Formula", '');
         SalesServiceCommitment.Modify(false);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
-        Assert.AreEqual(SalesLine."Shipment Date", ServiceCommitment."Service Start Date", NotCreatedProperlyErr);
+        Assert.AreEqual(SalesLine."Shipment Date", ServiceCommitment."Subscription Line Start Date", NotCreatedProperlyErr);
     end;
 
     [Test]
@@ -347,8 +350,8 @@ codeunit 139915 "Sales Service Commitment Test"
     var
         CustomerPriceGroup1: Record "Customer Price Group";
         CustomerPriceGroup2: Record "Customer Price Group";
-        ServiceCommPackageLine2: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage2: Record "Service Commitment Package";
+        ServiceCommPackageLine2: Record "Subscription Package Line";
+        ServiceCommitmentPackage2: Record "Subscription Package";
     begin
         Initialize();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage2, ServiceCommPackageLine2);
@@ -368,8 +371,8 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure CheckInsertSalesServiceCommitmentsBasedOnEmptyPriceGroupOnHeader()
     var
         CustomerPriceGroup: Record "Customer Price Group";
-        ServiceCommPackageLine2: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage2: Record "Service Commitment Package";
+        ServiceCommPackageLine2: Record "Subscription Package Line";
+        ServiceCommitmentPackage2: Record "Subscription Package";
     begin
         Initialize();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage2, ServiceCommPackageLine2);
@@ -388,8 +391,8 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure CheckInsertSalesServiceCommitmentsBasedSameOnPriceGroupOnHeader()
     var
         CustomerPriceGroup: Record "Customer Price Group";
-        ServiceCommPackageLine2: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage2: Record "Service Commitment Package";
+        ServiceCommPackageLine2: Record "Subscription Package Line";
+        ServiceCommitmentPackage2: Record "Subscription Package";
     begin
         Initialize();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage2, ServiceCommPackageLine2);
@@ -431,7 +434,7 @@ codeunit 139915 "Sales Service Commitment Test"
 
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
-        // Exclude Service Item from expected Totals
+        // Exclude Subscription Item from expected Totals
         SalesLine.SetFilter("No.", '<>%1', Item."No.");
         SalesLine.CalcSums("Line Amount", "Inv. Discount Amount", Amount, "Amount Including VAT");
 
@@ -489,7 +492,7 @@ codeunit 139915 "Sales Service Commitment Test"
     var
         SalesShptLine: Record "Sales Shipment Line";
     begin
-        // [WHEN] posting Sales Order with Item which is Service Commitment Item
+        // [WHEN] posting Sales Order with Item which is Subscription Item
         // it should not be possible to Get Shipment Lines in Sales Invoice
         Initialize();
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
@@ -519,7 +522,7 @@ codeunit 139915 "Sales Service Commitment Test"
         ReleaseSalesDoc: Codeunit "Release Sales Document";
         ServiceObjectCount: Integer;
     begin
-        // For each shipment of one sales line new Service object is created
+        // For each shipment of one sales line new Subscription is created
         Initialize();
         SetupAdditionalServiceCommPackageLine(Enum::"Service Partner"::Vendor);
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
@@ -543,18 +546,18 @@ codeunit 139915 "Sales Service Commitment Test"
         FetchSalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
         Assert.AreEqual(2, FetchSalesLine."Quantity Shipped", NotCreatedProperlyErr);
         Assert.AreEqual(2, FetchSalesLine."Quantity Invoiced", NotCreatedProperlyErr);
-        // Number of service objects = initial quantity on order
-        ServiceObject.SetRange("Item No.", SalesLine."No.");
+        // Number of Subscriptions = initial quantity on order
+        ServiceObject.FilterOnItemNo(SalesLine."No.");
         ServiceObjectCount := ServiceObject.Count();
         Assert.AreEqual(2, ServiceObjectCount, NotCreatedProperlyErr);
 
         SalesServiceCommitment.FilterOnSalesLine(FetchSalesLine);
         SalesServiceCommitment.FindFirst();
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
-        ServiceCommitment.TestField("Service Amount");
-        Assert.AreEqual(ServiceCommitment."Service Amount", SalesServiceCommitment."Service Amount" * ServiceObject."Quantity Decimal" / FetchSalesLine.Quantity, NotCreatedProperlyErr);
+        ServiceCommitment.TestField(Amount);
+        Assert.AreEqual(ServiceCommitment.Amount, SalesServiceCommitment.Amount * ServiceObject.Quantity / FetchSalesLine.Quantity, NotCreatedProperlyErr);
     end;
 
     [Test]
@@ -641,7 +644,7 @@ codeunit 139915 "Sales Service Commitment Test"
     [Test]
     procedure CheckSalesServiceCommitmentArchive()
     var
-        SalesServiceCommArchive: Record "Sales Service Comm. Archive";
+        SalesServiceCommArchive: Record "Sales Sub. Line Archive";
         ArchiveManagement: Codeunit ArchiveManagement;
         FirstArchiveLineFound: Boolean;
     begin
@@ -673,7 +676,7 @@ codeunit 139915 "Sales Service Commitment Test"
                 end else
                     SalesServiceCommArchive.Next();
                 SalesServiceCommArchive.TestField("Item No.", SalesServiceCommitment."Item No.");
-                SalesServiceCommArchive.TestField("Package Code", SalesServiceCommitment."Package Code");
+                SalesServiceCommArchive.TestField("Package Code", SalesServiceCommitment."Subscription Package Code");
                 SalesServiceCommArchive.TestField(Template, SalesServiceCommitment.Template);
                 SalesServiceCommArchive.TestField(Description, SalesServiceCommitment.Description);
                 SalesServiceCommArchive.TestField("Invoicing via", SalesServiceCommitment."Invoicing via");
@@ -684,9 +687,11 @@ codeunit 139915 "Sales Service Commitment Test"
                 SalesServiceCommArchive.TestField("Calculation Base Type", SalesServiceCommitment."Calculation Base Type");
                 SalesServiceCommArchive.TestField("Billing Base Period", SalesServiceCommitment."Billing Base Period");
                 SalesServiceCommArchive.TestField("Calculation Base %", SalesServiceCommitment."Calculation Base %");
-                SalesServiceCommArchive.TestField("Service Comm. Start Formula", SalesServiceCommitment."Service Comm. Start Formula");
+                SalesServiceCommArchive.TestField("Sub. Line Start Formula", SalesServiceCommitment."Sub. Line Start Formula");
                 SalesServiceCommArchive.TestField("Billing Rhythm", SalesServiceCommitment."Billing Rhythm");
                 SalesServiceCommArchive.TestField("Customer Price Group", SalesServiceCommitment."Customer Price Group");
+                SalesServiceCommArchive.TestField("Unit Cost", SalesServiceCommitment."Unit Cost");
+                SalesServiceCommArchive.TestField("Unit Cost (LCY)", SalesServiceCommitment."Unit Cost (LCY)");
             until SalesServiceCommitment.Next() = 0;
         until SalesLine.Next() = 0;
     end;
@@ -700,11 +705,11 @@ codeunit 139915 "Sales Service Commitment Test"
     begin
         Initialize();
         SetupAdditionalServiceCommPackageLine(Enum::"Service Partner"::Vendor);
-        // no sales service commitments for this item
+        // no Sales Subscription Lines for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales without Service Commitment", ServiceCommitmentPackage.Code);
-        // sales service commitments created for this item
+        // Sales Subscription Lines created for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item2, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
-        // sales service commitments created for this item
+        // Sales Subscription Lines created for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item3, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
         // no sales line for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item4, Enum::"Item Service Commitment Type"::"Invoicing Item", ServiceCommitmentPackage.Code);
@@ -759,8 +764,9 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure CheckSalesServiceCommitmentBaseAmountCalculation()
     var
         ExpectedCalculationBaseAmount: Decimal;
+        UnexpectedValueTok: Label 'Unexpected value of %1 for %2. Partner: %3, Calculation Base Type: %4', Locked = true;
     begin
-        // Creates Service Commitment Packages with Service Commitment Package Lines with combinations of Customer/Vendor and Calculation Base Type
+        // Creates Subscription Packages with Subscription Package Lines with combinations of Customer/Vendor and Calculation Base Type
         // Customer - Item Price
         // Customer - Document Price
         // Customer - Document Price and Discount
@@ -781,36 +787,36 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Item Price");
         SalesServiceCommitment.FindFirst();
-        SalesServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        Assert.AreEqual(ExpectedCalculationBaseAmount, SalesServiceCommitment."Calculation Base Amount", StrSubstNo(UnexpectedValueTok, SalesServiceCommitment.FieldCaption("Calculation Base Amount"), SalesServiceCommitment.TableCaption(), SalesServiceCommitment.Partner, SalesServiceCommitment."Calculation Base Type"));
 
         SalesLine.Validate("Unit Price", LibraryRandom.RandDec(10000, 2));
         SalesLine.Modify(false);
         ExpectedCalculationBaseAmount := SalesLine."Unit Price";
         SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
         SalesServiceCommitment.FindFirst();
-        SalesServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        Assert.AreEqual(ExpectedCalculationBaseAmount, SalesServiceCommitment."Calculation Base Amount", StrSubstNo(UnexpectedValueTok, SalesServiceCommitment.FieldCaption("Calculation Base Amount"), SalesServiceCommitment.TableCaption(), SalesServiceCommitment.Partner, SalesServiceCommitment."Calculation Base Type"));
 
         SalesLine.Validate("Line Discount %", LibraryRandom.RandDec(100, 2));
         SalesLine.Modify(false);
         ExpectedCalculationBaseAmount := SalesLine."Unit Price";
         SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price And Discount");
         SalesServiceCommitment.FindFirst();
-        SalesServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        Assert.AreEqual(ExpectedCalculationBaseAmount, SalesServiceCommitment."Calculation Base Amount", StrSubstNo(UnexpectedValueTok, SalesServiceCommitment.FieldCaption("Calculation Base Amount"), SalesServiceCommitment.TableCaption(), SalesServiceCommitment.Partner, SalesServiceCommitment."Calculation Base Type"));
         SalesServiceCommitment.TestField("Discount %", SalesLine."Line Discount %");
 
         // Vendor
-        ExpectedCalculationBaseAmount := Item."Last Direct Cost";
+        ExpectedCalculationBaseAmount := Item."Unit Cost";
         SalesServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Item Price");
         SalesServiceCommitment.FindFirst();
-        SalesServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        Assert.AreEqual(ExpectedCalculationBaseAmount, SalesServiceCommitment."Calculation Base Amount", StrSubstNo(UnexpectedValueTok, SalesServiceCommitment.FieldCaption("Calculation Base Amount"), SalesServiceCommitment.TableCaption(), SalesServiceCommitment.Partner, SalesServiceCommitment."Calculation Base Type"));
 
-        SalesLine.Validate("Unit Cost", LibraryRandom.RandDec(10000, 2));
+        SalesLine.Validate("Unit Cost (LCY)", LibraryRandom.RandDec(10000, 2));
         SalesLine.Modify(false);
         ExpectedCalculationBaseAmount := SalesLine."Unit Cost";
         SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price");
         SalesServiceCommitment.FindFirst();
-        SalesServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        Assert.AreEqual(ExpectedCalculationBaseAmount, SalesServiceCommitment."Calculation Base Amount", StrSubstNo(UnexpectedValueTok, SalesServiceCommitment.FieldCaption("Calculation Base Amount"), SalesServiceCommitment.TableCaption(), SalesServiceCommitment.Partner, SalesServiceCommitment."Calculation Base Type"));
     end;
 
     [Test]
@@ -833,11 +839,11 @@ codeunit 139915 "Sales Service Commitment Test"
         Currency.InitRoundingPrecision();
 
         DiscountPercent := LibraryRandom.RandDec(50, 2);
-        ExpectedDiscountAmount := Round(SalesServiceCommitment."Service Amount" * DiscountPercent / 100, Currency."Amount Rounding Precision");
+        ExpectedDiscountAmount := Round(SalesServiceCommitment.Amount * DiscountPercent / 100, Currency."Amount Rounding Precision");
         SalesServiceCommitment.Validate("Discount %", DiscountPercent);
         SalesServiceCommitment.TestField("Discount Amount", ExpectedDiscountAmount);
 
-        Evaluate(ServiceAmountInt, Format(SalesServiceCommitment."Service Amount", 0, '<Integer>'));
+        Evaluate(ServiceAmountInt, Format(SalesServiceCommitment.Amount, 0, '<Integer>'));
         DiscountAmount := LibraryRandom.RandDec(ServiceAmountInt, 2);
         ExpectedDiscountPercent := Round(DiscountAmount / Round((SalesServiceCommitment.Price * SalesLine.Quantity), Currency."Amount Rounding Precision") * 100, 0.00001);
         SalesServiceCommitment.Validate("Discount Amount", DiscountAmount);
@@ -848,7 +854,7 @@ codeunit 139915 "Sales Service Commitment Test"
     [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
     procedure CheckSalesServiceCommitmentPackageFilterForSalesLine()
     begin
-        // Create three Service Commitment Packages and assign them to one Item. First Serv. Comm. Package is set as Standard
+        // Create three Subscription Packages and assign them to one Item. First Serv. Comm. Package is set as Standard
         Initialize();
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
         SetupAdditionalServiceCommPackageAndAssignToItem();
@@ -887,7 +893,7 @@ codeunit 139915 "Sales Service Commitment Test"
             SalesServiceCommitment.FilterOnSalesLine(SalesLine);
             SalesServiceCommitment.FindSet();
             repeat
-                SalesServiceCommitment.TestField("Service Amount", Round(SalesServiceCommitment.Price, 0.01));
+                SalesServiceCommitment.TestField(Amount, Round(SalesServiceCommitment.Price, 0.01));
             until SalesServiceCommitment.Next() = 0;
         until SalesLine.Next() = 0;
     end;
@@ -924,22 +930,22 @@ codeunit 139915 "Sales Service Commitment Test"
         Currency.InitRoundingPrecision();
         Price := Round(SalesServiceCommitment."Calculation Base Amount" * SalesServiceCommitment."Calculation Base %" / 100, Currency."Unit-Amount Rounding Precision");
         ExpectedServiceAmount := Round(SalesLine.Quantity * Price, Currency."Amount Rounding Precision");
-        SalesServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        SalesServiceCommitment.TestField(Amount, ExpectedServiceAmount);
 
         ChangedCalculationBaseAmount := LibraryRandom.RandDec(1000, 2);
         SalesServiceCommitment.Validate("Calculation Base Amount", ChangedCalculationBaseAmount);
 
         ExpectedServiceAmount := Round((SalesServiceCommitment.Price * SalesLine.Quantity), Currency."Amount Rounding Precision");
-        SalesServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        SalesServiceCommitment.TestField(Amount, ExpectedServiceAmount);
 
         DiscountPercent := LibraryRandom.RandDec(100, 2);
         SalesServiceCommitment.Validate("Discount %", DiscountPercent);
 
         ExpectedServiceAmount := ExpectedServiceAmount - Round(ExpectedServiceAmount * DiscountPercent / 100, Currency."Amount Rounding Precision");
-        SalesServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        SalesServiceCommitment.TestField(Amount, ExpectedServiceAmount);
 
         ServiceAmountBiggerThanPrice := SalesServiceCommitment.Price * (SalesLine.Quantity + 1);
-        asserterror SalesServiceCommitment.Validate("Service Amount", ServiceAmountBiggerThanPrice);
+        asserterror SalesServiceCommitment.Validate(Amount, ServiceAmountBiggerThanPrice);
     end;
 
     [Test]
@@ -980,15 +986,15 @@ codeunit 139915 "Sales Service Commitment Test"
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
         LibrarySales.CreateSalesLineWithShipmentDate(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", WorkDate(), LibraryRandom.RandInt(100));
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
-        Evaluate(SalesServiceCommitment."Service Comm. Start Formula", '<1M>');
-        SalesServiceCommitment.ModifyAll(SalesServiceCommitment."Agreed Serv. Comm. Start Date", 0D, false);
+        Evaluate(SalesServiceCommitment."Sub. Line Start Formula", '<1M>');
+        SalesServiceCommitment.ModifyAll(SalesServiceCommitment."Agreed Sub. Line Start Date", 0D, false);
         SalesServiceCommitment.FindFirst();
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.FindFirst();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindFirst();
-        Assert.AreEqual(ServiceCommitment."Service Start Date", CalcDate(SalesServiceCommitment."Service Comm. Start Formula", SalesLine."Shipment Date"), NotCreatedProperlyErr);
+        Assert.AreEqual(ServiceCommitment."Subscription Line Start Date", CalcDate(SalesServiceCommitment."Sub. Line Start Formula", SalesLine."Shipment Date"), NotCreatedProperlyErr);
     end;
 
     [Test]
@@ -1033,13 +1039,13 @@ codeunit 139915 "Sales Service Commitment Test"
         SetupSalesLineForTotalAndVatCalculation(Item, true, 0);
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
         SalesServiceCommitment.FindFirst();
-        ExpectedVATAmount += Round((SalesServiceCommitment."Service Amount" / 12 * 1) * SalesLine."VAT %" / 100, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
+        ExpectedVATAmount += Round((SalesServiceCommitment.Amount / 12 * 1) * SalesLine."VAT %" / 100, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
 
         // Item with different VAT for same Billing Rhythm
         SetupSalesLineForTotalAndVatCalculation(Item4, true, SalesLine."VAT %");
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
         SalesServiceCommitment.FindFirst();
-        ExpectedVATAmount += Round((SalesServiceCommitment."Service Amount" / 12 * 1) * SalesLine."VAT %" / 100, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
+        ExpectedVATAmount += Round((SalesServiceCommitment.Amount / 12 * 1) * SalesLine."VAT %" / 100, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
 
         // "Billing Rhythm" = '<3M>', "Billing Base Period" = '<12M>'
         SetupSalesLineForTotalAndVatCalculation(Item2, true, 0);
@@ -1047,7 +1053,7 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesServiceCommitment.FindFirst();
         Evaluate(SalesServiceCommitment."Billing Rhythm", '3M');
         SalesServiceCommitment.Modify(false);
-        ExpectedVATAmount += (SalesServiceCommitment."Service Amount" / 12 * 3) * SalesLine."VAT %" / 100;
+        ExpectedVATAmount += (SalesServiceCommitment.Amount / 12 * 3) * SalesLine."VAT %" / 100;
 
         // "Billing Rhythm" = '<3M>', "Billing Base Period" = '<2Y>'
         SetupSalesLineForTotalAndVatCalculation(Item3, true, 0);
@@ -1056,7 +1062,7 @@ codeunit 139915 "Sales Service Commitment Test"
         Evaluate(SalesServiceCommitment."Billing Base Period", '<2Y>');
         Evaluate(SalesServiceCommitment."Billing Rhythm", '<3M>');
         SalesServiceCommitment.Modify(false);
-        ExpectedVATAmount += (SalesServiceCommitment."Service Amount" / 24 * 3) * SalesLine."VAT %" / 100;
+        ExpectedVATAmount += (SalesServiceCommitment.Amount / 24 * 3) * SalesLine."VAT %" / 100;
         ExpectedVATAmount := Round(ExpectedVATAmount, Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
 
         SalesServiceCommitment.CalcVATAmountLines(SalesHeader, TempSalesServiceCommitmentBuff, UniqueRhythmDictionary);
@@ -1069,12 +1075,12 @@ codeunit 139915 "Sales Service Commitment Test"
     [Test]
     procedure CreateServiceObjectWithItemTrackingCodeWithoutSNSpecificFlag()
     begin
-        // Check that Service Object is created with Item with Item Tracking Code without SNSpecific flag
+        // Check that Subscription is created with Item with Item Tracking Code without SNSpecific flag
         Initialize();
         CreateSalesServiceCommitmentItemWithSNSpecificTracking(false, false);
         CreateSalesDocumentAndLineWithRandomQuantity("Sales Document Type"::Order);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
 
         Assert.RecordCount(ServiceObject, 1);
         ServiceObject.FindFirst();
@@ -1088,9 +1094,9 @@ codeunit 139915 "Sales Service Commitment Test"
         CustomerPriceGroup: Record "Customer Price Group";
         CustomerReference: Text;
     begin
-        // Create Item as Sales with Service Commitment
+        // Create Item as Sales with Subscription
         // Assign negative value to Quantity
-        // Ship Item -  Service Object should not be created
+        // Ship Item -  Subscription should not be created
         Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
         LibrarySales.CreateCustomer(Customer);
@@ -1105,7 +1111,7 @@ codeunit 139915 "Sales Service Commitment Test"
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", -LibraryRandom.RandInt(100));
         LibrarySales.PostSalesDocument(SalesHeader, true, false);
 
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.SetRange("Customer Reference", CustomerReference);
         Assert.RecordIsEmpty(ServiceObject);
     end;
@@ -1146,7 +1152,7 @@ codeunit 139915 "Sales Service Commitment Test"
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         SetupServiceCommitmentTemplate();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);        // sales service commitments created for this item
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);        // Sales Subscription Lines created for this item
         Evaluate(ServiceCommPackageLine."Billing Rhythm", '');
         ServiceCommPackageLine.Modify(false);
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
@@ -1165,7 +1171,7 @@ codeunit 139915 "Sales Service Commitment Test"
         Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
         ServiceCommitmentTemplate.Modify(false);
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);        // sales service commitments created for this item
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);        // Sales Subscription Lines created for this item
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
 
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
@@ -1175,8 +1181,8 @@ codeunit 139915 "Sales Service Commitment Test"
     [Test]
     procedure ExpectErrorOnMergeContractLinesWithDifferentSerialNo()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
         Initialize();
         CreateAndPostSalesDocumentWithSerialNo(true, true);
@@ -1186,11 +1192,11 @@ codeunit 139915 "Sales Service Commitment Test"
         ServiceObject.SetFilter("Serial No.", '<>%1', '');
         ServiceObject.FindFirst();
         repeat
-            ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false);
+            ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false);
         until ServiceObject.Next() = 0;
 
         CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         asserterror CustomerContractLine.MergeContractLines(CustomerContractLine);
     end;
 
@@ -1231,17 +1237,17 @@ codeunit 139915 "Sales Service Commitment Test"
     [Test]
     procedure RunNormalSalesServiceCommitmentDeletion()
     begin
-        // [SCENARIO] Manual deletion of simple Sales Service Commitment Line should run with no error.
+        // [SCENARIO] Manual deletion of simple Sales Subscription Line Line should run with no error.
 
-        // [GIVEN] Setup a new Service Commitment Item
+        // [GIVEN] Setup a new Subscription Item
         Initialize();
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
 
-        // [WHEN] A sales line has been created for a Service Commitment Item
+        // [WHEN] A sales line has been created for a Subscription Item
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
 
-        // [THEN] Make sure that Sales Service Commitment Line has been created and can be deleted with no errors
+        // [THEN] Make sure that Sales Subscription Line Line has been created and can be deleted with no errors
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
         SalesServiceCommitment.FindFirst();
         SalesServiceCommitment.Delete(true);
@@ -1251,15 +1257,15 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure RunSalesServiceCommitmentDeletionForContractRenewal()
     var
         SalesLine2: Record "Sales Line";
-        SalesServiceCommitment2: Record "Sales Service Commitment";
+        SalesServiceCommitment2: Record "Sales Subscription Line";
     begin
-        // [SCENARIO] Manual deletion of Sales Service Commitment Line with Contract Renewal should hit an error when the only remaining Line For Contract Renewal is left in the document
+        // [SCENARIO] Manual deletion of Sales Subscription Line Line with Contract Renewal should hit an error when the only remaining Line For Contract Renewal is left in the document
 
-        // [GIVEN] Setup a new Service Commitment Item
+        // [GIVEN] Setup a new Subscription Item
         Initialize();
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
 
-        // [WHEN] Two sales lines has been created for a Service Commitment Item, both of them for Contract Renewal
+        // [WHEN] Two sales lines has been created for a Subscription Item, both of them for Contract Renewal
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandIntInRange(1, 100));
         SalesServiceCommitment.FilterOnSalesLine(SalesLine);
@@ -1272,10 +1278,10 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesServiceCommitment2.Process := SalesServiceCommitment.Process::"Contract Renewal";
         SalesServiceCommitment2.Modify(false);
 
-        // [THEN] Make sure that first Sales Service Commitment Line can be deleted with no errors
+        // [THEN] Make sure that first Sales Subscription Line Line can be deleted with no errors
         SalesServiceCommitment.Delete(true);
 
-        // [THEN] Make sure that second Sales Service Commitment Line can not be deleted
+        // [THEN] Make sure that second Sales Subscription Line Line can not be deleted
         asserterror SalesServiceCommitment2.Delete(true);
         Assert.ExpectedError(SalesServiceCommitmentCannotBeDeletedErr);
     end;
@@ -1286,10 +1292,10 @@ codeunit 139915 "Sales Service Commitment Test"
     var
         SalesShipmentLine: Record "Sales Shipment Line";
     begin
-        // [SCENARIO] Post Sales order with service commitment Item. Only Posted sales shipment will be created and Quantity Invoiced will be automatically set to shipped quantity
+        // [SCENARIO] Post Sales order with Subscription Item. Only Posted sales shipment will be created and Quantity Invoiced will be automatically set to shipped quantity
         // [SCENARIO] Test if Invoiced quantity will be reverted automatically when shipment is canceled
 
-        // [GIVEN] Create Service Commitment Item, Create Sales Order and post it
+        // [GIVEN] Create Subscription Item, Create Sales Order and post it
         Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
@@ -1322,7 +1328,7 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure SalesServiceCommitmentMakeOrderFromBlanketOrder()
     var
         SalesOrder: Record "Sales Header";
-        TempSalesServiceCommitment: Record "Sales Service Commitment" temporary;
+        TempSalesServiceCommitment: Record "Sales Subscription Line" temporary;
         BlanketSalesOrderToOrder: Codeunit "Blanket Sales Order to Order";
     begin
         Initialize();
@@ -1362,7 +1368,7 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure SalesServiceCommitmentMakeOrderFromQuote()
     var
         SalesOrder: Record "Sales Header";
-        TempSalesServiceCommitment: Record "Sales Service Commitment" temporary;
+        TempSalesServiceCommitment: Record "Sales Subscription Line" temporary;
         SalesQuoteToOrder: Codeunit "Sales-Quote to Order";
     begin
         Initialize();
@@ -1406,7 +1412,7 @@ codeunit 139915 "Sales Service Commitment Test"
         MainSalesLineLineNo: Integer;
     begin
         Initialize();
-        // Setup a Service Commitment Item with attributed extended text & a "normal" sales item with service commitment
+        // Setup a Subscription Item with attributed extended text & a "normal" sales item with Subscription Line
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
@@ -1447,8 +1453,8 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesLine.SetRange(Type, Enum::"Sales Line Type"::Item);
         SalesLine.SetRange("No.", Item."No.");
         SalesLine.FindLast();
-        SalesLine.CalcFields("Service Commitments");
-        SalesLine.TestField("Service Commitments");
+        SalesLine.CalcFields("Subscription Lines");
+        SalesLine.TestField("Subscription Lines");
     end;
 
     [Test]
@@ -1461,9 +1467,9 @@ codeunit 139915 "Sales Service Commitment Test"
         InventoryPickPostingDate: Date;
     begin
         Initialize();
-        // [WHEN] using Inventory Pick to post Sales Order if "Posting Date" option has been used in Service Contract Setup (Service Start Date for Inventory Pick)
-        // [THEN] Posting Date is set as Service Start Date in Service Commitments and Provision Start Date in Service Object
-        LibrarySetupStorage.Save(Database::"Service Contract Setup");
+        // [WHEN] using Inventory Pick to post Sales Order if "Posting Date" option has been used in Subscription Contract Setup (Subscription Line Start Date for Inventory Pick)
+        // [THEN] Posting Date is set as Subscription Line Start Date in Subscription Lines and Provision Start Date in Subscription
+        LibrarySetupStorage.Save(Database::"Subscription Contract Setup");
         LibrarySetupStorage.Save(Database::"Inventory Setup");
         SetupForInventoryPick();
         PurchaseHardwareItemForLocation();
@@ -1481,14 +1487,14 @@ codeunit 139915 "Sales Service Commitment Test"
         LibraryWarehouse.SetQtyToHandleWhseActivity(WarehouseActivityHeader, WarehouseActivityLine.Quantity);
         LibraryWarehouse.PostInventoryActivity(WarehouseActivityHeader, false);
 
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.SetRange("Provision Start Date", InventoryPickPostingDate);
         ServiceObject.FindFirst();
 
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
-            ServiceCommitment.TestField("Service Start Date", InventoryPickPostingDate);
+            ServiceCommitment.TestField("Subscription Line Start Date", InventoryPickPostingDate);
         until ServiceCommitment.Next() = 0;
 
         LibrarySetupStorage.Restore();
@@ -1509,18 +1515,18 @@ codeunit 139915 "Sales Service Commitment Test"
         ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
     end;
 
-    local procedure CheckAssignedSalesServiceCommitmentValues(var SalesServiceCommitmentToTest: Record "Sales Service Commitment"; SourceSalesLine: Record "Sales Line")
+    local procedure CheckAssignedSalesServiceCommitmentValues(var SalesServiceCommitmentToTest: Record "Sales Subscription Line"; SourceSalesLine: Record "Sales Line")
     var
-        SalesServiceCommMgmt: Codeunit "Sales Service Commitment Mgmt.";
+        SalesServiceCommMgmt: Codeunit "Sales Subscription Line Mgmt.";
     begin
-        ServiceCommPackageLine.SetRange("Package Code", ServiceCommitmentPackage.Code);
+        ServiceCommPackageLine.SetRange("Subscription Package Code", ServiceCommitmentPackage.Code);
         ServiceCommPackageLine.FindSet();
         repeat
-            SalesServiceCommitmentToTest.SetRange("Package Code", ServiceCommPackageLine."Package Code");
+            SalesServiceCommitmentToTest.SetRange("Subscription Package Code", ServiceCommPackageLine."Subscription Package Code");
             SalesServiceCommitmentToTest.SetRange(Partner, ServiceCommPackageLine.Partner);
             SalesServiceCommitmentToTest.FindFirst();
             SalesServiceCommitmentToTest.TestField("Item No.", SalesServiceCommMgmt.GetItemNoForSalesServiceCommitment(SourceSalesLine, ServiceCommPackageLine));
-            SalesServiceCommitmentToTest.TestField("Package Code", ServiceCommPackageLine."Package Code");
+            SalesServiceCommitmentToTest.TestField("Subscription Package Code", ServiceCommPackageLine."Subscription Package Code");
             SalesServiceCommitmentToTest.TestField(Template, ServiceCommPackageLine.Template);
             SalesServiceCommitmentToTest.TestField(Description, ServiceCommPackageLine.Description);
             SalesServiceCommitmentToTest.TestField("Invoicing via", ServiceCommPackageLine."Invoicing via");
@@ -1531,7 +1537,7 @@ codeunit 139915 "Sales Service Commitment Test"
             SalesServiceCommitmentToTest.TestField("Calculation Base Type", ServiceCommPackageLine."Calculation Base Type");
             SalesServiceCommitmentToTest.TestField("Billing Base Period", ServiceCommPackageLine."Billing Base Period");
             SalesServiceCommitmentToTest.TestField("Calculation Base %", ServiceCommPackageLine."Calculation Base %");
-            SalesServiceCommitmentToTest.TestField("Service Comm. Start Formula", ServiceCommPackageLine."Service Comm. Start Formula");
+            SalesServiceCommitmentToTest.TestField("Sub. Line Start Formula", ServiceCommPackageLine."Sub. Line Start Formula");
             SalesServiceCommitmentToTest.TestField("Billing Rhythm", ServiceCommPackageLine."Billing Rhythm");
             SalesServiceCommitmentToTest.TestField("Customer Price Group", SourceSalesLine."Customer Price Group");
         until ServiceCommPackageLine.Next() = 0;
@@ -1543,7 +1549,7 @@ codeunit 139915 "Sales Service Commitment Test"
     begin
         for i := 1 to NoOfServiceObjects do begin
             ServiceObject.Reset();
-            ServiceObject.SetRange("Item No.", Item."No.");
+            ServiceObject.FilterOnItemNo(Item."No.");
             ServiceObject.SetRange("Serial No.", SerialNo[i]);
             Assert.RecordCount(ServiceObject, 1);
         end;
@@ -1654,7 +1660,7 @@ codeunit 139915 "Sales Service Commitment Test"
     begin
         LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, SNSpecific, LNSpecific);
         LibraryItemTracking.CreateItemWithItemTrackingCode(Item, ItemTrackingCode);
-        Item."Service Commitment Option" := Enum::"Item Service Commitment Type"::"Sales with Service Commitment";
+        Item."Subscription Option" := Enum::"Item Service Commitment Type"::"Sales with Service Commitment";
         Item.Modify(false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
     end;
@@ -1783,12 +1789,12 @@ codeunit 139915 "Sales Service Commitment Test"
         EmptyDateFormula: DateFormula;
     begin
         ContractTestLibrary.CreateInventoryItem(Item);
-        Item."Service Commitment Option" := ServiceCommitmentType;
+        Item."Subscription Option" := ServiceCommitmentType;
         Item.Modify(false);
         SetupServiceCommitmentTemplate();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
-        ServiceCommPackageLine."Service Comm. Start Formula" := EmptyDateFormula;
+        ServiceCommPackageLine."Sub. Line Start Formula" := EmptyDateFormula;
         ServiceCommPackageLine.Modify(false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
     end;
@@ -1867,10 +1873,10 @@ codeunit 139915 "Sales Service Commitment Test"
 
     local procedure SetupServiceContractSetupForInventoryPick()
     var
-        ServiceContractSetup: Record "Service Contract Setup";
+        ServiceContractSetup: Record "Subscription Contract Setup";
     begin
         ServiceContractSetup.Get();
-        ServiceContractSetup."Serv. Start Date for Inv. Pick" := ServiceContractSetup."Serv. Start Date for Inv. Pick"::"Posting Date";
+        ServiceContractSetup."Sub. Line Start Date Inv. Pick" := ServiceContractSetup."Sub. Line Start Date Inv. Pick"::"Posting Date";
         ServiceContractSetup.Modify(false);
     end;
 
@@ -1900,8 +1906,8 @@ codeunit 139915 "Sales Service Commitment Test"
 
     local procedure TestSalesServiceCommitmentPackageFilterForSalesLine(SourceSalesLine: Record "Sales Line"; RemoveExistingPackageFromFilter: Boolean)
     var
-        ItemServiceCommitmentPackage: Record "Item Serv. Commitment Package";
-        StandardItemSrvCommPackageNotFoundErr: Label 'Item Service Commitment Package with Standard=true not found.', Locked = true;
+        ItemServiceCommitmentPackage: Record "Item Subscription Package";
+        StandardItemSrvCommPackageNotFoundErr: Label 'Item Subscription Package with Standard=true not found.', Locked = true;
         StandardServCommPackageFound: Boolean;
         PackageFilter: Text;
     begin
@@ -1921,10 +1927,10 @@ codeunit 139915 "Sales Service Commitment Test"
                 Error(StandardItemSrvCommPackageNotFoundErr);
     end;
 
-    local procedure TestSalesServiceCommitmentValues(var SalesServiceCommitmentToTest: Record "Sales Service Commitment"; var SalesServiceCommitmentToTestWith: Record "Sales Service Commitment")
+    local procedure TestSalesServiceCommitmentValues(var SalesServiceCommitmentToTest: Record "Sales Subscription Line"; var SalesServiceCommitmentToTestWith: Record "Sales Subscription Line")
     begin
         SalesServiceCommitmentToTest.TestField("Item No.", SalesServiceCommitmentToTestWith."Item No.");
-        SalesServiceCommitmentToTest.TestField("Package Code", SalesServiceCommitmentToTestWith."Package Code");
+        SalesServiceCommitmentToTest.TestField("Subscription Package Code", SalesServiceCommitmentToTestWith."Subscription Package Code");
         SalesServiceCommitmentToTest.TestField(Template, SalesServiceCommitmentToTestWith.Template);
         SalesServiceCommitmentToTest.TestField(Description, SalesServiceCommitmentToTestWith.Description);
         SalesServiceCommitmentToTest.TestField("Invoicing via", SalesServiceCommitmentToTestWith."Invoicing via");
@@ -1935,15 +1941,15 @@ codeunit 139915 "Sales Service Commitment Test"
         SalesServiceCommitmentToTest.TestField("Calculation Base Type", SalesServiceCommitmentToTestWith."Calculation Base Type");
         SalesServiceCommitmentToTest.TestField("Billing Base Period", SalesServiceCommitmentToTestWith."Billing Base Period");
         SalesServiceCommitmentToTest.TestField("Calculation Base %", SalesServiceCommitmentToTestWith."Calculation Base %");
-        SalesServiceCommitmentToTest.TestField("Service Comm. Start Formula", SalesServiceCommitmentToTestWith."Service Comm. Start Formula");
+        SalesServiceCommitmentToTest.TestField("Sub. Line Start Formula", SalesServiceCommitmentToTestWith."Sub. Line Start Formula");
         SalesServiceCommitmentToTest.TestField("Billing Rhythm", SalesServiceCommitmentToTestWith."Billing Rhythm");
         SalesServiceCommitmentToTest.TestField("Calculation Base Amount", SalesServiceCommitmentToTestWith."Calculation Base Amount");
         SalesServiceCommitmentToTest.TestField(Price, SalesServiceCommitmentToTestWith.Price);
         SalesServiceCommitmentToTest.TestField("Discount %", SalesServiceCommitmentToTestWith."Discount %");
-        SalesServiceCommitmentToTest.TestField("Service Amount", SalesServiceCommitmentToTestWith."Service Amount");
+        SalesServiceCommitmentToTest.TestField(Amount, SalesServiceCommitmentToTestWith.Amount);
     end;
 
-    local procedure TestServiceCommitmentPriceCalculation(ServiceCommitmentToTest: Record "Service Commitment")
+    local procedure TestServiceCommitmentPriceCalculation(ServiceCommitmentToTest: Record "Subscription Line")
     var
         ExpectedPrice: Decimal;
     begin
@@ -1953,11 +1959,11 @@ codeunit 139915 "Sales Service Commitment Test"
         ServiceCommitmentToTest.TestField(Price, ExpectedPrice);
     end;
 
-    local procedure TestServiceCommitmentValues(var ServiceCommitmentToTest: Record "Service Commitment"; var SalesServiceCommitmentToTestWith: Record "Sales Service Commitment")
+    local procedure TestServiceCommitmentValues(var ServiceCommitmentToTest: Record "Subscription Line"; var SalesServiceCommitmentToTestWith: Record "Sales Subscription Line")
     var
         CurrExchRate: Record "Currency Exchange Rate";
     begin
-        ServiceCommitmentToTest.TestField("Package Code", SalesServiceCommitmentToTestWith."Package Code");
+        ServiceCommitmentToTest.TestField("Subscription Package Code", SalesServiceCommitmentToTestWith."Subscription Package Code");
         ServiceCommitmentToTest.TestField(Template, SalesServiceCommitmentToTestWith.Template);
         ServiceCommitmentToTest.TestField(Description, SalesServiceCommitmentToTestWith.Description);
         ServiceCommitmentToTest.TestField("Invoicing via", SalesServiceCommitmentToTestWith."Invoicing via");
@@ -1969,16 +1975,19 @@ codeunit 139915 "Sales Service Commitment Test"
         ServiceCommitmentToTest.TestField("Billing Rhythm", SalesServiceCommitmentToTestWith."Billing Rhythm");
         ServiceCommitmentToTest.TestField("Currency Code", Customer."Currency Code");
         ServiceCommitmentToTest.TestField(Price, SalesServiceCommitmentToTestWith.Price);
-        ServiceCommitmentToTest.TestField("Service Amount", SalesServiceCommitmentToTestWith."Service Amount");
+        ServiceCommitmentToTest.TestField(Amount, SalesServiceCommitmentToTestWith.Amount);
         ServiceCommitmentToTest.TestField("Discount Amount", SalesServiceCommitmentToTestWith."Discount Amount");
         ServiceCommitmentToTest.TestField("Price (LCY)",
                     CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith.Price, ServiceCommitmentToTest."Currency Factor"));
-        ServiceCommitmentToTest.TestField("Service Amount (LCY)",
-                    CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith."Service Amount", ServiceCommitmentToTest."Currency Factor"));
+        ServiceCommitmentToTest.TestField("Amount (LCY)",
+                    CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith.Amount, ServiceCommitmentToTest."Currency Factor"));
         ServiceCommitmentToTest.TestField("Discount Amount (LCY)",
                     CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith."Discount Amount", ServiceCommitmentToTest."Currency Factor"));
+        ServiceCommitmentToTest.TestField("Unit Cost", SalesServiceCommitmentToTestWith."Unit Cost");
+        ServiceCommitmentToTest.TestField("Unit Cost (LCY)",
+                    CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith."Unit Cost", ServiceCommitmentToTest."Currency Factor"));
         ServiceCommitmentToTest.TestField("Price Binding Period", SalesServiceCommitmentToTestWith."Price Binding Period");
-        ServiceCommitmentToTest.TestField("Next Price Update", CalcDate(SalesServiceCommitmentToTestWith."Price Binding Period", ServiceCommitmentToTest."Service Start Date"));
+        ServiceCommitmentToTest.TestField("Next Price Update", CalcDate(SalesServiceCommitmentToTestWith."Price Binding Period", ServiceCommitmentToTest."Subscription Line Start Date"));
     end;
 
     local procedure TestServiceObjectWithSerialNoExists()
@@ -1986,22 +1995,31 @@ codeunit 139915 "Sales Service Commitment Test"
         i: Integer;
     begin
         ServiceObject.Reset();
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         for i := 1 to NoOfServiceObjects do begin
             ServiceObject.SetRange("Serial No.", SerialNo[i]); // check if Serial Object with specific Serial No. is created
             ServiceObject.FindFirst();
-            ServiceObject.TestField("Quantity Decimal", 1);
+            ServiceObject.TestField(Quantity, 1);
         end;
     end;
 
     local procedure TestServiceObjectWithSerialNoExpectedCount()
     begin
         ServiceObject.Reset();
-        ServiceObject.SetRange("Item No.", Item."No.");
+        ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.SetFilter("Serial No.", '<>%1', '');
         Assert.RecordCount(ServiceObject, NoOfServiceObjects);
     end;
 
+    local procedure VerifyServiceCommitmentUnitCostFromSalesServiceCommitment(ServiceCommitmentParam: Record "Subscription Line"; var TempSalesServiceCommitment: Record "Sales Subscription Line" temporary)
+    var
+        ValueNotCorrectTok: Label '%1 value is not correct.', Locked = true;
+    begin
+        ServiceCommitmentParam.TestField("Unit Cost");
+        ServiceCommitmentParam.TestField("Unit Cost (LCY)");
+        Assert.AreEqual(ServiceCommitmentParam."Unit Cost", TempSalesServiceCommitment."Unit Cost", StrSubstNo(ValueNotCorrectTok, ServiceCommitmentParam.FieldCaption("Unit Cost")));
+        Assert.AreEqual(ServiceCommitmentParam."Unit Cost (LCY)", TempSalesServiceCommitment."Unit Cost (LCY)", StrSubstNo(ValueNotCorrectTok, ServiceCommitmentParam.FieldCaption("Unit Cost (LCY)")));
+    end;
     #endregion Procedures
 
     #region Handlers

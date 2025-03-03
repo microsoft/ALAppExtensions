@@ -13,7 +13,7 @@ tableextension 6441 "SignUp E-Doc. Svc. Type Ext" extends "E-Doc. Service Suppor
         field(6440; "Profile Id"; Integer)
         {
             Caption = 'Profile Id';
-            ToolTip = 'The unique identifier for the metadata profile.';
+            ToolTip = 'Specifies the unique identifier for the metadata profile.';
             DataClassification = CustomerContent;
             TableRelation = "SignUp Metadata Profile";
             BlankZero = true;
@@ -23,10 +23,10 @@ tableextension 6441 "SignUp E-Doc. Svc. Type Ext" extends "E-Doc. Service Suppor
                 Rec.CalcFields("Profile Name");
             end;
         }
-        field(6382; "Profile Name"; Text[250])
+        field(6441; "Profile Name"; Text[250])
         {
             Caption = 'Profile Name';
-            ToolTip = 'The common name of the metadata profile.';
+            ToolTip = 'Specifies the common name of the metadata profile.';
             FieldClass = FlowField;
             Editable = false;
             CalcFormula = lookup("SignUp Metadata Profile"."Profile Name" where("Profile ID" = field("Profile Id")));

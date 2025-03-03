@@ -72,7 +72,7 @@ codeunit 139889 "Item Reference Test"
         ItemVendor.Validate("Vendor No.", Vendor."No.");
         ItemVendor.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
         ItemVendor.Insert(true);
-        asserterror Item.Validate("Service Commitment Option", Enum::"Item Service Commitment Type"::"Invoicing Item");
+        asserterror Item.Validate("Subscription Option", Enum::"Item Service Commitment Type"::"Invoicing Item");
     end;
 
     [Test]

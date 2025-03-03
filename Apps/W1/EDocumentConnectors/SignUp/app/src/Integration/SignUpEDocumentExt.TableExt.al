@@ -12,8 +12,9 @@ tableextension 6442 "SignUp E-Document Ext" extends "E-Document"
     {
         field(6440; "SignUp Document Id"; Text[50])
         {
+            DataClassification = SystemMetadata;
             Caption = 'SignUp Document ID';
-            ToolTip = 'This value is used by ExFlow E-Invoicing';
+            ToolTip = 'Specifies document id used by ExFlow E-Invoicing';
         }
     }
 }

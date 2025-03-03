@@ -142,12 +142,12 @@ codeunit 6445 "SignUp Processing"
         HttpResponseMessage: HttpResponseMessage;
         JsonArray: JsonArray;
         JsonToken: JsonToken;
-        ReceiveSucced: Boolean;
+        ReceiveSucceed: Boolean;
     begin
-        ReceiveSucced := this.SignUpConnection.GetReceivedDocuments(HttpRequestMessage, HttpResponseMessage);
+        ReceiveSucceed := this.SignUpConnection.GetReceivedDocuments(HttpRequestMessage, HttpResponseMessage);
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequestMessage);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponseMessage);
-        if not ReceiveSucced then
+        if not ReceiveSucceed then
             exit;
 
         if not HttpResponseMessage.Content.ReadAs(ContentData) then

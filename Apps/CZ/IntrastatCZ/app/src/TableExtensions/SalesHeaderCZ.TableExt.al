@@ -41,6 +41,8 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
         IntrastatReportSetup: Record "Intrastat Report Setup";
         IntrastatReportManagementCZ: Codeunit IntrastatReportManagementCZ;
 
+#if not CLEAN26
+    [Obsolete('Pending removal. Use CheckIntrastatMandatoryFields from Intrastat Core extension instead.', '26.0')]
     procedure CheckIntrastatMandatoryFieldsCZ()
     begin
         if not (Ship or Receive) then
@@ -58,7 +60,7 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
                 TestField("Shipment Method Code");
         end;
     end;
-
+#endif
     procedure GetPartnerBasedOnSetupCZ() Customer: Record Customer
     begin
         exit(IntrastatReportManagementCZ.GetCustomerBasedOnSetup("Sell-to Customer No.", "Bill-to Customer No."));

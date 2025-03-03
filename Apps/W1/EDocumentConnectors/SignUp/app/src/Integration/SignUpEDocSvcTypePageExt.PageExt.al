@@ -33,8 +33,8 @@ pageextension 6441 "SignUp EDoc. Svc. Type PageExt" extends "E-Doc Service Suppo
             action(PopulateMetaData)
             {
                 ApplicationArea = All;
-                Caption = 'Retreieve Metadata Profiles';
-                ToolTip = 'Retreieves Metadata Profiles from service';
+                Caption = 'Retrieve Metadata Profiles';
+                ToolTip = 'Retrieves Metadata Profiles from service';
                 Promoted = true;
                 PromotedCategory = Process;
                 Visible = ExFlowEInvoicingVisible;

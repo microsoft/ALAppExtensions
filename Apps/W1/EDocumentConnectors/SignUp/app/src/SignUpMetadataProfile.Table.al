@@ -16,32 +16,32 @@ table 6441 "SignUp Metadata Profile"
         field(1; "Profile ID"; Integer)
         {
             Caption = 'Profile ID';
-            Tooltip = 'The unique identifier for the metadata profile.';
+            Tooltip = 'Specifies the unique identifier for the metadata profile.';
         }
         field(2; "Profile Name"; Text[250])
         {
             Caption = 'Profile Name';
-            Tooltip = 'The common name of the metadata profile.';
+            Tooltip = 'Specifies the common name of the metadata profile.';
         }
         field(3; "Process Identifier Scheme"; Text[250])
         {
             Caption = 'Process Identifier Scheme';
-            Tooltip = 'The scheme of the process identifier.';
+            Tooltip = 'Specifies the scheme of the process identifier.';
         }
         field(4; "Process Identifier Value"; Text[2048])
         {
             Caption = 'Process Identifier Value';
-            Tooltip = 'The value of the process identifier.';
+            Tooltip = 'Specifies the value of the process identifier.';
         }
         field(5; "Document Identifier Scheme"; Text[250])
         {
             Caption = 'Document Identifier Scheme';
-            Tooltip = 'The scheme of the document identifier.';
+            Tooltip = 'Specifies the scheme of the document identifier.';
         }
         field(6; "Document Identifier Value"; Text[2048])
         {
             Caption = 'Document Identifier Value';
-            Tooltip = 'The value of the document identifier.';
+            Tooltip = 'Specifies the value of the document identifier.';
         }
     }
 

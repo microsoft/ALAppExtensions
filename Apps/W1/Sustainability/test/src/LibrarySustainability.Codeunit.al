@@ -153,7 +153,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilitySetup: Record "Sustainability Setup";
     begin
         SustainabilitySetup.Get();
-        SustainabilitySetup.Validate("Enable Value Chain Tracking", EnableValueChainTracking);
+        SustainabilitySetup."Enable Value Chain Tracking" := EnableValueChainTracking;
         SustainabilitySetup.Modify();
     end;
 

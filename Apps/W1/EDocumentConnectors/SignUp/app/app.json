@@ -4,7 +4,7 @@
     "publisher": "Microsoft",
     "brief": "E-Document Connector - SignUp",
     "description": "E-Document Connector - SignUp",
-    "version": "26.0.0.0",
+    "version": "27.0.0.0",
     "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -16,10 +16,16 @@
             "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
             "name": "E-Document Core",
             "publisher": "Microsoft",
-            "version": "26.0.0.0"
+            "version": "27.0.0.0"
         }
     ],
-    "internalsVisibleTo": [],
+    "internalsVisibleTo": [
+        {
+            "id": "b56171bd-9a8e-47ad-a527-99f476d5af84",
+            "name": "E-Document Connector - SignUp Tests",
+            "publisher": "Microsoft"
+        }
+    ],
     "screenshots": [],
     "platform": "26.0.0.0",
     "idRanges": [
@@ -33,7 +39,7 @@
         "allowDownloadingSource": true,
         "includeSourceInSymbolFile": true
     },
-    "application": "26.0.0.0",
+    "application": "27.0.0.0",
     "target": "OnPrem",
     "features": [
         "TranslationFile"

@@ -9,7 +9,6 @@ using System.Environment;
 
 page 6440 "SignUp Connection Setup Card"
 {
-    AdditionalSearchTerms = 'SignUp,electronic document,e-invoice,e-document,external,connection,connector';
     PageType = Card;
     SourceTable = "SignUp Connection Setup";
     ApplicationArea = Basic, Suite;
@@ -144,7 +143,7 @@ page 6440 "SignUp Connection Setup Card"
                     CurrPage.Update();
                     this.SetPageVariables();
                     Hyperlink(this.SignUpAuthentication.GetMarketplaceOnboardingUrl());
-                    this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
+                    this.FeatureTelemetry.LogUptake('0000OR1', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
         }
@@ -161,7 +160,7 @@ page 6440 "SignUp Connection Setup Card"
     begin
         this.FieldsVisible := not EnvironmentInformation.IsSaaSInfrastructure();
         this.SignUpAuthentication.InitConnectionSetup();
-        this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
+        this.FeatureTelemetry.LogUptake('0000OR2', this.ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnAfterGetCurrRecord()

@@ -16,7 +16,6 @@ table 6440 "SignUp Connection Setup"
         field(1; "Primary Key"; Code[10])
         {
             Caption = 'Primary Key', Locked = true;
-            ToolTip = 'Primary Key', Locked = true;
         }
         field(2; "Authentication URL"; Text[2048])
         {

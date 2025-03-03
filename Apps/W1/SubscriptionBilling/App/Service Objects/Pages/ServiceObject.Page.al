@@ -7,9 +7,9 @@ using Microsoft.Inventory.Item.Attribute;
 
 page 8060 "Service Object"
 {
-    Caption = 'Service Object';
+    Caption = 'Subscription';
     PageType = Card;
-    SourceTable = "Service Object";
+    SourceTable = "Subscription Header";
     RefreshOnActivate = true;
     UsageCategory = None;
     ApplicationArea = All;
@@ -23,7 +23,7 @@ page 8060 "Service Object"
                 Caption = 'General';
                 field("No."; Rec."No.")
                 {
-                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+                    ToolTip = 'Specifies the number of Subscription.';
 
                     trigger OnAssistEdit()
                     begin
@@ -31,22 +31,51 @@ page 8060 "Service Object"
                             CurrPage.Update();
                     end;
                 }
+#if not CLEAN26
                 field("Item No."; Rec."Item No.")
                 {
-                    ToolTip = 'Specifies the Item No. of the service object.';
+                    ToolTip = 'Specifies the Item No. of the Subscription.';
+                    ObsoleteReason = 'Replaced by field Source No.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
 
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
                     end;
                 }
+#endif
+                field(Type; Rec.Type)
+                {
+                    ToolTip = 'Specifies the type of the Subscription.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
+                field("Source No."; Rec."Source No.")
+                {
+                    ToolTip = 'Specifies the No. of the Item or G/L Account of the Subscription.';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
+                field("Created in Contract line"; Rec."Created in Contract line")
+                {
+                    ToolTip = 'Specifies whether the Subscription was created by creating a Contract line manually.';
+                    Visible = false;
+                }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                 }
-                field(Quantity; Rec."Quantity Decimal")
+                field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of service object.';
+                    ToolTip = 'Number of units of Subscription.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -58,25 +87,25 @@ page 8060 "Service Object"
                 }
                 field("Customer Reference"; Rec."Customer Reference")
                 {
-                    ToolTip = 'Specifies the reference by which the customer identifies the service object.';
+                    ToolTip = 'Specifies the reference by which the customer identifies the Subscription.';
                 }
                 field(Version; Rec.Version)
                 {
-                    ToolTip = 'Specifies the version of the service object.';
+                    ToolTip = 'Specifies the version of the Subscription.';
                 }
                 field("Key"; Rec."Key")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the additional information (ex. License) of the service object.';
+                    ToolTip = 'Specifies the additional information (ex. License) of the Subscription.';
                 }
                 field("Serial No."; Rec."Serial No.")
                 {
-                    ToolTip = 'Specifies the Serial No. assigned to the service object.';
+                    ToolTip = 'Specifies the Serial No. assigned to the Subscription.';
                 }
                 field("Variant Code"; Rec."Variant Code")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the Variant Code of the service object.';
+                    ToolTip = 'Specifies the Variant Code of the Subscription.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -84,12 +113,12 @@ page 8060 "Service Object"
                 }
                 field("Provision Start Date"; Rec."Provision Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the subject of the service and the associated services were made available to the customer.';
+                    ToolTip = 'Specifies the date from which the subject of the Subscription Line and the associated Subscription Lines were made available to the customer.';
                 }
 
                 field("Provision End Date"; Rec."Provision End Date")
                 {
-                    ToolTip = 'Specifies the date from which the subject of the service and the associated services are not longer available to the customer.';
+                    ToolTip = 'Specifies the date from which the subject of the Subscription Line and the associated Subscription Lines are not longer available to the customer.';
                 }
                 field(PrimaryAttributeValueField; PrimaryAttributeValue)
                 {
@@ -98,31 +127,31 @@ page 8060 "Service Object"
                     Importance = Additional;
                     Editable = false;
                 }
-                field("Archived Service Commitments"; Rec."Archived Service Commitments")
+                field("Archived Service Commitments"; Rec."Archived Sub. Lines exist")
                 {
-                    ToolTip = 'Specifies whether archived services exist for the service object.';
+                    ToolTip = 'Specifies whether archived Subscription Lines exist for the Subscription.';
                     Editable = false;
                     trigger OnDrillDown()
                     var
-                        ServiceCommitmentArchive: Record "Service Commitment Archive";
+                        ServiceCommitmentArchive: Record "Subscription Line Archive";
                     begin
-                        if Rec."Archived Service Commitments" = false then
+                        if Rec."Archived Sub. Lines exist" = false then
                             exit;
                         ServiceCommitmentArchive.SetCurrentKey("Entry No.");
                         ServiceCommitmentArchive.SetAscending("Entry No.", false);
-                        ServiceCommitmentArchive.SetRange("Service Object No.", Rec."No.");
+                        ServiceCommitmentArchive.SetRange("Subscription Header No.", Rec."No.");
                         Page.Run(Page::"Service Commitment Archive", ServiceCommitmentArchive);
                     end;
                 }
-                field("Planned Serv. Comm. exists"; Rec."Planned Serv. Comm. exists")
+                field("Planned Serv. Comm. exists"; Rec."Planned Sub. Lines exist")
                 {
-                    ToolTip = 'Specifies if planned Renewals exists for the service object.';
+                    ToolTip = 'Specifies if planned Renewals exists for the Subscription.';
                 }
             }
             part(Services; "Service Commitments")
             {
-                Caption = 'Services';
-                SubPageLink = "Service Object No." = field("No.");
+                Caption = 'Subscription Lines';
+                SubPageLink = "Subscription Header No." = field("No.");
                 UpdatePropagation = Both;
             }
             group("End User")
@@ -131,7 +160,7 @@ page 8060 "Service Object"
                 field("End-User Contact No."; Rec."End-User Contact No.")
                 {
                     Importance = Additional;
-                    ToolTip = 'Specifies the number of the contact of the customer to whom the service was sold.';
+                    ToolTip = 'Specifies the number of the contact of the customer to whom the Subscription Line was sold.';
 
                     trigger OnValidate()
                     begin
@@ -141,12 +170,12 @@ page 8060 "Service Object"
                 field("End-User Contact"; Rec."End-User Contact")
                 {
                     Editable = EndUserContactEditable;
-                    ToolTip = 'Specifies the name of the contact to whom the service was sold.';
+                    ToolTip = 'Specifies the name of the contact to whom the Subscription Line was sold.';
                 }
                 field("End-User Customer No."; Rec."End-User Customer No.")
                 {
                     Importance = Additional;
-                    ToolTip = 'Specifies the number of the customer to whom the service was sold.';
+                    ToolTip = 'Specifies the number of the customer to whom the Subscription Line was sold.';
 
                     trigger OnValidate()
                     begin
@@ -155,7 +184,7 @@ page 8060 "Service Object"
                 }
                 field("End-User Customer Name"; Rec."End-User Customer Name")
                 {
-                    ToolTip = 'Specifies the name of the customer to whom the service was sold.';
+                    ToolTip = 'Specifies the name of the customer to whom the Subscription Line was sold.';
 
                     trigger OnValidate()
                     begin
@@ -222,7 +251,7 @@ page 8060 "Service Object"
                         {
                             Caption = 'Ship-to';
                             OptionCaption = 'Default (End-User Address),Alternate Shipping Address,Custom Address';
-                            ToolTip = 'Specifies the address that the service object and service commitments were shipped. Default (End-User Address): The same as the customer''s End-User address. Alternate Ship-to Address: One of the customer''s alternate ship-to addresses. Custom Address: Any ship-to address that you specify in the fields below.';
+                            ToolTip = 'Specifies the address that the Subscription and Subscription Lines were shipped. Default (End-User Address): The same as the customer''s End-User address. Alternate Ship-to Address: One of the customer''s alternate ship-to addresses. Custom Address: Any ship-to address that you specify in the fields below.';
 
                             trigger OnValidate()
                             var
@@ -289,14 +318,14 @@ page 8060 "Service Object"
                             {
                                 Caption = 'Name';
                                 Editable = ShipToOptions = ShipToOptions::"Custom Address";
-                                ToolTip = 'Specifies the name that service object and service commitments were shipped.';
+                                ToolTip = 'Specifies the name that Subscription and Subscription Lines were shipped.';
                             }
                             field("Ship-to Address"; Rec."Ship-to Address")
                             {
                                 Caption = 'Address';
                                 Editable = ShipToOptions = ShipToOptions::"Custom Address";
                                 QuickEntry = false;
-                                ToolTip = 'Specifies the address that service object and service commitments were shipped.';
+                                ToolTip = 'Specifies the address that Subscription and Subscription Lines were shipped.';
                             }
                             field("Ship-to Address 2"; Rec."Ship-to Address 2")
                             {
@@ -348,7 +377,7 @@ page 8060 "Service Object"
                         field("Ship-to Contact"; Rec."Ship-to Contact")
                         {
                             Caption = 'Contact';
-                            ToolTip = 'Specifies the name of the contact person at the address that service object and service commitments were shipped.';
+                            ToolTip = 'Specifies the name of the contact person at the address that Subscription and Subscription Lines were shipped.';
                         }
                     }
                 }
@@ -482,15 +511,17 @@ page 8060 "Service Object"
             part(ServiceObjectAttrFactbox; "Service Object Attr. Factbox")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = Rec.Type = Rec.Type::Item;
             }
             part(ItemAttributesFactbox; "Item Attributes Factbox")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = Rec.Type = Rec.Type::Item;
             }
             part("Attached Documents"; "Doc. Attachment List Factbox")
             {
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(Database::"Service Object"),
+                SubPageLink = "Table ID" = const(Database::"Subscription Header"),
                               "No." = field("No.");
             }
             systempart(Control1900383207; Links)
@@ -510,20 +541,22 @@ page 8060 "Service Object"
         {
             action(AssignServices)
             {
-                Caption = 'Assign Service Commitments';
-                ToolTip = 'Opens the page with assignable service commitment packages.';
+                Caption = 'Assign Subscription Lines';
+                ToolTip = 'Opens the page with assignable Subscription Packages.';
                 Image = ServiceLedger;
+                Enabled = Rec.Type = Rec.Type::Item;
 
                 trigger OnAction()
                 var
-                    ServiceCommitmentPackage: Record "Service Commitment Package";
-                    ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+                    ServiceCommitmentPackage: Record "Subscription Package";
+                    ItemServCommitmentPackage: Record "Item Subscription Package";
                     AssignServiceCommitments: Page "Assign Service Commitments";
                     PackageFilter: Text;
                 begin
                     Rec.TestField("No.");
-                    Rec.TestField("Item No.");
-                    PackageFilter := ItemServCommitmentPackage.GetPackageFilterForItem(Rec."Item No.", Rec."No.");
+                    Rec.TestField(Type, Rec.Type::Item);
+                    Rec.TestField("Source No.");
+                    PackageFilter := ItemServCommitmentPackage.GetPackageFilterForItem(Rec."Source No.", Rec."No.");
                     ServiceCommitmentPackage.SetRange("Price Group", Rec."Customer Price Group");
                     if ServiceCommitmentPackage.IsEmpty() then
                         ServiceCommitmentPackage.SetRange("Price Group");
@@ -540,9 +573,9 @@ page 8060 "Service Object"
 
             action(UpdateServicesDatesAction)
             {
-                Caption = 'Update Service Dates';
+                Caption = 'Update Subscription Line Dates';
                 Image = ChangeDates;
-                ToolTip = 'The function updates the dates in the service commitments.';
+                ToolTip = 'The function updates the dates in the Subscription Lines.';
 
                 trigger OnAction()
                 begin
@@ -561,6 +594,25 @@ page 8060 "Service Object"
                 end;
             }
         }
+        area(Navigation)
+        {
+            action(Attributes)
+            {
+                AccessByPermission = tabledata "Item Attribute" = R;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Attributes';
+                Image = Category;
+                ToolTip = 'Displays the attributes of the Subscription that describe it in more detail.';
+                Enabled = Rec.Type = Rec.Type::Item;
+
+                trigger OnAction()
+                begin
+                    Page.RunModal(Page::"Serv. Object Attr. Values", Rec);
+                    CurrPage.SaveRecord();
+                    CurrPage.ServiceObjectAttrFactbox.Page.LoadServiceObjectAttributesData(Rec."No.");
+                end;
+            }
+        }
         area(Promoted)
         {
             group(Category_Process)
@@ -572,38 +624,20 @@ page 8060 "Service Object"
                 actionref(Attributes_Promoted; Attributes) { }
             }
         }
-        area(Navigation)
-        {
-            action(Attributes)
-            {
-                AccessByPermission = tabledata "Item Attribute" = R;
-                ApplicationArea = Basic, Suite;
-                Caption = 'Attributes';
-                Image = Category;
-                ToolTip = 'Displays the attributes of the Service Object that describe it in more detail.';
-
-                trigger OnAction()
-                begin
-                    Page.RunModal(Page::"Serv. Object Attr. Values", Rec);
-                    CurrPage.SaveRecord();
-                    CurrPage.ServiceObjectAttrFactbox.Page.LoadServiceObjectAttributesData(Rec."No.");
-                end;
-            }
-        }
     }
 
     [InternalEvent(false, false)]
-    local procedure OnAfterValidateShippingOptions(var ServiceObject: Record "Service Object"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
+    local procedure OnAfterValidateShippingOptions(var SubscriptionHeader: Record "Subscription Header"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeValidateShipToOptions(var ServiceObject: Record "Service Object"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
+    local procedure OnBeforeValidateShipToOptions(var SubscriptionHeader: Record "Subscription Header"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var ServiceObject: Record "Service Object")
+    local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var SubscriptionHeader: Record "Subscription Header")
     begin
     end;
 
@@ -621,9 +655,11 @@ page 8060 "Service Object"
 
     trigger OnAfterGetCurrRecord()
     begin
-        CurrPage.ServiceObjectAttrFactbox.Page.LoadServiceObjectAttributesData(Rec."No.");
-        CurrPage.ItemAttributesFactbox.Page.LoadItemAttributesData(Rec."Item No.");
-        Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
+        if Rec.IsItem() then begin
+            CurrPage.ServiceObjectAttrFactbox.Page.LoadServiceObjectAttributesData(Rec."No.");
+            CurrPage.ItemAttributesFactbox.Page.LoadItemAttributesData(Rec."Source No.");
+            Rec.SetPrimaryAttributeValueAndCaption(PrimaryAttributeValue, PrimaryAttributeValueCaption);
+        end;
     end;
 
     var

@@ -2,10 +2,10 @@ namespace Microsoft.SubscriptionBilling;
 
 page 8003 "Contract Renewal Lines"
 {
-    Caption = 'Contract Renewal Lines';
+    Caption = 'Subscription Contract Renewal Lines';
     LinksAllowed = false;
     PageType = List;
-    SourceTable = "Contract Renewal Line";
+    SourceTable = "Sub. Contract Renewal Line";
     Editable = false;
     UsageCategory = None;
     ApplicationArea = All;
@@ -16,51 +16,51 @@ page 8003 "Contract Renewal Lines"
         {
             repeater(BillingLines)
             {
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of the Contract.';
                     Visible = false;
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
-                    Caption = 'Contract Description';
-                    ToolTip = 'Specifies the products or service being offered.';
+                    Caption = 'Subscription Contract Description';
+                    ToolTip = 'Specifies the subscriptions being offered.';
                     Editable = false;
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object.';
+                    ToolTip = 'Specifies the number of the Subscription.';
 
                     trigger OnDrillDown()
                     begin
-                        ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                        ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                     end;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription t Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
             }
         }
@@ -68,11 +68,11 @@ page 8003 "Contract Renewal Lines"
 
     trigger OnAfterGetRecord()
     begin
-        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Contract No.");
+        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Subscription Contract No.");
     end;
 
     var
-        ServiceObject: Record "Service Object";
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ServiceObject: Record "Subscription Header";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         ContractDescriptionTxt: Text;
 }

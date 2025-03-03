@@ -16,7 +16,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.eServices.EDocument.Integration;
 
-codeunit 148195 IntegrationTests
+codeunit 148193 IntegrationTests
 {
     Subtype = Test;
 
@@ -513,27 +513,28 @@ codeunit 148195 IntegrationTests
         this.Assert.AreEqual(EDocument.Count(), TmpDocCount + 1, 'The document was not imported!');
     end;
 
+    /// Enable test when migrated to HTTP client handler
     /// <summary>
     /// Test needs MockService running to work. 
     /// </summary>
-    [Test]
-    procedure GetMetadataProfiles()
-    var
-        SignUpMetadataProfile: Record "SignUp Metadata Profile";
-        EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
-    begin
-        this.Initialize();
+    // [Test]
+    // procedure GetMetadataProfiles()
+    // var
+    //     SignUpMetadataProfile: Record "SignUp Metadata Profile";
+    //     EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
+    // begin
+    //     this.Initialize();
 
-        SignUpMetadataProfile.Reset();
-        SignUpMetadataProfile.DeleteAll();
+    //     SignUpMetadataProfile.Reset();
+    //     SignUpMetadataProfile.DeleteAll();
 
-        // Populate metadata profiles
-        EDocServiceSupportedTypes.OpenView();
-        EDocServiceSupportedTypes.PopulateMetaData.Invoke();
-        EDocServiceSupportedTypes.Close();
+    //     // Populate metadata profiles
+    //     EDocServiceSupportedTypes.OpenView();
+    //     EDocServiceSupportedTypes.PopulateMetaData.Invoke();
+    //     EDocServiceSupportedTypes.Close();
 
-        this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
-    end;
+    //     this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
+    // end;
 
     #endregion
 
@@ -674,8 +675,7 @@ codeunit 148195 IntegrationTests
     begin
         EDocumentServiceStatus.SetLoadFields("E-Document Service Code", Status);
         EDocumentServiceStatus.SetRange("E-Document Entry No", EntryNo);
-        if EDocumentServiceStatus.FindFirst() then
-            ;
+        if EDocumentServiceStatus.FindFirst() then;
     end;
 
     local procedure LogsCount(EDocumentServiceStatus: Record "E-Document Service Status"): Integer

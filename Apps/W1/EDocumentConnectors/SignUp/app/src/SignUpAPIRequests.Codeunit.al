@@ -29,8 +29,8 @@ codeunit 6441 "SignUp API Requests"
         MissingSetupCompanyIdErr: Label '%1 in %2 is missing', Comment = '%1 = Field Name, %2 = Table Name';
         MissingSetupCompanyIdMessageErr: Label 'You must set up %1 in %2.', Comment = '%1 = Field Name, %2 = Table Name';
         MissingSetupCompanyIdActionErr: Label 'Show %1', Comment = '%1 = Table Name';
-        UnSupportedDocumentTypeTxt: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type', Locked = true;
-        UnSupportedDocumentTypeProfileMissingTxt: Label 'Document %1 is not supported since %2 is missing in %3 %4', Comment = '%1 = EDocument Type; %2 = Profile Id; %3 = E-Document Service; %4 = Supported Document Types', Locked = true;
+        UnSupportedDocumentTypeTxt: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type';
+        UnSupportedDocumentTypeProfileMissingTxt: Label 'Document %1 is not supported since %2 is missing in %3 %4', Comment = '%1 = EDocument Type; %2 = Profile Id; %3 = E-Document Service; %4 = Supported Document Types';
         SupportedDocumentTypesTxt: Label 'Supported Document Types';
         SenderReceiverPrefixTxt: Label 'iso6523-actorid-upis::', Locked = true;
         ContentTypeTxt: Label 'Content-Type', Locked = true;
