@@ -50,7 +50,6 @@ codeunit 139629 "Library - E-Document"
 
     procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service")
     var
-        CountryRegion: Record "Country/Region";
         DocumentSendingProfile: Record "Document Sending Profile";
         SalesSetup: Record "Sales & Receivables Setup";
         WorkflowSetup: Codeunit "Workflow Setup";
@@ -66,17 +65,7 @@ codeunit 139629 "Library - E-Document"
         DocumentSendingProfile.Modify();
 
         // Create Customer for sales scenario
-        LibrarySales.CreateCustomer(Customer);
-        LibraryERM.FindCountryRegion(CountryRegion);
-        Customer.Validate(Address, LibraryUtility.GenerateRandomCode(Customer.FieldNo(Address), DATABASE::Customer));
-        Customer.Validate("Country/Region Code", CountryRegion.Code);
-        Customer.Validate(City, LibraryUtility.GenerateRandomCode(Customer.FieldNo(City), DATABASE::Customer));
-        Customer.Validate("Post Code", LibraryUtility.GenerateRandomCode(Customer.FieldNo("Post Code"), DATABASE::Customer));
-        Customer.Validate("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
-        Customer."VAT Registration No." := LibraryERM.GenerateVATRegistrationNo(CountryRegion.Code);
-        Customer.Validate(GLN, '1234567890128');
-        Customer."Document Sending Profile" := DocumentSendingProfile.Code;
-        Customer.Modify(true);
+        CreateCustomerForSalesScenario(Customer, DocumentSendingProfile.Code);
 
         // Create Item 
         if StandardItem."No." = '' then begin
@@ -548,6 +537,23 @@ codeunit 139629 "Library - E-Document"
         EntityName := LibraryUtility.GenerateGUID();
         LibraryWorkflow.CreateDynamicRequestPageEntity(EntityName, TableID, RelatedTable);
         exit(EntityName);
+    end;
+
+    procedure CreateCustomerForSalesScenario(var Customer: Record Customer; DocumentSendingProfileCode: Code[20])
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        LibraryERM.FindCountryRegion(CountryRegion);
+        Customer.Validate(Address, LibraryUtility.GenerateRandomCode(Customer.FieldNo(Address), DATABASE::Customer));
+        Customer.Validate("Country/Region Code", CountryRegion.Code);
+        Customer.Validate(City, LibraryUtility.GenerateRandomCode(Customer.FieldNo(City), DATABASE::Customer));
+        Customer.Validate("Post Code", LibraryUtility.GenerateRandomCode(Customer.FieldNo("Post Code"), DATABASE::Customer));
+        Customer.Validate("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
+        Customer."VAT Registration No." := LibraryERM.GenerateVATRegistrationNo(CountryRegion.Code);
+        Customer.Validate(GLN, '1234567890128');
+        Customer."Document Sending Profile" := DocumentSendingProfileCode;
+        Customer.Modify(true);
     end;
 
 #if not CLEAN26

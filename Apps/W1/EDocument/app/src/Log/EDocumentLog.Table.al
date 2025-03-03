@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using System.Utilities;
+using System.Telemetry;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Processing.Import;
 
@@ -119,6 +120,7 @@ table 6124 "E-Document Log"
         EDOCLogFileTxt: Label 'E-Document_Log_%1', Locked = true;
         EDocLogEntryNoExportMsg: Label 'E-Document log entry does not contain data to export.';
         NonEmptyTempBlobErr: Label 'Temp blob is not empty.';
+        EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
 
     internal procedure ExportDataStorage()
     var
@@ -164,6 +166,37 @@ table 6124 "E-Document Log"
     internal procedure CanHaveMappingLogs(): Boolean
     begin
         exit(Rec.Status in [Enum::"E-Document Service Status"::Exported, Enum::"E-Document Service Status"::Imported]);
+    end;
+
+    internal procedure FindLogWithStatus(
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        EDocumentServiceStatus: Enum "E-Document Service Status"): Boolean
+    var
+        EDocumentHelper: Codeunit "E-Document Processing";
+        Telemetry: Codeunit Telemetry;
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        Rec.SetLoadFields("E-Doc. Entry No", Status);
+        Rec.SetRange("E-Doc. Entry No", EDocument."Entry No");
+        Rec.SetRange("Service Code", EDocumentService.Code);
+#if not CLEAN26
+        Rec.SetRange("Service Integration", EDocumentService."Service Integration");
+#endif
+        Rec.SetRange("Document Format", EDocumentService."Document Format");
+        Rec.SetRange(Status, EDocumentServiceStatus);
+        if not Rec.FindLast() then begin
+            EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
+            Telemetry.LogMessage(
+                '0000LCE',
+                EDocTelemetryGetLogFailureLbl,
+                Verbosity::Error,
+                DataClassification::OrganizationIdentifiableInformation,
+                TelemetryScope::All,
+                TelemetryDimensions);
+            exit(false);
+        end else
+            exit(true);
     end;
 
     [IntegrationEvent(false, false)]
