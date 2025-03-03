@@ -94,6 +94,29 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         SaveValues = true;
         AboutTitle = 'Trial Balance/Previous Year Excel';
         AboutText = 'This report contains aggregated general ledger data for the trial balance with debit/credit columns for net change and balance. A report is shown for both local currency (LCY) and additional reporting currency (ACY, the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. The aggregation is for the period specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    // Used to set the date filter on the report header across multiple languages
+                    field(PostingDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'FA Posting Date Filter';
+                        ToolTip = 'Specifies the Posting Date Filter to of fixed asset ledger entries to include in the report.';
+                        Visible = false;
+                    }
+                }
+            }
+        }
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TrialBalancePreviousYearData.GetFilter("Date Filter");
+        end;
     }
     rendering
     {
@@ -110,8 +133,20 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         DataRetrieved = 'Data retrieved:';
         TrialBalanceLCY = 'Trial Balance (LCY)';
         TrialBalanceACY = 'Trial Balance (ACY)';
+        TrialBalanceLCYPrint = 'Trial Balance (LCY) (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCYAnalysis = 'Trial Balance (LCY) (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACYAnalysis = 'Trial Balance (ACY) (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         TrialBalancevsLastPeriodACY = 'Trial Balance vs. Last Period (Additional Reporting Currency)';
         TrialBalancevsLastPeriod = 'Trial Balance vs. Last Period';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
     trigger OnPreReport()
     begin
@@ -127,6 +162,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";
