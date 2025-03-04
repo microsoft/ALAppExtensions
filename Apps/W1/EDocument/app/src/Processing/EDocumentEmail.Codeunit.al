@@ -71,7 +71,7 @@ codeunit 6106 "E-Document Email"
         DocumentMailing.EmailFile(
             AttachmentsTempBlob.CreateInStream(),
             AttachmentFileName + AttachmentFileExtension,
-            EmailBodyTempBlob.CreateInStream(),
+            EmailBodyTempBlob,
             DocNo,
             SendToEmailAddress,
             DocName,
