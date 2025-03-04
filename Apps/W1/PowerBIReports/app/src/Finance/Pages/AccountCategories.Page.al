@@ -1,6 +1,7 @@
 namespace Microsoft.Finance.PowerBIReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.PowerBIReports;
 using System.Utilities;
 
 page 36961 "Account Categories"
@@ -85,11 +86,11 @@ page 36961 "Account Categories"
 
                 trigger OnAction()
                 var
-                    FinanceInstallationHandler: Codeunit "Finance Installation Handler";
+                    Initialization: Codeunit Initialization;
                     ConfirmMgt: Codeunit "Confirm Management";
                 begin
                     if ConfirmMgt.GetResponseOrDefault(ConfirmRestoreDefaultQst, false) then
-                        FinanceInstallationHandler.RestorePowerBIAccountCategories();
+                        Initialization.RestorePowerBIAccountCategories();
                 end;
             }
         }

@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Test library for the Field Service Integration extension.",
   "description": "Test library for the Field Service Integration extension.",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
   "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
@@ -16,7 +16,7 @@
       "id": "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
       "name": "Field Service Integration",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
@@ -27,7 +27,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 139205,

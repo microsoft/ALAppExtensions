@@ -6,11 +6,12 @@ page 37003 "Sales Month-To-Date"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Sales Month-To-Date';
     AboutTitle = 'About Sales Month-To-Date';
     AboutText = 'The Sales Month-to-Date report tracks the accumulation of sales amounts throughout the current month, providing insights into progress and performance up to the present date.';
-    Extensible = false;
 
     layout
     {
@@ -28,26 +29,6 @@ page 37003 "Sales Month-To-Date"
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

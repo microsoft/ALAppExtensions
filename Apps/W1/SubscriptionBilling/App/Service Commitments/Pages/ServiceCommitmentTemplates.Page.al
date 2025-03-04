@@ -4,9 +4,9 @@ page 8055 "Service Commitment Templates"
 {
 
     ApplicationArea = All;
-    Caption = 'Service Commitment Templates';
+    Caption = 'Subscription Package Line Templates';
     PageType = List;
-    SourceTable = "Service Commitment Template";
+    SourceTable = "Sub. Package Line Template";
     UsageCategory = Administration;
     layout
     {
@@ -17,35 +17,35 @@ page 8055 "Service Commitment Templates"
                 field(Code; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment template.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package Line Template.';
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment template.';
+                    ToolTip = 'Specifies a description of the Subscription Package Line Template.';
                 }
                 field("Invoicing via"; Rec."Invoicing via")
                 {
-                    ToolTip = 'Specifies whether the service commitment is invoiced via a contract. Service commitments with invoicing via sales are not charged. Only the items are billed.';
+                    ToolTip = 'Specifies whether the Subscription Line is invoiced via a contract. Subscription Lines with invoicing via sales are not charged. Only the items are billed.';
                 }
                 field("Invoicing Item No."; Rec."Invoicing Item No.")
                 {
-                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic service commmitment.';
+                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic Subscription Line.';
                 }
                 field("Calculation Base Type"; Rec."Calculation Base Type")
                 {
-                    ToolTip = 'Specifies how the price for service commitment is calculated. "Item Price" uses the list price defined on the Item. "Document Price" uses the price from the sales document. "Document Price And Discount" uses the price and the discount from the sales document.';
+                    ToolTip = 'Specifies how the price for Subscription Line is calculated. "Item Price" uses the list price defined on the Item. "Document Price" uses the price from the sales document. "Document Price And Discount" uses the price and the discount from the sales document.';
                 }
                 field("Calculation Base %"; Rec."Calculation Base %")
                 {
-                    ToolTip = 'Specifies the percentage at which the price of the service commitment is calculated. 100% means that the the price is the same as the calculation base (item or document).';
+                    ToolTip = 'Specifies the percentage at which the price of the Subscription Line is calculated. 100% means that the the price is the same as the calculation base (item or document).';
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
-                    ToolTip = 'Specifies the period to which the service commitment amount relates. For example, enter 1M if the amount relates to one month or 12M if the amount relates to 1 year.';
+                    ToolTip = 'Specifies the period to which the Subscription Line amount relates. For example, enter 1M if the amount relates to one month or 12M if the amount relates to 1 year.';
                 }
                 field(Discount; Rec.Discount)
                 {
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
                 field(UsageBasedBilling; Rec."Usage Based Billing")
                 {

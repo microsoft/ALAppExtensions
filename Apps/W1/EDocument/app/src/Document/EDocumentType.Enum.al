@@ -4,9 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-enum 6121 "E-Document Type"
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+
+enum 6121 "E-Document Type" implements IEDocumentFinishDraft
 {
     Extensible = true;
+    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Default Implementation";
+
     value(0; "None")
     {
     }
@@ -33,6 +38,7 @@ enum 6121 "E-Document Type"
     }
     value(8; "Purchase Invoice")
     {
+        Implementation = IEDocumentFinishDraft = "E-Doc. Create Purchase Invoice";
     }
     value(9; "Purchase Return Order")
     {

@@ -13,6 +13,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Utilities;
 using System.Telemetry;
+using System.IO;
 
 report 10039 "IRS 1099 FIRE"
 {
@@ -491,6 +492,7 @@ report 10039 "IRS 1099 FIRE"
     var
         TempBlob: Codeunit "Temp Blob";
         TypeHelper: Codeunit "Type Helper";
+        FileManagement: Codeunit "File Management";
         InStream: InStream;
         BlobOutStream: OutStream;
         IRSDataLine: Text;
@@ -505,7 +507,7 @@ report 10039 "IRS 1099 FIRE"
         TempBlob.CreateInStream(InStream);
         if FileName = '' then
             FileName := ClientFileNameTxt;
-        DownloadFromStream(InStream, '', '', '*.txt', FileName);
+        FileManagement.DownloadFromStreamHandler(InStream, '', '', '*.txt', FileName);
     end;
 
     trigger OnPreReport()
@@ -672,8 +674,11 @@ report 10039 "IRS 1099 FIRE"
         TempApplVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
         TempIRS1099Adjustment: Record "IRS 1099 Vendor Form Box Adj." temporary;
         IRS1099Adjustment: Record "IRS 1099 Vendor Form Box Adj.";
+        IRSReportingPeriod: Codeunit "IRS Reporting Period";
         FormTypeIndex: Integer;
+        PeriodNo: Code[20];
     begin
+        PeriodNo := IRSReportingPeriod.GetReportingPeriod(StartEndDate[1], StartEndDate[2]);
         EntryAppMgt.GetAppliedVendorEntries(TempApplVendorLedgerEntry, VendorNo, StartEndDate, true);
         for FormTypeIndex := 1 to FormTypeCount do begin
             TempApplVendorLedgerEntry.SetFilter("Document Type", '%1|%2', Enum::"Gen. Journal Document Type"::Invoice, Enum::"Gen. Journal Document Type"::"Credit Memo");
@@ -691,7 +696,34 @@ report 10039 "IRS 1099 FIRE"
                         end;
                     end;
                 until TempApplVendorLedgerEntry.Next() = 0;
+            AddAdjustments(TempIRS1099Adjustment, VendorNo, PeriodNo, FormTypeIndex, IRS1099CodeFilter[FormTypeIndex]);
         end;
+    end;
+
+    local procedure AddAdjustments(var TempIRS1099Adjustment: Record "IRS 1099 Vendor Form Box Adj." temporary; VendorNo: Code[20]; PeriodNo: Code[20]; FormTypeIndex: Integer; IRSCodeFilter: Text)
+    var
+        DummyVendorLedgerEntry: Record "Vendor Ledger Entry";
+        IRS1099FormBox: Record "IRS 1099 Form Box";
+        IRS1099Adjustment: Record "IRS 1099 Vendor Form Box Adj.";
+    begin
+        if VendorNo = '' then
+            exit;
+        if PeriodNo = '' then
+            exit;
+        if IRSCodeFilter = '' then
+            exit;
+        IRS1099FormBox.SetFilter("No.", IRSCodeFilter);
+        if not IRS1099FormBox.FindSet() then
+            exit;
+        repeat
+            if not TempIRS1099Adjustment.Get(PeriodNo, VendorNo, IRS1099FormBox."Form No.", IRS1099FormBox."No.") then
+                if IRS1099Adjustment.Get(PeriodNo, VendorNo, IRS1099FormBox."Form No.", IRS1099FormBox."No.") then begin
+                    Helper.UpdateLines(
+                        DummyVendorLedgerEntry, FormTypeIndex, FormTypeLastNo[FormTypeIndex], IRS1099Adjustment."Form Box No.", IRS1099Adjustment.Amount);
+                    TempIRS1099Adjustment := IRS1099Adjustment;
+                    TempIRS1099Adjustment.Insert();
+                end;
+        until IRS1099FormBox.Next() = 0;
     end;
 
     local procedure Calculate1099Amount(AppliedVendorLedgerEntry: Record "Vendor Ledger Entry"; FormTypeIndex: Integer)

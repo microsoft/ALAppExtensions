@@ -11,6 +11,9 @@ using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Service;
+using Microsoft.Finance.Currency;
+
 codeunit 148191 "Integration Tests"
 {
 
@@ -55,9 +58,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has "Pending Response"
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Response", 2);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -87,9 +88,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has Sent
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 3);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -143,9 +142,8 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Response", 2);
+
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
@@ -175,9 +173,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Response", 3);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -208,9 +204,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 4);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -266,9 +260,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Response", 2);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -298,9 +290,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has sending error
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Sending Error", 3);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -347,9 +337,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Response", 4);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -382,9 +370,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('5', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 5);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -436,9 +422,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Sending Error", 2);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -458,11 +442,19 @@ codeunit 148191 "Integration Tests"
     var
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
+        Currency: Record Currency;
         EDocServicePage: TestPage "E-Document Service";
     begin
         Initialize();
         SetAPIWithReceiveCode();
         SetCompanyIdInConnectionSetup(MockCompanyId(), 'Mock Name');
+
+        // Use date and currency exchange rate in document that is loaded
+        WorkDate(DMY2Date(8, 4, 2024));
+        Currency.Init();
+        Currency.Validate(Code, 'XYZ');
+        Currency.Insert(true);
+        LibraryERM.CreateExchangeRate('XYZ', WorkDate(), 1, 1);
 
         // Open and close E-Doc page creates auto import job due to setting
         EDocServicePage.OpenView();
@@ -517,6 +509,24 @@ codeunit 148191 "Integration Tests"
         ConnectionSetup.Get();
         Assert.AreEqual('610f55f3-76b6-42eb-a697-2b0b2e02a5bf', ConnectionSetup."Company Id", 'Has to be empty before selecting company');
         Assert.AreEqual('MS Business Central Ltd - ELR SBX', ConnectionSetup."Company Name", 'Has to be empty before selecting company');
+    end;
+
+    local procedure VerifyOutboundFactboxValuesForSingleService(EDocument: Record "E-Document"; Status: Enum "E-Document Service Status"; Logs: Integer);
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        Factbox: TestPage "Outbound E-Doc. Factbox";
+    begin
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.FindSet();
+        // This function is for single service, so we expect only one record
+        Assert.RecordCount(EDocumentServiceStatus, 1);
+
+        Factbox.OpenView();
+        Factbox.GoToRecord(EDocumentServiceStatus);
+
+        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Status), Factbox.SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Logs), Factbox.Log.Value(), IncorrectValueErr);
     end;
 
     local procedure Initialize()
@@ -658,6 +668,7 @@ codeunit 148191 "Integration Tests"
         LibraryEDocument: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
         LibraryJobQueue: Codeunit "Library - Job Queue";
+        LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';

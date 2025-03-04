@@ -1,13 +1,15 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.Finance.GeneralLedger.Setup;
+
 page 8051 "Service Contract Setup"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'Service Contract Setup';
+    Caption = 'Subscription Contract Setup';
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = Card;
-    SourceTable = "Service Contract Setup";
+    SourceTable = "Subscription Contract Setup";
     UsageCategory = Administration;
 
     layout
@@ -17,17 +19,25 @@ page 8051 "Service Contract Setup"
             group(General)
             {
                 Caption = 'General';
-                field("Ser. Start Date for Inv. Picks"; Rec."Serv. Start Date for Inv. Pick")
+                field("Ser. Start Date for Inv. Picks"; Rec."Sub. Line Start Date Inv. Pick")
                 {
-                    Tooltip = 'Specifies the date field, that will be used as Service Start Date of the Service Commitment, if the item is shipped in a inventory pick.';
+                    ToolTip = 'Specifies the date field, that will be used as Subscription Start Date of the Subscription Line, if the item is shipped in a inventory pick.';
                 }
                 field("Overdue Date Formula"; Rec."Overdue Date Formula")
                 {
-                    ToolTip = 'Specifies the default date formula which will be used for filtering overdue Service Commitments.';
+                    ToolTip = 'Specifies the default date formula which will be used for filtering overdue Subscription Lines.';
                 }
                 field("Default Period Calculation"; Rec."Default Period Calculation")
                 {
-                    ToolTip = 'Determines which Period Calculation will initially be set in Service Commitment Package line.';
+                    ToolTip = 'Specifies which Period Calculation will initially be set in Subscription Package line.';
+                }
+                field("Default Billing Base Period"; Rec."Default Billing Base Period")
+                {
+                    ToolTip = 'Specifies the default period to which the Subscription Line amount relates. For example, enter 1M if the amount relates to one month or 12M if the amount relates to 1 year.';
+                }
+                field("Default Billing Rhythm"; Rec."Default Billing Rhythm")
+                {
+                    ToolTip = 'Specifies the default rhythm in which the Subscription Line is calculated. Using a date formula, the rhythm can be defined as monthly, quarterly or annual calculation.';
                 }
             }
             group(Dimensions)
@@ -36,23 +46,28 @@ page 8051 "Service Contract Setup"
                 field("Aut. Insert C. Contr. DimValue"; Rec."Aut. Insert C. Contr. DimValue")
                 {
                     ApplicationArea = Dimensions;
-                    ToolTip = 'Specifies whether the contract number is also automatically created as a dimension value when a customer contract is created.';
+                    ToolTip = 'Specifies whether the contract number is also automatically created as a dimension value when a Customer Subscription Contract is created.';
+                }
+                field("Dimension Code Cust. Contr."; Rec."Dimension Code Cust. Contr.")
+                {
+                    ApplicationArea = Dimensions;
+                    ToolTip = 'Specifies the Dimension Code that is used for Customer Subscription Contracts.';
                 }
             }
             group("Number Series")
             {
                 Caption = 'Number Series';
-                field("Customer Contract Nos."; Rec."Customer Contract Nos.")
+                field("Customer Contract Nos."; Rec."Cust. Sub. Contract Nos.")
                 {
-                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to customer contracts.';
+                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to Customer Subscription Contracts.';
                 }
-                field("Vendor Contract Nos."; Rec."Vendor Contract Nos.")
+                field("Vendor Contract Nos."; Rec."Vend. Sub. Contract Nos.")
                 {
-                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to vendor contracts.';
+                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to Vendor Subscription Contracts.';
                 }
-                field("Service Object Nos."; Rec."Service Object Nos.")
+                field("Service Object Nos."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to service objects.';
+                    ToolTip = 'Specifies the code for the number series that will be used to assign numbers to Subscriptions.';
                 }
             }
             group(InvoiceDetails)
@@ -93,17 +108,35 @@ page 8051 "Service Contract Setup"
                     }
                 }
             }
+            group("Gen. Journal Templates")
+            {
+                Caption = 'Journal Templates';
+                Visible = IsJournalTemplatesVisible;
+
+                field("Def. Rel. Jnl. Template Name"; Rec."Def. Rel. Jnl. Template Name")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of the journal template to use for posting of deferrals release.';
+                }
+                field("Def. Rel. Jnl. Batch Name"; Rec."Def. Rel. Jnl. Batch Name")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the name of the journal batch to use for posting of deferrals release.';
+                }
+            }
         }
     }
 
     trigger OnOpenPage()
     begin
-        Rec.Reset();
-        if not Rec.Get() then begin
-            Rec.Init();
-            Rec.ContractTextsCreateDefaults();
-            Rec.Insert(false);
-        end;
+        Rec.InitRecord();
+
+        GLSetup.Get();
+        IsJournalTemplatesVisible := GLSetup."Journal Templ. Name Mandatory";
     end;
+
+    var
+        GLSetup: Record "General Ledger Setup";
+        IsJournalTemplatesVisible: Boolean;
 }
 

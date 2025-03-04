@@ -17,7 +17,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         CommunicationEvents: Codeunit "Shpfy Communication Events";
         GraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2024-07', Locked = true;
+        VersionTok: Label '2025-01', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
@@ -606,7 +606,7 @@ codeunit 30103 "Shpfy Communication Mgt."
 
     local procedure CheckQueryLength(GraphQLQuery: Text)
     begin
-        if StrLen(GraphQLQuery) > 50000 then begin
+        if StrLen(GraphQLQuery) > GetGraphQueryLengthThreshold() then begin
             Session.LogMessage('0000K18', QueryParamTooLongTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             if GraphQLQuery.Contains('productCreate') then
                 Error(ProductCreateQueryParamTooLongErr);
@@ -753,6 +753,11 @@ codeunit 30103 "Shpfy Communication Mgt."
             exit('true')
         else
             exit('false');
+    end;
+
+    internal procedure GetGraphQueryLengthThreshold(): Integer
+    begin
+        exit(50000);
     end;
 }
 

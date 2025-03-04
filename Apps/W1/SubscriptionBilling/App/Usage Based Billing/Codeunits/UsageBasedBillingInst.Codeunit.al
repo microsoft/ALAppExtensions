@@ -21,7 +21,7 @@ codeunit 8031 "Usage Based Billing Inst."
         InitializeUsageBasedGenericDataExchangeColumns();
         InitializeUsageBasedGenericDataExchangeFields();
         CreateUsageBasedGenericDataExchColumnDefinition(UsageBasedDataExchDefCodeTxt, UsageBasedDataExchDefLineCodeTxt);
-        CreateUsageBasedDataExchangeMapping(UsageBasedDataExchDefCodeTxt, UsageBasedDataExchDefLineCodeTxt, RRef.Number, UsageBasedDataExchMappingTxt, Codeunit::"Generic Import Mappings", 0, 0);
+        DataExchMapping.InsertRec(UsageBasedDataExchDefCodeTxt, UsageBasedDataExchDefLineCodeTxt, RRef.Number, UsageBasedDataExchMappingTxt, Codeunit::"Generic Import Mappings", 0, 0);
         CreateUsageBasedGenericDataExchangeFieldMapping(UsageBasedDataExchDefCodeTxt, UsageBasedDataExchDefLineCodeTxt, RRef.Number);
     end;
 
@@ -131,11 +131,6 @@ codeunit 8031 "Usage Based Billing Inst."
             end;
     end;
 
-    procedure CreateUsageBasedDataExchangeMapping(DataExchDefCode: Code[20]; DataExchLineDefCode: Code[20]; TableId: Integer; NewName: Text[250]; MappingCodeunit: Integer; DataExchNoFieldId: Integer; DataExchLineFieldId: Integer)
-    begin
-        DataExchMapping.InsertRec(DataExchDefCode, DataExchLineDefCode, TableId, NewName, MappingCodeunit, DataExchNoFieldId, DataExchLineFieldId);
-    end;
-
     procedure CreateUsageBasedGenericDataExchangeFieldMapping(DataExchDefCode: Code[20]; DataExchDefLineCode: Code[20]; TableId: Integer)
     var
         i: Integer;
@@ -145,7 +140,7 @@ codeunit 8031 "Usage Based Billing Inst."
                 FRef := RRef.Field(GenericFieldArr[i]);
                 if FRef.Type in [FRef.Type::Text, FRef.Type::Decimal, FRef.Type::Date, FRef.Type::Code] then begin
                     DataExchFieldMapping.InsertRec(DataExchDefCode, DataExchDefLineCode, TableId, GenericColumnArr[i], GenericFieldArr[i], false, 1);
-                    if FRef.Name in [UsageDataGenericImport.FieldName("Subscription ID"), UsageDataGenericImport.FieldName("Product ID"),
+                    if FRef.Name in [UsageDataGenericImport.FieldName("Supp. Subscription ID"), UsageDataGenericImport.FieldName("Product ID"),
                                      UsageDataGenericImport.FieldName("Product Name"), UsageDataGenericImport.FieldName(Quantity)] then begin
                         DataExchFieldMapping."Overwrite Value" := true;
                         DataExchFieldMapping.Modify(false);

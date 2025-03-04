@@ -83,31 +83,6 @@ codeunit 139632 "Shpfy Create Item Variant Test"
     end;
 
     [Test]
-    procedure UnitTestDeleteProductVariant()
-    var
-        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
-        VariantAPI: Codeunit "Shpfy Variant API";
-        VariantId: BigInteger;
-        ActualQueryTxt: Text;
-    begin
-        // [SCENARIO] Delete a product variant
-        Initialize();
-
-        // [GIVEN] Shopify Variant Id
-        VariantId := Any.IntegerInRange(10000, 99999);
-
-        // [WHEN] Invoke ProductAPI.DeleteProductVariant
-        BindSubscription(CreateItemAsVariantSub);
-        VariantAPI.DeleteProductVariant(VariantId);
-        ActualQueryTxt := CreateItemAsVariantSub.GetGraphQueryTxt();
-        UnbindSubscription(CreateItemAsVariantSub);
-
-        // [THEN] Query is correct
-        LibraryAssert.IsTrue(ActualQueryTxt.Contains('{"query":"mutation {productVariantDelete('), 'Query not correct');
-        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('id: \"gid://shopify/ProductVariant/%1\"', VariantId)), 'Variant Id not set');
-    end;
-
-    [Test]
     procedure UnitTestCreateVariantFromProductWithMultipleOptions()
     var
         Item: Record "Item";

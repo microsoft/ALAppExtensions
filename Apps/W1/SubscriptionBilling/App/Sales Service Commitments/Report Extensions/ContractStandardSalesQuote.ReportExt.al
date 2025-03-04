@@ -7,9 +7,6 @@ using Microsoft.Sales.Document;
 
 reportextension 8011 "Contract Standard Sales Quote" extends "Standard Sales - Quote"
 {
-    RDLCLayout = './Sales Service Commitments/Report Extensions/StandardSalesQuote.rdl';
-    WordLayout = './Sales Service Commitments/Report Extensions/StandardSalesQuote.docx';
-
     dataset
     {
         modify(Header)
@@ -107,6 +104,23 @@ reportextension 8011 "Contract Standard Sales Quote" extends "Standard Sales - Q
             }
         }
     }
+    rendering
+    {
+        layout("SalesQuoteForSubscriptionBilling.rdlc")
+        {
+            Type = RDLC;
+            LayoutFile = './Sales Service Commitments/Report Extensions/Layouts/SalesQuoteForSubscriptionBilling.rdlc';
+            Caption = 'Sales Quote for Subscription Billing (RDLC)';
+            Summary = 'The Sales Quote for Subscription Billing (RDLC) is the most detailed layout and provides most flexible layout options.';
+        }
+        layout("SalesQuoteForSubscriptionBilling.docx")
+        {
+            Type = Word;
+            LayoutFile = './Sales Service Commitments/Report Extensions/Layouts/SalesQuoteForSubscriptionBilling.docx';
+            Caption = 'Sales Quote for Subscription Billing (Word)';
+            Summary = 'The Sales Quote for Subscription Billing (Word) provides a simple layout that is also relatively easy for an end-user to modify.';
+        }
+    }
 
     var
         TempServiceCommitmentForLineCaption: Record "Name/Value Buffer" temporary;
@@ -119,7 +133,7 @@ reportextension 8011 "Contract Standard Sales Quote" extends "Standard Sales - Q
         ServiceCommitmentForLine.DeleteAll(false);
         TempServiceCommitmentForLineCaption.Reset();
         TempServiceCommitmentForLineCaption.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
+        OnBeforeFillSubscriptionLinesForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
         SalesReportPrintoutMgmt.FillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
     end;
 
@@ -129,17 +143,17 @@ reportextension 8011 "Contract Standard Sales Quote" extends "Standard Sales - Q
         ServiceCommitmentsGroup.DeleteAll(false);
         ServiceCommitmentsGroupPerPeriod.Reset();
         ServiceCommitmentsGroupPerPeriod.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
+        OnBeforeFillSubscriptionLinesGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
         SalesReportPrintoutMgmt.FillServiceCommitmentsGroups(Header, ServiceCommitmentsGroupPerPeriod, ServiceCommitmentsGroup);
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsForLine(Header: Record "Sales Header"; var ServiceCommitmentForLine: Record "Sales Line"; var ServiceCommitmentForLineCaption: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesForLine(Header: Record "Sales Header"; var SubscriptionLineForLine: Record "Sales Line"; var SubscriptionLineForLineCaption: Record "Name/Value Buffer")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(Header: Record "Sales Header"; var ServiceCommitmentsGroupPerPeriod: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesGroupPerPeriod(Header: Record "Sales Header"; var SubscriptionLinesGroupPerPeriod: Record "Name/Value Buffer")
     begin
     end;
 }

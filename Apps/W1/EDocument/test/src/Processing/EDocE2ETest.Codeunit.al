@@ -20,6 +20,7 @@ codeunit 139624 "E-Doc E2E Test"
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
         SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
         DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
 
     [Test]
     procedure CreateEDocumentBeforeAfterEventsSuccessful()
@@ -270,9 +271,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -283,6 +282,31 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(1, EDocument.Count(), IncorrectValueErr);
 
         UnbindSubscription(EDocImplState);
+    end;
+
+    local procedure VerifyOutboundFactboxValuesForSingleService(EDocument: Record "E-Document"; Status: Enum "E-Document Service Status"; Logs: Integer);
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        Factbox: TestPage "Outbound E-Doc. Factbox";
+    begin
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.FindSet();
+        // This function is for single service, so we expect only one record
+        Assert.RecordCount(EDocumentServiceStatus, 1);
+
+        Factbox.OpenView();
+        Factbox.GoToRecord(EDocumentServiceStatus);
+
+        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Status), Factbox.SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Logs), Factbox.Log.Value(), IncorrectValueErr);
+    end;
+
+    local procedure VerifyInboundFactboxValues(Factbox: TestPage "Inbound E-Doc. Factbox"; Status: Enum "E-Document Service Status"; Logs: Integer);
+    begin
+        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Status), Factbox.Status.Value(), IncorrectValueErr);
+        Assert.AreEqual(Logs, Factbox.Logs.Value(), IncorrectValueErr);
     end;
 
     [Test]
@@ -314,9 +338,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -362,9 +384,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Sending Error", 2);
 
         // [THEN] Logs are also correct
         EDocLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -420,9 +440,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 2);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -470,9 +488,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Export Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Export Error", 2);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -518,9 +534,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Batch"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('1', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::"Pending Batch", 1);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -545,9 +559,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 3);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -561,9 +573,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(DocNoA, EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        VerifyOutboundFactboxValuesForSingleService(EDocument, Enum::"E-Document Service Status"::Sent, 3);
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
@@ -1388,6 +1398,36 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    procedure GeneratePDFEmbedToXMLSuccess()
+    var
+        EDocument: Record "E-Document";
+        DocumentBlob: Codeunit "Temp Blob";
+        EDocumentLog: Codeunit "E-Document Log";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] 
+        Initialize(Enum::"Service Integration"::"Mock");
+        BindSubscription(this.EDocImplState);
+
+        // [GIVEN] EDocument Service is set to embed PDF to XML
+        this.EDocumentService."Embed PDF in export" := true;
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [GIVEN] Posted Invoice by a Team Member
+        this.LibraryLowerPermission.SetTeamMember();
+        this.LibraryEDoc.PostInvoice(this.Customer);
+
+        // [WHEN] Export EDocument
+        EDocument.FindLast();
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Exported);
+
+        // [THEN] PDF is embedded in the XML
+        CheckPDFEmbedToXML(DocumentBlob);
+    end;
+
+    [Test]
     procedure PostDocumentNoDefaultOrElectronicProfile()
     var
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -1448,6 +1488,130 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Delete();
     end;
 
+    local procedure CheckPDFEmbedToXML(TempBlob: Codeunit "Temp Blob")
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        InStream: InStream;
+    begin
+        TempBlob.CreateInStream(InStream);
+
+        TempXMLBuffer.LoadFromStream(InStream);
+
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
+        Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    [Test]
+    internal procedure DeleteDuplicateEDocumentSuccess()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] Create duplicate e-document
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+
+        // [GIVEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [WHEN] Delete ok
+        EDocument.Delete(true);
+
+        // [THEN] Check that E-Document no longer exists
+        CheckEDocumentDeleted(EDocument."Entry No");
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    internal procedure DeleteNonDuplicateEDocumentAllowedIfConfirming()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] Create single e-document
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+
+        // [GIVEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [WHEN] Delete allowed if confirming
+        EDocument.Delete(true);
+
+        // [THEN] Check that E-Document no longer exists
+        CheckEDocumentDeleted(EDocument."Entry No");
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerNo')]
+    internal procedure DeleteNonDuplicateEDocumentNotAllowedIfDenying()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] Create single e-document
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+
+        // [GIVEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [WHEN] Delete not allowed if denying
+        asserterror EDocument.Delete(true);
+    end;
+
+    [Test]
+    internal procedure DeleteProcessedEDocumentNotAllowed()
+    var
+        EDocument: Record "E-Document";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Deleting] 
+        // [SCENARIO] 
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] Create duplicate e-document and set to processed
+        VendorNo := this.LibraryPurchase.CreateVendorNo();
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::"In Progress");
+        CreateIncomingEDocument(VendorNo, Enum::"E-Document Status"::Processed);
+
+        // [GIVEN] Get last E-Document
+        EDocument.FindLast();
+
+        // [WHEN] Delete not allowed
+        asserterror EDocument.Delete(true);
+
+        // [THEN] Check error message
+        Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
+    end;
+
+    local procedure CreateIncomingEDocument(VendorNo: Code[20]; Status: Enum "E-Document Status")
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.Init();
+        EDocument."Document Type" := "E-Document Type"::"Purchase Invoice";
+        EDocument.Direction := Enum::"E-Document Direction"::Incoming;
+        EDocument."Document Date" := WorkDate();
+        EDocument."Incoming E-Document No." := 'TEST';
+        EDocument."Bill-to/Pay-to No." := VendorNo;
+        EDocument.Status := Status;
+        EDocument.Insert(false);
+    end;
+
     [ModalPageHandler]
     internal procedure EDocServicesPageHandler(var EDocServicesPage: TestPage "E-Document Services")
     var
@@ -1479,13 +1643,24 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
-        EDocumentService."Sent Actions Integration" := Enum::"Sent Document Actions"::Mock;
         EDocumentService.Modify();
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
 
         IsInitialized := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerYes(Message: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerNo(Message: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
     end;
 
 #if not CLEAN26
@@ -1527,8 +1702,14 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(EDocStatus, EDocument.Status, IncorrectValueErr);
     end;
 
+    local procedure CheckEDocumentDeleted(EDocNo: Integer)
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Entry No", EDocNo);
+        this.Assert.RecordIsEmpty(EDocument);
+    end;
 
-#pragma warning disable AS0018
 #if not CLEAN26
 
     [Test]
@@ -2254,6 +2435,4 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 #endif
-#pragma warning restore AS0018
-
 }

@@ -47,11 +47,7 @@ table 30102 "Shpfy Shop"
                 AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
                 if ("Shopify URL" <> '') then begin
-                    if not "Shopify URL".ToLower().StartsWith('https://') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
-
-                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+                    AuthenticationMgt.CorrectShopUrl("Shopify URL");
 
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
@@ -71,6 +67,8 @@ table 30102 "Shpfy Shop"
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                    if Rec.Enabled then
+                        Session.LogAuditMessage(StrSubstNo(ShopifyConsentProvidedLbl, UserSecurityId(), CompanyName()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
@@ -775,6 +773,11 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
         }
+        field(134; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
+        {
+            Caption = 'Company Tax Id Mapping';
+            DataClassification = CustomerContent;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -825,6 +828,7 @@ table 30102 "Shpfy Shop"
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
         BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
+        ShopifyConsentProvidedLbl: Label 'Shopify - consent provided by UserSecurityId %1 for company %2.', Comment = '%1 - User Security ID, %2 - Company name', Locked = true;
 
     [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: SecretText

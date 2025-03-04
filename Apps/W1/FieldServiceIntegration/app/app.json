@@ -2,7 +2,7 @@
   "id": "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
   "name": "Field Service Integration",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Seamless integration between Dynamics 365 Business Central and Dynamics 365 Field Service will synchronize work orders, stock, consumption and resource information to ensure that technicians can execute work orders faster, dispatchers can schedule them on time and back office can accurately account for consumption and invoice customers.",
   "description": "Integrating Dynamics 365 Business Central with Dynamics 365 Field service will help companies optimize their service operations, while keeping technicians focused on executing work and back office on accounting and invoicing. By integrating Field Service and Business Central, you will improve visibility into stock, pricing, work being performed and accurately post consumption, account for costs and revenue while having compliant and accurate invoicing and transparent view in billing and payments.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -11,7 +11,14 @@
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "ExtensionLogo.png",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "10cb69d9-bc8a-4d27-970a-9e110e9db2a5",
+      "name": "_Exclude_APIV2_",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
   "internalsVisibleTo": [
     {
       "id": "41b3ab6e-3f20-47c7-a67f-feccc4d58a55",
@@ -33,7 +40,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "features": [
     "NoImplicitWith",
     "TranslationFile"

@@ -8,5 +8,9 @@ tableextension 6162 "E-Doc. Purch. Payables Setup" extends "Purchases & Payables
             InitValue = 0;
             DecimalPlaces = 1;
         }
+        field(6101; "E-Document Learn Copilot Matchings"; Boolean)
+        {
+            Caption = 'E-Document Learn Copilot Matchings';
+        }
     }
 }

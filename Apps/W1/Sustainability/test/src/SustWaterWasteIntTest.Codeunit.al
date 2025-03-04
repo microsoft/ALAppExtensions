@@ -9,6 +9,7 @@ codeunit 148189 "Sust. Water/Waste Int. Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        LibraryERM: Codeunit "Library - ERM";
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -21,6 +22,8 @@ codeunit 148189 "Sust. Water/Waste Int. Test"
         EmissionScopeNotSupportedErr: Label 'Emission Scope %1 is not supported With CO2,N2O,CH4.', Comment = '%1 = Emission Scope';
         CanBeUsedOnlyForWasteErr: Label '%1 can be only used for waste.', Comment = '%1 = Field Value';
         CanBeUsedOnlyForWaterErr: Label '%1 can be used only for water.', Comment = '%1 = Field Value';
+        ScopeTypeIsNotSupportedErr: Label 'Scope Type %1 is not supported in %2.', Comment = '%1 = Scope Type , %2 = Table Caption';
+        NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in General Journal for Account No. %1', Comment = '%1 = Sustainability Account No.';
 
     [Test]
     procedure TestWaterIntensityCanBeOnlyBeEnableOnSustAccountCategory()
@@ -2149,6 +2152,113 @@ codeunit 148189 "Sust. Water/Waste Int. Test"
 
         // [VERIFY] Verify "Sust. Account No." should not selected in the purchase document with Intensity Setup.
         Assert.ExpectedError(StrSubstNo(NotAllowedToUseSustAccountForWaterOrWasteErr, AccountCode));
+    end;
+
+    [Test]
+    procedure ScopeTypeWaterWasteIsNotAllowedToSelectInEmissionFee()
+    var
+        EmissionFee: Record "Emission Fee";
+    begin
+        // [SCENARIO 566417] Verify "Scope Type" "Water/Waste" is not allowed to select in Emission Fee.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [WHEN] Create Emission Fee with "Scope Type" "Water/Waste".
+        EmissionFee.Init();
+        asserterror EmissionFee.Validate("Scope Type", EmissionFee."Scope Type"::"Water/Waste");
+
+        // [THEN] Verify "Scope Type" "Water/Waste" is not allowed to select in Emission Fee.
+        Assert.ExpectedError(StrSubstNo(ScopeTypeIsNotSupportedErr, EmissionFee."Scope Type"::"Water/Waste", EmissionFee.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustAccountIsNotAllowedToUseInGeneralJournalDocumentWithIntensitySetup()
+    var
+        SustAccountSubCategory: Record "Sustain. Account Subcategory";
+        SustAccountCategory: Record "Sustain. Account Category";
+        SustainabilityAccount: Record "Sustainability Account";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        BankAccount: Record "Bank Account";
+        Vendor: Record Vendor;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 566521] Verify Sustainability Ledger entry should not be created when the General Journal Line is posted with Intensity Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Get Sustainability Account.
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Get Sustainability Category.
+        SustAccountCategory.Get(CategoryCode);
+
+        // [GIVEN] Update "Water Intensity" and "Discharged Into Water" on Sustain. Account Category.
+        SustAccountCategory.Validate("Discharged Into Water", true);
+        SustAccountCategory.Validate("Water Intensity", true);
+        SustAccountCategory.Modify(true);
+
+        // [GIVEN] Get Sustainability Sub Category.
+        SustAccountSubCategory.Get(CategoryCode, SubcategoryCode);
+
+        // [GIVEN] Update "Water Intensity Factor" and "Discharged Into Water Factor" on Sustain. Account SubCategory.
+        SustAccountSubCategory.Validate("Water Intensity Factor", LibraryRandom.RandInt(10));
+        SustAccountSubCategory.Validate("Discharged Into Water Factor", LibraryRandom.RandInt(10));
+        SustAccountSubCategory.Modify(true);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Bank Account.
+        LibraryERM.CreateBankAccount(BankAccount);
+
+        // [GIVEN] Create a Vendor.
+        LibraryPurchase.CreateVendor(Vendor);
+
+        // [GIVEN] Create a Gen Journal Template with "Copy to Posted Jnl. Lines".
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate("Copy to Posted Jnl. Lines", true);
+        GenJournalTemplate.Modify(true);
+
+        // [GIVEN] Create a Gen Journal Batch with "Copy to Posted Jnl. Lines".
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        GenJournalBatch.Validate("Copy to Posted Jnl. Lines", true);
+        GenJournalBatch.Modify(true);
+
+        // [GIVEN] Create a General Journal Line.
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine,
+            GenJournalBatch."Journal Template Name",
+            GenJournalBatch.Name,
+            GenJournalLine."Document Type"::Invoice,
+            GenJournalLine."Account Type"::Vendor,
+            Vendor."No.",
+            -LibraryRandom.RandIntInRange(100, 200));
+
+        // [GIVEN] Update Sustainability Account No.,Total Emission CO2,Total Emission CH4,Total Emission N2O.
+        GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
+        GenJournalLine.Validate("Bal. Account No.", BankAccount."No.");
+        GenJournalLine.Validate("Sust. Account No.", SustainabilityAccount."No.");
+        GenJournalLine.Validate("Total Emission CH4", EmissionCH4);
+        GenJournalLine.Validate("Total Emission N2O", EmissionN2O);
+        GenJournalLine.Validate("Total Emission CO2", EmissionCO2);
+        GenJournalLine.Modify(true);
+
+        // [WHEN] Post General Jnl Line.
+        asserterror LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [THEN] Verify Sustainability Ledger entry should not be created when the General Journal Line is posted with Intensity Setup.
+        Assert.ExpectedError(StrSubstNo(NotAllowedToPostSustLedEntryForWaterOrWasteErr, AccountCode));
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"

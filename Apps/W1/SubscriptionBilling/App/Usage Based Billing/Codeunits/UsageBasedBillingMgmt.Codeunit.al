@@ -8,29 +8,28 @@ codeunit 8029 "Usage Based Billing Mgmt."
     Access = Internal;
 
     var
-        ExtendContractMgt: Codeunit "Extend Contract Mgt.";
+        ExtendContractMgt: Codeunit "Extend Sub. Contract Mgt.";
         ConfirmManagement: Codeunit "Confirm Management";
-        NoMatchingServiceCommitmentFoundErr: Label 'No %1 was found that matches the following criteria: %2', Comment = '%1 = Service Commitment, %2 = Service Commitment Filters';
-        NoContractFoundErr: Label 'No %1 was found for Service Object: %2.', Comment = '%1 = Customer/Vendor Contract, %2 = Service Object No.';
+        NoMatchingServiceCommitmentFoundErr: Label 'No %1 was found that matches the following criteria: %2', Comment = '%1 = Subscription Line, %2 = Subscription Line Filters';
+        NoContractFoundErr: Label 'No %1 was found for Subscription: %2.', Comment = '%1 = Customer/Vendor Contract, %2 = Subscription No.';
         FieldMustBeFilledErr: Label 'The Field "%1" must contain a value.', Comment = '%1 = Field name';
         ProgressLbl: Label '#1###################################### \Progress @2@@@@@@@@@@@@@@@@@@';
         ProcessingInterruptedTxt: Label 'Processing interrupted.';
-        ItemBlockedErr: Label 'You cannot connect Subscription to Service Object %1 because Item %2 from Service Object is blocked.', Comment = '%1 = Service Object No., %2 = Item No.';
-        MultipleServiceObjectsQst: Label 'Service Object %1 is to be connected with the entry %2 and other subscriptions. Continue?', Comment = '%1 = Service Object No., %2 = Usage Data Subscription Entry No.';
-        NoReferenceCommitmentFoundErr: Label 'For Item "%1" no Service Commitment with %2 was found.', Comment = '%1 = Item No., %2 = Usage Based Billing flag';
+        ItemBlockedErr: Label 'You cannot connect Subscription to Subscription %1 because Item %2 from Subscription is blocked.', Comment = '%1 = Subscription No., %2 = Item No.';
+        MultipleServiceObjectsQst: Label 'Subscription %1 is to be connected with the entry %2 and other subscriptions. Continue?', Comment = '%1 = Subscription No., %2 = Usage Data Subscription Entry No.';
+        NoReferenceCommitmentFoundErr: Label 'For Item "%1" no Subscription Line with %2 was found.', Comment = '%1 = Item No., %2 = Usage Based Billing flag';
         DisconnectFromSubscriptionQst: Label 'Do you want to disconnect from the subscription?';
-        SubscriptionCannotBeConnectedErr: Label 'The Subscription cannot be linked via "Existing Service Commitments" because the Service Commitments are not charged based on usage. Instead, select Link via=New Service Commitments.';
+        SubscriptionCannotBeConnectedErr: Label 'The Subscription cannot be linked via "Existing Subscription Lines" because the Subscription Lines are not charged based on usage. Instead, select Link via=New Subscription Lines.';
 
-    internal procedure ConnectSubscriptionsToServiceObjects(var UsageDataSubscription: Record "Usage Data Subscription")
+    internal procedure ConnectSubscriptionsToServiceObjects(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
-        UsageDataSubscription2: Record "Usage Data Subscription";
-        ServiceObject: Record "Service Object";
+        UsageDataSubscription2: Record "Usage Data Supp. Subscription";
         i: Integer;
         ProgressBox: Dialog;
         TotalCount: Integer;
     begin
-        UsageDataSubscription.SetRange("Service Commitment Entry No.", 0);
-        UsageDataSubscription.SetFilter("Connect to SO Method", '<>%1', "Connect To SO Method"::None);
+        UsageDataSubscription.SetRange("Subscription Line Entry No.", 0);
+        UsageDataSubscription.SetFilter("Connect to Sub. Header Method", '<>%1', "Connect To SO Method"::None);
         if UsageDataSubscription.FindSet(true) then begin
             i := 0;
             TotalCount := UsageDataSubscription.Count;
@@ -44,12 +43,11 @@ codeunit 8029 "Usage Based Billing Mgmt."
                 TestUsageDataSubscription(UsageDataSubscription2);
                 if UsageDataSubscription2."Processing Status" <> "Processing Status"::Error then begin
                     AskToProceedIfServiceObjectIsAssignedToMultipleSubscriptions(UsageDataSubscription2);
-                    ServiceObject.Get(UsageDataSubscription2."Connect to Service Object No.");
-                    ErrorIfServiceObjectItemIsBlocked(ServiceObject, UsageDataSubscription2);
+                    ErrorIfServiceObjectItemIsBlocked(UsageDataSubscription);
                 end;
 
                 if UsageDataSubscription2."Processing Status" <> "Processing Status"::Error then
-                    case UsageDataSubscription2."Connect to SO Method" of
+                    case UsageDataSubscription2."Connect to Sub. Header Method" of
                         "Connect To SO Method"::"New Service Commitments":
                             ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription2);
                         "Connect To SO Method"::"Existing Service Commitments":
@@ -63,33 +61,33 @@ codeunit 8029 "Usage Based Billing Mgmt."
         end;
     end;
 
-    internal procedure DisconnectServiceCommitmentFromSubscription(var ServiceCommitment: Record "Service Commitment")
+    internal procedure DisconnectServiceCommitmentFromSubscription(var ServiceCommitment: Record "Subscription Line")
     var
-        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
     begin
         ServiceCommitment.TestField("Supplier Reference Entry No.");
         UsageDataSubscription.SetRange("Supplier Reference Entry No.", ServiceCommitment."Supplier Reference Entry No.");
         if UsageDataSubscription.FindFirst() then
             if ConfirmManagement.GetResponse(StrSubstNo(DisconnectFromSubscriptionQst), true) then begin
-                ResetSupplierReferenceEntryNoForServiceObject(ServiceCommitment."Service Object No.", ServiceCommitment."Supplier Reference Entry No.");
+                ResetSupplierReferenceEntryNoForServiceObject(ServiceCommitment."Subscription Header No.", ServiceCommitment."Supplier Reference Entry No.");
                 UsageDataSubscription.ResetServiceObjectAndServiceCommitment();
             end;
     end;
 
     local procedure ResetSupplierReferenceEntryNoForServiceObject(ServiceObjectNo: Code[20]; SupplierReferenceEntryNo: Integer)
     var
-        ServiceCommitments: Record "Service Commitment";
+        ServiceCommitments: Record "Subscription Line";
     begin
-        ServiceCommitments.SetRange("Service Object No.", ServiceObjectNo);
+        ServiceCommitments.SetRange("Subscription Header No.", ServiceObjectNo);
         ServiceCommitments.SetRange("Supplier Reference Entry No.", SupplierReferenceEntryNo);
         ServiceCommitments.ModifyAll("Supplier Reference Entry No.", 0, false);
     end;
 
-    procedure ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(var UsageDataSubscription: Record "Usage Data Subscription")
+    procedure ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
-        ServiceCommitment.SetRange("Service Object No.", UsageDataSubscription."Connect to Service Object No.");
+        ServiceCommitment.SetRange("Subscription Header No.", UsageDataSubscription."Connect to Sub. Header No.");
         ServiceCommitment.SetRange("Usage Based Billing", true);
         ServiceCommitment.SetRange("Supplier Reference Entry No.", 0);
         if ServiceCommitment.FindSet(true) then
@@ -101,13 +99,13 @@ codeunit 8029 "Usage Based Billing Mgmt."
             exit;
         end;
         if UsageDataSubscription."Processing Status" <> UsageDataSubscription."Processing Status"::Error then begin
-            UsageDataSubscription.Validate("Service Object No.", ServiceCommitment."Service Object No.");
-            UsageDataSubscription.Validate("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+            UsageDataSubscription.Validate("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+            UsageDataSubscription.Validate("Subscription Line Entry No.", ServiceCommitment."Entry No.");
             UsageDataSubscription.Validate("Processing Status", UsageDataSubscription."Processing Status"::Ok);
         end;
     end;
 
-    local procedure CheckAndConnectServiceCommitmentToUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Subscription"; var ServiceCommitment: Record "Service Commitment")
+    local procedure CheckAndConnectServiceCommitmentToUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Supp. Subscription"; var ServiceCommitment: Record "Subscription Line")
     begin
         if not ServiceCommitment."Usage Based Billing" then begin
             UsageDataSubscription.SetErrorReason(SubscriptionCannotBeConnectedErr);
@@ -119,49 +117,49 @@ codeunit 8029 "Usage Based Billing Mgmt."
         end;
     end;
 
-    local procedure CloseExistingServiceCommitments(var ServiceObject: Record "Service Object"; var ServiceCommitment: Record "Service Commitment"; var UsageDataSubscription: Record "Usage Data Subscription"; var EndingDate: Date; var VendorContractNo: Code[20])
+    local procedure CloseExistingServiceCommitments(var ServiceObject: Record "Subscription Header"; var ServiceCommitment: Record "Subscription Line"; var UsageDataSubscription: Record "Usage Data Supp. Subscription"; var EndingDate: Date; var VendorContractNo: Code[20])
     begin
         ServiceCommitment.FindSet(true);
         repeat
-            EndingDate := UsageDataSubscription."Connect to SO at Date" - 1;
-            ServiceCommitment."Service End Date" := EndingDate;
+            EndingDate := UsageDataSubscription."Connect to Sub. Header at Date" - 1;
+            ServiceCommitment."Subscription Line End Date" := EndingDate;
             ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', EndingDate);
             ServiceCommitment.Modify(false);
             if ((VendorContractNo = '') and ServiceCommitment.IsPartnerVendor()) then
-                VendorContractNo := ServiceCommitment."Contract No.";
+                VendorContractNo := ServiceCommitment."Subscription Contract No.";
         until ServiceCommitment.Next() = 0;
         ServiceObject.UpdateServicesDates();
     end;
 
-    local procedure FindCustomerServiceCommitmentFromServiceObject(var ServiceCommitment: Record "Service Commitment"; ServiceObjectNo: Code[20]; var UsageDataSubscription: Record "Usage Data Subscription"): Boolean
+    local procedure FindCustomerServiceCommitmentFromServiceObject(var ServiceCommitment: Record "Subscription Line"; ServiceObjectNo: Code[20]; var UsageDataSubscription: Record "Usage Data Supp. Subscription"): Boolean
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObjectNo);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo);
         ServiceCommitment.SetRange(Partner, "Service Partner"::Customer);
-        ServiceCommitment.SetFilter("Contract No.", '<>%1', '');
-        ServiceCommitment.SetFilter("Service End Date", '%1|>=%2', 0D, UsageDataSubscription."Connect to SO at Date");
+        ServiceCommitment.SetFilter("Subscription Contract No.", '<>%1', '');
+        ServiceCommitment.SetFilter("Subscription Line End Date", '%1|>=%2', 0D, UsageDataSubscription."Connect to Sub. Header at Date");
         exit(ServiceCommitment.FindFirst());
     end;
 
-    local procedure AssignVendorContractNoFromServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var VendorContractNo: Code[20])
+    local procedure AssignVendorContractNoFromServiceCommitment(var ServiceCommitment: Record "Subscription Line"; var VendorContractNo: Code[20])
     begin
         ServiceCommitment.SetRange(Partner, ServiceCommitment.Partner::Vendor);
         if ServiceCommitment.FindFirst() then
-            VendorContractNo := ServiceCommitment."Contract No.";
+            VendorContractNo := ServiceCommitment."Subscription Contract No.";
         ServiceCommitment.SetRange(Partner);
     end;
 
-    local procedure CheckIfServiceCommPackageHasUsageBasedReference(var UsageDataSubscription: Record "Usage Data Subscription"; ItemNo: Code[20]; VendorContractNo: Code[20]; ServiceObjectNo: Code[20]; CustomerPriceGroup: Code[10]): Boolean
+    local procedure CheckIfServiceCommPackageHasUsageBasedReference(var UsageDataSubscription: Record "Usage Data Supp. Subscription"; ItemNo: Code[20]; VendorContractNo: Code[20]; ServiceObjectNo: Code[20]; CustomerPriceGroup: Code[10]): Boolean
     var
-        VendorContract: Record "Vendor Contract";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
+        VendorContract: Record "Vendor Subscription Contract";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommitmentPackageLine: Record "Subscription Package Line";
         ReferenceCommitmentFound: Boolean;
     begin
         ServiceCommitmentPackage.FilterCodeOnPackageFilter(ItemServCommitmentPackage.GetAllStandardPackageFilterForItem(ItemNo, CustomerPriceGroup));
         if ServiceCommitmentPackage.FindSet() then begin
             repeat
-                ServiceCommitmentPackageLine.SetRange("Package Code", ServiceCommitmentPackage."Code");
+                ServiceCommitmentPackageLine.SetRange("Subscription Package Code", ServiceCommitmentPackage."Code");
                 if ServiceCommitmentPackageLine.FindSet() then
                     repeat
                         if ServiceCommitmentPackageLine.IsPartnerVendor() and (VendorContractNo = '') then begin
@@ -178,61 +176,65 @@ codeunit 8029 "Usage Based Billing Mgmt."
         end;
     end;
 
-    local procedure CheckIfUsageDataSubscriptionIsSetToNewServiceCommitments(var UsageDataSubscription: Record "Usage Data Subscription")
+    local procedure CheckIfUsageDataSubscriptionIsSetToNewServiceCommitments(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     begin
-        if UsageDataSubscription."Connect to SO Method" = Enum::"Connect To SO Method"::"New Service Commitments" then
-            UsageDataSubscription.SetErrorReason(StrSubstNo(FieldMustBeFilledErr, UsageDataSubscription.FieldCaption("Connect to SO at Date")));
+        if UsageDataSubscription."Connect to Sub. Header Method" = Enum::"Connect To SO Method"::"New Service Commitments" then
+            UsageDataSubscription.SetErrorReason(StrSubstNo(FieldMustBeFilledErr, UsageDataSubscription.FieldCaption("Connect to Sub. Header at Date")));
     end;
 
-    local procedure TestUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Subscription")
+    local procedure TestUsageDataSubscription(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     begin
-        if UsageDataSubscription."Connect to SO at Date" = 0D then
+        if UsageDataSubscription."Connect to Sub. Header at Date" = 0D then
             CheckIfUsageDataSubscriptionIsSetToNewServiceCommitments(UsageDataSubscription);
 
-        if UsageDataSubscription."Connect to Service Object No." = '' then
-            UsageDataSubscription.SetErrorReason(StrSubstNo(FieldMustBeFilledErr, UsageDataSubscription.FieldCaption("Connect to Service Object No.")));
+        if UsageDataSubscription."Connect to Sub. Header No." = '' then
+            UsageDataSubscription.SetErrorReason(StrSubstNo(FieldMustBeFilledErr, UsageDataSubscription.FieldCaption("Connect to Sub. Header No.")));
     end;
 
-    local procedure AskToProceedIfServiceObjectIsAssignedToMultipleSubscriptions(var UsageDataSubscription: Record "Usage Data Subscription")
+    local procedure AskToProceedIfServiceObjectIsAssignedToMultipleSubscriptions(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
-        UsageDataSubscription2: Record "Usage Data Subscription";
+        UsageDataSubscription2: Record "Usage Data Supp. Subscription";
     begin
         UsageDataSubscription2.Reset();
         UsageDataSubscription2.CopyFilters(UsageDataSubscription);
-        UsageDataSubscription2.SetRange("Connect to Service Object No.", UsageDataSubscription."Connect to Service Object No.");
+        UsageDataSubscription2.SetRange("Connect to Sub. Header No.", UsageDataSubscription."Connect to Sub. Header No.");
         UsageDataSubscription2.SetFilter("Entry No.", '<>%1', UsageDataSubscription."Entry No.");
         if UsageDataSubscription2.FindFirst() then
-            if not ConfirmManagement.GetResponse(StrSubstNo(MultipleServiceObjectsQst, UsageDataSubscription."Connect to Service Object No.", UsageDataSubscription2."Entry No."), false) then
+            if not ConfirmManagement.GetResponse(StrSubstNo(MultipleServiceObjectsQst, UsageDataSubscription."Connect to Sub. Header No.", UsageDataSubscription2."Entry No."), false) then
                 Error(ProcessingInterruptedTxt);
     end;
 
-    local procedure ErrorIfServiceObjectItemIsBlocked(ServiceObject: Record "Service Object"; var UsageDataSubscription: Record "Usage Data Subscription")
+    local procedure ErrorIfServiceObjectItemIsBlocked(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
+        ServiceObject: Record "Subscription Header";
         Item: Record Item;
     begin
-        if Item.Get(ServiceObject."Item No.") then
+        ServiceObject.Get(UsageDataSubscription."Connect to Sub. Header No.");
+        ServiceObject.TestField(Type, ServiceObject.Type::Item);
+        if Item.Get(ServiceObject."Source No.") then
             if Item.Blocked then
-                UsageDataSubscription.SetErrorReason(StrSubstNo(ItemBlockedErr, ServiceObject."No.", ServiceObject."Item No."));
+                UsageDataSubscription.SetErrorReason(StrSubstNo(ItemBlockedErr, ServiceObject."No.", ServiceObject."Source No."));
     end;
 
-    procedure ConnectSubscriptionToServiceObjectWithNewServiceCommitments(var UsageDataSubscription: Record "Usage Data Subscription")
+    procedure ConnectSubscriptionToServiceObjectWithNewServiceCommitments(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
-        ServiceObject: Record "Service Object";
-        CustomerContract: Record "Customer Contract";
-        ServiceCommitment: Record "Service Commitment";
+        ServiceObject: Record "Subscription Header";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceCommitment: Record "Subscription Line";
         Item: Record Item;
-        UsageDataSubscription2: Record "Usage Data Subscription";
-        TempServiceCommitmentPackage: Record "Service Commitment Package" temporary;
-        VendorContract: Record "Vendor Contract";
+        UsageDataSubscription2: Record "Usage Data Supp. Subscription";
+        TempServiceCommitmentPackage: Record "Subscription Package" temporary;
+        VendorContract: Record "Vendor Subscription Contract";
         CustomerContractNo: Code[20];
         VendorContractNo: Code[20];
         EndingDate: Date;
     begin
-        ServiceObject.Get(UsageDataSubscription."Connect to Service Object No.");
-        Item.Get(ServiceObject."Item No.");
+        ServiceObject.Get(UsageDataSubscription."Connect to Sub. Header No.");
+        ServiceObject.TestField(Type, ServiceObject.Type::Item);
+        Item.Get(ServiceObject."Source No.");
 
         if FindCustomerServiceCommitmentFromServiceObject(ServiceCommitment, ServiceObject."No.", UsageDataSubscription) then
-            CustomerContractNo := ServiceCommitment."Contract No."
+            CustomerContractNo := ServiceCommitment."Subscription Contract No."
         else begin
             UsageDataSubscription.SetErrorReason(StrSubstNo(NoContractFoundErr, CustomerContract.TableCaption(), ServiceObject."No."));
             exit;
@@ -252,8 +254,8 @@ codeunit 8029 "Usage Based Billing Mgmt."
         ExtendContractMgt.ExtendContract(ServiceObject, TempServiceCommitmentPackage, CustomerContractNo <> '', CustomerContract, VendorContractNo <> '', VendorContract, true, UsageDataSubscription."Supplier Reference Entry No.");
 
         UsageDataSubscription2.Get(UsageDataSubscription."Entry No.");
-        UsageDataSubscription.Validate("Service Object No.", UsageDataSubscription2."Service Object No.");
-        UsageDataSubscription.Validate("Service Commitment Entry No.", UsageDataSubscription2."Service Commitment Entry No.");
+        UsageDataSubscription.Validate("Subscription Header No.", UsageDataSubscription2."Subscription Header No.");
+        UsageDataSubscription.Validate("Subscription Line Entry No.", UsageDataSubscription2."Subscription Line Entry No.");
         UsageDataSubscription.Validate("Processing Status", UsageDataSubscription."Processing Status"::Ok);
     end;
 }

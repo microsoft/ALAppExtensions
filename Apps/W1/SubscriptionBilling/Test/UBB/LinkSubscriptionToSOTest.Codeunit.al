@@ -10,79 +10,45 @@ codeunit 148158 "Link Subscription To SO Test"
     TestPermissions = Disabled;
     Access = Internal;
 
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
-    procedure TestConnectSubscriptiontoExistingServiceCommitment()
-    begin
-        ResetAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        SetupItemWithMultipleServiceCommitmentPackages();
-        SetupUsageDataForProcessingToGenericImport();
-
-        ContractTestLibrary.CreateCustomer(Customer);
-        CreateServiceObjectWithServiceCommitments();
-
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
-        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"Existing Service Commitments");
-        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
-        UsageBasedBillingMgmt.ConnectSubscriptionsToServiceObjects(UsageDataSubscription);
-        FindUsageDataGenericImportUpdated();
-
-        FilterServiceCommOnServiceObjectAndPartner(ServiceObject."No.", "Service Partner"::Customer);
-        ServiceCommitment.SetRange("Supplier Reference Entry No.", 0);
-        asserterror ServiceCommitment.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
-    procedure TestConnectSubscriptiontoNewServiceCommitment()
     var
-        PreviousNoOfContractLines: Integer;
-        PreviousNoOfStandardContractLines: Integer;
-    begin
-        ResetAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        SetupItemWithMultipleServiceCommitmentPackages();
-        SetupUsageDataForProcessingToGenericImport();
+        Customer: Record Customer;
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        DataExchColumnDef: Record "Data Exch. Column Def";
+        DataExchDef: Record "Data Exch. Def";
+        DataExchFieldMapping: Record "Data Exch. Field Mapping";
+        DataExchLineDef: Record "Data Exch. Line Def";
+        DataExchMapping: Record "Data Exch. Mapping";
+        GenericImportSettings: Record "Generic Import Settings";
+        Item: Record Item;
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
+        UsageDataBlob: Record "Usage Data Blob";
+        UsageDataImport: Record "Usage Data Import";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
+        UsageDataSupplier: Record "Usage Data Supplier";
+        VendorContract: Record "Vendor Subscription Contract";
+        Assert: Codeunit Assert;
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        LibraryRandom: Codeunit "Library - Random";
+        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
+        UsageBasedBillingMgmt: Codeunit "Usage Based Billing Mgmt.";
+        RecordRef: RecordRef;
+        ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
+        FileEncoding: Option "MS-DOS","UTF-8","UTF-16",WINDOWS;
+        FileType: Option Xml,"Variable Text","Fixed Text",Json;
 
-        ContractTestLibrary.CreateCustomer(Customer);
-        CreateServiceObjectWithServiceCommitments();
-
-        //Update each Service Commitment to have Service End Date = Today()
-        //In order to avoid missinterpretations in Closing of service commitments were Today() is used as reference date
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.ModifyAll("Service End Date", CalcDate('<1D>', Today()), false);
-
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '');
-        ServiceCommitment.Reset();
-        FilterServiceCommOnServiceObjectAndPartner(ServiceObject."No.", "Service Partner"::Customer);
-        ServiceCommitment.SetFilter("Service End Date", '%1|>=%2', 0D, Today());//=UsageDataSubscription."Connect to SO at Date"
-        PreviousNoOfContractLines := ServiceCommitment.Count();
-        SetPreviousNoOfStandardContractLines(PreviousNoOfStandardContractLines);
-
-        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
-        UsageBasedBillingMgmt.ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription);
-        FindUsageDataGenericImportUpdated();
-
-        Assert.AreEqual(PreviousNoOfContractLines, GetNumberOfCustomerContractLines(true), 'Contract Lines were not closed properly.');
-        Assert.AreEqual(PreviousNoOfStandardContractLines, GetNumberOfCustomerContractLines(false), 'Contract Lines were not extended properly.');
-
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange(Closed, false);
-        CustomerContractLine.FindSet();
-        repeat
-            CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-            ServiceCommitment.TestField("Supplier Reference Entry No.");
-        until CustomerContractLine.Next() = 0;
-    end;
+    #region Tests
 
     [Test]
     [HandlerFunctions('ConfirmHandler')]
     procedure ExpectErrorOnAssignServiceObjectWithoutCustomerToUsageDataSubscription()
     begin
-        ResetAll();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         SetupItemWithMultipleServiceCommitmentPackages();
         SetupUsageDataForProcessingToGenericImport();
@@ -95,32 +61,9 @@ codeunit 148158 "Link Subscription To SO Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
-    procedure TestResetProcessingStatusOnUsageDataSubscription()
-    begin
-        ResetAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        SetupItemWithMultipleServiceCommitmentPackages();
-        SetupUsageDataForProcessingToGenericImport();
-
-        ContractTestLibrary.CreateCustomer(Customer);
-        CreateServiceObjectWithServiceCommitments();
-
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
-        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
-        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
-        UsageBasedBillingMgmt.ConnectSubscriptionsToServiceObjects(UsageDataSubscription);
-
-        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
-        UsageDataSubscription.ResetProcessingStatus(UsageDataSubscription);
-
-        TestUsageDataSubscriptionProcessingStatus(UsageDataImport."Supplier No.", Enum::"Processing Status"::None);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
     procedure ExpectErrorOnConnectSOToSubscriptionWithoutServiceObject()
     begin
-        ResetAll();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         SetupItemWithMultipleServiceCommitmentPackages();
         SetupUsageDataForProcessingToGenericImport();
@@ -128,11 +71,11 @@ codeunit 148158 "Link Subscription To SO Test"
         ContractTestLibrary.CreateCustomer(Customer);
         CreateServiceObjectWithServiceCommitments();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
         UsageDataSubscription.FindSet();
         repeat
-            UsageDataSubscription."Connect to SO Method" := Enum::"Connect To SO Method"::"Existing Service Commitments";
+            UsageDataSubscription."Connect to Sub. Header Method" := Enum::"Connect To SO Method"::"Existing Service Commitments";
             UsageDataSubscription.Modify(false);
         until UsageDataSubscription.Next() = 0;
 
@@ -146,7 +89,7 @@ codeunit 148158 "Link Subscription To SO Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
     procedure ExpectErrorOnConnectSOToSubscriptionWithBlockedSOItem()
     begin
-        ResetAll();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         SetupItemWithMultipleServiceCommitmentPackages();
         SetupUsageDataForProcessingToGenericImport();
@@ -156,7 +99,7 @@ codeunit 148158 "Link Subscription To SO Test"
         Item.Blocked := true;
         Item.Modify(false);
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
 
         FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
@@ -167,11 +110,9 @@ codeunit 148158 "Link Subscription To SO Test"
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
-    procedure TestDisconnectServiceCommitmentsFromUsageDataSubscription()
-    var
-        ReferenceToBeRemoved: Integer;
+    procedure TestConnectSubscriptionToExistingServiceCommitment()
     begin
-        ResetAll();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         SetupItemWithMultipleServiceCommitmentPackages();
         SetupUsageDataForProcessingToGenericImport();
@@ -179,7 +120,77 @@ codeunit 148158 "Link Subscription To SO Test"
         ContractTestLibrary.CreateCustomer(Customer);
         CreateServiceObjectWithServiceCommitments();
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
+        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"Existing Service Commitments");
+        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
+        UsageBasedBillingMgmt.ConnectSubscriptionsToServiceObjects(UsageDataSubscription);
+        FindUsageDataGenericImportUpdated();
+
+        FilterServiceCommOnServiceObjectAndPartner(ServiceObject."No.", "Service Partner"::Customer);
+        ServiceCommitment.SetRange("Supplier Reference Entry No.", 0);
+        Assert.RecordIsEmpty(ServiceCommitment);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
+    procedure TestConnectSubscriptionToNewServiceCommitment()
+    var
+        PreviousNoOfContractLines: Integer;
+        PreviousNoOfStandardContractLines: Integer;
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        SetupItemWithMultipleServiceCommitmentPackages();
+        SetupUsageDataForProcessingToGenericImport();
+
+        ContractTestLibrary.CreateCustomer(Customer);
+        CreateServiceObjectWithServiceCommitments();
+
+        // Update each Subscription Line to have Subscription Line End Date = Today()
+        // In order to avoid misinterpretations in Closing of Subscription Lines were Today() is used as reference date
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.ModifyAll("Subscription Line End Date", CalcDate('<1D>', Today()), false);
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '');
+        ServiceCommitment.Reset();
+        FilterServiceCommOnServiceObjectAndPartner(ServiceObject."No.", "Service Partner"::Customer);
+        ServiceCommitment.SetFilter("Subscription Line End Date", '%1|>=%2', 0D, Today()); // =UsageDataSubscription."Connect to SO at Date"
+        PreviousNoOfContractLines := ServiceCommitment.Count();
+        SetPreviousNoOfStandardContractLines(PreviousNoOfStandardContractLines);
+
+        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
+        UsageBasedBillingMgmt.ConnectSubscriptionToServiceObjectWithNewServiceCommitments(UsageDataSubscription);
+        FindUsageDataGenericImportUpdated();
+
+        Assert.AreEqual(PreviousNoOfContractLines, GetNumberOfCustomerContractLines(true), 'Contract Lines were not closed properly.');
+        Assert.AreEqual(PreviousNoOfStandardContractLines, GetNumberOfCustomerContractLines(false), 'Contract Lines were not extended properly.');
+
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange(Closed, false);
+        CustomerContractLine.FindSet();
+        repeat
+            CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+            ServiceCommitment.TestField("Supplier Reference Entry No.");
+        until CustomerContractLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
+    procedure TestDisconnectServiceCommitmentsFromUsageDataSubscription()
+    var
+        ReferenceToBeRemoved: Integer;
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        SetupItemWithMultipleServiceCommitmentPackages();
+        SetupUsageDataForProcessingToGenericImport();
+
+        ContractTestLibrary.CreateCustomer(Customer);
+        CreateServiceObjectWithServiceCommitments();
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"Existing Service Commitments");
         UsageBasedBillingMgmt.ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(UsageDataSubscription);
 
@@ -190,24 +201,126 @@ codeunit 148158 "Link Subscription To SO Test"
 
         UsageBasedBillingMgmt.DisconnectServiceCommitmentFromSubscription(ServiceCommitment);
         Commit(); // retain data after asserterror
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange("Supplier Reference Entry No.", ReferenceToBeRemoved);
-        asserterror ServiceCommitment.FindSet();
+        Assert.RecordIsEmpty(ServiceCommitment);
 
         UsageDataSubscription.Reset();
         UsageDataSubscription.SetRange("Supplier Reference Entry No.", ReferenceToBeRemoved);
         UsageDataSubscription.FindSet();
         repeat
-            UsageDataSubscription.TestField("Service Object No.", '');
-            UsageDataSubscription.TestField("Service Commitment Entry No.", 0);
+            UsageDataSubscription.TestField("Subscription Header No.", '');
+            UsageDataSubscription.TestField("Subscription Line Entry No.", 0);
         until UsageDataSubscription.Next() = 0;
     end;
 
-    procedure SetupUsageDataForProcessingToGenericImport()
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,ConfirmHandler')]
+    procedure TestResetProcessingStatusOnUsageDataSubscription()
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        SetupItemWithMultipleServiceCommitmentPackages();
+        SetupUsageDataForProcessingToGenericImport();
+
+        ContractTestLibrary.CreateCustomer(Customer);
+        CreateServiceObjectWithServiceCommitments();
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
+        ValidateUsageDataSubscriptionConnectToServiceObject(Enum::"Connect To SO Method"::"New Service Commitments");
+        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
+        UsageBasedBillingMgmt.ConnectSubscriptionsToServiceObjects(UsageDataSubscription);
+
+        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
+        UsageDataSubscription.ResetProcessingStatus(UsageDataSubscription);
+
+        TestUsageDataSubscriptionProcessingStatus(UsageDataImport."Supplier No.", Enum::"Processing Status"::None);
+    end;
+
+    #endregion Tests
+
+    #region Procedures
+
+    local procedure Initialize()
+    begin
+        ClearAll();
+        ServiceCommitmentTemplate.Reset();
+        ServiceCommitmentTemplate.DeleteAll(false);
+        ServiceCommitmentPackage.Reset();
+        ServiceCommitmentPackage.DeleteAll(false);
+        ServiceCommPackageLine.Reset();
+        ServiceCommPackageLine.DeleteAll(false);
+        ItemServCommitmentPackage.Reset();
+        ItemServCommitmentPackage.DeleteAll(false);
+        ContractTestLibrary.InitContractsApp();
+    end;
+
+    local procedure CreateMultipleUsageDataBlobFiles()
+    var
+        i: Integer;
+    begin
+        for i := 1 to 5 do begin
+            UsageDataBlob.InsertFromUsageDataImport(UsageDataImport);
+            UsageBasedBTestLibrary.CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(UsageDataBlob, RecordRef, ServiceObject."No.", ServiceCommitment."Entry No.");
+        end;
+    end;
+
+    local procedure CreateServiceObjectWithServiceCommitments()
+    begin
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, false);
+        ServiceObject."Provision End Date" := 0D;
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(false);
+    end;
+
+    local procedure FilterUsageDataSubscriptionOnSupplier(var SourceUsageDataSubscription: Record "Usage Data Supp. Subscription"; SupplierNo: Code[20])
+    begin
+        SourceUsageDataSubscription.Reset();
+        SourceUsageDataSubscription.SetRange("Supplier No.", SupplierNo);
+    end;
+
+    local procedure FilterServiceCommOnServiceObjectAndPartner(ServiceObjectNo: Code[20]; ServicePartner: Enum "Service Partner")
+    begin
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo);
+        ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
+        ServiceCommitment.SetRange("Usage Based Billing", true);
+        ServiceCommitment.SetRange(Partner, ServicePartner);
+    end;
+
+    local procedure FindUsageDataGenericImportUpdated()
     var
         UsageDataGenericImport: Record "Usage Data Generic Import";
     begin
-        UsageBasedBTestLibrary.ResetUsageBasedRecords();
+        UsageDataGenericImport.SetRange("Supp. Subscription ID", UsageDataSubscription."Supplier Reference");
+        UsageDataGenericImport.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
+        UsageDataGenericImport.FindFirst();
+    end;
+
+    local procedure GetNumberOfCustomerContractLines(FilterClosed: Boolean): Integer
+    var
+        CustContractLines: Record "Cust. Sub. Contract Line";
+    begin
+        CustomerContractLine.Reset();
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange(Closed, FilterClosed);
+        if CustomerContractLine.FindSet() then
+            repeat
+                CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+                if ServiceCommitment."Usage Based Billing" then begin
+                    CustContractLines.Get(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
+                    CustContractLines.Mark(true);
+                end;
+            until CustomerContractLine.Next() = 0;
+        CustContractLines.MarkedOnly(true);
+        exit(CustContractLines.Count());
+    end;
+
+    local procedure SetupUsageDataForProcessingToGenericImport()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+    begin
+        UsageBasedBTestLibrary.DeleteAllUsageBasedRecords();
         UsageBasedBTestLibrary.CreateUsageDataSupplier(UsageDataSupplier, Enum::"Usage Data Supplier Type"::Generic, true, Enum::"Vendor Invoice Per"::Import);
         UsageBasedBTestLibrary.CreateGenericImportSettings(GenericImportSettings, UsageDataSupplier."No.", true, true);
         UsageBasedBTestLibrary.CreateUsageDataImport(UsageDataImport, UsageDataSupplier."No.");
@@ -217,10 +330,10 @@ codeunit 148158 "Link Subscription To SO Test"
         CreateMultipleUsageDataBlobFiles();
         UsageDataImport."Processing Step" := Enum::"Processing Step"::"Create Imported Lines";
         UsageDataImport.Modify(false);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
         UsageDataImport."Processing Step" := Enum::"Processing Step"::"Process Imported Lines";
         UsageDataImport.Modify(false);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
     end;
 
     local procedure SetupDataExchangeDefinition()
@@ -232,15 +345,7 @@ codeunit 148158 "Link Subscription To SO Test"
         UsageBasedBTestLibrary.CreateDataExchangeFieldMapping(DataExchFieldMapping, DataExchDef.Code, DataExchLineDef.Code, RecordRef);
     end;
 
-    local procedure CreateMultipleUsageDataBlobFiles()
-    begin
-        for i := 1 to 5 do begin
-            UsageDataBlob.InsertFromUsageDataImport(UsageDataImport);
-            UsageBasedBTestLibrary.CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(UsageDataBlob, RecordRef, ServiceObject."No.", ServiceCommitment."Entry No.");
-        end;
-    end;
-
-    procedure SetupItemWithMultipleServiceCommitmentPackages()
+    local procedure SetupItemWithMultipleServiceCommitmentPackages()
     begin
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDec(100, 2);
@@ -249,9 +354,9 @@ codeunit 148158 "Link Subscription To SO Test"
         ServiceCommitmentTemplate."Usage Based Billing" := true;
         ServiceCommitmentTemplate.Modify(false);
 
-        //Standard Service Comm. Package with two Service Comm. Package Lines
-        //1. for Customer
-        //2. for Vendor
+        // Standard Subscription Package with two Subscription Package Lines
+        // 1. for Customer
+        // 2. for Vendor
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -272,7 +377,7 @@ codeunit 148158 "Link Subscription To SO Test"
         ItemServCommitmentPackage.Standard := true;
         ItemServCommitmentPackage.Modify(false);
 
-        //Additional Service Commitment Package
+        // Additional Subscription Package
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -286,33 +391,14 @@ codeunit 148158 "Link Subscription To SO Test"
         ItemServCommitmentPackage.Modify(false);
     end;
 
-    local procedure ValidateUsageDataSubscriptionConnectToServiceObject(ConnectToSOMethod: Enum "Connect To SO Method")
+    local procedure SetPreviousNoOfStandardContractLines(var PreviousNoOfStandardContractLines: Integer)
     begin
-        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
-        UsageDataSubscription.FindSet();
+        ServiceCommitment.FindSet();
         repeat
-            UsageDataSubscription.Validate("Customer No.", Customer."No.");
-            UsageDataSubscription.Validate("Connect to Service Object No.", ServiceObject."No.");
-            UsageDataSubscription.Validate("Connect to SO Method", ConnectToSOMethod);
-            UsageDataSubscription."Connect to SO at Date" := Today();
-            UsageDataSubscription.Modify(false);
-        until UsageDataSubscription.Next() = 0;
-    end;
-
-    local procedure FilterUsageDataSubscriptionOnSupplier(var SourceUsageDataSubscription: Record "Usage Data Subscription"; SupplierNo: Code[20])
-    begin
-        SourceUsageDataSubscription.Reset();
-        SourceUsageDataSubscription.SetRange("Supplier No.", SupplierNo);
-    end;
-
-    local procedure FindUsageDataGenericImportUpdated()
-    var
-        UsageDataGenericImport: Record "Usage Data Generic Import";
-    begin
-        UsageDataGenericImport.SetRange("Subscription ID", UsageDataSubscription."Supplier Reference");
-        UsageDataGenericImport.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
-        UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
-        UsageDataGenericImport.FindFirst();
+            ItemServCommitmentPackage.Get(Item."No.", ServiceCommitment."Subscription Package Code");
+            if ItemServCommitmentPackage.Standard then
+                PreviousNoOfStandardContractLines += 1;
+        until ServiceCommitment.Next() = 0;
     end;
 
     local procedure TestUsageDataSubscriptionProcessingStatus(SupplierNo: Code[20]; NewProcessingStatus: Enum "Processing Status")
@@ -324,68 +410,27 @@ codeunit 148158 "Link Subscription To SO Test"
             until UsageDataSubscription.Next() = 0;
     end;
 
-    local procedure GetNumberOfCustomerContractLines(FilterClosed: Boolean): Integer
-    var
-        CustContractLines: Record "Customer Contract Line";
+    local procedure ValidateUsageDataSubscriptionConnectToServiceObject(ConnectToSOMethod: Enum "Connect To SO Method")
     begin
-        CustomerContractLine.Reset();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange(Closed, FilterClosed);
-        if CustomerContractLine.FindSet() then
-            repeat
-                CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-                if ServiceCommitment."Usage Based Billing" then begin
-                    CustContractLines.Get(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
-                    CustContractLines.Mark(true);
-                end;
-            until CustomerContractLine.Next() = 0;
-        CustContractLines.MarkedOnly(true);
-        exit(CustContractLines.Count());
-    end;
-
-    local procedure CreateServiceObjectWithServiceCommitments()
-    begin
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
-        ServiceObject."Provision End Date" := 0D;
-        ServiceObject.Validate("End-User Customer No.", Customer."No.");
-        ServiceObject.Modify(false);
-    end;
-
-    local procedure FilterServiceCommOnServiceObjectAndPartner(ServiceObjectNo: Code[20]; ServicePartner: Enum "Service Partner")
-    begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObjectNo);
-        ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
-        ServiceCommitment.SetRange("Usage Based Billing", true);
-        ServiceCommitment.SetRange(Partner, ServicePartner);
-    end;
-
-    local procedure SetPreviousNoOfStandardContractLines(var PreviousNoOfStandardContractLines: Integer)
-    begin
-        ServiceCommitment.FindSet();
+        FilterUsageDataSubscriptionOnSupplier(UsageDataSubscription, UsageDataImport."Supplier No.");
+        UsageDataSubscription.FindSet();
         repeat
-            ItemServCommitmentPackage.Get(Item."No.", ServiceCommitment."Package Code");
-            if ItemServCommitmentPackage.Standard then
-                PreviousNoOfStandardContractLines += 1;
-        until ServiceCommitment.Next() = 0;
+            UsageDataSubscription.Validate("Customer No.", Customer."No.");
+            UsageDataSubscription.Validate("Connect to Sub. Header No.", ServiceObject."No.");
+            UsageDataSubscription.Validate("Connect to Sub. Header Method", ConnectToSOMethod);
+            UsageDataSubscription."Connect to Sub. Header at Date" := Today();
+            UsageDataSubscription.Modify(false);
+        until UsageDataSubscription.Next() = 0;
     end;
 
-    local procedure ResetAll()
-    begin
-        ClearAll();
-        ServiceCommitmentTemplate.Reset();
-        ServiceCommitmentTemplate.DeleteAll(false);
-        ServiceCommitmentPackage.Reset();
-        ServiceCommitmentPackage.DeleteAll(false);
-        ServiceCommPackageLine.Reset();
-        ServiceCommPackageLine.DeleteAll(false);
-        ItemServCommitmentPackage.Reset();
-        ItemServCommitmentPackage.DeleteAll(false);
-        ContractTestLibrary.InitContractsApp();
-    end;
+    #endregion Procedures
 
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
+    #region Handlers
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
+        Reply := true;
     end;
 
     [ModalPageHandler]
@@ -394,42 +439,10 @@ codeunit 148158 "Link Subscription To SO Test"
         ExchangeRateSelectionPage.OK().Invoke();
     end;
 
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
     begin
-        Reply := true;
     end;
 
-    var
-        Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        UsageDataSubscription: Record "Usage Data Subscription";
-        UsageDataSupplier: Record "Usage Data Supplier";
-        GenericImportSettings: Record "Generic Import Settings";
-        UsageDataImport: Record "Usage Data Import";
-        UsageDataBlob: Record "Usage Data Blob";
-        ServiceObject: Record "Service Object";
-        ServiceCommitment: Record "Service Commitment";
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        DataExchDef: Record "Data Exch. Def";
-        DataExchColumnDef: Record "Data Exch. Column Def";
-        DataExchLineDef: Record "Data Exch. Line Def";
-        DataExchMapping: Record "Data Exch. Mapping";
-        DataExchFieldMapping: Record "Data Exch. Field Mapping";
-        CustomerContractLine: Record "Customer Contract Line";
-        VendorContract: Record "Vendor Contract";
-        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        Assert: Codeunit Assert;
-        UsageBasedBillingMgmt: Codeunit "Usage Based Billing Mgmt.";
-        RecordRef: RecordRef;
-        FileType: Option Xml,"Variable Text","Fixed Text",Json;
-        FileEncoding: Option "MS-DOS","UTF-8","UTF-16",WINDOWS;
-        ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
-        i: Integer;
+    #endregion Handlers
 }

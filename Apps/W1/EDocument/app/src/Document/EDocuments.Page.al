@@ -85,30 +85,68 @@ page 6122 "E-Documents"
                 ToolTip = 'Opens E-Document Logs page.';
                 Image = Log;
             }
+            action(ViewFile)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'View file';
+                ToolTip = 'View the source file.';
+                Image = ViewDetails;
+                Visible = NewEDocumentExperienceActive;
+
+                trigger OnAction()
+                begin
+                    Rec.ViewSourceFile();
+                end;
+            }
+        }
+        area(Navigation)
+        {
+            action(InboundEDocuments)
+            {
+                Caption = 'Inbound E-Documents';
+                ToolTip = 'View inbound electronic documents.';
+                Visible = NewEDocumentExperienceActive;
+                RunObject = Page "Inbound E-Documents";
+                Image = InwardEntry;
+            }
+            action(OutboundEDocuments)
+            {
+                Caption = 'Outbound E-Documents';
+                ToolTip = 'View outbound electronic documents.';
+                Visible = NewEDocumentExperienceActive;
+                RunObject = Page "Outbound E-Documents";
+                Image = OutboundEntry;
+            }
         }
         area(Promoted)
         {
             actionref(Promoted_ImportManually; ImportManually) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
+            actionref(Promoted_ViewFile; ViewFile) { }
+            actionref(Promoted_InboundEDocuments; InboundEDocuments) { }
+            actionref(Promoted_OutboundEDocuments; OutboundEDocuments) { }
         }
     }
 
     var
-        DocNotCreatedQst: Label 'Failed to create new %1 from E-Document. Do you want to open E-Document and see the reported errors?', Comment = '%1 - E-Document Document Type';
+        NewEDocumentExperienceActive: Boolean;
 
+    trigger OnOpenPage()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
+    end;
 
     local procedure NewFromFile()
     var
         EDocument: Record "E-Document";
         EDocImport: Codeunit "E-Doc. Import";
-        EDocErrorHelper: Codeunit "E-Document Error Helper";
     begin
         EDocImport.UploadDocument(EDocument);
         if EDocument."Entry No" <> 0 then begin
-            EDocImport.ProcessDocument(EDocument, false);
-            if EDocErrorHelper.HasErrors(EDocument) then
-                if Confirm(DocNotCreatedQst, true, EDocument."Document Type") then
-                    Page.Run(Page::"E-Document", EDocument);
+            EDocImport.ProcessIncomingEDocument(EDocument, EDocument.GetEDocumentService().GetDefaultImportParameters());
+            Page.Run(Page::"E-Document", EDocument);
         end;
     end;
 }

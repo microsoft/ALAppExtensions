@@ -843,6 +843,12 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'Gen. Posting Type';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Gen. Posting Type" <> "Gen. Posting Type"::" " then
+                    Validate("VAT Prod. Posting Group");
+            end;
         }
         field(70; "VAT Calculation Type"; Enum "Tax Calculation Type")
         {
@@ -869,26 +875,26 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-                if VATPostingSetup.Get("VAT Bus. Posting Group", "VAT Prod. Posting Group") then begin
-                    "VAT %" := VATPostingSetup."VAT %";
-                    "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
-                    "VAT Identifier" := VATPostingSetup."VAT Identifier";
-                    case "VAT Calculation Type" of
-                        "VAT Calculation Type"::"Reverse Charge VAT",
-                        "VAT Calculation Type"::"Sales Tax":
-                            "VAT %" := 0;
-                        "VAT Calculation Type"::"Full VAT":
-                            begin
-                                TestField("Account Type", "Account Type"::"G/L Account");
-                                VATPostingSetup.TestField("Sales VAT Account");
-                                TestField("Account No.", VATPostingSetup."Sales VAT Account");
-                            end;
+                "VAT %" := 0;
+                "VAT Calculation Type" := "VAT Calculation Type"::"Normal VAT";
+                "VAT Identifier" := '';
+                if "Gen. Posting Type" <> "Gen. Posting Type"::" " then
+                    if VATPostingSetup.Get("VAT Bus. Posting Group", "VAT Prod. Posting Group") then begin
+                        "VAT %" := VATPostingSetup."VAT %";
+                        "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
+                        "VAT Identifier" := VATPostingSetup."VAT Identifier";
+                        case "VAT Calculation Type" of
+                            "VAT Calculation Type"::"Reverse Charge VAT",
+                            "VAT Calculation Type"::"Sales Tax":
+                                "VAT %" := 0;
+                            "VAT Calculation Type"::"Full VAT":
+                                begin
+                                    TestField("Account Type", "Account Type"::"G/L Account");
+                                    VATPostingSetup.TestField("Sales VAT Account");
+                                    TestField("Account No.", VATPostingSetup."Sales VAT Account");
+                                end;
+                        end;
                     end;
-                end else begin
-                    "VAT %" := 0;
-                    "VAT Calculation Type" := "VAT Calculation Type"::"Normal VAT";
-                    "VAT Identifier" := '';
-                end;
                 Validate(Amount);
             end;
         }
@@ -901,6 +907,14 @@ table 11733 "Cash Document Line CZP"
             begin
                 TestField("Gen. Posting Type", "Gen. Posting Type"::Purchase);
             end;
+        }
+        field(80; "Attached to Line No."; Integer)
+        {
+            Caption = 'Attached to Line No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+            TableRelation = "Cash Document Line CZP"."Line No." where("Cash Desk No." = field("Cash Desk No."),
+                                                                    "Cash Document No." = field("Cash Document No."));
         }
         field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
         {
@@ -1169,6 +1183,17 @@ table 11733 "Cash Document Line CZP"
             DataClassification = CustomerContent;
             TableRelation = "Allocation Account";
         }
+        field(7011; "Attached Lines Count"; Integer)
+        {
+            CalcFormula = count("Cash Document Line CZP" where("Cash Desk No." = field("Cash Desk No."),
+                                                    "Cash Document No." = field("Cash Document No."),
+                                                    "Attached to Line No." = field("Line No."),
+                                                    Amount = filter(<> 0)));
+            Caption = 'Attached Lines Count';
+            Editable = false;
+            FieldClass = FlowField;
+            BlankZero = true;
+        }
     }
 
     keys
@@ -1182,6 +1207,21 @@ table 11733 "Cash Document Line CZP"
             SumIndexFields = Amount, "Amount (LCY)", "Amount Including VAT", "Amount Including VAT (LCY)", "VAT Base Amount", "VAT Base Amount (LCY)", "VAT Amount", "VAT Amount (LCY)";
         }
     }
+
+    trigger OnDelete()
+    var
+        CashDocumentLineCZP: Record "Cash Document Line CZP";
+    begin
+        if "Line No." <> 0 then begin
+            CashDocumentLineCZP.Reset();
+            CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
+            CashDocumentLineCZP.SetRange("Cash Document No.", "Cash Document No.");
+            CashDocumentLineCZP.SetRange("Attached to Line No.", "Line No.");
+            CashDocumentLineCZP.SetFilter("Line No.", '<>%1', "Line No.");
+            OnDeleteOnAfterSetCashDocumentLineFilters(CashDocumentLineCZP);
+            CashDocumentLineCZP.DeleteAll(true);
+        end;
+    end;
 
     trigger OnInsert()
     begin
@@ -2100,6 +2140,11 @@ table 11733 "Cash Document Line CZP"
         TestField("Account Type", "Account Type"::"G/L Account");
     end;
 
+    procedure IsExtendedText(): Boolean
+    begin
+        exit(("Account Type" = "Account Type"::" ") and ("Attached to Line No." <> 0) and (Amount = 0));
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -2249,6 +2294,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCheckAccountTypeOnProjectValidation(var IsHandled: Boolean; var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDeleteOnAfterSetCashDocumentLineFilters(var CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
 }
