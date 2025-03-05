@@ -139,7 +139,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Amount Line", OnInsertLine, '', false, false)]
-    local procedure Set(var VATAmountLine: Record "VAT Amount Line"; var SkipZeroVatAmounts: Boolean)
+    local procedure SetInsertNotToSkipZeroVatAmounts(var VATAmountLine: Record "VAT Amount Line"; var SkipZeroVatAmounts: Boolean)
     var
         PEPPOLManagement: Codeunit "PEPPOL Management";
     begin
