@@ -7,6 +7,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Service.History;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Finance.VAT.Calculation;
 
 codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
 {
@@ -135,6 +136,15 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreatePEPPOLXMLDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"VAT Amount Line", OnInsertLine, '', false, false)]
+    local procedure Set(var VATAmountLine: Record "VAT Amount Line"; var SkipZeroVatAmounts: Boolean)
+    var
+        PEPPOLManagement: Codeunit "PEPPOL Management";
+    begin
+        if PEPPOLManagement.IsZeroVatCategory(VATAmountLine."Tax Category") then
+            SkipZeroVatAmounts := false;
     end;
 
     var
