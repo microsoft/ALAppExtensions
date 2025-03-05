@@ -42,6 +42,10 @@ codeunit 6212 "Sustainability Post Mgt"
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);
+        SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
+
+        if SustainabilityValueEntry."Item Ledger Entry Type" = SustainabilityValueEntry."Item Ledger Entry Type"::Transfer then
+            SustainabilityValueEntry."Valued Quantity" := Abs(SustainabilityValueEntry."Valued Quantity");
 
         if (ValueEntry."Order Type" = ValueEntry."Order Type"::Production) and
            (ValueEntry."Item Ledger Entry Type" in [ValueEntry."Item Ledger Entry Type"::Output, ValueEntry."Item Ledger Entry Type"::" "])

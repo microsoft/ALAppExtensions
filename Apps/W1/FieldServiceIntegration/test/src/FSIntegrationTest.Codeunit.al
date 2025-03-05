@@ -141,7 +141,7 @@ codeunit 139204 "FS Integration Test"
         InitSetup(false, '');
 
         // [GIVEN] Setup without Job Journal Template and Integration Type = Service.
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify();
 
         // [THEN] Validate that the connection is enabled without error message (regarding job journal).
@@ -193,7 +193,7 @@ codeunit 139204 "FS Integration Test"
         LibraryJob.CreateJobJournalTemplate(JobJournalTemplate);
         JobJournalTemplate.Insert();
         FSConnectionSetup."Job Journal Template" := JobJournalTemplate.Name;
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify();
 
         // [THEN] Validate that the connection is enabled without error message (regarding job journal).
@@ -253,7 +253,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Set Integration Type to "Service".
         // [THEN] Error message "Manual No. Series is required for Service integration." appears.
         FSConnectionSetup.Get();
-        asserterror FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Service);
+        asserterror FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::"Service and projects");
         Assert.ExpectedError('Please make sure that the No. Series setup is correct.');
     end;
 
@@ -274,7 +274,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Set Integration Type to "Project".
         // [THEN] No error message appears.
         FSConnectionSetup.Get();
-        FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Project);
+        FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Projects);
     end;
 
     [Test]
@@ -297,7 +297,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Field Service Integration is enabled.
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
         FSIntegrationTestLibrary.ResetConfiguration(FSConnectionSetup);
 
@@ -346,7 +346,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Service Managment Flag is set to false.
@@ -1121,7 +1121,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1154,7 +1154,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1187,7 +1187,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1220,7 +1220,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1256,7 +1256,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Service Header
@@ -1291,7 +1291,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1333,7 +1333,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1380,7 +1380,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1413,7 +1413,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is disabled
@@ -1446,7 +1446,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled

@@ -99,7 +99,7 @@ table 6623 "FS Connection Setup"
                 CRMConnectionSetupPage: Page "CRM Connection Setup";
             begin
                 if "Is Enabled" then begin
-                    if "Integration Type" <> "Integration Type"::Service then begin
+                    if "Integration Type" <> "Integration Type"::"Service and projects" then begin
                         TestField("Job Journal Template");
                         TestField("Job Journal Batch");
                     end;
@@ -724,6 +724,7 @@ table 6623 "FS Connection Setup"
         Validate("Hour Unit of Measure", SourceFSConnectionSetup."Hour Unit of Measure");
         Validate("Line Synch. Rule", SourceFSConnectionSetup."Line Synch. Rule");
         Validate("Line Post Rule", SourceFSConnectionSetup."Line Post Rule");
+        Validate("Integration Type", SourceFSConnectionSetup."Integration Type");
         Modify(true);
     end;
 
@@ -1061,12 +1062,12 @@ table 6623 "FS Connection Setup"
 
     internal procedure IsIntegrationTypeServiceEnabled(): Boolean
     begin
-        exit(IsEnabled() and ("Integration Type" = "Integration Type"::Service));
+        exit(IsEnabled() and ("Integration Type" = "Integration Type"::"Service and projects"));
     end;
 
     internal procedure IsIntegrationTypeProjectEnabled(): Boolean
     begin
-        exit(IsEnabled() and ("Integration Type" = "Integration Type"::Project));
+        exit(IsEnabled() and ("Integration Type" = "Integration Type"::Projects));
     end;
 
     internal procedure GetProxyVersion(): Integer

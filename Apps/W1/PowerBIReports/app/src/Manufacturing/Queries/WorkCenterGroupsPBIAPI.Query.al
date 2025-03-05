@@ -18,12 +18,8 @@ query 37012 "Work Center Groups - PBI API"
     {
         dataitem(workCenterGroup; "Work Center Group")
         {
-            column(code; Code)
-            {
-            }
-            column(name; Name)
-            {
-            }
+            column(code; Code) { }
+            column(name; Name) { }
         }
     }
 }

@@ -178,7 +178,9 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                 TempBankAccLedgerEntryMatchingBuffer.SetRange("Posting Date", FromDate, ToDate);
             end;
 
-            TempBankAccLedgerEntryMatchingBuffer.FindSet();
+            if not TempBankAccLedgerEntryMatchingBuffer.FindSet() then
+                exit(true);
+
             BuildBankRecLedgerEntries(LocaLedgerEntryLines, TempBankAccLedgerEntryMatchingBuffer, LocalCandidateEntryNos);
 
             // if ledger entry part of the prompt is small enough, we are done
@@ -544,10 +546,9 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                     LedgerEntryBufferFilterSet := true;
                 end;
 
-                if LedgerEntryBufferFilterSet then begin
-                    TempBankAccLedgerEntryMatchingBuffer.FindSet();
-                    BuildBankRecLedgerEntries(BankRecLedgerEntriesTxt, TempBankAccLedgerEntryMatchingBuffer, CandidateLedgerEntryNos);
-                end;
+                if LedgerEntryBufferFilterSet then
+                    if TempBankAccLedgerEntryMatchingBuffer.FindSet() then
+                        BuildBankRecLedgerEntries(BankRecLedgerEntriesTxt, TempBankAccLedgerEntryMatchingBuffer, CandidateLedgerEntryNos);
 
                 // if you were unable to set the filter, and your bank ledger entry list is not completely empty
                 // just let it be, we have some candidates and we go with them

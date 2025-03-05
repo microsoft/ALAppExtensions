@@ -1,9 +1,9 @@
 page 8090 "Contract Analysis Entries"
 {
     ApplicationArea = All;
-    Caption = 'Contract Analysis Entries';
+    Caption = 'Subscription Contract Analysis Entries';
     PageType = List;
-    SourceTable = "Contract Analysis Entry";
+    SourceTable = "Sub. Contr. Analysis Entry";
     UsageCategory = ReportsAndAnalysis;
     Editable = false;
 
@@ -17,41 +17,55 @@ page 8090 "Contract Analysis Entries"
                 {
                     ToolTip = 'Specifies the number of the entry assigned to it from the specified number series when it was created.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the contract to which the service is to be assigned.';
+                    ToolTip = 'Specifies the contract to which the Subscription Line is to be assigned.';
                 }
+#if not CLEAN26
                 field("Service Object Item No."; Rec."Service Object Item No.")
                 {
-                    ToolTip = 'Specifies the Item No. of the service object.';
+                    ToolTip = 'Specifies the Item No. of the Subscription.';
+                    ObsoleteReason = 'Replaced by field Service Object Source No.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+#endif
+                field("Service Object Source Type"; Rec."Sub. Header Source Type")
                 {
-                    ToolTip = 'Specifies the value of the Service Object Description field.';
+                    ToolTip = 'Specifies the Source Type of the Subscription.';
                 }
-                field("Service Commitment Entry No."; Rec."Service Commitment Entry No.")
+                field("Service Object Source No."; Rec."Sub. Header Source No.")
                 {
-                    ToolTip = 'Specifies the value of the Service Commitment Line No. field.';
+                    ToolTip = 'Specifies the Source No. of the Subscription.';
                 }
-                field("Package Code"; Rec."Package Code")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies the code of the service commitment package. If a vendor contract line has the same Service Object No. and Package Code as a customer contract line, the customer contract dimension value is copied to the vendor contract line.';
+                    ToolTip = 'Specifies the value of the Subscription Description field.';
+                }
+                field("Service Commitment Entry No."; Rec."Subscription Line Entry No.")
+                {
+                    ToolTip = 'Specifies the value of the Subscription Line Line No. field.';
+                }
+                field("Package Code"; Rec."Subscription Package Code")
+                {
+                    ToolTip = 'Specifies the code of the Subscription Package. If a Vendor Subscription Contract line has the same Subscription No. and Package Code as a Customer Subscription Contract line, the Customer Subscription Contract dimension value is copied to the Vendor Subscription Contract line.';
                 }
                 field(Template; Rec.Template)
                 {
-                    ToolTip = 'Specifies the code of the service commitment template.';
+                    ToolTip = 'Specifies the code of the Subscription Package Line Template.';
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
                 field("Next Billing Date"; Rec."Next Billing Date")
                 {
@@ -63,23 +77,23 @@ page 8090 "Contract Analysis Entries"
                 }
                 field("Calculation Base %"; Rec."Calculation Base %")
                 {
-                    ToolTip = 'Specifies the percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                 }
                 field("Price"; Rec."Price")
                 {
-                    ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                 }
                 field("Discount %"; Rec."Discount %")
                 {
-                    ToolTip = 'Specifies the percent of the discount for the service.';
+                    ToolTip = 'Specifies the percent of the discount for the Subscription Line.';
                 }
                 field("Discount Amount"; Rec."Discount Amount")
                 {
-                    ToolTip = 'Specifies the amount of the discount for the service.';
+                    ToolTip = 'Specifies the amount of the discount for the Subscription Line.';
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                 }
                 field("Analysis Date"; Rec."Analysis Date")
                 {
@@ -95,7 +109,7 @@ page 8090 "Contract Analysis Entries"
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
-                    ToolTip = 'Specifies for which period the Service Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Service Amount refers to.';
+                    ToolTip = 'Specifies for which period the Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Amount refers to.';
                 }
                 field("Invoicing Item No."; Rec."Invoicing Item No.")
                 {
@@ -103,35 +117,35 @@ page 8090 "Contract Analysis Entries"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Specifies whether the service will will be calculated as a credit (Purchase Invoice) or as debit (Sales Invoice).';
+                    ToolTip = 'Specifies whether the Subscription Line will will be calculated as a credit (Purchase Invoice) or as debit (Sales Invoice).';
                 }
                 field("Partner No."; Rec."Partner No.")
                 {
-                    ToolTip = 'Specifies the number of the partner who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the partner who will receive the contract components and be billed by default.';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the contract to which the service is to be assigned.';
+                    ToolTip = 'Specifies the contract to which the Subscription Line is to be assigned.';
                 }
-                field("Contract Line No."; Rec."Contract Line No.")
+                field("Contract Line No."; Rec."Subscription Contract Line No.")
                 {
                     ToolTip = 'Specifies the value of the Contract Line No. field.';
                 }
                 field("Notice Period"; Rec."Notice Period")
                 {
-                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the service commitment ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
+                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the Subscription Line ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
                 }
                 field("Initial Term"; Rec."Initial Term")
                 {
-                    ToolTip = 'Specifies a date formula for calculating the minimum term of the service commitment. If the minimum term is filled and no extension term is entered, the end of service commitment is automatically set to the end of the initial term.';
+                    ToolTip = 'Specifies a date formula for calculating the minimum term of the Subscription Line. If the minimum term is filled and no extension term is entered, the end of Subscription Line is automatically set to the end of the initial term.';
                 }
                 field("Extension Term"; Rec."Extension Term")
                 {
-                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of service is automatically set to the end of the initial term or notice period.';
+                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of Subscription Line is automatically set to the end of the initial term or notice period.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                 }
                 field("Cancellation Possible Until"; Rec."Cancellation Possible Until")
                 {
@@ -139,27 +153,31 @@ page 8090 "Contract Analysis Entries"
                 }
                 field("Term Until"; Rec."Term Until")
                 {
-                    ToolTip = 'Specifies the earliest regular date for the end of the service, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
+                    ToolTip = 'Specifies the earliest regular date for the end of the Subscription Line, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
+                }
+                field("Unit Cost (LCY)"; Rec."Unit Cost (LCY)")
+                {
+                    ToolTip = 'Specifies the unit cost of the item.';
                 }
                 field("Price (LCY)"; Rec."Price (LCY)")
                 {
-                    ToolTip = 'Specifies the price of the service in client currency related to quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line in client currency related to quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                 }
                 field("Discount Amount (LCY)"; Rec."Discount Amount (LCY)")
                 {
-                    ToolTip = 'Specifies the discount amount in client currency that is granted on the service.';
+                    ToolTip = 'Specifies the discount amount in client currency that is granted on the Subscription Line.';
                 }
-                field("Service Amount (LCY)"; Rec."Service Amount (LCY)")
+                field("Service Amount (LCY)"; Rec."Amount (LCY)")
                 {
-                    ToolTip = 'Specifies the amount in client currency for the service including discount.';
+                    ToolTip = 'Specifies the amount in client currency for the Subscription Line including discount.';
                 }
                 field("Currency Code"; Rec."Currency Code")
                 {
-                    ToolTip = 'Specifies the currency of amounts in the service.';
+                    ToolTip = 'Specifies the currency of amounts in the Subscription Line.';
                 }
                 field("Currency Factor"; Rec."Currency Factor")
                 {
-                    ToolTip = 'Specifies the currency factor valid for the service, which is used to convert amounts to the client currency.';
+                    ToolTip = 'Specifies the currency factor valid for the Subscription Line, which is used to convert amounts to the client currency.';
                 }
                 field("Currency Factor Date"; Rec."Currency Factor Date")
                 {
@@ -171,15 +189,15 @@ page 8090 "Contract Analysis Entries"
                 }
                 field(Discount; Rec.Discount)
                 {
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
-                field("Quantity Decimal"; Rec."Quantity Decimal")
+                field("Quantity Decimal"; Rec.Quantity)
                 {
                     ToolTip = 'Specifies the value of the Quantity field.';
                 }
                 field("Renewal Term"; Rec."Renewal Term")
                 {
-                    ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the service and can be changed manually.';
+                    ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the Subscription Line and can be changed manually.';
                 }
                 field("Dimension Set ID"; Rec."Dimension Set ID")
                 {

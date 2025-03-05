@@ -21,23 +21,23 @@ codeunit 139912 "Customer Deferrals Test"
         BillingTemplate: Record "Billing Template";
         CurrExchRate: Record "Currency Exchange Rate";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractDeferral: Record "Customer Contract Deferral";
-        SalesCrMemoDeferral: Record "Customer Contract Deferral";
-        SalesInvoiceDeferral: Record "Customer Contract Deferral";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
+        SalesCrMemoDeferral: Record "Cust. Sub. Contract Deferral";
+        SalesInvoiceDeferral: Record "Cust. Sub. Contract Deferral";
         GLSetup: Record "General Ledger Setup";
         GeneralPostingSetup: Record "General Posting Setup";
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         SalesCrMemoHeader: Record "Sales Header";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         UserSetup: Record "User Setup";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
@@ -246,7 +246,7 @@ codeunit 139912 "Customer Deferrals Test"
         PostSalesDocumentAndGetSalesInvoice();
         CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesCrMemoHeader);
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
-        SalesInvoiceLine.SetFilter("Contract Line No.", '<>0');
+        SalesInvoiceLine.SetFilter("Subscription Contract Line No.", '<>0');
         SalesInvoiceLine.FindLast();
         SalesLine.SetRange("Document No.", SalesCrMemoHeader."No.");
         SalesLine.SetRange(Type, SalesLine.Type::Item);
@@ -257,10 +257,10 @@ codeunit 139912 "Customer Deferrals Test"
         // [THEN] Matching Deferral entries have been created for the first invoice line but not for the second invoice line
         FetchCustomerContractDeferrals(CorrectedDocumentNo);
         SalesInvoiceLine.FindFirst();
-        CustomerContractDeferral.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+        CustomerContractDeferral.SetRange("Subscription Contract Line No.", SalesInvoiceLine."Subscription Contract Line No.");
         Assert.RecordIsNotEmpty(CustomerContractDeferral);
         SalesInvoiceLine.FindLast();
-        CustomerContractDeferral.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+        CustomerContractDeferral.SetRange("Subscription Contract Line No.", SalesInvoiceLine."Subscription Contract Line No.");
         Assert.RecordIsEmpty(CustomerContractDeferral);
     end;
 
@@ -282,22 +282,22 @@ codeunit 139912 "Customer Deferrals Test"
         GeneralPostingSetup.Get(Customer."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group");
 
         // After crediting expect this amount to be on GL Entry
-        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
 
-        // Release only first Customer Contract Deferral
+        // Release only first Customer Subscription Contract Deferral
         PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
-        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
 
         // Expect Amount on GL Account to be decreased by Released Customer Deferral
         ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
-        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
         Assert.AreEqual(GLAmountAfterInvoicing - CustomerContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
 
         SalesInvoiceHeader.Get(PostedDocumentNo);
         PostSalesCreditMemo();
 
-        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
         Assert.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
     end;
 
@@ -306,7 +306,7 @@ codeunit 139912 "Customer Deferrals Test"
     procedure ExpectAmountOnContractDeferralAccountToBeZeroForContractLinesWithDiscount()
     var
         GLEntry: Record "G/L Entry";
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         ContractDeferralsRelease: Report "Contract Deferrals Release";
         FinalGLAmount: Decimal;
         GLAmountAfterInvoicing: Decimal;
@@ -318,8 +318,8 @@ codeunit 139912 "Customer Deferrals Test"
         SetPostingAllowTo(0D);
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
 
-        // use discounts on Service Commitment
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        // use discounts on Subscription Line
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             ServiceCommitment.Validate("Discount %", 10);
@@ -334,24 +334,24 @@ codeunit 139912 "Customer Deferrals Test"
         GLEntry.DeleteAll(false);
 
         // After crediting expect this amount to be on GL Entry
-        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(StartingGLAmount, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
 
-        // Release only first Customer Contract Deferral
+        // Release only first Customer Subscription Contract Deferral
         PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
-        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(GLAmountAfterInvoicing, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
         GetGLEntryAmountFromAccountNo(GLLineDiscountAmountAfterInvoicing, GeneralPostingSetup."Sales Line Disc. Account");
         Assert.AreEqual(0, GLLineDiscountAmountAfterInvoicing, 'There should not be amount posted into Sales Line Discount Account.');
 
         // Expect Amount on GL Account to be decreased by Released Customer Deferral
         ContractDeferralsRelease.Run(); // ContractDeferralsReleaseRequestPageHandler
-        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(GLAmountAfterRelease, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
         Assert.AreEqual(GLAmountAfterInvoicing - CustomerContractDeferral.Amount, GLAmountAfterRelease, 'Amount was not moved from Deferrals Account to Contract Account');
 
         SalesInvoiceHeader.Get(PostedDocumentNo);
         PostSalesCreditMemo();
 
-        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Contr. Deferral Account");
+        GetGLEntryAmountFromAccountNo(FinalGLAmount, GeneralPostingSetup."Cust. Sub. Contr. Def Account");
         Assert.AreEqual(StartingGLAmount, FinalGLAmount, 'Released Contract Deferrals where not reversed properly.');
     end;
 
@@ -366,7 +366,7 @@ codeunit 139912 "Customer Deferrals Test"
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
-        // Release only first Customer Contract Deferral
+        // Release only first Customer Subscription Contract Deferral
         PostSalesDocumentAndFetchDeferrals();
         PostingDate := CustomerContractDeferral."Posting Date";
         ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
@@ -489,7 +489,7 @@ codeunit 139912 "Customer Deferrals Test"
         // Step 2 Release deferrals
         // Step 3 Correct posted sales invoice
         // Expectation:
-        // -Customer Contract Deferrals with opposite sign are created
+        // -Customer Subscription Contract Deferrals with opposite sign are created
         // -Invoice Contract Deferrals are released
         // -Credit Memo Contract Deferrals are released
         // -GL Entries are posted on the Credit Memo Posting date
@@ -582,7 +582,7 @@ codeunit 139912 "Customer Deferrals Test"
             ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
             CustomerContractDeferral.Get(CustomerContractDeferral."Entry No.");
             GLEntry.Get(CustomerContractDeferral."G/L Entry No.");
-            GLEntry.TestField("Sub. Contract No.", CustomerContractDeferral."Contract No.");
+            GLEntry.TestField("Subscription Contract No.", CustomerContractDeferral."Subscription Contract No.");
             FetchAndTestUpdatedCustomerContractDeferral(CustomerContractDeferral);
         until CustomerContractDeferral.Next() = 0;
     end;
@@ -599,7 +599,7 @@ codeunit 139912 "Customer Deferrals Test"
 
         // [GIVEN] Contract has been created and the billing proposal with non posted contract credit memo
         SetPostingAllowTo(0D);
-        CreateCustomerContractWithDeferrals('<2M-CM>', true, 1, true);
+        CreateCustomerContractWithDeferrals('<2M-CM>', true, 1, false);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
         // [WHEN] Post the credit memo
@@ -611,7 +611,7 @@ codeunit 139912 "Customer Deferrals Test"
             ContractDeferralsRelease.Run();  // ContractDeferralsReleaseRequestPageHandler
             CustomerContractDeferral.Get(CustomerContractDeferral."Entry No.");
             GLEntry.Get(CustomerContractDeferral."G/L Entry No.");
-            GLEntry.TestField("Sub. Contract No.", CustomerContractDeferral."Contract No.");
+            GLEntry.TestField("Subscription Contract No.", CustomerContractDeferral."Subscription Contract No.");
             FetchAndTestUpdatedCustomerContractDeferral(CustomerContractDeferral);
         until CustomerContractDeferral.Next() = 0;
     end;
@@ -697,7 +697,12 @@ codeunit 139912 "Customer Deferrals Test"
         CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1, false);
     end;
 
-    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommitmentCount: Integer; Discount: Boolean)
+    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; UseInvoicingItem: Boolean)
+    begin
+        CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1, UseInvoicingItem);
+    end;
+
+    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommitmentCount: Integer; UseInvoicingItem: Boolean)
     var
         i: Integer;
     begin
@@ -705,16 +710,16 @@ codeunit 139912 "Customer Deferrals Test"
             ContractTestLibrary.CreateCustomerInLCY(Customer)
         else
             ContractTestLibrary.CreateCustomer(Customer);
-        if Discount then
-            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item")
+        if UseInvoicingItem then
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item")
         else
-            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+            ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         Item.Validate("Unit Price", 1200);
         Item.Modify(false);
 
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item."No.");
 
-        ServiceObject.Validate("Quantity Decimal", 1);
+        ServiceObject.Validate(Quantity, 1);
         ServiceObject.SetHideValidationDialog(true);
         ServiceObject.Validate("End-User Customer No.", Customer."No.");
         ServiceObject.Modify(false);
@@ -727,10 +732,10 @@ codeunit 139912 "Customer Deferrals Test"
         end;
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Source No."));
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(CalcDate(BillingDateFormula, WorkDate()), ServiceCommitmentPackage);
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
     end;
 
     local procedure CreateSalesDocumentsFromCustomerContractWODeferrals()
@@ -742,9 +747,9 @@ codeunit 139912 "Customer Deferrals Test"
         CustomerContract.Modify(false);
     end;
 
-    local procedure FetchAndTestUpdatedCustomerContractDeferral(CustomerDeferrals: Record "Customer Contract Deferral")
+    local procedure FetchAndTestUpdatedCustomerContractDeferral(CustomerDeferrals: Record "Cust. Sub. Contract Deferral")
     var
-        UpdatedCustomerContractDeferral: Record "Customer Contract Deferral";
+        UpdatedCustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
     begin
         UpdatedCustomerContractDeferral.Get(CustomerDeferrals."Entry No.");
         Assert.AreNotEqual(PrevGLEntry, UpdatedCustomerContractDeferral."G/L Entry No.", 'G/L Entry No. is not properly assigned');
@@ -847,24 +852,24 @@ codeunit 139912 "Customer Deferrals Test"
 
     local procedure TestCustomerContractDeferralsFields()
     begin
-        CustomerContractDeferral.TestField("Contract No.", BillingLine."Contract No.");
+        CustomerContractDeferral.TestField("Subscription Contract No.", BillingLine."Subscription Contract No.");
         CustomerContractDeferral.TestField("Document No.", PostedDocumentNo);
         CustomerContractDeferral.TestField("Customer No.", SalesHeader."Sell-to Customer No.");
         CustomerContractDeferral.TestField("Bill-to Customer No.", SalesHeader."Bill-to Customer No.");
         CustomerContractDeferral.TestField("Document Posting Date", SalesHeader."Posting Date");
     end;
 
-    local procedure TestGLEntryFields(EntryNo: Integer; UpdatedCustomerContractDeferral: Record "Customer Contract Deferral")
+    local procedure TestGLEntryFields(EntryNo: Integer; UpdatedCustomerContractDeferral: Record "Cust. Sub. Contract Deferral")
     var
         GLEntry: Record "G/L Entry";
     begin
         GLEntry.Get(EntryNo);
         GLEntry.TestField("Document No.", UpdatedCustomerContractDeferral."Document No.");
         GLEntry.TestField("Dimension Set ID", UpdatedCustomerContractDeferral."Dimension Set ID");
-        GLEntry.TestField("Sub. Contract No.", UpdatedCustomerContractDeferral."Contract No.");
+        GLEntry.TestField("Subscription Contract No.", UpdatedCustomerContractDeferral."Subscription Contract No.");
     end;
 
-    local procedure TestSalesInvoiceDeferralsReleasedFields(DeferralsToTest: Record "Customer Contract Deferral"; DocumentPostingDate: Date)
+    local procedure TestSalesInvoiceDeferralsReleasedFields(DeferralsToTest: Record "Cust. Sub. Contract Deferral"; DocumentPostingDate: Date)
     begin
         DeferralsToTest.TestField("Release Posting Date", DocumentPostingDate);
         DeferralsToTest.TestField(Released, true);

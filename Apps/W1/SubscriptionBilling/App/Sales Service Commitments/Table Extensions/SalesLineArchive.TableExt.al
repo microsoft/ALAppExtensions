@@ -7,11 +7,11 @@ tableextension 8068 "Sales Line Archive" extends "Sales Line Archive"
 {
     fields
     {
-        field(8055; "Service Commitments"; Integer)
+        field(8055; "Subscription Lines"; Integer)
         {
-            Caption = 'Service Commitments';
+            Caption = 'Subscription Lines';
             FieldClass = FlowField;
-            CalcFormula = count("Sales Service Comm. Archive" where("Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No."), "Doc. No. Occurrence" = field("Doc. No. Occurrence"), "Version No." = field("Version No.")));
+            CalcFormula = count("Sales Sub. Line Archive" where("Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No."), "Doc. No. Occurrence" = field("Doc. No. Occurrence"), "Version No." = field("Version No.")));
             Editable = false;
         }
         field(8059; "Exclude from Doc. Total"; Boolean)
@@ -21,7 +21,7 @@ tableextension 8068 "Sales Line Archive" extends "Sales Line Archive"
         }
         modify("No.")
         {
-            TableRelation = if (Type = const("Service Object")) "Service Object";
+            TableRelation = if (Type = const("Service Object")) "Subscription Header";
 
         }
     }
@@ -33,7 +33,7 @@ tableextension 8068 "Sales Line Archive" extends "Sales Line Archive"
 
     local procedure DeleteSalesServiceCommitmentArchive(var SalesLineArchive: Record "Sales Line Archive")
     var
-        SalesServiceCommArchive: Record "Sales Service Comm. Archive";
+        SalesServiceCommArchive: Record "Sales Sub. Line Archive";
     begin
         if SalesLineArchive.IsTemporary() then
             exit;

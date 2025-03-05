@@ -38,45 +38,45 @@ table 8061 "Billing Line"
             TableRelation = if (Partner = const(Customer)) Customer else
             if (Partner = const(Vendor)) Vendor;
         }
-        field(20; "Contract No."; Code[20])
+        field(20; "Subscription Contract No."; Code[20])
         {
-            Caption = 'Contract No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract" else
-            if (Partner = const(Vendor)) "Vendor Contract";
+            Caption = 'Subscription Contract No.';
+            TableRelation = if (Partner = const(Customer)) "Customer Subscription Contract" else
+            if (Partner = const(Vendor)) "Vendor Subscription Contract";
         }
-        field(21; "Contract Line No."; Integer)
+        field(21; "Subscription Contract Line No."; Integer)
         {
-            Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
-            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            Caption = 'Subscription Contract Line No.';
+            TableRelation = if (Partner = const(Customer)) "Cust. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No.")) else
+            if (Partner = const(Vendor)) "Vend. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No."));
         }
-        field(30; "Service Object No."; Code[20])
+        field(30; "Subscription Header No."; Code[20])
         {
-            Caption = 'Service Object No.';
-            TableRelation = "Service Object";
+            Caption = 'Subscription No.';
+            TableRelation = "Subscription Header";
         }
-        field(31; "Service Commitment Entry No."; Integer)
+        field(31; "Subscription Line Entry No."; Integer)
         {
-            Caption = 'Service Commitment Entry No.';
+            Caption = 'Subscription Line Entry No.';
         }
-        field(32; "Service Object Description"; Text[100])
+        field(32; "Subscription Description"; Text[100])
         {
-            Caption = 'Service Object Description';
+            Caption = 'Subscription Description';
             FieldClass = FlowField;
-            CalcFormula = lookup("Service Object".Description where("No." = field("Service Object No.")));
+            CalcFormula = lookup("Subscription Header".Description where("No." = field("Subscription Header No.")));
             Editable = false;
         }
-        field(33; "Service Commitment Description"; Text[100])
+        field(33; "Subscription Line Description"; Text[100])
         {
-            Caption = 'Service Commitment Description';
+            Caption = 'Subscription Line Description';
         }
-        field(34; "Service Start Date"; Date)
+        field(34; "Subscription Line Start Date"; Date)
         {
-            Caption = 'Service Start Date';
+            Caption = 'Subscription Line Start Date';
         }
-        field(35; "Service End Date"; Date)
+        field(35; "Subscription Line End Date"; Date)
         {
-            Caption = 'Service End Date';
+            Caption = 'Subscription Line End Date';
         }
         field(36; Partner; Enum "Service Partner")
         {
@@ -86,7 +86,7 @@ table 8061 "Billing Line"
         {
             Caption = 'Discount';
         }
-        field(39; "Service Obj. Quantity Decimal"; Decimal)
+        field(39; "Service Object Quantity"; Decimal)
         {
             Caption = 'Quantity';
         }
@@ -98,9 +98,9 @@ table 8061 "Billing Line"
         {
             Caption = 'Billing to';
         }
-        field(52; "Service Amount"; Decimal)
+        field(52; Amount; Decimal)
         {
-            Caption = 'Service Amount';
+            Caption = 'Amount';
             BlankZero = true;
             AutoFormatType = 2;
         }
@@ -178,6 +178,18 @@ table 8061 "Billing Line"
             Caption = 'Code';
             TableRelation = Currency.Code;
         }
+        field(102; "Unit Cost"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 2;
+            Caption = 'Unit Cost';
+            Editable = false;
+        }
+        field(103; "Unit Cost (LCY)"; Decimal)
+        {
+            AutoFormatType = 2;
+            Caption = 'Unit Cost (LCY)';
+        }
         field(200; Indent; Integer)
         {
             Caption = 'Indent';
@@ -185,6 +197,10 @@ table 8061 "Billing Line"
         field(201; "Detail Overview"; Enum "Contract Detail Overview")
         {
             Caption = 'Detail Overview';
+        }
+        field(202; Rebilling; Boolean)
+        {
+            Caption = 'Rebilling';
         }
     }
 
@@ -194,13 +210,13 @@ table 8061 "Billing Line"
         {
             Clustered = true;
         }
-        key(SK1; "Service Object No.", "Service Commitment Entry No.", "Billing to")
+        key(SK1; "Subscription Header No.", "Subscription Line Entry No.", "Billing to")
         {
         }
-        key(SK2; "Partner No.", "Contract No.", "Contract Line No.", "Billing from")
+        key(SK2; "Partner No.", "Subscription Contract No.", "Subscription Contract Line No.", "Billing from")
         {
         }
-        key(SK3; "Contract No.", "Contract Line No.", "Billing from")
+        key(SK3; "Subscription Contract No.", "Subscription Contract Line No.", "Billing from")
         {
         }
     }
@@ -215,36 +231,39 @@ table 8061 "Billing Line"
         if (BillingLine2."Entry No." = "Entry No.") then
             ResetServiceCommitmentNextBillingDate()
         else
-            Error(OnlyLastServiceLineCanBeDeletedErr, "Service Object No.");
+            Error(OnlyLastServiceLineCanBeDeletedErr, "Subscription Header No.");
         RecalculateCustomerContractHarmonizedBillingFields();
     end;
 
     var
         PageManagement: Codeunit "Page Management";
-        DocumentExistsErr: Label 'There is an unposted invoice or credit memo for the service commitment. Please delete this document before updating the data.';
-        OnlyLastServiceLineCanBeDeletedErr: Label 'Only last Billing Line for service can be deleted or all Billing Lines. Please make your selection accordingly or use the "Clear Billing Proposal" action. (%1)';
+        DocumentExistsErr: Label 'There is an unposted invoice or credit memo for the Subscription Line. Please delete this document before updating the data.';
+        OnlyLastServiceLineCanBeDeletedErr: Label 'Only last Billing Line for Subscription Line can be deleted or all Billing Lines. Please make your selection accordingly or use the "Clear Billing Proposal" action. (%1)';
         CannotDeleteBillingLinesWithDocumentNoErr: Label 'Billing line connected with a sales/purchase document cannot be deleted.';
 
     internal procedure FindFirstBillingLineForServiceCommitment(var BillingLine2: Record "Billing Line")
     begin
-        BillingLine2.SetCurrentKey("Service Object No.", "Service Commitment Entry No.", "Billing to");
+        BillingLine2.SetCurrentKey("Subscription Header No.", "Subscription Line Entry No.", "Billing to");
         BillingLine2.SetAscending("Billing to", false);
-        BillingLine2.SetRange("Service Object No.", "Service Object No.");
-        BillingLine2.SetRange("Service Commitment Entry No.", "Service Commitment Entry No.");
+        BillingLine2.SetRange("Subscription Header No.", "Subscription Header No.");
+        BillingLine2.SetRange("Subscription Line Entry No.", "Subscription Line Entry No.");
         BillingLine2.FindFirst();
     end;
 
     internal procedure ResetServiceCommitmentNextBillingDate()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
         GetServiceCommitment(ServiceCommitment);
 
-        OnBeforeUpdateNextBillingDateInResetServiceCommitmentNextBillingDate(ServiceCommitment);
+        OnBeforeUpdateNextBillingDateInResetSubscriptionLineNextBillingDate(ServiceCommitment);
         if ("Document Type" = "Document Type"::"Credit Memo") and ("Correction Document Type" <> "Rec. Billing Document Type"::None) then
             ServiceCommitment.UpdateNextBillingDate("Billing to")
         else
             ServiceCommitment.UpdateNextBillingDate("Billing from" - 1);
+
+        //Update next billing to date to last invoiced date from metadata if the billing line being deleted is rebilling
+        UpdateNextBillingDateFromUsageDataMetadata(ServiceCommitment);
         ServiceCommitment.Modify(false);
     end;
 
@@ -269,9 +288,9 @@ table 8061 "Billing Line"
         BillingLine: Record "Billing Line";
     begin
         BillingLine.Copy(Rec);
-        BillingLine.SetRange("Contract No.", Rec."Contract No.");
-        BillingLine.CalcSums("Service Amount");
-        exit(BillingLine."Service Amount");
+        BillingLine.SetRange("Subscription Contract No.", Rec."Subscription Contract No.");
+        BillingLine.CalcSums(Amount);
+        exit(BillingLine.Amount);
     end;
 
     internal procedure GetSalesDocumentTypeForCustomerNo() SalesDocumentType: Enum "Sales Document Type"
@@ -300,8 +319,8 @@ table 8061 "Billing Line"
         if UseDetailOverviewFilter then
             BillingLine.SetRange("Detail Overview", Rec."Detail Overview");
         BillingLine.SetRange("Currency Code", Rec."Currency Code");
-        BillingLine.CalcSums("Service Amount");
-        exit(BillingLine."Service Amount");
+        BillingLine.CalcSums(Amount);
+        exit(BillingLine.Amount);
     end;
 
     local procedure GetSalesDocumentTypeForAmount(Amount: Decimal) SalesDocumentType: Enum "Sales Document Type"
@@ -407,22 +426,22 @@ table 8061 "Billing Line"
     internal procedure FilterBillingLineOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
     begin
         Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Contract No.", ContractNo);
+        Rec.SetRange("Subscription Contract No.", ContractNo);
     end;
 
     internal procedure FilterBillingLineOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
     begin
         Rec.FilterBillingLineOnContract(ServicePartner, ContractNo);
-        Rec.SetRange("Contract Line No.", ContractLineNo);
+        Rec.SetRange("Subscription Contract Line No.", ContractLineNo);
     end;
 
     local procedure RecalculateCustomerContractHarmonizedBillingFields()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         if Rec.IsPartnerVendor() then
             exit;
-        CustomerContract.Get(Rec."Contract No.");
+        CustomerContract.Get(Rec."Subscription Contract No.");
         CustomerContract.RecalculateHarmonizedBillingFieldsBasedOnNextBillingDate(0);
     end;
 
@@ -457,12 +476,42 @@ table 8061 "Billing Line"
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeUpdateNextBillingDateInResetServiceCommitmentNextBillingDate(var ServiceCommitment: Record "Service Commitment")
+    local procedure OnBeforeUpdateNextBillingDateInResetSubscriptionLineNextBillingDate(var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    local procedure GetServiceCommitment(var ServiceCommitment: Record "Service Commitment")
+    local procedure GetServiceCommitment(var ServiceCommitment: Record "Subscription Line")
     begin
-        ServiceCommitment.Get("Service Commitment Entry No.");
+        ServiceCommitment.Get("Subscription Line Entry No.");
+    end;
+
+    local procedure UpdateNextBillingDateFromUsageDataMetadata(var ServiceCommitment: Record "Subscription Line")
+    var
+        UsageDataBilling: Record "Usage Data Billing";
+        UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
+        SupplierChargeEndDate: date;
+    begin
+        if not ServiceCommitment.IsUsageBasedBillingValid() then
+            exit;
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Rec.Partner, UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(Rec."Document Type"), Rec."Document No.");
+        if not UsageDataBilling.FindFirst() then
+            exit;
+        if UsageDataBilling.Rebilling then begin
+            SupplierChargeEndDate := ServiceCommitment.GetSupplierChargeStartDateIfRebillingMetadataExist(Rec."Billing from");
+            if SupplierChargeEndDate <> 0D then
+                ServiceCommitment."Next Billing Date" := SupplierChargeEndDate;
+        end;
+    end;
+
+    internal procedure RebillingUsageDataExist(): Boolean
+    var
+        UsageDataBilling: Record "Usage Data Billing";
+    begin
+        UsageDataBilling.SetRange("Subscription Header No.", Rec."Subscription Header No.");
+        UsageDataBilling.SetRange("Subscription Line Entry No.", Rec."Subscription Line Entry No.");
+        UsageDataBilling.SetRange("Charge Start Date", Rec."Billing from");
+        UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
+        UsageDataBilling.SetRange(Rebilling, true);
+        exit(not UsageDataBilling.IsEmpty());
     end;
 }

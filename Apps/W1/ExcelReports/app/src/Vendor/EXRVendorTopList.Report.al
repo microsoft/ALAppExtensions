@@ -48,6 +48,7 @@ report 4404 "EXR Vendor Top List"
     {
         AboutTitle = 'About Vendor - Top List (Excel)';
         AboutText = 'Analyze the effect of vendors on cash flow, and prioritize vendor payments. Amounts are shown in local currency (LCY).';
+
         SaveValues = true;
         layout
         {
@@ -75,6 +76,14 @@ report 4404 "EXR Vendor Top List"
                         Caption = 'Quantity';
                         ToolTip = 'Specifies the number of vendors that will be included in the report.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the EXR Top Vendor Report Buffer.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -83,6 +92,11 @@ report 4404 "EXR Vendor Top List"
         begin
             NoOfRecordsToPrint := 10;
             ChangeShowType(GlobalExtTopVendorReportBuffer."Ranking Based On"::"Purchases (LCY)");
+        end;
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TopVendorData.GetFilter("Date Filter");
         end;
     }
     rendering
@@ -100,11 +114,22 @@ report 4404 "EXR Vendor Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopVendorListLabel = 'Top Vendor List';
-        DateFilterLabel = 'Date Filter Label:';
+        TopVendorListPrint = 'Top Vendor List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TopVendorListAnalysis = 'Top Vendor List (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         GlobalExtTopVendorReportBuffer: Record "EXR Top Vendor Report Buffer";

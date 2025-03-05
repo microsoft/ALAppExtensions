@@ -8,10 +8,10 @@ codeunit 8009 "Price Update Management"
         LastGroupByValue: Code[20];
         LastGroupEntryNo: Integer;
 
-    internal procedure InitTempTable(var TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary; GroupBy: Enum "Contract Billing Grouping")
+    internal procedure InitTempTable(var TempContractPriceUpdateLine: Record "Sub. Contr. Price Update Line" temporary; GroupBy: Enum "Contract Billing Grouping")
     var
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
-        TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
+        TempContractPriceUpdateLine2: Record "Sub. Contr. Price Update Line" temporary;
     begin
         TempContractPriceUpdateLine2.CopyFilters(TempContractPriceUpdateLine);
         ContractPriceUpdateLine.CopyFilters(TempContractPriceUpdateLine);
@@ -31,13 +31,13 @@ codeunit 8009 "Price Update Management"
         TempContractPriceUpdateLine.CopyFilters(TempContractPriceUpdateLine2);
     end;
 
-    local procedure SetKeysForGrouping(var ContractPriceUpdateLine: Record "Contract Price Update Line"; var TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary; GroupBy: Enum "Contract Billing Grouping")
+    local procedure SetKeysForGrouping(var ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line"; var TempContractPriceUpdateLine: Record "Sub. Contr. Price Update Line" temporary; GroupBy: Enum "Contract Billing Grouping")
     begin
         case GroupBy of
             GroupBy::Contract:
                 begin
-                    ContractPriceUpdateLine.SetCurrentKey(Partner, "Contract No.");
-                    TempContractPriceUpdateLine.SetCurrentKey(Partner, "Contract No.");
+                    ContractPriceUpdateLine.SetCurrentKey(Partner, "Subscription Contract No.");
+                    TempContractPriceUpdateLine.SetCurrentKey(Partner, "Subscription Contract No.");
                 end;
             GroupBy::"Contract Partner":
                 begin
@@ -50,7 +50,7 @@ codeunit 8009 "Price Update Management"
         LastGroupByValue := '';
     end;
 
-    local procedure CreateGroupingLine(var TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary; ContractPriceUpdateLine: Record "Contract Price Update Line"; GroupBy: Enum "Contract Billing Grouping")
+    local procedure CreateGroupingLine(var TempContractPriceUpdateLine: Record "Sub. Contr. Price Update Line" temporary; ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line"; GroupBy: Enum "Contract Billing Grouping")
     begin
         if GroupingLineShouldBeInserted(ContractPriceUpdateLine, GroupBy) then begin
             TempContractPriceUpdateLine.Init();
@@ -59,21 +59,21 @@ codeunit 8009 "Price Update Management"
             TempContractPriceUpdateLine.Partner := ContractPriceUpdateLine.Partner;
             TempContractPriceUpdateLine."Partner No." := ContractPriceUpdateLine."Partner No.";
             TempContractPriceUpdateLine."Partner Name" := ContractPriceUpdateLine."Partner Name";
-            TempContractPriceUpdateLine."Contract Description" := ContractPriceUpdateLine."Contract Description";
+            TempContractPriceUpdateLine."Sub. Contract Description" := ContractPriceUpdateLine."Sub. Contract Description";
             if GroupBy = GroupBy::Contract then
-                TempContractPriceUpdateLine."Contract No." := ContractPriceUpdateLine."Contract No.";
+                TempContractPriceUpdateLine."Subscription Contract No." := ContractPriceUpdateLine."Subscription Contract No.";
             TempContractPriceUpdateLine.Indent := 0;
             TempContractPriceUpdateLine.Insert(false);
         end;
     end;
 
-    local procedure GroupingLineShouldBeInserted(ContractPriceUpdateLine: Record "Contract Price Update Line"; GroupBy: Enum "Contract Billing Grouping") InsertLine: Boolean
+    local procedure GroupingLineShouldBeInserted(ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line"; GroupBy: Enum "Contract Billing Grouping") InsertLine: Boolean
     var
         NewGroupByValue: Code[20];
     begin
         case GroupBy of
             GroupBy::Contract:
-                NewGroupByValue := ContractPriceUpdateLine."Contract No.";
+                NewGroupByValue := ContractPriceUpdateLine."Subscription Contract No.";
             GroupBy::"Contract Partner":
                 NewGroupByValue := ContractPriceUpdateLine."Partner No.";
         end;
@@ -107,9 +107,9 @@ codeunit 8009 "Price Update Management"
             Error(NoIncludeContractLinesUpToDateErr);
     end;
 
-    internal procedure GetAndApplyFiltersOnServiceCommitment(var ServiceCommitment: Record "Service Commitment"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    internal procedure GetAndApplyFiltersOnServiceCommitment(var ServiceCommitment: Record "Subscription Line"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     var
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        TempServiceCommitment: Record "Subscription Line" temporary;
         ServiceObjectFilterText: Text;
         ServiceCommitmentFilterText: Text;
         ContractFilterText: Text;
@@ -117,12 +117,12 @@ codeunit 8009 "Price Update Management"
         ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
         InitTempServiceCommitmentTable(ServiceCommitment, TempServiceCommitment);
 
-        if PriceUpdateTemplate."Contract Filter".HasValue() then
-            ContractFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Contract Filter"));
-        if PriceUpdateTemplate."Service Object Filter".HasValue() then
-            ServiceObjectFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Service Object Filter"));
-        if PriceUpdateTemplate."Service Commitment Filter".HasValue() then
-            ServiceCommitmentFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Service Commitment Filter"));
+        if PriceUpdateTemplate."Subscription Contract Filter".HasValue() then
+            ContractFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Subscription Contract Filter"));
+        if PriceUpdateTemplate."Subscription Filter".HasValue() then
+            ServiceObjectFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Subscription Filter"));
+        if PriceUpdateTemplate."Subscription Line Filter".HasValue() then
+            ServiceCommitmentFilterText := PriceUpdateTemplate.ReadFilter(PriceUpdateTemplate.FieldNo("Subscription Line Filter"));
 
         if ServiceCommitmentFilterText <> '' then begin
             ServiceCommitment.SetView(ServiceCommitmentFilterText);
@@ -139,21 +139,21 @@ codeunit 8009 "Price Update Management"
         end;
 
         MarkServiceCommitmentsFromTempTable(ServiceCommitment, TempServiceCommitment);
-        OnAfterFilterServiceCommitmentOnAfterGetAndApplyFiltersOnServiceCommitment(ServiceCommitment);
+        OnAfterFilterSubscriptionLineOnAfterGetAndApplyFiltersOnSubscriptionLine(ServiceCommitment);
     end;
 
-    local procedure ApplyDefaultFiltering(var ServiceCommitment: Record "Service Commitment"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure ApplyDefaultFiltering(var ServiceCommitment: Record "Subscription Line"; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     begin
         ServiceCommitment.SetRange(Partner, PriceUpdateTemplate.Partner);
         ServiceCommitment.SetRange("Exclude from Price Update", false);
         ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
         ServiceCommitment.SetFilter("Next Price Update", '<=%1|%2', IncludeServiceCommitmentUpToDate, 0D);
-        ServiceCommitment.SetRange("Planned Serv. Comm. exists", false);
+        ServiceCommitment.SetRange("Planned Sub. Line exists", false);
         ServiceCommitment.SetRange("Usage Based Billing", false);
         ServiceCommitment.SetRange(Closed, false);
     end;
 
-    local procedure InitTempServiceCommitmentTable(ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure InitTempServiceCommitmentTable(ServiceCommitment: Record "Subscription Line"; var TempServiceCommitment: Record "Subscription Line" temporary)
     begin
         TempServiceCommitment.Reset();
         TempServiceCommitment.DeleteAll(false);
@@ -164,7 +164,7 @@ codeunit 8009 "Price Update Management"
             until ServiceCommitment.Next() = 0;
     end;
 
-    local procedure FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure FindAndMarkMatchedAndDeleteUnmarkedServiceCommitment(var ServiceCommitment: Record "Subscription Line"; var TempServiceCommitment: Record "Subscription Line" temporary)
     begin
         if ServiceCommitment.FindSet() then
             repeat
@@ -174,7 +174,7 @@ codeunit 8009 "Price Update Management"
         DeleteUnmarkedTempServiceCommitment(TempServiceCommitment);
     end;
 
-    local procedure DeleteUnmarkedTempServiceCommitment(var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure DeleteUnmarkedTempServiceCommitment(var TempServiceCommitment: Record "Subscription Line" temporary)
     begin
         if TempServiceCommitment.FindSet() then
             repeat
@@ -184,30 +184,30 @@ codeunit 8009 "Price Update Management"
         TempServiceCommitment.Reset();
     end;
 
-    local procedure FilterAndMarkServiceCommitmentOnServiceObject(var ServiceCommitment: Record "Service Commitment"; ServiceObjectFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure FilterAndMarkServiceCommitmentOnServiceObject(var ServiceCommitment: Record "Subscription Line"; ServiceObjectFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
     begin
         ServiceCommitment.Reset();
         ServiceObject.SetView(ServiceObjectFilterText);
         ServiceObject.SetLoadFields("No.");
         if ServiceObject.FindSet() then
             repeat
-                ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+                ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
                 ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
                 if ServiceCommitment.FindSet() then
                     repeat
                         ServiceCommitment.Mark(true);
                     until ServiceCommitment.Next() = 0;
             until ServiceObject.Next() = 0;
-        ServiceCommitment.SetRange("Service Object No.");
+        ServiceCommitment.SetRange("Subscription Header No.");
         ServiceCommitment.MarkedOnly(true);
     end;
 
-    local procedure FilterAndMarkServiceCommitmentOnContract(var ServiceCommitment: Record "Service Commitment"; ContractFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure FilterAndMarkServiceCommitmentOnContract(var ServiceCommitment: Record "Subscription Line"; ContractFilterText: Text; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     var
-        VendorContract: Record "Vendor Contract";
-        CustomerContract: Record "Customer Contract";
+        VendorContract: Record "Vendor Subscription Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         ServiceCommitment.Reset();
         case PriceUpdateTemplate.Partner of
@@ -229,11 +229,11 @@ codeunit 8009 "Price Update Management"
                 end;
         end;
         ServiceCommitment.SetRange(Partner);
-        ServiceCommitment.SetRange("Contract No.");
+        ServiceCommitment.SetRange("Subscription Contract No.");
         ServiceCommitment.MarkedOnly(true);
     end;
 
-    local procedure ApplyContractFilterAndMarkServiceCommitment(var ServiceCommitment: Record "Service Commitment"; ContractNo: Code[20]; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
+    local procedure ApplyContractFilterAndMarkServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ContractNo: Code[20]; PriceUpdateTemplate: Record "Price Update Template"; IncludeServiceCommitmentUpToDate: Date)
     begin
         ServiceCommitment.FilterOnContract(PriceUpdateTemplate.Partner, ContractNo);
         ApplyDefaultFiltering(ServiceCommitment, PriceUpdateTemplate, IncludeServiceCommitmentUpToDate);
@@ -243,7 +243,7 @@ codeunit 8009 "Price Update Management"
             until ServiceCommitment.Next() = 0;
     end;
 
-    local procedure MarkServiceCommitmentsFromTempTable(var ServiceCommitment: Record "Service Commitment"; var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure MarkServiceCommitmentsFromTempTable(var ServiceCommitment: Record "Subscription Line"; var TempServiceCommitment: Record "Subscription Line" temporary)
     begin
         ServiceCommitment.Reset();
         if TempServiceCommitment.FindSet() then
@@ -256,7 +256,7 @@ codeunit 8009 "Price Update Management"
 
     internal procedure DeleteProposal(PriceUpdateTemplateCode: Code[20])
     var
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
         ClearContractPriceUpdateProposalOptionsTxt: Label 'All Price Update Lines, Only current Price Update Template';
         ClearContractPriceUpdateProposalQst: Label 'Which Price Update lines(s) should be deleted?';
         StrMenuResponse: Integer;
@@ -275,7 +275,7 @@ codeunit 8009 "Price Update Management"
         end;
     end;
 
-    internal procedure DeleteContractPriceUpdateLines(var ContractPriceUpdateLine: Record "Contract Price Update Line")
+    internal procedure DeleteContractPriceUpdateLines(var ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line")
     begin
         if not ContractPriceUpdateLine.IsEmpty() then
             ContractPriceUpdateLine.DeleteAll(true)
@@ -283,7 +283,7 @@ codeunit 8009 "Price Update Management"
 
     internal procedure PerformPriceUpdate()
     var
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
     begin
         if ContractPriceUpdateLine.FindSet() then
             repeat
@@ -294,7 +294,7 @@ codeunit 8009 "Price Update Management"
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnAfterFilterServiceCommitmentOnAfterGetAndApplyFiltersOnServiceCommitment(var ServiceCommitment: Record "Service Commitment")
+    local procedure OnAfterFilterSubscriptionLineOnAfterGetAndApplyFiltersOnSubscriptionLine(var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 }

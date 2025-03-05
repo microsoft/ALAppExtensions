@@ -82,6 +82,30 @@ report 4405 "EXR Trial Balance Excel"
         SaveValues = true;
         AboutTitle = 'About Trial Balance (Excel)';
         AboutText = 'View a snapshot of your chart of accounts at a given point to check the debit and credit net change and closing balance. You can see the trial balance in both your local currency (LCY) and additional reporting currency (ACY).';
+
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the G/L Account.';
+                        Visible = false;
+                    }
+                }
+            }
+        }
+        trigger OnClosePage()
+        begin
+            DateFilter := GLAccounts.GetFilter("Date Filter");
+        end;
     }
     rendering
     {
@@ -99,6 +123,18 @@ report 4405 "EXR Trial Balance Excel"
         TrialBalanceACYSheet = 'Trial Balance (ACY)';
         TrialBalanceACY = 'Trial Balance (Additional Reporting Currency)';
         DataRetrieved = 'Data retrieved:';
+        TrialBalancePrint = 'Trial Balance List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCYAnalysis = 'Trial Balance LCY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACYSheetAnalysis = 'Trial Balance ACY (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()
@@ -114,6 +150,7 @@ report 4405 "EXR Trial Balance Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";

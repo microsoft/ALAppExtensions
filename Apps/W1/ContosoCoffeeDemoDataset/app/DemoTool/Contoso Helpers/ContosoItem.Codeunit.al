@@ -144,6 +144,11 @@ codeunit 5143 "Contoso Item"
         InsertItem(ItemNo, Enum::"Item Type"::Service, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, '', Enum::"Costing Method"::FIFO, BaseUnitOfMeasure, ItemCategoryCode, '', 0, '', '', 0, Enum::"Replenishment System"::Purchase, 0, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", false, '', Picture, '');
     end;
 
+    procedure InsertNonInventoryItem(ItemNo: Code[20]; Description: Text[100]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGroup: Code[20]; TaxGroup: Code[20]; BaseUnitOfMeasure: Code[10]; ItemCategoryCode: Code[20]; Picture: Codeunit "Temp Blob")
+    begin
+        InsertItem(ItemNo, Enum::"Item Type"::"Non-Inventory", Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, '', Enum::"Costing Method"::FIFO, BaseUnitOfMeasure, ItemCategoryCode, '', 0, '', '', 0, Enum::"Replenishment System"::Purchase, 0, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", false, '', Picture, '');
+    end;
+
     procedure InsertItemCategory(ItemCategoryCode: Code[20]; Description: Text[100]; ParentCategory: Code[20])
     begin
         InsertItemCategory(ItemCategoryCode, ParentCategory, Description, 0, 0);
@@ -362,6 +367,11 @@ codeunit 5143 "Contoso Item"
     end;
 
     procedure InsertAssemblySetup(StockoutWarning: Boolean; AssemblyOrderNos: Code[20]; AssemblyQuoteNos: Code[20]; BlanketAssemblyOrderNos: Code[20]; PostedAssemblyOrderNos: Code[20]; CopyCommentswhenPosting: Boolean; CreateMovementsAutomatically: Boolean)
+    begin
+        InsertAssemblySetup(StockoutWarning, AssemblyOrderNos, AssemblyQuoteNos, BlanketAssemblyOrderNos, PostedAssemblyOrderNos, CopyCommentswhenPosting, CreateMovementsAutomatically, '');
+    end;
+
+    procedure InsertAssemblySetup(StockoutWarning: Boolean; AssemblyOrderNos: Code[20]; AssemblyQuoteNos: Code[20]; BlanketAssemblyOrderNos: Code[20]; PostedAssemblyOrderNos: Code[20]; CopyCommentswhenPosting: Boolean; CreateMovementsAutomatically: Boolean; DefaultGenBusPostGroup: Code[20])
     var
         AssemblySetup: Record "Assembly Setup";
     begin
@@ -375,6 +385,7 @@ codeunit 5143 "Contoso Item"
         AssemblySetup.Validate("Posted Assembly Order Nos.", PostedAssemblyOrderNos);
         AssemblySetup.Validate("Copy Comments when Posting", CopyCommentswhenPosting);
         AssemblySetup.Validate("Create Movements Automatically", CreateMovementsAutomatically);
+        AssemblySetup.Validate("Default Gen. Bus. Post. Group", DefaultGenBusPostGroup);
         AssemblySetup.Modify(true);
     end;
 

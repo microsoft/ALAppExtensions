@@ -2,8 +2,8 @@ namespace Microsoft.SubscriptionBilling;
 
 profile "Subscription Billing"
 {
-    Caption = 'Subscription & Recurring Billing';
+    Caption = 'Subscription Billing';
     RoleCenter = "Sub. Billing Role Center";
-    ProfileDescription = 'Subscription & Recurring Billing';
+    ProfileDescription = 'Subscription Billing';
     Enabled = true;
 }

@@ -132,7 +132,7 @@ page 6125 "E-Document Logs"
         EDocumentLog.Copy(Rec);
         if EDocumentLog.FindFirst() then;
         if EDocument.Get(EDocumentLog."E-Doc. Entry No") then;
-        ShowImportProcessingStatus := (EDocument.GetEDocumentService()."Import Process" <> "E-Document Import Process"::"Version 1.0") and (EDocument.Direction = "E-Document Direction"::Incoming);
+        ShowImportProcessingStatus := (EDocument.GetEDocumentService().GetImportProcessVersion() <> "E-Document Import Process"::"Version 1.0") and (EDocument.Direction = "E-Document Direction"::Incoming);
     end;
 
     trigger OnAfterGetCurrRecord()
