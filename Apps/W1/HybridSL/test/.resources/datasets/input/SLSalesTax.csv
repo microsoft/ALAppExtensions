@@ -1,0 +1,14 @@
+﻿TaxType,TaxId,Descr
+G,CHICAGO-G ,"Chicago, IL Sales Tax Group   "
+G,COOK-G    ,Cook County Sales Tax Group   
+G,MADISON-G ,"Madison, WI Sales Tax Group   "
+T,CAIRO     ,"Cairo, IL                     "
+T,CHICAGO   ,"City of Chicago, IL           "
+T,COOK      ,"Cook County, IL               "
+T,CTA       ,"Chicago, IL Transit           "
+T,DANE      ,Dane County                   
+T,ILLINOIS  ,State of Illinois             
+T,IOWA      ,Dane County                   
+T,MADISON   ,"City of Madison, WI           "
+T,SIOUX-CITY,City of Sioux City IA         
+T,WISCONSIN ,Wisconsin State               

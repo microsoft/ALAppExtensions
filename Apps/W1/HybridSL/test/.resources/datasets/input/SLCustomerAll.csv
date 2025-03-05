@@ -1,0 +1,19 @@
+﻿CustId,Addr1,Addr2,Attn,BillName,City,Country,CrLmt,DfltShipToId,Fax,Name,Phone,SlsperId,State,Status,TaxID00,Terms,Territory,Zip
+C300,222 Ridge Trail,,,School of Fine Art,Chicago,US,15000,DEFAULT,5555550120,School of Fine Art,5555550120,PM,IL,A,,01,,23333
+C315,P.O. Box 17866,,,The Phone Company,WHEELING,US,30000,DEFAULT,5555550130,The Phone Company,5555550129,BW,WV,A,,01,,00011
+C331,141 Yale Avenue,,,Trey Research,Cleveland,US,0,DEFAULT,,Trey Research,5555550129,BW,OH,A,,01,,23456
+C376,108 Main,,,Graphic Design Institute,Cuyahoga Falls,US,0,DEFAULT,,Graphic Design Institute,5555550130,BW,OH,A,,01,,55555
+C389,Main Street,,,Alpine Ski House,Pittsburgh,US,0,DEFAULT,,Alpine Ski House,5555550131,BW,PA,A,,01,,33222
+C404,1202 Lexington Avenue,,Jay,Jay Jamison,Birmingham,US,500,DEFAULT,,Jay Jamison,5555550132,BW,AL,A,,01,,01234
+C407,330 Bartlett Road,,,Tailspin Toys,Glastonbury,US,0,DEFAULT,,Tailspin Toys,5555550143,BW,CT,A,,01,,90000
+C419,,,,"Fabrikam, Inc",San Diego,US,0,DEFAULT,,"Fabrikam, Inc",,BW,CA,A,,05,,45789
+C420,,,,"Wingtip Toys",Findlay,US,0,DEFAULT,,Wingtip Toys,,BW,OH,A,,05,,01234
+C421,,,,"City Power & Light",Las Vegas,US,0,DEFAULT,,City Power & Light,,BW,NV,A,,05,,45844
+C422,,,,"Jeff Smith",Honolulu,US,0,DEFAULT,,Jeff Smith,,BW,HI,A,,05,,45666
+CT0100,400 West Main St.,Suite 435,Denise,Denise Smith,Chicago,US,0,DEFAULT,,Denise Smith,,MN,IL,A,CHICAGO-G 01,NORTH 45474
+CT0110,100 N. State St.,,Kim,Kim Ralls,Chicago,US,0,DEFAULT,5555550160,Kim Ralls,5555550160,MN,IL,A,CHICAGO 05,NORTH 23939
+CT0120,400 West St.,Suite 400,,Scot Schulte,Chicago,US,0,DEFAULT,5555550167,Scot Schulte,5555550167,MN,IL,A,SIOUX-CITY 01,NORTH 45850
+CT0130,1200 Divison St.,Suite 500,Jeff,Jeff Price,Chicago,US,0,DEFAULT,5555550170,Jeff Price,5555550170,MN,IL,A,SIOUX-CITY 05,NORTH 44444
+CT0131,200 E. Main St.,Suite150,Mr. Gary,Gary Schare,Chicago,US,0,DEFAULT,5555550175,Gary Schare,5555550175,MN,IL,A,SIOUX-CITY 05,NORTH 44444
+CT0132,123 Avenue St,Dear Eric,Eric Rothenberg,Chicago,US,0,DEFAULT,5555550136,Eric Rothenberg,5555550135,MN,IL,A,SIOUX-CITY 05,NORTH 33333
+CT0133,215 West St.,,Raymond K. Sam,Chicago,US,0,DEFAULT,5555550151,Raymond K. Sam,5555550150,MN,IL,A,SIOUX-CITY 05,NORTH 22222
