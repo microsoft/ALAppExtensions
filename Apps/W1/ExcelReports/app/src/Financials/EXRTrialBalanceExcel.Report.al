@@ -14,7 +14,7 @@ report 4405 "EXR Trial Balance Excel"
 {
     AdditionalSearchTerms = 'year closing,close accounting period,close fiscal year';
     ApplicationArea = All;
-    Caption = 'Trial Balance Excel (Preview)';
+    Caption = 'Trial Balance (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = TrialBalanceExcelLayout;
     ExcelLayoutMultipleDataSheets = true;
@@ -80,8 +80,8 @@ report 4405 "EXR Trial Balance Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Trial Balance Excel';
-        AboutText = 'This report contains aggregated general ledger data for the trial balance with debit/credit columns for net change and balance. A report is shown for both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. The aggregation is for the period specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        AboutTitle = 'About Trial Balance (Excel)';
+        AboutText = 'View a snapshot of your chart of accounts at a given point to check the debit and credit net change and closing balance. You can see the trial balance in both your local currency (LCY) and additional reporting currency (ACY).';
     }
     rendering
     {

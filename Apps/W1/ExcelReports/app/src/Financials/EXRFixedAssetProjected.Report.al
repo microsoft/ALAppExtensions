@@ -11,7 +11,7 @@ report 4413 "EXR Fixed Asset Projected"
 {
     ApplicationArea = All;
     AdditionalSearchTerms = 'FA Projected Value, FA Projected Value Excel';
-    Caption = 'Fixed Asset Projected Value Excel (Preview)';
+    Caption = 'Fixed Asset Projected Value (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetProjectedValueExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -76,8 +76,8 @@ report 4413 "EXR Fixed Asset Projected"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Fixed Asset Projected Value Excel';
-        AboutText = 'This report shows how Fixed Asset Ledger entries would look if depreciated in the given dates.';
+        AboutTitle = 'About Fixed Asset Projected Value (Excel)';
+        AboutText = 'Explore projected depreciation amounts and book value for a future period for your fixed assets. You can choose to include projected disposals and use the accounting periods specified in the Accounting Period table in the report.';
         layout
         {
             area(Content)
