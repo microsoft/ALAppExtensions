@@ -40,7 +40,46 @@ pageextension 6149 "E-Doc. Issued Fin. Charge Memo" extends "Issued Finance Char
                         EDocument.OpenEdocument(Rec.RecordId);
                     end;
                 }
+                action(CreateAndSendEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create and Send E-Document';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an electronic document from the issued finance charge memo and sends it via service.';
+                    Enabled = not EDocumentExists;
+
+                    trigger OnAction()
+                    begin
+                        Rec.CreateEDocument();
+                        Message(EDocumentCreatedMsg);
+                    end;
+                }
+                action(CreateAndEmailEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create and E-mail E-Document';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an electronic document, sends it via service and attaches created e-document file to email.';
+                    Enabled = not EDocumentExists;
+
+                    trigger OnAction()
+                    begin
+                        Rec.CreateAndEmailEDocument();
+                    end;
+                }
             }
         }
     }
+
+    var
+        EDocumentCreatedMsg: Label 'The electronic document has been created.';
+        EDocumentExists: Boolean;
+
+    trigger OnAfterGetRecord()
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Document Record ID", Rec.RecordId());
+        EDocumentExists := not EDocument.IsEmpty();
+    end;
 }
