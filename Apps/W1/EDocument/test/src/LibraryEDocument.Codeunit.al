@@ -18,6 +18,7 @@ codeunit 139629 "Library - E-Document"
         LibraryInvt: Codeunit "Library - Inventory";
         LibraryJobQueue: Codeunit "Library - Job Queue";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryFinChargeMemo: Codeunit "Library - Finance Charge Memo";
 
     procedure SetupStandardVAT()
     begin
@@ -279,7 +280,7 @@ codeunit 139629 "Library - E-Document"
 
         CreateItemWithPrice(Item, LibraryRandom.RandInt(10));
 
-        LibraryInvt.CreateItemUnitOfMeasure(ItemUOM, Item."No.", UOM.Code, QtyPerUnit);
+        //LibraryInvt.CreateItemUnitOfMeasure(ItemUOM, Item."No.", UOM.Code, QtyPerUnit);
 
         Item.Validate("Sales Unit of Measure", UOM.Code);
         Item.Modify(true);
@@ -337,6 +338,86 @@ codeunit 139629 "Library - E-Document"
     procedure PostSalesDocument(var SalesHeader: Record "Sales Header"; var SalesInvHeader: Record "Sales Invoice Header")
     begin
         SalesInvHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    procedure CreateReminderWithLine(Customer: Record Customer; var ReminderHeader: Record "Reminder Header")
+    var
+        ReminderLine: Record "Reminder Line";
+    begin
+        this.LibraryERM.CreateReminderHeader(ReminderHeader);
+        ReminderHeader.Validate("Customer No.", Customer."No.");
+        ReminderHeader."Your Reference" := this.LibraryRandom.RandText(35);
+        ReminderHeader.Modify(false);
+
+        this.LibraryERM.CreateReminderLine(ReminderLine, ReminderHeader."No.", Enum::"Reminder Source Type"::"G/L Account");
+        ReminderLine.Validate("Remaining Amount", this.LibraryRandom.RandInt(100));
+        ReminderLine.Description := this.LibraryRandom.RandText(100);
+        ReminderLine.Modify(false);
+    end;
+
+    procedure CreateFinChargeMemoWithLine(Customer: Record Customer; var FinChargeMemoHeader: Record "Finance Charge Memo Header")
+    var
+        FinChargeMemoLine: Record "Finance Charge Memo Line";
+        FinanceChargeTerms: Record "Finance Charge Terms";
+    begin
+        this.LibraryERM.CreateFinanceChargeMemoHeader(FinChargeMemoHeader, Customer."No.");
+        this.LibraryFinChargeMemo.CreateFinanceChargeTermAndText(FinanceChargeTerms);
+        FinChargeMemoHeader.Validate("Fin. Charge Terms Code", FinanceChargeTerms.Code);
+        FinChargeMemoHeader."Your Reference" := this.LibraryRandom.RandText(35);
+        FinChargeMemoHeader.Modify(false);
+
+        this.LibraryERM.CreateFinanceChargeMemoLine(FinChargeMemoLine, FinChargeMemoHeader."No.", FinChargeMemoLine.Type::"G/L Account");
+        FinChargeMemoLine.Validate("Remaining Amount", this.LibraryRandom.RandInt(100));
+        FinChargeMemoLine.Description := this.LibraryRandom.RandText(100);
+        FinChargeMemoLine.Modify(false);
+    end;
+
+    procedure IssueReminder(Customer: Record Customer) IssuedReminderHeader: Record "Issued Reminder Header"
+    var
+        ReminderHeader: Record "Reminder Header";
+        ReminderIssue: Codeunit "Reminder-Issue";
+    begin
+        this.CreateReminderWithLine(Customer, ReminderHeader);
+
+        ReminderHeader.SetRange("No.", ReminderHeader."No.");
+        ReminderIssue.Set(ReminderHeader, false, 0D);
+        ReminderIssue.Run();
+
+        ReminderIssue.GetIssuedReminder(IssuedReminderHeader);
+    end;
+
+    procedure IssueFinChargeMemo(Customer: Record Customer) IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"
+    var
+        FinChargeMemoHeader: Record "Finance Charge Memo Header";
+        FinChargeMemoIssue: Codeunit "FinChrgMemo-Issue";
+    begin
+        this.CreateFinChargeMemoWithLine(Customer, FinChargeMemoHeader);
+
+        FinChargeMemoHeader.SetRange("No.", FinChargeMemoHeader."No.");
+        FinChargeMemoIssue.Set(FinChargeMemoHeader, false, 0D);
+        FinChargeMemoIssue.Run();
+
+        FinChargeMemoIssue.GetIssuedFinChrgMemo(IssuedFinChargeMemoHeader);
+    end;
+
+    procedure SetupReminderNoSeries()
+    var
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesSetup.Get();
+        SalesSetup.Validate("Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Validate("Issued Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Modify();
+    end;
+
+    procedure SetupFinChargeMemoNoSeries()
+    var
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesSetup.Get();
+        SalesSetup.Validate("Fin. Chrg. Memo Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Validate("Issued Fin. Chrg. M. Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Modify();
     end;
 
     procedure Initialize()
