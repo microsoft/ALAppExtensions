@@ -280,7 +280,7 @@ codeunit 139629 "Library - E-Document"
 
         CreateItemWithPrice(Item, LibraryRandom.RandInt(10));
 
-        //LibraryInvt.CreateItemUnitOfMeasure(ItemUOM, Item."No.", UOM.Code, QtyPerUnit);
+        LibraryInvt.CreateItemUnitOfMeasure(ItemUOM, Item."No.", UOM.Code, QtyPerUnit);
 
         Item.Validate("Sales Unit of Measure", UOM.Code);
         Item.Modify(true);
