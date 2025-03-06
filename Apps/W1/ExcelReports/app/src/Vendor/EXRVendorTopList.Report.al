@@ -11,7 +11,7 @@ using Microsoft.ExcelReports;
 report 4404 "EXR Vendor Top List"
 {
     ApplicationArea = All;
-    Caption = 'Vendor - Top List Excel (Preview)';
+    Caption = 'Vendor - Top List (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = VendorTopTrendExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -46,8 +46,9 @@ report 4404 "EXR Vendor Top List"
 
     requestpage
     {
-        AboutTitle = 'Vendor - Top Trends';
-        AboutText = 'This report contains aggregated purchase (LCY) and balance (LCY) data for the top number of vendors selected. The data is aggregated for the period specified in the request page''s Datefilter parameter.';
+        AboutTitle = 'About Vendor - Top List (Excel)';
+        AboutText = 'Analyze the effect of vendors on cash flow, and prioritize vendor payments. Amounts are shown in local currency (LCY).';
+
         SaveValues = true;
         layout
         {

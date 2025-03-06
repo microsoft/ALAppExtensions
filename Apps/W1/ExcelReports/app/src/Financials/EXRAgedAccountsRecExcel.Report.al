@@ -14,7 +14,7 @@ using Microsoft.ExcelReports;
 report 4402 "EXR Aged Accounts Rec Excel"
 {
     ApplicationArea = All;
-    Caption = 'Aged Accounts Receivable Excel (Preview)';
+    Caption = 'Aged Accounts Receivable (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = AgedAccountsReceivableExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -166,8 +166,8 @@ report 4402 "EXR Aged Accounts Rec Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Aged Accounts Receivable Excel';
-        AboutText = 'This report contains aggregated aging data based on customer ledger entries. The data is aggregated and bucketed according to the ‘Aged as of'' and ‘period length'' parameters in the reports request page. The aggregated data is summarized per the 2 global dimensions.';
+        AboutTitle = 'About Aged Accounts Receivable (Excel)';
+        AboutText = 'Analyze customer balances at the end of each period, either in local or in foreign currency. Use the data as a gauge to measure the reliability of debt collections for your customers. You can also use it to help reconcile the customer subledger against the receivables accounts in the general ledger, assuming that direct posting is disabled. You can see the balance in both your local currency (LCY) and foreign currency (FCY).';
 
         layout
         {
