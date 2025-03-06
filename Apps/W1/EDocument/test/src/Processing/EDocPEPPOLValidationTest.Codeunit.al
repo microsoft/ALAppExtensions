@@ -15,7 +15,6 @@ codeunit 139502 "E-Doc. PEPPOL Validation Test"
         Any: Codeunit Any;
         IsInitialized: Boolean;
 
-
     [Test]
     procedure PostInvoiceWithZeroVatAmountCategoryAndNonZeroVat()
     var
