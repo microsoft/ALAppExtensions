@@ -283,11 +283,11 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // success scan
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
 
         // success void
         VoidInvoice(PurchaseHeader);
-        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
         PurchaseHeader.Delete();
@@ -331,7 +331,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
                 Vendor[1]."No.", 'CR Name',
                 Vendor[2]."No.", Vendor[2].Name),
             LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
         SwissQRBillTestLibrary.ClearVendor(VendorNo);
@@ -373,7 +373,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // decode failed
         Assert.ExpectedMessage(ImportFailedTxt + '\\' + DecodeFailedTxt, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -408,7 +408,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // success scan
         Assert.ExpectedMessage(PurchDocAlreadyQRImportedQst, LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
         PurchaseHeader.Delete();
@@ -432,7 +432,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // cancelled import
         Assert.ExpectedMessage(PurchDocAlreadyQRImportedQst, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, '123', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, true, '123', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -464,7 +464,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // cancelled import
         Assert.ExpectedMessage(StrSubstNo(PurhDocVendBankAccountQst, IBAN), LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(ImportCancelledMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, false, '123', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '123', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -498,7 +498,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // success import
         Assert.ExpectedMessage(StrSubstNo(PurhDocVendBankAccountQst, IBAN), LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
         VerifyBankAccount(PurchaseHeader."Buy-from Vendor No.", 'BANK1', IBAN);
 
         LibraryVariableStorage.AssertEmpty();
@@ -824,11 +824,11 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // success scan
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
 
         // success void
         VoidOrder(PurchaseHeader);
-        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '', '', WorkDate());
 
         LibraryVariableStorage.AssertEmpty();
         PurchaseHeader.Delete();
@@ -863,7 +863,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // success import
         Assert.ExpectedMessage(StrSubstNo(PurhDocVendBankAccountQst, IBAN), LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
         VerifyBankAccount(PurchaseHeader."Buy-from Vendor No.", 'BANK1', IBAN);
 
         LibraryVariableStorage.AssertEmpty();
@@ -1087,7 +1087,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // [THEN] QR-Bill text was scanned. Swiss QR-Bill Amount is 0.
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
 
         // [THEN] Swiss QR-Bill Amount field is editable on page Purchase Order.
         PurchaseOrder.OpenEdit();
@@ -1144,7 +1144,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // [THEN] QR-Bill text was scanned. Swiss QR-Bill Amount is 0.
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 0, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', WorkDate());
 
         // [THEN] Swiss QR-Bill Amount field is editable on page Purchase Invoice.
         PurchaseInvoice.OpenEdit();
@@ -1390,6 +1390,100 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
     end;
 
     [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillOptionalInfos()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+        OldVendorInvoiceNo: Code[50];
+        OldPostingDescription: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Invoice card when Document Date is specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with Document Date = 15.10.2023.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123/11/231015';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+        OldVendorInvoiceNo := 'DefaultInvoice0001';
+        OldPostingDescription := 'Defaul Posting Description';
+
+        // [GIVEN] Purchase Invoice.
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, OldVendorInvoiceNo, false, PaymentReference,OldPostingDescription);
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] Posting Date was set to WorkDate, Document Date was set to 15.10.2023 in Purchase Invoice.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg', Format(20231015D));
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillWithoutOptionalInfos()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+        OldPaymentReference: Code[50];
+        OldVendorInvoiceNo: Code[50];
+        OldPostingDescription: Text;
+    begin
+        // [FEATURE] [UI]
+        // [SCENARIO 467388] Scan QR-Bill from Purchase Invoice card when Document Date is not specified in Billing Information.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information without Document Date.
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        OldPaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+       
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', '', '', '');
+        OldVendorInvoiceNo := 'DefaultInvoice0001';
+        OldPostingDescription := 'Defaul Posting Description';
+        // [GIVEN] Purchase Invoice.
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, OldPaymentReference, OldVendorInvoiceNo, OldPostingDescription);
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] Document Date was set to be equal to Posting Date (WorkDate) in Purchase Invoice.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        VerifyPurchDoc(PurchaseHeader, true, OldPaymentReference, OldVendorInvoiceNo, 123.45, 'CHF', IBAN, '',WorkDate(), '', OldPostingDescription);
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
     [HandlerFunctions('QRBillScanMPH,ConfirmHandler')]
     procedure DocumentDateInGenJnlLineWhenBillInfoWithDocDate()
     var
@@ -1531,7 +1625,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
 
         // cancelled import
         Assert.ExpectedMessage(PmtRefMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, false, '123', '', 0, '', '', '', '');
+        VerifyPurchDoc(PurchaseHeader, false, '123', '', 0, '', '', '', '', '', WorkDate());
 
         PurchaseHeader.Delete();
     end;
@@ -1553,7 +1647,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // success import
         Assert.ExpectedMessage(PmtRefMsg, LibraryVariableStorage.DequeueText());
         Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
-        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo);
+        VerifyPurchDoc(PurchaseHeader, true, PaymentReference, 'DOCNO123', 123.45, 'CHF', IBAN, 'Unstr Msg', BillInfo, 'Unstr Msg');
 
         PurchaseHeader.Delete();
     end;
@@ -1564,6 +1658,16 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         PurchaseHeader."Swiss QR-Bill" := QRBill;
         PurchaseHeader."Vendor Invoice No." := '';
         PurchaseHeader."Payment Reference" := PmtRef;
+        PurchaseHeader.Modify();
+    end;
+
+    local procedure CreatePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; QRBill: Boolean; PmtRef: Code[50]; VendorInvoiceNo: Text; PostingDescription: Text)
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PurchaseHeader."Swiss QR-Bill" := QRBill;
+        PurchaseHeader."Vendor Invoice No." := VendorInvoiceNo;
+        PurchaseHeader."Payment Reference" := PmtRef;
+        PurchaseHeader."Posting Description" := PostingDescription;
         PurchaseHeader.Modify();
     end;
 
@@ -1740,7 +1844,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         PurchaseOrder.Close();
     end;
 
-    local procedure VerifyPurchDoc(PurchaseHeader: Record "Purchase Header"; QRBill: Boolean; PaymentReference: Code[50]; VendorInvoiceNo: Code[20]; Amount: Decimal; Currency: Code[10]; IBAN: Code[50]; UnstrMsg: Text; BillInfo: Text)
+    local procedure VerifyPurchDoc(PurchaseHeader: Record "Purchase Header"; QRBill: Boolean; PaymentReference: Code[50]; VendorInvoiceNo: Code[20]; Amount: Decimal; Currency: Code[10]; IBAN: Code[50]; UnstrMsg: Text; BillInfo: Text;DocumentDate: Date; PostingDescription: Text;)
     begin
         PurchaseHeader.Find();
         PurchaseHeader.TestField("Swiss QR-Bill", QRBill);
@@ -1749,8 +1853,11 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         PurchaseHeader.TestField("Swiss QR-Bill IBAN", IBAN);
         PurchaseHeader.TestField("Swiss QR-Bill Unstr. Message", UnstrMsg);
         PurchaseHeader.TestField("Swiss QR-Bill Bill Info", BillInfo);
+        PurchaseHeader.TestField("Posting Date", WorkDate());
+        PurchaseHeader.TestField("Document Date", DocumentDate);
         PurchaseHeader.TestField("Payment Reference", PaymentReference);
         PurchaseHeader.TestField("Vendor Invoice No.", VendorInvoiceNo);
+        PurchaseHeader.TestField("Posting Description", UnstrMsg);
     end;
 
     local procedure VerifyJournalLine(GenJournalLine: Record "Gen. Journal Line"; QRBill: Boolean; VendorNo: Code[20]; PaymentReference: Code[50]; VendorInvoiceNo: Code[20]; Amount: Decimal; Currency: Code[10]; BankAccount: Code[50]; UnstrMsg: Text; BillInfo: Text)
