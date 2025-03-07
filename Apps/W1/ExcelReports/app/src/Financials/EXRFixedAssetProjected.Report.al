@@ -187,8 +187,19 @@ report 4413 "EXR Fixed Asset Projected"
         DataRetrieved = 'Data retrieved:';
         FixedAssetProjectedValue = 'Fixed Asset Projected Value';
         ProjectedValue = 'Projected Value';
+        ProjectedValuePrint = 'Projected Value (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        ProjectedValueAnalysis = 'Projected Value (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BookValueCaption = 'Book Value';
         ProjectedEntryCaption = 'Projected entry';
+        Period = 'Period:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
     trigger OnPreReport()
     begin

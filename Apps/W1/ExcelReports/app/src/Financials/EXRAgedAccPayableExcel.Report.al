@@ -242,11 +242,11 @@ report 4403 "EXR Aged Acc Payable Excel"
     }
     labels
     {
-        ByPeriodLCY = 'By period (LCY)';
+        ByPeriodLCY = 'By Period (LCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BalanceLCY = 'Balance (LCY)';
         AgedAccountsPayableByPeriodLCY = 'Aged Accounts Payable by Period (LCY)';
         OpenAmountsInLCY = 'Open amounts in LCY';
-        ByPeriodFCY = 'By Period (FCY)';
+        ByPeriodFCY = 'By Period (FCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BalanceFCY = 'Balance (FCY)';
         AgedAccountsPayableByPeriodFCY = 'Aged Accounts Payable by Period (FCY)';
         OpenAmountsInFCY = 'Open amounts in FCY';
@@ -260,10 +260,22 @@ report 4403 "EXR Aged Acc Payable Excel"
         DocumentDateMonth = 'Document Date (Month)';
         DocumentDateQuarter = 'Document Date (Quarter)';
         DocumentDateYear = 'Document Date (Year)';
-        DueByCurrencies = 'Due by Currencies';
+        DueByCurrencies = 'Due by Currencies', MaxLength = 31, Comment = 'Excel worksheet name.';
         OpenByFCY = 'Open by (FCY)';
         DataRetrieved = 'Data retrieved:';
         CurrencyCodeDisplay = 'Currency Code';
+        AgedAsOf = 'Aged as of:';
+        AgedAccountsPayable = 'Aged Accounts Payable';
+        AgedAccountsPayablePrint = 'Aged Accounts Payable (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        AgedBy = 'Aged by:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     var
