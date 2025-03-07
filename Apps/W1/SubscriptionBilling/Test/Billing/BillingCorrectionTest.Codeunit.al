@@ -16,7 +16,7 @@ codeunit 139686 "Billing Correction Test"
         BillingLine: Record "Billing Line";
         BillingLineArchive: Record "Billing Line Archive";
         BillingTemplate: Record "Billing Template";
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         PurchInvoiceHeader: Record "Purch. Inv. Header";
         PurchInvoiceLine: Record "Purch. Inv. Line";
         PurchaseHeader: Record "Purchase Header";
@@ -25,8 +25,8 @@ codeunit 139686 "Billing Correction Test"
         SalesHeader2: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         CopyDocMgt: Codeunit "Copy Document Mgt.";
@@ -53,14 +53,14 @@ codeunit 139686 "Billing Correction Test"
 
         PostSalesInvoiceForContract();
         CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-        BillingLineArchive.SetRange("Contract No.", SalesInvoiceLine."Contract No.");
-        BillingLineArchive.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
+        BillingLineArchive.SetRange("Subscription Contract No.", SalesInvoiceLine."Subscription Contract No.");
+        BillingLineArchive.SetRange("Subscription Contract Line No.", SalesInvoiceLine."Subscription Contract Line No.");
         if BillingLineArchive.FindSet() then
             repeat
                 BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
                 BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
-                BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-                BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+                BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+                BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
                 BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
                 BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
                 BillingLine.FindFirst();
@@ -77,14 +77,14 @@ codeunit 139686 "Billing Correction Test"
 
         PostPurchaseInvoiceForContract();
         CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
-        BillingLineArchive.SetRange("Contract No.", PurchInvoiceLine."Contract No.");
-        BillingLineArchive.SetRange("Contract Line No.", PurchInvoiceLine."Contract Line No.");
+        BillingLineArchive.SetRange("Subscription Contract No.", PurchInvoiceLine."Subscription Contract No.");
+        BillingLineArchive.SetRange("Subscription Contract Line No.", PurchInvoiceLine."Subscription Contract Line No.");
         if BillingLineArchive.FindSet() then
             repeat
                 BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
                 BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
-                BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-                BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+                BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+                BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
                 BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
                 BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
                 BillingLine.FindFirst();
@@ -204,33 +204,33 @@ codeunit 139686 "Billing Correction Test"
     [HandlerFunctions('CreateBillingDocsCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestChangeServiceStartDateAfterCorrectionCustomerContract()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
     begin
         Initialize();
 
         PostSalesInvoiceForContract();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); // Retrieve updated Service Commitment
+        ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); // Retrieve updated Subscription Line
         ServiceCommitment.Get(ServiceCommitment."Entry No.");
-        ServiceCommitment.Validate("Service Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Service Start Date", 100));
+        ServiceCommitment.Validate("Subscription Line Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Subscription Line Start Date", 100));
     end;
 
     [Test]
     [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestChangeServiceStartDateAfterCorrectionVendorContract()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
     begin
         Initialize();
 
         PostPurchaseInvoiceForContract();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+        ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
         CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
-        // Retrieve updated Service Commitment
+        // Retrieve updated Subscription Line
         ServiceCommitment.Get(ServiceCommitment."Entry No.");
-        ServiceCommitment.Validate("Service Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Service Start Date", 100));
+        ServiceCommitment.Validate("Subscription Line Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Subscription Line Start Date", 100));
     end;
 
     #endregion Tests
@@ -256,7 +256,7 @@ codeunit 139686 "Billing Correction Test"
     begin
         ClearAll();
         BillingTemplate.DeleteAll(false);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
@@ -274,7 +274,7 @@ codeunit 139686 "Billing Correction Test"
     local procedure PostSalesInvoiceForContract()
     begin
         ClearAll();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);

@@ -5,7 +5,7 @@ using Microsoft.Inventory.Item.Attribute;
 
 page 8012 "Service Object Attr. Factbox"
 {
-    Caption = 'Service Object Attributes';
+    Caption = 'Subscription Attributes';
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
@@ -25,28 +25,28 @@ page 8012 "Service Object Attr. Factbox"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Attribute';
-                    ToolTip = 'Specifies the name of the service object attribute.';
+                    ToolTip = 'Specifies the name of the Subscription attribute.';
                     Visible = TranslatedValuesVisible;
                 }
                 field(Value; Rec.GetValueInCurrentLanguage())
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Value';
-                    ToolTip = 'Specifies the value of the service object attribute.';
+                    ToolTip = 'Specifies the value of the Subscription attribute.';
                     Visible = TranslatedValuesVisible;
                 }
                 field("Attribute Name"; Rec."Attribute Name")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Attribute';
-                    ToolTip = 'Specifies the name of the service object attribute.';
+                    ToolTip = 'Specifies the name of the Subscription attribute.';
                     Visible = not TranslatedValuesVisible;
                 }
                 field(RawValue; Rec.Value)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Value';
-                    ToolTip = 'Specifies the value of the service object attribute.';
+                    ToolTip = 'Specifies the value of the Subscription attribute.';
                     Visible = not TranslatedValuesVisible;
                 }
             }
@@ -63,11 +63,11 @@ page 8012 "Service Object Attr. Factbox"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Edit';
                 Image = Edit;
-                ToolTip = 'Edit the Service Object''s attributes that describe it in more detail.';
+                ToolTip = 'Edit the Subscription''s attributes that describe it in more detail.';
 
                 trigger OnAction()
                 var
-                    ServiceObject: Record "Service Object";
+                    ServiceObject: Record "Subscription Header";
                 begin
                     if not ServiceObject.Get(ServiceObjectNo) then
                         exit;
@@ -108,7 +108,7 @@ page 8012 "Service Object Attr. Factbox"
     begin
         Rec.Reset();
         Rec.DeleteAll(false);
-        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+        ItemAttributeValueMapping.SetRange("Table ID", Database::"Subscription Header");
         ItemAttributeValueMapping.SetRange("No.", KeyValue);
         if ItemAttributeValueMapping.FindSet() then
             repeat

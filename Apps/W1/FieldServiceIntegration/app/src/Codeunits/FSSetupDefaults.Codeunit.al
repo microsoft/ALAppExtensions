@@ -50,7 +50,7 @@ codeunit 6611 "FS Setup Defaults"
         CDSIntegrationMgt.RegisterConnection();
         CDSIntegrationMgt.ActivateConnection();
 
-        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Project then begin
+        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Projects then begin
             ResetProjectTaskMapping(FSConnectionSetup, 'PROJECTTASK', true);
             ResetProjectJournalLineWOProductMapping(FSConnectionSetup, 'PJLINE-WORDERPRODUCT', true);
             ResetProjectJournalLineWOServiceMapping(FSConnectionSetup, 'PJLINE-WORDERSERVICE', true);
@@ -61,7 +61,7 @@ codeunit 6611 "FS Setup Defaults"
         ResetLocationMapping(FSConnectionSetup, 'LOCATION', true, false);
         CRMSetupDefault.ResetItemProductMapping('ITEM-PRODUCT', true);
 
-        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service then begin
+        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects" then begin
             ResetServiceOrderTypeMapping(FSConnectionSetup, 'SRVORDERTYPE', true);
             ResetServiceOrderMapping(FSConnectionSetup, 'SRVORDER', true);
             ResetServiceOrderItemLineMapping(FSConnectionSetup, 'SRVORDERITEMLINE', true);
@@ -500,7 +500,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         FSWorkOrderType.Reset();
@@ -560,7 +560,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         ServiceOrder.Reset();
@@ -664,7 +664,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         ServiceItemLine.Reset();
@@ -727,7 +727,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         ServiceLine.Reset();
@@ -855,7 +855,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         ServiceLine.Reset();
@@ -961,7 +961,7 @@ codeunit 6611 "FS Setup Defaults"
         if IsHandled then
             exit;
 
-        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service) then
+        if not (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects") then
             exit;
 
         ServiceLine.Reset();

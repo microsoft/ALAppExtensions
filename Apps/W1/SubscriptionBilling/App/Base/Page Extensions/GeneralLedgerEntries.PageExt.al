@@ -8,7 +8,7 @@ pageextension 8087 "General Ledger Entries" extends "General Ledger Entries"
     {
         addafter("External Document No.")
         {
-            field("Contract No."; Rec."Sub. Contract No.")
+            field("Contract No."; Rec."Subscription Contract No.")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the contract number for which the contract deferral was released.';

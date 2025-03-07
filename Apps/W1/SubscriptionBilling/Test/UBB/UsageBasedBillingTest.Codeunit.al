@@ -26,8 +26,8 @@ codeunit 148153 "Usage Based Billing Test"
         BillingTemplate: Record "Billing Template";
         Currency: Record Currency;
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
         DataExchColumnDef: Record "Data Exch. Column Def";
         DataExchDef: Record "Data Exch. Def";
         DataExchFieldMapping: Record "Data Exch. Field Mapping";
@@ -35,7 +35,7 @@ codeunit 148153 "Usage Based Billing Test"
         DataExchMapping: Record "Data Exch. Mapping";
         GenericImportSettings: Record "Generic Import Settings";
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         PurchSetup: Record "Purchases & Payables Setup";
@@ -44,27 +44,26 @@ codeunit 148153 "Usage Based Billing Test"
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesLine: Record "Sales Line";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         UsageDataBilling: Record "Usage Data Billing";
         UsageDataBlob: Record "Usage Data Blob";
-        UsageDataCustomer: Record "Usage Data Customer";
+        UsageDataCustomer: Record "Usage Data Supp. Customer";
         UsageDataGenericImport: Record "Usage Data Generic Import";
         UsageDataImport: Record "Usage Data Import";
-        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
-        VendorContractLine: Record "Vendor Contract Line";
+        VendorContract: Record "Vendor Subscription Contract";
+        VendorContractLine: Record "Vend. Sub. Contract Line";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         CorrectPostedPurchaseInvoice: Codeunit "Correct Posted Purch. Invoice";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
-        DateTimeManagement: Codeunit "Date Time Management";
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryItemReference: Codeunit "Library - Item Reference";
@@ -94,22 +93,22 @@ codeunit 148153 "Usage Based Billing Test"
     var
         DiscountPct: Decimal;
     begin
-        // [SCENARIO] Check that discount from service commitment is applied in the invoice and usage data is updated accordingly
+        // [SCENARIO] Check that discount from Subscription Line is applied in the invoice and usage data is updated accordingly
 
-        // [GIVEN] Create service commitment Item
+        // [GIVEN] Create Subscription Item
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         Item."Unit Price" := LibraryRandom.RandDec(1000, 2);
         Item."Unit Cost" := LibraryRandom.RandDec(1000, 2);
         Item.Modify(false);
 
-        // [GIVEN] Setup service object with service commitments and usage quantity
+        // [GIVEN] Setup Subscription with Subscription Lines and usage quantity
         SetupServiceDataForProcessing(Enum::"Usage Based Pricing"::"Usage Quantity", "Calculation Base Type"::"Item Price", Enum::"Invoicing Via"::Contract,
                                        '1Y', '1Y', '1Y', "Service Partner"::Customer, 100, Item."No.");
 
-        // [GIVEN] Add discount to service commitment
+        // [GIVEN] Add discount to Subscription Line
         DiscountPct := LibraryRandom.RandDec(99, 2);
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             ServiceCommitment.Validate("Discount %", DiscountPct);
@@ -126,39 +125,39 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         UsageDataBilling.FindFirst();
 
-        BillingLine.FilterBillingLineOnContractLine(UsageDataBilling.Partner, UsageDataBilling."Contract No.", UsageDataBilling."Contract Line No.");
+        BillingLine.FilterBillingLineOnContractLine(UsageDataBilling.Partner, UsageDataBilling."Subscription Contract No.", UsageDataBilling."Subscription Contract Line No.");
         BillingLine.FindSet();
         repeat
             BillingLine.TestField("Discount %", DiscountPct);
         until BillingLine.Next() = 0;
 
-        // [THEN] Test that prices service commitment is not updated
+        // [THEN] Test that prices Subscription Line is not updated
         CheckIfServiceCommitmentRemains();
     end;
 
     [Test]
     procedure ExistForContractLineDependsOnUsageDataForContractLine()
     var
-        CustomerContractLine1: Record "Customer Contract Line";
+        CustomerContractLine1: Record "Cust. Sub. Contract Line";
         UsageDataBilling1: Record "Usage Data Billing";
         UsageDataExist: Boolean;
     begin
         // [SCENARIO] Action Usage Data should be disabled if there is no Usage Data for Contract Line and should be enabled if there is Usage Data for Contract Line
 
-        // [GIVEN] Create Customer Contract with line
+        // [GIVEN] Create Customer Subscription Contract with line
         ResetAll();
         UsageBasedBTestLibrary.MockCustomerContractLine(CustomerContractLine1);
 
         // [WHEN] Contract line is selected
-        UsageDataExist := UsageDataBilling1.ExistForContractLine("Service Partner"::Customer, CustomerContractLine1."Contract No.", CustomerContractLine1."Line No.");
+        UsageDataExist := UsageDataBilling1.ExistForContractLine("Service Partner"::Customer, CustomerContractLine1."Subscription Contract No.", CustomerContractLine1."Line No.");
 
         // [THEN] Action Usage Data should be disabled
         Assert.IsFalse(UsageDataExist, 'Usage Data Action should be disabled');
 
         // [WHEN] Usage Data is created and Contract line is selected
         UsageBasedBTestLibrary.MockCustomerContractLine(CustomerContractLine1);
-        UsageBasedBTestLibrary.MockUsageDataBillingForContractLine(UsageDataBilling1, "Service Partner"::Customer, CustomerContractLine1."Contract No.", CustomerContractLine1."Line No.");
-        UsageDataExist := UsageDataBilling1.ExistForContractLine("Service Partner"::Customer, CustomerContractLine1."Contract No.", CustomerContractLine1."Line No.");
+        UsageBasedBTestLibrary.MockUsageDataBillingForContractLine(UsageDataBilling1, "Service Partner"::Customer, CustomerContractLine1."Subscription Contract No.", CustomerContractLine1."Line No.");
+        UsageDataExist := UsageDataBilling1.ExistForContractLine("Service Partner"::Customer, CustomerContractLine1."Subscription Contract No.", CustomerContractLine1."Line No.");
 
         // [THEN] Action Usage Data should be enabled
         Assert.IsTrue(UsageDataExist, 'Usage Data Action should be enabled');
@@ -209,7 +208,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageBasedBTestLibrary.MockBillingLine(BillingLine1);
 
         // [WHEN] Billing line is selected
-        UsageDataExist := UsageDataBilling1.ExistForRecurringBilling(BillingLine1."Service Object No.", BillingLine1."Service Commitment Entry No.", BillingLine1."Document Type", BillingLine1."Document No.");
+        UsageDataExist := UsageDataBilling1.ExistForRecurringBilling(BillingLine1."Subscription Header No.", BillingLine1."Subscription Line Entry No.", BillingLine1."Document Type", BillingLine1."Document No.");
 
         // [THEN] Action Usage Data should be disabled
         Assert.IsFalse(UsageDataExist, 'Usage Data Action should be disabled');
@@ -218,7 +217,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageBasedBTestLibrary.MockBillingLineWithServObjectNo(BillingLine1);
         UsageBasedBTestLibrary.CreateSalesInvoiceAndAssignToBillingLine(BillingLine1);
         UsageBasedBTestLibrary.MockUsageDataForBillingLine(UsageDataBilling1, BillingLine1);
-        UsageDataExist := UsageDataBilling1.ExistForRecurringBilling(BillingLine1."Service Object No.", BillingLine1."Service Commitment Entry No.", BillingLine1."Document Type", BillingLine1."Document No.");
+        UsageDataExist := UsageDataBilling1.ExistForRecurringBilling(BillingLine1."Subscription Header No.", BillingLine1."Subscription Line Entry No.", BillingLine1."Document Type", BillingLine1."Document No.");
 
         // [THEN] Action Usage Data should be enabled
         Assert.IsTrue(UsageDataExist, 'Usage Data Action should be enabled');
@@ -227,25 +226,25 @@ codeunit 148153 "Usage Based Billing Test"
     [Test]
     procedure ExistForServiceCommitmentsDependsOnServiceCommitmentUsageData()
     var
-        ServiceCommitment1: Record "Service Commitment";
+        ServiceCommitment1: Record "Subscription Line";
         UsageDataBilling1: Record "Usage Data Billing";
         UsageDataExist: Boolean;
     begin
-        // [SCENARIO] Action Usage Data should be disabled if there is no Usage Data for Service Commitment Line and should be enabled if there is Usage Data for Service Commitment Line
+        // [SCENARIO] Action Usage Data should be disabled if there is no Usage Data for Subscription Line Line and should be enabled if there is Usage Data for Subscription Line Line
 
-        // [GIVEN] Create Service Commitment
+        // [GIVEN] Create Subscription Line
         ResetAll();
         UsageBasedBTestLibrary.MockServiceCommitmentLine(ServiceCommitment1);
 
-        // [WHEN] Service Commitment line is selected
-        UsageDataExist := UsageDataBilling1.ExistForServiceCommitments(ServiceCommitment1.Partner, ServiceCommitment1."Service Object No.", ServiceCommitment1."Entry No.");
+        // [WHEN] Subscription Line line is selected
+        UsageDataExist := UsageDataBilling1.ExistForServiceCommitments(ServiceCommitment1.Partner, ServiceCommitment1."Subscription Header No.", ServiceCommitment1."Entry No.");
 
         // [THEN] Action Usage Data should be disabled
         Assert.IsFalse(UsageDataExist, 'Usage Data Action should be disabled');
 
-        // [WHEN] Usage data is created and Service Commitment line is selected
-        UsageBasedBTestLibrary.MockUsageDataBillingForServiceCommitmentLine(UsageDataBilling1, ServiceCommitment1.Partner, ServiceCommitment1."Service Object No.", ServiceCommitment1."Entry No.");
-        UsageDataExist := UsageDataBilling1.ExistForServiceCommitments(ServiceCommitment1.Partner, ServiceCommitment1."Service Object No.", ServiceCommitment1."Entry No.");
+        // [WHEN] Usage data is created and Subscription Line line is selected
+        UsageBasedBTestLibrary.MockUsageDataBillingForServiceCommitmentLine(UsageDataBilling1, ServiceCommitment1.Partner, ServiceCommitment1."Subscription Header No.", ServiceCommitment1."Entry No.");
+        UsageDataExist := UsageDataBilling1.ExistForServiceCommitments(ServiceCommitment1.Partner, ServiceCommitment1."Subscription Header No.", ServiceCommitment1."Entry No.");
 
         // [THEN] Action Usage Data should be enabled
         Assert.IsTrue(UsageDataExist, 'Usage Data Action should be enabled');
@@ -259,14 +258,12 @@ codeunit 148153 "Usage Based Billing Test"
         SetupDataExchangeDefinition();
         UsageDataImport."Processing Step" := Enum::"Processing Step"::"Create Imported Lines";
         UsageDataImport.Modify(false);
-        asserterror Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        asserterror Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure ExpectErrorIfServiceCommitmentIsNotAssignedToContract()
-    var
-        TempServiceCommitment: Record "Service Commitment" temporary;
     begin
         Initialize();
         SetupUsageDataForProcessingToGenericImport(WorkDate(), WorkDate(), WorkDate(), WorkDate(), 1, false);
@@ -277,11 +274,11 @@ codeunit 148153 "Usage Based Billing Test"
         Item."Unit Cost" := 1;
         Item.Modify(false);
         SetupItemWithMultipleServiceCommitmentPackages();
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item."No.");
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        CreateCustomerContractAndAssignServiceCommitments(TempServiceCommitment);
+        CreateCustomerContractAndAssignServiceCommitments();
         UsageBasedBTestLibrary.ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDef.Code, GenericImportSettings);
 
         ProcessUsageDataImport(Enum::"Processing Step"::"Create Imported Lines");
@@ -290,7 +287,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         UsageDataGenericImport.FindFirst();
         PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling("Usage Based Pricing"::"Usage Quantity", '1D', '1D');
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
         UsageDataImport.SetRecFilter();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Create Usage Data Billing");
 
@@ -306,7 +303,7 @@ codeunit 148153 "Usage Based Billing Test"
         CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataBilling.SetRange(Partner, "Service Partner"::Customer);
         UsageDataBilling.FindFirst();
-        CustomerContractLine.Get(UsageDataBilling."Contract No.", UsageDataBilling."Contract Line No.");
+        CustomerContractLine.Get(UsageDataBilling."Subscription Contract No.", UsageDataBilling."Subscription Contract Line No.");
         asserterror CustomerContractLine.Delete(true);
     end;
 
@@ -330,7 +327,7 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         Initialize();
         CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", WorkDate(), WorkDate(), WorkDate(), WorkDate(), 0);
-        ServiceObject."Quantity Decimal" := 0;
+        ServiceObject.Quantity := 0;
         ServiceObject.Modify(false);
         Codeunit.Run(Codeunit::"Process Usage Data Billing", UsageDataImport);
         UsageDataImport.TestField("Processing Status", "Processing Status"::Error);
@@ -388,12 +385,12 @@ codeunit 148153 "Usage Based Billing Test"
         // [GIVEN] Create usage data which will for sure cause an error
         Initialize();
         CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", WorkDate(), WorkDate(), WorkDate(), WorkDate(), 0);
-        ServiceObject."Quantity Decimal" := 0; // Zero Quantity on Service Object will cause error
+        ServiceObject.Quantity := 0; // Zero Quantity on Subscription will cause error
         ServiceObject.Modify(false);
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
 
-        // [WHEN] Try to create customer contract invoices; Error should be caught and no usage data lines should be taken into contract invoice
+        // [WHEN] Try to create Customer Subscription Contract invoices; Error should be caught and no usage data lines should be taken into contract invoice
         UsageDataImport.CollectCustomerContractsAndCreateInvoices(UsageDataImport);
 
         // [THEN] Test if Processing Status Error is set in Usage Data Import and that no invoice has been created and assigned in Usage Data Billing
@@ -411,7 +408,7 @@ codeunit 148153 "Usage Based Billing Test"
         for i := 1 to 2 do // create usage data for 3 different contracts
             CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
 
-        // Process usage data and create customer contract invoices
+        // Process usage data and create Customer Subscription Contract invoices
         UsageDataImport.Reset();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.Reset();
@@ -426,7 +423,7 @@ codeunit 148153 "Usage Based Billing Test"
         for i := 1 to 2 do // create usage data for 3 different contracts
             CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
 
-        // Process usage data and create vendor contract invoices
+        // Process usage data and create Vendor Subscription Contract invoices
         UsageDataImport.Reset();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.Reset();
@@ -460,7 +457,7 @@ codeunit 148153 "Usage Based Billing Test"
         // [WHEN] Creating a billing proposal
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
-        // [THEN] A Billing Line should be created for Usage Based Service Commitments with usage data
+        // [THEN] A Billing Line should be created for Usage Based Subscription Lines with usage data
         BillingLine.Reset();
         Assert.AreEqual(false, BillingLine.IsEmpty, 'A new Billing Line should be created for Usage Based Service Commitments with usage data when creating an invoice from the contract');
     end;
@@ -482,14 +479,14 @@ codeunit 148153 "Usage Based Billing Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestCreateInvoicesForMoreThanOneContractPerImportViaRecurringBilling()
     var
-        CustomerContract2: Record "Customer Contract";
-        ServiceObject2: Record "Service Object";
+        CustomerContract2: Record "Customer Subscription Contract";
+        ServiceObject2: Record "Subscription Header";
         TestSubscribers: Codeunit "Usage Based B. Test Subscr.";
         QuantityOfServiceCommitments: Integer;
     begin
         ClearAll();
         ContractTestLibrary.InitContractsApp();
-        // [GIVEN] Multiple Contracts with Usage based Service Commitments and Usage Data Billing
+        // [GIVEN] Multiple Contracts with Usage based Subscription Lines and Usage Data Billing
         ContractTestLibrary.CreateCustomer(Customer);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ContractTestLibrary.CreateCustomerContract(CustomerContract2, Customer."No.");
@@ -497,11 +494,11 @@ codeunit 148153 "Usage Based Billing Test"
 
         TestSubscribers.SetTestContext('TestCreateInvoicesForMoreThanOneContractPerImport');
         BindSubscription(TestSubscribers);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract2, ServiceObject2, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract2, ServiceObject2, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
         UnbindSubscription(TestSubscribers);
 
-        ServiceCommitment.SetFilter("Service Object No.", '%1|%2', ServiceObject."No.", ServiceObject2."No.");
+        ServiceCommitment.SetFilter("Subscription Header No.", '%1|%2', ServiceObject."No.", ServiceObject2."No.");
         QuantityOfServiceCommitments := ServiceCommitment.Count();
         ServiceCommitment.FindSet();
         repeat
@@ -512,7 +509,7 @@ codeunit 148153 "Usage Based Billing Test"
         ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<CM>', '', '', Enum::"Service Partner"::Customer);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
-        // [THEN] A new Billing Line should be created for each Usage Based Service Commitment and Contract with usage data when creating an invoice via "Usage Data Imports"
+        // [THEN] A new Billing Line should be created for each Usage Based Subscription Line and Contract with usage data when creating an invoice via "Usage Data Imports"
         BillingLine.Reset();
         Assert.AreEqual(QuantityOfServiceCommitments, BillingLine.Count(), 'A new Billing Line should be created for each Usage Based Service Commitment and Contract with usage data when creating an invoice via "Usage Data Imports"');
     end;
@@ -521,14 +518,14 @@ codeunit 148153 "Usage Based Billing Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocumentPageHandler')]
     procedure TestCreateInvoicesForMoreThanOneContractPerImportViaUsageDataImports()
     var
-        CustomerContract2: Record "Customer Contract";
-        ServiceObject2: Record "Service Object";
+        CustomerContract2: Record "Customer Subscription Contract";
+        ServiceObject2: Record "Subscription Header";
         TestSubscribers: Codeunit "Usage Based B. Test Subscr.";
         QuantityOfServiceCommitments: Integer;
     begin
         ClearAll();
         ContractTestLibrary.InitContractsApp();
-        // [GIVEN] Multiple Contracts with Usage based Service Commitments and Usage Data Billing
+        // [GIVEN] Multiple Contracts with Usage based Subscription Lines and Usage Data Billing
         ContractTestLibrary.CreateCustomer(Customer);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ContractTestLibrary.CreateCustomerContract(CustomerContract2, Customer."No.");
@@ -536,11 +533,11 @@ codeunit 148153 "Usage Based Billing Test"
 
         TestSubscribers.SetTestContext('TestCreateInvoicesForMoreThanOneContractPerImport');
         BindSubscription(TestSubscribers);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract2, ServiceObject2, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract2, ServiceObject2, false); // ExchangeRateSelectionModalPageHandler,MessageHandler
         UnbindSubscription(TestSubscribers);
 
-        ServiceCommitment.SetFilter("Service Object No.", '%1|%2', ServiceObject."No.", ServiceObject2."No.");
+        ServiceCommitment.SetFilter("Subscription Header No.", '%1|%2', ServiceObject."No.", ServiceObject2."No.");
         QuantityOfServiceCommitments := ServiceCommitment.Count();
         ServiceCommitment.FindSet();
         repeat
@@ -550,7 +547,7 @@ codeunit 148153 "Usage Based Billing Test"
         // [WHEN] Creating a billing proposal via "Usage Data Imports" (CollectCustomerContractsAndCreateInvoices)
         UsageDataImport.CollectCustomerContractsAndCreateInvoices(UsageDataImport); // CreateCustomerBillingDocumentPageHandler
 
-        // [THEN] A Billing Line should be created for Usage Based Service Commitments with usage data
+        // [THEN] A Billing Line should be created for Usage Based Subscription Lines with usage data
         BillingLine.Reset();
         Assert.AreEqual(QuantityOfServiceCommitments, BillingLine.Count(), 'A new Billing Line should be created for each Usage Based Service Commitment and Contract with usage data when creating an invoice via "Usage Data Imports"');
     end;
@@ -571,7 +568,7 @@ codeunit 148153 "Usage Based Billing Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateCustomerBillingDocumentPageHandler,MessageHandler')]
     procedure TestCreateUsageDataBillingDocumentsWhenBillingRequiredInBillingProposal()
     begin
-        // Create recurring billing for simple customer contract
+        // Create recurring billing for simple Customer Subscription Contract
         // Set update required
         // Expect no error on create Usage data billing documents
         Initialize();
@@ -580,7 +577,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
 
         CreateBillingProposalForSimpleCustomerContract();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+        ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
         ServiceCommitment.Validate("Discount %", LibraryRandom.RandDec(50, 2));
         ServiceCommitment.Modify(true);
 
@@ -609,7 +606,7 @@ codeunit 148153 "Usage Based Billing Test"
     procedure TestCreateVendorContractInvoiceFromUsageDataImport()
     begin
         Initialize();
-        CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
+        CreateUsageDataBilling("Usage Based Pricing"::"Usage Quantity", LibraryRandom.RandDec(10, 2));
         PostDocument := false;
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
         UsageDataImport.TestField("Processing Status", "Processing Status"::Ok);
@@ -775,7 +772,7 @@ codeunit 148153 "Usage Based Billing Test"
         // Expect that month between BillingDate1 and BillingDate2 is skipped
         BillingLine.Reset();
         BillingLine.SetRange(Partner, "Service Partner"::Customer);
-        BillingLine.SetRange("Service Start Date", CalcDate('<CM>', TestBillingDate));
+        BillingLine.SetRange("Subscription Line Start Date", CalcDate('<CM>', TestBillingDate));
         Assert.RecordIsEmpty(BillingLine);
     end;
 
@@ -783,7 +780,8 @@ codeunit 148153 "Usage Based Billing Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestPriceCalculationInUsageBasedBasedOnDay()
     var
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        ProcessUsageDataBilling: Codeunit "Process Usage Data Billing";
+        RoundingPrecision: Decimal;
     begin
         Initialize();
         SetupUsageDataForProcessingToGenericImport(WorkDate(), WorkDate(), WorkDate(), WorkDate(), 1, false);
@@ -794,12 +792,12 @@ codeunit 148153 "Usage Based Billing Test"
         Item."Unit Cost" := 1;
         Item.Modify(false);
         SetupItemWithMultipleServiceCommitmentPackages();
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item."No.");
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        CreateCustomerContractAndAssignServiceCommitments(TempServiceCommitment);
-        CreateVendorContractAndAssignServiceCommitments(TempServiceCommitment);
+        CreateCustomerContractAndAssignServiceCommitments();
+        CreateVendorContractAndAssignServiceCommitments();
         UsageBasedBTestLibrary.ConnectDataExchDefinitionToUsageDataGenericSettings(DataExchDef.Code, GenericImportSettings);
 
         ProcessUsageDataImport(Enum::"Processing Step"::"Create Imported Lines");
@@ -808,14 +806,15 @@ codeunit 148153 "Usage Based Billing Test"
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         UsageDataGenericImport.FindFirst();
         PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling("Usage Based Pricing"::"Usage Quantity", '1D', '1D');
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
         UsageDataImport.SetRecFilter();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Create Usage Data Billing");
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
 
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.");
         UsageDataBilling.FindSet();
-        UsageDataBilling.TestField("Unit Price", 1);
+        ProcessUsageDataBilling.SetRoundingPrecision(RoundingPrecision, UsageDataBilling."Unit Price", Currency);
+        Assert.AreEqual(Round(ServiceCommitment.Price, RoundingPrecision), UsageDataBilling."Unit Price", 'Amount was not calculated properly in Usage data.');
     end;
 
     [Test]
@@ -825,23 +824,28 @@ codeunit 148153 "Usage Based Billing Test"
         Initialize();
         CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
-        // Test update service object and service commitment
+        // Test update Subscription and Subscription Line
     end;
 
     [Test]
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestProcessUsageDataBillingWithDiscount100()
     begin
-        // [SCENARIO] Setup simple customer contract with service commitment marked as Usage based billing
-        // Add 100% discount in service commitment
+        // [SCENARIO] Setup simple Customer Subscription Contract with Subscription Line marked as Usage based billing
+        // Add 100% discount in Subscription Line
         // Processing of Usage data should proceed without an error
 
-        // [GIVEN] Setup Usage based service commitment and assign it to customer; Add Discount of 100% to the service commitment
+        // [GIVEN]: Setup Usage based Subscription Line and assign it to customer; Add Discount of 100% to the Subscription Lines
         Initialize();
         CreateUsageDataBilling("Usage Based Pricing"::"Fixed Quantity", LibraryRandom.RandDec(10, 2));
-        ServiceCommitment.FindFirst();
-        ServiceCommitment.Validate("Discount Amount", ServiceCommitment."Service Amount");  // Rounding issue; Make sure that the Discount amount is equal to Service Amount
-        ServiceCommitment.Modify(true);
+
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.FindSet();
+        repeat
+            ServiceCommitment.Validate("Discount %", 100);
+            ServiceCommitment.Modify(true);
+        until ServiceCommitment.Next() = 0;
 
         // [WHEN] Expect no error to happen on processing usage data billing
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
@@ -867,15 +871,15 @@ codeunit 148153 "Usage Based Billing Test"
                                        '1M', '1M', '1M', "Service Partner"::Customer, 100, Item."No.");
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, "Service Partner"::Customer);
         ServiceCommitment.FindFirst();
 
-        ServiceCommitment.Validate("Service Start Date", CalcDate('<-CM>', WorkDate()));
+        ServiceCommitment.Validate("Subscription Line Start Date", CalcDate('<-CM>', WorkDate()));
         ServiceCommitment.Modify(false);
-        ExpectedResult := DateTimeManagement.CalculateProRatedAmount(ServiceCommitment."Service Amount", CalcDate('<-CM>', WorkDate()), 000000T, CalcDate('<1D>', WorkDate()), 000000T, ServiceCommitment."Billing Base Period");
+        ExpectedResult := ServiceCommitment.UnitPriceForPeriod(CalcDate('<-CM>', WorkDate()), WorkDate()) * ServiceObject.Quantity;
 
-        ProcessUsageDataWithSimpleGenericImport(CalcDate('<-CM>', WorkDate()), WorkDate(), CalcDate('<-CM>', WorkDate()), WorkDate(), LibraryRandom.RandInt(10), "Usage Based Pricing"::"Fixed Quantity");
+        ProcessUsageDataWithSimpleGenericImport(CalcDate('<-CM>', WorkDate()), WorkDate(), CalcDate('<-CM>', WorkDate()), WorkDate(), ServiceObject.Quantity, "Usage Based Pricing"::"Fixed Quantity");
 
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         UsageDataBilling.CalcSums(Amount);
@@ -921,8 +925,10 @@ codeunit 148153 "Usage Based Billing Test"
         BaseAmount := 100;
         Evaluate(BillingBasePeriod, '1D');
         ChargeStartDate := CalcDate('<-CY>', WorkDate());
-        ChargeEndDate := CalcDate('<1D>', ChargeStartDate);
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T, BillingBasePeriod);
+        ChargeEndDate := ChargeStartDate;
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
+
         ExpectedResult := BaseAmount;
         Assert.AreEqual(Result, ExpectedResult, 'Amount was not calculated properly');
     end;
@@ -940,14 +946,17 @@ codeunit 148153 "Usage Based Billing Test"
         BaseAmount := 100;
         Evaluate(BillingBasePeriod, '1M');
         ChargeStartDate := CalcDate('<-CY>', WorkDate());
-        ChargeEndDate := CalcDate('<CY+1D>', ChargeStartDate);
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T, BillingBasePeriod);
+        ChargeEndDate := CalcDate('<CY>', ChargeStartDate);
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
+
         ExpectedResult := BaseAmount * 12;
         Assert.AreEqual(Result, ExpectedResult, 'Amount was not calculated properly');
 
         ChargeStartDate := CalcDate('<15D>', ChargeStartDate);
         ChargeEndDate := CalcDate('<1M>', ChargeStartDate);
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T, BillingBasePeriod);
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate - 1);
 
         Assert.AreEqual(Result, BaseAmount, 'Amount was not calculated properly');
     end;
@@ -955,7 +964,6 @@ codeunit 148153 "Usage Based Billing Test"
     [Test]
     procedure TestProratedAmountForMonthlyPriceWithDailyUsageData()
     var
-        ProcessUsageDataBilling: Codeunit "Process Usage Data Billing";
         BillingBasePeriod: DateFormula;
         ChargeEndDate: Date;
         ChargeStartDate: Date;
@@ -967,10 +975,11 @@ codeunit 148153 "Usage Based Billing Test"
         BaseAmount := 100;
         Evaluate(BillingBasePeriod, '1M');
         ChargeStartDate := CalcDate('<-CY>', WorkDate());
-        ChargeEndDate := CalcDate('<1D>', ChargeStartDate);
-        Result := ProcessUsageDataBilling.CalculateAmount(BillingBasePeriod, BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T);
+        ChargeEndDate := ChargeStartDate;
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
 
-        NoOfDaysInMonth1 := CalcDate('<CM>', ChargeEndDate) - CalcDate('<CM-1M+1D>', ChargeEndDate) + 1;
+        NoOfDaysInMonth1 := CalcDate('<CM>', ChargeEndDate) - ChargeStartDate + 1;
         ExpectedResult := BaseAmount * 1 / NoOfDaysInMonth1;
 
         Assert.AreEqual(Result, ExpectedResult, 'Amount was not calculated properly');
@@ -985,25 +994,27 @@ codeunit 148153 "Usage Based Billing Test"
         BaseAmount: Decimal;
         ExpectedResult: Decimal;
         Result: Decimal;
-        DaysInPeriod: Integer;
     begin
         BaseAmount := 100;
         Evaluate(BillingBasePeriod, '12M');
         ChargeStartDate := CalcDate('<-CY>', WorkDate());
-        ChargeEndDate := CalcDate('<CY+1D>', ChargeStartDate);
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 000000T, ChargeEndDate, 000000T, BillingBasePeriod);
+        ChargeEndDate := CalcDate('<CY>', ChargeStartDate);
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
+
         ExpectedResult := BaseAmount;
         Assert.AreEqual(ExpectedResult, Result, 'Amount was not calculated properly');
 
         Evaluate(BillingBasePeriod, '1Y');
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T, BillingBasePeriod);
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
         Assert.AreEqual(ExpectedResult, Result, 'Amount was not calculated properly');
 
-        ChargeEndDate := CalcDate('<1D>', ChargeStartDate);
-        Result := DateTimeManagement.CalculateProRatedAmount(BaseAmount, ChargeStartDate, 0T, ChargeEndDate, 0T, BillingBasePeriod);
-        DaysInPeriod := ChargeEndDate - ChargeStartDate;
-        ExpectedResult := DaysInPeriod * BaseAmount / (CalcDate('<12M>', ChargeStartDate) - ChargeStartDate); // Divide with Days in a year
-        Assert.AreEqual(ExpectedResult, Result, 'Amount was not calculated properly');
+        BaseAmount := ChargeEndDate - ChargeStartDate + 1; // Set the Amount to number of days
+        ChargeEndDate := ChargeStartDate;
+        MockServiceCommitment(ServiceCommitment, BillingBasePeriod, BillingBasePeriod, BaseAmount);
+        Result := ServiceCommitment.UnitPriceForPeriod(ChargeStartDate, ChargeEndDate);
+        Assert.AreEqual(1, Result, 'Amount was not calculated properly');
     end;
 
     [Test]
@@ -1013,7 +1024,7 @@ codeunit 148153 "Usage Based Billing Test"
         ClearAll();
         ContractTestLibrary.InitContractsApp();
 
-        // [GIVEN] Setup simple customer contract with service commitment marked as Usage based billing
+        // [GIVEN] Setup simple Customer Subscription Contract with Subscription Line marked as Usage based billing
         // Try to create a billing proposal with Billing To Date (crucial)
         ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
         ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), false);
@@ -1023,14 +1034,14 @@ codeunit 148153 "Usage Based Billing Test"
         ServiceCommPackageLine."Usage Based Billing" := true;
         ServiceCommPackageLine.Modify(false);
         ContractTestLibrary.InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         CustomerContract.SetRange("No.", CustomerContract."No.");
         CreateRecurringBillingTemplateSetupForCustomerContract('<2M-CM>', '<8M+CM>', CustomerContract.GetView());
 
         // [WHEN] Creating a billing proposal
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
-        // [THEN] No Billing Line should be created for Usage Based Service Commitments without usage data
+        // [THEN] No Billing Line should be created for Usage Based Subscription Lines without usage data
         BillingLine.Reset();
         Assert.AreEqual(true, BillingLine.IsEmpty, 'No Billing Line should be created for Usage Based Service Commitments without usage data');
     end;
@@ -1136,7 +1147,7 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         Assert.RecordCount(UsageDataBilling, 2); // Expect additional usage data billing for credit memo
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Credit Memo", SalesCrMemoHeader."No.");
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::"Credit Memo", SalesCrMemoHeader."No.");
         UsageDataBilling.FindSet();
     end;
 
@@ -1160,7 +1171,7 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Vendor);
         Assert.RecordCount(UsageDataBilling, 2); // Expect additional usage data billing for credit memo and one without document type and document no
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Credit Memo", PurchaseHeader."No.");
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Vendor, Enum::"Usage Based Billing Doc. Type"::"Credit Memo", PurchaseHeader."No.");
         UsageDataBilling.FindSet();
     end;
 
@@ -1183,7 +1194,7 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         Assert.RecordCount(UsageDataBilling, 2); // Expect additional usage data billing for credit memo and one without document type and document no
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Credit Memo", SalesCrMemoHeader."No.");
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::"Credit Memo", SalesCrMemoHeader."No.");
         UsageDataBilling.FindSet();
     end;
 
@@ -1207,10 +1218,10 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         Assert.RecordCount(UsageDataBilling, 3); // Expect additional usage data billing for credit memo and one without document type and document no
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
         UsageDataBilling.FindSet();
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::None, '');
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::None, '');
         UsageDataBilling.FindSet();
     end;
 
@@ -1237,10 +1248,10 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Vendor);
         Assert.RecordCount(UsageDataBilling, 3); // Expect additional usage data billing for credit memo and one without document type and document no
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Vendor, Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
         UsageDataBilling.FindSet();
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::None, '');
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Vendor, Enum::"Usage Based Billing Doc. Type"::None, '');
         UsageDataBilling.FindSet();
     end;
 
@@ -1282,10 +1293,10 @@ codeunit 148153 "Usage Based Billing Test"
         FilterUsageDataBillingOnUsageDataImport(UsageDataImport."Entry No.", "Service Partner"::Customer);
         Assert.RecordCount(UsageDataBilling, 3); // Expect additional usage data billing for credit memo and one without document type and document no
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::"Posted Credit Memo", CorrectedDocumentNo);
         UsageDataBilling.FindSet();
 
-        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Usage Based Billing Doc. Type"::None, '');
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(Enum::"Service Partner"::Customer, Enum::"Usage Based Billing Doc. Type"::None, '');
         UsageDataBilling.FindSet();
     end;
 
@@ -1344,10 +1355,10 @@ codeunit 148153 "Usage Based Billing Test"
     var
         ItemReference: Record "Item Reference";
     begin
-        // [SCENARIO]: The Service Object Availability should be properly updated after processing imported lines
-        // When there is no available Service Object to be connected to the imported line status should be "Not Available"
-        // When there is available Service Object to be connected to the imported line status should be "Available"
-        // When a Service Object is connected to the imported line status should be "Connected"
+        // [SCENARIO]: The Subscription Availability should be properly updated after processing imported lines
+        // When there is no available Subscription to be connected to the imported line status should be "Not Available"
+        // When there is available Subscription to be connected to the imported line status should be "Available"
+        // When a Subscription is connected to the imported line status should be "Connected"
 
         // [GIVEN]: Setup Generic Connector and import lines from a file
         Initialize();
@@ -1363,30 +1374,30 @@ codeunit 148153 "Usage Based Billing Test"
         // [WHEN]: process imported lines
         ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
 
-        // [THEN]: Test if Service Object Availability is set to "Not Available"
+        // [THEN]: Test if Subscription Availability is set to "Not Available"
         ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::"Not Available", '');
 
         // [WHEN]: insert an item reference to a usage data supplier reference
-        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID");
+        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID");
         UsageDataSupplierReference.FindSupplierReference(UsageDataImport."Supplier No.", UsageDataSubscription."Product ID", Enum::"Usage Data Reference Type"::Product);
         LibraryItemReference.CreateItemReference(ItemReference, Item."No.", "Item Reference Type"::Vendor, UsageDataSupplier."Vendor No.");
         ItemReference."Supplier Ref. Entry No." := UsageDataSupplierReference."Entry No.";
         ItemReference.Modify(false);
         ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
 
-        // [THEN]: Test if Service Object Availability is set to "Available"
+        // [THEN]: Test if Subscription Availability is set to "Available"
         ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::Available, '');
 
-        // [WHEN]: insert an subscription reference is set for Service Commitment
-        UsageDataSupplierReference.FindSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        // [WHEN]: insert an subscription reference is set for Subscription Line
+        UsageDataSupplierReference.FindSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindFirst();
         ServiceCommitment."Supplier Reference Entry No." := UsageDataSupplierReference."Entry No.";
         ServiceCommitment.Modify(false);
         ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
 
-        // [THEN]: Test if Service Object Availability is set to "Connected"
+        // [THEN]: Test if Subscription Availability is set to "Connected"
         ValidateUsageDataGenericImportAvailability(UsageDataImport."Entry No.", "Service Object Availability"::Connected, ServiceObject."No.");
     end;
 
@@ -1445,27 +1456,115 @@ codeunit 148153 "Usage Based Billing Test"
         ResetAll();
         UsageBasedBTestLibrary.MockBillingLineWithServObjectNo(BillingLines[1]);
         UsageBasedBTestLibrary.MockBillingLine(BillingLines[2]);
-        BillingLines[2]."Service Object No." := BillingLines[1]."Service Object No.";
-        BillingLines[2]."Service Commitment Entry No." := BillingLines[1]."Service Commitment Entry No.";
+        BillingLines[2]."Subscription Header No." := BillingLines[1]."Subscription Header No.";
+        BillingLines[2]."Subscription Line Entry No." := BillingLines[1]."Subscription Line Entry No.";
         UsageBasedBTestLibrary.CreateSalesInvoiceAndAssignToBillingLine(BillingLines[1]);
         UsageBasedBTestLibrary.MockUsageDataForBillingLine(UsageDataBillings[1], BillingLines[1]);
         UsageBasedBTestLibrary.MockUsageDataForBillingLine(UsageDataBillings[2], BillingLines[2]);
 
         // [WHEN] Billing line with assigned Document No. is selected
-        UsageDataBillings[1].ShowForRecurringBilling(BillingLines[1]."Service Object No.", BillingLines[1]."Service Commitment Entry No.", BillingLines[1]."Document Type", BillingLines[1]."Document No."); // UsageDataBillingsModalPageHandler
+        UsageDataBillings[1].ShowForRecurringBilling(BillingLines[1]."Subscription Header No.", BillingLines[1]."Subscription Line Entry No.", BillingLines[1]."Document Type", BillingLines[1]."Document No."); // UsageDataBillingsModalPageHandler
 
         // [THEN] Usage Data Billing is filtered and only one record is visible
         Assert.IsTrue(LibraryVariableStorage.DequeueBoolean(), 'Usage Data Billing is not found, but should be.');
         Assert.IsFalse(LibraryVariableStorage.DequeueBoolean(), 'Usage Data Billing is found, but should not be');
 
         // [WHEN] Billing line without Document No. is selected
-        UsageDataBillings[2].ShowForRecurringBilling(BillingLines[2]."Service Object No.", BillingLines[2]."Service Commitment Entry No.", BillingLines[2]."Document Type", BillingLines[2]."Document No."); // UsageDataBillingsModalPageHandler
+        UsageDataBillings[2].ShowForRecurringBilling(BillingLines[2]."Subscription Header No.", BillingLines[2]."Subscription Line Entry No.", BillingLines[2]."Document Type", BillingLines[2]."Document No."); // UsageDataBillingsModalPageHandler
 
         // [THEN] Usage Data Billing is filtered and only one record is visible
         Assert.IsTrue(LibraryVariableStorage.DequeueBoolean(), 'Usage Data Billing is not found, but should be.');
         Assert.IsFalse(LibraryVariableStorage.DequeueBoolean(), 'Usage Data Billing is found, but should not be');
     end;
 
+    [Test]
+    [HandlerFunctions('MessageHandler,CreateCustomerBillingDocumentPageHandler')]
+    procedure TestUsageDataImportWithMultipleUsageDataGenericImports()
+    var
+        UBBTestLibrary: Codeunit "Usage Based B. Test Library";
+        BillingPeriodStartDate: Date;
+        SubscriptionStartDate: Date;
+        SubscriptionID: Text;
+        ExpectedAmount: Decimal;
+    begin
+        // [SCENARIO] Verify that usage data import with multiple usage data generic imports creates correct billing and invoices
+
+        // [GIVEN] Initialize the contracts and usage-based billing applications
+        ContractTestLibrary.InitContractsApp();
+
+        // [GIVEN] Create a Subscription Item
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        Item."Unit Price" := LibraryRandom.RandDec(1000, 2);
+        Item."Unit Cost" := LibraryRandom.RandDec(1000, 2);
+        Item.Modify(false);
+
+        // [GIVEN] Setup Subscription with Subscription Lines and usage quantity
+        SetupServiceDataForProcessing(Enum::"Usage Based Pricing"::"Usage Quantity", Enum::"Calculation Base Type"::"Item Price", Enum::"Invoicing Via"::Contract,
+                                       '1M', '1M', '1M', "Service Partner"::Customer, 100, Item."No.");
+
+        // [WHEN] Create and process simple usage data
+        UBBTestLibrary.CreateUsageDataSupplier(UsageDataSupplier, Enum::"Usage Data Supplier Type"::Generic, false, Enum::"Vendor Invoice Per"::Import);
+        UBBTestLibrary.CreateGenericImportSettings(GenericImportSettings, UsageDataSupplier."No.", true, true);
+        UBBTestLibrary.CreateUsageDataImport(UsageDataImport, UsageDataSupplier."No.");
+        BillingPeriodStartDate := CalcDate('<-CM>', WorkDate());
+        SubscriptionStartDate := CalcDate('<-CM>', WorkDate());
+        SubscriptionID := LibraryRandom.RandText(80);
+        for i := 1 to LibraryRandom.RandInt(10) do begin
+            UBBTestLibrary.CreateSimpleUsageDataGenericImport(UsageDataGenericImport, UsageDataImport."Entry No.", ServiceObject."No.", Customer."No.", Item."Unit Cost",
+             BillingPeriodStartDate, CalcDate('<CM>', BillingPeriodStartDate), SubscriptionStartDate, CalcDate('<CM>', SubscriptionStartDate), LibraryRandom.RandInt(10));
+
+            UsageDataGenericImport."Supp. Subscription ID" := SubscriptionID;
+            UsageDataGenericImport.Modify();
+            BillingPeriodStartDate := CalcDate('<1M>', BillingPeriodStartDate);
+            SubscriptionStartDate := CalcDate('<1M>', SubscriptionStartDate);
+        end;
+        ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
+
+        // [WHEN] Prepare Subscription Line and usage data generic import for usage billing
+        UsageDataGenericImport.Reset();
+        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataGenericImport.FindFirst();
+        repeat
+            PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(Enum::"Usage Based Pricing"::"Usage Quantity", '1M', '1M', Calcdate('<-CM>', WorkDate()));
+        until UsageDataGenericImport.Next() = 0;
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
+
+        // [WHEN] Process usage data import to create and process usage data billing
+        UsageDataImport.SetRecFilter();
+        UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Create Usage Data Billing");
+        UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Process Usage Data Billing");
+
+        // [WHEN] Create contract invoice from usage data
+        UsageDataImport.CollectCustomerContractsAndCreateInvoices(UsageDataImport);
+
+        // [THEN] Verify that Line Amount in the Invoice equals the sum of all Usage Billing Data Amounts
+        UsageDataBilling.Reset();
+        UsageDataBilling.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataBilling.SetRange(Partner, "Service Partner"::Customer);
+        UsageDataBilling.CalcSums(Amount);
+        ExpectedAmount := UsageDataBilling.Amount;
+        UsageDataBilling.FindLast();
+
+        SalesLine.SetRange("Document Type", "Sales Document Type"::Invoice);
+        SalesLine.SetRange("Document No.", UsageDataBilling."Document No.");
+        SalesLine.SetRange("Line No.", UsageDataBilling."Document Line No.");
+        SalesLine.FindFirst();
+        Assert.AreEqual(ExpectedAmount, SalesLine.Amount, 'Line Amount in the Invoice should be equal to the sum of all Usage Billing Data Amounts');
+        Assert.AreEqual(UsageDataBilling.Quantity, SalesLine.Quantity, 'Quantity in the Invoice should be equal to the Quantity of Last Usage Billing Data');
+
+        // [THEN] Verify that each Billing line corresponds to each Usage Data Billing
+        BillingLine.Reset();
+        BillingLine.SetRange("Document No.", UsageDataBilling."Document No.");
+        BillingLine.FindFirst();
+        repeat
+            UsageDataBilling.SetRange("Document No.", BillingLine."Document No.");
+            UsageDataBilling.SetRange("Charge Start Date", BillingLine."Billing from");
+            UsageDataBilling.SetRange("Charge End Date", BillingLine."Billing to");
+            UsageDataBilling.FindFirst();
+            Assert.AreEqual(BillingLine.Amount, UsageDataBilling.Amount, 'Billing Line Amount should be equal to Usage Data Billing Amount');
+            Assert.AreEqual(BillingLine."Service Object Quantity", UsageDataBilling.Quantity, 'Billing Line Quantity should be equal to Usage Data Billing Quantity');
+        until BillingLine.Next() = 0;
+    end;
     #endregion Tests
 
     #region Procedures
@@ -1483,6 +1582,7 @@ codeunit 148153 "Usage Based Billing Test"
         LibraryERMCountryData.UpdateSalesReceivablesSetup();
         LibraryERMCountryData.UpdateGeneralLedgerSetup();
         LibraryERMCountryData.UpdateJournalTemplMandatory(false);
+        ContractTestLibrary.InitSourceCodeSetup();
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Usage Based Billing Test");
     end;
@@ -1513,7 +1613,7 @@ codeunit 148153 "Usage Based Billing Test"
             repeat
                 BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
                 BillingLine.TestField("Document No.");
-                ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+                ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
                 ServiceCommitment.TestField("Usage Based Billing");
                 ServiceCommitment.TestField("Supplier Reference Entry No.");
 
@@ -1522,8 +1622,10 @@ codeunit 148153 "Usage Based Billing Test"
                 PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
                 PurchaseLine.SetFilter("Recurring Billing from", '>=%1', BillingLine."Billing from");
                 PurchaseLine.SetFilter("Recurring Billing to", '<=%1', BillingLine."Billing to");
-                Assert.AreEqual(1, PurchaseLine.Count, 'The Purchase lines were not created properly.');
+                Assert.RecordCount(PurchaseLine, 1);
                 TestIfRelatedUsageDataBillingIsUpdated("Service Partner"::Vendor, UsageBasedDocTypeConverter.ConvertPurchaseDocTypeToUsageBasedBillingDocType(PurchaseHeader."Document Type"), PurchaseHeader."No.", true, BillingLine."Entry No.");
+                PurchaseLine.FindFirst();
+                TestIfInvoicesMatchesUsageData("Service Partner"::Vendor, PurchaseLine."Line Amount", PurchaseLine."Document No.");
             until BillingLine.Next() = 0;
     end;
 
@@ -1533,7 +1635,7 @@ codeunit 148153 "Usage Based Billing Test"
         repeat
             BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
             BillingLine.TestField("Document No.");
-            ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+            ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
             ServiceCommitment.TestField("Usage Based Billing");
             ServiceCommitment.TestField("Supplier Reference Entry No.");
 
@@ -1542,16 +1644,31 @@ codeunit 148153 "Usage Based Billing Test"
             SalesLine.SetRange("Document No.", SalesHeader."No.");
             SalesLine.SetFilter("Recurring Billing from", '>=%1', BillingLine."Billing from");
             SalesLine.SetFilter("Recurring Billing to", '<=%1', BillingLine."Billing to");
-            Assert.AreEqual(1, SalesLine.Count, 'The Sales lines were not created properly.');
+            Assert.RecordCount(SalesLine, 1);
             TestIfRelatedUsageDataBillingIsUpdated("Service Partner"::Customer, UsageBasedDocTypeConverter.ConvertSalesDocTypeToUsageBasedBillingDocType(SalesHeader."Document Type"), SalesHeader."No.", true, BillingLine."Entry No.");
+            SalesLine.FindFirst();
+            TestIfInvoicesMatchesUsageData("Service Partner"::Customer, SalesLine."Line Amount", SalesLine."Document No.");
         until BillingLine.Next() = 0;
+    end;
+
+    local procedure TestIfInvoicesMatchesUsageData(ServicePartner: Enum "Service Partner"; InvoiceAmount: Decimal; DocumentNo: Code[20])
+    begin
+        UsageDataBilling.Reset();
+        UsageDataBilling.FilterOnDocumentTypeAndDocumentNo(ServicePartner, Enum::"Usage Based Billing Doc. Type"::"Invoice", DocumentNo);
+        UsageDataBilling.CalcSums(Amount, "Cost Amount");
+        case ServicePartner of
+            ServicePartner::Customer:
+                Assert.AreEqual(UsageDataBilling.Amount, InvoiceAmount, 'The Sales Invoice lines were not created properly.');
+            ServicePartner::Vendor:
+                Assert.AreEqual(UsageDataBilling."Cost Amount", InvoiceAmount, 'The Purchase Invoice lines were not created properly.');
+        end;
     end;
 
     local procedure CheckIfServiceCommitmentRemains()
     begin
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", UsageDataBilling."Service Object No.");
-        ServiceCommitment.SetRange("Entry No.", UsageDataBilling."Service Commitment Entry No.");
+        ServiceCommitment.SetRange("Subscription Header No.", UsageDataBilling."Subscription Header No.");
+        ServiceCommitment.SetRange("Entry No.", UsageDataBilling."Subscription Line Entry No.");
         ServiceCommitment.FindSet();
         repeat
             if ServiceCommitment.Partner = "Service Partner"::Customer then
@@ -1563,7 +1680,7 @@ codeunit 148153 "Usage Based Billing Test"
 
     local procedure CheckIfSubscriptionSupplierReferencesAreIsCreated()
     begin
-        UsageDataSupplierReference.FilterUsageDataSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
+        UsageDataSupplierReference.FilterUsageDataSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
         UsageDataSupplierReference.FindFirst();
     end;
 
@@ -1576,14 +1693,14 @@ codeunit 148153 "Usage Based Billing Test"
 
     local procedure CheckIfUsageDataSubscriptionIsCreated()
     begin
-        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID");
+        UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID");
         UsageDataSubscription.TestField("Customer ID", UsageDataGenericImport."Customer ID");
         UsageDataSubscription.TestField("Product ID", UsageDataGenericImport."Product ID");
         UsageDataSubscription.TestField("Product Name", UsageDataGenericImport."Product Name");
         UsageDataSubscription.TestField("Unit Type", UsageDataGenericImport.Unit);
         UsageDataSubscription.TestField(Quantity, UsageDataGenericImport.Quantity);
-        UsageDataSubscription.TestField("Start Date", UsageDataGenericImport."Subscription Start Date");
-        UsageDataSubscription.TestField("End Date", UsageDataGenericImport."Subscription End Date");
+        UsageDataSubscription.TestField("Start Date", UsageDataGenericImport."Supp. Subscription Start Date");
+        UsageDataSubscription.TestField("End Date", UsageDataGenericImport."Supp. Subscription End Date");
     end;
 
     local procedure ConvertDocumentType(DocumentType: Enum "Rec. Billing Document Type"): Enum "Usage Based Billing Doc. Type"
@@ -1616,17 +1733,19 @@ codeunit 148153 "Usage Based Billing Test"
 
         CheckIfServiceCommitmentRemains();
 
-        BillingLine.FilterBillingLineOnContractLine(UsageDataBilling.Partner, UsageDataBilling."Contract No.", UsageDataBilling."Contract Line No.");
-        BillingLine.CalcSums("Service Amount");
-        Assert.AreEqual(Round(BillingLine."Service Amount", Currency."Unit-Amount Rounding Precision"), ExpectedInvoiceAmount, 'Billing lines where not created properly');
+        BillingLine.FilterBillingLineOnContractLine(UsageDataBilling.Partner, UsageDataBilling."Subscription Contract No.", UsageDataBilling."Subscription Contract Line No.");
+        BillingLine.CalcSums(Amount);
+        Assert.AreEqual(Round(BillingLine.Amount, Currency."Unit-Amount Rounding Precision"), ExpectedInvoiceAmount, 'Billing lines where not created properly');
     end;
 
-    local procedure CreateCustomerContractAndAssignServiceCommitments(var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure CreateCustomerContractAndAssignServiceCommitments()
+    var
+        TempServiceCommitment: Record "Subscription Line" temporary;
     begin
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         ContractTestLibrary.FillTempServiceCommitment(TempServiceCommitment, ServiceObject, CustomerContract);
         CustomerContract.CreateCustomerContractLinesFromServiceCommitments(TempServiceCommitment);
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.FindLast();
         ContractTestLibrary.SetGeneralPostingSetup(Customer."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group", false, Enum::"Service Partner"::Customer);
     end;
@@ -1643,7 +1762,7 @@ codeunit 148153 "Usage Based Billing Test"
         Item."Unit Cost" := LibraryRandom.RandDec(1000, 2);
         Item.Modify(false);
         SetupItemWithMultipleServiceCommitmentPackages();
-        ContractTestLibrary.CreateServiceObject(ServiceObject, Item."No.");
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item."No.");
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(ServiceAndCalculationStartDate);
         ServiceObject."End-User Customer No." := CustomerNo;
         ServiceObject.Modify(false);
@@ -1663,39 +1782,41 @@ codeunit 148153 "Usage Based Billing Test"
         ProcessUsageDataImport(Enum::"Processing Step"::"Create Imported Lines");
         ProcessUsageDataImport(Enum::"Processing Step"::"Process Imported Lines");
 
-        // Error is expected because Usage data subscription is created in this step - linking with service commitment is second step
+        // Error is expected because Usage data subscription is created in this step - linking with Subscription Line is second step
         // Therefore Processing needs to be performed twice - refer to AB2070
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         UsageDataGenericImport.FindFirst();
         PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
         UsageDataImport.SetRecFilter();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Create Usage Data Billing");
     end;
 
-    local procedure CreateUsageDataBillingDummyDataFromServiceCommitment(var NewUsageDataBilling: Record "Usage Data Billing"; UsageDataImportEntryNo: Integer; SourceServiceCommitment: Record "Service Commitment")
+    local procedure CreateUsageDataBillingDummyDataFromServiceCommitment(var NewUsageDataBilling: Record "Usage Data Billing"; UsageDataImportEntryNo: Integer; SourceServiceCommitment: Record "Subscription Line")
     begin
-        SourceServiceCommitment.SetAutoCalcFields("Quantity Decimal");
+        SourceServiceCommitment.SetAutoCalcFields(Quantity);
         NewUsageDataBilling."Entry No." := 0;
         NewUsageDataBilling."Usage Data Import Entry No." := UsageDataImportEntryNo;
         NewUsageDataBilling.Partner := SourceServiceCommitment.Partner;
-        NewUsageDataBilling."Service Object No." := SourceServiceCommitment."Service Object No.";
-        NewUsageDataBilling."Service Commitment Entry No." := SourceServiceCommitment."Entry No.";
-        NewUsageDataBilling."Contract No." := SourceServiceCommitment."Contract No.";
-        NewUsageDataBilling."Contract Line No." := SourceServiceCommitment."Contract Line No.";
-        NewUsageDataBilling.Quantity := SourceServiceCommitment."Quantity Decimal";
+        NewUsageDataBilling."Subscription Header No." := SourceServiceCommitment."Subscription Header No.";
+        NewUsageDataBilling."Subscription Line Entry No." := SourceServiceCommitment."Entry No.";
+        NewUsageDataBilling."Subscription Contract No." := SourceServiceCommitment."Subscription Contract No.";
+        NewUsageDataBilling."Subscription Contract Line No." := SourceServiceCommitment."Subscription Contract Line No.";
+        NewUsageDataBilling.Quantity := SourceServiceCommitment.Quantity;
         NewUsageDataBilling."Charge Start Date" := WorkDate();
         NewUsageDataBilling."Charge End Date" := CalcDate('<CM>', WorkDate());
         NewUsageDataBilling.Insert(true);
     end;
 
-    local procedure CreateVendorContractAndAssignServiceCommitments(var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure CreateVendorContractAndAssignServiceCommitments()
+    var
+        TempServiceCommitment: Record "Subscription Line" temporary;
     begin
         ContractTestLibrary.CreateVendor(Vendor);
         ContractTestLibrary.CreateVendorContract(VendorContract, Vendor."No.");
         ContractTestLibrary.FillTempServiceCommitmentForVendor(TempServiceCommitment, ServiceObject, VendorContract);
         VendorContract.CreateVendorContractLinesFromServiceCommitments(TempServiceCommitment);
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.FindLast();
         ContractTestLibrary.SetGeneralPostingSetup(Vendor."Gen. Bus. Posting Group", Item."Gen. Prod. Posting Group", false, Enum::"Service Partner"::Vendor);
     end;
@@ -1775,21 +1896,31 @@ codeunit 148153 "Usage Based Billing Test"
         PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing, '', '');
     end;
 
-    local procedure PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing: Enum "Usage Based Pricing"; BillingBasePeriod: Text; BillingRhythm: Text)
+    local procedure PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing: Enum "Usage Based Pricing"; BillingBasePeriod: Text;
+                                                                                                                BillingRhythm: Text)
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing, BillingBasePeriod, BillingRhythm, 0D);
+
+    end;
+
+    local procedure PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing: Enum "Usage Based Pricing"; BillingBasePeriod: Text;
+                                                                                                            BillingRhythm: Text; ServiceStartDate: Date)
+    begin
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             ServiceCommitment."Usage Based Pricing" := UsageBasedPricing;
+            if ServiceStartDate <> 0D then
+                ServiceCommitment."Subscription Line Start Date" := CalcDate('<-CM>', WorkDate());
             if BillingBasePeriod <> '' then
                 Evaluate(ServiceCommitment."Billing Base Period", BillingBasePeriod);
             if BillingRhythm <> '' then
                 Evaluate(ServiceCommitment."Billing Rhythm", BillingRhythm);
-            UsageDataSupplierReference.FilterUsageDataSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
+            UsageDataSupplierReference.FilterUsageDataSupplierReference(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID", Enum::"Usage Data Reference Type"::Subscription);
             if UsageDataSupplierReference.FindFirst() then
                 ServiceCommitment."Supplier Reference Entry No." := UsageDataSupplierReference."Entry No.";
             ServiceCommitment.Modify(false);
-            UsageDataGenericImport."Service Object No." := ServiceObject."No.";
+            UsageDataGenericImport."Subscription Header No." := ServiceObject."No.";
             UsageDataGenericImport.Modify(false);
         until ServiceCommitment.Next() = 0;
     end;
@@ -1798,15 +1929,15 @@ codeunit 148153 "Usage Based Billing Test"
     begin
         UsageDataImport."Processing Step" := ProcessingStep;
         UsageDataImport.Modify(false);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
     end;
 
-    local procedure ProcessUsageDataWithSimpleGenericImport(BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
+    local procedure ProcessUsageDataWithSimpleGenericImport(BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Decimal)
     begin
         ProcessUsageDataWithSimpleGenericImport(BillingPeriodStartDate, BillingPeriodEndDate, SubscriptionStartDate, SubscriptionEndDate, Quantity, "Usage Based Pricing"::"Usage Quantity");
     end;
 
-    local procedure ProcessUsageDataWithSimpleGenericImport(BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer; UsageBasedPricing: Enum "Usage Based Pricing")
+    local procedure ProcessUsageDataWithSimpleGenericImport(BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Decimal; UsageBasedPricing: Enum "Usage Based Pricing")
     begin
         UsageBasedBTestLibrary.CreateUsageDataSupplier(UsageDataSupplier, Enum::"Usage Data Supplier Type"::Generic, false, Enum::"Vendor Invoice Per"::Import);
         UsageBasedBTestLibrary.CreateGenericImportSettings(GenericImportSettings, UsageDataSupplier."No.", true, true);
@@ -1816,7 +1947,7 @@ codeunit 148153 "Usage Based Billing Test"
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         UsageDataGenericImport.FindFirst();
         PrepareServiceCommitmentAndUsageDataGenericImportForUsageBilling(UsageBasedPricing);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
 
         UsageDataImport.SetRecFilter();
         UsageDataImport.ProcessUsageDataImport(UsageDataImport, Enum::"Processing Step"::"Create Usage Data Billing");
@@ -1842,7 +1973,7 @@ codeunit 148153 "Usage Based Billing Test"
         ServiceCommitmentTemplate."Calculation Base Type" := "Calculation Base Type"::"Item Price";
         ServiceCommitmentTemplate."Usage Based Billing" := true;
         ServiceCommitmentTemplate.Modify(false);
-        // Standard Service Comm. Package with two Service Comm. Package Lines
+        // Standard Subscription Package with two Subscription Package Lines
         // 1. for Customer
         // 2. for Vendor
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
@@ -1865,7 +1996,7 @@ codeunit 148153 "Usage Based Billing Test"
         ItemServCommitmentPackage.Standard := true;
         ItemServCommitmentPackage.Modify(false);
 
-        // Additional Service Commitment Package
+        // Additional Subscription Package
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -1884,8 +2015,6 @@ codeunit 148153 "Usage Based Billing Test"
                                                                          ServicePartner: Enum "Service Partner";
                                                                          CalculationBase: Decimal;
                                                                          ItemNo: Code[20])
-    var
-        TempServiceCommitment: Record "Service Commitment" temporary;
     begin
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate."Usage Based Billing" := true;
@@ -1903,21 +2032,19 @@ codeunit 148153 "Usage Based Billing Test"
         ItemServCommitmentPackage.Modify(false);
 
         LibrarySales.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObject(ServiceObject, ItemNo);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, ItemNo);
         ServiceObject.InsertServiceCommitmentsFromStandardServCommPackages(WorkDate());
         ServiceObject."End-User Customer No." := Customer."No.";
         ServiceObject.Modify(false);
-        CreateCustomerContractAndAssignServiceCommitments(TempServiceCommitment);
+        CreateCustomerContractAndAssignServiceCommitments();
     end;
 
     local procedure SetupServiceObjectAndContracts(ServiceAndCalculationStartDate: Date)
-    var
-        TempServiceCommitment: Record "Service Commitment" temporary;
     begin
         ContractTestLibrary.CreateCustomer(Customer);
         CreateServiceObjectWithServiceCommitments(Customer."No.", ServiceAndCalculationStartDate);
-        CreateCustomerContractAndAssignServiceCommitments(TempServiceCommitment);
-        CreateVendorContractAndAssignServiceCommitments(TempServiceCommitment);
+        CreateCustomerContractAndAssignServiceCommitments();
+        CreateVendorContractAndAssignServiceCommitments();
     end;
 
     local procedure SetupUsageDataForProcessingToGenericImport()
@@ -1937,8 +2064,18 @@ codeunit 148153 "Usage Based Billing Test"
         UsageBasedBTestLibrary.CreateUsageDataImport(UsageDataImport, UsageDataSupplier."No.");
         RRef.GetTable(UsageDataGenericImport);
         UsageDataBlob.InsertFromUsageDataImport(UsageDataImport);
-        UsageBasedBTestLibrary.CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(UsageDataBlob, RRef, ServiceObject."No.", ServiceCommitment."Entry No.", BillingPeriodStartingDate, BillingPeriodEndingDate,
-                                                                                    SubscriptionStartingDate, SubscriptionEndingDate, Quantity);
+        UsageBasedBTestLibrary.CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(
+                    UsageDataBlob,
+                    RRef,
+                    CopyStr(LibraryRandom.RandText(80), 1, 80),
+                    CopyStr(LibraryRandom.RandText(80), 1, 80),
+                    ServiceObject."No.",
+                    ServiceCommitment."Entry No.",
+                    BillingPeriodStartingDate,
+                    BillingPeriodEndingDate,
+                    SubscriptionStartingDate,
+                    SubscriptionEndingDate,
+                    Quantity);
     end;
 
     local procedure TestIfRelatedUsageDataBillingIsUpdated(ServicePartner: Enum "Service Partner"; UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; TestNotEmptyDocLineNo: Boolean; BillingLineNo: Integer)
@@ -1949,8 +2086,8 @@ codeunit 148153 "Usage Based Billing Test"
             UsageDataBilling.TestField("Document Type", UsageBasedBillingDocType);
             UsageDataBilling.TestField("Document No.", DocumentNo);
             if BillingLineNo <> 0 then
-                UsageDataBilling.TestField("Billing Line Entry No.", GetBillingEntryNo(BillingLine."Document Type", BillingLine.Partner, DocumentNo, UsageDataBilling."Contract No.",
-                                                              UsageDataBilling."Contract Line No."));
+                UsageDataBilling.TestField("Billing Line Entry No.", GetBillingEntryNo(BillingLine."Document Type", BillingLine.Partner, DocumentNo, UsageDataBilling."Subscription Contract No.",
+                                                              UsageDataBilling."Subscription Contract Line No."));
             // Billing Line No. is always last line no. for Contract No. and Contract Line No.
             if TestNotEmptyDocLineNo then
                 UsageDataBilling.TestField("Document Line No.")
@@ -1962,23 +2099,21 @@ codeunit 148153 "Usage Based Billing Test"
     local procedure TestUsageDataBilling()
     begin
         UsageDataBilling.TestField("Usage Data Import Entry No.", UsageDataGenericImport."Usage Data Import Entry No.");
-        UsageDataBilling.TestField("Service Object No.", UsageDataGenericImport."Service Object No.");
+        UsageDataBilling.TestField("Subscription Header No.", UsageDataGenericImport."Subscription Header No.");
         UsageDataBilling.TestField("Charge Start Date", UsageDataGenericImport."Billing Period Start Date");
-        UsageDataBilling.TestField("Charge Start Time", 000000T);
-        UsageDataBilling.TestField("Charge End Date", CalcDate('<+1D>', UsageDataGenericImport."Billing Period End Date"));
-        UsageDataBilling.TestField("Charge End Time", 000000T);
+        UsageDataBilling.TestField("Charge End Date", UsageDataGenericImport."Billing Period End Date");
         UsageDataBilling.TestField("Unit Cost", UsageDataGenericImport.Cost);
         UsageDataBilling.TestField(Quantity, UsageDataGenericImport.Quantity);
         UsageDataBilling.TestField("Cost Amount", UsageDataGenericImport."Cost Amount");
         UsageDataBilling.TestField(Amount, 0);
         UsageDataBilling.TestField("Unit Price", 0);
         UsageDataBilling.TestField("Currency Code", UsageDataGenericImport.Currency);
-        UsageDataBilling.TestField("Service Object No.", ServiceCommitment."Service Object No.");
+        UsageDataBilling.TestField("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         UsageDataBilling.TestField(Partner, ServiceCommitment.Partner);
-        UsageDataBilling.TestField("Contract No.", ServiceCommitment."Contract No.");
-        UsageDataBilling.TestField("Contract Line No.", ServiceCommitment."Contract Line No.");
-        UsageDataBilling.TestField("Service Object No.", ServiceCommitment."Service Object No.");
-        UsageDataBilling.TestField("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+        UsageDataBilling.TestField("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+        UsageDataBilling.TestField("Subscription Contract Line No.", ServiceCommitment."Subscription Contract Line No.");
+        UsageDataBilling.TestField("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        UsageDataBilling.TestField("Subscription Line Entry No.", ServiceCommitment."Entry No.");
         UsageDataBilling.TestField("Usage Base Pricing", ServiceCommitment."Usage Based Pricing");
         UsageDataBilling.TestField("Pricing Unit Cost Surcharge %", ServiceCommitment."Pricing Unit Cost Surcharge %");
     end;
@@ -1988,9 +2123,16 @@ codeunit 148153 "Usage Based Billing Test"
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
         UsageDataGenericImport.FindFirst();
         Assert.AreEqual(ExpectedServiceObjectAvailability, UsageDataGenericImport."Service Object Availability", 'Service Object Availability is not set to expected value in Usage Data Generic Import.');
-        Assert.AreEqual(ExpectedServiceObjectNo, UsageDataGenericImport."Service Object No.", 'Service Object No. is not set to expected value in Usage Data Generic Import.');
+        Assert.AreEqual(ExpectedServiceObjectNo, UsageDataGenericImport."Subscription Header No.", 'Service Object No. is not set to expected value in Usage Data Generic Import.');
     end;
 
+    local procedure MockServiceCommitment(var ServiceCommitment: Record "Subscription Line"; BillingBasePeriod: DateFormula; BillingRhythm: DateFormula; Price: Decimal)
+    begin
+        ServiceCommitment.Init();
+        ServiceCommitment."Billing Base Period" := BillingBasePeriod;
+        ServiceCommitment."Billing Rhythm" := BillingRhythm;
+        ServiceCommitment.Price := Price;
+    end;
     #endregion Procedures
 
     #region Handlers

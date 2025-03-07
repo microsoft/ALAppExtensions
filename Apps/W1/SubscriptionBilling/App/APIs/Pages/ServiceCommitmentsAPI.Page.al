@@ -9,7 +9,7 @@ page 8018 "Service Commitments API"
     EntityName = 'serviceCommitment';
     EntitySetName = 'serviceCommitments';
     PageType = API;
-    SourceTable = "Service Commitment";
+    SourceTable = "Subscription Line";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -24,13 +24,13 @@ page 8018 "Service Commitments API"
                 field(systemId; Rec.SystemId)
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
                 field(entryNo; Rec."Entry No.")
                 {
                 }
-                field(packageCode; Rec."Package Code")
+                field(packageCode; Rec."Subscription Package Code")
                 {
                 }
                 field(template; Rec.Template)
@@ -39,10 +39,10 @@ page 8018 "Service Commitments API"
                 field(description; Rec.Description)
                 {
                 }
-                field(serviceStartDate; Rec."Service Start Date")
+                field(serviceStartDate; Rec."Subscription Line Start Date")
                 {
                 }
-                field(serviceEndDate; Rec."Service End Date")
+                field(serviceEndDate; Rec."Subscription Line End Date")
                 {
                 }
                 field(nextBillingDate; Rec."Next Billing Date")
@@ -54,6 +54,12 @@ page 8018 "Service Commitments API"
                 field(calculationBase; Rec."Calculation Base %")
                 {
                 }
+                field(unitCost; Rec."Unit Cost")
+                {
+                }
+                field(unitCostLCY; Rec."Unit Cost (LCY)")
+                {
+                }
                 field(price; Rec.Price)
                 {
                 }
@@ -63,7 +69,7 @@ page 8018 "Service Commitments API"
                 field(discountAmount; Rec."Discount Amount")
                 {
                 }
-                field(serviceAmount; Rec."Service Amount")
+                field(serviceAmount; Rec.Amount)
                 {
                 }
                 field(billingBasePeriod; Rec."Billing Base Period")
@@ -78,7 +84,7 @@ page 8018 "Service Commitments API"
                 field(partner; Rec.Partner)
                 {
                 }
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
                 field(noticePeriod; Rec."Notice Period")
@@ -99,10 +105,10 @@ page 8018 "Service Commitments API"
                 field(termUntil; Rec."Term Until")
                 {
                 }
-                field(serviceObjectCustomerNo; Rec."Service Object Customer No.")
+                field(serviceObjectCustomerNo; Rec."Sub. Header Customer No.")
                 {
                 }
-                field(contractLineNo; Rec."Contract Line No.")
+                field(contractLineNo; Rec."Subscription Contract Line No.")
                 {
                 }
                 field(customerPriceGroup; Rec."Customer Price Group")
@@ -120,7 +126,7 @@ page 8018 "Service Commitments API"
                 field(discountAmountLCY; Rec."Discount Amount (LCY)")
                 {
                 }
-                field(serviceAmountLCY; Rec."Service Amount (LCY)")
+                field(serviceAmountLCY; Rec."Amount (LCY)")
                 {
                 }
                 field(currencyCode; Rec."Currency Code")
@@ -138,10 +144,10 @@ page 8018 "Service Commitments API"
                 field(discount; Rec.Discount)
                 {
                 }
-                field(quantityDecimal; Rec."Quantity Decimal")
+                field(quantityDecimal; Rec.Quantity)
                 {
                 }
-                field(plannedServCommExists; Rec."Planned Serv. Comm. exists")
+                field(plannedServCommExists; Rec."Planned Sub. Line exists")
                 {
                 }
                 field(renewalTerm; Rec."Renewal Term")
@@ -150,10 +156,22 @@ page 8018 "Service Commitments API"
                 field(dimensionSetID; Rec."Dimension Set ID")
                 {
                 }
+#if not CLEAN26
                 field(itemNo; Rec."Item No.")
                 {
+                    ObsoleteReason = 'Replaced by field Source No.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
-                field(serviceObjectDescription; Rec."Service Object Description")
+#endif
+                field(sourceType; Rec."Source Type")
+                {
+                }
+                field(sourceNo; Rec."Source No.")
+                {
+                }
+                field(serviceObjectDescription; Rec."Subscription Description")
                 {
                 }
             }

@@ -9,6 +9,8 @@ using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Manufacturing.WorkCenter;
 using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Utilities;
 using System.Security.AccessControl;
@@ -50,7 +52,7 @@ table 6227 "Sustainability Value Entry"
         }
         field(7; "Valued Quantity"; Decimal)
         {
-            Caption = 'Valued Quantity';
+            Caption = 'Sust. Valued Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(8; "Item Ledger Entry Quantity"; Decimal)
@@ -132,6 +134,25 @@ table 6227 "Sustainability Value Entry"
         field(23; "Document Line No."; Integer)
         {
             Caption = 'Document Line No.';
+        }
+        field(30; "Account No."; Code[20])
+        {
+            Caption = 'Account No.';
+            TableRelation = "Sustainability Account" where("Account Type" = const(Posting));
+        }
+        field(31; "Account Name"; Text[100])
+        {
+            Caption = 'Account Name';
+        }
+        field(32; "Account Category"; Code[20])
+        {
+            Caption = 'Account Category';
+            TableRelation = "Sustain. Account Category";
+        }
+        field(33; "Account Subcategory"; Code[20])
+        {
+            Caption = 'Account Subcategory';
+            TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
         }
         field(105; "Entry Type"; Enum "Cost Entry Type")
         {
@@ -279,7 +300,14 @@ table 6227 "Sustainability Value Entry"
             Type := Type::Item;
             "No." := ValueEntry."Item No.";
         end;
+    end;
 
+    procedure CopyFromSustainabilityJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+        "Account No." := SustainabilityJnlLine."Account No.";
+        "Account Name" := SustainabilityJnlLine."Account Name";
+        "Account Category" := SustainabilityJnlLine."Account Category";
+        "Account Subcategory" := SustainabilityJnlLine."Account Subcategory"
     end;
 
     procedure GetLastEntryNo(): Integer;

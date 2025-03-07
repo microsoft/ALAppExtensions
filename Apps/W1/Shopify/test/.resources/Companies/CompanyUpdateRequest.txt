@@ -1,0 +1,1 @@
+{"query":"mutation {companyUpdate(companyId: \"gid://shopify/Company/%1\", input: {name: \"!Name\"}) {company {id, updatedAt}, userErrors {field, message}}}"}

@@ -12,6 +12,8 @@ using Microsoft.Purchases.Vendor;
 using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Service;
+using Microsoft.Finance.Currency;
+
 codeunit 148191 "Integration Tests"
 {
 
@@ -440,11 +442,19 @@ codeunit 148191 "Integration Tests"
     var
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
+        Currency: Record Currency;
         EDocServicePage: TestPage "E-Document Service";
     begin
         Initialize();
         SetAPIWithReceiveCode();
         SetCompanyIdInConnectionSetup(MockCompanyId(), 'Mock Name');
+
+        // Use date and currency exchange rate in document that is loaded
+        WorkDate(DMY2Date(8, 4, 2024));
+        Currency.Init();
+        Currency.Validate(Code, 'XYZ');
+        Currency.Insert(true);
+        LibraryERM.CreateExchangeRate('XYZ', WorkDate(), 1, 1);
 
         // Open and close E-Doc page creates auto import job due to setting
         EDocServicePage.OpenView();
@@ -658,6 +668,7 @@ codeunit 148191 "Integration Tests"
         LibraryEDocument: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
         LibraryJobQueue: Codeunit "Library - Job Queue";
+        LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';

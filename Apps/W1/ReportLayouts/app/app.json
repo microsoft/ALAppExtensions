@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "[Obsolete] Report layouts made available by extensions or created by users.",
   "description": "[Obsolete] The report layouts page shows all the report layouts made available from extensions or those defined by users. Content has been moved to the Business Central Base Application and the extension be removed in a future release.",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "help": "https://go.microsoft.com",
   "privacyStatement": "https://go.microsoft.com",
   "EULA": "https://go.microsoft.com",
@@ -12,7 +12,7 @@
   "contextSensitiveHelpUrl": "https://go.microsoft.com",
   "logo": "ExtensionLogo.png",
   "dependencies": [],
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "OnPrem",
   "resourceExposurePolicy": {
     "allowDebugging": false,

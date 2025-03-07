@@ -9,7 +9,7 @@ page 8023 "Vendor Contracts API"
     EntityName = 'vendorContract';
     EntitySetName = 'vendorContracts';
     PageType = API;
-    SourceTable = "Vendor Contract";
+    SourceTable = "Vendor Subscription Contract";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -146,7 +146,7 @@ page 8023 "Vendor Contracts API"
                     Caption = 'vendorContractLines', Locked = true;
                     EntityName = 'vendorContractLines';
                     EntitySetName = 'vendorContractLines';
-                    SubPageLink = "Contract No." = field("No.");
+                    SubPageLink = "Subscription Contract No." = field("No.");
                 }
             }
         }

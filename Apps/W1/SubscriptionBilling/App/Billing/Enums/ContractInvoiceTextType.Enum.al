@@ -10,11 +10,11 @@ enum 8001 "Contract Invoice Text Type"
     }
     value(1; "Service Object")
     {
-        Caption = 'Service Object';
+        Caption = 'Subscription';
     }
     value(2; "Service Commitment")
     {
-        Caption = 'Service Commitment';
+        Caption = 'Subscription Line';
     }
     value(3; "Customer Reference")
     {

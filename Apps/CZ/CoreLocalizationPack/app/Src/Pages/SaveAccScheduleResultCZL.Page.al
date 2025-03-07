@@ -35,22 +35,6 @@ page 31202 "Save Acc. Schedule Result CZL"
                     TableRelation = "Column Layout Name".Name;
                     ToolTip = 'Specifies the name of the column layout that you want to use in the window.';
                     Editable = false;
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    var
-                        EnteredColumnName: Text[10];
-                        LookupColumnName: Boolean;
-                    begin
-                        EnteredColumnName := CopyStr(Text, 1, MaxStrLen(EnteredColumnName));
-                        LookupColumnName := AccSchedManagement.LookupColumnName(ColumnLayoutName, EnteredColumnName);
-                        Text := EnteredColumnName;
-                        exit(LookupColumnName);
-                    end;
-
-                    trigger OnValidate()
-                    begin
-                        AccSchedManagement.CheckColumnName(ColumnLayoutName);
-                    end;
                 }
                 field(DateFilter; DateFilter)
                 {
@@ -86,7 +70,6 @@ page 31202 "Save Acc. Schedule Result CZL"
 
     var
         AccScheduleLine: Record "Acc. Schedule Line";
-        AccSchedManagement: Codeunit AccSchedManagement;
         AccSchedName: Code[10];
         ColumnLayoutName: Code[10];
         DateFilter: Text;

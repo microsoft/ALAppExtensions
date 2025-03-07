@@ -7,10 +7,10 @@ using Microsoft.Finance.Dimension;
 
 page 8070 "Vendor Contract"
 {
-    Caption = 'Vendor Contract';
+    Caption = 'Vendor Subscription Contract';
     PageType = Document;
     RefreshOnActivate = true;
-    SourceTable = "Vendor Contract";
+    SourceTable = "Vendor Subscription Contract";
     UsageCategory = None;
     ApplicationArea = Basic, Suite;
 
@@ -159,7 +159,7 @@ page 8070 "Vendor Contract"
                     {
                         MultiLine = true;
                         ShowCaption = false;
-                        ToolTip = 'Specifies the products or service being offered.';
+                        ToolTip = 'Specifies the subscriptions being offered.';
 
                         trigger OnValidate()
                         begin
@@ -177,7 +177,7 @@ page 8070 "Vendor Contract"
                 {
                     ApplicationArea = Suite;
                     Importance = Additional;
-                    ToolTip = 'Specifies which purchaser is assigned to the vendor contract.';
+                    ToolTip = 'Specifies which purchaser is assigned to the Vendor Subscription Contract.';
                 }
                 field("Assigned User ID"; Rec."Assigned User ID")
                 {
@@ -201,12 +201,12 @@ page 8070 "Vendor Contract"
             part(Lines; "Vendor Contract Line Subpage")
             {
                 Caption = 'Lines';
-                SubPageLink = "Contract No." = field("No."), Closed = filter(false);
+                SubPageLink = "Subscription Contract No." = field("No."), Closed = filter(false);
             }
             part("Closed Lines"; "Closed Vend. Cont. Line Subp.")
             {
                 Caption = 'Closed Lines';
-                SubPageLink = "Contract No." = field("No."), Closed = filter(true);
+                SubPageLink = "Subscription Contract No." = field("No."), Closed = filter(true);
             }
             group(Payment)
             {
@@ -333,7 +333,7 @@ page 8070 "Vendor Contract"
                 {
                     ApplicationArea = Suite;
                     Importance = Promoted;
-                    ToolTip = 'Specifies the currency of amounts on the vendor contract invoice.';
+                    ToolTip = 'Specifies the currency of amounts on the Vendor Subscription Contract invoice.';
 
                     trigger OnValidate()
                     begin
@@ -382,7 +382,7 @@ page 8070 "Vendor Contract"
         {
             group(Contract)
             {
-                Caption = 'Vendor Contract';
+                Caption = 'Vendor Subscription Contract';
                 Image = "Order";
                 action(Vendor)
                 {
@@ -392,7 +392,7 @@ page 8070 "Vendor Contract"
                     RunObject = page "Vendor Card";
                     RunPageLink = "No." = field("Pay-to Vendor No.");
                     ShortcutKey = 'Shift+F7';
-                    ToolTip = 'View or edit detailed information about the vendor on the vendor contract.';
+                    ToolTip = 'View or edit detailed information about the vendor on the Vendor Subscription Contract.';
                 }
                 action(Dimensions)
                 {
@@ -410,9 +410,9 @@ page 8070 "Vendor Contract"
                 }
                 action(GetServiceCommitmentsAction)
                 {
-                    Caption = 'Get Service Commitments';
+                    Caption = 'Get Subscription Lines';
                     Image = SelectLineToApply;
-                    ToolTip = 'Get Service Commitments without Contract.';
+                    ToolTip = 'Get Subscription Lines without Contract.';
 
                     trigger OnAction()
                     var
@@ -424,9 +424,9 @@ page 8070 "Vendor Contract"
                 }
                 action(UpdateServicesDatesAction)
                 {
-                    Caption = 'Update Service Dates';
+                    Caption = 'Update Subscription Line Dates';
                     Image = ChangeDates;
-                    ToolTip = 'The function updates the dates in the service commitments.';
+                    ToolTip = 'The function updates the dates in the Subscription Lines.';
 
                     trigger OnAction()
                     var
@@ -502,13 +502,13 @@ page 8070 "Vendor Contract"
                 }
                 action("Vendor Contract Deferrals")
                 {
-                    Caption = 'Vendor Contract Deferrals';
-                    ToolTip = 'Vendor Contract Deferrals.';
+                    Caption = 'Vendor Subscription Contract Deferrals';
+                    ToolTip = 'Vendor Subscription Contract Deferrals.';
                     Image = LedgerEntries;
                     ShortcutKey = 'Ctrl+F7';
                     RunObject = page "Vendor Contract Deferrals";
-                    RunPageView = sorting("Contract No.");
-                    RunPageLink = "Contract No." = field("No.");
+                    RunPageView = sorting("Subscription Contract No.");
+                    RunPageLink = "Subscription Contract No." = field("No.");
 
                 }
                 action(UpdateDimensionsInDeferrals)
@@ -605,7 +605,7 @@ page 8070 "Vendor Contract"
 
     var
         FormatAddress: Codeunit "Format Address";
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         DocNoVisible: Boolean;
         DescriptionText: Text;
         IsBuyFromCountyVisible: Boolean;

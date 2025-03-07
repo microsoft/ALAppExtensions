@@ -3,8 +3,8 @@ namespace Microsoft.SubscriptionBilling;
 page 8075 "Customer Contract Lines"
 {
     PageType = List;
-    SourceTable = "Customer Contract Line";
-    Caption = 'Customer Contract Lines';
+    SourceTable = "Cust. Sub. Contract Line";
+    Caption = 'Customer Subscription Contract Lines';
     Editable = false;
     UsageCategory = None;
     ApplicationArea = All;
@@ -19,29 +19,29 @@ page 8075 "Customer Contract Lines"
                 {
                     ToolTip = 'Specifies the contract line type.';
                 }
-                field("Service Start Date"; ServiceCommitment."Service Start Date")
+                field("Service Start Date"; ServiceCommitment."Subscription Line Start Date")
                 {
-                    Caption = 'Service Start Date';
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    Caption = 'Subscription Line Start Date';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                 }
-                field("Service End Date"; ServiceCommitment."Service End Date")
+                field("Service End Date"; ServiceCommitment."Subscription Line End Date")
                 {
-                    Caption = 'Service End Date';
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    Caption = 'Subscription Line End Date';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the service object no.';
+                    ToolTip = 'Specifies the number of the Subscription No.';
 
                     trigger OnAssistEdit()
                     begin
                         Rec.OpenServiceObjectCard();
                     end;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
 
                     trigger OnAssistEdit()
                     begin
@@ -53,29 +53,29 @@ page 8075 "Customer Contract Lines"
                     Caption = 'Customer Reference';
                     Editable = false;
                     Visible = false;
-                    ToolTip = 'Specifies the reference by which the customer identifies the service object.';
+                    ToolTip = 'Specifies the reference by which the customer identifies the Subscription.';
                 }
                 field("Service Object Serial No."; ServiceObject."Serial No.")
                 {
                     Caption = 'Serial No.';
                     Editable = false;
                     Visible = false;
-                    ToolTip = 'Specifies the Serial No. assigned to the service object.';
+                    ToolTip = 'Specifies the Serial No. assigned to the Subscription.';
                 }
                 field(ServiceObjectPrimaryAttribute; ServiceObject.GetPrimaryAttributeValue())
                 {
                     Caption = 'Primary Attribute';
                     Editable = false;
                     Visible = false;
-                    ToolTip = 'Displays the primary attribute of the related Service Object.';
+                    ToolTip = 'Displays the primary attribute of the related Subscription.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Object Quantity"; Rec."Service Obj. Quantity Decimal")
+                field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Number of units of service object.';
+                    ToolTip = 'Number of units of Subscription.';
 
                     trigger OnDrillDown()
                     begin
@@ -85,14 +85,14 @@ page 8075 "Customer Contract Lines"
                 field(Price; ServiceCommitment.Price)
                 {
                     Caption = 'Price';
-                    ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                     Editable = false;
                     BlankZero = true;
                 }
                 field("Discount %"; ServiceCommitment."Discount %")
                 {
                     Caption = 'Discount %';
-                    ToolTip = 'Specifies the percent of the discount for the service.';
+                    ToolTip = 'Specifies the percent of the discount for the Subscription Line.';
                     BlankZero = true;
                     MinValue = 0;
                     MaxValue = 100;
@@ -101,14 +101,14 @@ page 8075 "Customer Contract Lines"
                 field("Discount Amount"; ServiceCommitment."Discount Amount")
                 {
                     Caption = 'Discount Amount';
-                    ToolTip = 'Specifies the amount of the discount for the service.';
+                    ToolTip = 'Specifies the amount of the discount for the Subscription Line.';
                     BlankZero = true;
                     MinValue = 0;
                 }
-                field("Service Amount"; ServiceCommitment."Service Amount")
+                field("Service Amount"; ServiceCommitment.Amount)
                 {
-                    Caption = 'Service Amount';
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    Caption = 'Amount';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                     BlankZero = true;
                 }
                 field("Next Billing Date"; ServiceCommitment."Next Billing Date")
@@ -129,13 +129,13 @@ page 8075 "Customer Contract Lines"
                 {
                     MinValue = 0;
                     Caption = 'Calculation Base %';
-                    ToolTip = 'Specifies the percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                     BlankZero = true;
                 }
                 field("Billing Base Period"; ServiceCommitment."Billing Base Period")
                 {
                     Caption = 'Billing Base Period';
-                    ToolTip = 'Specifies for which period the Service Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Service Amount refers to.';
+                    ToolTip = 'Specifies for which period the Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Amount refers to.';
                 }
                 field("Cancellation Possible Until"; ServiceCommitment."Cancellation Possible Until")
                 {
@@ -145,32 +145,32 @@ page 8075 "Customer Contract Lines"
                 field("Term Until"; ServiceCommitment."Term Until")
                 {
                     Caption = 'Term Until';
-                    ToolTip = 'Specifies the earliest regular date for the end of the service, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
+                    ToolTip = 'Specifies the earliest regular date for the end of the Subscription Line, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
                 }
                 field("Initial Term"; ServiceCommitment."Initial Term")
                 {
                     Caption = 'Initial Term';
-                    ToolTip = 'Specifies a date formula for calculating the minimum term of the service commitment. If the minimum term is filled and no extension term is entered, the end of service commitment is automatically set to the end of the initial term.';
+                    ToolTip = 'Specifies a date formula for calculating the minimum term of the Subscription Line. If the minimum term is filled and no extension term is entered, the end of Subscription Line is automatically set to the end of the initial term.';
                 }
                 field("Extension Term"; ServiceCommitment."Extension Term")
                 {
                     Caption = 'Subsequent Term';
-                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of service is automatically set to the end of the initial term or notice period.';
+                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of Subscription Line is automatically set to the end of the initial term or notice period.';
                 }
                 field("Billing Rhythm"; ServiceCommitment."Billing Rhythm")
                 {
                     Caption = 'Billing Rhythm';
-                    ToolTip = 'Specifies the Dateformula for rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                 }
-                field("Package Code"; ServiceCommitment."Package Code")
+                field("Package Code"; ServiceCommitment."Subscription Package Code")
                 {
                     Caption = 'Package Code';
-                    ToolTip = 'Specifies the code of the service commitment package.';
+                    ToolTip = 'Specifies the code of the Subscription Package.';
                 }
                 field(Template; ServiceCommitment.Template)
                 {
                     Caption = 'Template';
-                    ToolTip = 'Specifies the code of the service commitment template.';
+                    ToolTip = 'Specifies the code of the Subscription Package Line Template.';
                 }
             }
         }
@@ -180,7 +180,7 @@ page 8075 "Customer Contract Lines"
     begin
         InitializePageVariables();
         SetNextBillingDateStyle();
-        Rec.LoadAmountsForContractLine(ServiceCommitment.Price, ServiceCommitment."Discount %", ServiceCommitment."Discount Amount", ServiceCommitment."Service Amount", ServiceCommitment."Calculation Base Amount", ServiceCommitment."Calculation Base %");
+        Rec.LoadServiceCommitmentForContractLine(ServiceCommitment);
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -190,8 +190,8 @@ page 8075 "Customer Contract Lines"
     end;
 
     var
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         NextBillingDateStyleExpr: Text;
 
     local procedure InitializePageVariables()
@@ -203,7 +203,7 @@ page 8075 "Customer Contract Lines"
 
     local procedure SetNextBillingDateStyle()
     begin
-        if (ServiceCommitment."Next Billing Date" > ServiceCommitment."Service End Date") and (ServiceCommitment."Service End Date" <> 0D) then
+        if (ServiceCommitment."Next Billing Date" > ServiceCommitment."Subscription Line End Date") and (ServiceCommitment."Subscription Line End Date" <> 0D) then
             NextBillingDateStyleExpr := 'AttentionAccent'
     end;
 }

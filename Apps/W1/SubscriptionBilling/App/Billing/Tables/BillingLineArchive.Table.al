@@ -3,6 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Finance.Currency;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
@@ -36,44 +37,44 @@ table 8064 "Billing Line Archive"
             TableRelation = if (Partner = const(Customer)) Customer else
             if (Partner = const(Vendor)) Vendor;
         }
-        field(20; "Contract No."; Code[20])
+        field(20; "Subscription Contract No."; Code[20])
         {
-            Caption = 'Contract No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract";
+            Caption = 'Subscription Contract No.';
+            TableRelation = if (Partner = const(Customer)) "Customer Subscription Contract";
         }
-        field(21; "Contract Line No."; Integer)
+        field(21; "Subscription Contract Line No."; Integer)
         {
-            Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
-            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            Caption = 'Subscription Contract Line No.';
+            TableRelation = if (Partner = const(Customer)) "Cust. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No.")) else
+            if (Partner = const(Vendor)) "Vend. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No."));
         }
-        field(30; "Service Object No."; Code[20])
+        field(30; "Subscription Header No."; Code[20])
         {
-            Caption = 'Service Object No.';
-            TableRelation = "Service Object";
+            Caption = 'Subscription No.';
+            TableRelation = "Subscription Header";
         }
-        field(31; "Service Commitment Entry No."; Integer)
+        field(31; "Subscription Line Entry No."; Integer)
         {
-            Caption = 'Service Commitment Entry No.';
+            Caption = 'Subscription Line Entry No.';
         }
-        field(32; "Service Object Description"; Text[100])
+        field(32; "Subscription Description"; Text[100])
         {
-            Caption = 'Service Object Description';
+            Caption = 'Subscription Description';
             FieldClass = FlowField;
-            CalcFormula = lookup("Service Object".Description where("No." = field("Service Object No.")));
+            CalcFormula = lookup("Subscription Header".Description where("No." = field("Subscription Header No.")));
             Editable = false;
         }
-        field(33; "Service Commitment Description"; Text[100])
+        field(33; "Subscription Line Description"; Text[100])
         {
-            Caption = 'Service Commitment Description';
+            Caption = 'Subscription Line Description';
         }
-        field(34; "Service Start Date"; Date)
+        field(34; "Subscription Line Start Date"; Date)
         {
-            Caption = 'Service Start Date';
+            Caption = 'Subscription Line Start Date';
         }
-        field(35; "Service End Date"; Date)
+        field(35; "Subscription Line End Date"; Date)
         {
-            Caption = 'Service End Date';
+            Caption = 'Subscription Line End Date';
         }
         field(36; Partner; Enum "Service Partner")
         {
@@ -83,7 +84,7 @@ table 8064 "Billing Line Archive"
         {
             Caption = 'Discount';
         }
-        field(39; "Service Obj. Quantity Decimal"; Decimal)
+        field(39; "Service Object Quantity"; Decimal)
         {
             Caption = 'Quantity';
         }
@@ -95,9 +96,9 @@ table 8064 "Billing Line Archive"
         {
             Caption = 'Billing to';
         }
-        field(52; "Service Amount"; Decimal)
+        field(52; Amount; Decimal)
         {
-            Caption = 'Service Amount';
+            Caption = 'Amount';
             BlankZero = true;
             AutoFormatType = 2;
         }
@@ -160,6 +161,23 @@ table 8064 "Billing Line Archive"
             Caption = 'Code';
             TableRelation = "Billing Template";
         }
+        field(101; "Currency Code"; Code[20])
+        {
+            Caption = 'Code';
+            TableRelation = Currency.Code;
+        }
+        field(102; "Unit Cost"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 2;
+            Caption = 'Unit Cost';
+            Editable = false;
+        }
+        field(103; "Unit Cost (LCY)"; Decimal)
+        {
+            AutoFormatType = 2;
+            Caption = 'Unit Cost (LCY)';
+        }
     }
 
     keys
@@ -168,7 +186,7 @@ table 8064 "Billing Line Archive"
         {
             Clustered = true;
         }
-        key(SK1; "Contract No.", "Contract Line No.", "Billing from")
+        key(SK1; "Subscription Contract No.", "Subscription Contract Line No.", "Billing from")
         {
         }
     }
@@ -241,13 +259,13 @@ table 8064 "Billing Line Archive"
     internal procedure FilterBillingLineArchiveOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
     begin
         Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Contract No.", ContractNo);
+        Rec.SetRange("Subscription Contract No.", ContractNo);
     end;
 
     internal procedure FilterBillingLineArchiveOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
     begin
         Rec.FilterBillingLineArchiveOnContract(ServicePartner, ContractNo);
-        Rec.SetRange("Contract Line No.", ContractLineNo);
+        Rec.SetRange("Subscription Contract Line No.", ContractLineNo);
     end;
 
     internal procedure FilterBillingLineArchiveOnDocument(RecurringBillingDocumentType: Enum "Rec. Billing Document Type"; DocumentNo: Code[20])
@@ -258,7 +276,7 @@ table 8064 "Billing Line Archive"
 
     internal procedure FilterBillingLineArchiveOnServiceCommitment(ServiceCommitmentEntryNo: Integer)
     begin
-        Rec.SetRange("Service Commitment Entry No.", ServiceCommitmentEntryNo);
+        Rec.SetRange("Subscription Line Entry No.", ServiceCommitmentEntryNo);
     end;
 
     internal procedure IsInvoiceCredited(ServicePartner: Enum "Service Partner"; DocumentNo: Code[20]): Boolean

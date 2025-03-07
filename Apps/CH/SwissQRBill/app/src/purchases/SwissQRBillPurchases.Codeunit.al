@@ -532,8 +532,8 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                 PurchaseHeader.TestField("Pay-to Vendor No.");
                 if Confirm(StrSubstNo(PurhDocVendBankAccountQst, IncomingDocument."Vendor IBAN")) then begin
                     VendorBankAccount."Vendor No." := PurchaseHeader."Pay-to Vendor No.";
-                    VendorBankAccount.Validate(IBAN, IncomingDocument."Vendor IBAN");
                     VendorBankAccount."Payment Form" := VendorBankAccount."Payment Form"::"Bank Payment Domestic";
+                    VendorBankAccount.Validate(IBAN, IncomingDocument."Vendor IBAN");
                     SwissQRBillCreateVendBank.LookupMode(true);
                     SwissQRBillCreateVendBank.SetDetails(VendorBankAccount);
                     if SwissQRBillCreateVendBank.RunModal() = Action::LookupOK then begin

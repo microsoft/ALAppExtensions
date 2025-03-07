@@ -94,14 +94,14 @@ table 8011 "Usage Data Blob"
         Rec.Insert(false);
     end;
 
-    internal procedure ImportFromFile(InStream: InStream; FilePath: Text)
+    internal procedure ImportFromFile(InStream: InStream; FileName: Text)
     var
         OutStream: OutStream;
     begin
         Rec.Data.CreateOutStream(OutStream);
         CopyStream(OutStream, InStream);
         Rec.ComputeHashValue();
-        Rec.Source := CopyStr(FilePath, 1, MaxStrLen(Rec.Source));
+        Rec.Source := CopyStr(FileName, 1, MaxStrLen(Rec.Source));
         Rec."Import Date" := Today();
         Rec."Import Status" := "Processing Status"::Ok;
         Rec.Modify(false);

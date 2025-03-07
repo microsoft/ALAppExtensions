@@ -1163,6 +1163,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
                 SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
                 SalesAdvLetterEntryCZZ.SetFilter("Posting Date", '%1..', PostingDate + 1);
+                OnCheckAdvancePaymentOnAfterSetFilters(SalesAdvLetterEntryCZZ, AdvanceLetterApplicationCZZ);
                 if not SalesAdvLetterEntryCZZ.IsEmpty() then
                     if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(LaterPostingDateQst, AdvanceLetterApplicationCZZ."Advance Letter No.", Format(PostingDate)), false) then
                         Error('');
@@ -1653,6 +1654,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUnlinkAdvancePayment(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCheckAdvancePaymentOnAfterSetFilters(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
     begin
     end;
 }

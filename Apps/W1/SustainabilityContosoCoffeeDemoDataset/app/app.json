@@ -2,7 +2,7 @@
   "id": "a0673989-48a4-48a0-9517-499c9f4037d3",
   "name": "Sustainability Contoso Coffee Demo Dataset",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "To help partners demonstrate the capabilities of Sustainability extension, we are making demo data available for various sustainability scenarios.",
   "description": "Sustainability specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various sustainability reporting scenarios.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,23 +15,35 @@
       "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
       "name": "Sustainability",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "ea130081-c669-460f-a5f4-5dde14f03131",
+      "name": "Statistical Accounts",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
     },
     {
       "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
       "name": "Contoso Coffee Demo Dataset",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "d196d21b-75c3-45da-831b-345055b9d25f",
+      "name": "ESG Statistical Accounts Demo Tool",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
     }
   ],
   "internalsVisibleTo": [],
   "screenshots": [],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 5212,
-      "to": 5222
+      "to": 5260
     }
   ],
   "resourceExposurePolicy": {

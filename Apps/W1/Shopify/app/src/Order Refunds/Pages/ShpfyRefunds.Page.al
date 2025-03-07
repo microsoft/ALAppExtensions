@@ -93,7 +93,7 @@ page 30147 "Shpfy Refunds"
                 Caption = 'Create Credit Memo';
                 Image = CreateCreditMemo;
                 ToolTip = 'Create a credit memo for this refund.';
-                Enabled = CanCreateDocument;
+                Enabled = CanCreateDocument and not MultipleSelected;
 
                 trigger OnAction()
                 var
@@ -117,9 +117,14 @@ page 30147 "Shpfy Refunds"
     }
     var
         CanCreateDocument: Boolean;
+        MultipleSelected: Boolean;
 
     trigger OnAfterGetCurrRecord()
+    var
+        RefundHeader: Record "Shpfy Refund Header";
     begin
         CanCreateDocument := Rec.CheckCanCreateDocument();
+        CurrPage.SetSelectionFilter(RefundHeader);
+        MultipleSelected := RefundHeader.Count > 1;
     end;
 }

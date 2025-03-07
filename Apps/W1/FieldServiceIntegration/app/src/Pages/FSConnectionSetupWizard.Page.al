@@ -683,7 +683,7 @@ page 6613 "FS Connection Setup Wizard"
 
     local procedure UpdateIntegrationTypeEditable()
     begin
-        EditableProjectSettings := Rec."Integration Type" = Rec."Integration Type"::Project;
+        EditableProjectSettings := Rec."Integration Type" = Rec."Integration Type"::Projects;
     end;
 }
 

@@ -10,14 +10,14 @@ pageextension 8052 "Customer List" extends "Customer List"
         {
             action(NewContract)
             {
-                AccessByPermission = tabledata "Customer Contract" = RIM;
+                AccessByPermission = tabledata "Customer Subscription Contract" = RIM;
                 ApplicationArea = Basic, Suite;
-                Caption = 'Contract';
+                Caption = 'Subscription Contract';
                 Image = FileContract;
                 RunObject = page "Customer Contract";
                 RunPageLink = "Sell-to Customer No." = field("No.");
                 RunPageMode = Create;
-                ToolTip = 'Create a contract for the customer.';
+                ToolTip = 'Create a Subscription Contract for the customer.';
             }
         }
         addlast(Category_Category5)
@@ -30,23 +30,23 @@ pageextension 8052 "Customer List" extends "Customer List"
         {
             action(Contracts)
             {
-                AccessByPermission = tabledata "Customer Contract" = R;
+                AccessByPermission = tabledata "Customer Subscription Contract" = R;
                 ApplicationArea = Basic, Suite;
-                Caption = 'Contracts';
+                Caption = 'Subscription Contracts';
                 Image = FileContract;
                 RunObject = page "Customer Contracts";
                 RunPageLink = "Sell-to Customer No." = field("No.");
-                ToolTip = 'View a list of ongoing customer contracts.';
+                ToolTip = 'View a list of ongoing Customer Subscription Contracts.';
             }
             action(ServiceObjects)
             {
-                AccessByPermission = tabledata "Service Object" = R;
+                AccessByPermission = tabledata "Subscription Header" = R;
                 ApplicationArea = Basic, Suite;
-                Caption = 'Service Objects';
+                Caption = 'Subscriptions';
                 Image = ServiceItem;
                 RunObject = page "Service Object";
                 RunPageLink = "End-User Customer No." = field("No.");
-                ToolTip = 'View a list of service objects for the customer.';
+                ToolTip = 'View a list of Subscriptions for the customer.';
             }
         }
         addlast(Category_Category7)
@@ -62,8 +62,8 @@ pageextension 8052 "Customer List" extends "Customer List"
         {
             action(OverviewOfContractComponents)
             {
-                Caption = 'Overview of contract components';
-                ToolTip = 'View a detailed list of services for the selected customer(s).';
+                Caption = 'Overview of Subscription Contract components';
+                ToolTip = 'View a detailed list of Subscription Line for the selected customer(s).';
                 Image = QualificationOverview;
                 ApplicationArea = All;
                 RunObject = Report "Overview Of Contract Comp";

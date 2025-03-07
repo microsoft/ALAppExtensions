@@ -16,7 +16,7 @@ page 8033 "Create Usage B. Cust. B. Docs"
                 field(BillingDate; BillingDate)
                 {
                     Caption = 'Billing Date';
-                    ToolTip = 'Specifies the date up to which the billable services will be taken into account.';
+                    ToolTip = 'Specifies the date up to which the billable Subscription Lines will be taken into account.';
                 }
             }
             group(Posting)
@@ -82,7 +82,7 @@ page 8033 "Create Usage B. Cust. B. Docs"
 
     local procedure CreateBillingDocumentForContract()
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         if ServicePartner = ServicePartner::Vendor then
             exit;

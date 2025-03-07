@@ -5,8 +5,8 @@ page 8013 "Imported Customer Contracts"
     PageType = Worksheet;
     ApplicationArea = All;
     UsageCategory = Administration;
-    SourceTable = "Imported Customer Contract";
-    Caption = 'Imported Customer Contracts';
+    SourceTable = "Imported Cust. Sub. Contract";
+    Caption = 'Imported Customer Subscription Contracts';
 
     layout
     {
@@ -14,17 +14,17 @@ page 8013 "Imported Customer Contracts"
         {
             repeater(ImportedServiceCommitments)
             {
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of Contract that will be created.';
                 }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.")
                 {
-                    ToolTip = 'Specifies the number of the customer who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the customer who will receive the contract components and be billed by default.';
                 }
                 field("Sell-to Contact No."; Rec."Sell-to Contact No.")
                 {
-                    ToolTip = 'Specifies the number of the contact that receives the contractual services.';
+                    ToolTip = 'Specifies the number of the contact that receives the contract components.';
                 }
                 field("Bill-to Customer No."; Rec."Bill-to Customer No.")
                 {
@@ -34,7 +34,7 @@ page 8013 "Imported Customer Contracts"
                 {
                     ToolTip = 'Specifies the number of the contact the invoice will be sent to.';
                 }
-                field("Contract Type"; Rec."Contract Type")
+                field("Contract Type"; Rec."Subscription Contract Type")
                 {
                     ToolTip = 'Specifies the classification of the contract.';
                 }
@@ -98,7 +98,7 @@ page 8013 "Imported Customer Contracts"
                 }
                 field("Contract created"; Rec."Contract created")
                 {
-                    ToolTip = 'Specifies whether a Customer Contract has been created.';
+                    ToolTip = 'Specifies whether a Customer Subscription Contract has been created.';
                 }
                 field("Error Text"; Rec."Error Text")
                 {
@@ -129,13 +129,13 @@ page 8013 "Imported Customer Contracts"
             action(CreateCustomerContracts)
             {
                 ApplicationArea = All;
-                Caption = 'Create Customer Contracts';
-                ToolTip = 'Creates Customer Contracts.';
+                Caption = 'Create Customer Subscription Contracts';
+                ToolTip = 'Creates Customer Subscription Contracts.';
                 Image = CreateBinContent;
 
                 trigger OnAction()
                 var
-                    ImportedCustomerContract: Record "Imported Customer Contract";
+                    ImportedCustomerContract: Record "Imported Cust. Sub. Contract";
                 begin
                     CurrPage.SetSelectionFilter(ImportedCustomerContract);
                     Report.Run(Report::"Create Customer Contracts", false, false, ImportedCustomerContract);

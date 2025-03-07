@@ -18,8 +18,8 @@ pageextension 8083 "Job Project Manager RC" extends "Job Project Manager RC"
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
-                ApplicationArea = Jobs;
-                Caption = 'Subscription & Recurring Billing';
+                ApplicationArea = All;
+                Caption = 'Subscription Billing';
             }
         }
     }

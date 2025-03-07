@@ -2,7 +2,7 @@
   "id": "3ef6b9df-8622-4b1f-8949-6a5c544fb224",
   "name": "Nemhandel Notification in Denmark",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "If the Danish company isn't registered with Nemhandelsregisteret, users will receive a notification with registration instructions and they can follow the provided link to register.",
   "description": "In the event that the Danish company is not currently registered with the Nemhandelsregisteret, an automated notification will be generated. This notification will provide comprehensive instructions on the steps to be taken in order to initiate the registration process together with the direct link, allowing the company to proceed with the registration procedure seamlessly.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -21,7 +21,7 @@
   ],
   "screenshots": [],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 13608,

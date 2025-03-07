@@ -6,17 +6,17 @@ tableextension 8058 "Sales Cr. Memo Line" extends "Sales Cr.Memo Line"
 {
     fields
     {
-        field(8051; "Contract No."; Code[20])
+        field(8051; "Subscription Contract No."; Code[20])
         {
-            Caption = 'Contract No.';
+            Caption = 'Subscription Contract No.';
             DataClassification = CustomerContent;
-            TableRelation = "Customer Contract";
+            TableRelation = "Customer Subscription Contract";
         }
-        field(8052; "Contract Line No."; Integer)
+        field(8052; "Subscription Contract Line No."; Integer)
         {
-            Caption = 'Contract Line No.';
+            Caption = 'Subscription Contract Line No.';
             DataClassification = CustomerContent;
-            TableRelation = "Customer Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            TableRelation = "Cust. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No."));
         }
         field(8053; "Recurring Billing from"; Date)
         {

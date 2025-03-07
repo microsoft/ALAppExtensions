@@ -83,7 +83,7 @@ codeunit 6142 "E-Doc. Recurrent Batch Send"
                         until TempEDocMappingLogs.Next() = 0;
 
                     EDocumentProcessing.ModifyServiceStatus(EDocuments, EDocumentService, EDocServiceStatus);
-                    EDocumentProcessing.ModifyEDocumentStatus(EDocuments, EDocServiceStatus);
+                    EDocumentProcessing.ModifyEDocumentStatus(EDocuments);
                 until EDocuments.Next() = 0;
 
                 if EntryNumbers.Count() > 0 then begin

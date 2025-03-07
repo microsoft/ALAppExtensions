@@ -12,17 +12,17 @@ codeunit 139691 "Contract Price Update Test"
 
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         PriceUpdateTemplate: Record "Price Update Template";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         Confirm: Boolean;
@@ -43,7 +43,7 @@ codeunit 139691 "Contract Price Update Test"
         ClearAll();
         ContractTestLibrary.DeleteAllContractRecords();
         SetupServiceObjectWithServiceCommitment(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
         Confirm := true;
         CustomerContract.Validate(DefaultExcludeFromPriceUpdate, true); // ConfirmHandler
         CustomerContract.Modify(false);
@@ -74,7 +74,7 @@ codeunit 139691 "Contract Price Update Test"
         ClearAll();
         ContractTestLibrary.DeleteAllContractRecords();
         SetupServiceObjectWithServiceCommitment(false);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", true);        // ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", true);        // ExchangeRateSelectionModalPageHandler, MessageHandler
         Confirm := true;
         VendorContract.Validate(DefaultExcludeFromPriceUpdate, true); // ConfirmHandler
         VendorContract.Modify(false);
@@ -106,7 +106,7 @@ codeunit 139691 "Contract Price Update Test"
     begin
         ClearAll();
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, SNSpecificTracking);
         ServiceObject.Validate("End-User Customer Name", Customer.Name);
         ServiceObject.Modify(false);
 
@@ -133,7 +133,7 @@ codeunit 139691 "Contract Price Update Test"
         ServiceCommPackageLine.Modify(false);
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Source No."));
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
     end;
 

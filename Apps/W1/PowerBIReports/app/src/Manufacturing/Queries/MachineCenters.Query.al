@@ -18,15 +18,9 @@ query 36985 "Machine Centers"
     {
         dataitem(MachineCenter; "Machine Center")
         {
-            column(no; "No.")
-            {
-            }
-            column(name; Name)
-            {
-            }
-            column(workCenterNo; "Work Center No.")
-            {
-            }
+            column(no; "No.") { }
+            column(name; Name) { }
+            column(workCenterNo; "Work Center No.") { }
         }
     }
 }

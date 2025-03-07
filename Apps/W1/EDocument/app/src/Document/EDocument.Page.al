@@ -21,7 +21,6 @@ page 6121 "E-Document"
     PageType = Card;
     SourceTable = "E-Document";
     InsertAllowed = false;
-    DeleteAllowed = false;
     ModifyAllowed = false;
     RefreshOnActivate = true;
 
@@ -307,6 +306,7 @@ page 6121 "E-Document"
                     Caption = 'View file';
                     ToolTip = 'View the source file.';
                     Image = ViewDetails;
+                    Visible = NewEDocumentExperienceActive;
 
                     trigger OnAction()
                     begin
@@ -341,6 +341,7 @@ page 6121 "E-Document"
                         EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
                         EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+                        EDocImportParameters."Purch. Journal V1 Behavior" := EDocImportParameters."Purch. Journal V1 Behavior"::"Create purchase document";
                         EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
@@ -358,6 +359,7 @@ page 6121 "E-Document"
                         EDocImportParameters: Record "E-Doc. Import Parameters";
                     begin
                         EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+                        EDocImportParameters."Purch. Journal V1 Behavior" := EDocImportParameters."Purch. Journal V1 Behavior"::"Create journal line";
                         EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
                         if EDocumentErrorHelper.HasErrors(Rec) then
                             Message(DocNotCreatedMsg, Rec."Document Type");
@@ -531,6 +533,7 @@ page 6121 "E-Document"
 
     trigger OnOpenPage()
     var
+        EDocumentsSetup: Record "E-Documents Setup";
         EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
         ShowMapToOrder := false;
@@ -538,6 +541,7 @@ page 6121 "E-Document"
         HasErrors := false;
         IsProcessed := false;
         CopilotVisible := EDocPOMatching.IsCopilotVisible();
+        NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
     end;
 
     trigger OnAfterGetRecord()
@@ -647,6 +651,7 @@ page 6121 "E-Document"
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
+        NewEDocumentExperienceActive: Boolean;
         RecordLinkTxt, StyleStatusTxt : Text;
         ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';

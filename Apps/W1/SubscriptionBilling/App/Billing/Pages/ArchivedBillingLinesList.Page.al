@@ -31,45 +31,45 @@ page 8017 "Archived Billing Lines List"
                 {
                     ToolTip = 'Specifies the value of the Partner field.';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of the Contract No.';
                 }
                 field("Billing from"; Rec."Billing from")
                 {
-                    ToolTip = 'Specifies the date from which the service is billed.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is billed.';
                 }
                 field("Billing to"; Rec."Billing to")
                 {
-                    ToolTip = 'Specifies the date to which the service is billed.';
+                    ToolTip = 'Specifies the date to which the Subscription Line is billed.';
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Obj. Quantity Decimal"; Rec."Service Obj. Quantity Decimal")
+                field("Service Obj. Quantity Decimal"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from service object.';
+                    ToolTip = 'Quantity from Subscription.';
                 }
                 field("Unit Price"; Rec."Unit Price")
                 {
-                    ToolTip = 'Specifies the Unit Price for the service billing period without discount.';
+                    ToolTip = 'Specifies the Unit Price for the subscription line billing period without discount.';
                 }
                 field("Discount %"; Rec."Discount %")
                 {
-                    ToolTip = 'Specifies the Discount % for the service billing period.';
+                    ToolTip = 'Specifies the Discount % for the subscription line billing period.';
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                     Visible = false;
                 }
                 field("Billing Template Code"; Rec."Billing Template Code")
@@ -77,7 +77,7 @@ page 8017 "Archived Billing Lines List"
                     ToolTip = 'Specifies the template code.';
                     Visible = false;
                 }
-                field("Contract Line No."; Rec."Contract Line No.")
+                field("Contract Line No."; Rec."Subscription Contract Line No.")
                 {
                     ToolTip = 'Specifies the value of the Contract Line No. field.';
                     Visible = false;
@@ -94,7 +94,7 @@ page 8017 "Archived Billing Lines List"
                 }
                 field(Discount; Rec.Discount)
                 {
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                     Visible = false;
                 }
                 field("Line No."; Rec."Entry No.")
@@ -104,27 +104,27 @@ page 8017 "Archived Billing Lines List"
                 }
                 field("Partner No."; Rec."Partner No.")
                 {
-                    ToolTip = 'Specifies the number of the partner who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the partner who will receive the contract components and be billed by default.';
                     Visible = false;
                 }
-                field("Service Commitment Entry No."; Rec."Service Commitment Entry No.")
+                field("Service Commitment Entry No."; Rec."Subscription Line Entry No.")
                 {
-                    ToolTip = 'Specifies the value of the Service Commitment Entry No. field.';
+                    ToolTip = 'Specifies the value of the Subscription Line Entry No. field.';
                     Visible = false;
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                     Visible = false;
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object no.';
+                    ToolTip = 'Specifies the number of the Subscription No.';
                     Visible = false;
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                     Visible = false;
                 }
                 field(SystemCreatedAt; Rec.SystemCreatedAt)
@@ -185,23 +185,23 @@ page 8017 "Archived Billing Lines List"
 
                 trigger OnAction()
                 var
-                    ContractsGenMgt: Codeunit "Contracts General Mgt.";
+                    ContractsGenMgt: Codeunit "Sub. Contracts General Mgt.";
                 begin
-                    ContractsGenMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                    ContractsGenMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                 end;
             }
             action(ShowServiceObject)
             {
                 ApplicationArea = All;
-                Caption = 'Show Service Object';
-                ToolTip = 'Opens the Service Object.';
+                Caption = 'Show Subscription';
+                ToolTip = 'Opens the Subscription.';
                 Image = Document;
 
                 trigger OnAction()
                 var
-                    ServiceObject: Record "Service Object";
+                    ServiceObject: Record "Subscription Header";
                 begin
-                    ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                    ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                 end;
             }
         }

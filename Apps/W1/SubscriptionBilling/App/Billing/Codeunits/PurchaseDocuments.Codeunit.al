@@ -226,8 +226,8 @@ codeunit 8066 "Purchase Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        PurchInvLine."Contract No." := BillingLine."Contract No.";
-        PurchInvLine."Contract Line No." := BillingLine."Contract Line No.";
+        PurchInvLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        PurchInvLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Cr. Memo Line", OnAfterInitFromPurchLine, '', false, false)]
@@ -238,7 +238,7 @@ codeunit 8066 "Purchase Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        PurchCrMemoLine."Contract No." := BillingLine."Contract No.";
-        PurchCrMemoLine."Contract Line No." := BillingLine."Contract Line No.";
+        PurchCrMemoLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        PurchCrMemoLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 }

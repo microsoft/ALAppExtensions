@@ -7,7 +7,7 @@ page 8063 "Assigned Items"
 {
     Caption = 'Assigned Items';
     PageType = List;
-    SourceTable = "Item Serv. Commitment Package";
+    SourceTable = "Item Subscription Package";
     Editable = false;
     UsageCategory = None;
     ApplicationArea = All;
@@ -29,13 +29,11 @@ page 8063 "Assigned Items"
                 }
                 field(BaseUnitOfMeasure; Item."Base Unit of Measure")
                 {
-                    ApplicationArea = Invoicing, Basic, Suite;
                     ToolTip = 'Specifies the base unit used to measure the item, such as piece, box, or pallet. The base unit of measure also serves as the conversion basis for alternate units of measure.';
                     Caption = 'Base Unit of Measure';
                 }
                 field(UnitPrice; Item."Unit Price")
                 {
-                    ApplicationArea = Invoicing, Basic, Suite;
                     ToolTip = 'Specifies the price for one unit of the item, in LCY.';
                     Caption = 'Unit Price';
                 }
@@ -50,7 +48,7 @@ page 8063 "Assigned Items"
             {
                 Caption = 'Assign New Items';
                 Image = NewItem;
-                ToolTip = 'Assign new items to the Service Commitment Package.';
+                ToolTip = 'Assign new items to the Subscription Package.';
 
                 trigger OnAction()
                 begin
@@ -61,11 +59,11 @@ page 8063 "Assigned Items"
             {
                 Caption = 'Remove Items';
                 Image = Delete;
-                ToolTip = 'Removes the assignment of items to the Service Commitment Package.';
+                ToolTip = 'Removes the assignment of items to the Subscription Package.';
 
                 trigger OnAction()
                 var
-                    ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+                    ItemServCommitmentPackage: Record "Item Subscription Package";
                 begin
                     CurrPage.SetSelectionFilter(ItemServCommitmentPackage);
                     RemoveItems(ItemServCommitmentPackage);
@@ -101,11 +99,11 @@ page 8063 "Assigned Items"
     internal procedure AssignItems(PackageCode: Code[20])
     var
         Item2: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ContractsItemManagement: Codeunit "Contracts Item Management";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ContractsItemManagement: Codeunit "Sub. Contracts Item Management";
         ItemList: Page "Item List";
     begin
-        Item2.SetRange("Service Commitment Option", Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        Item2.SetRange("Subscription Option", Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item");
         if Item2.FindSet() then
             repeat
                 if not ItemServCommitmentPackage.Get(Item2."No.", PackageCode) then
@@ -123,7 +121,7 @@ page 8063 "Assigned Items"
         end;
     end;
 
-    internal procedure RemoveItems(var ItemServCommitmentPackage: Record "Item Serv. Commitment Package")
+    internal procedure RemoveItems(var ItemServCommitmentPackage: Record "Item Subscription Package")
     var
         ConfirmManagement: Codeunit "Confirm Management";
     begin

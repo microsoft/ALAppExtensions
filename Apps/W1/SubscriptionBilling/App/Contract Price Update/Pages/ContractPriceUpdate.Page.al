@@ -3,14 +3,14 @@ namespace Microsoft.SubscriptionBilling;
 page 8025 "Contract Price Update"
 {
     ApplicationArea = All;
-    Caption = 'Contract Price Update';
+    Caption = 'Subscription Contract Price Update';
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
     LinksAllowed = false;
     PageType = Worksheet;
     SaveValues = true;
-    SourceTable = "Contract Price Update Line";
+    SourceTable = "Sub. Contr. Price Update Line";
     SourceTableTemporary = true;
     UsageCategory = Tasks;
 
@@ -54,37 +54,37 @@ page 8025 "Contract Price Update"
                 field("Partner Name"; Rec."Partner Name")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the name of the partner who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the name of the partner who will receive the contract components and be billed by default.';
                     trigger OnDrillDown()
                     begin
                         ContractsGeneralMgt.OpenPartnerCard(Rec.Partner, Rec."Partner No.");
                         InitTempTable();
                     end;
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     StyleExpr = LineStyleExpr;
                     ToolTip = 'Specifies the number of the Contract.';
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                         InitTempTable();
                     end;
                 }
-                field("Contract Description"; Rec."Contract Description")
+                field("Contract Description"; Rec."Sub. Contract Description")
                 {
                     StyleExpr = LineStyleExpr;
                     ToolTip = 'Specifies the description of the Contract.';
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                         InitTempTable();
                     end;
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies a description of the service commitment.';
+                    ToolTip = 'Specifies a description of the Subscription Line.';
                 }
                 field(OldPrice; Rec."Old Price")
                 {
@@ -96,54 +96,54 @@ page 8025 "Contract Price Update"
                     StyleExpr = LineStyleExpr;
                     ToolTip = 'Specifies the new price after the price update.';
                 }
-                field(AdditionalServiceAmount; Rec."Additional Service Amount")
+                field(AdditionalServiceAmount; Rec."Additional Amount")
                 {
                     StyleExpr = LineStyleExpr;
                     ToolTip = 'Specifies the additional amount, which will be charged after the price update.';
                 }
-                field(OldServiceAmount; Rec."Old Service Amount")
+                field(OldServiceAmount; Rec."Old Amount")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the current Service Amount of the contract line.';
+                    ToolTip = 'Specifies the current Amount of the contract line.';
                 }
-                field(NewServiceAmount; Rec."New Service Amount")
+                field(NewServiceAmount; Rec."New Amount")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the new Service Amount after the price update.';
+                    ToolTip = 'Specifies the new Amount after the price update.';
                 }
                 field("Perform Update On"; Rec."Perform Update On")
                 {
                     StyleExpr = LineStyleExpr;
                     ToolTip = 'Specifies the date, the price update will take affect.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the number of the service object.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Visible = false;
                 }
                 field(Quantity; Rec.Quantity)
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Quantity from service object.';
+                    ToolTip = 'Quantity from Subscription.';
                     Visible = false;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                     Visible = false;
                 }
                 field("Discount %"; Rec."Discount %")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the Discount % for the service billing period.';
+                    ToolTip = 'Specifies the Discount % for the subscription line billing period.';
                     Visible = false;
                 }
                 field("Discount Amount"; Rec."Discount Amount")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the amount of the discount for the service.';
+                    ToolTip = 'Specifies the amount of the discount for the Subscription Line.';
                     Visible = false;
                 }
                 field("Next Price Update"; Rec."Next Price Update")
@@ -167,13 +167,13 @@ page 8025 "Contract Price Update"
                 field(OldCalculationBasePerc; Rec."Old Calculation Base %")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the old percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the old percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                     Visible = false;
                 }
                 field(NewCalculationBasePerc; Rec."New Calculation Base %")
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Specifies the old percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the old percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                     Visible = false;
                 }
             }
@@ -209,7 +209,7 @@ page 8025 "Contract Price Update"
             {
                 Caption = 'Perform Price Update';
                 Image = Process;
-                ToolTip = 'Performs the Price Update. If the contract line has been invoiced up to the "Next Price Update", the price will be changed directly. Otherwise a Planned Service Commitment will be created.';
+                ToolTip = 'Performs the Price Update. If the contract line has been invoiced up to the "Next Price Update", the price will be changed directly. Otherwise a Planned Subscription Line will be created.';
                 trigger OnAction()
                 begin
                     PriceUpdateManagement.PerformPriceUpdate();
@@ -224,7 +224,7 @@ page 8025 "Contract Price Update"
                 ToolTip = 'Deletes the selected line.';
                 trigger OnAction()
                 var
-                    ContractPriceUpdateLine: Record "Contract Price Update Line";
+                    ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
                 begin
                     CurrPage.SetSelectionFilter(ContractPriceUpdateLine);
                     PriceUpdateManagement.DeleteContractPriceUpdateLines(ContractPriceUpdateLine);
@@ -327,7 +327,7 @@ page 8025 "Contract Price Update"
     var
         PriceUpdateTemplate: Record "Price Update Template";
         PriceUpdateManagement: Codeunit "Price Update Management";
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IncludeServiceCommitmentUpToDate: Date;
         PerformUpdateOnDate: Date;
         GroupBy: Enum "Contract Billing Grouping";

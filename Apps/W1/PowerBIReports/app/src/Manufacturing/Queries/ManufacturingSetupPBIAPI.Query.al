@@ -18,9 +18,7 @@ query 37007 "Manufacturing Setup - PBI API"
     {
         dataitem(manufacturingSetup; "Manufacturing Setup")
         {
-            column(showCapacityIn; "Show Capacity In")
-            {
-            }
+            column(showCapacityIn; "Show Capacity In") { }
         }
     }
 }

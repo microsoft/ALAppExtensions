@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Setup;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.UOM;
 using Microsoft.Utilities;
+using System.Utilities;
 
 table 6217 "Sustainability Setup"
 {
@@ -144,6 +145,13 @@ table 6217 "Sustainability Setup"
         field(25; "Enable Value Chain Tracking"; Boolean)
         {
             Caption = 'Enable Value Chain Tracking';
+
+            trigger OnValidate()
+            begin
+                if Rec."Enable Value Chain Tracking" then
+                    if not ConfirmManagement.GetResponseOrDefault(ConfirmEnableValueChainTrackingQst, false) then
+                        Error('');
+            end;
         }
     }
 
@@ -158,9 +166,11 @@ table 6217 "Sustainability Setup"
     var
         GLSetup: Record "General Ledger Setup";
         SustainabilitySetup: Record "Sustainability Setup";
+        ConfirmManagement: Codeunit "Confirm Management";
         SustainabilitySetupRetrieved: Boolean;
         RecordHasBeenRead: Boolean;
         AutoFormatExprLbl: Label '<Precision,%1><Standard Format,0>', Locked = true;
+        ConfirmEnableValueChainTrackingQst: Label 'Value Chain Tracking feature is currently in preview. We strongly recommend that you first enable and test this feature on a sandbox environment that has a copy of production data before doing this on a production environment.\\Are you sure you want to enable this feature?';
 
     procedure GetRecordOnce()
     begin

@@ -5,11 +5,11 @@ report 8002 "Cr. Serv. Comm. And Contr. L."
     ApplicationArea = All;
     UsageCategory = None;
     ProcessingOnly = true;
-    Caption = 'Create Service Commitments and Contract Lines';
+    Caption = 'Create Subscription Lines and Subscription Contract Lines';
 
     dataset
     {
-        dataitem(ImportedServiceCommitmentDataItem; "Imported Service Commitment")
+        dataitem(ImportedServiceCommitmentDataItem; "Imported Subscription Line")
         {
             trigger OnPreDataItem()
             begin
@@ -21,7 +21,7 @@ report 8002 "Cr. Serv. Comm. And Contr. L."
             var
                 SkipCreateContractLine: Boolean;
             begin
-                if ImportedServiceCommitmentDataItem."Service Commitment created" and ImportedServiceCommitment."Contract Line created" then
+                if ImportedServiceCommitmentDataItem."Subscription Line created" and ImportedServiceCommitment."Sub. Contract Line created" then
                     CurrReport.Skip();
 
                 Counter += 1;
@@ -32,9 +32,9 @@ report 8002 "Cr. Serv. Comm. And Contr. L."
                 ImportedServiceCommitment := ImportedServiceCommitmentDataItem;
                 ImportedServiceCommitment."Error Text" := '';
 
-                if not ImportedServiceCommitmentDataItem."Service Commitment created" then begin
+                if not ImportedServiceCommitmentDataItem."Subscription Line created" then begin
                     ClearLastError();
-                    if not Codeunit.Run(Codeunit::"Create Service Commitment", ImportedServiceCommitment) then begin
+                    if not Codeunit.Run(Codeunit::"Create Subscription Line", ImportedServiceCommitment) then begin
                         ImportedServiceCommitment."Error Text" := CopyStr(GetLastErrorText, 1, MaxStrLen(ImportedServiceCommitment."Error Text"));
                         ImportedServiceCommitment.Modify(false);
                         SkipCreateContractLine := true;
@@ -42,9 +42,9 @@ report 8002 "Cr. Serv. Comm. And Contr. L."
                     Commit(); //retain data even if errors ocurr
                 end;
 
-                if (not ImportedServiceCommitment."Contract Line created") and (not SkipCreateContractLine) then begin
+                if (not ImportedServiceCommitment."Sub. Contract Line created") and (not SkipCreateContractLine) then begin
                     ClearLastError();
-                    if not Codeunit.Run(Codeunit::"Create Contract Line", ImportedServiceCommitment) then begin
+                    if not Codeunit.Run(Codeunit::"Create Sub. Contract Line", ImportedServiceCommitment) then begin
                         ImportedServiceCommitment."Error Text" := CopyStr(GetLastErrorText, 1, MaxStrLen(ImportedServiceCommitment."Error Text"));
                         ImportedServiceCommitment.Modify(false);
                     end;
@@ -78,7 +78,7 @@ report 8002 "Cr. Serv. Comm. And Contr. L."
     end;
 
     var
-        ImportedServiceCommitment: Record "Imported Service Commitment";
+        ImportedServiceCommitment: Record "Imported Subscription Line";
         Window: Dialog;
         NoOfRecords: Integer;
         Counter: Integer;

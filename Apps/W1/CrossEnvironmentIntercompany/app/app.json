@@ -2,7 +2,7 @@
   "id": "a190e87b-2f59-4e14-a727-421877802768",
   "name": "API - Cross Environment Intercompany",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "API - Cross Environment Intercompany lets you easily access tha data necessary to use intercompany in between environments.",
   "description": "API - Cross Environment Intercompany lets you easily access tha data necessary to use intercompany in between environments.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -12,7 +12,7 @@
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
   "logo": "ExtensionLogo.png",
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "Cloud",
   "idRanges": [
     {

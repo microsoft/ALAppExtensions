@@ -4,9 +4,9 @@ using System.Utilities;
 
 page 8031 "Connect Subscription To SO"
 {
-    Caption = 'Connect Subscription to Service Object';
+    Caption = 'Connect Supplier Subscription to Subscription';
     ApplicationArea = All;
-    SourceTable = "Usage Data Subscription";
+    SourceTable = "Usage Data Supp. Subscription";
     UsageCategory = Lists;
     PageType = List;
     LinksAllowed = false;
@@ -48,15 +48,15 @@ page 8031 "Connect Subscription To SO"
                     ToolTip = 'Specifies the name of the customer to which this subscription refers.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object to which this subscription refers.';
+                    ToolTip = 'Specifies the number of the Subscription to which this subscription refers.';
                     StyleExpr = UsageDataSubscriptionStyle;
                     Visible = false;
                 }
-                field("Service Commitment"; Rec."Service Commitment Entry No.")
+                field("Service Commitment"; Rec."Subscription Line Entry No.")
                 {
-                    ToolTip = 'Specifies the service to which this subscription is linked.';
+                    ToolTip = 'Specifies the Subscription Line to which this subscription is linked.';
                     StyleExpr = UsageDataSubscriptionStyle;
                     Visible = false;
                 }
@@ -65,19 +65,19 @@ page 8031 "Connect Subscription To SO"
                     ToolTip = 'Specifies the vendor''s product name for this subscription.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Connect to Service Object No."; Rec."Connect to Service Object No.")
+                field("Connect to Service Object No."; Rec."Connect to Sub. Header No.")
                 {
-                    ToolTip = 'Specifies the service object to which the subscription should be connected.';
+                    ToolTip = 'Specifies the Subscription to which the subscription should be connected.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Connect to SO Method"; Rec."Connect to SO Method")
+                field("Connect to SO Method"; Rec."Connect to Sub. Header Method")
                 {
-                    ToolTip = 'Specifies whether new service commitments will be created or existing service commitments will be updated for the service object.';
+                    ToolTip = 'Specifies whether new Subscription Lines will be created or existing Subscription Lines will be updated for the Subscription.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Connect to SO at Date"; Rec."Connect to SO at Date")
+                field("Connect to SO at Date"; Rec."Connect to Sub. Header at Date")
                 {
-                    ToolTip = 'Specifies the date on which the new service commitments will be created.';
+                    ToolTip = 'Specifies the date on which the new Subscription Lines will be created.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
                 field(Status; Rec.Status)
@@ -162,15 +162,15 @@ page 8031 "Connect Subscription To SO"
         {
             action("Connect Subscriptions to Service Objects")
             {
-                Caption = 'Connect Subscriptions to Service Objects';
-                ToolTip = 'Connects the selected subscriptions to the selected service objects as specified.';
+                Caption = 'Connect Subscriptions to Subscriptions';
+                ToolTip = 'Connects the selected subscriptions to the selected Subscriptions as specified.';
                 Ellipsis = true;
                 Image = CarryOutActionMessage;
                 Scope = Repeater;
 
                 trigger OnAction()
                 var
-                    UsageDataSubscription: Record "Usage Data Subscription";
+                    UsageDataSubscription: Record "Usage Data Supp. Subscription";
                     UsageBasedBillingMgmt: Codeunit "Usage Based Billing Mgmt.";
                     ConfirmManagement: Codeunit "Confirm Management";
                 begin
@@ -190,7 +190,7 @@ page 8031 "Connect Subscription To SO"
 
                 trigger OnAction()
                 var
-                    UsageDataSubscription: Record "Usage Data Subscription";
+                    UsageDataSubscription: Record "Usage Data Supp. Subscription";
                     ConfirmManagement: Codeunit "Confirm Management";
                 begin
                     if not ConfirmManagement.GetResponse(ResetProcessingStatusQst, true) then
@@ -219,7 +219,7 @@ page 8031 "Connect Subscription To SO"
 
     trigger OnOpenPage()
     begin
-        Rec.SetRange("Service Commitment Entry No.", 0);
+        Rec.SetRange("Subscription Line Entry No.", 0);
     end;
 
     trigger OnAfterGetRecord()
@@ -230,7 +230,7 @@ page 8031 "Connect Subscription To SO"
     local procedure SetUsageDataSubscriptionStyleExpresion()
     begin
         UsageDataSubscriptionStyle := 'Standard';
-        if Rec."Service Commitment Entry No." = 0 then
+        if Rec."Subscription Line Entry No." = 0 then
             UsageDataSubscriptionStyle := 'StandardAccent';
         if Rec."Processing Status" = Enum::"Processing Status"::Error then
             UsageDataSubscriptionStyle := 'Attention';
@@ -238,6 +238,6 @@ page 8031 "Connect Subscription To SO"
 
     var
         UsageDataSubscriptionStyle: Text;
-        ProceedConnectingServiceObjectToSubscriptionQst: Label 'If you continue, the selected Subscriptions will be connected to their respective Service Object by either creating new service commitment or by updating existing service commitment.\\Do you want to continue?';
+        ProceedConnectingServiceObjectToSubscriptionQst: Label 'If you continue, the selected Subscriptions will be connected to their respective Subscription by either creating new Subscription Line or by updating existing Subscription Line.\\Do you want to continue?';
         ResetProcessingStatusQst: Label 'Do you want to reset the Processing Status for all selected Subscriptions?';
 }

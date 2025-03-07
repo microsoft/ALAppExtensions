@@ -97,6 +97,14 @@ page 4810 "Intrastat Report Setup"
                 Caption = 'Numbering';
                 field("Intrastat Nos."; Rec."Intrastat Nos.") { }
             }
+            group("MandatoryFields")
+            {
+                Caption = 'Mandatory Fields';
+                field("Transaction Type Mandatory"; Rec."Transaction Type Mandatory") { }
+                field("Transaction Spec. Mandatory"; Rec."Transaction Spec. Mandatory") { }
+                field("Transport Method Mandatory"; Rec."Transport Method Mandatory") { }
+                field("Shipment Method Mandatory"; Rec."Shipment Method Mandatory") { }
+            }
         }
     }
 

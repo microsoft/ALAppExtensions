@@ -31,11 +31,11 @@ page 8038 "Usage Data Generic Import"
                 }
                 field("Service Object"; Rec."Service Object Availability")
                 {
-                    ToolTip = 'Specifies whether a Service Object is available to be connected with the subscription or if the connection has been established already.';
+                    ToolTip = 'Specifies whether a Subscription is available to be connected with the subscription or if the connection has been established already.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifices to which Service Object the usage data refers.';
+                    ToolTip = 'Specifices to which Subscription the usage data refers.';
                 }
                 field(CustomerId; Rec."Customer ID")
                 {
@@ -49,23 +49,23 @@ page 8038 "Usage Data Generic Import"
                 {
                     ToolTip = 'Specifies the number of the invoice to which the usage data refers.';
                 }
-                field(SubscriptionId; Rec."Subscription ID")
+                field(SubscriptionId; Rec."Supp. Subscription ID")
                 {
                     ToolTip = 'Specifies the ID of the subscription at the supplier to which the usage data refers. The ID of the subscription is stored in the "Usage data item references".';
                 }
-                field(SubscriptionName; Rec."Subscription Name")
+                field(SubscriptionName; Rec."Supp. Subscription Name")
                 {
                     ToolTip = 'Specifies the name of the subscription at the supplier to which the usage data refers.';
                 }
-                field(SubscriptionDescription; Rec."Subscription Description")
+                field(SubscriptionDescription; Rec."Supp. Subscription Description")
                 {
                     ToolTip = 'Specifies an additional description of the supplier''s subscription.';
                 }
-                field(SubscriptionStartDate; Rec."Subscription Start Date")
+                field(SubscriptionStartDate; Rec."Supp. Subscription Start Date")
                 {
                     ToolTip = 'Specifies the start date of the subscription at the supplier.';
                 }
-                field(SubscriptionEndDate; Rec."Subscription End Date")
+                field(SubscriptionEndDate; Rec."Supp. Subscription End Date")
                 {
                     ToolTip = 'Specifies the end date of the subscription at the supplier.';
                 }
@@ -161,23 +161,23 @@ page 8038 "Usage Data Generic Import"
             action(ExtendContract)
             {
                 Caption = 'Extend Contract';
-                ToolTip = 'Opens the action for creating a service object with services that directly extend the specified contracts.';
+                ToolTip = 'Opens the action for creating a Subscription with Subscription Lines that directly extend the specified contracts.';
                 Image = AddAction;
 
                 trigger OnAction()
                 var
                     UsageDataImport: Record "Usage Data Import";
-                    UsageDataSubscription: Record "Usage Data Subscription";
-                    UsageDataCustomer: Record "Usage Data Customer";
+                    UsageDataSubscription: Record "Usage Data Supp. Subscription";
+                    UsageDataCustomer: Record "Usage Data Supp. Customer";
                     ExtendContractPage: Page "Extend Contract";
                 begin
                     UsageDataImport.Get(Rec."Usage Data Import Entry No.");
-                    UsageDataSubscription.SetRange("Supplier Reference", Rec."Subscription ID");
+                    UsageDataSubscription.SetRange("Supplier Reference", Rec."Supp. Subscription ID");
                     if UsageDataSubscription.FindFirst() then;
                     UsageDataCustomer.SetRange("Supplier Reference", Rec."Customer ID");
                     if UsageDataCustomer.FindFirst() then;
 
-                    ExtendContractPage.SetParameters(UsageDataCustomer."Customer No.", '', Rec."Subscription Start Date", true);
+                    ExtendContractPage.SetParameters(UsageDataCustomer."Customer No.", '', Rec."Supp. Subscription Start Date", true);
                     ExtendContractPage.SetUsageBasedParameters(UsageDataImport."Supplier No.", UsageDataSubscription."Entry No.");
                     ExtendContractPage.RunModal();
                     CurrPage.Update();
@@ -185,11 +185,11 @@ page 8038 "Usage Data Generic Import"
             }
             action(ConnectSubscriptionToServiceObject)
             {
-                Caption = 'Connect Subscription to Service Object';
-                ToolTip = 'Opens the page for connecting subscriptions to Service Objects, filtered to the currently selected subscription.';
+                Caption = 'Connect Subscription to Subscription';
+                ToolTip = 'Opens the page for connecting subscriptions to Subscriptions, filtered to the currently selected subscription.';
                 Image = AddAction;
                 RunObject = page "Connect Subscription To SO";
-                RunPageLink = "Supplier Reference" = field("Subscription ID");
+                RunPageLink = "Supplier Reference" = field("Supp. Subscription ID");
             }
         }
         area(navigation)
@@ -203,7 +203,7 @@ page 8038 "Usage Data Generic Import"
 
                 trigger OnAction()
                 var
-                    UsageDataCustomer: Record "Usage Data Customer";
+                    UsageDataCustomer: Record "Usage Data Supp. Customer";
                     UsageDataImport: Record "Usage Data Import";
                 begin
                     UsageDataImport.Get(Rec."Usage Data Import Entry No.");

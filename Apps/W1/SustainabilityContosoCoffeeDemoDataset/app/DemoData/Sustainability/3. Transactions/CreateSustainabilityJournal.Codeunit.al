@@ -18,21 +18,21 @@ codeunit 5221 "Create Sustainability Journal"
     var
         ContosoSustainability: Codeunit "Contoso Sustainability";
         Account: Codeunit "Create Sustainability Account";
-        CommonUoM: Codeunit "Create Common Unit Of Measure";
+        CreateUnitofMeasure: Codeunit "Create Unit of Measure";
     begin
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarLargeSize(), CommonUoM.KM(), 0, 385, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarMediumSize(), CommonUoM.KM(), 0, 1820, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarPremiumSize(), CommonUoM.KM(), 0, 268, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarLargeSize(), CreateUnitofMeasure.KM(), 0, 385, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarMediumSize(), CreateUnitofMeasure.KM(), 0, 1820, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.CompanyCarPremiumSize(), CreateUnitofMeasure.KM(), 0, 268, 0, 1, 0, '', '');
 
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.AirContinentalEconomy(), CommonUoM.KM(), 0, 4120, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.AirIntercontinentalBusiness(), CommonUoM.KM(), 0, 9860, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.AirContinentalEconomy(), CreateUnitofMeasure.KM(), 0, 4120, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.AirIntercontinentalBusiness(), CreateUnitofMeasure.KM(), 0, 9860, 0, 1, 0, '', '');
 
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel3Stars(), CommonUoM.Day(), 0, 0, 2, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel4Stars(), CommonUoM.Day(), 0, 0, 6, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel4StarsJuniorSuite(), CommonUoM.Day(), 0, 0, 3, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel3Stars(), CreateUnitofMeasure.Day(), 0, 0, 2, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel4Stars(), CreateUnitofMeasure.Day(), 0, 0, 6, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoHotel4StarsJuniorSuite(), CreateUnitofMeasure.Day(), 0, 0, 3, 1, 0, '', '');
 
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoRentalCar(), CommonUoM.L(), 120, 0, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.Rail(), CommonUoM.KM(), 0, 0, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.ContosoRentalCar(), CreateUnitofMeasure.L(), 120, 0, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.Rail(), CreateUnitofMeasure.KM(), 0, 0, 0, 1, 0, '', '');
 
         ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'SJ00018', Account.PurchasedServices(), 0, 0, 0, '', '');
     end;
@@ -41,11 +41,11 @@ codeunit 5221 "Create Sustainability Journal"
     var
         ContosoSustainability: Codeunit "Contoso Sustainability";
         Account: Codeunit "Create Sustainability Account";
-        CommonUoM: Codeunit "Create Common Unit Of Measure";
+        CreateUnitofMeasure: Codeunit "Create Unit of Measure";
     begin
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.OnRoadVehicleUrbanTrucks(), CommonUoM.KM(), 0, 1010, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.NonRoadVehiclesTractors(), CommonUoM.L(), 225, 0, 0, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.NonRoadVehiclesBackhoes(), CommonUoM.L(), 180, 0, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.OnRoadVehicleUrbanTrucks(), CreateUnitofMeasure.KM(), 0, 1010, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.NonRoadVehiclesTractors(), CreateUnitofMeasure.L(), 225, 0, 0, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0001', Account.NonRoadVehiclesBackhoes(), CreateUnitofMeasure.L(), 180, 0, 0, 1, 0, '', '');
     end;
 
     local procedure CreateLinesForScope2Batch(TemplateName: Code[10]; BatchName: Code[10]; DefaultDate: Date)
@@ -60,10 +60,10 @@ codeunit 5221 "Create Sustainability Journal"
     var
         ContosoSustainability: Codeunit "Contoso Sustainability";
         Account: Codeunit "Create Sustainability Account";
-        CommonUoM: Codeunit "Create Common Unit Of Measure";
+        CreateUnitofMeasure: Codeunit "Create Unit of Measure";
     begin
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.WastePlasticGeneratedInOperation(), CommonUoM.Ton(), 0, 0, 0.41, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.WasteOrganicGeneratedInOperation(), CommonUoM.Ton(), 0, 0, 0.63, 1, 0, '', '');
-        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.RecycledWasteGeneratedInOperation(), CommonUoM.Ton(), 0, 0, 0.82, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.WastePlasticGeneratedInOperation(), CreateUnitofMeasure.Ton(), 0, 0, 0.41, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.WasteOrganicGeneratedInOperation(), CreateUnitofMeasure.Ton(), 0, 0, 0.63, 1, 0, '', '');
+        ContosoSustainability.InsertSustainabilityJournalLine(TemplateName, BatchName, DefaultDate, 'EMIS1-0003', Account.RecycledWasteGeneratedInOperation(), CreateUnitofMeasure.Ton(), 0, 0, 0.82, 1, 0, '', '');
     end;
 }

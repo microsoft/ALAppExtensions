@@ -10,13 +10,13 @@ codeunit 47002 "SL Populate Account History"
     Access = Internal;
     trigger OnRun()
     begin
-        FillSLGLAcctBalbyPeriodWrkTbl();
-        PopulateSLAccountTransactionsTbl();
+        FillSLGLAcctBalByPeriod();
+        PopulateSLAccountTransactions();
     end;
 
-    internal procedure FillSLGLAcctBalbyPeriodWrkTbl()
+    internal procedure FillSLGLAcctBalByPeriod()
     var
-        SLGLAcctBalbyPeriodWrkTbl: Record SLGLAcctBalByPeriod;
+        SLGLAcctBalByPeriod: Record SLGLAcctBalByPeriod;
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         SLGLSetup: Record "SL GLSetup";
         AccountQuery: Query "SL AcctHist Active Accounts";
@@ -29,8 +29,8 @@ codeunit 47002 "SL Populate Account History"
             SLYtdNetIncAcct := CopyStr(SLGLSetup.YtdNetIncAcct.Trim(), 1, MaxStrLen(SLYtdNetIncAcct));
         end;
 
-        if SLGLAcctBalbyPeriodWrkTbl.FindFirst() then
-            SLGLAcctBalbyPeriodWrkTbl.DeleteAll();
+        if SLGLAcctBalByPeriod.FindFirst() then
+            SLGLAcctBalByPeriod.DeleteAll();
 
         AccountQuery.SetRange(CpnyID, CompanyName().Trim());
         AccountQuery.SetRange(LedgerID, SLLedgerID);
@@ -45,608 +45,93 @@ codeunit 47002 "SL Populate Account History"
             exit;
 
         while AccountQuery.Read() do begin
-            if AccountQuery.PtdBal00 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 1;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal00 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal00 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal00;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal00 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal00 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal00;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal01 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 2;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal01 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal01 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal01;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal01 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal01 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal01;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal02 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 3;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal02 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal02 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal02;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal02 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal02 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal02;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal03 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 4;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal03 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal03 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal03;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal03 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal03 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal03;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal04 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 5;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal04 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal04 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal04;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal04 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal04 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal04;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal05 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 6;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal05 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal05 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal05;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal05 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal05 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal05;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal06 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 7;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal06 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal06 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal06;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal06 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal06 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal06;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal07 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 8;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal07 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal07 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal07;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal07 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal07 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal07;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal08 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 9;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal08 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal08 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal08;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal08 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal08 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal08;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal09 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 10;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal09 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal09 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal09;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal09 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal09 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal09;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal10 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 11;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal10 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal10 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal10;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal10 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal10 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal10;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal11 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 12;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal11 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal11 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal11;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal11 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal11 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal11;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
-            if AccountQuery.PtdBal12 <> 0 then begin
-                SLGLAcctBalbyPeriodWrkTbl.ACCT := AccountQuery.Acct;
-                SLGLAcctBalbyPeriodWrkTbl.SUB := AccountQuery.Sub;
-                SLGLAcctBalbyPeriodWrkTbl.FISCYR := AccountQuery.FiscYr;
-                SLGLAcctBalbyPeriodWrkTbl.PERIODID := 13;
-                case (AccountQuery.AcctType.Substring(2, 1)) of
-                    'A', 'E':
-                        if AccountQuery.PtdBal12 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal12 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal12;
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                        end;
-                    'L', 'I':
-                        if AccountQuery.PtdBal12 < 0 then begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := 0;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := AccountQuery.PtdBal12 * -1;
-                        end else begin
-                            SLGLAcctBalbyPeriodWrkTbl.CREDITAMT := AccountQuery.PtdBal12;
-                            SLGLAcctBalbyPeriodWrkTbl.DEBITAMT := 0;
-                        end;
-                end;
-                if SLGLAcctBalbyPeriodWrkTbl.CREDITAMT <> 0 then
-                    SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT
-                else
-                    if SLGLAcctBalbyPeriodWrkTbl.DEBITAMT <> 0 then
-                        SLGLAcctBalbyPeriodWrkTbl.PERBAL := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-
-                SLGLAcctBalbyPeriodWrkTbl.Insert();
-                Commit();
-            end;
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal00, 1);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal01, 2);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal02, 3);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal03, 4);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal04, 5);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal05, 6);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal06, 7);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal07, 8);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal08, 9);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal09, 10);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal10, 11);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal11, 12);
+            ProcessAccountQueryPeriod(AccountQuery, SLGLAcctBalByPeriod, AccountQuery.PtdBal12, 13);
         end;
     end;
 
-    internal procedure PopulateSLAccountTransactionsTbl()
+    internal procedure ProcessAccountQueryPeriod(AccountQuery: Query "SL AcctHist Active Accounts"; var SLGLAcctBalByPeriod: Record SLGLAcctBalByPeriod; PtdBal: Decimal; PeriodID: Integer)
+    begin
+        if PtdBal <> 0 then begin
+            SLGLAcctBalByPeriod.ACCT := AccountQuery.Acct;
+            SLGLAcctBalByPeriod.SUB := AccountQuery.Sub;
+            SLGLAcctBalByPeriod.FISCYR := AccountQuery.FiscYr;
+            SLGLAcctBalByPeriod.PERIODID := PeriodID;
+            case (AccountQuery.AcctType.Substring(2, 1)) of
+                'A', 'E':  // Asset, Expense
+                    if PtdBal < 0 then begin
+                        SLGLAcctBalByPeriod.DEBITAMT := 0;
+                        SLGLAcctBalByPeriod.CREDITAMT := PtdBal * -1;
+                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                    end else begin
+                        SLGLAcctBalByPeriod.DEBITAMT := PtdBal;
+                        SLGLAcctBalByPeriod.CREDITAMT := 0;
+                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                    end;
+                'L', 'I':  // Liability, Income
+                    if PtdBal < 0 then begin
+                        SLGLAcctBalByPeriod.CREDITAMT := 0;
+                        SLGLAcctBalByPeriod.DEBITAMT := PtdBal * -1;
+                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                    end else begin
+                        SLGLAcctBalByPeriod.CREDITAMT := PtdBal;
+                        SLGLAcctBalByPeriod.DEBITAMT := 0;
+                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                    end;
+            end;
+            SLGLAcctBalByPeriod.Insert();
+            Commit();
+        end;
+    end;
+
+    internal procedure PopulateSLAccountTransactions()
     var
-        SLGLAcctBalbyPeriodWrkTbl: Record SLGLAcctBalByPeriod;
-        SLAccountTransactionsTbl: Record "SL AccountTransactions";
+        SLGLAcctBalByPeriod: Record SLGLAcctBalByPeriod;
+        SLAccountTransactions: Record "SL AccountTransactions";
         NbrOfSegments: Integer;
     begin
-        NbrOfSegments := 0;
         NbrOfSegments := GetNumberOfSegments();
 
-        if SLAccountTransactionsTbl.FindFirst() then
-            SLAccountTransactionsTbl.DeleteAll();
+        if SLAccountTransactions.FindFirst() then
+            SLAccountTransactions.DeleteAll();
 
-        if SLGLAcctBalbyPeriodWrkTbl.FindSet() then
+        if SLGLAcctBalByPeriod.FindSet() then
             repeat
-                case NbrOfSegments of
-                    1:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := '';
-                            SLAccountTransactionsTbl.SubSegment_3 := '';
-                            SLAccountTransactionsTbl.SubSegment_4 := '';
-                            SLAccountTransactionsTbl.SubSegment_5 := '';
-                            SLAccountTransactionsTbl.SubSegment_6 := '';
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    2:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := '';
-                            SLAccountTransactionsTbl.SubSegment_4 := '';
-                            SLAccountTransactionsTbl.SubSegment_5 := '';
-                            SLAccountTransactionsTbl.SubSegment_6 := '';
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    3:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := '';
-                            SLAccountTransactionsTbl.SubSegment_5 := '';
-                            SLAccountTransactionsTbl.SubSegment_6 := '';
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    4:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 4);
-                            SLAccountTransactionsTbl.SubSegment_5 := '';
-                            SLAccountTransactionsTbl.SubSegment_6 := '';
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    5:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 4);
-                            SLAccountTransactionsTbl.SubSegment_5 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 5);
-                            SLAccountTransactionsTbl.SubSegment_6 := '';
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    6:
-                        begin
-                            SLAccountTransactionsTbl.SetCurrentKey(Id);
-                            if SLAccountTransactionsTbl.FindLast() then
-                                SLAccountTransactionsTbl.Id := SLAccountTransactionsTbl.Id + 1
-                            else
-                                SLAccountTransactionsTbl.Id := 1;
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 4);
-                            SLAccountTransactionsTbl.SubSegment_5 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 5);
-                            SLAccountTransactionsTbl.SubSegment_6 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 6);
-                            SLAccountTransactionsTbl.SubSegment_7 := '';
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
+                PopulateTransaction(SLGLAcctBalByPeriod, SLAccountTransactions, NbrOfSegments);
+            until SLGLAcctBalByPeriod.Next() = 0;
+    end;
 
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    7:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 4);
-                            SLAccountTransactionsTbl.SubSegment_5 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 5);
-                            SLAccountTransactionsTbl.SubSegment_6 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 6);
-                            SLAccountTransactionsTbl.SubSegment_7 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 7);
-                            SLAccountTransactionsTbl.SubSegment_8 := '';
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                    8:
-                        begin
-                            SLAccountTransactionsTbl.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 1);
-                            SLAccountTransactionsTbl.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 2);
-                            SLAccountTransactionsTbl.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 3);
-                            SLAccountTransactionsTbl.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 4);
-                            SLAccountTransactionsTbl.SubSegment_5 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 5);
-                            SLAccountTransactionsTbl.SubSegment_6 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 6);
-                            SLAccountTransactionsTbl.SubSegment_7 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 7);
-                            SLAccountTransactionsTbl.SubSegment_8 := GetSubAcctSegmentText(SLGLAcctBalbyPeriodWrkTbl.SUB, 7);
-                            SLAccountTransactionsTbl.Balance := SLGLAcctBalbyPeriodWrkTbl.PERBAL;
-                            SLAccountTransactionsTbl.DebitAmount := SLGLAcctBalbyPeriodWrkTbl.DEBITAMT;
-                            SLAccountTransactionsTbl.CreditAmount := SLGLAcctBalbyPeriodWrkTbl.CREDITAMT;
-                            SLAccountTransactionsTbl.Sub := SLGLAcctBalbyPeriodWrkTbl.SUB;
-                            SLAccountTransactionsTbl.PERIODID := SLGLAcctBalbyPeriodWrkTbl.PERIODID;
-                            SLAccountTransactionsTbl.AcctNum := SLGLAcctBalbyPeriodWrkTbl.ACCT;
-                            SLAccountTransactionsTbl.Year := SLGLAcctBalbyPeriodWrkTbl.FISCYR;
-                            SLAccountTransactionsTbl.Insert();
-                            Commit();
-                        end;
-                end;
-            until SLGLAcctBalbyPeriodWrkTbl.Next() = 0;
+    internal procedure PopulateTransaction(SLGLAcctBalByPeriod: Record SLGLAcctBalByPeriod; var SLAccountTransactions: Record "SL AccountTransactions"; NbrOfSegments: Integer)
+    begin
+        Clear(SLAccountTransactions);
+        SLAccountTransactions.SubSegment_1 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 1, NbrOfSegments);
+        SLAccountTransactions.SubSegment_2 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 2, NbrOfSegments);
+        SLAccountTransactions.SubSegment_3 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 3, NbrOfSegments);
+        SLAccountTransactions.SubSegment_4 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 4, NbrOfSegments);
+        SLAccountTransactions.SubSegment_5 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 5, NbrOfSegments);
+        SLAccountTransactions.SubSegment_6 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 6, NbrOfSegments);
+        SLAccountTransactions.SubSegment_7 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 7, NbrOfSegments);
+        SLAccountTransactions.SubSegment_8 := GetSubAcctSegmentText(SLGLAcctBalByPeriod.SUB, 8, NbrOfSegments);
+        SLAccountTransactions.Balance := SLGLAcctBalByPeriod.PERBAL;
+        SLAccountTransactions.DebitAmount := SLGLAcctBalByPeriod.DEBITAMT;
+        SLAccountTransactions.CreditAmount := SLGLAcctBalByPeriod.CREDITAMT;
+        SLAccountTransactions.Sub := SLGLAcctBalByPeriod.SUB;
+        SLAccountTransactions.PERIODID := SLGLAcctBalByPeriod.PERIODID;
+        SLAccountTransactions.AcctNum := SLGLAcctBalByPeriod.ACCT;
+        SLAccountTransactions.Year := SLGLAcctBalByPeriod.FISCYR;
+        SLAccountTransactions.Insert();
+        Commit();
     end;
 
     internal procedure GetNumberOfSegments(): Integer
@@ -670,7 +155,7 @@ codeunit 47002 "SL Populate Account History"
         exit(NbrSegments);
     end;
 
-    internal procedure GetSubAcctSegmentText(Subaccount: Text[24]; SegmentNo: Integer): Text[24]
+    internal procedure GetSubAcctSegmentText(Subaccount: Text[24]; SegmentNo: Integer; NbrOfSegments: Integer): Text[24]
     var
         SubaccountSegmentText: Text;
     begin
@@ -681,40 +166,54 @@ codeunit 47002 "SL Populate Account History"
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
                 end;
             2:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1, SegLen2);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             3:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2, SegLen3);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             4:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2 + SegLen3, SegLen4);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             5:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2 + SegLen3 + SegLen4, SegLen5);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             6:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2 + SegLen3 + SegLen4 + SegLen5, SegLen6);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             7:
-                begin
+                if NbrOfSegments >= SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2 + SegLen3 + SegLen4 + SegLen5 + SegLen6, SegLen7);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
             8:
-                begin
+                if NbrOfSegments = SegmentNo then begin
                     SubaccountSegmentText := CopyStr(Subaccount, 1 + SegLen1 + SegLen2 + SegLen3 + SegLen4 + SegLen5 + SegLen6 + SegLen7, SegLen8);
                     exit(Copystr(SubaccountSegmentText, 1, MaxStrLen(Subaccount)));
-                end;
+                end
+                else
+                    exit('');
         end;
     end;
 

@@ -108,6 +108,7 @@ codeunit 31269 "Compensation - Post CZC"
                 GenJournalLine."Shortcut Dimension 2 Code" := CompensationLineCZC."Shortcut Dimension 2 Code";
                 GenJournalLine."Source Code" := SourceCodeSetup."Compensation CZC";
                 GenJournalLine."System-Created Entry" := true;
+                OnRunOnBeforeRunBalanceGenJnlPostLine(GenJournalLine, CompensationLineCZC);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
             end;
 
@@ -208,6 +209,11 @@ codeunit 31269 "Compensation - Post CZC"
 
     [IntegrationEvent(true, false)]
     local procedure OnRunOnBeforeRunGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; var CompensationLineCZC: Record "Compensation Line CZC"; var TempAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnRunOnBeforeRunBalanceGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; var CompensationLineCZC: Record "Compensation Line CZC")
     begin
     end;
 }

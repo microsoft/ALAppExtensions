@@ -9,7 +9,7 @@ page 8019 "Sales Service Commitments API"
     EntityName = 'salesServiceCommitment';
     EntitySetName = 'salesServiceCommitments';
     PageType = API;
-    SourceTable = "Sales Service Commitment";
+    SourceTable = "Sales Subscription Line";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -66,13 +66,19 @@ page 8019 "Sales Service Commitments API"
                 field(discountAmount; Rec."Discount Amount")
                 {
                 }
-                field(serviceAmount; Rec."Service Amount")
+                field(serviceAmount; Rec.Amount)
                 {
                 }
-                field(serviceCommStartFormula; Rec."Service Comm. Start Formula")
+                field(unitCost; Rec."Unit Cost")
                 {
                 }
-                field(agreedServCommStartDate; Rec."Agreed Serv. Comm. Start Date")
+                field(unitCostLCY; Rec."Unit Cost (LCY)")
+                {
+                }
+                field(serviceCommStartFormula; Rec."Sub. Line Start Formula")
+                {
+                }
+                field(agreedServCommStartDate; Rec."Agreed Sub. Line Start Date")
                 {
                 }
                 field(noticePeriod; Rec."Notice Period")
@@ -93,7 +99,7 @@ page 8019 "Sales Service Commitments API"
                 field(template; Rec.Template)
                 {
                 }
-                field(packageCode; Rec."Package Code")
+                field(packageCode; Rec."Subscription Package Code")
                 {
                 }
                 field(customerPriceGroup; Rec."Customer Price Group")
@@ -102,13 +108,13 @@ page 8019 "Sales Service Commitments API"
                 field(discount; Rec.Discount)
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
                 field(initialTerm; Rec."Initial Term")
                 {
                 }
-                field(serviceCommitmentEntryNo; Rec."Service Commitment Entry No.")
+                field(serviceCommitmentEntryNo; Rec."Subscription Line Entry No.")
                 {
                 }
                 field(linkedToNo; Rec."Linked to No.")

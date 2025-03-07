@@ -2,7 +2,7 @@
   "id": "c471774f-4b9e-45eb-9619-e7e0b96a8b98",
   "name": "Contoso Coffee Demo Dataset Tests",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Tests for Contoso Coffee Demo Dataset.",
   "description": "Test for Contoso Coffee Demo Dataset.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -15,18 +15,18 @@
       "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
       "name": "Contoso Coffee Demo Dataset",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "name": "Tests-TestLibraries",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 148000,

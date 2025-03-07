@@ -4,11 +4,11 @@ using Microsoft.Inventory.Item;
 
 page 8062 "Item Serv. Commitments Factbox"
 {
-    Caption = 'Service Commitments';
+    Caption = 'Subscription Packages Lines';
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = false;
-    SourceTable = "Item Serv. Commitment Package";
+    SourceTable = "Item Subscription Package";
     PageType = ListPart;
     RefreshOnActivate = true;
     ApplicationArea = All;
@@ -21,11 +21,11 @@ page 8062 "Item Serv. Commitments Factbox"
             {
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                 }
                 field(Standard; Rec.Standard)
                 {
-                    ToolTip = 'Specifies whether the package service commitments should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package service commitments can be added manually in the sales process.';
+                    ToolTip = 'Specifies whether the package Subscription Lines should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package Subscription Lines can be added manually in the sales process.';
                 }
             }
         }
@@ -36,10 +36,10 @@ page 8062 "Item Serv. Commitments Factbox"
         {
             action(ServiceCommitments)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Image = ServiceLedger;
-                Caption = 'Service Commitments';
-                ToolTip = 'View or add service commitments for the item.';
+                Caption = 'Subscription Lines';
+                ToolTip = 'View or add Subscription Lines for the item.';
 
                 trigger OnAction()
                 var

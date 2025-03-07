@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Fixed Asset local functionality of Business Central for the Czech Republic",
   "description": "Fixed Asset features for your Business Central in the Czech Republic.",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -16,19 +16,19 @@
       "id": "ef5dfe8c-ba1c-4271-8a86-95d5abdc6fe9",
       "name": "Fixed Asset Localization for Czech",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     },
     {
       "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
       "name": "Contoso Coffee Demo Dataset",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     },
     {
       "id": "acbbfbc7-75c1-436f-8b22-926d741b2616",
       "name": "Contoso Coffee Demo Dataset (CZ)",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
@@ -38,6 +38,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "Cloud"
 }

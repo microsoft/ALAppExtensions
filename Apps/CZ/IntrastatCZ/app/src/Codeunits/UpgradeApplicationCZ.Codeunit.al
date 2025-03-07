@@ -77,6 +77,7 @@ codeunit 31306 "Upgrade Application CZ"
         UpgradeTransferShipmentHeader();
         UpgradeIntrastatDeliveryGroup();
         UpgradeIntrastatDescription();
+        UpgradeMandatoryFields();
     end;
 
     local procedure UpgradeDirectTransHeader()
@@ -460,5 +461,23 @@ codeunit 31306 "Upgrade Application CZ"
         end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatDescriptionUpgradeTag());
+    end;
+
+    local procedure UpgradeMandatoryFields()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatMandatoryFieldsUpgradeTag()) then
+            exit;
+
+        if IntrastatReportSetup.Get() then begin
+            IntrastatReportSetup."Transaction Type Mandatory" := IntrastatReportSetup."Transaction Type Mandatory CZ";
+            IntrastatReportSetup."Transaction Spec. Mandatory" := IntrastatReportSetup."Transaction Spec. Mandatory CZ";
+            IntrastatReportSetup."Transport Method Mandatory" := IntrastatReportSetup."Transport Method Mandatory CZ";
+            IntrastatReportSetup."Shipment Method Mandatory" := IntrastatReportSetup."Shipment Method Mandatory CZ";
+            IntrastatReportSetup.Modify()
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatMandatoryFieldsUpgradeTag());
     end;
 }

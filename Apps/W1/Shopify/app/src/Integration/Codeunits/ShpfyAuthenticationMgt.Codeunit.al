@@ -202,6 +202,15 @@ codeunit 30199 "Shpfy Authentication Mgt."
         exit(Regex.IsMatch(Hostname, PatternLbl))
     end;
 
+    procedure CorrectShopUrl(var ShopUrl: Text[250])
+    begin
+        if not ShopUrl.ToLower().StartsWith('https://') then
+            ShopUrl := CopyStr('https://' + ShopUrl, 1, MaxStrLen(ShopUrl));
+
+        if ShopUrl.ToLower().StartsWith('https://admin.shopify.com/store/') then
+            ShopUrl := CopyStr('https://' + ShopUrl.Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen(ShopUrl));
+    end;
+
     internal procedure EnableHttpRequestForShopifyConnector(ErrorInfo: ErrorInfo)
     var
         ExtensionManagement: Codeunit "Extension Management";

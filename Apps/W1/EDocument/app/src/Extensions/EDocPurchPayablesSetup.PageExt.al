@@ -19,7 +19,7 @@ pageextension 6162 "E-Doc. Purch. Payables Setup" extends "Purchases & Payables 
             field("E-Document Learn Copilot Matchings"; Rec."E-Document Learn Copilot Matchings")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies whether Copilot E-Document line matchings are learned by default (Item References and Text-To-Account Mappings). This can be overwritten on the matching page.';
+                ToolTip = 'Specifies whether Copilot E-Document line matchings are learned by default (Item References and Text To Account Mappings). This can be overwritten on the matching page.';
             }
         }
     }

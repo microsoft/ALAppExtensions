@@ -60,7 +60,7 @@ page 6167 "E-Doc. Order Line Matching"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Purchase Order Lines';
-                    SubPageLink = "Document Type" = filter("Order"), "Document No." = field("Order No."), Type = filter('G/L Account|Item');
+                    SubPageLink = "Document Type" = filter("Order"), "Document No." = field("Order No.");
                     UpdatePropagation = Both;
                 }
             }

@@ -9,7 +9,7 @@ page 8020 "Service Object API"
     EntityName = 'serviceObject';
     EntitySetName = 'serviceObjects';
     PageType = API;
-    SourceTable = "Service Object";
+    SourceTable = "Subscription Header";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -72,7 +72,19 @@ page 8020 "Service Object API"
                 field(shipToContact; Rec."Ship-to Contact")
                 {
                 }
+#if not CLEAN26
                 field(itemNo; Rec."Item No.")
+                {
+                    ObsoleteReason = 'Replaced by field Source No.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    Visible = false;
+                }
+#endif
+                field(type; Rec.Type)
+                {
+                }
+                field(sourceNo; Rec."Source No.")
                 {
                 }
                 field(description; Rec.Description)
@@ -93,7 +105,7 @@ page 8020 "Service Object API"
                 field(provisionEndDate; Rec."Provision End Date")
                 {
                 }
-                field(quantityDecimal; Rec."Quantity Decimal")
+                field(quantityDecimal; Rec.Quantity)
                 {
                 }
                 field(customerPriceGroup; Rec."Customer Price Group")
@@ -147,7 +159,7 @@ page 8020 "Service Object API"
                 field(customerReference; Rec."Customer Reference")
                 {
                 }
-                field(archivedServiceCommitments; Rec."Archived Service Commitments")
+                field(archivedServiceCommitments; Rec."Archived Sub. Lines exist")
                 {
                 }
                 field(noSeries; Rec."No. Series")
@@ -162,7 +174,7 @@ page 8020 "Service Object API"
                 field(endUserFaxNo; Rec."End-User Fax No.")
                 {
                 }
-                field(plannedServCommExists; Rec."Planned Serv. Comm. exists")
+                field(plannedServCommExists; Rec."Planned Sub. Lines exist")
                 {
                 }
                 field(endUserContactNo; Rec."End-User Contact No.")

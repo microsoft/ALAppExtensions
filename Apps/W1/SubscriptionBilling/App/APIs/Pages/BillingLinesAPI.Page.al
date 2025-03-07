@@ -33,28 +33,28 @@ page 8021 "Billing Lines API"
                 field(partnerNo; Rec."Partner No.")
                 {
                 }
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
-                field(contractLineNo; Rec."Contract Line No.")
+                field(contractLineNo; Rec."Subscription Contract Line No.")
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
-                field(serviceCommitmentEntryNo; Rec."Service Commitment Entry No.")
+                field(serviceCommitmentEntryNo; Rec."Subscription Line Entry No.")
                 {
                 }
-                field(serviceObjectDescription; Rec."Service Object Description")
+                field(serviceObjectDescription; Rec."Subscription Description")
                 {
                 }
-                field(serviceCommitmentDescription; Rec."Service Commitment Description")
+                field(serviceCommitmentDescription; Rec."Subscription Line Description")
                 {
                 }
-                field(serviceStartDate; Rec."Service Start Date")
+                field(serviceStartDate; Rec."Subscription Line Start Date")
                 {
                 }
-                field(serviceEndDate; Rec."Service End Date")
+                field(serviceEndDate; Rec."Subscription Line End Date")
                 {
                 }
                 field(partner; Rec.Partner)
@@ -63,7 +63,7 @@ page 8021 "Billing Lines API"
                 field(discount; Rec.Discount)
                 {
                 }
-                field(serviceObjQuantityDecimal; Rec."Service Obj. Quantity Decimal")
+                field(serviceObjQuantityDecimal; Rec."Service Object Quantity")
                 {
                 }
                 field(billingFrom; Rec."Billing from")
@@ -72,7 +72,7 @@ page 8021 "Billing Lines API"
                 field(billingTo; Rec."Billing to")
                 {
                 }
-                field(serviceAmount; Rec."Service Amount")
+                field(serviceAmount; Rec.Amount)
                 {
                 }
                 field(billingRhythm; Rec."Billing Rhythm")
@@ -88,6 +88,12 @@ page 8021 "Billing Lines API"
                 {
                 }
                 field(documentLineNo; Rec."Document Line No.")
+                {
+                }
+                field(unitCost; Rec."Unit Cost")
+                {
+                }
+                field(unitCostLCY; Rec."Unit Cost (LCY)")
                 {
                 }
                 field(unitPrice; Rec."Unit Price")

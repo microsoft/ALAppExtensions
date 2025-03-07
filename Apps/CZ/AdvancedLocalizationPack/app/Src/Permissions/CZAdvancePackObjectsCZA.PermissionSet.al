@@ -4,7 +4,12 @@
     Assignable = false;
     Caption = 'CZ Advance Pack - Objects';
 
-    Permissions = codeunit "Assembly Handler CZA" = X,
+    Permissions =
+#if not CLEAN26
+#pragma warning disable AL0432
+    codeunit "Assembly Handler CZA" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "Calculate Invent. Handler CZA" = X,
                   codeunit "Cancel FA Ldg.Ent. Handler CZA" = X,
                   codeunit "Data Class. Eval. Handler CZA" = X,
@@ -29,7 +34,11 @@
                   codeunit "Item Tracking Line Handler CZA" = X,
                   codeunit "Job Journal Line Handler CZA" = X,
                   codeunit "Process Data Exch. Handler CZA" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   codeunit "Production Order Handler CZA" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "Purchase Line Handler CZA" = X,
                   codeunit "Reversal Entry Handler CZA" = X,
                   codeunit "Req.Wksh.Make Ord. Handler CZA" = X,

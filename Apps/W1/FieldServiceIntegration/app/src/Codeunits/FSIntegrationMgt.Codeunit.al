@@ -15,6 +15,7 @@ codeunit 6615 "FS Integration Mgt."
 {
     var
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
+        ProgressWindow: Dialog;
         OAuthConnectionStringFormatTok: Label 'Url=%1; AccessToken=%2; ProxyVersion=%3; %4', Locked = true;
         ConnectionStringFormatTok: Label 'Url=%1; UserName=%2; Password=%3; ProxyVersion=%4; %5', Locked = true;
         UserDoesNotExistCRMErr: Label 'There is no user with email address %1 in %2. Enter a valid email address.', Comment = '%1 = User email address, %2 = Dataverse service name';
@@ -31,6 +32,9 @@ codeunit 6615 "FS Integration Mgt."
         CannotAssignFieldSecurityProfileToUserTelemetryLbl: Label 'Cannot assign field security profile to integration user.', Locked = true;
         CannotAssignFieldSecurityProfileToUserQst: Label 'To enable the setup, you must sign in to %1 as administrator and assign the column security profile "Field Service - Administrator" to the Business Central integration user. Do you want to open the Business Central integration user card in %1?', Comment = '%1 - Dataverse environment URL';
         NoPermissionsTxt: Label 'No permissions.', Locked = true;
+        ImportProjectSolutionLbl: Label 'Importing Field Service Integration Solution - Project';
+        ImportServiceSolutionLbl: Label 'Importing Field Service Integration Solution - Service';
+        ProgressBarMsg: Label 'This process will take several minutes. Please wait while the operation is being completed.';
 
     [TryFunction]
     internal procedure ImportFSSolution(ServerAddress: Text; IntegrationUserEmail: Text; AdminUserEmail: Text; AdminUserPassword: SecretText; AccessToken: SecretText; AdminADDomain: Text; ProxyVersion: Integer; ForceRedeploy: Boolean; ImportSolutionFailed: Boolean)
@@ -81,7 +85,7 @@ codeunit 6615 "FS Integration Mgt."
         ImportFieldServiceIntegrationSolution(CRMHelper, TempConnectionString, UserGUID, IntegrationRoleGUID, ForceRedeploy, ImportSolutionFailed);
 
         FSConnectionSetup.Get();
-        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Service then
+        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::"Service and projects" then
             ImportPremiumFieldServiceIntegrationSolution(CRMHelper, TempConnectionString, UserGUID, IntegrationRoleGUID, ForceRedeploy, ImportSolutionFailed);
 
         if CDSIntegrationImpl.IsIntegrationEnabled() then begin
@@ -136,15 +140,20 @@ codeunit 6615 "FS Integration Mgt."
         else
             ImportSolution := not SolutionInstalled;
 
-        if ImportSolution then
+        if ImportSolution then begin
+            if GuiAllowed() then
+                ProgressWindow.Open(StrSubstNo('%1%2%3', ImportProjectSolutionLbl, '\', ProgressBarMsg));
             if not ImportDefaultFSSolution(CRMHelper) then begin
                 ImportSolutionFailed := true;
                 CRMIntegrationManagement.ProcessConnectionFailures();
             end;
+        end;
 
         IntegrationRoleGUID := CRMHelper.GetRoleId(GetFieldServiceIntegrationRoleID());
         if not CRMHelper.CheckRoleAssignedToUser(UserGUID, IntegrationRoleGUID) then
             CRMHelper.AssociateUserWithRole(UserGUID, IntegrationRoleGUID);
+
+        if TryCloseProgress() then;
     end;
 
     local procedure ImportPremiumFieldServiceIntegrationSolution(var CRMHelper: DotNet CrmHelper; var TempConnectionString: SecretText; UserGUID: Guid; var IntegrationRoleGUID: Guid; ForceRedeploy: Boolean; var ImportSolutionFailed: Boolean)
@@ -162,15 +171,27 @@ codeunit 6615 "FS Integration Mgt."
         else
             ImportSolution := not SolutionInstalled;
 
-        if ImportSolution then
+        if ImportSolution then begin
+            if GuiAllowed() then
+                ProgressWindow.Open(StrSubstNo('%1%2%3', ImportServiceSolutionLbl, '\', ProgressBarMsg));
             if not ImportPremiumFSSolution(CRMHelper) then begin
                 ImportSolutionFailed := true;
                 CRMIntegrationManagement.ProcessConnectionFailures();
             end;
+        end;
 
         IntegrationRoleGUID := CRMHelper.GetRoleId(GetPremiumFieldServiceIntegrationRoleID());
         if not CRMHelper.CheckRoleAssignedToUser(UserGUID, IntegrationRoleGUID) then
             CRMHelper.AssociateUserWithRole(UserGUID, IntegrationRoleGUID);
+
+        if TryCloseProgress() then;
+    end;
+
+    [TryFunction]
+    local procedure TryCloseProgress()
+    begin
+        if GuiAllowed() then
+            ProgressWindow.Close();
     end;
 
     [TryFunction]
@@ -189,7 +210,7 @@ codeunit 6615 "FS Integration Mgt."
         FSConnectionSetup: Record "FS Connection Setup";
     begin
         FSConnectionSetup.Get();
-        if TryTouchFSSolutionEntities() and (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Project) then
+        if TryTouchFSSolutionEntities() and (FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Projects) then
             exit(true);
 
         ClearLastError();
@@ -263,7 +284,7 @@ codeunit 6615 "FS Integration Mgt."
         SetToManualLbl: Label 'Set to Manual';
         OpenNoSeriesListLbl: Label 'Open No. Series. list';
     begin
-        if not (IntegrationType = IntegrationType::Service) then
+        if not (IntegrationType = IntegrationType::"Service and projects") then
             exit;
 
         ServiceMgtSetup.Get();
@@ -299,7 +320,7 @@ codeunit 6615 "FS Integration Mgt."
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
     begin
-        if not (IntegrationType = IntegrationType::Service) then
+        if not (IntegrationType = IntegrationType::"Service and projects") then
             exit;
 
         ServiceMgtSetup.Get();

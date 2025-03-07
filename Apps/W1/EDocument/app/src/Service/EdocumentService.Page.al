@@ -39,7 +39,6 @@ page 6133 "E-Document Service"
                     Caption = 'Service Integration';
                     ToolTip = 'Specifies integration code for the electronic export setup.';
                 }
-
             }
             group(ImportProcessing)
             {
@@ -171,6 +170,15 @@ page 6133 "E-Document Service"
                                 ToolTip = 'Specifies the number of minutes between batch processing jobs.';
                             }
                         }
+                    }
+                }
+                group(Parameters)
+                {
+                    Caption = 'Parameters';
+                    Visible = Rec."Document Format" = Rec."Document Format"::"PEPPOL BIS 3.0";
+
+                    field("Embed PDF in export"; Rec."Embed PDF in export")
+                    {
                     }
                 }
 

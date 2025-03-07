@@ -6,7 +6,7 @@ page 8073 "Archived Billing Lines"
     Editable = false;
     PageType = List;
     SourceTable = "Billing Line Archive";
-    SourceTableView = sorting("Contract No.", "Contract Line No.", "Billing from");
+    SourceTableView = sorting("Subscription Contract No.", "Subscription Contract Line No.", "Billing from");
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -18,7 +18,7 @@ page 8073 "Archived Billing Lines"
             {
                 field("Partner No."; Rec."Partner No.")
                 {
-                    ToolTip = 'Specifies the number of the partner who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the partner who will receive the contract components and be billed by default.';
                     Visible = false;
 
                     trigger OnDrillDown()
@@ -29,7 +29,7 @@ page 8073 "Archived Billing Lines"
                 field("Partner Name"; PartnerNameTxt)
                 {
                     Caption = 'Partner Name';
-                    ToolTip = 'Specifies the name of the partner who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the name of the partner who will receive the contract components and be billed by default.';
                     Editable = false;
 
                     trigger OnDrillDown()
@@ -37,57 +37,61 @@ page 8073 "Archived Billing Lines"
                         ContractsGeneralMgt.OpenPartnerCard(Rec.Partner, Rec."Partner No.");
                     end;
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of the Contract No.';
                     Visible = false;
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
-                    Caption = 'Contract Description';
-                    ToolTip = 'Specifies the products or service being offered.';
+                    Caption = 'Subscription Contract Description';
+                    ToolTip = 'Specifies the subscriptions being offered.';
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
                 field("Billing from"; Rec."Billing from")
                 {
-                    ToolTip = 'Specifies the date from which the service is billed.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is billed.';
                 }
                 field("Billing to"; Rec."Billing to")
                 {
-                    ToolTip = 'Specifies the date to which the service is billed.';
+                    ToolTip = 'Specifies the date to which the Subscription Line is billed.';
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
+                }
+                field("Unit Cost (LCY)"; Rec."Unit Cost (LCY)")
+                {
+                    ToolTip = 'Specifies the unit cost for the billing period.';
                 }
                 field("Unit Price"; Rec."Unit Price")
                 {
-                    ToolTip = 'Specifies the Unit Price for the service billing period without discount.';
+                    ToolTip = 'Specifies the Unit Price for the subscription line billing period without discount.';
                 }
-                field("Service Object Quantity"; Rec."Service Obj. Quantity Decimal")
+                field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from service object.';
+                    ToolTip = 'Quantity from Subscription.';
                 }
                 field("Discount %"; Rec."Discount %")
                 {
-                    ToolTip = 'Specifies the Discount % for the service billing period.';
+                    ToolTip = 'Specifies the Discount % for the subscription line billing period.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
@@ -101,26 +105,26 @@ page 8073 "Archived Billing Lines"
                 {
                     ToolTip = 'Shows the document line number of the document, it was posted in.';
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object no.';
+                    ToolTip = 'Specifies the number of the Subscription No.';
 
                     trigger OnDrillDown()
                     begin
-                        ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                        ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                     end;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                 }
                 field("Billing Template Code"; Rec."Billing Template Code")
                 {
@@ -131,7 +135,7 @@ page 8073 "Archived Billing Lines"
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
                 field("User ID"; Rec."User ID")
                 {
@@ -144,13 +148,13 @@ page 8073 "Archived Billing Lines"
 
     trigger OnAfterGetRecord()
     begin
-        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Contract No.");
+        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Subscription Contract No.");
         PartnerNameTxt := ContractsGeneralMgt.GetPartnerName(Rec.Partner, Rec."Partner No.");
     end;
 
     var
-        ServiceObject: Record "Service Object";
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ServiceObject: Record "Subscription Header";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         ContractDescriptionTxt: Text;
         PartnerNameTxt: Text;
 }

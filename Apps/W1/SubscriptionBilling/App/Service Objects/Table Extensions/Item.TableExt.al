@@ -16,14 +16,14 @@ tableextension 8052 Item extends Item
 {
     fields
     {
-        field(8052; "Service Commitment Option"; Enum "Item Service Commitment Type")
+        field(8052; "Subscription Option"; Enum "Item Service Commitment Type")
         {
             DataClassification = CustomerContent;
-            Caption = 'Service Commitment Option';
+            Caption = 'Subscription Option';
 
             trigger OnValidate()
             var
-                ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+                ItemServCommitmentPackage: Record "Item Subscription Package";
 #if not CLEAN25
                 SalesPrice: Record "Sales Price";
 #endif
@@ -33,14 +33,14 @@ tableextension 8052 Item extends Item
                 PriceCalculationMgt: Codeunit "Price Calculation Mgt.";
 #endif
             begin
-                if "Service Commitment Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"] then
+                if "Subscription Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"] then
                     if Type <> Type::"Non-Inventory" then
-                        Error(ItemTypeErr, "Service Commitment Option", Format(Type::"Non-Inventory"), FieldCaption(Type));
+                        Error(ItemTypeErr, "Subscription Option", Format(Type::"Non-Inventory"), FieldCaption(Type));
 
-                if not ("Service Commitment Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then begin
+                if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then begin
                     ItemServCommitmentPackage.SetRange("Item No.", "No.");
                     if not ItemServCommitmentPackage.IsEmpty() then
-                        if ConfirmManagement.GetResponse(StrSubstNo(ItemServiceCommitmentPackageQst, "Item Service Commitment Type"::"Sales with Service Commitment", "Item Service Commitment Type"::"Service Commitment Item", "Service Commitment Option"), true) then
+                        if ConfirmManagement.GetResponse(StrSubstNo(ItemServiceCommitmentPackageQst, "Item Service Commitment Type"::"Sales with Service Commitment", "Item Service Commitment Type"::"Service Commitment Item", "Subscription Option"), true) then
                             ItemServCommitmentPackage.DeleteAll(false)
                         else
                             Error('');
@@ -76,7 +76,7 @@ tableextension 8052 Item extends Item
                     end;
 #endif
                 end;
-                if xRec."Service Commitment Option" = Enum::"Item Service Commitment Type"::"Service Commitment Item" then begin
+                if xRec."Subscription Option" = Enum::"Item Service Commitment Type"::"Service Commitment Item" then begin
                     ItemReference.SetRange("Item No.", Rec."No.");
                     ItemReference.SetFilter("Supplier Ref. Entry No.", '<>%1', 0);
                     Rec.CalcFields("Usage Data Suppl. Ref. Exists");
@@ -102,18 +102,18 @@ tableextension 8052 Item extends Item
     }
     var
         ConfirmManagement: Codeunit "Confirm Management";
-        ItemTypeErr: Label 'The value "%1" can only be set if the option "%2" is selected in the "%3" field.';
-        ItemServiceCommitmentPackageQst: Label 'Service commitment packages can only be stored for items with the service option "%1" or "%2". You want to change the value to "%3". In doing so, the stored service commitment packages will be deleted. Do you want to continue?';
-        ServiceCommitmentErr: Label 'Service commitment packages can be assigned only to items with service commitment option "%1" or "%2". The current value is "%3".';
-        DoNotAllowInvoiceDiscountForServiceCommitmentItemErr: Label 'Service Commitment Items cannot be included in an invoice discount.';
-        UsageDataReferenceEntryNoExistsErr: Label 'The Service Commitment Option cannot be changed because for this Item Usage Data Supplier Reference Entry No. (see Actions "Suppliers" or "Item references") is defined for this Item.';
+        ItemTypeErr: Label 'The value "%1" can only be set if the option "%2" is selected in the "%3" field.', Comment = '%1 = Subscription option, %2 = Item type, %3 = Field name';
+        ItemServiceCommitmentPackageQst: Label 'Subscription Packages can only be stored for items with the subscription option "%1" or "%2". You want to change the value to "%3". In doing so, the stored Subscription Packages will be deleted. Do you want to continue?', Comment = '%1 = Subscription Option, %2 = Subscription Option, %3 = Subscription Option';
+        ServiceCommitmentErr: Label 'Subscription Packages can be assigned only to items with Subscription Option "%1" or "%2". The current value is "%3".', Comment = '%1 = Subscription Option, %2 = Subscription Option, %3 = Subscription Option';
+        DoNotAllowInvoiceDiscountForServiceCommitmentItemErr: Label 'Subscription Items cannot be included in an invoice discount.';
+        UsageDataReferenceEntryNoExistsErr: Label 'The Subscription Option cannot be changed because for this Item Usage Data Supplier Reference Entry No. (see Actions "Suppliers" or "Item references") is defined for this Item.';
 
     internal procedure OpenItemServCommitmentPackagesPage()
     var
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
     begin
-        if not ("Service Commitment Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then
-            Error(ServiceCommitmentErr, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item", "Service Commitment Option");
+        if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then
+            Error(ServiceCommitmentErr, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item", "Subscription Option");
         ItemServCommitmentPackage.FilterGroup(2);
         ItemServCommitmentPackage.SetRange("Item No.", "No.");
         Page.Run(Page::"Item Serv. Commitment Packages", ItemServCommitmentPackage);
@@ -121,7 +121,7 @@ tableextension 8052 Item extends Item
 
     internal procedure IsServiceCommitmentItem(): Boolean
     begin
-        exit(Rec."Service Commitment Option" = Rec."Service Commitment Option"::"Service Commitment Item");
+        exit(Rec."Subscription Option" = Rec."Subscription Option"::"Service Commitment Item");
     end;
 
     local procedure ErrorIfItemIsServiceCommitmentItem()

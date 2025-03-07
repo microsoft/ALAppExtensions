@@ -7,7 +7,7 @@ page 8045 "Customer Contract Lines API"
     EntityName = 'customerContractLines';
     EntitySetName = 'customerContractLines';
     PageType = API;
-    SourceTable = "Customer Contract Line";
+    SourceTable = "Cust. Sub. Contract Line";
     Editable = false;
     DataAccessIntent = ReadOnly;
 
@@ -17,16 +17,16 @@ page 8045 "Customer Contract Lines API"
         {
             repeater(General)
             {
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
                 field(contractLineNo; Rec."Line No.")
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
-                field(serviceCommitmentLineNo; Rec."Service Commitment Entry No.")
+                field(serviceCommitmentLineNo; Rec."Subscription Line Entry No.")
                 {
                 }
                 part(CustContractDeferralAPI; "Cust. Contract Deferral API")
@@ -34,7 +34,7 @@ page 8045 "Customer Contract Lines API"
                     Caption = 'customerContractDeferrals', Locked = true;
                     EntityName = 'customerContractDeferrals';
                     EntitySetName = 'customerContractDeferrals';
-                    SubPageLink = "Contract No." = field("Contract No."), "Contract Line No." = field("Line No.");
+                    SubPageLink = "Subscription Contract No." = field("Subscription Contract No."), "Subscription Contract Line No." = field("Line No.");
                 }
             }
         }

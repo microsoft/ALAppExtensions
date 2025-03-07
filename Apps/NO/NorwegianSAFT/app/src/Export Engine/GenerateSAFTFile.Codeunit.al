@@ -1079,8 +1079,8 @@ codeunit 10673 "Generate SAF-T File"
             CurrencyCode := CustLedgEntry."Currency Code";
             ExchangeRate := GetCurrencyFactor(CustLedgEntry."Original Currency Factor", CustLedgEntry.Amount, CustLedgEntry."Amount (LCY)");
             if CustLedgEntry."Entry No." = GLEntry."Entry No." then begin
-                EntryAmount := CustLedgEntry.Amount;
-                EntryAmountLCY := CustLedgEntry."Amount (LCY)";
+                EntryAmount := Abs(CustLedgEntry.Amount);
+                EntryAmountLCY := Abs(CustLedgEntry."Amount (LCY)");
             end;
             exit;
         end;

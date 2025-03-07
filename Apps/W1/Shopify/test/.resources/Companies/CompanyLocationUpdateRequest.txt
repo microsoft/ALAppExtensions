@@ -1,0 +1,1 @@
+{"query":"mutation {companyLocationAssignAddress(locationId: \"gid://shopify/CompanyLocation/%1\", addressTypes: [BILLING,SHIPPING] address: {address1: \"!Address\", address2: \"!Address 2\", city: \"!City\", phone: \"!111\", recipient: \"!Recipient\"}) {addresses {id}, userErrors {field, message}}}"}

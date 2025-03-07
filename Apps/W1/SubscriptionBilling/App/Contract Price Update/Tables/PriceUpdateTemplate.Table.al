@@ -23,17 +23,17 @@ table 8003 "Price Update Template"
         {
             Caption = 'Partner';
         }
-        field(4; "Contract Filter"; Blob)
+        field(4; "Subscription Contract Filter"; Blob)
         {
-            Caption = 'Contract Filter';
+            Caption = 'Subscription Contract Filter';
         }
-        field(5; "Service Commitment Filter"; Blob)
+        field(5; "Subscription Line Filter"; Blob)
         {
-            Caption = 'Service Commitment Filter';
+            Caption = 'Subscription Line Filter';
         }
-        field(6; "Service Object Filter"; Blob)
+        field(6; "Subscription Filter"; Blob)
         {
-            Caption = 'Service Object Filter';
+            Caption = 'Subscription Filter';
         }
         field(7; "Price Update Method"; Enum "Price Update Method")
         {
@@ -60,7 +60,7 @@ table 8003 "Price Update Template"
         }
         field(10; InclContrLinesUpToDateFormula; DateFormula)
         {
-            Caption = 'Include Contract Lines up to Date Formula';
+            Caption = 'Include Subscription Contract Lines up to Date Formula';
         }
         field(11; "Price Binding Period"; DateFormula)
         {
@@ -95,20 +95,20 @@ table 8003 "Price Update Template"
         IStream: InStream;
     begin
         case FieldNumber of
-            FieldNo("Contract Filter"):
+            FieldNo("Subscription Contract Filter"):
                 begin
-                    CalcFields("Contract Filter");
-                    "Contract Filter".CreateInStream(IStream, TextEncoding::UTF8);
+                    CalcFields("Subscription Contract Filter");
+                    "Subscription Contract Filter".CreateInStream(IStream, TextEncoding::UTF8);
                 end;
-            FieldNo("Service Object Filter"):
+            FieldNo("Subscription Filter"):
                 begin
-                    CalcFields("Service Object Filter");
-                    "Service Object Filter".CreateInStream(IStream, TextEncoding::UTF8);
+                    CalcFields("Subscription Filter");
+                    "Subscription Filter".CreateInStream(IStream, TextEncoding::UTF8);
                 end;
-            FieldNo("Service Commitment Filter"):
+            FieldNo("Subscription Line Filter"):
                 begin
-                    CalcFields("Service Commitment Filter");
-                    "Service Commitment Filter".CreateInStream(IStream, TextEncoding::UTF8);
+                    CalcFields("Subscription Line Filter");
+                    "Subscription Line Filter".CreateInStream(IStream, TextEncoding::UTF8);
                 end;
         end;
         IStream.ReadText(FilterText);
@@ -123,28 +123,28 @@ table 8003 "Price Update Template"
         i: Integer;
     begin
         case FieldNumber of
-            FieldNo("Contract Filter"):
+            FieldNo("Subscription Contract Filter"):
                 case Rec.Partner of
                     "Service Partner"::Customer:
                         begin
-                            AddDefaultFilterFields(DefaultFilterFields, Database::"Customer Contract");
-                            RRef.Open(Database::"Customer Contract");
+                            AddDefaultFilterFields(DefaultFilterFields, Database::"Customer Subscription Contract");
+                            RRef.Open(Database::"Customer Subscription Contract");
                         end;
                     "Service Partner"::Vendor:
                         begin
-                            AddDefaultFilterFields(DefaultFilterFields, Database::"Vendor Contract");
-                            RRef.Open(Database::"Vendor Contract");
+                            AddDefaultFilterFields(DefaultFilterFields, Database::"Vendor Subscription Contract");
+                            RRef.Open(Database::"Vendor Subscription Contract");
                         end;
                 end;
-            FieldNo("Service Object Filter"):
+            FieldNo("Subscription Filter"):
                 begin
-                    AddDefaultFilterFields(DefaultFilterFields, Database::"Service Object");
-                    RRef.Open(Database::"Service Object");
+                    AddDefaultFilterFields(DefaultFilterFields, Database::"Subscription Header");
+                    RRef.Open(Database::"Subscription Header");
                 end;
-            FieldNo("Service Commitment Filter"):
+            FieldNo("Subscription Line Filter"):
                 begin
-                    AddDefaultFilterFields(DefaultFilterFields, Database::"Service Commitment");
-                    RRef.Open(Database::"Service Commitment");
+                    AddDefaultFilterFields(DefaultFilterFields, Database::"Subscription Line");
+                    RRef.Open(Database::"Subscription Line");
                 end;
 
         end;
@@ -173,31 +173,31 @@ table 8003 "Price Update Template"
         OStream: OutStream;
     begin
         case FieldNumber of
-            FieldNo("Contract Filter"):
+            FieldNo("Subscription Contract Filter"):
                 begin
-                    Clear("Contract Filter");
+                    Clear("Subscription Contract Filter");
                     case Rec.Partner of
                         "Service Partner"::Customer:
-                            RRef.Open(Database::"Customer Contract");
+                            RRef.Open(Database::"Customer Subscription Contract");
                         "Service Partner"::Vendor:
-                            RRef.Open(Database::"Vendor Contract");
+                            RRef.Open(Database::"Vendor Subscription Contract");
                     end;
                     BlankView := RRef.GetView(false);
-                    "Contract Filter".CreateOutStream(OStream, TextEncoding::UTF8);
+                    "Subscription Contract Filter".CreateOutStream(OStream, TextEncoding::UTF8);
                 end;
-            FieldNo("Service Object Filter"):
+            FieldNo("Subscription Filter"):
                 begin
-                    Clear("Service Object Filter");
-                    RRef.Open(Database::"Service Object");
+                    Clear("Subscription Filter");
+                    RRef.Open(Database::"Subscription Header");
                     BlankView := RRef.GetView(false);
-                    "Service Object Filter".CreateOutStream(OStream, TextEncoding::UTF8);
+                    "Subscription Filter".CreateOutStream(OStream, TextEncoding::UTF8);
                 end;
-            FieldNo("Service Commitment Filter"):
+            FieldNo("Subscription Line Filter"):
                 begin
-                    Clear("Service Commitment Filter");
-                    RRef.Open(Database::"Service Commitment");
+                    Clear("Subscription Line Filter");
+                    RRef.Open(Database::"Subscription Line");
                     BlankView := RRef.GetView(false);
-                    "Service Commitment Filter".CreateOutStream(OStream, TextEncoding::UTF8);
+                    "Subscription Line Filter".CreateOutStream(OStream, TextEncoding::UTF8);
                 end;
         end;
 
@@ -208,29 +208,32 @@ table 8003 "Price Update Template"
 
     local procedure AddDefaultFilterFields(var DefaultFilterFields: array[10] of Integer; TableID: Integer)
     var
-        CustomerContract: Record "Customer Contract";
-        VendorContract: Record "Vendor Contract";
-        ServiceObject: Record "Service Object";
-        ServiceCommitment: Record "Service Commitment";
+        CustomerContract: Record "Customer Subscription Contract";
+        VendorContract: Record "Vendor Subscription Contract";
+        ServiceObject: Record "Subscription Header";
+        ServiceCommitment: Record "Subscription Line";
     begin
         case TableID of
-            Database::"Customer Contract":
+            Database::"Customer Subscription Contract":
                 begin
                     DefaultFilterFields[1] := CustomerContract.FieldNo("Contract Type");
                     DefaultFilterFields[2] := CustomerContract.FieldNo("Sell-to Customer No.");
                 end;
-            Database::"Vendor Contract":
+            Database::"Vendor Subscription Contract":
                 begin
                     DefaultFilterFields[1] := CustomerContract.FieldNo("Contract Type");
                     DefaultFilterFields[2] := VendorContract.FieldNo("Buy-from Vendor No.");
                 end;
-            Database::"Service Object":
-                DefaultFilterFields[1] := ServiceObject.FieldNo("Item No.");
-            Database::"Service Commitment":
+            Database::"Subscription Header":
+                begin
+                    DefaultFilterFields[1] := ServiceObject.FieldNo(Type);
+                    DefaultFilterFields[2] := ServiceObject.FieldNo("Source No.");
+                end;
+            Database::"Subscription Line":
                 begin
                     DefaultFilterFields[1] := ServiceCommitment.FieldNo(Partner);
-                    DefaultFilterFields[2] := ServiceCommitment.FieldNo("Contract No.");
-                    DefaultFilterFields[3] := ServiceCommitment.FieldNo("Package Code");
+                    DefaultFilterFields[2] := ServiceCommitment.FieldNo("Subscription Contract No.");
+                    DefaultFilterFields[3] := ServiceCommitment.FieldNo("Subscription Package Code");
                     DefaultFilterFields[4] := ServiceCommitment.FieldNo("Billing Rhythm");
                     DefaultFilterFields[5] := ServiceCommitment.FieldNo("Next Price Update");
                 end;

@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.EServices.EDocument.Format;
 
 /// <summary>
 /// E-Document Data Storage Blob Type
@@ -23,7 +24,7 @@ enum 6109 "E-Doc. Data Storage Blob Type" implements IBlobType
     value(1; "PDF")
     {
         Caption = 'PDF';
-        Implementation = IBlobType = "E-Doc. PDF Blob Type";
+        Implementation = IBlobType = "E-Document ADI Handler";
     }
     value(2; "XML")
     {

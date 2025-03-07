@@ -24,9 +24,9 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
             Editable = false;
             DataClassification = CustomerContent;
         }
-        field(8056; "Attached to Contract line"; Boolean)
+        field(8056; "Attached to Sub. Contract line"; Boolean)
         {
-            Caption = 'Attached to Contract line';
+            Caption = 'Attached to Subscription Contract line';
             Editable = false;
             FieldClass = FlowField;
             CalcFormula = exist("Billing Line" where("Document Type" = filter(Invoice), "Document No." = field("Document No."), "Document Line No." = field("Line No.")));
@@ -61,7 +61,7 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
             exit;
         if not Item.Get(Rec."No.") then
             exit;
-        exit((Item."Service Commitment Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"])
+        exit((Item."Subscription Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"])
                                        and (not Rec.IsLineAttachedToBillingLine()));
     end;
 

@@ -2,9 +2,9 @@ namespace Microsoft.SubscriptionBilling;
 
 page 8091 "Select Cust. Contract Lines"
 {
-    Caption = 'Select customer contract line';
+    Caption = 'Select Customer Subscription Contract Lines';
     PageType = StandardDialog;
-    SourceTable = "Customer Contract Line";
+    SourceTable = "Cust. Sub. Contract Line";
     Editable = false;
     UsageCategory = None;
     ApplicationArea = All;
@@ -15,23 +15,23 @@ page 8091 "Select Cust. Contract Lines"
         {
             repeater(General)
             {
-                field("Service Start Date"; ServiceCommitment."Service Start Date")
+                field("Service Start Date"; ServiceCommitment."Subscription Line Start Date")
                 {
-                    Caption = 'Service Start Date';
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    Caption = 'Subscription Line Start Date';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
 
                     trigger OnAssistEdit()
                     begin
                         Rec.OpenServiceObjectCard();
                     end;
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
                 field("Cancellation Possible Until"; ServiceCommitment."Cancellation Possible Until")
                 {
@@ -41,16 +41,16 @@ page 8091 "Select Cust. Contract Lines"
                 field("Term Until"; ServiceCommitment."Term Until")
                 {
                     Caption = 'Term Until';
-                    ToolTip = 'Specifies the earliest regular date for the end of the service, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
+                    ToolTip = 'Specifies the earliest regular date for the end of the Subscription Line, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
                 }
-                field("Service Object Quantity"; ServiceObject."Quantity Decimal")
+                field("Service Object Quantity"; ServiceObject.Quantity)
                 {
-                    ToolTip = 'Specifies the Quantity of the Service Object.';
+                    ToolTip = 'Specifies the Quantity of the Subscription.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the service object no.';
+                    ToolTip = 'Specifies the number of the Subscription No.';
                 }
             }
         }
@@ -63,11 +63,11 @@ page 8091 "Select Cust. Contract Lines"
     local procedure InitializePageVariables()
     var
     begin
-        ServiceObject.Get(Rec."Service Object No.");
-        ServiceCommitment.Get(Rec."Service Commitment Entry No.");
+        ServiceObject.Get(Rec."Subscription Header No.");
+        ServiceCommitment.Get(Rec."Subscription Line Entry No.");
     end;
 
-    local procedure ErrorIfMoreThanOneLineIsSelected(var CustomerContractLine: Record "Customer Contract Line")
+    local procedure ErrorIfMoreThanOneLineIsSelected(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     begin
         if CustomerContractLine.Count > 1 then
             Error(OnlyOneLineCanBeSelectedErr);
@@ -75,7 +75,7 @@ page 8091 "Select Cust. Contract Lines"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
         CurrPage.SetSelectionFilter(CustomerContractLine);
         if CloseAction = Action::OK then
@@ -83,7 +83,7 @@ page 8091 "Select Cust. Contract Lines"
     end;
 
     var
-        ServiceCommitment: Record "Service Commitment";
-        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceObject: Record "Subscription Header";
         OnlyOneLineCanBeSelectedErr: Label 'Only one line can be selected.';
 }

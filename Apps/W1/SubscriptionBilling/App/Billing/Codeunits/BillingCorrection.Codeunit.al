@@ -10,8 +10,8 @@ codeunit 8061 "Billing Correction"
     Access = Internal;
 
     var
-        NewerInvoiceExistErr: Label 'The service commitment has already been invoiced until %1. In order to cancel the invoice, please cancel the newer invoices first.';
-        RelatedDocumentLineExistErr: Label 'The %1 %2 already exists for the service commitment. Please post or delete this %1 first.';
+        NewerInvoiceExistErr: Label 'The Subscription Line has already been invoiced until %1. In order to cancel the invoice, please cancel the newer invoices first.';
+        RelatedDocumentLineExistErr: Label 'The %1 %2 already exists for the Subscription Line. Please post or delete this %1 first.';
         CopyingErr: Label 'Copying documents with a link to a contract is not allowed. To create contract invoices, please use the "Recurring Billing" page. For cancelling a contract invoice, please use the "Create Corrective Credit Memo" function in the posted invoice.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnBeforeUpdateSalesLine, '', false, false)]
@@ -31,7 +31,7 @@ codeunit 8061 "Billing Correction"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnAfterInsertToSalesLine, '', false, false)]
     local procedure CreateBillingLineFromBillingLineArchiveAfterInsertToSalesLine(var ToSalesLine: Record "Sales Line"; FromSalesLine: Record "Sales Line"; DocLineNo: Integer; FromSalesHeader: Record "Sales Header")
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         BillingLine: Record "Billing Line";
         BillingLineArchive: Record "Billing Line Archive";
         IsHandled: Boolean;
@@ -47,8 +47,8 @@ codeunit 8061 "Billing Correction"
         ToSalesLine.TestField("Recurring Billing to");
 
         if BillingLineArchive.FindFirst() then begin
-            ServiceCommitment.SetRange("Contract No.", BillingLineArchive."Contract No.");
-            ServiceCommitment.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+            ServiceCommitment.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+            ServiceCommitment.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
             ServiceCommitment.FindFirst();
             if ServiceCommitment."Next Billing Date" - 1 > ToSalesLine."Recurring Billing to" then
                 Error(NewerInvoiceExistErr, ServiceCommitment."Next Billing Date");
@@ -56,15 +56,15 @@ codeunit 8061 "Billing Correction"
 
         BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice, Enum::"Rec. Billing Document Type"::"Credit Memo");
         BillingLine.SetFilter("Document No.", '<>%1', ToSalesLine."Document No.");
-        BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-        BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+        BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+        BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
 
         if BillingLine.FindFirst() then
             Error(RelatedDocumentLineExistErr, BillingLine."Document Type", BillingLine."Document No.");
         CreateBillingLineFromBillingLineArchive(ToSalesLine, ServiceCommitment, FromSalesHeader."No.", DocLineNo);
     end;
 
-    local procedure CreateBillingLineFromBillingLineArchive(RecVariant: Variant; var ServiceCommitment: Record "Service Commitment"; FromDocumentNo: Code[20]; DocLineNo: Integer)
+    local procedure CreateBillingLineFromBillingLineArchive(RecVariant: Variant; var ServiceCommitment: Record "Subscription Line"; FromDocumentNo: Code[20]; DocLineNo: Integer)
     var
         BillingLine: Record "Billing Line";
         BillingLineArchive: Record "Billing Line Archive";
@@ -90,7 +90,7 @@ codeunit 8061 "Billing Correction"
                 end;
                 BillingLine."Document No." := RRef.Field(3).Value;
                 BillingLine."Document Line No." := RRef.Field(4).Value;
-                BillingLine."Service Amount" := -BillingLine."Service Amount";
+                BillingLine.Amount := -BillingLine.Amount;
                 BillingLine.Insert(false);
             until BillingLineArchive.Next() = 0;
         BillingFrom := RRef.Field(8053).Value;
@@ -111,6 +111,7 @@ codeunit 8061 "Billing Correction"
                         CreditMemoUsageDataBilling."Document Line No." := RRef.Field(4).Value;
                         CreditMemoUsageDataBilling."Entry No." := 0;
                         CreditMemoUsageDataBilling.Insert(true);
+                        CreditMemoUsageDataBilling.InsertMetadata();
                     until InvoiceUsageDataBilling.Next() = 0;
             end;
 
@@ -192,7 +193,7 @@ codeunit 8061 "Billing Correction"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnAfterInsertToPurchLine, '', false, false)]
     local procedure CreateBillingLineFromBillingLineArchiveAfterInsertToPurchLine(var ToPurchLine: Record "Purchase Line"; var FromPurchLine: Record "Purchase Line"; RecalculateLines: Boolean; DocLineNo: Integer; FromPurchDocType: Enum "Purchase Document Type From"; var ToPurchHeader: Record "Purchase Header"; MoveNegLines: Boolean; FromPurchaseHeader: Record "Purchase Header")
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         BillingLine: Record "Billing Line";
         BillingLineArchive: Record "Billing Line Archive";
     begin
@@ -202,8 +203,8 @@ codeunit 8061 "Billing Correction"
         ToPurchLine.TestField("Recurring Billing from");
         ToPurchLine.TestField("Recurring Billing to");
         if BillingLineArchive.FindFirst() then begin
-            ServiceCommitment.SetRange("Contract No.", BillingLineArchive."Contract No.");
-            ServiceCommitment.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+            ServiceCommitment.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+            ServiceCommitment.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
             ServiceCommitment.FindFirst();
             if ServiceCommitment."Next Billing Date" - 1 > ToPurchLine."Recurring Billing to" then
                 Error(NewerInvoiceExistErr, ServiceCommitment."Next Billing Date");
@@ -211,8 +212,8 @@ codeunit 8061 "Billing Correction"
 
         BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice, Enum::"Rec. Billing Document Type"::"Credit Memo");
         BillingLine.SetFilter("Document No.", '<>%1', ToPurchLine."Document No.");
-        BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-        BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
+        BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+        BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
         if BillingLine.FindFirst() then
             Error(RelatedDocumentLineExistErr, BillingLine."Document Type", BillingLine."Document No.");
         CreateBillingLineFromBillingLineArchive(ToPurchLine, ServiceCommitment, FromPurchaseHeader."No.", DocLineNo);
@@ -229,7 +230,7 @@ codeunit 8061 "Billing Correction"
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeUpdateNextBillingDateInCreateBillingLineFromBillingLineArchive(var ServiceCommitment: Record "Service Commitment")
+    local procedure OnBeforeUpdateNextBillingDateInCreateBillingLineFromBillingLineArchive(var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 }

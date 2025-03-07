@@ -106,12 +106,18 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
 
     local procedure CanPostSustainabilityJnlLine(GenJournalLine: Record "Gen. Journal Line"; CO2ToPost: Decimal; CH4ToPost: Decimal; N2OToPost: Decimal): Boolean
     var
+        SustAccountCategory: Record "Sustain. Account Category";
         SustainAccountSubcategory: Record "Sustain. Account Subcategory";
     begin
         if GenJournalLine."Sust. Account No." = '' then
             exit(false);
 
         GenJournalLine.CheckSustGenJournalLine(GenJournalLine);
+
+        if SustAccountCategory.Get(GenJournalLine."Sust. Account Category") then
+            if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
+                Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, GenJournalLine."Sust. Account No.");
+
         if SustainAccountSubcategory.Get(GenJournalLine."Sust. Account Category", GenJournalLine."Sust. Account Subcategory") then
             if not SustainAccountSubcategory."Renewable Energy" then
                 if (CO2ToPost = 0) and (CH4ToPost = 0) and (N2OToPost = 0) then
@@ -123,4 +129,5 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
 
     var
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0 for Journal Template Name=%1 ,Journal Batch Name=%2 ,Line No.=%3.', Comment = '%1 = Journal Template Name , %2 = Journal Batch Name , %3 = Line No.';
+        NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in General Journal for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

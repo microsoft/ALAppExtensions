@@ -32,37 +32,37 @@ table 8006 "Usage Data Billing"
         {
             Caption = 'Partner';
         }
-        field(5; "Contract No."; Code[20])
+        field(5; "Subscription Contract No."; Code[20])
         {
-            Caption = 'Contract No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract" else
-            if (Partner = const(Vendor)) "Vendor Contract";
+            Caption = 'Subscription Contract No.';
+            TableRelation = if (Partner = const(Customer)) "Customer Subscription Contract" else
+            if (Partner = const(Vendor)) "Vendor Subscription Contract";
         }
-        field(6; "Contract Line No."; Integer)
+        field(6; "Subscription Contract Line No."; Integer)
         {
-            Caption = 'Contract Line No.';
-            TableRelation = if (Partner = const(Customer)) "Customer Contract Line"."Line No." where("Contract No." = field("Contract No.")) else
-            if (Partner = const(Vendor)) "Vendor Contract Line"."Line No." where("Contract No." = field("Contract No."));
+            Caption = 'Subscription Contract Line No.';
+            TableRelation = if (Partner = const(Customer)) "Cust. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No.")) else
+            if (Partner = const(Vendor)) "Vend. Sub. Contract Line"."Line No." where("Subscription Contract No." = field("Subscription Contract No."));
         }
-        field(7; "Service Object No."; Code[20])
+        field(7; "Subscription Header No."; Code[20])
         {
-            Caption = 'Service Object No.';
-            TableRelation = "Service Object";
+            Caption = 'Subscription No.';
+            TableRelation = "Subscription Header";
         }
-        field(8; "Service Object Description"; Text[100])
+        field(8; "Subscription Description"; Text[100])
         {
-            Caption = 'Service Object Description';
+            Caption = 'Subscription Description';
             FieldClass = FlowField;
-            CalcFormula = lookup("Service Object".Description where("No." = field("Service Object No.")));
+            CalcFormula = lookup("Subscription Header".Description where("No." = field("Subscription Header No.")));
             Editable = false;
         }
-        field(9; "Service Commitment Entry No."; Integer)
+        field(9; "Subscription Line Entry No."; Integer)
         {
-            Caption = 'Service Commitment Entry No.';
+            Caption = 'Subscription Line Entry No.';
         }
-        field(10; "Service Commitment Description"; Text[100])
+        field(10; "Subscription Line Description"; Text[100])
         {
-            Caption = 'Service Commitment Description';
+            Caption = 'Subscription Line Description';
         }
         field(11; "Processing Status"; Enum "Processing Status")
         {
@@ -108,6 +108,14 @@ table 8006 "Usage Data Billing"
         field(17; "Charge Start Time"; Time)
         {
             Caption = 'Charge Start Time';
+#if not CLEAN26
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
+            ObsoleteReason = 'No longer needed as the time component is not relevant for processing of usage data.';
         }
         field(18; "Charge End Date"; Date)
         {
@@ -116,6 +124,14 @@ table 8006 "Usage Data Billing"
         field(19; "Charge End Time"; Time)
         {
             Caption = 'Charge End Time';
+#if not CLEAN26
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
+            ObsoleteReason = 'No longer needed as the time component is not relevant for processing of usage data.';
         }
         field(20; "Charged Period (Days)"; Decimal)
         {
@@ -124,6 +140,14 @@ table 8006 "Usage Data Billing"
         field(21; "Charged Period (Hours)"; Decimal)
         {
             Caption = 'Charged Period (Hours)';
+#if not CLEAN26
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
+            ObsoleteReason = 'No longer needed as the time component is not relevant for processing of usage data.';
         }
         field(22; Quantity; Decimal)
         {
@@ -234,6 +258,10 @@ table 8006 "Usage Data Billing"
             else
             if (Partner = const(Vendor), "Document Type" = const("Posted Credit Memo")) "Purch. Cr. Memo Line"."Line No." where("Document No." = field("Document No."));
         }
+        field(34; Rebilling; Boolean)
+        {
+            Caption = 'Rebilling';
+        }
     }
     keys
     {
@@ -241,7 +269,7 @@ table 8006 "Usage Data Billing"
         {
             Clustered = true;
         }
-        key(key1; "Usage Data Import Entry No.", "Service Object No.", "Service Commitment Entry No.", Partner, "Document Type", "Charge End Date", "Charge End Time")
+        key(key1; "Usage Data Import Entry No.", "Subscription Header No.", "Subscription Line Entry No.", Partner, "Document Type", "Charge End Date")
         {
             SumIndexFields = Quantity, Amount;
             MaintainSiftIndex = true;
@@ -260,6 +288,36 @@ table 8006 "Usage Data Billing"
         "Processing Time" := Time();
     end;
 
+    trigger OnDelete()
+    begin
+        if not Rec.IsInvoiced() then begin
+            RevertServiceCommitmentNextBillingDateIfRebillingMetadataExist();
+            DeleteUsageDataBillingMetadata();
+        end;
+    end;
+
+    internal procedure DeleteUsageDataBillingMetadata()
+    var
+        UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
+    begin
+        UsageDataBillingMetadata.SetRange("Usage Data Billing Entry No.", Rec."Entry No.");
+        UsageDataBillingMetadata.DeleteAll();
+    end;
+
+    internal procedure RevertServiceCommitmentNextBillingDateIfRebillingMetadataExist()
+    var
+        ServiceCommitment: Record "Subscription Line";
+        UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
+    begin
+        UsageDataBillingMetadata.FilterOnServiceCommitment(Rec."Subscription Line Entry No.");
+        UsageDataBillingMetadata.SetRange(Rebilling, true);
+        if not UsageDataBillingMetadata.FindLast() then
+            exit;
+        ServiceCommitment.Get(UsageDataBillingMetadata."Subscription Line Entry No.");
+        ServiceCommitment."Next Billing Date" := UsageDataBillingMetadata."Original Invoiced to Date" + 1;
+        ServiceCommitment.Modify();
+    end;
+
     internal procedure SetReason(ReasonText: Text)
     var
         TextManagement: Codeunit "Text Management";
@@ -276,47 +334,42 @@ table 8006 "Usage Data Billing"
         end;
     end;
 
-    internal procedure InitFromUsageDataGenericImport(UsageDataGenericImport: Record "Usage Data Generic Import")
+    internal procedure InitFrom(UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; BillingPeriodStartDate: Date;
+                        BillingPeriodEndDate: Date; UnitCost: Decimal; NewQuantity: Decimal; CostAmount: Decimal; UnitPrice: Decimal;
+                        NewAmount: Decimal; CurrencyCode: Code[10])
     begin
         Rec.Init();
         Rec."Entry No." := 0;
-        Rec."Usage Data Import Entry No." := UsageDataGenericImport."Usage Data Import Entry No.";
-        Rec."Service Object No." := UsageDataGenericImport."Service Object No.";
-        Rec."Charge Start Date" := UsageDataGenericImport."Billing Period Start Date";
-        Rec."Charge Start Time" := 000000T;
-        Rec."Charge End Date" := CalcDate('<+1D>', UsageDataGenericImport."Billing Period End Date");
-        Rec."Charge End Time" := 000000T;
-        Rec."Unit Cost" := UsageDataGenericImport.Cost;
-        Rec.Quantity := UsageDataGenericImport.Quantity;
-        if UsageDataGenericImport."Cost Amount" = 0 then
-            Rec."Cost Amount" := UsageDataGenericImport.Quantity * UsageDataGenericImport.Cost
+        Rec."Usage Data Import Entry No." := UsageDataImportEntryNo;
+        Rec."Subscription Header No." := ServiceObjectNo;
+        Rec."Charge Start Date" := BillingPeriodStartDate;
+        Rec."Charge End Date" := BillingPeriodEndDate;
+        Rec."Unit Cost" := UnitCost;
+        Rec.Quantity := NewQuantity;
+        if CostAmount = 0 then
+            Rec."Cost Amount" := NewQuantity * unitCost
         else
-            Rec."Cost Amount" := UsageDataGenericImport."Cost Amount";
-        Rec."Unit Price" := UsageDataGenericImport.Price;
-        Rec.Amount := UsageDataGenericImport.Amount;
-        Rec."Currency Code" := UsageDataGenericImport.GetCurrencyCode();
+            Rec."Cost Amount" := CostAmount;
+        Rec."Unit Price" := UnitPrice;
+        Rec.Amount := NewAmount;
+        Rec."Currency Code" := CurrencyCode;
         Rec.UpdateChargedPeriod();
-        OnAfterInitFromUsageDataGenericImport(Rec, UsageDataGenericImport);
     end;
 
-    internal procedure FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Service Commitment")
+    internal procedure FilterOnUsageDataImportAndServiceCommitment(UsageDataImportEntryNo: Integer; ServiceCommitment: Record "Subscription Line")
     begin
         Rec.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
         Rec.FilterOnServiceCommitment(ServiceCommitment);
     end;
 
-    internal procedure FilterOnServiceCommitment(ServiceCommitment: Record "Service Commitment")
+    internal procedure FilterOnServiceCommitment(ServiceCommitment: Record "Subscription Line")
     begin
-        Rec.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+        Rec.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
     end;
 
     internal procedure UpdateChargedPeriod()
-    var
-        Milliseconds: BigInteger;
     begin
-        Milliseconds := EssDateTimeMgt.GetDurationForRange("Charge Start Date", "Charge Start Time", "Charge End Date", "Charge End Time");
-        "Charged Period (Days)" := Milliseconds / EssDateTimeMgt.GetMillisecondsForDay();
-        "Charged Period (Hours)" := Milliseconds / EssDateTimeMgt.GetMillisecondsForHour();
+        "Charged Period (Days)" := Rec."Charge End Date" - Rec."Charge Start Date" + 1;
     end;
 
     internal procedure ShowReason()
@@ -353,12 +406,12 @@ table 8006 "Usage Data Billing"
 
     local procedure MarkAndOpenCustomerContracts(var UsageDataBilling: Record "Usage Data Billing")
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
-        UsageDataBilling.SetFilter("Contract No.", '<>%1', '');
+        UsageDataBilling.SetFilter("Subscription Contract No.", '<>%1', '');
         if UsageDataBilling.FindSet() then
             repeat
-                if CustomerContract.Get(UsageDataBilling."Contract No.") then
+                if CustomerContract.Get(UsageDataBilling."Subscription Contract No.") then
                     CustomerContract.Mark(true);
             until UsageDataBilling.Next() = 0;
         CustomerContract.MarkedOnly(true);
@@ -368,12 +421,12 @@ table 8006 "Usage Data Billing"
 
     local procedure MarkAndOpenVendorContracts(var UsageDataBilling: Record "Usage Data Billing")
     var
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
-        UsageDataBilling.SetFilter("Contract No.", '<>%1', '');
+        UsageDataBilling.SetFilter("Subscription Contract No.", '<>%1', '');
         if UsageDataBilling.FindSet() then
             repeat
-                if VendorContract.Get(UsageDataBilling."Contract No.") then
+                if VendorContract.Get(UsageDataBilling."Subscription Contract No.") then
                     VendorContract.Mark(true);
             until UsageDataBilling.Next() = 0;
         VendorContract.MarkedOnly(true);
@@ -465,15 +518,13 @@ table 8006 "Usage Data Billing"
         SalesHeader.MarkedOnly(true);
     end;
 
-    internal procedure FilterOnDocumentTypeAndDocumentNo(UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20])
+    internal procedure FilterOnDocumentTypeAndDocumentNo(ServicePartner: Enum "Service Partner"; UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20])
     begin
         Rec.SetRange("Document Type", UsageBasedBillingDocType);
         Rec.SetRange("Document No.", DocumentNo);
     end;
 
-    internal procedure SaveDocumentValues(UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20];
-                                                                      DocumentEntryNo: Integer;
-                                                                      BillingLineEntryNo: Integer)
+    internal procedure SaveDocumentValues(UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; DocumentEntryNo: Integer; BillingLineEntryNo: Integer)
     begin
         Rec."Document Type" := UsageBasedBillingDocType;
         Rec."Document No." := DocumentNo;
@@ -492,30 +543,23 @@ table 8006 "Usage Data Billing"
         exit(Rec.Partner = Rec.Partner::Customer);
     end;
 
-    internal procedure CalculateChargeEndDate(): Date
-    begin
-        if Rec."Charge End Time" = 0T then
-            exit(CalcDate('<-1D>', Rec."Charge End Date"));
-        exit(Rec."Charge End Date");
-    end;
-
     local procedure FilterContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; EntryNo: Integer)
     begin
         Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Contract No.", ContractNo);
-        Rec.SetRange("Contract Line No.", EntryNo);
+        Rec.SetRange("Subscription Contract No.", ContractNo);
+        Rec.SetRange("Subscription Contract Line No.", EntryNo);
     end;
 
-    local procedure FilterDocumentWithLine(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
+    local procedure FilterDocumentWithLine(ServicePartner: Enum "Service Partner"; DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
     begin
-        Rec.FilterOnDocumentTypeAndDocumentNo(DocumentType, DocumentNo);
+        Rec.FilterOnDocumentTypeAndDocumentNo(ServicePartner, DocumentType, DocumentNo);
         Rec.SetRange("Document Line No.", EntryNo);
     end;
 
     local procedure FilterBillingLine(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20])
     begin
-        Rec.SetRange("Service Object No.", ServiceObjectNo);
-        Rec.SetRange("Service Commitment Entry No.", ServCommEntryNo);
+        Rec.SetRange("Subscription Header No.", ServiceObjectNo);
+        Rec.SetRange("Subscription Line Entry No.", ServCommEntryNo);
         Rec.SetRange("Document Type", DocumentType);
         Rec.SetRange("Document No.", DocumentNo);
     end;
@@ -523,8 +567,8 @@ table 8006 "Usage Data Billing"
     local procedure FilterServiceCommitmentLine(ServicePartner: Enum "Service Partner"; ServiceObjectNo: Code[20]; EntryNo: Integer)
     begin
         Rec.SetRange(Partner, ServicePartner);
-        Rec.SetRange("Service Object No.", ServiceObjectNo);
-        Rec.SetRange("Service Commitment Entry No.", EntryNo);
+        Rec.SetRange("Subscription Header No.", ServiceObjectNo);
+        Rec.SetRange("Subscription Line Entry No.", EntryNo);
     end;
 
     internal procedure ShowForContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; EntryNo: Integer)
@@ -533,20 +577,20 @@ table 8006 "Usage Data Billing"
         Page.RunModal(Page::"Usage Data Billings", Rec);
     end;
 
-    internal procedure ShowForDocuments(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
+    internal procedure ShowForDocuments(ServicePartner: Enum "Service Partner"; DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer)
     begin
-        FilterDocumentWithLine(DocumentType, DocumentNo, EntryNo);
+        FilterDocumentWithLine(ServicePartner, DocumentType, DocumentNo, EntryNo);
         Page.RunModal(Page::"Usage Data Billings", Rec);
     end;
 
     internal procedure ShowForSalesDocuments(DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; EntryNo: Integer)
     begin
-        ShowForDocuments(UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
+        ShowForDocuments(Enum::"Service Partner"::Customer, UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
     end;
 
     internal procedure ShowForPurchaseDocuments(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; EntryNo: Integer)
     begin
-        ShowForDocuments(UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
+        ShowForDocuments(Enum::"Service Partner"::Vendor, UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo);
     end;
 
     internal procedure ShowForRecurringBilling(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Rec. Billing Document Type"; DocumentNo: Code[20])
@@ -567,20 +611,20 @@ table 8006 "Usage Data Billing"
         exit(not Rec.IsEmpty());
     end;
 
-    internal procedure ExistForDocuments(DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
+    internal procedure ExistForDocuments(ServicePartner: Enum "Service Partner"; DocumentType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
     begin
-        FilterDocumentWithLine(DocumentType, DocumentNo, EntryNo);
+        FilterDocumentWithLine(ServicePartner, DocumentType, DocumentNo, EntryNo);
         exit(not Rec.IsEmpty());
     end;
 
     internal procedure ExistForSalesDocuments(DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
     begin
-        exit(ExistForDocuments(UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
+        exit(ExistForDocuments(Enum::"Service Partner"::Customer, UsageBasedDocTypeConv.ConvertSalesDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
     end;
 
     internal procedure ExistForPurchaseDocuments(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; EntryNo: Integer): Boolean
     begin
-        exit(ExistForDocuments(UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
+        exit(ExistForDocuments(Enum::"Service Partner"::Vendor, UsageBasedDocTypeConv.ConvertPurchaseDocTypeToUsageBasedBillingDocType(DocumentType), DocumentNo, EntryNo));
     end;
 
     internal procedure ExistForRecurringBilling(ServiceObjectNo: Code[20]; ServCommEntryNo: Integer; DocumentType: Enum "Rec. Billing Document Type"; DocumentNo: Code[20]): Boolean
@@ -595,13 +639,57 @@ table 8006 "Usage Data Billing"
         exit(not Rec.IsEmpty());
     end;
 
-
-    [InternalEvent(false, false)]
-    local procedure OnAfterInitFromUsageDataGenericImport(var UsageDataBilling: Record "Usage Data Billing"; UsageDataGenericImport: Record "Usage Data Generic Import")
+    internal procedure UpdateRebilling()
+    var
+        UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
     begin
+        UsageDataBillingMetadata.SetRange("Subscription No.", Rec."Subscription Header No.");
+        UsageDataBillingMetadata.SetRange("Subscription Line Entry No.", Rec."Subscription Line Entry No.");
+        UsageDataBillingMetadata.SetRange("Supplier Charge End Date", Rec."Charge End Date");
+        UsageDataBillingMetadata.SetFilter("Supplier Charge Start Date", '<=%1', Rec."Charge Start Date");
+        UsageDataBillingMetadata.SetRange(Invoiced, true);
+        Rec.Rebilling := not UsageDataBillingMetadata.IsEmpty;
+    end;
+
+    internal procedure InsertMetadata()
+    var
+        UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
+    begin
+        UsageDataBillingMetadata.SetRange("Usage Data Billing Entry No.", Rec."Entry No.");
+        if UsageDataBillingMetadata.IsEmpty then
+            UsageDataBillingMetadata.InsertFromUsageDataBilling(Rec)
+        else
+            UsageDataBillingMetadata.ModifyAll(Rebilling, Rec.Rebilling, false);
+    end;
+
+    internal procedure SetMetadataAsInvoiced()
+    var
+        UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
+    begin
+        UsageDataBillingMetadata.SetRange("Billing Document Type", Rec."Document Type");
+        UsageDataBillingMetadata.SetRange("Billing Document No.", Rec."Document No.");
+        if UsageDataBillingMetadata.IsEmpty then
+            exit;
+
+        UsageDataBillingMetadata.ModifyAll(Invoiced, true, false);
+    end;
+
+    internal procedure IsInvoiced(): Boolean
+    begin
+        exit((Rec."Document Type" <> "Usage Based Billing Doc. Type"::None) and (Rec."Document No." <> ''));
+    end;
+
+    internal procedure SetBillingProposalFilters(ServiceCommitment: Record "Subscription Line"; BillingFromDate: Date; BillingToDate: Date)
+    begin
+        Rec.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        Rec.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
+        Rec.SetRange(Partner, ServiceCommitment.Partner);
+        Rec.SetRange("Usage Base Pricing", "Usage Based Pricing"::"Usage Quantity", "Usage Based Pricing"::"Unit Cost Surcharge");
+        Rec.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
+        Rec.SetFilter("Charge Start Date", '>=%1', BillingFromDate);
+        Rec.SetFilter("Charge End Date", '<=%1', CalcDate('<1D>', BillingToDate));
     end;
 
     var
-        EssDateTimeMgt: Codeunit "Date Time Management";
         UsageBasedDocTypeConv: Codeunit "Usage Based Doc. Type Conv.";
 }

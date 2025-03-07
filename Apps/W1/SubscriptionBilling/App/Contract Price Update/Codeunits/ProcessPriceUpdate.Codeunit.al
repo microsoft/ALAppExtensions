@@ -2,7 +2,7 @@ namespace Microsoft.SubscriptionBilling;
 
 codeunit 8013 "Process Price Update"
 {
-    TableNo = "Contract Price Update Line";
+    TableNo = "Sub. Contr. Price Update Line";
     Access = Internal;
 
     trigger OnRun()
@@ -14,11 +14,11 @@ codeunit 8013 "Process Price Update"
 
     local procedure UpdateServiceCommitmentPrices()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ServiceCommitment.CalcFields("Planned Serv. Comm. exists");
-        if ServiceCommitment."Planned Serv. Comm. exists" then
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ServiceCommitment.CalcFields("Planned Sub. Line exists");
+        if ServiceCommitment."Planned Sub. Line exists" then
             exit;
         if ShouldPlannedServiceCommitmentBeCreated(ServiceCommitment) then
             CreatePlannedServiceCommitment(ServiceCommitment)
@@ -26,16 +26,16 @@ codeunit 8013 "Process Price Update"
             ServiceCommitment.UpdateServiceCommitmentFromContractPriceUpdateLine(ContractPriceUpdateLine);
     end;
 
-    local procedure CreatePlannedServiceCommitment(ServiceCommitment: Record "Service Commitment")
+    local procedure CreatePlannedServiceCommitment(ServiceCommitment: Record "Subscription Line")
     var
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         PriceUpdateTemplate: Record "Price Update Template";
     begin
         PlannedServiceCommitment.TransferFields(ServiceCommitment);
         PlannedServiceCommitment.Validate("Calculation Base %", ContractPriceUpdateLine."New Calculation Base %");
         PlannedServiceCommitment.Validate("Calculation Base Amount", ContractPriceUpdateLine."New Calculation Base");
         PlannedServiceCommitment.Validate(Price, ContractPriceUpdateLine."New Price");
-        PlannedServiceCommitment.Validate("Service Amount", ContractPriceUpdateLine."New Service Amount");
+        PlannedServiceCommitment.Validate(Amount, ContractPriceUpdateLine."New Amount");
         PlannedServiceCommitment.Validate("Discount %", ContractPriceUpdateLine."Discount %");
         PlannedServiceCommitment.Validate("Discount Amount", ContractPriceUpdateLine."Discount Amount");
         PlannedServiceCommitment."Next Price Update" := ContractPriceUpdateLine."Next Price Update";
@@ -46,7 +46,7 @@ codeunit 8013 "Process Price Update"
         PlannedServiceCommitment.Insert(false);
     end;
 
-    local procedure ShouldPlannedServiceCommitmentBeCreated(ServiceCommitment: Record "Service Commitment"): Boolean
+    local procedure ShouldPlannedServiceCommitmentBeCreated(ServiceCommitment: Record "Subscription Line"): Boolean
     begin
         if ContractPriceUpdateLine."Perform Update On" > ServiceCommitment."Next Billing Date" then
             exit(true);
@@ -58,5 +58,5 @@ codeunit 8013 "Process Price Update"
     end;
 
     var
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
 }

@@ -55,7 +55,6 @@ codeunit 139883 "E-Doc Process Test"
         Assert.IsTrue(IBlobType.IsStructured(), 'New entry should always be structured');
     end;
 
-
     [Test]
     procedure ProcessingDoesSequenceOfSteps()
     var
@@ -136,6 +135,7 @@ codeunit 139883 "E-Doc Process Test"
         PurchaseHeader.Insert();
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
         EDocumentPurchaseHeader."Purchase Order No." := PurchaseHeader."No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := '13124234';
         EDocumentPurchaseHeader.Insert();
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
@@ -175,7 +175,7 @@ codeunit 139883 "E-Doc Process Test"
         Vendor."VAT Registration No." := 'EDOCTESTTAXID001';
         Vendor.Insert();
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
-        EDocumentPurchaseHeader."Vendor Tax Id" := Vendor."VAT Registration No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor."VAT Registration No.";
         EDocumentPurchaseHeader.Insert();
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
@@ -219,7 +219,7 @@ codeunit 139883 "E-Doc Process Test"
         TextToAccountMapping.Insert();
 
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
-        EDocumentPurchaseHeader."Vendor Tax Id" := Vendor."VAT Registration No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor."VAT Registration No.";
         EDocumentPurchaseHeader.Insert();
         EDocumentPurchaseLine."E-Document Entry No." := EDocument."Entry No";
         EDocumentPurchaseLine.Description := 'Test description';
@@ -261,7 +261,7 @@ codeunit 139883 "E-Doc Process Test"
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Draft Ready");
         EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
-        EDocImportParameters."Finish Purchase Draft Impl." := "E-Doc. Create Purchase Invoice"::"Mock Create Purchase Invoice";
+        EDocImportParameters."Processing Customizations" := "E-Doc. Proc. Customizations"::"Mock Create Purchase Invoice";
         EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
 
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
@@ -278,6 +278,7 @@ codeunit 139883 "E-Doc Process Test"
         TransformationRule: Record "Transformation Rule";
         EDocument: Record "E-Document";
         EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocumentsSetup: Record "E-Documents Setup";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
@@ -298,6 +299,7 @@ codeunit 139883 "E-Doc Process Test"
         EDocumentService."Import Process" := "E-Document Import Process"::"Version 2.0";
         EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PDF Mock";
         EDocumentService.Modify();
+        EDocumentsSetup.InsertNewExperienceSetup();
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();

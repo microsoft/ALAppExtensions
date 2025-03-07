@@ -473,7 +473,7 @@ codeunit 139780 "Integration Tests"
         EDocument: Record "E-Document";
     begin
         if EDocument.FindSet() then
-            EDocument.DeleteAll(true);
+            EDocument.DeleteAll();
     end;
 
     local procedure EnterUserCredentials()

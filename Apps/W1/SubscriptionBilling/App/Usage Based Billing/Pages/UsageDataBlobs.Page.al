@@ -66,6 +66,7 @@ page 8036 "Usage Data Blobs"
     trigger OnAfterGetRecord()
     begin
         UsageDataImport.Get(Rec."Usage Data Import Entry No.");
+        UsageDataImport.CalcFields("Supplier Description");
     end;
 
     var

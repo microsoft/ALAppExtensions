@@ -20,7 +20,7 @@ codeunit 8067 "Customer Deferrals Mngmt."
         tabledata "Sales Invoice Line" = r;
 
     var
-        TempCustomerContractDeferral: Record "Customer Contract Deferral" temporary;
+        TempCustomerContractDeferral: Record "Cust. Sub. Contract Deferral" temporary;
         GLSetup: Record "General Ledger Setup";
         DeferralEntryNo: Integer;
 
@@ -34,22 +34,22 @@ codeunit 8067 "Customer Deferrals Mngmt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPrepareLineOnBeforeSetAccount', '', false, false)]
     local procedure OnPrepareLineOnBeforeSetAccount(SalesLine: Record "Sales Line"; var SalesAccount: Code[20])
     var
-        CustContractHeader: Record "Customer Contract";
+        CustContractHeader: Record "Customer Subscription Contract";
         GeneralPostingSetup: Record "General Posting Setup";
         BillingLine: Record "Billing Line";
     begin
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        CustContractHeader.Get(BillingLine."Contract No.");
+        CustContractHeader.Get(BillingLine."Subscription Contract No.");
 
         GeneralPostingSetup.Get(SalesLine."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
         if CustContractHeader."Without Contract Deferrals" then begin
-            GeneralPostingSetup.TestField("Customer Contract Account");
-            SalesAccount := GeneralPostingSetup."Customer Contract Account";
+            GeneralPostingSetup.TestField("Cust. Sub. Contract Account");
+            SalesAccount := GeneralPostingSetup."Cust. Sub. Contract Account";
         end else begin
-            GeneralPostingSetup.TestField("Cust. Contr. Deferral Account");
-            SalesAccount := GeneralPostingSetup."Cust. Contr. Deferral Account";
+            GeneralPostingSetup.TestField("Cust. Sub. Contr. Def Account");
+            SalesAccount := GeneralPostingSetup."Cust. Sub. Contr. Def Account";
         end;
     end;
 
@@ -57,7 +57,7 @@ codeunit 8067 "Customer Deferrals Mngmt."
     local procedure OnPrepareLineOnBeforeSetLineDiscAccount(SalesLine: Record "Sales Line"; GenPostingSetup: Record "General Posting Setup"; var InvDiscAccount: Code[20]; var IsHandled: Boolean)
     begin
         if IsCustomerContractWithDeferrals(SalesLine) then begin
-            InvDiscAccount := GenPostingSetup."Cust. Contr. Deferral Account";
+            InvDiscAccount := GenPostingSetup."Cust. Sub. Contr. Def Account";
             IsHandled := true;
         end;
     end;
@@ -84,9 +84,9 @@ codeunit 8067 "Customer Deferrals Mngmt."
 
     local procedure InsertContractDeferrals(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; DocumentNo: Code[20])
     var
-        CustContractHeader: Record "Customer Contract";
-        CustContractLine: Record "Customer Contract Line";
-        CustomerContractDeferral: Record "Customer Contract Deferral";
+        CustContractHeader: Record "Customer Subscription Contract";
+        CustContractLine: Record "Cust. Sub. Contract Line";
+        CustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
         CurrExchRate: Record "Currency Exchange Rate";
         BillingLine: Record "Billing Line";
         Sign: Integer;
@@ -103,7 +103,7 @@ codeunit 8067 "Customer Deferrals Mngmt."
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        CustContractHeader.Get(BillingLine."Contract No.");
+        CustContractHeader.Get(BillingLine."Subscription Contract No.");
         if CustContractHeader."Without Contract Deferrals" then
             exit;
 
@@ -112,14 +112,14 @@ codeunit 8067 "Customer Deferrals Mngmt."
         CustomerContractDeferral.Init();
         CustomerContractDeferral.InitFromSalesLine(SalesLine, Sign);
         CustomerContractDeferral."Document No." := DocumentNo;
-        CustomerContractDeferral."Contract Type" := CustContractHeader."Contract Type";
+        CustomerContractDeferral."Subscription Contract Type" := CustContractHeader."Contract Type";
         CustomerContractDeferral."User ID" := CopyStr(UserId(), 1, MaxStrLen(CustomerContractDeferral."User ID"));
         CustomerContractDeferral."Document Posting Date" := SalesHeader."Posting Date";
-        CustContractLine.Get(CustContractHeader."No.", BillingLine."Contract Line No.");
-        CustomerContractDeferral."Service Commitment Description" := CustContractLine."Service Commitment Description";
-        CustomerContractDeferral."Service Object Description" := CustContractLine."Service Object Description";
-        CustomerContractDeferral."Contract No." := CustContractLine."Contract No.";
-        CustomerContractDeferral."Contract Line No." := CustContractLine."Line No.";
+        CustContractLine.Get(CustContractHeader."No.", BillingLine."Subscription Contract Line No.");
+        CustomerContractDeferral."Subscription Line Description" := CustContractLine."Subscription Line Description";
+        CustomerContractDeferral."Subscription Description" := CustContractLine."Subscription Description";
+        CustomerContractDeferral."Subscription Contract No." := CustContractLine."Subscription Contract No.";
+        CustomerContractDeferral."Subscription Contract Line No." := CustContractLine."Line No.";
 
         if SalesHeader."Prices Including VAT" then
             if SalesLine."Line Discount Amount" <> 0 then
@@ -167,7 +167,7 @@ codeunit 8067 "Customer Deferrals Mngmt."
         TotalLineDiscountAmount := SalesLine."Line Discount Amount";
     end;
 
-    local procedure InsertContractDeferralsWhenStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Customer Contract Deferral"; SalesLine: Record "Sales Line")
+    local procedure InsertContractDeferralsWhenStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Cust. Sub. Contract Deferral"; SalesLine: Record "Sales Line")
     var
         NumberOfPeriods: Integer;
         i: Integer;
@@ -207,7 +207,7 @@ codeunit 8067 "Customer Deferrals Mngmt."
         end;
     end;
 
-    local procedure InsertContractDeferralsWhenNotStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Customer Contract Deferral"; SalesLine: Record "Sales Line")
+    local procedure InsertContractDeferralsWhenNotStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Cust. Sub. Contract Deferral"; SalesLine: Record "Sales Line")
     var
         NumberOfPeriods: Integer;
         NextPostingDate: Date;
@@ -293,8 +293,8 @@ codeunit 8067 "Customer Deferrals Mngmt."
 
     local procedure ReleaseAndCreditCustomerContractDeferrals(SalesHeader: Record "Sales Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line")
     var
-        InvoiceCustContractDeferral: Record "Customer Contract Deferral";
-        CreditMemoCustContractDeferral: Record "Customer Contract Deferral";
+        InvoiceCustContractDeferral: Record "Cust. Sub. Contract Deferral";
+        CreditMemoCustContractDeferral: Record "Cust. Sub. Contract Deferral";
         SalesInvoiceLine: Record "Sales Invoice Line";
         ContractDeferralRelease: Report "Contract Deferrals Release";
         SalesDocuments: Codeunit "Sales Documents";
@@ -304,8 +304,8 @@ codeunit 8067 "Customer Deferrals Mngmt."
         if SalesDocuments.IsInvoiceCredited(AppliesToDocNo) then
             exit;
         InvoiceCustContractDeferral.FilterOnDocumentTypeAndDocumentNo(Enum::"Rec. Billing Document Type"::Invoice, AppliesToDocNo);
-        InvoiceCustContractDeferral.SetRange("Contract No.", SalesCrMemoLine."Contract No.");
-        InvoiceCustContractDeferral.SetRange("Contract Line No.", SalesCrMemoLine."Contract Line No.");
+        InvoiceCustContractDeferral.SetRange("Subscription Contract No.", SalesCrMemoLine."Subscription Contract No.");
+        InvoiceCustContractDeferral.SetRange("Subscription Contract Line No.", SalesCrMemoLine."Subscription Contract Line No.");
         if InvoiceCustContractDeferral.FindSet() then begin
             ContractDeferralRelease.GetAndTestSourceCode();
             ContractDeferralRelease.GetGeneralLedgerSetupAndCheckJournalTemplateAndBatch();
@@ -343,14 +343,14 @@ codeunit 8067 "Customer Deferrals Mngmt."
 
     local procedure IsCustomerContractWithDeferrals(SalesLine: Record "Sales Line"): Boolean
     var
-        CustomerContractHeader: Record "Customer Contract";
+        CustomerContractHeader: Record "Customer Subscription Contract";
         BillingLine: Record "Billing Line";
     begin
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
 
-        CustomerContractHeader.Get(BillingLine."Contract No.");
+        CustomerContractHeader.Get(BillingLine."Subscription Contract No.");
         exit(not CustomerContractHeader."Without Contract Deferrals");
     end;
 
@@ -365,25 +365,25 @@ codeunit 8067 "Customer Deferrals Mngmt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Preview Event Handler", OnAfterShowEntries, '', false, false)]
     local procedure OnAfterShowEntries(TableNo: Integer)
     begin
-        if TableNo = Database::"Customer Contract Deferral" then
+        if TableNo = Database::"Cust. Sub. Contract Deferral" then
             Page.Run(Page::"Customer Contract Deferrals", TempCustomerContractDeferral);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, OnAfterNavigateFindRecords, '', false, false)]
     local procedure OnAfterFindEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
-        CustomerContractDeferral: Record "Customer Contract Deferral";
+        CustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
     begin
         CustomerContractDeferral.SetFilter("Document No.", DocNoFilter);
-        DocumentEntry.InsertIntoDocEntry(Database::"Customer Contract Deferral", CustomerContractDeferral."Document Type", CustomerContractDeferral.TableCaption, CustomerContractDeferral.Count);
+        DocumentEntry.InsertIntoDocEntry(Database::"Cust. Sub. Contract Deferral", CustomerContractDeferral."Document Type", CustomerContractDeferral.TableCaption, CustomerContractDeferral.Count);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, OnBeforeShowRecords, '', false, false)]
     local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     var
-        CustomerContractDeferral: Record "Customer Contract Deferral";
+        CustomerContractDeferral: Record "Cust. Sub. Contract Deferral";
     begin
-        if TempDocumentEntry."Table ID" <> Database::"Customer Contract Deferral" then
+        if TempDocumentEntry."Table ID" <> Database::"Cust. Sub. Contract Deferral" then
             exit;
         CustomerContractDeferral.SetFilter("Document No.", DocNoFilter);
         Page.Run(Page::"Customer Contract Deferrals", CustomerContractDeferral);
@@ -392,11 +392,11 @@ codeunit 8067 "Customer Deferrals Mngmt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnAfterGLFinishPosting, '', false, false)]
     local procedure GetEntryNo(GLEntry: Record "G/L Entry"; var GenJnlLine: Record "Gen. Journal Line")
     var
-        CustomerContractDeferrals: Record "Customer Contract Deferral";
+        CustomerContractDeferrals: Record "Cust. Sub. Contract Deferral";
         SourceCodeSetup: Record "Source Code Setup";
     begin
         SourceCodeSetup.Get();
-        if SourceCodeSetup."Contract Deferrals Release" <> GLEntry."Source Code" then
+        if SourceCodeSetup."Sub. Contr. Deferrals Release" <> GLEntry."Source Code" then
             exit;
         //Update Contract Deferrals while releasing
         if DeferralEntryNo <> 0 then begin
@@ -419,24 +419,24 @@ codeunit 8067 "Customer Deferrals Mngmt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforePostGenJnlLine, '', false, false)]
     local procedure SetContractNo(var GenJournalLine: Record "Gen. Journal Line")
     var
-        CustomerContractDeferrals: Record "Customer Contract Deferral";
+        CustomerContractDeferrals: Record "Cust. Sub. Contract Deferral";
         SourceCodeSetup: Record "Source Code Setup";
     begin
         if DeferralEntryNo = 0 then
             exit;
         SourceCodeSetup.Get();
-        if SourceCodeSetup."Contract Deferrals Release" <> GenJournalLine."Source Code" then
+        if SourceCodeSetup."Sub. Contr. Deferrals Release" <> GenJournalLine."Source Code" then
             exit;
         CustomerContractDeferrals.Get(DeferralEntryNo);
-        GenJournalLine."Sub. Contract No." := CustomerContractDeferrals."Contract No.";
+        GenJournalLine."Subscription Contract No." := CustomerContractDeferrals."Subscription Contract No.";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforeInsertGlobalGLEntry, '', false, false)]
     local procedure TransferContractNoToGLEntry(var GlobalGLEntry: Record "G/L Entry"; GenJournalLine: Record "Gen. Journal Line")
     begin
-        if GenJournalLine."Sub. Contract No." = '' then
+        if GenJournalLine."Subscription Contract No." = '' then
             exit;
-        GlobalGLEntry."Sub. Contract No." := GenJournalLine."Sub. Contract No.";
+        GlobalGLEntry."Subscription Contract No." := GenJournalLine."Subscription Contract No.";
     end;
 
     procedure SetDeferralNo(NewDeferralNo: Integer)
@@ -445,12 +445,12 @@ codeunit 8067 "Customer Deferrals Mngmt."
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeInsertCustomerContractDeferralWhenStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Customer Contract Deferral"; SalesLine: Record "Sales Line"; PeriodNo: Integer; NumberOfPeriods: Integer)
+    local procedure OnBeforeInsertCustomerContractDeferralWhenStartingOnFirstDayInMonth(var CustSubContractDeferral: Record "Cust. Sub. Contract Deferral"; SalesLine: Record "Sales Line"; PeriodNo: Integer; NumberOfPeriods: Integer)
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeInsertCustomerContractDeferralWhenNotStartingOnFirstDayInMonth(var CustomerContractDeferral: Record "Customer Contract Deferral"; SalesLine: Record "Sales Line"; PeriodNo: Integer; NumberOfPeriods: Integer)
+    local procedure OnBeforeInsertCustomerContractDeferralWhenNotStartingOnFirstDayInMonth(var CustSubContractDeferral: Record "Cust. Sub. Contract Deferral"; SalesLine: Record "Sales Line"; PeriodNo: Integer; NumberOfPeriods: Integer)
     begin
     end;
 }

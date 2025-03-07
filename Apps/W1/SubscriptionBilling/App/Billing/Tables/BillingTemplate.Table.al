@@ -68,12 +68,12 @@ table 8060 "Billing Template"
                     "Service Partner"::Customer:
                         begin
                             AddDefaultFilterFields(DefaultFilterFields, "Service Partner"::Customer);
-                            RRef.Open(Database::"Customer Contract");
+                            RRef.Open(Database::"Customer Subscription Contract");
                         end;
                     "Service Partner"::Vendor:
                         begin
                             AddDefaultFilterFields(DefaultFilterFields, "Service Partner"::Vendor);
-                            RRef.Open(Database::"Vendor Contract");
+                            RRef.Open(Database::"Vendor Subscription Contract");
                         end;
                 end;
         end;
@@ -121,9 +121,9 @@ table 8060 "Billing Template"
                     Clear(Filter);
                     case Rec.Partner of
                         "Service Partner"::Customer:
-                            RRef.Open(Database::"Customer Contract");
+                            RRef.Open(Database::"Customer Subscription Contract");
                         "Service Partner"::Vendor:
-                            RRef.Open(Database::"Vendor Contract");
+                            RRef.Open(Database::"Vendor Subscription Contract");
                     end;
                     BlankView := RRef.GetView(false);
                     Filter.CreateOutStream(OStream, TextEncoding::UTF8);
@@ -137,8 +137,8 @@ table 8060 "Billing Template"
 
     local procedure AddDefaultFilterFields(var DefaultFilterFields: array[10] of Integer; ServicePartner: Enum "Service Partner")
     var
-        CustomerContract: Record "Customer Contract";
-        VendorContract: Record "Vendor Contract";
+        CustomerContract: Record "Customer Subscription Contract";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
         case ServicePartner of
             "Service Partner"::Customer:

@@ -55,13 +55,14 @@ codeunit 6108 "E-Document Processing"
     /// <summary>
     /// Updates EDocument status based on E-Document Service Status value
     /// </summary>
-    procedure ModifyEDocumentStatus(var EDocument: Record "E-Document"; EDocumentStatus: Enum "E-Document Service Status")
+    procedure ModifyEDocumentStatus(var EDocument: Record "E-Document")
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
 #if not CLEAN26
         EDocumentLog: Codeunit "E-Document Log";
 #endif
-        EDocServiceCount: Integer;
+        IEDocumentStatus: Interface IEDocumentStatus;
+        InProgress: Boolean;
 #if not CLEAN26
         IsHandled: Boolean;
 #endif
@@ -72,43 +73,29 @@ codeunit 6108 "E-Document Processing"
             exit;
 #endif
 
-        // Check for errors
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5',
-            EDocumentServiceStatus.Status::"Sending Error",
-            EDocumentServiceStatus.Status::"Export Error",
-            EDocumentServiceStatus.Status::"Cancel Error",
-            EDocumentServiceStatus.Status::"Imported Document Processing Error",
-            EDocumentServiceStatus.Status::"Approval Error");
+        if EDocumentServiceStatus.FindSet() then
+            repeat
+                IEDocumentStatus := EDocumentServiceStatus.Status;
+                case IEDocumentStatus.GetEDocumentStatus() of
+                    EDocument.Status::Error:
+                        begin
+                            // In case of any error we exit 
+                            EDocument.Validate(Status, EDocument.Status::Error);
+                            EDocument.Modify(true);
+                            exit;
+                        end;
+                    EDocument.Status::"In Progress":
+                        InProgress := true;
+                end;
 
-        if not EDocumentServiceStatus.IsEmpty() then begin
-            EDocument.Validate(Status, EDocument.Status::Error);
-            EDocument.Modify(true);
-            exit;
-        end;
+            until EDocumentServiceStatus.Next() = 0;
 
-        Clear(EDocumentServiceStatus);
-        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocServiceCount := EDocumentServiceStatus.Count();
-
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
-            EDocumentServiceStatus.Status::Sent,
-            EDocumentServiceStatus.Status::Exported,
-            EDocumentServiceStatus.Status::"Imported Document Created",
-            EDocumentServiceStatus.Status::"Journal Line Created",
-            EDocumentServiceStatus.Status::Approved,
-            EDocumentServiceStatus.Status::Rejected,
-            EDocumentServiceStatus.Status::Canceled);
-
-        // There can be service status for multiple services:
-        // Example Service A and Service B
-        // Service A -> Sent
-        // Service B -> Exported
-        if EDocumentServiceStatus.Count() = EDocServiceCount then
-            EDocument.Validate(Status, EDocument.Status::Processed)
+        // If one service is in progress, then the whole E-Document is in progress
+        if InProgress then
+            EDocument.Validate(Status, EDocument.Status::"In Progress")
         else
-            EDocument.Validate(Status, EDocument.Status::"In Progress");
-
+            EDocument.Validate(Status, EDocument.Status::Processed);
         EDocument.Modify(true);
     end;
 

@@ -14,10 +14,10 @@ reportextension 8007 "Contract Stand. Sales Cr. Memo" extends "Standard Sales - 
         }
         add(Line)
         {
-            column(ContractLineNo; "Contract Line No.")
+            column(ContractLineNo; "Subscription Contract Line No.")
             {
             }
-            column(ContractNo; "Contract No.")
+            column(ContractNo; "Subscription Contract No.")
             {
             }
             column(RecurringBillingfrom; "Recurring Billing from")

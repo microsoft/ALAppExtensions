@@ -24,6 +24,9 @@ codeunit 5213 "Create Sustainability Category"
         ContosoSustainability.InsertAccountCategory(UtilityHeat(), UtilityHeatLbl, Enum::"Emission Scope"::"Scope 2", Enum::"Calculation Foundation"::Custom, true, false, false, 'THERMAL UNIT', false);
         ContosoSustainability.InsertAccountCategory(UtilitySteam(), UtilitySteamLbl, Enum::"Emission Scope"::"Scope 2", Enum::"Calculation Foundation"::Custom, true, false, false, 'TON/HOUR', false);
         ContosoSustainability.InsertAccountCategory(Waste(), WasteLbl, Enum::"Emission Scope"::"Scope 3", Enum::"Calculation Foundation"::Custom, true, true, false, 'WASTE TON', false);
+        ContosoSustainability.InsertAccountCategory(Credit1(), Credit1Lbl, Enum::"Emission Scope"::"Scope 1", Enum::"Calculation Foundation"::Custom, true, false, false, 'WASTE TON', false);
+        ContosoSustainability.InsertAccountCategory(Credit2(), Credit2Lbl, Enum::"Emission Scope"::"Scope 2", Enum::"Calculation Foundation"::Custom, true, false, false, 'WASTE TON', false);
+        ContosoSustainability.InsertAccountCategory(Credit3(), Credit3Lbl, Enum::"Emission Scope"::"Scope 3", Enum::"Calculation Foundation"::Custom, true, false, false, 'WASTE TON', false);
     end;
 
     procedure CompanyCar(): Code[20]
@@ -112,6 +115,21 @@ codeunit 5213 "Create Sustainability Category"
         exit(WasteTok);
     end;
 
+    procedure Credit1(): Code[20]
+    begin
+        exit(Credit1Tok);
+    end;
+
+    procedure Credit2(): Code[20]
+    begin
+        exit(Credit2Tok);
+    end;
+
+    procedure Credit3(): Code[20]
+    begin
+        exit(Credit3Tok);
+    end;
+
     var
         CompanyCarTok: Label 'COMPCAR', MaxLength = 20;
         CompanyCarLbl: Label 'Company Cars', MaxLength = 100;
@@ -147,4 +165,10 @@ codeunit 5213 "Create Sustainability Category"
         UtilitySteamLbl: Label 'Utility Providers - Steam', MaxLength = 100;
         WasteTok: Label 'WASTE', MaxLength = 20;
         WasteLbl: Label 'Waste Generated', MaxLength = 100;
+        Credit1Tok: Label 'CREDIT1', MaxLength = 20;
+        Credit1Lbl: Label 'Carbon Credit Scope 1', MaxLength = 100;
+        Credit2Tok: Label 'CREDIT2', MaxLength = 20;
+        Credit2Lbl: Label 'Carbon Credit Scope 2', MaxLength = 100;
+        Credit3Tok: Label 'CREDIT3', MaxLength = 20;
+        Credit3Lbl: Label 'Carbon Credit Scope 3', MaxLength = 100;
 }

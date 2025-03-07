@@ -76,13 +76,12 @@ codeunit 139511 "SAF-T Tests"
         GLAccountMappingLine: Record "G/L Account Mapping Line";
         AuditFileExportHeader: Record "Audit File Export Header";
         GenJournalLine: Record "Gen. Journal Line";
-        GLEntry: Record "G/L Entry";
         TempBlob: Codeunit "Temp Blob";
     begin
         // [SCENARIO 452704] Export General Ledger Entries.
         // [SCENARIO 495176] "TransactionID" xml node contains the concatenated value of the "Posting Date" and "Document No." fields of the G/L Entry
         Initialize();
-        GLEntry.DeleteAll();
+        DeleteEntries();
         ClearSourceCode();
 
         // [GIVEN] Audit File Export Format "SAF-T" set up.
@@ -118,14 +117,11 @@ codeunit 139511 "SAF-T Tests"
         PurchInvHeader: Record "Purch. Inv. Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         PurchInvLine: Record "Purch. Inv. Line";
-        CustLederEntry: Record "Cust. Ledger Entry";
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempBlob: Codeunit "Temp Blob";
     begin
         // [SCENARIO 452704] Export General Ledger Entries.
         Initialize();
-        CustLederEntry.DeleteAll();
-        VendorLedgerEntry.DeleteAll();
+        DeleteEntries();
         SalesInvoiceHeader.DeleteAll();
         PurchInvHeader.DeleteAll();
         ClearSourceCode();
@@ -163,7 +159,6 @@ codeunit 139511 "SAF-T Tests"
     procedure GLEntryTotalsContainValuesFromAllPeriods()
     var
         GLAccountMappingLine: Record "G/L Account Mapping Line";
-        GLEntry: Record "G/L Entry";
         AuditFileExportHeader: Record "Audit File Export Header";
         TempBlob: Codeunit "Temp Blob";
         NamespacePrefix: Text;
@@ -172,9 +167,8 @@ codeunit 139511 "SAF-T Tests"
         FileNo: Integer;
     begin
         // [SCENARIO 485839] G/L Entry Totals xml nodes contain values from all periods when SAF-T file splitted to multiple periods
-
         Initialize();
-        GLEntry.DeleteAll();
+        DeleteEntries();
         ClearSourceCode();
 
         SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
@@ -216,7 +210,6 @@ codeunit 139511 "SAF-T Tests"
     procedure CreditBalanceForPurchInvoice()
     var
         GLAccountMappingLine: Record "G/L Account Mapping Line";
-        VendLedgEntry: Record "Vendor Ledger Entry";
         AuditFileExportHeader: Record "Audit File Export Header";
         Vendor: Record Vendor;
         TempBlob: Codeunit "Temp Blob";
@@ -230,7 +223,7 @@ codeunit 139511 "SAF-T Tests"
 
         Initialize();
         Vendor.DeleteAll();
-        VendLedgEntry.DeleteAll();
+        DeleteEntries();
         ClearSourceCode();
 
         // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
@@ -265,7 +258,6 @@ codeunit 139511 "SAF-T Tests"
     procedure DebitBalanceForPurchCrMemo()
     var
         GLAccountMappingLine: Record "G/L Account Mapping Line";
-        VendLedgEntry: Record "Vendor Ledger Entry";
         AuditFileExportHeader: Record "Audit File Export Header";
         Vendor: Record Vendor;
         TempBlob: Codeunit "Temp Blob";
@@ -276,10 +268,9 @@ codeunit 139511 "SAF-T Tests"
         AmountInPeriod: Decimal;
     begin
         // [SCENARIO 464814] Purchase credit memo exports with debit ppening and closing balance
-
         Initialize();
         Vendor.DeleteAll();
-        VendLedgEntry.DeleteAll();
+        DeleteEntries();
         ClearSourceCode();
 
         // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
@@ -317,7 +308,6 @@ codeunit 139511 "SAF-T Tests"
         AuditFileExportHeader: Record "Audit File Export Header";
         GenJournalLine: Record "Gen. Journal Line";
         GLEntry: Record "G/L Entry";
-        BankAccLedgEntry: Record "Bank Account Ledger Entry";
         TempBlob: Codeunit "Temp Blob";
         NamespacePrefix: Text;
         NamespaceUri: Text;
@@ -328,10 +318,8 @@ codeunit 139511 "SAF-T Tests"
         EntryNo: Integer;
     begin
         // [SCENARIO 49517] G/L Entries are grouped by Document No. and Posting Date in the SAF-T xml file
-
         Initialize();
-        GLEntry.DeleteAll();
-        BankAccLedgEntry.DeleteAll();
+        DeleteEntries();
         ClearSourceCode();
 
         // [GIVEN] Audit File Export Format "SAF-T" set up.
@@ -386,6 +374,129 @@ codeunit 139511 "SAF-T Tests"
                 until GLEntry.Next() = 0;
             end;
         end;
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure DebitCreditAmountWhenPaymentReversed()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        ReversalEntry: Record "Reversal Entry";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        DebitAmountXpath: Text;
+        CreditAmountXpath: Text;
+        PaymentAmount: Decimal;
+    begin
+        // [SCENARIO 537092] Export reversed payment.
+        Initialize();
+        DeleteEntries();
+        ClearSourceCode();
+
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2025
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled, "Starting Date" = 01.01.2025, "Ending Date" = 01.02.2025
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        // [GIVEN] Posted payment for Customer with Amount -100.
+        PaymentAmount := LibraryRandom.RandDecInRange(100, 200, 2);
+        CreateAndPostGenJnlLine(
+            GenJournalLine, "Gen. Journal Account Type"::Customer, LibrarySales.CreateCustomerNo(), -PaymentAmount);
+
+        // [GIVEN] Reversal Entry for payment.
+        ReversalEntry.SetHideDialog(true);
+        ReversalEntry.ReverseTransaction(GetPostedDocTransactionNo(GenJournalLine."Document No."));
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] Three files were created - one for master data, one for G/L Entries and one for source documents.
+        // [THEN] The second file contains two "Transaction/Line/DebitAmount" and two "Transaction/Line/CreditAmount" nodes with Amount 100.
+        GetAuditFileContent(AuditFileExportHeader.ID, 2, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+
+        DebitAmountXpath := '/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/DebitAmount/Amount';
+        LibraryXPathXMLReader.VerifyNodeCountByXPath(DebitAmountXpath, 2);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(DebitAmountXpath, GetSAFTMonetaryDecimal(PaymentAmount), 0);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(DebitAmountXpath, GetSAFTMonetaryDecimal(PaymentAmount), 1);
+
+        CreditAmountXpath := '/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount';
+        LibraryXPathXMLReader.VerifyNodeCountByXPath(CreditAmountXpath, 2);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(CreditAmountXpath, GetSAFTMonetaryDecimal(PaymentAmount), 0);
+        LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(CreditAmountXpath, GetSAFTMonetaryDecimal(PaymentAmount), 1);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure CurrencyAmountForFCYPayment()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        DebitAmountXpath: Text;
+        CreditAmountXpath: Text;
+        CurrencyCode: Code[10];
+        PaymentAmountFCY: Decimal;
+        PaymentAmountLCY: Decimal;
+        ExchangeRateAmount: Decimal;
+    begin
+        // [SCENARIO 537092] Export payment in FCY.
+        Initialize();
+        DeleteEntries();
+        ClearSourceCode();
+
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2025
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled, "Starting Date" = 01.01.2025, "Ending Date" = 01.02.2025
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        // [GIVEN] Posted payment for Customer with Currency ABC, Amount -100, Amount(LCY) -500.
+        PaymentAmountFCY := 100;
+        ExchangeRateAmount := 0.2;
+        PaymentAmountLCY := PaymentAmountFCY / ExchangeRateAmount;
+        CurrencyCode := LibraryERM.CreateCurrencyWithExchangeRate(WorkDate(), ExchangeRateAmount, ExchangeRateAmount);
+        CreateGenJnlBatch(GenJournalBatch);
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+            "Gen. Journal Document Type"::Payment, "Gen. Journal Account Type"::Customer, LibrarySales.CreateCustomerNo(), -PaymentAmountFCY);
+        GenJournalLine.Validate("Currency Code", CurrencyCode);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] Three files were created - one for master data, one for G/L Entries and one for source documents.
+        // [THEN] The second file contains G/L Entries data.
+        GetAuditFileContent(AuditFileExportHeader.ID, 2, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+
+        // [THEN] Node "Transaction/Line/DebitAmount" has child node Amount 500 and no currency nodes.
+        DebitAmountXpath := '/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/DebitAmount';
+        LibraryXPathXMLReader.VerifyNodeCountByXPath(DebitAmountXpath, 1);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(DebitAmountXpath + '/Amount', GetSAFTMonetaryDecimal(PaymentAmountLCY));
+        LibraryXPathXMLReader.VerifyNodeAbsence(CreditAmountXpath + '/CurrencyCode');
+        LibraryXPathXMLReader.VerifyNodeAbsence(CreditAmountXpath + '/CurrencyAmount');
+        LibraryXPathXMLReader.VerifyNodeAbsence(CreditAmountXpath + '/ExchangeRate');
+
+        // [THEN] Node "Transaction/Line/CreditAmount" has 4 child nodes: Amount 500, CurrencyCode ABC, CurrencyAmount 100, ExchangeRate 5.
+        CreditAmountXpath := '/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount';
+        LibraryXPathXMLReader.VerifyNodeCountByXPath(CreditAmountXpath, 1);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(CreditAmountXpath + '/Amount', GetSAFTMonetaryDecimal(PaymentAmountLCY));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(CreditAmountXpath + '/CurrencyCode', CurrencyCode);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(CreditAmountXpath + '/CurrencyAmount', GetSAFTMonetaryDecimal(PaymentAmountFCY));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(CreditAmountXpath + '/ExchangeRate', GetSAFTMonetaryDecimal(1 / ExchangeRateAmount));
     end;
 
     local procedure Initialize()
@@ -466,6 +577,40 @@ codeunit 139511 "SAF-T Tests"
         PurchInvLine.FindFirst();
     end;
 
+    local procedure DeleteEntries()
+    var
+        GLEntry: Record "G/L Entry";
+        VATEntry: Record "VAT Entry";
+        ValueEntry: Record "Value Entry";
+        CostEntry: Record "Cost Entry";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        BankAccLedgEntry: Record "Bank Account Ledger Entry";
+        GLEntryVATEntryLink: Record "G/L Entry - VAT Entry Link";
+    begin
+        GLEntry.DeleteAll();
+        VATEntry.DeleteAll();
+        ValueEntry.DeleteAll();
+        CostEntry.DeleteAll();
+        CustLedgerEntry.DeleteAll();
+        DetailedCustLedgEntry.DeleteAll();
+        VendorLedgerEntry.DeleteAll();
+        DetailedVendorLedgEntry.DeleteAll();
+        BankAccLedgEntry.DeleteAll();
+        GLEntryVATEntryLink.DeleteAll();
+    end;
+
+    local procedure GetPostedDocTransactionNo(DocumentNo: Code[20]): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("Document No.", DocumentNo);
+        GLEntry.FindLast();
+        exit(GLEntry."Transaction No.");
+    end;
+
     local procedure GetAuditFileContent(ExportID: Integer; FileNo: Integer; var TempBlob: Codeunit "Temp Blob")
     var
         AuditFile: Record "Audit File";
@@ -541,7 +686,8 @@ codeunit 139511 "SAF-T Tests"
             GenJournalLine."Document No." + Format(GenJournalLine."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionDate', Format(GenJournalLine."Document Date", 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionType', Format(GenJournalLine."Document Type"));
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount', GetSAFTMonetaryDecimal(GenJournalLine."Amount (LCY)"));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/DebitAmount/Amount', GetSAFTMonetaryDecimal(Abs(GenJournalLine."Amount (LCY)")));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount', GetSAFTMonetaryDecimal(Abs(GenJournalLine."Amount (LCY)")));
     end;
 
     local procedure VerifyAuditFileWithSourceDocs(var TempBlob: Codeunit "Temp Blob"; SalesInvoiceLine: Record "Sales Invoice Line"; PurchInvLine: Record "Purch. Inv. Line"; GenJournalLineCust: Record "Gen. Journal Line"; GenJournalLineVend: Record "Gen. Journal Line")
@@ -600,9 +746,6 @@ codeunit 139511 "SAF-T Tests"
         SourceCode: Record "Source Code";
     begin
         SourceCode.SetRange("Source Code SAF-T", '');
-        if SourceCode.IsEmpty() then
-            exit;
-
         SourceCode.DeleteAll();
     end;
 

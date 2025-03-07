@@ -26,11 +26,11 @@ page 8039 "Usage Data Generic Import API"
                 field(customerId; Rec."Customer ID") { }
                 field(customerName; Rec."Customer Name") { }
                 field(invoiceId; Rec."Invoice ID") { }
-                field(subscriptionId; Rec."Subscription ID") { }
-                field(subscriptionName; Rec."Subscription Name") { }
-                field(subscriptionDescription; Rec."Subscription Description") { }
-                field(subscriptionStartDate; Rec."Subscription Start Date") { }
-                field(subscriptionEndDate; Rec."Subscription End Date") { }
+                field(subscriptionId; Rec."Supp. Subscription ID") { }
+                field(subscriptionName; Rec."Supp. Subscription Name") { }
+                field(subscriptionDescription; Rec."Supp. Subscription Description") { }
+                field(subscriptionStartDate; Rec."Supp. Subscription Start Date") { }
+                field(subscriptionEndDate; Rec."Supp. Subscription End Date") { }
                 field(billingPeriodStartDate; Rec."Billing Period Start Date") { }
                 field(billingPeriodEndDate; Rec."Billing Period End Date") { }
                 field(productId; Rec."Product ID") { }

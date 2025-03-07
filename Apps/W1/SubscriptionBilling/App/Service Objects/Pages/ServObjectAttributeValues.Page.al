@@ -4,7 +4,7 @@ using Microsoft.Inventory.Item.Attribute;
 
 page 8011 "Serv. Object Attribute Values"
 {
-    Caption = 'Service Object Attribute Values';
+    Caption = 'Subscription Attribute Values';
     DelayedInsert = true;
     LinksAllowed = false;
     PageType = ListPart;
@@ -23,7 +23,7 @@ page 8011 "Serv. Object Attribute Values"
                     AssistEdit = false;
                     Caption = 'Attribute';
                     TableRelation = "Item Attribute".Name where(Blocked = const(false));
-                    ToolTip = 'Specifies the service object attribute.';
+                    ToolTip = 'Specifies the Subscription attribute.';
 
                     trigger OnValidate()
                     var
@@ -43,7 +43,7 @@ page 8011 "Serv. Object Attribute Values"
                         if ItemAttributeValue.Get(ItemAttributeValue."Attribute ID", ItemAttributeValue.ID) then begin
                             ItemAttributeValueMapping.Reset();
                             ItemAttributeValueMapping.Init();
-                            ItemAttributeValueMapping."Table ID" := Database::"Service Object";
+                            ItemAttributeValueMapping."Table ID" := Database::"Subscription Header";
                             ItemAttributeValueMapping."No." := RelatedRecordCode;
                             ItemAttributeValueMapping."Item Attribute ID" := ItemAttributeValue."Attribute ID";
                             ItemAttributeValueMapping."Item Attribute Value ID" := ItemAttributeValue.ID;
@@ -58,7 +58,7 @@ page 8011 "Serv. Object Attribute Values"
                     Caption = 'Value';
                     TableRelation = if ("Attribute Type" = const(Option)) "Item Attribute Value".Value where("Attribute ID" = field("Attribute ID"),
                                                                                                             Blocked = const(false));
-                    ToolTip = 'Specifies the value of the service object attribute.';
+                    ToolTip = 'Specifies the value of the Subscription attribute.';
 
                     trigger OnValidate()
                     var
@@ -69,7 +69,7 @@ page 8011 "Serv. Object Attribute Values"
                         if not Rec.FindAttributeValue(ItemAttributeValue) then
                             Rec.InsertItemAttributeValue(ItemAttributeValue, Rec);
 
-                        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+                        ItemAttributeValueMapping.SetRange("Table ID", Database::"Subscription Header");
                         ItemAttributeValueMapping.SetRange("No.", RelatedRecordCode);
                         ItemAttributeValueMapping.SetRange("Item Attribute ID", ItemAttributeValue."Attribute ID");
                         if ItemAttributeValueMapping.FindFirst() then begin
@@ -94,7 +94,7 @@ page 8011 "Serv. Object Attribute Values"
                 field(Primary; Rec.Primary)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the primary attribute. Only one attribute can be marked per Service Object.';
+                    ToolTip = 'Specifies the primary attribute. Only one attribute can be marked per Subscription.';
 
                     trigger OnValidate()
                     var
@@ -106,7 +106,7 @@ page 8011 "Serv. Object Attribute Values"
                         if not Rec.FindAttributeValue(ItemAttributeValue) then
                             Rec.InsertItemAttributeValue(ItemAttributeValue, Rec);
 
-                        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+                        ItemAttributeValueMapping.SetRange("Table ID", Database::"Subscription Header");
                         ItemAttributeValueMapping.SetRange("No.", RelatedRecordCode);
                         ItemAttributeValueMapping.SetRange("Item Attribute ID", ItemAttributeValue."Attribute ID");
                         if ItemAttributeValueMapping.FindFirst() then begin
@@ -146,7 +146,7 @@ page 8011 "Serv. Object Attribute Values"
         ItemAttributeValue: Record "Item Attribute Value";
     begin
         RelatedRecordCode := ServiceObjectNo;
-        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+        ItemAttributeValueMapping.SetRange("Table ID", Database::"Subscription Header");
         ItemAttributeValueMapping.SetRange("No.", ServiceObjectNo);
         if ItemAttributeValueMapping.FindSet() then
             repeat
@@ -157,7 +157,7 @@ page 8011 "Serv. Object Attribute Values"
                 TempItemAttributeValue.Insert(false);
             until ItemAttributeValueMapping.Next() = 0;
 
-        Rec.PopulateItemAttributeValueSelection(TempItemAttributeValue, Database::"Service Object", ServiceObjectNo);
+        Rec.PopulateItemAttributeValueSelection(TempItemAttributeValue, Database::"Subscription Header", ServiceObjectNo);
     end;
 
     local procedure DeleteItemAttributeValueMapping(AttributeToDeleteID: Integer)
@@ -165,7 +165,7 @@ page 8011 "Serv. Object Attribute Values"
         ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
         ItemAttribute: Record "Item Attribute";
     begin
-        ItemAttributeValueMapping.SetRange("Table ID", Database::"Service Object");
+        ItemAttributeValueMapping.SetRange("Table ID", Database::"Subscription Header");
         ItemAttributeValueMapping.SetRange("No.", RelatedRecordCode);
         ItemAttributeValueMapping.SetRange("Item Attribute ID", AttributeToDeleteID);
         if ItemAttributeValueMapping.FindFirst() then begin

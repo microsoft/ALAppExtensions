@@ -19,19 +19,19 @@ codeunit 139690 "Contract Price Proposal Test"
     var
         BillingLine: Record "Billing Line";
         BillingTemplate: Record "Billing Template";
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
-        TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary;
+        ContractPriceUpdateLine: Record "Sub. Contr. Price Update Line";
+        TempContractPriceUpdateLine: Record "Sub. Contr. Price Update Line" temporary;
         Currency: Record Currency;
         Customer: Record Customer;
         Customer2: Record Customer;
         Item: Record Item;
         PriceUpdateTemplateCustomer: Record "Price Update Template";
         PriceUpdateTemplateVendor: Record "Price Update Template";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         Vendor: Record Vendor;
         Vendor2: Record Vendor;
         Assert: Codeunit Assert;
@@ -58,20 +58,20 @@ codeunit 139690 "Contract Price Proposal Test"
         Initialize();
 
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<1M>', LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
-
+        Currency.InitRoundingPrecision();
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
         ContractPriceUpdateLine.FindSet();
         repeat
-            ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+            ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
             ContractPriceUpdateLine.TestField("Old Price", ServiceCommitment.Price);
             ContractPriceUpdateLine.TestField("Old Calculation Base", ServiceCommitment."Calculation Base Amount");
             ContractPriceUpdateLine.TestField("Old Calculation Base %", ServiceCommitment."Calculation Base %");
-            ContractPriceUpdateLine.TestField("Old Service Amount", ServiceCommitment."Service Amount");
+            ContractPriceUpdateLine.TestField("Old Amount", ServiceCommitment.Amount);
 
             ContractPriceUpdateLine.TestField("New Calculation Base %", PriceUpdateTemplateCustomer."Update Value %");
             ContractPriceUpdateLine.TestField("New Calculation Base", ContractPriceUpdateLine."Old Calculation Base");
             Assert.AreNearlyEqual(Round(ContractPriceUpdateLine."New Calculation Base" * ContractPriceUpdateLine."New Calculation Base %" / 100, Currency."Unit-Amount Rounding Precision"), ContractPriceUpdateLine."New Price", 0.01, 'New  Price was not calculated properly');
-            ContractPriceUpdateLine.TestField("Additional Service Amount", ContractPriceUpdateLine."New Service Amount" - ContractPriceUpdateLine."Old Service Amount");
+            ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
             NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
@@ -80,7 +80,7 @@ codeunit 139690 "Contract Price Proposal Test"
 
             NewServiceAmount := Round((ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity), Currency."Amount Rounding Precision");
             NewServiceAmount := NewServiceAmount - NewDiscountAmount;
-            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Service Amount", 'New Service Amount was not calculated properly');
+            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Amount", 'New Service Amount was not calculated properly');
         until ContractPriceUpdateLine.Next() = 0;
     end;
 
@@ -98,16 +98,16 @@ codeunit 139690 "Contract Price Proposal Test"
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
         ContractPriceUpdateLine.FindSet();
         repeat
-            ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+            ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
             ContractPriceUpdateLine.TestField("Old Price", ServiceCommitment.Price);
             ContractPriceUpdateLine.TestField("Old Calculation Base", ServiceCommitment."Calculation Base Amount");
             ContractPriceUpdateLine.TestField("Old Calculation Base %", ServiceCommitment."Calculation Base %");
-            ContractPriceUpdateLine.TestField("Old Service Amount", ServiceCommitment."Service Amount");
+            ContractPriceUpdateLine.TestField("Old Amount", ServiceCommitment.Amount);
 
             ContractPriceUpdateLine.TestField("New Calculation Base %", ContractPriceUpdateLine."Old Calculation Base %");
             ContractPriceUpdateLine.TestField("New Calculation Base", Round(ContractPriceUpdateLine."Old Calculation Base" + ContractPriceUpdateLine."Old Calculation Base" * PriceUpdateTemplateCustomer."Update Value %" / 100, Currency."Amount Rounding Precision"));
             ContractPriceUpdateLine.TestField("New Price", Round(ContractPriceUpdateLine."Old Price" + ContractPriceUpdateLine."Old Price" * PriceUpdateTemplateCustomer."Update Value %" / 100, Currency."Unit-Amount Rounding Precision"));
-            ContractPriceUpdateLine.TestField("Additional Service Amount", ContractPriceUpdateLine."New Service Amount" - ContractPriceUpdateLine."Old Service Amount");
+            ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
             NewServiceAmount := Round(ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
@@ -116,7 +116,7 @@ codeunit 139690 "Contract Price Proposal Test"
             Assert.AreEqual(CalcDiscountAmount, NewDiscountAmount, 'Discount Amount was not calculated properly');
 
             NewServiceAmount := NewServiceAmount - NewDiscountAmount;
-            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Service Amount", '"New Service Amount" was not calculated properly');
+            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Amount", '"New Service Amount" was not calculated properly');
         until ContractPriceUpdateLine.Next() = 0;
     end;
 
@@ -134,15 +134,15 @@ codeunit 139690 "Contract Price Proposal Test"
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
         ContractPriceUpdateLine.FindSet();
         repeat
-            ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+            ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
             ContractPriceUpdateLine.TestField("Old Price", ServiceCommitment.Price);
             ContractPriceUpdateLine.TestField("Old Calculation Base", ServiceCommitment."Calculation Base Amount");
             ContractPriceUpdateLine.TestField("Old Calculation Base %", ServiceCommitment."Calculation Base %");
-            ContractPriceUpdateLine.TestField("Old Service Amount", ServiceCommitment."Service Amount");
+            ContractPriceUpdateLine.TestField("Old Amount", ServiceCommitment.Amount);
 
             ContractPriceUpdateLine.TestField("New Calculation Base %", ContractPriceUpdateLine."Old Calculation Base %");
             ContractPriceUpdateLine.TestField("New Price", Round(ContractPriceUpdateLine."New Calculation Base" * ContractPriceUpdateLine."New Calculation Base %" / 100, Currency."Unit-Amount Rounding Precision"));
-            ContractPriceUpdateLine.TestField("Additional Service Amount", ContractPriceUpdateLine."New Service Amount" - ContractPriceUpdateLine."Old Service Amount");
+            ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
             NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
@@ -151,7 +151,7 @@ codeunit 139690 "Contract Price Proposal Test"
 
             NewServiceAmount := Round((ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity), Currency."Amount Rounding Precision");
             NewServiceAmount := NewServiceAmount - NewDiscountAmount;
-            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Service Amount", '"New Service Amount" was not calculated properly');
+            Assert.AreEqual(NewServiceAmount, ContractPriceUpdateLine."New Amount", '"New Service Amount" was not calculated properly');
         until ContractPriceUpdateLine.Next() = 0;
     end;
 
@@ -159,8 +159,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckContractPriceUpdatePageGroupingLines()
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContract2: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContract2: Record "Customer Subscription Contract";
     begin
         Initialize();
 
@@ -170,24 +170,24 @@ codeunit 139690 "Contract Price Proposal Test"
         Assert.IsTrue(TempContractPriceUpdateLine.IsEmpty(), 'Grouping Line should not be found.');
 
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::Contract);
-        TempContractPriceUpdateLine.SetFilter("Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
+        TempContractPriceUpdateLine.SetFilter("Subscription Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
         TempContractPriceUpdateLine.FindFirst();
-        Assert.AreEqual(CustomerContract."No.", TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(CustomerContract."No.", TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Customer."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
 
         TempContractPriceUpdateLine.Next();
-        Assert.AreEqual(CustomerContract2."No.", TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(CustomerContract2."No.", TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Customer2."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
 
-        TempContractPriceUpdateLine.SetRange("Contract No.");
+        TempContractPriceUpdateLine.SetRange("Subscription Contract No.");
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::"Contract Partner");
         TempContractPriceUpdateLine.SetFilter("Partner No.", '%1|%2', Customer."No.", Customer2."No.");
         TempContractPriceUpdateLine.FindFirst();
-        Assert.AreEqual('', TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Customer."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
 
         TempContractPriceUpdateLine.Next();
-        Assert.AreEqual('', TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Customer2."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
     end;
 
@@ -195,8 +195,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckRecurringBillingPageGroupingLinesForVendor()
     var
-        VendorContract: Record "Vendor Contract";
-        VendorContract2: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
+        VendorContract2: Record "Vendor Subscription Contract";
     begin
         Initialize();
 
@@ -207,24 +207,24 @@ codeunit 139690 "Contract Price Proposal Test"
 
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::Contract);
 
-        TempContractPriceUpdateLine.SetFilter("Contract No.", '%1|%2', VendorContract."No.", VendorContract2."No.");
+        TempContractPriceUpdateLine.SetFilter("Subscription Contract No.", '%1|%2', VendorContract."No.", VendorContract2."No.");
         TempContractPriceUpdateLine.FindFirst();
-        Assert.AreEqual(VendorContract."No.", TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(VendorContract."No.", TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Vendor."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
 
         TempContractPriceUpdateLine.Next();
-        Assert.AreEqual(VendorContract2."No.", TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(VendorContract2."No.", TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Vendor2."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
 
-        TempContractPriceUpdateLine.SetRange("Contract No.");
+        TempContractPriceUpdateLine.SetRange("Subscription Contract No.");
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::"Contract Partner");
         TempContractPriceUpdateLine.SetFilter("Partner No.", '%1|%2', Vendor."No.", Vendor2."No.");
         TempContractPriceUpdateLine.FindFirst();
-        Assert.AreEqual('', TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Vendor."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
 
         TempContractPriceUpdateLine.Next();
-        Assert.AreEqual('', TempContractPriceUpdateLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempContractPriceUpdateLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Vendor2."No.", TempContractPriceUpdateLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
     end;
 
@@ -232,12 +232,12 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure TestCancelPostedSalesInvoiceWithContractPriceUpdate()
     var
-        CustomerContract: Record "Customer Contract";
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        CustomerContract: Record "Customer Subscription Contract";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        OldServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentArchive: Record "Service Commitment Archive";
+        OldServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentArchive: Record "Subscription Line Archive";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
     begin
         Initialize();
@@ -251,30 +251,30 @@ codeunit 139690 "Contract Price Proposal Test"
         PriceUpdateManagement.PerformPriceUpdate();
         Commit(); // Commit after processing
 
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ServiceCommitment.CalcFields("Planned Serv. Comm. exists");
-        Assert.IsTrue(ServiceCommitment."Planned Serv. Comm. exists", 'Planned Service Commitment was not created on Process Price Update.');
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ServiceCommitment.CalcFields("Planned Sub. Line exists");
+        Assert.IsTrue(ServiceCommitment."Planned Sub. Line exists", 'Planned Service Commitment was not created on Process Price Update.');
 
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
         CreateAndPostSalesBillingDocuments(SalesHeader, SalesInvoiceHeader);
         Commit(); // retain data after asserterror
 
-        ServiceCommitmentArchive.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
+        ServiceCommitmentArchive.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         ServiceCommitmentArchive.SetRange("Original Entry No.", ServiceCommitment."Entry No.");
         ServiceCommitmentArchive.FindLast();
-        OldServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        OldServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
 
         CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
         LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        // Service commitment is updated from service commitment archive
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestServiceCommitmentPrices(ServiceCommitmentArchive.Price, ServiceCommitmentArchive."Calculation Base %", ServiceCommitmentArchive."Calculation Base Amount", ServiceCommitmentArchive."Service Amount",
+        // Subscription Line is updated from Subscription Line archive
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestServiceCommitmentPrices(ServiceCommitmentArchive.Price, ServiceCommitmentArchive."Calculation Base %", ServiceCommitmentArchive."Calculation Base Amount", ServiceCommitmentArchive.Amount,
                                     ServiceCommitmentArchive."Discount %", ServiceCommitmentArchive."Discount Amount", ServiceCommitmentArchive."Next Price Update");
 
-        // Planned service commitment will be updated with old service commitment
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestPlannedServiceCommitment(PlannedServiceCommitment, OldServiceCommitment.Price, OldServiceCommitment."Calculation Base %", OldServiceCommitment."Calculation Base Amount", OldServiceCommitment."Service Amount",
+        // Planned Subscription Line will be updated with old Subscription Line
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestPlannedServiceCommitment(PlannedServiceCommitment, OldServiceCommitment.Price, OldServiceCommitment."Calculation Base %", OldServiceCommitment."Calculation Base Amount", OldServiceCommitment.Amount,
                                      OldServiceCommitment."Discount %", OldServiceCommitment."Discount Amount", OldServiceCommitment."Next Price Update");
     end;
 
@@ -282,11 +282,11 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestCancelPostedPurchaseInvoiceWithContractPriceUpdate()
     var
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchaseHeader: Record "Purchase Header";
-        OldServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentArchive: Record "Service Commitment Archive";
+        OldServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentArchive: Record "Subscription Line Archive";
         CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
     begin
         Initialize();
@@ -299,31 +299,31 @@ codeunit 139690 "Contract Price Proposal Test"
         PriceUpdateManagement.PerformPriceUpdate();
         Commit(); // Commit after processing
 
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ServiceCommitment.CalcFields("Planned Serv. Comm. exists");
-        Assert.IsTrue(ServiceCommitment."Planned Serv. Comm. exists", 'Planned Service Commitment was not created on Process Price Update.');
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ServiceCommitment.CalcFields("Planned Sub. Line exists");
+        Assert.IsTrue(ServiceCommitment."Planned Sub. Line exists", 'Planned Service Commitment was not created on Process Price Update.');
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
 
         CreateAndPostPurchaseBillingDocuments(PurchaseHeader, PurchInvHeader);
         Commit(); // retain data after asserterror
 
-        ServiceCommitmentArchive.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
+        ServiceCommitmentArchive.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         ServiceCommitmentArchive.SetRange("Original Entry No.", ServiceCommitment."Entry No.");
         ServiceCommitmentArchive.FindLast();
-        OldServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        OldServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
 
         CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvHeader, PurchaseHeader);
         PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
         PurchaseHeader.Modify(false);
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        // Service commitment is updated from service commitment archive
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestServiceCommitmentPrices(ServiceCommitmentArchive.Price, ServiceCommitmentArchive."Calculation Base %", ServiceCommitmentArchive."Calculation Base Amount", ServiceCommitmentArchive."Service Amount",
+        // Subscription Line is updated from Subscription Line archive
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestServiceCommitmentPrices(ServiceCommitmentArchive.Price, ServiceCommitmentArchive."Calculation Base %", ServiceCommitmentArchive."Calculation Base Amount", ServiceCommitmentArchive.Amount,
                                     ServiceCommitmentArchive."Discount %", ServiceCommitmentArchive."Discount Amount", ServiceCommitmentArchive."Next Price Update");
 
-        // Planned service commitment will be updated with old service commitment
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestPlannedServiceCommitment(PlannedServiceCommitment, OldServiceCommitment.Price, OldServiceCommitment."Calculation Base %", OldServiceCommitment."Calculation Base Amount", OldServiceCommitment."Service Amount",
+        // Planned Subscription Line will be updated with old Subscription Line
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestPlannedServiceCommitment(PlannedServiceCommitment, OldServiceCommitment.Price, OldServiceCommitment."Calculation Base %", OldServiceCommitment."Calculation Base Amount", OldServiceCommitment.Amount,
                                      OldServiceCommitment."Discount %", OldServiceCommitment."Discount Amount", OldServiceCommitment."Next Price Update");
     end;
 
@@ -341,9 +341,9 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestContractPriceUpdateTemplateFilters()
     var
-        ContractType: Record "Contract Type";
-        CustomerContract: Record "Customer Contract";
-        CurrentServiceCommitment: Record "Service Commitment";
+        ContractType: Record "Subscription Contract Type";
+        CustomerContract: Record "Customer Subscription Contract";
+        CurrentServiceCommitment: Record "Subscription Line";
         i: Integer;
         Iterations: Integer;
         BadServiceObjectFilterText: Text;
@@ -358,31 +358,31 @@ codeunit 139690 "Contract Price Proposal Test"
         Iterations := 12;
         SerialNo := CreateGuid();
         ComposePriceUpdateTemplateFilters(ServiceCommitmentFilterText, ServiceObjectFilterText, BadServiceObjectFilterText, ContractFilterText, SerialNo, ContractType.Code);
-        // Create 12 Contracts with 1 Service Object and 1 Service Commitment
+        // Create 12 Contracts with 1 Subscription and 1 Subscription Line
         for i := 1 to Iterations do begin
             Clear(CustomerContract);
             Clear(ServiceObject);
             Clear(Customer);
-            ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+            ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
             // every 2nd Contract gets a ContractType
             if i mod 2 = 0 then
                 CustomerContract."Contract Type" := ContractType.Code
             else
                 CustomerContract."Contract Type" := '';
             CustomerContract.Modify(false);
-            // every 3rd Service Object gets a Serial Number
+            // every 3rd Subscription gets a Serial Number
             if i mod 3 = 0 then
                 ServiceObject."Serial No." := SerialNo
             else
                 ServiceObject."Serial No." := '';
             ServiceObject.Modify(false);
-            // every 4th Service Commitment gets a ServiceEndDate
-            CurrentServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+            // every 4th Subscription Line gets a Subscription Line End Date
+            CurrentServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
             if CurrentServiceCommitment.FindFirst() then
                 if i mod 4 = 0 then
-                    CurrentServiceCommitment."Service End Date" := 99991231D
+                    CurrentServiceCommitment."Subscription Line End Date" := 99991231D
                 else
-                    CurrentServiceCommitment."Service End Date" := 0D;
+                    CurrentServiceCommitment."Subscription Line End Date" := 0D;
             CurrentServiceCommitment.Modify(false);
         end;
 
@@ -446,7 +446,7 @@ codeunit 139690 "Contract Price Proposal Test"
 
         // Force Next Price Update Date to empty
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.FindSet();
         repeat
             ServiceCommitment."Next Price Update" := 0D;
@@ -462,8 +462,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure TestIfServiceCommIsUpdatedFromPlannedServiceCommitmentAfterPostSalesInvoice()
     var
-        CustomerContract: Record "Customer Contract";
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        CustomerContract: Record "Customer Subscription Contract";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
@@ -477,30 +477,30 @@ codeunit 139690 "Contract Price Proposal Test"
         PriceUpdateManagement.PerformPriceUpdate();
         Commit(); // Commit after processing
 
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ServiceCommitment.CalcFields("Planned Serv. Comm. exists");
-        Assert.IsTrue(ServiceCommitment."Planned Serv. Comm. exists", 'Planned Service Commitment was not created on Process Price Update.');
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ServiceCommitment.CalcFields("Planned Sub. Line exists");
+        Assert.IsTrue(ServiceCommitment."Planned Sub. Line exists", 'Planned Service Commitment was not created on Process Price Update.');
 
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
 
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
         CreateAndPostSalesBillingDocuments(SalesHeader, SalesInvoiceHeader);
         Commit(); // retain data after asserterror
 
-        // Service commitment is updated from Planned service commitment
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestServiceCommitmentPrices(PlannedServiceCommitment.Price, PlannedServiceCommitment."Calculation Base %", PlannedServiceCommitment."Calculation Base Amount", PlannedServiceCommitment."Service Amount",
+        // Subscription Line is updated from Planned Subscription Line
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestServiceCommitmentPrices(PlannedServiceCommitment.Price, PlannedServiceCommitment."Calculation Base %", PlannedServiceCommitment."Calculation Base Amount", PlannedServiceCommitment.Amount,
                                     PlannedServiceCommitment."Discount %", PlannedServiceCommitment."Discount Amount", PlannedServiceCommitment."Next Price Update");
 
-        // Planned service commitment will be deleted after sales invoice is posted
-        asserterror PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        // Planned Subscription Line will be deleted after sales invoice is posted
+        asserterror PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
     end;
 
     [Test]
     [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestIfServiceCommIsUpdatedFromPlannedServiceCommitmentAfterPostPurchaseInvoice()
     var
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        PlannedServiceCommitment: Record "Planned Subscription Line";
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchaseHeader: Record "Purchase Header";
     begin
@@ -514,28 +514,28 @@ codeunit 139690 "Contract Price Proposal Test"
         PriceUpdateManagement.PerformPriceUpdate();
         Commit(); // Commit after processing
 
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        ServiceCommitment.CalcFields("Planned Serv. Comm. exists");
-        Assert.IsTrue(ServiceCommitment."Planned Serv. Comm. exists", 'Planned Service Commitment was not created on Process Price Update.');
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        ServiceCommitment.CalcFields("Planned Sub. Line exists");
+        Assert.IsTrue(ServiceCommitment."Planned Sub. Line exists", 'Planned Service Commitment was not created on Process Price Update.');
 
-        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
         CreateAndPostPurchaseBillingDocuments(PurchaseHeader, PurchInvHeader);
         Commit(); // retain data after asserterror
 
-        // Service commitment is updated from Planned service commitment
-        ServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
-        TestServiceCommitmentPrices(PlannedServiceCommitment.Price, PlannedServiceCommitment."Calculation Base %", PlannedServiceCommitment."Calculation Base Amount", PlannedServiceCommitment."Service Amount",
+        // Subscription Line is updated from Planned Subscription Line
+        ServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
+        TestServiceCommitmentPrices(PlannedServiceCommitment.Price, PlannedServiceCommitment."Calculation Base %", PlannedServiceCommitment."Calculation Base Amount", PlannedServiceCommitment.Amount,
                                     PlannedServiceCommitment."Discount %", PlannedServiceCommitment."Discount Amount", PlannedServiceCommitment."Next Price Update");
 
-        // Planned service commitment will be deleted after sales invoice is posted
-        asserterror PlannedServiceCommitment.Get(ContractPriceUpdateLine."Service Commitment Entry No.");
+        // Planned Subscription Line will be deleted after sales invoice is posted
+        asserterror PlannedServiceCommitment.Get(ContractPriceUpdateLine."Subscription Line Entry No.");
     end;
 
     [Test]
     procedure TestPlannedServiceCommitmentAfterPerformPriceUpdate()
     var
-        TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
-        PlannedServiceCommitment: Record "Planned Service Commitment";
+        TempContractPriceUpdateLine2: Record "Sub. Contr. Price Update Line" temporary;
+        PlannedServiceCommitment: Record "Planned Subscription Line";
     begin
         Initialize();
 
@@ -554,9 +554,9 @@ codeunit 139690 "Contract Price Proposal Test"
         TempContractPriceUpdateLine2.Reset();
         TempContractPriceUpdateLine2.FindSet();
         repeat
-            PlannedServiceCommitment.Get(TempContractPriceUpdateLine2."Service Commitment Entry No.");
+            PlannedServiceCommitment.Get(TempContractPriceUpdateLine2."Subscription Line Entry No.");
             TestPlannedServiceCommitment(PlannedServiceCommitment, TempContractPriceUpdateLine2."New Price", TempContractPriceUpdateLine2."New Calculation Base %", TempContractPriceUpdateLine2."New Calculation Base",
-                                         TempContractPriceUpdateLine2."New Service Amount", TempContractPriceUpdateLine2."Discount %", TempContractPriceUpdateLine2."Discount Amount", CalcDate(PriceUpdateTemplateCustomer."Price Binding Period", ContractPriceUpdateLine."Perform Update On"));
+                                         TempContractPriceUpdateLine2."New Amount", TempContractPriceUpdateLine2."Discount %", TempContractPriceUpdateLine2."Discount Amount", CalcDate(PriceUpdateTemplateCustomer."Price Binding Period", ContractPriceUpdateLine."Perform Update On"));
         until TempContractPriceUpdateLine2.Next() = 0;
     end;
 
@@ -564,17 +564,17 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure TestServiceCommitmentAfterPerformPriceUpdate()
     var
-        TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
-        CustomerContract: Record "Customer Contract";
+        TempContractPriceUpdateLine2: Record "Sub. Contr. Price Update Line" temporary;
+        CustomerContract: Record "Customer Subscription Contract";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        TempServiceCommitment: Record "Subscription Line" temporary;
     begin
         Initialize();
 
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<12M>', LibraryRandom.RandDec(100, 2), '<1M>', '<1M>', '<1M>');
-        // Make sure that the service commitment is fully invoice until date of next price update
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
+        // Make sure that the Subscription Line is fully invoice until date of next price update
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
         CreateAndPostSalesBillingDocuments(SalesHeader, SalesInvoiceHeader);
         Commit(); // retain data after asserterror
 
@@ -583,7 +583,7 @@ codeunit 139690 "Contract Price Proposal Test"
         repeat
             TempContractPriceUpdateLine2 := ContractPriceUpdateLine;
             TempContractPriceUpdateLine2.Insert(false);
-            ServiceCommitment.Get(TempContractPriceUpdateLine2."Service Commitment Entry No.");
+            ServiceCommitment.Get(TempContractPriceUpdateLine2."Subscription Line Entry No.");
             TempServiceCommitment := ServiceCommitment;
             TempServiceCommitment.Insert(false);
         until ContractPriceUpdateLine.Next() = 0;
@@ -595,9 +595,9 @@ codeunit 139690 "Contract Price Proposal Test"
         TempContractPriceUpdateLine2.Reset();
         TempContractPriceUpdateLine2.FindSet();
         repeat
-            ServiceCommitment.Get(TempContractPriceUpdateLine2."Service Commitment Entry No.");
+            ServiceCommitment.Get(TempContractPriceUpdateLine2."Subscription Line Entry No.");
             TempServiceCommitment.Get(ServiceCommitment."Entry No.");
-            TestServiceCommitmentPrices(TempContractPriceUpdateLine2."New Price", TempContractPriceUpdateLine2."New Calculation Base %", TempContractPriceUpdateLine2."New Calculation Base", TempContractPriceUpdateLine2."New Service Amount",
+            TestServiceCommitmentPrices(TempContractPriceUpdateLine2."New Price", TempContractPriceUpdateLine2."New Calculation Base %", TempContractPriceUpdateLine2."New Calculation Base", TempContractPriceUpdateLine2."New Amount",
                                         TempContractPriceUpdateLine2."Discount %", TempContractPriceUpdateLine2."Discount Amount", TempContractPriceUpdateLine2."Next Price Update");
             TestIfArchivedServiceCommitmentIsCreated(TempServiceCommitment);
         until TempContractPriceUpdateLine2.Next() = 0;
@@ -609,7 +609,7 @@ codeunit 139690 "Contract Price Proposal Test"
         PerformUpdateOn: Date;
     begin
         // Test the return date value for procedure UpdatePerformUpdateOn()
-        // [GIVEN] Create dummy Service Commitment with only Next Billing Date filled out
+        // [GIVEN] Create dummy Subscription Line with only Next Billing Date filled out
         // [GIVEN] Create random dates where PerformUpdateOn is the latest date
         ServiceCommitment.Init();
         ServiceCommitment."Next Billing Date" := LibraryRandom.RandDateFrom(WorkDate(), 12);
@@ -649,6 +649,8 @@ codeunit 139690 "Contract Price Proposal Test"
         LibraryERMCountryData.UpdateSalesReceivablesSetup();
         LibraryERMCountryData.UpdateGeneralLedgerSetup();
         LibraryERMCountryData.UpdateJournalTemplMandatory(false);
+        ContractTestLibrary.InitSourceCodeSetup();
+        IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contract Price Proposal Test");
     end;
 
@@ -681,17 +683,17 @@ codeunit 139690 "Contract Price Proposal Test"
         SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure CreateCustomerContractPriceUpdateFromMultipleContracts(var CustomerContract: Record "Customer Contract"; var CustomerContract2: Record "Customer Contract")
+    local procedure CreateCustomerContractPriceUpdateFromMultipleContracts(var CustomerContract: Record "Customer Subscription Contract"; var CustomerContract2: Record "Customer Subscription Contract")
     var
-        ServiceObject2: Record "Service Object";
+        ServiceObject2: Record "Subscription Header";
     begin
         ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateCustomer, "Service Partner"::Customer, "Price Update Method"::"Recent Item Prices", 0, '<12M>', '<12M>', '<12M>');
         PriceUpdateTemplateCustomer."Group by" := Enum::"Contract Billing Grouping"::Contract;
 
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.", false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.", false);
         ContractTestLibrary.CreateCustomer(Customer2);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract2, ServiceObject2, Customer2."No.", false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract2, ServiceObject2, Customer2."No.", false);
 
         PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateCustomer.Code, CalcDate(PriceUpdateTemplateCustomer.InclContrLinesUpToDateFormula, WorkDate()), WorkDate());
     end;
@@ -712,12 +714,12 @@ codeunit 139690 "Contract Price Proposal Test"
     local procedure CreateContractPriceUpdateProposalForVendorServiceCommitments(PriceUpdateMethod: Enum "Price Update Method"; ContractPriceUpdateBaseDate: Date;
                                                                                 UpdateValuePercentage: Decimal; PerformUpdateOnFormula: Text; InclContrLinesUpToDateFormula: Text; PriceBindingPeriod: Text)
     var
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
         ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateVendor, "Service Partner"::Vendor, PriceUpdateMethod, UpdateValuePercentage, PerformUpdateOnFormula, InclContrLinesUpToDateFormula, PriceBindingPeriod);
         ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", false);
-        UpdateItemLastDirectCost(ServiceObject."Item No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", false);
+        UpdateItemUnitCost(ServiceObject."Source No.");
         PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateVendor.Code, CalcDate(PriceUpdateTemplateVendor.InclContrLinesUpToDateFormula, ContractPriceUpdateBaseDate), ContractPriceUpdateBaseDate);
     end;
 
@@ -726,9 +728,9 @@ codeunit 139690 "Contract Price Proposal Test"
         ContractPriceUpdateLine.Reset();
         ContractPriceUpdateLine.DeleteAll(false);
         ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateCustomer, "Service Partner"::Customer, Enum::"Price Update Method"::"Calculation Base by %", LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
-        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Contract Filter"), ContractFilterText);
-        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Service Object Filter"), ServiceObjectFilterText);
-        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Service Commitment Filter"), ServiceCommitmentFilterText);
+        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Subscription Contract Filter"), ContractFilterText);
+        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Subscription Filter"), ServiceObjectFilterText);
+        PriceUpdateTemplateCustomer.WriteFilter(PriceUpdateTemplateCustomer.FieldNo("Subscription Line Filter"), ServiceCommitmentFilterText);
         // Execute Proposal
         PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateCustomer.Code, CalcDate(PriceUpdateTemplateCustomer.InclContrLinesUpToDateFormula, WorkDate()), WorkDate());
         // Check
@@ -738,57 +740,57 @@ codeunit 139690 "Contract Price Proposal Test"
 
     local procedure ComposePriceUpdateTemplateFilters(var ServiceCommitmentFilterText: Text; var ServiceObjectFilterText: Text; var BadServiceObjectFilterText: Text; var ContractFilterText: Text; SerialNo: Guid; ContractTypeCode: Code[10])
     var
-        DummyContract: Record "Customer Contract";
-        DummyServComm: Record "Service Commitment";
-        DummyServObj: Record "Service Object";
+        DummyContract: Record "Customer Subscription Contract";
+        DummyServComm: Record "Subscription Line";
+        DummyServObj: Record "Subscription Header";
     begin
-        DummyServComm.SetRange("Service End Date", 99991231D);
+        DummyServComm.SetRange("Subscription Line End Date", 99991231D);
         ServiceCommitmentFilterText := DummyServComm.GetView(false);
         DummyServObj.SetRange("Serial No.", SerialNo);
         ServiceObjectFilterText := DummyServObj.GetView(false);
-        DummyServObj.SetRange("Item No.", LibraryRandom.RandText(19));
+        DummyServObj.SetRange("Source No.", LibraryRandom.RandText(19));
         BadServiceObjectFilterText := DummyServObj.GetView(false);
         DummyContract.SetRange("Contract Type", ContractTypeCode);
         ContractFilterText := DummyContract.GetView(false);
     end;
 
-    local procedure CreateVendorContractPriceUpdateFromMultipleContracts(var VendorContract: Record "Vendor Contract"; var VendorContract2: Record "Vendor Contract")
+    local procedure CreateVendorContractPriceUpdateFromMultipleContracts(var VendorContract: Record "Vendor Subscription Contract"; var VendorContract2: Record "Vendor Subscription Contract")
     var
-        ServiceObject2: Record "Service Object";
+        ServiceObject2: Record "Subscription Header";
     begin
         ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateVendor, "Service Partner"::Vendor, "Price Update Method"::"Recent Item Prices", 0, '<24M>', '<24M>', '<12M>');
         PriceUpdateTemplateCustomer."Group by" := Enum::"Contract Billing Grouping"::Contract;
 
         ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", false);
-        UpdateItemLastDirectCost(ServiceObject."Item No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", false);
+        UpdateItemUnitCost(ServiceObject."Source No.");
         ContractTestLibrary.CreateVendor(Vendor2);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract2, ServiceObject2, Vendor2."No.", false);
-        UpdateItemLastDirectCost(ServiceObject2."Item No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract2, ServiceObject2, Vendor2."No.", false);
+        UpdateItemUnitCost(ServiceObject2."Source No.");
         PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateVendor.Code, CalcDate(PriceUpdateTemplateVendor.InclContrLinesUpToDateFormula, WorkDate()), WorkDate());
     end;
 
-    local procedure TestIfArchivedServiceCommitmentIsCreated(TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure TestIfArchivedServiceCommitmentIsCreated(TempServiceCommitment: Record "Subscription Line" temporary)
     var
-        ServiceCommitmentArchive: Record "Service Commitment Archive";
+        ServiceCommitmentArchive: Record "Subscription Line Archive";
     begin
         ServiceCommitmentArchive.FilterOnServiceCommitment(TempServiceCommitment."Entry No.");
         Assert.AreEqual(1, ServiceCommitmentArchive.Count, 'Service commitment was not archived properly on after perform price update');
 
         ServiceCommitmentArchive.FindLast();
         ServiceCommitmentArchive.TestField(Price, TempServiceCommitment.Price);
-        ServiceCommitmentArchive.TestField("Service Amount", TempServiceCommitment."Service Amount");
+        ServiceCommitmentArchive.TestField(Amount, TempServiceCommitment.Amount);
         ServiceCommitmentArchive.TestField("Calculation Base %", TempServiceCommitment."Calculation Base %");
         ServiceCommitmentArchive.TestField("Calculation Base Amount", TempServiceCommitment."Calculation Base Amount");
         ServiceCommitmentArchive.TestField("Type Of Update", Enum::"Type Of Price Update"::"Price Update");
     end;
 
-    local procedure TestPlannedServiceCommitment(PlannedServiceCommitment: Record "Planned Service Commitment"; ExpectedPrice: Decimal; ExpectedCalculationBase: Decimal; ExpectedCalculationBaseAmount: Decimal; ExpectedServiceAmount: Decimal; ExpectedDiscountPct: Decimal; ExpectedDiscountAmount: Decimal; ExpectedNextPriceUpdate: Date)
+    local procedure TestPlannedServiceCommitment(PlannedServiceCommitment: Record "Planned Subscription Line"; ExpectedPrice: Decimal; ExpectedCalculationBase: Decimal; ExpectedCalculationBaseAmount: Decimal; ExpectedServiceAmount: Decimal; ExpectedDiscountPct: Decimal; ExpectedDiscountAmount: Decimal; ExpectedNextPriceUpdate: Date)
     begin
         PlannedServiceCommitment.TestField(Price, ExpectedPrice);
         PlannedServiceCommitment.TestField("Calculation Base %", ExpectedCalculationBase);
         PlannedServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
-        PlannedServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        PlannedServiceCommitment.TestField(Amount, ExpectedServiceAmount);
         PlannedServiceCommitment.TestField("Next Price Update", ExpectedNextPriceUpdate);
         PlannedServiceCommitment.TestField("Discount %", ExpectedDiscountPct);
         PlannedServiceCommitment.TestField("Discount Amount", ExpectedDiscountAmount);
@@ -799,22 +801,21 @@ codeunit 139690 "Contract Price Proposal Test"
         ServiceCommitment.TestField(Price, ExpectedPrice);
         ServiceCommitment.TestField("Calculation Base %", ExpectedCalculationBase);
         ServiceCommitment.TestField("Calculation Base Amount", ExpectedCalculationBaseAmount);
-        ServiceCommitment.TestField("Service Amount", ExpectedServiceAmount);
+        ServiceCommitment.TestField(Amount, ExpectedServiceAmount);
         ServiceCommitment.TestField("Next Price Update", ExpectedNextPriceUpdate);
         ServiceCommitment.TestField("Discount %", ExpectedDiscountPct);
         ServiceCommitment.TestField("Discount Amount", ExpectedDiscountAmount);
     end;
 
-    local procedure UpdateItemLastDirectCost(ItemNo: Code[20])
+    local procedure UpdateItemUnitCost(ItemNo: Code[20])
     begin
         Item.Get(ItemNo);
-        Item."Last Direct Cost" := LibraryRandom.RandDec(100, 2);
         Item.Modify(false);
     end;
 
     local procedure UpdateServiceCommitmentWithAmounts()
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         if ServiceCommitment.FindSet() then
             repeat
                 ServiceCommitment.Validate("Calculation Base Amount", LibraryRandom.RandDec(1000, 1));

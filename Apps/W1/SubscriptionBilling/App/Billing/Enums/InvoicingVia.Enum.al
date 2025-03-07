@@ -10,6 +10,6 @@ enum 8051 "Invoicing Via"
     }
     value(1; "Contract")
     {
-        Caption = 'Contract';
+        Caption = 'Subscription Contract';
     }
 }

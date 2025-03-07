@@ -9,9 +9,9 @@ codeunit 139884 "Item Serv. Comm. Test"
 
     var
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
         ContractTestLibrary: Codeunit "Contract Test Library";
         AssignedItems: Page "Assigned Items";
         i: Integer;
@@ -27,7 +27,7 @@ codeunit 139884 "Item Serv. Comm. Test"
         Commit(); // retain data after asserterror
         for i := 0 to 3 do begin
             ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type".FromInteger(i));
-            case Item."Service Commitment Option" of
+            case Item."Subscription Option" of
                 Enum::"Item Service Commitment Type"::"Sales without Service Commitment",
                 Enum::"Item Service Commitment Type"::"Invoicing Item":
                     asserterror AssignedItems.AssignItems(ServiceCommitmentPackage.Code);
@@ -52,7 +52,7 @@ codeunit 139884 "Item Serv. Comm. Test"
         Commit(); // retain data after asserterror
         for i := 0 to 3 do begin
             ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type".FromInteger(i));
-            case Item."Service Commitment Option" of
+            case Item."Subscription Option" of
                 Enum::"Item Service Commitment Type"::"Sales without Service Commitment",
                 Enum::"Item Service Commitment Type"::"Invoicing Item":
                     asserterror Item.OpenItemServCommitmentPackagesPage();
@@ -75,7 +75,7 @@ codeunit 139884 "Item Serv. Comm. Test"
         SetupServiceCommPackageAndServiceCommitmentItem(true);
         AssignedItems.AssignItems(ServiceCommitmentPackage.Code);
         ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
-        Item.Validate("Service Commitment Option", Enum::"Item Service Commitment Type"::"Sales without Service Commitment");
+        Item.Validate("Subscription Option", Enum::"Item Service Commitment Type"::"Sales without Service Commitment");
         asserterror ItemServCommitmentPackage.Get(Item."No.", ServiceCommitmentPackage.Code);
     end;
 

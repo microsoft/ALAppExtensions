@@ -4,14 +4,14 @@ using Microsoft.Purchases.Document;
 
 page 8095 "Get Vendor Contract Lines"
 {
-    Caption = 'Get Vendor Contract Lines';
+    Caption = 'Get Vendor Subscription Contract Lines';
     ApplicationArea = All;
     UsageCategory = None;
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = false;
     PageType = Worksheet;
-    SourceTable = "Service Commitment";
+    SourceTable = "Subscription Line";
     SourceTableTemporary = true;
 
     layout
@@ -24,7 +24,7 @@ page 8095 "Get Vendor Contract Lines"
                 field(VendorContractNoFilter; VendorContractFilterText)
                 {
                     Caption = 'Vendor Contract No.';
-                    ToolTip = 'Specifies the name of the template that is used to calculate billable services.';
+                    ToolTip = 'Specifies the name of the template that is used to calculate billable Subscription Lines.';
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
@@ -42,15 +42,15 @@ page 8095 "Get Vendor Contract Lines"
                 ShowAsTree = true;
                 IndentationColumn = Rec.Indent;
                 TreeInitialState = ExpandAll;
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies in which contract the service will be calculated.';
+                    ToolTip = 'Specifies in which contract the Subscription Line will be calculated.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
                 field(Selected; Rec.Selected)
                 {
-                    ToolTip = 'Specifies that the Service Commitment is to be called up in the purchase invoice.';
+                    ToolTip = 'Specifies that the Subscription Line is to be called up in the purchase invoice.';
                     StyleExpr = LineStyleExpr;
                     Enabled = IsContractLine;
                     trigger OnValidate()
@@ -73,15 +73,15 @@ page 8095 "Get Vendor Contract Lines"
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
                 field("Service Commitment Description"; Rec."Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
@@ -95,7 +95,7 @@ page 8095 "Get Vendor Contract Lines"
                 field("Billing to Date"; BillingToDate)
                 {
                     Caption = 'Billing to Date';
-                    ToolTip = 'Specifies the optional date up to which the billable services should be charged.';
+                    ToolTip = 'Specifies the optional date up to which the billable Subscription Lines should be charged.';
                     StyleExpr = LineStyleExpr;
                     Editable = IsContractLine;
                     trigger OnValidate()
@@ -119,23 +119,23 @@ page 8095 "Get Vendor Contract Lines"
                             UpdateWithVendorInvoiceAmount();
                     end;
                 }
-                field("Service Object Quantity"; Rec."Quantity Decimal")
+                field("Service Object Quantity"; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of service object.';
+                    ToolTip = 'Number of units of Subscription.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
                 field(Price; Rec.Price)
                 {
                     Caption = 'Price';
-                    ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                     Editable = false;
                     BlankZero = true;
                     StyleExpr = LineStyleExpr;
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
@@ -147,19 +147,19 @@ page 8095 "Get Vendor Contract Lines"
                 }
                 field("Calculation Base %"; Rec."Calculation Base %")
                 {
-                    ToolTip = 'Specifies the percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                    ToolTip = 'Specifies the percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
-                    ToolTip = 'Specifies for which period the Service Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Service Amount refers to.';
+                    ToolTip = 'Specifies for which period the Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Amount refers to.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for hythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Date formula for Rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
@@ -176,7 +176,7 @@ page 8095 "Get Vendor Contract Lines"
         IsContractLine := Rec.Indent = 1;
         SetLineStyleExpr();
 
-        if VendorContract.Get(Rec."Contract No.") then;
+        if VendorContract.Get(Rec."Subscription Contract No.") then;
         SetDefaultValues();
     end;
 
@@ -191,7 +191,7 @@ page 8095 "Get Vendor Contract Lines"
 
     local procedure LoadVendorServiceCommitments()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         TextManagement: Codeunit "Text Management";
     begin
         Rec.Reset();
@@ -200,27 +200,27 @@ page 8095 "Get Vendor Contract Lines"
 
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
-        ServiceCommitment.SetFilter("Contract No.", '<>%1', '');
+        ServiceCommitment.SetFilter("Subscription Contract No.", '<>%1', '');
         TextManagement.ReplaceInvalidFilterChar(VendorContractFilterText);
         if VendorContractFilterText <> '' then
-            ServiceCommitment.SetFilter("Contract No.", VendorContractFilterText);
-        ServiceCommitment.SetCurrentKey("Contract No.");
+            ServiceCommitment.SetFilter("Subscription Contract No.", VendorContractFilterText);
+        ServiceCommitment.SetCurrentKey("Subscription Contract No.");
         ServiceCommitment.SetRange(Closed, false);
         if ServiceCommitment.FindSet() then
             repeat
                 LoadVendorServiceCommitmentIfRelevant(ServiceCommitment);
             until ServiceCommitment.Next() = 0;
-        Rec.SetCurrentKey("Contract No.");
+        Rec.SetCurrentKey("Subscription Contract No.");
         CurrPage.Update(false);
     end;
 
-    local procedure LoadVendorServiceCommitmentIfRelevant(ServiceCommitment: Record "Service Commitment")
+    local procedure LoadVendorServiceCommitmentIfRelevant(ServiceCommitment: Record "Subscription Line")
     var
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
     begin
         if ServiceCommitment.BillingLineExists() then
             exit;
-        VendorContract.Get(ServiceCommitment."Contract No.");
+        VendorContract.Get(ServiceCommitment."Subscription Contract No.");
         if VendorContract."Buy-from Vendor No." = PurchaseHeader."Buy-from Vendor No." then
             if not Rec.Get(ServiceCommitment."Entry No.") then begin
                 CreateGroupingLine(ServiceCommitment);
@@ -231,35 +231,35 @@ page 8095 "Get Vendor Contract Lines"
             end;
     end;
 
-    local procedure CreateGroupingLine(ServiceCommitment: Record "Service Commitment")
+    local procedure CreateGroupingLine(ServiceCommitment: Record "Subscription Line")
     begin
         if GroupingLineShouldBeInserted(ServiceCommitment) then begin
             NextEntryNo -= 1;
             Rec.Init();
             Rec."Entry No." := NextEntryNo;
             Rec.Partner := ServiceCommitment.Partner;
-            Rec."Contract No." := ServiceCommitment."Contract No.";
-            Rec."Service Amount" := GetContractTotalServiceAmount(ServiceCommitment);
+            Rec."Subscription Contract No." := ServiceCommitment."Subscription Contract No.";
+            Rec.Amount := GetContractTotalServiceAmount(ServiceCommitment);
             Rec.Indent := 0;
             Rec.Insert(false);
         end;
     end;
 
-    local procedure GetContractTotalServiceAmount(ServiceCommitment: Record "Service Commitment"): Decimal
+    local procedure GetContractTotalServiceAmount(ServiceCommitment: Record "Subscription Line"): Decimal
     var
-        ServiceCommitment2: Record "Service Commitment";
+        ServiceCommitment2: Record "Subscription Line";
     begin
         ServiceCommitment2.CopyFilters(Rec);
-        ServiceCommitment2.SetRange("Contract No.", ServiceCommitment."Contract No.");
-        ServiceCommitment2.CalcSums("Service Amount");
-        exit(ServiceCommitment2."Service Amount");
+        ServiceCommitment2.SetRange("Subscription Contract No.", ServiceCommitment."Subscription Contract No.");
+        ServiceCommitment2.CalcSums(Amount);
+        exit(ServiceCommitment2.Amount);
     end;
 
-    local procedure GroupingLineShouldBeInserted(ServiceCommitment: Record "Service Commitment") InsertLine: Boolean
+    local procedure GroupingLineShouldBeInserted(ServiceCommitment: Record "Subscription Line") InsertLine: Boolean
     var
         NewContractNo: Code[20];
     begin
-        NewContractNo := ServiceCommitment."Contract No.";
+        NewContractNo := ServiceCommitment."Subscription Contract No.";
 
         InsertLine := LastContractNo <> NewContractNo;
         if InsertLine then
@@ -268,7 +268,7 @@ page 8095 "Get Vendor Contract Lines"
 
     local procedure LookupVendorContract()
     var
-        VendorContract2: Record "Vendor Contract";
+        VendorContract2: Record "Vendor Subscription Contract";
         VendorContracts: Page "Vendor Contracts";
     begin
         VendorContract2.SetRange("Buy-from Vendor No.", PurchaseHeader."Buy-from Vendor No.");
@@ -311,7 +311,7 @@ page 8095 "Get Vendor Contract Lines"
         if (Rec."Next Billing Date" <> 0D) and IsContractLine then
             BillingToDate := BillingProposal.CalculateNextBillingToDateForServiceCommitment(Rec, Rec."Next Billing Date");
         if VendorInvoiceAmountEditable then
-            VendorInvoiceAmount := Rec."Service Amount"
+            VendorInvoiceAmount := Rec.Amount
     end;
 
     local procedure ResetPreviouslySelectedServiceCommitment()
@@ -326,7 +326,7 @@ page 8095 "Get Vendor Contract Lines"
 
     local procedure ResetServiceCommitment()
     var
-        SourceServiceCommitment: Record "Service Commitment";
+        SourceServiceCommitment: Record "Subscription Line";
     begin
         SourceServiceCommitment.Get(Rec."Entry No.");
         Rec := SourceServiceCommitment;
@@ -338,7 +338,7 @@ page 8095 "Get Vendor Contract Lines"
     begin
         Rec.Validate("Calculation Base %", 100);
         Rec.Validate("Calculation Base Amount", VendorInvoiceAmount);
-        Rec.Validate("Service Amount", VendorInvoiceAmount);
+        Rec.Validate(Amount, VendorInvoiceAmount);
     end;
 
     internal procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
@@ -372,7 +372,7 @@ page 8095 "Get Vendor Contract Lines"
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         BillingProposal: Codeunit "Billing Proposal";
         NextEntryNo: Integer;
         BillingToDate: Date;

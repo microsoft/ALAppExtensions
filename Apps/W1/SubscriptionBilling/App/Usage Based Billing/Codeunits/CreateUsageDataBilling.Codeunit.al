@@ -7,6 +7,9 @@ codeunit 8023 "Create Usage Data Billing"
     Access = Internal;
     TableNo = "Usage Data Import";
 
+    var
+        UsageDataProcessing: Interface "Usage Data Processing";
+
     trigger OnRun()
     begin
         UsageDataImport.Copy(Rec);
@@ -20,10 +23,10 @@ codeunit 8023 "Create Usage Data Billing"
         if UsageDataImport.FindSet() then
             repeat
                 CheckRetryFailedUsageLines();
-                if not RetryFailedUsageDataGenericImportLines then
+                if not RetryFailedUsageDataImport then
                     TestUsageDataImport();
                 if not (UsageDataImport."Processing Status" = "Processing Status"::Error) then
-                    FindAndProcessUsageDataGenericImport();
+                    FindAndProcessUsageDataImport();
                 if not (UsageDataImport."Processing Status" = "Processing Status"::Error) then
                     SetUsageDataImportError();
             until UsageDataImport.Next() = 0;
@@ -36,115 +39,72 @@ codeunit 8023 "Create Usage Data Billing"
         UsageDataBilling.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
         if not UsageDataBilling.IsEmpty() then
             if GuiAllowed then
-                if ConfirmManagement.GetResponse(StrSubstNo(RetryFailedUsageDataGenericImportTxt, UsageDataImport."Entry No."), false) then
-                    RetryFailedUsageDataGenericImportLines := true;
+                if ConfirmManagement.GetResponse(StrSubstNo(RetryFailedUsageDataImportTxt, UsageDataImport."Entry No."), false) then
+                    RetryFailedUsageDataImport := true;
     end;
 
-    local procedure FindAndProcessUsageDataGenericImport()
+    local procedure FindAndProcessUsageDataImport()
     var
-        TempServiceCommitment: Record "Service Commitment" temporary;
+        UsageDataSupplier: Record "Usage Data Supplier";
     begin
-        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
-        if RetryFailedUsageDataGenericImportLines then
-            UsageDataGenericImport.SetFilter("Processing Status", '<>%1', "Processing Status"::Ok);
-
-        if UsageDataGenericImport.FindSet() then
-            repeat
-                CollectServiceCommitments(TempServiceCommitment);
-                SetUsageDataGenericImportError('');
-                if not CheckServiceCommitments(TempServiceCommitment) then
-                    exit;
-                CreateUsageDataBillingFromTempServiceCommitments(UsageDataGenericImport, TempServiceCommitment);
-            until UsageDataGenericImport.Next() = 0
-        else begin
-            UsageDataImport.SetErrorReason(StrSubstNo(NoDataFoundErr, UsageDataImport."Processing Step"));
-            UsageDataImport.Modify(false);
-        end;
+        UsageDataSupplier.Get(UsageDataImport."Supplier No.");
+        UsageDataProcessing := UsageDataSupplier.Type;
+        UsageDataProcessing.FindAndProcessUsageDataImport(UsageDataImport);
     end;
 
-    local procedure CollectServiceCommitments(var TempServiceCommitment: Record "Service Commitment" temporary)
+    internal procedure CollectServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary; ServiceObjectNo: Code[20]; SubscriptionEndDate: Date)
     begin
-        FillTempServiceCommitment(TempServiceCommitment, UsageDataGenericImport."Service Object No.", UsageDataGenericImport."Subscription End Date");
+        FillTempServiceCommitment(TempServiceCommitment, ServiceObjectNo, SubscriptionEndDate);
     end;
 
-    local procedure CreateUsageDataBillingFromTempServiceCommitments(SourceUsageDataGenericImport: Record "Usage Data Generic Import"; var TempServiceCommitment: Record "Service Commitment")
+    internal procedure CreateUsageDataBillingFromTempServiceCommitments(var TempServiceCommitment: Record "Subscription Line"; SupplierNo: Code[20]; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; BillingPeriodStartDate: Date;
+                        BillingPeriodEndDate: Date; UnitCost: Decimal; NewQuantity: Decimal; CostAmount: Decimal; UnitPrice: Decimal; NewAmount: Decimal; CurrencyCode: Code[10])
     begin
         repeat
-            CreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport, TempServiceCommitment);
+            CreateUsageDataBillingFromTempServiceCommitment(TempServiceCommitment, SupplierNo, UsageDataImportEntryNo, ServiceObjectNo, BillingPeriodStartDate, BillingPeriodEndDate, UnitCost, NewQuantity, CostAmount, UnitPrice, NewAmount, CurrencyCode);
         until TempServiceCommitment.Next() = 0;
-        OnAfterCreateUsageDataBillingFromTempServiceCommitments(SourceUsageDataGenericImport, TempServiceCommitment);
+        OnAfterCreateUsageDataBillingFromTempSubscriptionLines(TempServiceCommitment);
     end;
 
-    local procedure CreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport: Record "Usage Data Generic Import"; var TempServiceCommitment: Record "Service Commitment")
+    local procedure CreateUsageDataBillingFromTempServiceCommitment(var TempServiceCommitment: Record "Subscription Line"; SupplierNo: Code[20]; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; BillingPeriodStartDate: Date;
+                        BillingPeriodEndDate: Date; UnitCost: Decimal; NewQuantity: Decimal; CostAmount: Decimal; UnitPrice: Decimal; NewAmount: Decimal; CurrencyCode: Code[10])
     var
         UsageDataBilling: Record "Usage Data Billing";
         UsageDataSupplier: Record "Usage Data Supplier";
     begin
-        OnBeforeCreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport, TempServiceCommitment);
+        UsageDataSupplier.Get(SupplierNo);
 
-        UsageDataSupplier.Get(UsageDataImport."Supplier No.");
-
-        UsageDataBilling.InitFromUsageDataGenericImport(SourceUsageDataGenericImport);
-        UsageDataBilling."Supplier No." := UsageDataImport."Supplier No.";
-        UsageDataBilling."Service Object No." := TempServiceCommitment."Service Object No.";
+        UsageDataBilling.InitFrom(UsageDataImportEntryNo, ServiceObjectNo, BillingPeriodStartDate, BillingPeriodEndDate, UnitCost, NewQuantity, CostAmount, UnitPrice, NewAmount, CurrencyCode);
+        UsageDataBilling."Supplier No." := SupplierNo;
+        UsageDataBilling."Subscription Header No." := TempServiceCommitment."Subscription Header No.";
         UsageDataBilling.Partner := TempServiceCommitment.Partner;
-        UsageDataBilling."Contract No." := TempServiceCommitment."Contract No.";
-        UsageDataBilling."Contract Line No." := TempServiceCommitment."Contract Line No.";
-        UsageDataBilling."Service Object No." := TempServiceCommitment."Service Object No.";
-        UsageDataBilling."Service Commitment Entry No." := TempServiceCommitment."Entry No.";
-        UsageDataBilling."Service Commitment Description" := TempServiceCommitment.Description;
+        UsageDataBilling."Subscription Contract No." := TempServiceCommitment."Subscription Contract No.";
+        UsageDataBilling."Subscription Contract Line No." := TempServiceCommitment."Subscription Contract Line No.";
+        UsageDataBilling."Subscription Header No." := TempServiceCommitment."Subscription Header No.";
+        UsageDataBilling."Subscription Line Entry No." := TempServiceCommitment."Entry No.";
+        UsageDataBilling."Subscription Line Description" := TempServiceCommitment.Description;
         UsageDataBilling."Usage Base Pricing" := TempServiceCommitment."Usage Based Pricing";
         UsageDataBilling."Pricing Unit Cost Surcharge %" := TempServiceCommitment."Pricing Unit Cost Surcharge %";
         if UsageDataBilling.IsPartnerVendor() or not UsageDataSupplier."Unit Price from Import" then begin
             UsageDataBilling."Unit Price" := 0;
             UsageDataBilling.Amount := 0;
         end;
+        UsageDataBilling.UpdateRebilling();
         UsageDataBilling."Entry No." := 0;
         UsageDataBilling.Insert(true);
+        UsageDataBilling.InsertMetadata();
 
-        OnAfterCreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport, TempServiceCommitment, UsageDataBilling);
+        OnAfterCreateUsageDataBillingFromTempSubscriptionLine(TempServiceCommitment, UsageDataBilling);
     end;
 
-    local procedure SetUsageDataGenericImportError(Reason: Text)
-    begin
-        if Reason = '' then
-            UsageDataGenericImport."Processing Status" := UsageDataGenericImport."Processing Status"::Ok
-        else
-            UsageDataGenericImport."Processing Status" := UsageDataGenericImport."Processing Status"::Error;
-        UsageDataGenericImport.SetReason(Reason);
-        UsageDataGenericImport.Modify(false);
-    end;
-
-    local procedure CheckServiceCommitments(var TempServiceCommitment: Record "Service Commitment" temporary): Boolean
+    local procedure FillTempServiceCommitment(var TempServiceCommitment: Record "Subscription Line" temporary; ServiceObjectNo: Code[20]; SubscriptionEndDate: Date)
     var
-        ServiceObject: Record "Service Object";
-    begin
-        TempServiceCommitment.Reset();
-        TempServiceCommitment.SetRange("Contract No.", '');
-        if TempServiceCommitment.FindFirst() then begin
-            SetUsageDataGenericImportError(StrSubstNo(NoContractErr, TempServiceCommitment.TableCaption, TempServiceCommitment."Entry No.",
-                                             ServiceObject.TableCaption, UsageDataGenericImport."Service Object No."));
-            exit(false);
-        end;
-
-        TempServiceCommitment.Reset();
-        if not TempServiceCommitment.FindSet() then begin
-            SetUsageDataGenericImportError(StrSubstNo(NoServiceCommitmentWithUsageBasedFlagInServiceObjectErr, ServiceObject.TableCaption, UsageDataGenericImport."Service Object No.",
-                                             TempServiceCommitment.TableCaption, TempServiceCommitment.FieldCaption("Usage Based Billing")));
-            exit(false);
-        end;
-
-        exit(true);
-    end;
-
-    local procedure FillTempServiceCommitment(var TempServiceCommitment: Record "Service Commitment" temporary; ServiceObjectNo: Code[20]; SubscriptionEndDate: Date)
-    var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
         TempServiceCommitment.Reset();
         TempServiceCommitment.DeleteAll(false);
-        ServiceCommitment.SetRange("Service Object No.", ServiceObjectNo);
-        ServiceCommitment.SetFilter("Service End Date", '>=%1|%2', SubscriptionEndDate, 0D);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo);
+        ServiceCommitment.SetFilter("Subscription Line End Date", '>=%1|%2', SubscriptionEndDate, 0D);
         ServiceCommitment.SetRange("Usage Based Billing", true);
         if ServiceCommitment.FindSet() then
             repeat
@@ -157,58 +117,36 @@ codeunit 8023 "Create Usage Data Billing"
 
     local procedure TestUsageDataImport()
     var
-        UsageDataGenImport: Record "Usage Data Generic Import";
+        UsageDataSupplier: Record "Usage Data Supplier";
     begin
-        UsageDataGenImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
-        UsageDataGenImport.SetFilter("Processing Status", '<>%1', UsageDataGenImport."Processing Status"::Ok);
-        if not UsageDataGenImport.IsEmpty() then begin
-            UsageDataImport.SetErrorReason(StrSubstNo(UsageDataGenericImportWithErrorExistErr, UsageDataImport."Entry No."));
-            UsageDataImport.Modify(false);
-        end;
-        UsageDataGenImport.SetRange("Processing Status");
-        if UsageDataGenImport.IsEmpty() then begin
-            UsageDataImport.SetErrorReason(StrSubstNo(NoDataFoundErr, UsageDataImport."Processing Step"));
-            UsageDataImport.Modify(false);
-        end;
+        UsageDataSupplier.Get(UsageDataImport."Supplier No.");
+        UsageDataProcessing := UsageDataSupplier.Type;
+        UsageDataProcessing.TestUsageDataImport(UsageDataImport);
     end;
 
     local procedure SetUsageDataImportError()
     begin
-        UsageDataGenericImport.Reset();
-        UsageDataGenericImport.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
-        UsageDataGenericImport.SetRange("Processing Status", UsageDataGenericImport."Processing Status"::Error);
-        if UsageDataGenericImport.IsEmpty() then begin
-            UsageDataImport."Processing Status" := UsageDataImport."Processing Status"::Ok;
-            UsageDataImport.SetReason('');
-        end else
-            UsageDataImport.SetErrorReason(UsageDataGenericImportProcessingErr);
-        UsageDataImport.Modify(false);
+        UsageDataProcessing.SetUsageDataImportError(UsageDataImport);
+    end;
+
+    internal procedure GetRetryFailedUsageDataImport(): Boolean
+    begin
+        exit(RetryFailedUsageDataImport);
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeCreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport: Record "Usage Data Generic Import"; var TempServiceCommitment: Record "Service Commitment")
+    local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLine(var TempSubscriptionLine: Record "Subscription Line"; var UsageDataBilling: Record "Usage Data Billing")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnAfterCreateUsageDataBillingFromTempServiceCommitment(SourceUsageDataGenericImport: Record "Usage Data Generic Import"; var TempServiceCommitment: Record "Service Commitment"; var UsageDataBilling: Record "Usage Data Billing")
-    begin
-    end;
-
-    [InternalEvent(false, false)]
-    local procedure OnAfterCreateUsageDataBillingFromTempServiceCommitments(SourceUsageDataGenericImport: Record "Usage Data Generic Import"; var TempServiceCommitment: Record "Service Commitment")
+    local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLines(var TempSubscriptionLine: Record "Subscription Line")
     begin
     end;
 
     var
         UsageDataImport: Record "Usage Data Import";
-        UsageDataGenericImport: Record "Usage Data Generic Import";
         ConfirmManagement: Codeunit "Confirm Management";
-        UsageDataGenericImportProcessingErr: Label 'Errors were found while processing the Usage Data Generic Import.';
-        NoServiceCommitmentWithUsageBasedFlagInServiceObjectErr: Label '%1 "%2" has no valid %3 with property "%4": Yes', Comment = '%1 = Service Object, %2 = Service Object No., %3 = Service Commitment, %4 = Usage Based Billing';
-        NoContractErr: Label 'The %1 %2 in %3 "%4" has not been assigned to a Contract yet.', Comment = '%1 = Service Commitment, %2 = Service Commitment Entry No., %3 = Service Object, %4 = Service Object No.';
-        RetryFailedUsageDataGenericImportTxt: Label 'Usage Data Billing for Import %1 already exist. Do you want to try to create new entries for the failed Usage Data Generic Import only?';
-        UsageDataGenericImportWithErrorExistErr: Label 'Usage Data Billing for Import %1 already exist. They must be deleted before new Billing can be created.';
-        NoDataFoundErr: Label 'No data found for processing step %1.', Comment = '%1=Name of the processing step';
-        RetryFailedUsageDataGenericImportLines: Boolean;
+        RetryFailedUsageDataImportTxt: Label 'Usage Data Billing for Import %1 already exist. Do you want to try to create new entries for the failed Usage Data Generic Import only?';
+        RetryFailedUsageDataImport: Boolean;
 }

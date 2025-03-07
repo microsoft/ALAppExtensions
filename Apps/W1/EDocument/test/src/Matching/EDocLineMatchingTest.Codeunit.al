@@ -8,13 +8,14 @@ codeunit 139659 "E-Doc. Line Matching Test"
     var
 
         Vendor: Record Vendor;
-        MatchingItem: Record Item;
         EDocumentService: Record "E-Document Service";
         Assert: Codeunit Assert;
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Any: Codeunit Any;
+        MatchingLineType: Enum "Purchase Line Type";
+        MatchingLineNo: Code[20];
         IsInitialized: Boolean;
 
     procedure Initialize(Integration: Enum "Service Integration")
@@ -93,12 +94,13 @@ codeunit 139659 "E-Doc. Line Matching Test"
 
     [Test]
     [HandlerFunctions('EDocumentLineCreationHandler,MessageHandler,PurchaseOrderHandler')]
-    procedure MatchOneImportLineToOnePOLineThroughCreatePOLineSuccess()
+    procedure MatchOneImportLineToOnePOLineThroughCreatePOLineSuccessItem()
     var
         EDocument: Record "E-Document";
         EDocImportedLine: Record "E-Doc. Imported Line";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
+        MatchingItem: Record Item;
         EDocLineMatching: Codeunit "E-Doc. Line Matching";
         EDocLog: Codeunit "E-Document Log";
         EDocProcessing: Codeunit "E-Document Processing";
@@ -116,6 +118,8 @@ codeunit 139659 "E-Doc. Line Matching Test"
         CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
         CreateEDocumentWithPOReference(EDocument, PurchaseHeader);
         LibraryEDoc.GetGenericItem(MatchingItem);
+        MatchingLineType := Enum::"Purchase Line Type"::Item;
+        MatchingLineNo := PurchaseLine."No.";
 
         // Receive
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
@@ -162,6 +166,82 @@ codeunit 139659 "E-Doc. Line Matching Test"
         // [THEN] we have qty 5 and qty to invoice 5 
         Assert.AreEqual('5.00', EDocOrderLineMatchingPage.OrderLines."Available Quantity".Value(), '');
         Assert.AreEqual('5', EDocOrderLineMatchingPage.OrderLines."Qty. to Invoice".Value(), '');
+    end;
+
+    [Test]
+    [HandlerFunctions('EDocumentLineCreationHandler,MessageHandler')]
+    procedure MatchOneImportLineToOnePOLineThroughCreatePOLineSuccessGLAccount()
+    var
+        EDocument: Record "E-Document";
+        EDocImportedLine: Record "E-Doc. Imported Line";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATPostingSetup: Record "VAT Posting Setup";
+        LibraryERM: Codeunit "Library - ERM";
+        EDocLineMatching: Codeunit "E-Doc. Line Matching";
+        EDocLog: Codeunit "E-Document Log";
+        EDocProcessing: Codeunit "E-Document Processing";
+        EDocOrderLineMatchingPage: TestPage "E-Doc. Order Line Matching";
+    begin
+        // [FEATURE] [E-Document] [Matching] 
+        // [SCENARIO] Match single imported line of type G/L Account to single PO line of type G/L Account
+
+        // Setup E-Document with link to purchase order
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        EDocImportedLine.DeleteAll();
+        if not VATPostingSetup.Get(Vendor."VAT Bus. Posting Group", '') then
+            LibraryERM.CreateVATPostingSetup(VATPostingSetup, Vendor."VAT Bus. Posting Group", '');
+
+        // [GIVEN] We create e-document and PO line with Qty 5
+        CreatePurchaseOrderWithLine(PurchaseHeader, PurchaseLine, 5);
+        CreateEDocumentWithPOReference(EDocument, PurchaseHeader);
+        EDocLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Order Linked");
+        EDocProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Order Linked");
+
+        // [GIVEN] We imported a G/L Account line with quantity 5
+        CreateImportedLine(EDocument, 10000, 5, Enum::"Purchase Line Type"::"G/L Account");
+        EDocImportedLine.FindLast();
+        EDocImportedLine."Unit Of Measure Code" := PurchaseLine."Unit of Measure Code";
+        EDocImportedLine."Direct Unit Cost" := PurchaseLine."Direct Unit Cost";
+        EDocImportedLine."Line Discount %" := PurchaseLine."Line Discount %";
+        EDocImportedLine.Modify();
+        Assert.RecordCount(EDocImportedLine, 1);
+        Assert.RecordCount(PurchaseLine, 1);
+
+        // [WHEN] Open Matching page and select first entry
+        Commit();
+        LibraryPermission.SetTeamMember();
+
+        EDocOrderLineMatchingPage.Trap();
+        EDocLineMatching.RunMatching(EDocument);
+
+        EDocOrderLineMatchingPage.ImportedLines.First();
+        EDocOrderLineMatchingPage.OrderLines.First();
+
+        // [THEN] we have qty 5 and matched 0 
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines.Quantity.Value(), 'Invalid imported line quantity before matching.');
+        Assert.AreEqual('0', EDocOrderLineMatchingPage.ImportedLines."Matched Quantity".Value(), 'Invalid imported line matched quantity before matching.');
+        // [THEN] we have qty 0 and qty to invoice 0 since the item line has not been received
+        Assert.AreEqual('0.00', EDocOrderLineMatchingPage.OrderLines."Available Quantity".Value(), 'Invalid order line available quantity before matching.');
+        Assert.AreEqual('0', EDocOrderLineMatchingPage.OrderLines."Qty. to Invoice".Value(), 'Invalid order line quantity to invoice before matching.');
+
+        // [GIVEN] We use create PO line action to create a matching G/L Account in the invoice and a matching rule for it
+        LibraryPermission.SetO365BusFull();
+        MatchingLineType := Enum::"Purchase Line Type"::"G/L Account";
+        MatchingLineNo := LibraryERM.CreateGLAccountNo();
+        EDocOrderLineMatchingPage.ImportedLines.CreatePurchaseOrderLine.Invoke();
+
+        // [WHEN] We click "Match Automatically" action
+        EDocOrderLineMatchingPage.MatchAuto_Promoted.Invoke();
+
+        // [THEN] we have qty 5 and matched 5
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines.Quantity.Value(), 'Invalid imported line quantity after matching.');
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.ImportedLines."Matched Quantity".Value(), 'Invalid imported line matched quantity after matching.');
+        // [THEN] The newly created PO line is matched
+        EDocOrderLineMatchingPage.OrderLines.Last();
+        Assert.AreEqual('5.00', EDocOrderLineMatchingPage.OrderLines."Available Quantity".Value(), 'Invalid order line available quantity after matching.');
+        Assert.AreEqual('5', EDocOrderLineMatchingPage.OrderLines."Qty. to Invoice".Value(), 'Invalid order line quantity to invoice after matching.');
     end;
 
     [Test]
@@ -596,8 +676,8 @@ codeunit 139659 "E-Doc. Line Matching Test"
     [ModalPageHandler]
     internal procedure EDocumentLineCreationHandler(var EDocCreatePurchOrderLine: TestPage "E-Doc. Create Purch Order Line")
     begin
-        EDocCreatePurchOrderLine.Type.SetValue(Enum::"Purchase Line Type"::Item);
-        EDocCreatePurchOrderLine."No.".SetValue(MatchingItem."No.");
+        EDocCreatePurchOrderLine.Type.SetValue(MatchingLineType);
+        EDocCreatePurchOrderLine."No.".SetValue(MatchingLineNo);
         EDocCreatePurchOrderLine."Learn matching rule".SetValue(true);
         EDocCreatePurchOrderLine.OK().Invoke();
     end;

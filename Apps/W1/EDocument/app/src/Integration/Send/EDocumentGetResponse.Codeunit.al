@@ -84,7 +84,7 @@ codeunit 6144 "E-Document Get Response"
         EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
         EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, SendContext.Http().GetHttpRequestMessage(), SendContext.Http().GetHttpResponseMessage());
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
     end;
 
 #if not CLEAN25

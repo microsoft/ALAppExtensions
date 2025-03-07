@@ -9,6 +9,8 @@ codeunit 5215 "Create Sustainability Account"
         SustainSubcategory: Codeunit "Create Sustain. Subcategory";
         ContosoSustainability: Codeunit "Contoso Sustainability";
         SustainabilityAccountMgt: Codeunit "Sustainability Account Mgt.";
+        CreatePostingGroup: Codeunit "Create Posting Groups";
+        ContosoGLAccount: Codeunit "Contoso GL Account";
     begin
         ContosoSustainability.InsertSustainabilityAccount(GasEmissions(), GasEmissionsLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
         ContosoSustainability.InsertSustainabilityAccount(Scope1(), Scope1BeginTotalLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
@@ -89,7 +91,20 @@ codeunit 5215 "Create Sustainability Account"
         ContosoSustainability.InsertSustainabilityAccount(TotalScope3(), TotalScope3IndirectEmissionLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", Scope3() + '..' + TotalScope3(), false);
         ContosoSustainability.InsertSustainabilityAccount(TotalGasEmissions(), TotalGasEmissionsLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", GasEmissions() + '..' + TotalGasEmissions(), false);
 
+        ContosoSustainability.InsertSustainabilityAccount(CarbonCredits(), CarbonCreditsLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(CarbonCreditScope1(), CarbonCreditScope1Lbl, SustainCategory.Credit1(), SustainSubcategory.Credit(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(CarbonCreditScope2(), CarbonCreditScope2Lbl, SustainCategory.Credit2(), SustainSubcategory.Credit(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(CarbonCreditScope3(), CarbonCreditScope3Lbl, SustainCategory.Credit3(), SustainSubcategory.Credit(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalCarbonCredits(), TotalCarbonCreditsLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", CarbonCredits() + '..' + TotalCarbonCredits(), false);
+
+        ContosoGLAccount.InsertGLAccount(UtilitiesExpensePowerPlant(), UtilitiesExpensePowerPlantLbl, "G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, '', Enum::"G/L Account Type"::Posting, CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), 0, '', Enum::"G/L Account Type"::Posting, '', '', true, false, false);
+
         SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts(true);
+    end;
+
+    procedure UtilitiesExpensePowerPlant(): Code[20]
+    begin
+        exit('60410');
     end;
 
     procedure GasEmissions(): Code[20]
@@ -437,6 +452,31 @@ codeunit 5215 "Create Sustainability Account"
         exit('19999');
     end;
 
+    procedure CarbonCredits(): Code[20]
+    begin
+        exit('14000');
+    end;
+
+    procedure CarbonCreditScope1(): Code[20]
+    begin
+        exit('14001');
+    end;
+
+    procedure CarbonCreditScope2(): Code[20]
+    begin
+        exit('14002');
+    end;
+
+    procedure CarbonCreditScope3(): Code[20]
+    begin
+        exit('14003');
+    end;
+
+    procedure TotalCarbonCredits(): Code[20]
+    begin
+        exit('14999');
+    end;
+
     var
         GasEmissionsLbl: Label 'Gas Emissions', MaxLength = 100;
         Scope1BeginTotalLbl: Label 'Scope 1 - Direct Emission', MaxLength = 100;
@@ -503,4 +543,10 @@ codeunit 5215 "Create Sustainability Account"
         TotalBusinessTravelAndEmployeeCommutingLbl: Label 'Total, Business Travel and Employee Commuting', MaxLength = 100;
         TotalScope3IndirectEmissionLbl: Label 'TOTAL SCOPE 3 - INDIRECT EMISSION', MaxLength = 100;
         TotalGasEmissionsLbl: Label 'TOTAL GAS EMISSIONS', MaxLength = 100;
+        CarbonCreditsLbl: Label 'Carbon Credits', MaxLength = 100;
+        CarbonCreditScope1Lbl: Label 'Carbon Credit - Scope 1', MaxLength = 100;
+        CarbonCreditScope2Lbl: Label 'Carbon Credit - Scope 2', MaxLength = 100;
+        CarbonCreditScope3Lbl: Label 'Carbon Credit - Scope 3', MaxLength = 100;
+        TotalCarbonCreditsLbl: Label 'TOTAL - CARBON CREDITS', MaxLength = 100;
+        UtilitiesExpensePowerPlantLbl: Label 'Utilities Expense - Power Plant', MaxLength = 100;
 }

@@ -20,11 +20,11 @@ tableextension 8009 "Usage Based Item Vendor" extends "Item Vendor"
                 if Rec."Item No." = '' then
                     exit;
                 Item.Get(Rec."Item No.");
-                if Item."Service Commitment Option" <> Enum::"Item Service Commitment Type"::"Service Commitment Item" then
+                if Item."Subscription Option" <> Enum::"Item Service Commitment Type"::"Service Commitment Item" then
                     Error(NotServiceCommitmentItemErr);
             end;
         }
     }
     var
-        NotServiceCommitmentItemErr: Label 'Usage Data Supplier Ref. Entry No. can only be entered for Service Commitment Items (see "Service Commitment Option in the Item).';
+        NotServiceCommitmentItemErr: Label 'Usage Data Supplier Ref. Entry No. can only be entered for Subscription Items (see "Subscription Option in the Item).';
 }

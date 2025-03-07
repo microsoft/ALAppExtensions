@@ -222,7 +222,7 @@ codeunit 30178 "Shpfy Product Export"
         Clear(TempShopifyVariant);
         FillInProductVariantData(TempShopifyVariant, Item, ItemUnitofMeasure);
         TempShopifyVariant.Insert(false);
-        VariantApi.AddProductVariants(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
+        VariantApi.AddProductVariant(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
     end;
 
     /// <summary> 
@@ -244,7 +244,7 @@ codeunit 30178 "Shpfy Product Export"
         Clear(TempShopifyVariant);
         FillInProductVariantData(TempShopifyVariant, Item, ItemVariant);
         TempShopifyVariant.Insert(false);
-        VariantApi.AddProductVariants(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
+        VariantApi.AddProductVariant(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
     end;
 
     /// <summary> 
@@ -265,7 +265,7 @@ codeunit 30178 "Shpfy Product Export"
         Clear(TempShopifyVariant);
         FillInProductVariantData(TempShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
         TempShopifyVariant.Insert(false);
-        VariantApi.AddProductVariants(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
+        VariantApi.AddProductVariant(TempShopifyVariant, ProductId, "Shpfy Variant Create Strategy"::DEFAULT);
     end;
 
 

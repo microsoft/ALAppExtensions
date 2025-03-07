@@ -45,7 +45,7 @@ codeunit 8021 "Text Management"
         ShowTextViewer(BlobText, PageCaption);
     end;
 
-    local procedure ShowTextViewer(var Content: Text; PageCaption: Text): Boolean
+    local procedure ShowTextViewer(Content: Text; PageCaption: Text): Boolean
     var
         TextEditor: Page "Text Viewer";
     begin

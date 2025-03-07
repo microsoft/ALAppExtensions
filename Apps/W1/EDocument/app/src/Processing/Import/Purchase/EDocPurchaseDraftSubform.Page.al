@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.eServices.EDocument.Processing.Import.Purchase;
+
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.Finance.Dimension;
+
 page 6183 "E-Doc. Purchase Draft Subform"
 {
 
@@ -8,7 +17,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
     DeleteAllowed = false;
     ModifyAllowed = true;
     PageType = ListPart;
-    SourceTable = "E-Document Purchase Line";
+    SourceTable = "E-Document Line Mapping";
 
     layout
     {
@@ -19,123 +28,89 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 field("Line No."; Rec."E-Document Line Id")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the line number.';
                     StyleExpr = StyleTxt;
                     Editable = false;
+                    Visible = false;
                 }
-                field("Line Type"; EDocumentLineMapping."Purchase Line Type")
+                field("Line Type"; Rec."Purchase Line Type")
                 {
                     ApplicationArea = All;
                     StyleExpr = StyleTxt;
                     Editable = true;
                 }
-                field("No."; EDocumentLineMapping."Purchase Type No.")
+                field("No."; Rec."Purchase Type No.")
                 {
                     ApplicationArea = All;
                     StyleExpr = StyleTxt;
-                    Editable = true;
-                    Lookup = true;
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    begin
-                        LookupNo();
-                    end;
-                }
-                field(Description; Rec.Description)
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the description.';
-                    StyleExpr = StyleTxt;
-                    Editable = false;
-                }
-                field("Unit Of Measure"; EDocumentLineMapping."Unit of Measure")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the unit of measure code.';
                     Editable = true;
                     Lookup = true;
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    begin
-                        LookupUOM();
-                    end;
                 }
-                field(Quantity; Rec.Quantity)
+                field(Description; EDocumentPurchaseLine.Description)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the quantity.';
+                    StyleExpr = StyleTxt;
                     Editable = false;
                 }
-                field("Direct Unit Cost"; Rec."Unit Price")
+                field("Unit Of Measure"; Rec."Unit of Measure")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the direct unit cost.';
+                    Editable = true;
+                    Lookup = true;
+                }
+                field(Quantity; EDocumentPurchaseLine.Quantity)
+                {
+                    ApplicationArea = All;
                     Editable = false;
+                }
+                field("Direct Unit Cost"; EDocumentPurchaseLine."Unit Price")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                }
+                field("Deferral Code"; Rec."Deferral Code")
+                {
+                    ApplicationArea = All;
+                    Editable = true;
+                }
+                field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
+                {
+                    ApplicationArea = Dimensions;
+                    Visible = DimVisible1;
+                }
+                field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
+                {
+                    ApplicationArea = Dimensions;
+                    Visible = DimVisible2;
                 }
             }
         }
     }
 
     var
-        EDocumentLineMapping: Record "E-Document Line Mapping";
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
         StyleTxt: Text;
+        DimVisible1, DimVisible2 : Boolean;
+
+    trigger OnOpenPage()
+    begin
+        SetDimensionsVisibility();
+    end;
 
     trigger OnAfterGetRecord()
     begin
-        if EDocumentLineMapping.Get(Rec."E-Document Line Id") then;
+        if EDocumentPurchaseLine.Get(Rec."E-Document Line Id") then;
     end;
 
-    local procedure LookupNo()
-    begin
-        case EDocumentLineMapping."Purchase Line Type" of
-            "Purchase Line Type"::Item:
-                LookupItem();
-            "Purchase Line Type"::"G/L Account":
-                LookupGLAccount();
-            else
-                exit;
-        end;
-    end;
-
-    local procedure LookupItem()
+    local procedure SetDimensionsVisibility()
     var
-        Item: Record Item;
-        ItemList: Page "Item List";
+        DimMgt: Codeunit DimensionManagement;
+        DimOther: Boolean;
     begin
-        ItemList.LookupMode := true;
-        if ItemList.RunModal() = Action::LookupOK then begin
-            ItemList.GetRecord(Item);
-            EDocumentLineMapping."Purchase Type No." := Item."No.";
-            EDocumentLineMapping.Modify();
-        end;
-    end;
+        DimVisible1 := false;
+        DimVisible2 := false;
 
-    local procedure LookupGLAccount()
-    var
-        GLAccount: Record "G/L Account";
-        ChartOfAccounts: Page "Chart of Accounts";
-    begin
-        ChartOfAccounts.LookupMode := true;
-        GLAccount.SetRange("Direct Posting", true);
-        ChartOfAccounts.SetTableView(GLAccount);
-        if ChartOfAccounts.RunModal() = Action::LookupOK then begin
-            ChartOfAccounts.GetRecord(GLAccount);
-            EDocumentLineMapping."Purchase Type No." := GLAccount."No.";
-            EDocumentLineMapping.Modify();
-        end;
-    end;
-
-    local procedure LookupUOM()
-    var
-        UnitOfMeasure: Record "Unit of Measure";
-        UnitsOfMeasure: Page "Units of Measure";
-    begin
-        UnitsOfMeasure.LookupMode := true;
-        if UnitsOfMeasure.RunModal() = Action::LookupOK then begin
-            UnitsOfMeasure.GetRecord(UnitOfMeasure);
-            EDocumentLineMapping."Unit of Measure" := UnitOfMeasure.Code;
-            EDocumentLineMapping.Modify();
-        end;
+        DimMgt.UseShortcutDims(
+          DimVisible1, DimVisible2, DimOther, DimOther, DimOther, DimOther, DimOther, DimOther);
     end;
 
 }

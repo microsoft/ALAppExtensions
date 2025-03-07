@@ -4,9 +4,9 @@ page 8054 "Contract Types"
 {
     PageType = List;
     UsageCategory = Lists;
-    ApplicationArea = Jobs;
-    SourceTable = "Contract Type";
-    Caption = 'Contract Types';
+    ApplicationArea = All;
+    SourceTable = "Subscription Contract Type";
+    Caption = 'Subscription Contract Types';
     LinksAllowed = false;
 
     layout
@@ -18,7 +18,7 @@ page 8054 "Contract Types"
                 field(Code; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies the unique code of the contract type.';
+                    ToolTip = 'Specifies the unique code of the Subscription Contract Type.';
                 }
                 field(Description; Rec.Description)
                 {
@@ -26,7 +26,7 @@ page 8054 "Contract Types"
                 }
                 field(HarmonizedBillingCustContracts; Rec.HarmonizedBillingCustContracts)
                 {
-                    ToolTip = 'Specifies that the contract elements of the customer contracts with this contract type are billed on a common key date.';
+                    ToolTip = 'Specifies that the contract elements of the Customer Subscription Contracts with this Subscription Contract Type are billed on a common key date.';
                 }
                 field(DefaultWithoutContractDeferrals; Rec."Def. Without Contr. Deferrals")
                 {
@@ -55,7 +55,7 @@ page 8054 "Contract Types"
         {
             action(OpenTranslation)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Translations';
                 Image = Translate;
                 ToolTip = 'Displays or edits translations. Translations are automatically considered and used according to the language code when printing.';

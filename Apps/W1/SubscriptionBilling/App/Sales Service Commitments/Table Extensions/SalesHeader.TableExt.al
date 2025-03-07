@@ -11,9 +11,9 @@ tableextension 8053 "Sales Header" extends "Sales Header"
             DataClassification = CustomerContent;
             Caption = 'Recurring Billing';
         }
-        field(8052; "Contract Detail Overview"; Enum "Contract Detail Overview")
+        field(8052; "Sub. Contract Detail Overview"; Enum "Contract Detail Overview")
         {
-            Caption = 'Contract Detail Overview';
+            Caption = 'Subscription Contract Detail Overview';
             DataClassification = CustomerContent;
         }
     }

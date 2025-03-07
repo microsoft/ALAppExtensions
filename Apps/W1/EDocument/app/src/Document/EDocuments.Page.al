@@ -91,6 +91,7 @@ page 6122 "E-Documents"
                 Caption = 'View file';
                 ToolTip = 'View the source file.';
                 Image = ViewDetails;
+                Visible = NewEDocumentExperienceActive;
 
                 trigger OnAction()
                 begin
@@ -98,13 +99,44 @@ page 6122 "E-Documents"
                 end;
             }
         }
+        area(Navigation)
+        {
+            action(InboundEDocuments)
+            {
+                Caption = 'Inbound E-Documents';
+                ToolTip = 'View inbound electronic documents.';
+                Visible = NewEDocumentExperienceActive;
+                RunObject = Page "Inbound E-Documents";
+                Image = InwardEntry;
+            }
+            action(OutboundEDocuments)
+            {
+                Caption = 'Outbound E-Documents';
+                ToolTip = 'View outbound electronic documents.';
+                Visible = NewEDocumentExperienceActive;
+                RunObject = Page "Outbound E-Documents";
+                Image = OutboundEntry;
+            }
+        }
         area(Promoted)
         {
             actionref(Promoted_ImportManually; ImportManually) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
             actionref(Promoted_ViewFile; ViewFile) { }
+            actionref(Promoted_InboundEDocuments; InboundEDocuments) { }
+            actionref(Promoted_OutboundEDocuments; OutboundEDocuments) { }
         }
     }
+
+    var
+        NewEDocumentExperienceActive: Boolean;
+
+    trigger OnOpenPage()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
+    end;
 
     local procedure NewFromFile()
     var

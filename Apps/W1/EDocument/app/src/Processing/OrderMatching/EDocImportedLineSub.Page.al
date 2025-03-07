@@ -94,6 +94,8 @@ page 6165 "E-Doc. Imported Line Sub"
                 var
                     EDocLineMatching: Codeunit "E-Doc. Line Matching";
                 begin
+                    if Rec.Quantity = Rec."Matched Quantity" then
+                        Error(CannotCreateLinesForMatchedLinesErr);
                     EDocLineMatching.CreatePurchaseOrderLine(EDocumentBeingMatched, Rec);
                 end;
             }
@@ -104,6 +106,7 @@ page 6165 "E-Doc. Imported Line Sub"
         EDocumentBeingMatched: Record "E-Document";
         StyleTxt: Text;
         IsPurchaseOrder: Boolean;
+        CannotCreateLinesForMatchedLinesErr: Label 'You cannot create purchase order lines for E-Document lines that are already matched.';
 
     trigger OnAfterGetRecord()
     begin

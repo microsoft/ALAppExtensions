@@ -19,14 +19,14 @@ codeunit 139893 "Usage Based B. Test Subscr."
 
     #region Subscribers
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contract Test Library", OnCreateServiceCommitmentTemplateOnBeforeInsert, '', false, false)]
-    local procedure SetUsageBasedServiceCommitment(var ServiceCommitmentTemplate: Record "Service Commitment Template")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contract Test Library", OnCreateSubPackageLineTemplateOnBeforeInsert, '', false, false)]
+    local procedure SetUsageBasedServiceCommitment(var SubPackageLineTemplate: Record "Sub. Package Line Template")
     begin
         if TestContext = '' then
             exit;
 
-        ServiceCommitmentTemplate."Usage Based Billing" := true;
-        ServiceCommitmentTemplate."Usage Based Pricing" := Enum::"Usage Based Pricing"::"Fixed Quantity";
+        SubPackageLineTemplate."Usage Based Billing" := true;
+        SubPackageLineTemplate."Usage Based Pricing" := Enum::"Usage Based Pricing"::"Fixed Quantity";
     end;
 
     #endregion Subscribers

@@ -26,10 +26,10 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
         }
         add(Line)
         {
-            column(ContractLineNo; "Contract Line No.")
+            column(ContractLineNo; "Subscription Contract Line No.")
             {
             }
-            column(ContractNo; "Contract No.")
+            column(ContractNo; "Subscription Contract No.")
             {
             }
             column(RecurringBillingfrom; "Recurring Billing from")
@@ -198,7 +198,7 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
         TempContractBillingDetailsGroupingBuffer: Record "Job Ledger Entry" temporary;
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer2: Record Customer;
-        ContractBillingPrintout: Codeunit "Contract Billing Printout";
+        ContractBillingPrintout: Codeunit "Sub. Contract Billing Printout";
         ReportFormatting: Codeunit "Report Formatting";
         CustomerLbl: Label 'Customer';
         ContractNoLbl: Label 'Contract No.';
@@ -207,7 +207,7 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
         EndDateLbl: Label 'End Date';
         DaysLbl: Label 'Days';
         Days: Integer;
-        ServiceDescriptionLbl: Label 'Service Object';
+        ServiceDescriptionLbl: Label 'Subscription';
         CurrencyLbl: Label 'Currency';
         SalesPriceLblTxt: Text;
         CurrencyLblText: Text;

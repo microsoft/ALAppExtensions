@@ -7,14 +7,14 @@ using Microsoft.Finance.Dimension;
 page 8053 "Customer Contracts"
 {
     ApplicationArea = All;
-    Caption = 'Customer Contracts';
+    Caption = 'Customer Subscription Contracts';
     CardPageId = "Customer Contract";
     DataCaptionFields = "Sell-to Customer No.";
     Editable = false;
     PageType = List;
-    QueryCategory = 'Customer Contract List';
+    QueryCategory = 'Customer Subscription Contracts';
     RefreshOnActivate = true;
-    SourceTable = "Customer Contract";
+    SourceTable = "Customer Subscription Contract";
     UsageCategory = Lists;
 
     layout
@@ -31,15 +31,15 @@ page 8053 "Customer Contracts"
                 field(DescriptionText; DescriptionText)
                 {
                     Caption = 'Description';
-                    ToolTip = 'Specifies the products or service being offered.';
+                    ToolTip = 'Specifies the subscriptions being offered.';
                 }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.")
                 {
-                    ToolTip = 'Specifies the number of the customer who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the customer who will receive the contract components and be billed by default.';
                 }
                 field("Sell-to Customer Name"; Rec."Sell-to Customer Name")
                 {
-                    ToolTip = 'Specifies the name of the customer who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the name of the customer who will receive the contract components and be billed by default.';
                 }
                 field("Sell-to Post Code"; Rec."Sell-to Post Code")
                 {
@@ -144,7 +144,7 @@ page 8053 "Customer Contracts"
             part("Attached Documents"; "Doc. Attachment List Factbox")
             {
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(Database::"Customer Contract"),
+                SubPageLink = "Table ID" = const(Database::"Customer Subscription Contract"),
                               "No." = field("No.");
             }
             systempart(Control1900383207; Links)
@@ -196,13 +196,13 @@ page 8053 "Customer Contracts"
                 action("Customer Contract Deferrals")
                 {
                     ApplicationArea = All;
-                    Caption = 'Customer Contract Deferrals';
-                    ToolTip = 'Customer Contract Deferrals.';
+                    Caption = 'Customer Subscription Contract Deferrals';
+                    ToolTip = 'Customer Subscription Contract Deferrals.';
                     Image = LedgerEntries;
                     ShortcutKey = 'Ctrl+F7';
                     RunObject = page "Customer Contract Deferrals";
-                    RunPageView = sorting("Contract No.");
-                    RunPageLink = "Contract No." = field("No.");
+                    RunPageView = sorting("Subscription Contract No.");
+                    RunPageLink = "Subscription Contract No." = field("No.");
 
                 }
                 action(UpdateDimensionsInDeferrals)
@@ -224,7 +224,7 @@ page 8053 "Customer Contracts"
                 action(OverviewOfContractComponents)
                 {
                     Caption = 'Overview of contract components';
-                    ToolTip = 'View a detailed list of services for the selected contract(s).';
+                    ToolTip = 'View a detailed list of Subscription Lines for the selected contract(s).';
                     Image = QualificationOverview;
                     ApplicationArea = All;
                     RunObject = Report "Overview Of Contract Comp";

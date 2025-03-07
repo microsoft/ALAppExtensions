@@ -9,7 +9,7 @@ codeunit 30281 "Shpfy Bulk UpdateProductPrice" implements "Shpfy IBulk Operation
 
     procedure GetGraphQL(): Text
     begin
-        exit('mutation call($productId: ID!, $variants: [ProductVariantsBulkInput]!) { productVariantsBulkUpdate(productId: $productId, variants: $variants) { productVariants {updatedAt}, userErrors {field, message}}}');
+        exit('mutation call($productId: ID!, $variants: [ProductVariantsBulkInput!]!) { productVariantsBulkUpdate(productId: $productId, variants: $variants) { productVariants {updatedAt}, userErrors {field, message}}}');
     end;
 
     procedure GetInput(): Text

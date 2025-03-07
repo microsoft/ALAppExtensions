@@ -92,6 +92,9 @@ codeunit 6258 "Sust. Transfer Subscriber"
         if Ship then
             TransferLine."Posted Shipped Total CO2e" += PostedEmissionCO2e;
 
+        if ((Qty + TransferLine."Quantity Shipped") = TransferLine.Quantity) then
+            TransferLine."Total CO2e" := 0;
+
         TransferLine.Modify();
     end;
 

@@ -87,21 +87,21 @@ codeunit 139892 "Usage Based B. Test Library"
         GenericImportSettings.Init();
         GenericImportSettings."Usage Data Supplier No." := SupplierNo;
         GenericImportSettings."Create Customers" := CreateUsageDataCustomer;
-        GenericImportSettings."Create Subscriptions" := CreateUsageDataSubscription;
+        GenericImportSettings."Create Supplier Subscriptions" := CreateUsageDataSubscription;
         GenericImportSettings.Insert(true);
     end;
 
-    procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Integer)
+    procedure CreateSimpleUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import"; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; CustomerNo: Code[20]; UnitCost: Decimal; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date; SubscriptionStartDate: Date; SubscriptionEndDate: Date; Quantity: Decimal)
     begin
         UsageDataGenericImport.Init();
         UsageDataGenericImport."Usage Data Import Entry No." := UsageDataImportEntryNo;
-        UsageDataGenericImport."Service Object No." := ServiceObjectNo;
+        UsageDataGenericImport."Subscription Header No." := ServiceObjectNo;
         UsageDataGenericImport."Customer ID" := CustomerNo;
-        UsageDataGenericImport."Subscription ID" := CopyStr(LibraryRandom.RandText(80), 1, MaxStrLen(UsageDataGenericImport."Subscription ID"));
+        UsageDataGenericImport."Supp. Subscription ID" := CopyStr(LibraryRandom.RandText(80), 1, MaxStrLen(UsageDataGenericImport."Supp. Subscription ID"));
         UsageDataGenericImport."Billing Period Start Date" := BillingPeriodStartDate;
         UsageDataGenericImport."Billing Period End Date" := BillingPeriodEndDate;
-        UsageDataGenericImport."Subscription Start Date" := SubscriptionStartDate;
-        UsageDataGenericImport."Subscription End Date" := SubscriptionEndDate;
+        UsageDataGenericImport."Supp. Subscription Start Date" := SubscriptionStartDate;
+        UsageDataGenericImport."Supp. Subscription End Date" := SubscriptionEndDate;
         UsageDataGenericImport.Cost := UnitCost;
         UsageDataGenericImport.Quantity := Quantity;
         UsageDataGenericImport."Cost Amount" := UnitCost * UsageDataGenericImport.Quantity;
@@ -150,28 +150,39 @@ codeunit 139892 "Usage Based B. Test Library"
     procedure CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(var UsageDataBlob: Record "Usage Data Blob"; var RecordRef: RecordRef;
                                                                           ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer)
     begin
-        CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(UsageDataBlob, RecordRef, ServiceObjectNo, ServiceCommitmentEntryNo, WorkDate(), WorkDate(), WorkDate(), WorkDate(), LibraryRandom.RandDec(10, 2));
+        CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(
+            UsageDataBlob,
+            RecordRef,
+            CopyStr(LibraryRandom.RandText(80), 1, 80),
+            CopyStr(LibraryRandom.RandText(80), 1, 80),
+            ServiceObjectNo,
+            ServiceCommitmentEntryNo,
+            WorkDate(),
+            WorkDate(),
+            WorkDate(),
+            WorkDate(),
+            LibraryRandom.RandDec(10, 2));
     end;
 
-    procedure CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(var UsageDataBlob: Record "Usage Data Blob"; var RecordRef: RecordRef;
-                                                                          ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer;
-                                                                          BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
+    procedure CreateUsageDataCSVFileBasedOnRecordAndImportToUsageDataBlob(var UsageDataBlob: Record "Usage Data Blob"; var RecordRef: RecordRef; CustomerId: Text[80]; SubscriptionId: Text[80]; ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer;
+            BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
     var
         FieldCount: Integer;
         OutStr: OutStream;
     begin
         UsageDataBlob.Data.CreateOutStream(OutStr, TextEncoding::UTF8);
         FieldCount := RecordRef.FieldCount();
-        CreateOutStreamHeaders(OutStr, RecordRef, FieldCount);
-        CreateOutStreamData(OutStr, RecordRef, FieldCount, ServiceObjectNo, BillingPeriodStartingDate, BillingPeriodEndingDate, SubscriptionStartingDate, SubscriptionEndingDate, Quantity);
+        CreateOutStreamHeaders(UsageDataBlob, OutStr, RecordRef, FieldCount);
+        CreateOutStreamData(UsageDataBlob, OutStr, RecordRef, FieldCount, CustomerId, SubscriptionId, ServiceObjectNo, ServiceCommitmentEntryNo, BillingPeriodStartingDate, BillingPeriodEndingDate, SubscriptionStartingDate, SubscriptionEndingDate, Quantity);
         UsageDataBlob.ComputeHashValue();
         UsageDataBlob."Import Status" := Enum::"Processing Status"::Ok;
         UsageDataBlob.Modify(false);
     end;
 
-    local procedure CreateOutStreamData(var OutStr: OutStream; var RecordRef: RecordRef; FieldCount: Integer;
-                                                                          ServiceObjectNo: Code[20];
-                                                                          BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
+    procedure CreateOutStreamData(var UsageDataBlob: Record "Usage Data Blob"; var OutStr: OutStream; var RecordRef: RecordRef; FieldCount: Integer;
+                                                                              CustomerId: Text[80]; SubscriptionId: Text[80];
+                                                                              ServiceObjectNo: Code[20]; ServiceCommitmentEntryNo: Integer;
+                                                                              BillingPeriodStartingDate: Date; BillingPeriodEndingDate: Date; SubscriptionStartingDate: Date; SubscriptionEndingDate: Date; Quantity: Decimal)
     var
         FieldRef: FieldRef;
     begin
@@ -183,6 +194,10 @@ codeunit 139892 "Usage Based B. Test Library"
                         case FieldRef.Number of
                             6:
                                 OutStr.WriteText(ServiceObjectNo);
+                            7:
+                                OutStr.WriteText(CustomerId);
+                            10:
+                                OutStr.WriteText(SubscriptionId);
                             25:
                                 Currency.Get(LibraryERM.CreateCurrencyWithRandomExchRates());
                             else
@@ -213,7 +228,7 @@ codeunit 139892 "Usage Based B. Test Library"
         OutStr.WriteText();
     end;
 
-    local procedure CreateOutStreamHeaders(var OutStr: OutStream; var RecordRef: RecordRef; FieldCount: Integer)
+    procedure CreateOutStreamHeaders(var UsageDataBlob: Record "Usage Data Blob"; var OutStr: OutStream; var RecordRef: RecordRef; FieldCount: Integer)
     var
         FieldRef: FieldRef;
     begin
@@ -243,10 +258,10 @@ codeunit 139892 "Usage Based B. Test Library"
         GenericImportSettings: Record "Generic Import Settings";
         UsageDataBilling: Record "Usage Data Billing";
         UsageDataBlob: Record "Usage Data Blob";
-        UsageDataCustomer: Record "Usage Data Customer";
+        UsageDataCustomer: Record "Usage Data Supp. Customer";
         UsageDataGenericImport: Record "Usage Data Generic Import";
         UsageDataImport: Record "Usage Data Import";
-        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
     begin
@@ -279,31 +294,31 @@ codeunit 139892 "Usage Based B. Test Library"
     procedure MockBillingLineWithServObjectNo(var BillingLine: Record "Billing Line")
     begin
         BillingLine.InitNewBillingLine();
-        BillingLine."Service Object No." := LibraryUtility.GenerateGUID();
-        BillingLine."Service Commitment Entry No." := LibraryRandom.RandInt(10000);
+        BillingLine."Subscription Header No." := LibraryUtility.GenerateGUID();
+        BillingLine."Subscription Line Entry No." := LibraryRandom.RandInt(10000);
         BillingLine.Insert(false);
     end;
 
-    procedure MockCustomerContractLine(var CustomerContractLine: Record "Customer Contract Line")
+    procedure MockCustomerContractLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
     begin
         CustomerContract.Init();
         CustomerContract.Insert(true);
         CustomerContractLine.Init();
-        CustomerContractLine."Contract No." := CustomerContract."No.";
-        CustomerContractLine."Contract Line Type" := CustomerContractLine."Contract Line Type"::"Service Commitment";
+        CustomerContractLine."Subscription Contract No." := CustomerContract."No.";
+        CustomerContractLine."Contract Line Type" := CustomerContractLine."Contract Line Type"::Item;
         CustomerContractLine.Insert(false);
     end;
 
-    procedure MockServiceCommitmentLine(var ServiceCommitment: Record "Service Commitment")
+    procedure MockServiceCommitmentLine(var ServiceCommitment: Record "Subscription Line")
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
     begin
         ServiceObject.Init();
         ServiceObject.Insert(true);
         ServiceCommitment.Init();
-        ServiceCommitment."Service Object No." := ServiceObject."No.";
+        ServiceCommitment."Subscription Header No." := ServiceObject."No.";
         ServiceCommitment."Entry No." := 0;
         ServiceCommitment.Partner := ServiceCommitment.Partner::Customer;
         ServiceCommitment.Insert(false);
@@ -313,8 +328,8 @@ codeunit 139892 "Usage Based B. Test Library"
     begin
         UsageDataBilling.Init();
         UsageDataBilling.Partner := ServicePartner;
-        UsageDataBilling."Contract No." := ContractNo;
-        UsageDataBilling."Contract Line No." := ContractLine;
+        UsageDataBilling."Subscription Contract No." := ContractNo;
+        UsageDataBilling."Subscription Contract Line No." := ContractLine;
         UsageDataBilling.Insert(false);
     end;
 
@@ -332,8 +347,8 @@ codeunit 139892 "Usage Based B. Test Library"
     begin
         UsageDataBilling.Init();
         UsageDataBilling.Partner := ServCommPartner;
-        UsageDataBilling."Service Object No." := ServCommServiceObjectNo;
-        UsageDataBilling."Service Commitment Entry No." := ServCommLineNo;
+        UsageDataBilling."Subscription Header No." := ServCommServiceObjectNo;
+        UsageDataBilling."Subscription Line Entry No." := ServCommLineNo;
         UsageDataBilling.Insert(false);
     end;
 
@@ -341,8 +356,8 @@ codeunit 139892 "Usage Based B. Test Library"
     begin
         UsageDataBilling.Init();
         UsageDataBilling.Partner := UsageDataBilling.Partner::Customer;
-        UsageDataBilling."Service Object No." := BillingLine."Service Object No.";
-        UsageDataBilling."Service Commitment Entry No." := BillingLine."Service Commitment Entry No.";
+        UsageDataBilling."Subscription Header No." := BillingLine."Subscription Header No.";
+        UsageDataBilling."Subscription Line Entry No." := BillingLine."Subscription Line Entry No.";
         UsageDataBilling."Document Type" := UsageBasedDocTypeConv.ConvertRecurringBillingDocTypeToUsageBasedBillingDocType(BillingLine."Document Type");
         UsageDataBilling."Document No." := BillingLine."Document No.";
         UsageDataBilling."Billing Line Entry No." := BillingLine."Entry No.";

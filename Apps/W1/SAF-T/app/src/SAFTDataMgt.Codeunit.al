@@ -620,13 +620,12 @@ codeunit 5280 "SAF-T Data Mgt."
 
     internal procedure GetAmountInfoFromGLEntry(var AmountXMLNode: Text; var Amount: Decimal; GLEntry: Record "G/L Entry")
     begin
-        if GLEntry."Debit Amount" = 0 then begin
+        if GLEntry.Amount > 0 then
+            AmountXMLNode := 'DebitAmount'
+        else
             AmountXMLNode := 'CreditAmount';
-            Amount := GLEntry."Credit Amount";
-        end else begin
-            AmountXMLNode := 'DebitAmount';
-            Amount := GLEntry."Debit Amount";
-        end;
+
+        Amount := Abs(GLEntry.Amount);
     end;
 
     internal procedure IsSalesLineService(SourceType: Enum "Sales Line Type"; SourceNo: Code[20]): Boolean

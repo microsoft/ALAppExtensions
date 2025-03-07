@@ -19,54 +19,27 @@ query 37005 "Value Entries - Sales"
         dataitem(SalesValueEntry; "Item Ledger Entry")
         {
             DataItemTableFilter = "Entry Type" = const(Sale);
-            column(itemLedgerEntryNo; "Entry No.")
-            {
-            }
+            column(itemLedgerEntryNo; "Entry No.") { }
             dataitem(Value_Entry; "Value Entry")
             {
                 DataItemLink = "Item Ledger Entry No." = SalesValueEntry."Entry No.";
-                column(entryNo; "Entry No.")
-                {
-                }
-                column(entryType; "Entry Type")
-                {
-                }
-                column(documentNo; "Document No.")
-                {
-                }
-                column(documentType; "Document Type")
-                {
-                }
-                column(invoicedQuantity; "Invoiced Quantity")
-                {
-                }
-                column(salesAmountActual; "Sales Amount (Actual)")
-                {
-                }
-                column(costAmountActual; "Cost Amount (Actual)")
-                {
-                }
-                column(costAmountNonInvtbl; "Cost Amount (Non-Invtbl.)")
-                {
-                }
-                column(customerNo; "Source No.")
-                {
-                }
-                column(postingDate; "Posting Date")
-                {
-                }
-                column(itemNo; "Item No.")
-                {
-                }
-                column(locationCode; "Location Code")
-                {
-                }
-                column(dimensionSetID; "Dimension Set ID")
-                {
-                }
-                column(salespersonPurchaserCode; "Salespers./Purch. Code")
-                {
-                }
+                column(entryNo; "Entry No.") { }
+                column(entryType; "Entry Type") { }
+                column(documentNo; "Document No.") { }
+                column(documentType; "Document Type") { }
+                column(invoicedQuantity; "Invoiced Quantity") { }
+                column(salesAmountActual; "Sales Amount (Actual)") { }
+                column(costAmountActual; "Cost Amount (Actual)") { }
+                column(costAmountNonInvtbl; "Cost Amount (Non-Invtbl.)") { }
+                column(costPostedToGL; "Cost Posted to G/L") { }
+                column(customerNo; "Source No.") { }
+                column(postingDate; "Posting Date") { }
+                column(documentDate; "Document Date") { }
+                column(itemNo; "Item No.") { }
+                column(locationCode; "Location Code") { }
+                column(dimensionSetID; "Dimension Set ID") { }
+                column(salespersonPurchaserCode; "Salespers./Purch. Code") { }
+                column(returnReasonCode; "Return Reason Code") { }
             }
         }
     }

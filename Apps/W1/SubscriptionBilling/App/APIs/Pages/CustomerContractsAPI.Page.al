@@ -9,7 +9,7 @@ page 8024 "Customer Contracts API"
     EntityName = 'customerContract';
     EntitySetName = 'customerContracts';
     PageType = API;
-    SourceTable = "Customer Contract";
+    SourceTable = "Customer Subscription Contract";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -200,7 +200,7 @@ page 8024 "Customer Contracts API"
                     Caption = 'customerContractLines', Locked = true;
                     EntityName = 'customerContractLines';
                     EntitySetName = 'customerContractLines';
-                    SubPageLink = "Contract No." = field("No.");
+                    SubPageLink = "Subscription Contract No." = field("No.");
                 }
             }
         }

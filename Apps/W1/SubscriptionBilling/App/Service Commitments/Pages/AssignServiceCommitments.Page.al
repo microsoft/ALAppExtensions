@@ -4,9 +4,9 @@ using Microsoft.Sales.Document;
 
 page 8065 "Assign Service Commitments"
 {
-    Caption = 'Assign Service Commitments';
+    Caption = 'Assign Subscription Lines';
     PageType = ListPlus;
-    SourceTable = "Service Commitment Package";
+    SourceTable = "Subscription Package";
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = false;
@@ -24,14 +24,14 @@ page 8065 "Assign Service Commitments"
                 Visible = not OpenedFromSalesLine;
                 field(FieldServiceAndCalculationStartDate; ServiceAndCalculationStartDate)
                 {
-                    Caption = 'Service and Calculation Start Date';
-                    ToolTip = 'Specifies the date from which the service(s) are valid and should be calculated. The date is taken over when services are created as Service Start Date and Next Calculation Date.';
+                    Caption = 'Subscription Line and Calculation Start Date';
+                    ToolTip = 'Specifies the date from which the Subscription Line(s) are valid and should be calculated. The date is taken over when Subscription Lines are created as Subscription Line Start Date and Next Calculation Date.';
                 }
-                field(ItemNo; ServiceObject."Item No.")
+                field(ItemNo; ServiceObject."Source No.")
                 {
                     Editable = false;
                     Caption = 'Item No.';
-                    ToolTip = 'Specifies the Item No. of the service object.';
+                    ToolTip = 'Specifies the Item No. of the Subscription.';
                 }
             }
             repeater(RepeaterControl)
@@ -39,7 +39,7 @@ page 8065 "Assign Service Commitments"
                 field("Code"; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment package.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package.';
                     Editable = false;
 
                     trigger OnValidate()
@@ -49,7 +49,7 @@ page 8065 "Assign Service Commitments"
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                     Editable = false;
 
                 }
@@ -57,7 +57,7 @@ page 8065 "Assign Service Commitments"
             part(PackageLines; "Service Comm. Package Lines")
             {
                 Editable = false;
-                SubPageLink = "Package Code" = field(Code);
+                SubPageLink = "Subscription Package Code" = field(Code);
                 UpdatePropagation = Both;
             }
         }
@@ -71,12 +71,12 @@ page 8065 "Assign Service Commitments"
     end;
 
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         SalesLine: Record "Sales Line";
         OpenedFromSalesLine: Boolean;
         ServiceAndCalculationStartDate: Date;
 
-    internal procedure SetServiceObject(NewServiceObject: Record "Service Object")
+    internal procedure SetServiceObject(NewServiceObject: Record "Subscription Header")
     begin
         ServiceObject := NewServiceObject;
     end;
@@ -87,7 +87,7 @@ page 8065 "Assign Service Commitments"
         OpenedFromSalesLine := true;
     end;
 
-    internal procedure GetSelectionFilter(var ServiceCommitmentPackage: Record "Service Commitment Package")
+    internal procedure GetSelectionFilter(var ServiceCommitmentPackage: Record "Subscription Package")
     begin
         CurrPage.SetSelectionFilter(ServiceCommitmentPackage);
     end;

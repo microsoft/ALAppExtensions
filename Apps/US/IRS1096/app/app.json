@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Easily report IRS 1096 form.",
   "description": "This app provides functionality that enables an easy overview and reporting of the 1096 form to IRS.",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/unitedstates/set-up-use-irs1096-form",
@@ -25,6 +25,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "target": "Cloud"
 }

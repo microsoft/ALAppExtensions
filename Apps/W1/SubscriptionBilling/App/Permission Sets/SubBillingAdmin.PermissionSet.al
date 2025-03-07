@@ -8,11 +8,11 @@ permissionset 8051 "Sub. Billing Admin"
     IncludedPermissionSets = "Sub. Billing User";
 
     Permissions =
-        tabledata "Service Contract Setup" = IMD,
-        tabledata "Contract Type" = IMD,
-        tabledata "Service Commitment Template" = IMD,
-        tabledata "Service Commitment Package" = IMD,
-        tabledata "Service Comm. Package Line" = IMD,
-        tabledata "Item Templ. Serv. Comm. Pack." = IMD,
+        tabledata "Subscription Contract Setup" = IMD,
+        tabledata "Subscription Contract Type" = IMD,
+        tabledata "Sub. Package Line Template" = IMD,
+        tabledata "Subscription Package" = IMD,
+        tabledata "Subscription Package Line" = IMD,
+        tabledata "Item Templ. Sub. Package" = IMD,
         tabledata "Generic Import Settings" = IMD;
 }

@@ -25,28 +25,28 @@ codeunit 139688 "Recurring Billing Test"
         Currency: Record Currency;
         Customer: Record Customer;
         Customer2: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        CustomerContract2: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
-        TempDeletedCustomerContractLine: Record "Customer Contract Line" temporary;
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContract2: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        TempDeletedCustomerContractLine: Record "Cust. Sub. Contract Line" temporary;
         GLSetup: Record "General Ledger Setup";
         Item: Record Item;
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchaseHeader: Record "Purchase Header";
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
-        ServiceObject2: Record "Service Object";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
+        ServiceObject2: Record "Subscription Header";
         Vendor: Record Vendor;
         Vendor2: Record Vendor;
-        VendorContract: Record "Vendor Contract";
-        VendorContract2: Record "Vendor Contract";
-        TempDeletedVendorContractLine: Record "Vendor Contract Line" temporary;
-        VendorContractLine: Record "Vendor Contract Line";
+        VendorContract: Record "Vendor Subscription Contract";
+        VendorContract2: Record "Vendor Subscription Contract";
+        TempDeletedVendorContractLine: Record "Vend. Sub. Contract Line" temporary;
+        VendorContractLine: Record "Vend. Sub. Contract Line";
         Assert: Codeunit Assert;
         BillingProposal: Codeunit "Billing Proposal";
         ContractTestLibrary: Codeunit "Contract Test Library";
@@ -62,56 +62,57 @@ codeunit 139688 "Recurring Billing Test"
         StrMenuHandlerStep: Integer;
         BillingProposalNotCreatedErr: Label 'Billing proposal not created.';
         RecurringBillingPage: TestPage "Recurring Billing";
+        IsPartnerVendor: Boolean;
 
     #region Tests
 
     [Test]
     procedure BillCompletePeriodWhenServiceStartDateIsLastDayOfMonth()
     var
-        ServiceCommitmentPackageLine: Record "Service Comm. Package Line";
+        ServiceCommitmentPackageLine: Record "Subscription Package Line";
         EndDate: Date;
         StartDate: Date;
     begin
-        // [SCENARIO] When Customer Contract has Service Start Date at the end of the month, the proposed billing lines should convert the whole period including the last day of the contract
+        // [SCENARIO] When Customer Subscription Contract has Subscription Line Start Date at the end of the month, the proposed billing lines should convert the whole period including the last day of the contract
         Initialize();
 
         StartDate := CalcDate('<-CM-5M-1D>', Today()); // Last day of the month, e.g. 31.03.2023
         EndDate := CalcDate('<-CM-4M-1D>', Today()); // Last day of the next month, e.g. 30.04.2023
 
-        // [GIVEN] Service Commitment Item
-        ContractTestLibrary.CreateServiceObjectItem(Item, false, Enum::"Item Service Commitment Type"::"Service Commitment Item", "Item Type"::"Non-Inventory");
+        // [GIVEN] Subscription Item
+        ContractTestLibrary.CreateItemForServiceObject(Item, false, Enum::"Item Service Commitment Type"::"Service Commitment Item", "Item Type"::"Non-Inventory");
 
-        // [GIVEN] Service Commitment Package with assigned Item
+        // [GIVEN] Subscription Package with assigned Item
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommitmentPackageLine);
         ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommitmentPackageLine, '<2M>', 100, '<1M>', '', "Service Partner"::Customer, '');
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
         ServiceCommitmentPackage.SetRecFilter();
 
-        // [GIVEN] Customer and Customer Contract
+        // [GIVEN] Customer and Customer Subscription Contract
         LibrarySales.CreateCustomer(Customer);
         ContractTestLibrary.CreateCustomerContract(CustomerContract, Customer."No.");
         CustomerContract.SetRecFilter();
 
-        // [GIVEN] Service Object assigned to Customer Contract
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        // [GIVEN] Subscription assigned to Customer Subscription Contract
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, false);
         ServiceObject.Validate("End-User Customer No.", Customer."No.");
         ServiceObject.Modify(true);
         ServiceObject.SetRecFilter();
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(StartDate, EndDate, ServiceCommitmentPackage, false);
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false);
+        ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false);
 
-        // [GIVEN] Billing Template for Customer Contract for complete period - last day of the month following to the next one
+        // [GIVEN] Billing Template for Customer Subscription Contract for complete period - last day of the month following to the next one
         ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<CM+2M>', '<CM+2M>', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
         BillingTemplate.SetRecFilter();
 
-        // [WHEN] Create Billing Proposal for Customer Contract
+        // [WHEN] Create Billing Proposal for Customer Subscription Contract
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
-        // [THEN] Billing Lines are created for Customer Contract for complete period
+        // [THEN] Billing Lines are created for Customer Subscription Contract for complete period
         BillingLine.Reset();
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         BillingLine.SetRange("Billing from", StartDate);
         Assert.RecordIsNotEmpty(BillingLine);
         // There could be multiple lines
@@ -503,11 +504,11 @@ codeunit 139688 "Recurring Billing Test"
         // Check that Billing Lines are being archived when posting Sales Invoice
         BillingLinesArchiveSetup();
         // Check Archived Billing Lines exist
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.FindSet();
         repeat
-            TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
-            ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+            TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+            ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
             BillingLineArchive.FindSet();
             repeat
                 BillingLineArchive.TestField("Document Type", BillingLineArchive."Document Type"::Invoice);
@@ -526,11 +527,11 @@ codeunit 139688 "Recurring Billing Test"
         BillingLinesArchiveSetupForPurchaseDocs();
 
         // Check Archived Billing Lines exist
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.FindSet();
         repeat
-            TestArchivedBillingLinesExist(VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
-            ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+            TestArchivedBillingLinesExist(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+            ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
             BillingLineArchive.FindSet();
             repeat
                 BillingLineArchive.TestField("Document Type", BillingLineArchive."Document Type"::Invoice);
@@ -549,7 +550,7 @@ codeunit 139688 "Recurring Billing Test"
 
         // [GIVEN] BillingLine has values
         MockBillingLineForPartnerNoWithUnitPriceAndDiscountAndServiceObjectQuantity(LibraryRandom.RandDec(100, 2), LibraryRandom.RandDec(50, 2), LibraryRandom.RandDec(10, 2));
-        ExpectedServiceAmount := BillingLine."Unit Price" * BillingLine."Service Obj. Quantity Decimal" * (1 - BillingLine."Discount %" / 100);
+        ExpectedServiceAmount := BillingLine."Unit Price" * BillingLine."Service Object Quantity" * (1 - BillingLine."Discount %" / 100);
 
         Assert.AreEqual(ExpectedServiceAmount, BillingProposal.CalculateBillingLineServiceAmount(BillingLine), 'Service Amount has not been calculated correctly on a Billing Line.');
     end;
@@ -566,43 +567,47 @@ codeunit 139688 "Recurring Billing Test"
         Initialize();
 
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         BillingLine.Reset();
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.FindFirst();
         DiscountPercent := BillingLine."Discount %" + 1;
         DiscountAmount := BillingLine."Unit Price" * BillingLine."Discount %" + 1;
-        ServiceAmount := BillingLine."Service Amount" - 1;
-        CustomerContractLine.SetRange("Contract No.", BillingLine."Contract No.");
-        CustomerContractLine.SetRange("Line No.", BillingLine."Contract Line No.");
+        ServiceAmount := BillingLine.Amount - 1;
+        CustomerContractLine.SetRange("Subscription Contract No.", BillingLine."Subscription Contract No.");
+        CustomerContractLine.SetRange("Line No.", BillingLine."Subscription Contract Line No.");
         CustomerContractLine.FindFirst();
 
         CustomerContractLineSubPage.OpenEdit();
 
         CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
         CustomerContractLineSubPage."Service Amount".SetValue(ServiceAmount);
-        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
         CustomerContractLineSubPage."Discount Amount".SetValue(DiscountAmount);
-        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
         CustomerContractLineSubPage."Discount %".SetValue(DiscountPercent);
-        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
         Evaluate(BillingRhythm, '2M');
         CustomerContractLineSubPage."Billing Rhythm".SetValue(BillingRhythm);
-        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
 
         CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
         CustomerContractLineSubPage."Service Commitment Description".SetValue(LibraryRandom.RandText(100));
-        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
+
+        CustomerContractLineSubPage.GoToRecord(CustomerContractLine);
+        CustomerContractLineSubPage."Unit Cost (LCY)".SetValue(LibraryRandom.RandDec(100, 2));
+        TestBillingLineUpdateRequiredSetAndReset(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.");
     end;
 
     [Test]
@@ -617,43 +622,43 @@ codeunit 139688 "Recurring Billing Test"
         Initialize();
 
         ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.");
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
         BillingLine.Reset();
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.FindFirst();
         DiscountPercent := BillingLine."Discount %" + 1;
         DiscountAmount := BillingLine."Unit Price" * BillingLine."Discount %" + 1;
-        ServiceAmount := BillingLine."Service Amount" - 1;
-        VendorContractLine.SetRange("Contract No.", BillingLine."Contract No.");
-        VendorContractLine.SetRange("Line No.", BillingLine."Contract Line No.");
+        ServiceAmount := BillingLine.Amount - 1;
+        VendorContractLine.SetRange("Subscription Contract No.", BillingLine."Subscription Contract No.");
+        VendorContractLine.SetRange("Line No.", BillingLine."Subscription Contract Line No.");
         VendorContractLine.FindFirst();
 
         VendorContractLineSubPage.OpenEdit();
 
         VendorContractLineSubPage.GoToRecord(VendorContractLine);
         VendorContractLineSubPage."Service Amount".SetValue(ServiceAmount);
-        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         VendorContractLineSubPage.GoToRecord(VendorContractLine);
         VendorContractLineSubPage."Discount Amount".SetValue(DiscountAmount);
-        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         VendorContractLineSubPage.GoToRecord(VendorContractLine);
         VendorContractLineSubPage."Discount %".SetValue(DiscountPercent);
-        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.");
         BillingProposal.CreateBillingProposal(BillingLine."Billing Template Code", BillingLine."Billing from", BillingLine."Billing to");
 
         VendorContractLineSubPage.GoToRecord(VendorContractLine);
         Evaluate(BillingRhythm, '<3M>');
         VendorContractLineSubPage."Billing Rhythm".SetValue(BillingRhythm);
-        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.");
 
         VendorContractLineSubPage.GoToRecord(VendorContractLine);
         VendorContractLineSubPage."Service Commitment Description".SetValue(LibraryRandom.RandText(100));
-        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        TestBillingLineUpdateRequiredSetAndReset(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.");
     end;
 
     [Test]
@@ -666,7 +671,7 @@ codeunit 139688 "Recurring Billing Test"
         FindFirstServiceCommitment();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         BillingLine.SetRange("Billing to", CalcDate('<-1D>', ServiceCommitment."Next Billing Date"));
         BillingLine.FindFirst();
         BillingProposal.UpdateBillingToDate(BillingLine, CalcDate('<+3D>', BillingLine."Billing to"));
@@ -685,7 +690,7 @@ codeunit 139688 "Recurring Billing Test"
         FindFirstServiceCommitment();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         BillingLine.SetRange("Billing to", CalcDate('<-1D>', ServiceCommitment."Next Billing Date"));
         BillingLine.FindFirst();
         BillingProposal.UpdateBillingToDate(BillingLine, CalcDate('<+3D>', BillingLine."Billing to"));
@@ -703,7 +708,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateBillingProposalForCustomerContractUsingRealTemplate();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if not BillingLine.FindSet() then
             Error(BillingProposalNotCreatedErr);
 
@@ -717,7 +722,7 @@ codeunit 139688 "Recurring Billing Test"
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if not BillingLine.FindSet() then
             Error(BillingProposalNotCreatedErr);
 
@@ -738,7 +743,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateBillingProposalForVendorContractUsingRealTemplate();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if not BillingLine.FindSet() then
             Error(BillingProposalNotCreatedErr);
 
@@ -752,7 +757,7 @@ codeunit 139688 "Recurring Billing Test"
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if not BillingLine.FindSet() then
             Error(BillingProposalNotCreatedErr);
 
@@ -771,10 +776,10 @@ codeunit 139688 "Recurring Billing Test"
         Initialize();
 
         ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.");
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject2, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject2, Customer."No.");
         ContractTestLibrary.CreateBillingProposal(BillingTemplate2, Enum::"Service Partner"::Customer);
 
         StrMenuHandlerStep := 1;
@@ -792,19 +797,19 @@ codeunit 139688 "Recurring Billing Test"
         CreateBillingProposalForCustomerContractUsingRealTemplate();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
-                ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+                ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
                 Assert.AreEqual(BillingLine."Billing Template Code", BillingTemplate.Code, BillingLine."Billing Template Code");
-                Assert.AreEqual(BillingLine."Service Object No.", ServiceCommitment."Service Object No.", BillingLine.FieldName("Service Object No."));
-                Assert.AreEqual(BillingLine."Service Commitment Entry No.", ServiceCommitment."Entry No.", BillingLine.FieldName("Service Commitment Entry No."));
-                Assert.AreEqual(BillingLine."Service Commitment Description", ServiceCommitment.Description, BillingLine.FieldName("Service Commitment Description"));
-                Assert.AreEqual(BillingLine."Service Start Date", ServiceCommitment."Service Start Date", BillingLine.FieldName("Service Start Date"));
-                Assert.AreEqual(BillingLine."Service End Date", ServiceCommitment."Service End Date", BillingLine.FieldName("Service End Date"));
+                Assert.AreEqual(BillingLine."Subscription Header No.", ServiceCommitment."Subscription Header No.", BillingLine.FieldName("Subscription Header No."));
+                Assert.AreEqual(BillingLine."Subscription Line Entry No.", ServiceCommitment."Entry No.", BillingLine.FieldName("Subscription Line Entry No."));
+                Assert.AreEqual(BillingLine."Subscription Line Description", ServiceCommitment.Description, BillingLine.FieldName("Subscription Line Description"));
+                Assert.AreEqual(BillingLine."Subscription Line Start Date", ServiceCommitment."Subscription Line Start Date", BillingLine.FieldName("Subscription Line Start Date"));
+                Assert.AreEqual(BillingLine."Subscription Line End Date", ServiceCommitment."Subscription Line End Date", BillingLine.FieldName("Subscription Line End Date"));
                 Assert.AreEqual(BillingLine."Billing Rhythm", ServiceCommitment."Billing Rhythm", BillingLine.FieldName("Billing Rhythm"));
                 Assert.AreEqual(BillingLine."Discount %", ServiceCommitment."Discount %", BillingLine.FieldName("Discount %"));
-                Assert.AreEqual(BillingLine."Service Obj. Quantity Decimal", ServiceObject."Quantity Decimal", BillingLine.FieldName("Service Obj. Quantity Decimal"));
+                Assert.AreEqual(BillingLine."Service Object Quantity", ServiceObject.Quantity, BillingLine.FieldName("Service Object Quantity"));
             until BillingLine.Next() = 0
         else
             Error(BillingProposalNotCreatedErr);
@@ -820,7 +825,7 @@ codeunit 139688 "Recurring Billing Test"
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate(), 0D);
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         BillingLine.FindSet();
     end;
 
@@ -832,19 +837,19 @@ codeunit 139688 "Recurring Billing Test"
         CreateBillingProposalForVendorContractUsingRealTemplate();
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
-                ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+                ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
                 Assert.AreEqual(BillingLine."Billing Template Code", BillingTemplate.Code, BillingLine."Billing Template Code");
-                Assert.AreEqual(BillingLine."Service Object No.", ServiceCommitment."Service Object No.", BillingLine.FieldName("Service Object No."));
-                Assert.AreEqual(BillingLine."Service Commitment Entry No.", ServiceCommitment."Entry No.", BillingLine.FieldName("Service Commitment Entry No."));
-                Assert.AreEqual(BillingLine."Service Commitment Description", ServiceCommitment.Description, BillingLine.FieldName("Service Commitment Description"));
-                Assert.AreEqual(BillingLine."Service Start Date", ServiceCommitment."Service Start Date", BillingLine.FieldName("Service Start Date"));
-                Assert.AreEqual(BillingLine."Service End Date", ServiceCommitment."Service End Date", BillingLine.FieldName("Service End Date"));
+                Assert.AreEqual(BillingLine."Subscription Header No.", ServiceCommitment."Subscription Header No.", BillingLine.FieldName("Subscription Header No."));
+                Assert.AreEqual(BillingLine."Subscription Line Entry No.", ServiceCommitment."Entry No.", BillingLine.FieldName("Subscription Line Entry No."));
+                Assert.AreEqual(BillingLine."Subscription Line Description", ServiceCommitment.Description, BillingLine.FieldName("Subscription Line Description"));
+                Assert.AreEqual(BillingLine."Subscription Line Start Date", ServiceCommitment."Subscription Line Start Date", BillingLine.FieldName("Subscription Line Start Date"));
+                Assert.AreEqual(BillingLine."Subscription Line End Date", ServiceCommitment."Subscription Line End Date", BillingLine.FieldName("Subscription Line End Date"));
                 Assert.AreEqual(BillingLine."Billing Rhythm", ServiceCommitment."Billing Rhythm", BillingLine.FieldName("Billing Rhythm"));
                 Assert.AreEqual(BillingLine."Discount %", ServiceCommitment."Discount %", BillingLine.FieldName("Discount %"));
-                Assert.AreEqual(BillingLine."Service Obj. Quantity Decimal", ServiceObject."Quantity Decimal", BillingLine.FieldName("Service Obj. Quantity Decimal"));
+                Assert.AreEqual(BillingLine."Service Object Quantity", ServiceObject.Quantity, BillingLine.FieldName("Service Object Quantity"));
             until BillingLine.Next() = 0
         else
             Error(BillingProposalNotCreatedErr);
@@ -859,7 +864,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateRecurringBillingTemplateSetupForVendorContract('<2M-CM>', '<8M+CM>', VendorContract.GetView());
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor, WorkDate(), 0D);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         BillingLine.FindSet();
     end;
 
@@ -869,24 +874,24 @@ codeunit 139688 "Recurring Billing Test"
     begin
         Initialize();
 
-        // Check that Archived Billing Lines are deleted only when both related Customer Contract Line and posted sales documents have been deleted
-        // This test deletes the Customer Contract Line connected to Archived Billing Lines first
+        // Check that Archived Billing Lines are deleted only when both related Customer Subscription Contract Line and posted sales documents have been deleted
+        // This test deletes the Customer Subscription Contract Line connected to Archived Billing Lines first
         BillingLinesArchiveSetup();
 
         // Check that the Archived Billing Lines are deleted correctly after the posted sales document has been deleted
         // - should not be deleted while posted sales document exist
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.FindFirst();
-        TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
         TempDeletedCustomerContractLine := CustomerContractLine;
         CustomerContractLine.Delete(true);
 
         CustomerContractLine.Next();
-        TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
-        TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Subscription Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
         DeletePostedSalesDocument();
-        TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
-        asserterror TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        asserterror TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Subscription Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
     end;
 
     [Test]
@@ -895,21 +900,21 @@ codeunit 139688 "Recurring Billing Test"
     begin
         Initialize();
 
-        // Check that Archived Billing Lines are deleted only when both related Customer Contract Line and posted sales documents have been deleted
+        // Check that Archived Billing Lines are deleted only when both related Customer Subscription Contract Line and posted sales documents have been deleted
         // This test deletes the posted sales document connected to Archived Billing Lines first
         BillingLinesArchiveSetup();
 
-        // Check that the Archived Billing Lines are deleted correctly when deleting Customer Contract Line
+        // Check that the Archived Billing Lines are deleted correctly when deleting Customer Subscription Contract Line
         // - posted sales document should be deleted first
         DeletePostedSalesDocument();
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.FindFirst();
-        TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
         TempDeletedCustomerContractLine := CustomerContractLine;
         CustomerContractLine.Delete(true);
-        asserterror TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        asserterror TestArchivedBillingLinesExist(TempDeletedCustomerContractLine."Subscription Contract No.", TempDeletedCustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
         CustomerContractLine.Next();
-        TestArchivedBillingLinesExist(CustomerContractLine."Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
+        TestArchivedBillingLinesExist(CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.", Enum::"Service Partner"::Customer);
     end;
 
     [Test]
@@ -918,20 +923,20 @@ codeunit 139688 "Recurring Billing Test"
     begin
         Initialize();
 
-        // Check that Archived Billing Lines are deleted only when both related Vendor Contract Line and posted purchase documents have been deleted
+        // Check that Archived Billing Lines are deleted only when both related Vendor Subscription Contract Line and posted purchase documents have been deleted
         // This test deletes the posted purchase document connected to Archived Billing Lines first
         BillingLinesArchiveSetupForPurchaseDocs();
-        // Check that the Archived Billing Lines are deleted correctly when deleting Vendor Contract Line
+        // Check that the Archived Billing Lines are deleted correctly when deleting Vendor Subscription Contract Line
         // - posted purchase document should be deleted first
         DeletePostedPurchaseDocument();
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.FindFirst();
-        TestArchivedBillingLinesExist(VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        TestArchivedBillingLinesExist(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
         TempDeletedVendorContractLine := VendorContractLine;
         VendorContractLine.Delete(true);
-        asserterror TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        asserterror TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Subscription Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
         VendorContractLine.Next();
-        TestArchivedBillingLinesExist(VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        TestArchivedBillingLinesExist(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
     end;
 
     [Test]
@@ -940,22 +945,22 @@ codeunit 139688 "Recurring Billing Test"
     begin
         Initialize();
 
-        // Check that Archived Billing Lines are deleted only when both related Customer Contract Line and posted Purchase documents have been deleted
-        // This test deletes the Vendor Contract Line connected to Archived Billing Lines first
+        // Check that Archived Billing Lines are deleted only when both related Customer Subscription Contract Line and posted Purchase documents have been deleted
+        // This test deletes the Vendor Subscription Contract Line connected to Archived Billing Lines first
         BillingLinesArchiveSetupForPurchaseDocs();
         // Check that the Archived Billing Lines are deleted correctly after the posted Purchase document has been deleted
         // - should not be deleted while posted Purchase document exist
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.FindFirst();
-        TestArchivedBillingLinesExist(VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        TestArchivedBillingLinesExist(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
         TempDeletedVendorContractLine := VendorContractLine;
         VendorContractLine.Delete(true);
 
         VendorContractLine.Next();
-        TestArchivedBillingLinesExist(VendorContractLine."Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
-        TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        TestArchivedBillingLinesExist(VendorContractLine."Subscription Contract No.", VendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Subscription Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
         DeletePostedPurchaseDocument();
-        asserterror TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
+        asserterror TestArchivedBillingLinesExist(TempDeletedVendorContractLine."Subscription Contract No.", TempDeletedVendorContractLine."Line No.", Enum::"Service Partner"::Vendor);
     end;
 
     [Test]
@@ -969,7 +974,7 @@ codeunit 139688 "Recurring Billing Test"
         Commit(); // retain data after asserterror
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
                 if (CalcDate('<-1D>', ServiceCommitment."Next Billing Date") = BillingLine."Billing to") then
@@ -991,7 +996,7 @@ codeunit 139688 "Recurring Billing Test"
         FindFirstServiceCommitment();
         Commit(); // retain data after asserterror
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
                 if (CalcDate('<-1D>', ServiceCommitment."Next Billing Date") = BillingLine."Billing to") then
@@ -1008,13 +1013,13 @@ codeunit 139688 "Recurring Billing Test"
     var
         ExpectedServiceAmount: Decimal;
     begin
-        // [SCENARIO] When the "Discount %" is entered on a Service Commitment it should be transferred to a billing line when creating billing proposal.
+        // [SCENARIO] When the "Discount %" is entered on a Subscription Line it should be transferred to a billing line when creating billing proposal.
         Initialize();
 
         // [GIVEN] Contract has been created
         CreateCustomerContract('<1M>', '<12M>');
 
-        // [GIVEN] "Discount %" is updated on a Service Commitment
+        // [GIVEN] "Discount %" is updated on a Subscription Line
         FindFirstServiceCommitment();
         ServiceCommitment."Discount %" := LibraryRandom.RandDec(50, 2);
         ServiceCommitment.Modify(false);
@@ -1023,13 +1028,13 @@ codeunit 139688 "Recurring Billing Test"
         CreateRecurringBillingTemplateSetupForCustomerContract('<2M-CM>', '<8M+CM>', CustomerContract.GetView());
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
-        // [THEN] Billing Lines must have correctly calculated service amount taking discount % from Service Commitment into account
+        // [THEN] Billing Lines must have correctly calculated Amount taking discount % from Subscription Line into account
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
-                ExpectedServiceAmount := Round(BillingLine."Unit Price" * BillingLine."Service Obj. Quantity Decimal" * (1 - ServiceCommitment."Discount %" / 100), Currency."Amount Rounding Precision");
-                Assert.AreEqual(ExpectedServiceAmount, BillingLine."Service Amount", 'Discount not transferred from Service Commitment to a Billing Line.');
+                ExpectedServiceAmount := Round(BillingLine."Unit Price" * BillingLine."Service Object Quantity" * (1 - ServiceCommitment."Discount %" / 100), Currency."Amount Rounding Precision");
+                Assert.AreEqual(ExpectedServiceAmount, BillingLine.Amount, 'Discount not transferred from Service Commitment to a Billing Line.');
             until BillingLine.Next() = 0;
     end;
 
@@ -1038,13 +1043,13 @@ codeunit 139688 "Recurring Billing Test"
     var
         ExpectedServiceAmount: Decimal;
     begin
-        // [SCENARIO] When the "Discount %" is entered on a Service Commitment it should be transferred to a billing line when creating billing proposal.
+        // [SCENARIO] When the "Discount %" is entered on a Subscription Line it should be transferred to a billing line when creating billing proposal.
         Initialize();
 
         // [GIVEN] Contract has been created
         CreateVendorContract('<1M>', '<12M>');
 
-        // [GIVEN] "Discount %" is updated on a Service Commitment
+        // [GIVEN] "Discount %" is updated on a Subscription Line
         FindFirstServiceCommitment();
         ServiceCommitment."Discount %" := LibraryRandom.RandDec(50, 2);
         ServiceCommitment.Modify(false);
@@ -1053,13 +1058,13 @@ codeunit 139688 "Recurring Billing Test"
         CreateRecurringBillingTemplateSetupForVendorContract('<2M-CM>', '<8M+CM>', VendorContract.GetView());
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
 
-        // [THEN] Billing Lines must have correctly calculated service amount taking discount % from Service Commitment into account
+        // [THEN] Billing Lines must have correctly calculated Amount taking discount % from Subscription Line into account
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
         if BillingLine.FindSet() then
             repeat
-                ExpectedServiceAmount := Round(BillingLine."Unit Price" * BillingLine."Service Obj. Quantity Decimal" * (1 - ServiceCommitment."Discount %" / 100), Currency."Amount Rounding Precision");
-                Assert.AreEqual(ExpectedServiceAmount, BillingLine."Service Amount", 'Discount not transferred from Service Commitment to a Billing Line.');
+                ExpectedServiceAmount := Round(BillingLine."Unit Price" * BillingLine."Service Object Quantity" * (1 - ServiceCommitment."Discount %" / 100), Currency."Amount Rounding Precision");
+                Assert.AreEqual(ExpectedServiceAmount, BillingLine.Amount, 'Discount not transferred from Service Commitment to a Billing Line.');
             until BillingLine.Next() = 0
     end;
 
@@ -1135,9 +1140,9 @@ codeunit 139688 "Recurring Billing Test"
                     if DistanceToEndOfMonth < 3 then
                         ExpectedNextToDate := CalcDate('<CM>', ExpectedNextToDate) - DistanceToEndOfMonth - 1;
                     ServiceCommitment."Period Calculation" := ServiceCommitment."Period Calculation"::"Align to End of Month";
-                    ServiceCommitment."Service Start Date" := StartDate;
+                    ServiceCommitment."Subscription Line Start Date" := StartDate;
                     for MonthForLoop := 1 to 12 do
-                        NextToDate := BillingProposal.CalculateNextToDate(ServiceCommitment, MonthFormula, NextToDate + 1);
+                        NextToDate := ServiceCommitment.CalculateNextToDate(MonthFormula, NextToDate + 1);
                     Assert.AreEqual(ExpectedNextToDate, NextToDate, 'Next Date not calculated correctly.');
                 end;
     end;
@@ -1175,29 +1180,29 @@ codeunit 139688 "Recurring Billing Test"
 
         BillingProposal.InitTempTable(TempBillingLine, Enum::"Contract Billing Grouping"::Contract);
 
-        TempBillingLine.SetFilter("Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
+        TempBillingLine.SetFilter("Subscription Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
         TempBillingLine.FindFirst();
-        Assert.AreEqual(CustomerContract."No.", TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(CustomerContract."No.", TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Customer."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, CustomerContract."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, CustomerContract."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by Contract).');
 
         TempBillingLine.Next();
-        Assert.AreEqual(CustomerContract2."No.", TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(CustomerContract2."No.", TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Customer2."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, CustomerContract2."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, CustomerContract2."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by Contract).');
 
-        TempBillingLine.SetRange("Contract No.");
+        TempBillingLine.SetRange("Subscription Contract No.");
         BillingProposal.InitTempTable(TempBillingLine, Enum::"Contract Billing Grouping"::"Contract Partner");
         TempBillingLine.SetFilter("Partner No.", '%1|%2', Customer."No.", Customer2."No.");
         TempBillingLine.FindFirst();
-        Assert.AreEqual('', TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Customer."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Customer."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Customer."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
 
         TempBillingLine.Next();
-        Assert.AreEqual('', TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Customer2."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Customer2."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Customer2."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
     end;
 
     [Test]
@@ -1215,29 +1220,29 @@ codeunit 139688 "Recurring Billing Test"
 
         BillingProposal.InitTempTable(TempBillingLine, Enum::"Contract Billing Grouping"::Contract);
 
-        TempBillingLine.SetFilter("Contract No.", '%1|%2', VendorContract."No.", VendorContract2."No.");
+        TempBillingLine.SetFilter("Subscription Contract No.", '%1|%2', VendorContract."No.", VendorContract2."No.");
         TempBillingLine.FindFirst();
-        Assert.AreEqual(VendorContract."No.", TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(VendorContract."No.", TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Vendor."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, VendorContract."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, VendorContract."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by Contract).');
 
         TempBillingLine.Next();
-        Assert.AreEqual(VendorContract2."No.", TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(VendorContract2."No.", TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by Contract).');
         Assert.AreEqual(Vendor2."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by Contract).');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, VendorContract2."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by Contract).');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::Contract, VendorContract2."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by Contract).');
 
-        TempBillingLine.SetRange("Contract No.");
+        TempBillingLine.SetRange("Subscription Contract No.");
         BillingProposal.InitTempTable(TempBillingLine, Enum::"Contract Billing Grouping"::"Contract Partner");
         TempBillingLine.SetFilter("Partner No.", '%1|%2', Vendor."No.", Vendor2."No.");
         TempBillingLine.FindFirst();
-        Assert.AreEqual('', TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Vendor."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Vendor."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Vendor."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
 
         TempBillingLine.Next();
-        Assert.AreEqual('', TempBillingLine."Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual('', TempBillingLine."Subscription Contract No.", 'Contract No. is not set correctly in grouping line (Group by "Contract Partner").');
         Assert.AreEqual(Vendor2."No.", TempBillingLine."Partner No.", 'Partner No. is not set correctly in grouping line (Group by "Contract Partner").');
-        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Vendor2."No."), TempBillingLine."Service Amount", 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
+        Assert.AreEqual(GetBillingLineServiceAmount(Enum::"Contract Billing Grouping"::"Contract Partner", Vendor2."No."), TempBillingLine.Amount, 'Service Amount not calculated correctly in grouping line (Group by "Contract Partner").');
     end;
 
     [Test]
@@ -1268,7 +1273,7 @@ codeunit 139688 "Recurring Billing Test"
         CustomerContract.SetRange("Contract Type", LibraryRandom.RandText(MaxStrLen(CustomerContract."Contract Type")));
         CreateRecurringBillingTemplateSetupForCustomerContract('<-CM>', '<CM>', CustomerContract.GetView());
         FilterText := BillingTemplate.ReadFilter(BillingTemplate.FieldNo(Filter));
-        Assert.AreEqual(CustomerContract.GetView(), FilterText, 'Billing Template customer contract filter failed.');
+        Assert.AreEqual(CustomerContract.GetView(), FilterText, 'Billing Template Customer Subscription Contract filter failed.');
     end;
 
     [Test]
@@ -1281,7 +1286,7 @@ codeunit 139688 "Recurring Billing Test"
         VendorContract.SetRange("Contract Type", LibraryRandom.RandText(MaxStrLen(VendorContract."Contract Type")));
         CreateRecurringBillingTemplateSetupForVendorContract('<-CM>', '<CM>', VendorContract.GetView());
         FilterText := BillingTemplate.ReadFilter(BillingTemplate.FieldNo(Filter));
-        Assert.AreEqual(VendorContract.GetView(), FilterText, 'Billing Template vendor contract filter failed.');
+        Assert.AreEqual(VendorContract.GetView(), FilterText, 'Billing Template Vendor Subscription Contract filter failed.');
     end;
 
     [Test]
@@ -1296,13 +1301,13 @@ codeunit 139688 "Recurring Billing Test"
         ContractNo := LibraryUtility.GenerateGUID();
         MockBillingLineForContractWithAmount(ContractNo, LibraryRandom.RandDecInRange(60, 100, 2));
         MockBillingLineForContractWithAmount(ContractNo, -LibraryRandom.RandDecInRange(1, 50, 2));
-        BillingLine.SetRange("Contract No.", ContractNo);
+        BillingLine.SetRange("Subscription Contract No.", ContractNo);
         Assert.AreEqual("Purchase Document Type"::Invoice, BillingLine.GetPurchaseDocumentTypeForContractNo(), 'Purchase Document Type is not calculated correctly for Invoice.');
         // Credit Memo
         ContractNo := LibraryUtility.GenerateGUID();
         MockBillingLineForContractWithAmount(ContractNo, -LibraryRandom.RandDecInRange(60, 100, 2));
         MockBillingLineForContractWithAmount(ContractNo, LibraryRandom.RandDecInRange(1, 50, 2));
-        BillingLine.SetRange("Contract No.", ContractNo);
+        BillingLine.SetRange("Subscription Contract No.", ContractNo);
         Assert.AreEqual("Purchase Document Type"::"Credit Memo", BillingLine.GetPurchaseDocumentTypeForContractNo(), 'Purchase Document Type is not calculated correctly for Credit Memo.');
     end;
 
@@ -1341,13 +1346,13 @@ codeunit 139688 "Recurring Billing Test"
         ContractNo := LibraryUtility.GenerateGUID();
         MockBillingLineForContractWithAmount(ContractNo, LibraryRandom.RandDecInRange(60, 100, 2));
         MockBillingLineForContractWithAmount(ContractNo, -LibraryRandom.RandDecInRange(1, 50, 2));
-        BillingLine.SetRange("Contract No.", ContractNo);
+        BillingLine.SetRange("Subscription Contract No.", ContractNo);
         Assert.AreEqual("Sales Document Type"::Invoice, BillingLine.GetSalesDocumentTypeForContractNo(), 'Sales Document Type is not calculated correctly for Invoice.');
         // Credit Memo
         ContractNo := LibraryUtility.GenerateGUID();
         MockBillingLineForContractWithAmount(ContractNo, -LibraryRandom.RandDecInRange(60, 100, 2));
         MockBillingLineForContractWithAmount(ContractNo, LibraryRandom.RandDecInRange(1, 50, 2));
-        BillingLine.SetRange("Contract No.", ContractNo);
+        BillingLine.SetRange("Subscription Contract No.", ContractNo);
         Assert.AreEqual("Sales Document Type"::"Credit Memo", BillingLine.GetSalesDocumentTypeForContractNo(), 'Sales Document Type is not calculated correctly for Credit Memo.');
     end;
 
@@ -1396,11 +1401,11 @@ codeunit 139688 "Recurring Billing Test"
 
     local procedure BillingLinesArchiveSetup()
     begin
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.", true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.", true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
 
         // Create Billing Document (Sales)
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
@@ -1414,11 +1419,11 @@ codeunit 139688 "Recurring Billing Test"
 
     local procedure BillingLinesArchiveSetupForPurchaseDocs()
     begin
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", true);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
 
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.SetRange("Subscription Header No.", ServiceObject."No.");
 
         // Create Billing Document (Purchase)
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
@@ -1434,11 +1439,19 @@ codeunit 139688 "Recurring Billing Test"
     local procedure CheckBillingLineAmountAndPrice(ExpectedCalculatedUnitPrice: Decimal)
     var
         ExpectedCalculatedServiceAmount: Decimal;
+        ExpectedCalculatedUnitCost: Decimal;
     begin
         BillingLine.FindLast();
-        ExpectedCalculatedServiceAmount := Round(ExpectedCalculatedUnitPrice * ServiceObject."Quantity Decimal", Currency."Amount Rounding Precision");
+        ExpectedCalculatedServiceAmount := Round(ExpectedCalculatedUnitPrice * ServiceObject.Quantity, Currency."Amount Rounding Precision");
         Assert.AreEqual(ExpectedCalculatedUnitPrice, BillingLine."Unit Price", 'Billing Line Unit Price not calculated correctly.');
-        Assert.AreEqual(ExpectedCalculatedServiceAmount, BillingLine."Service Amount", 'Billing Line Service Amount not calculated correctly.');
+        Assert.AreEqual(ExpectedCalculatedServiceAmount, BillingLine.Amount, 'Billing Line Service Amount not calculated correctly.');
+        if IsPartnerVendor then begin
+            ExpectedCalculatedUnitCost := ExpectedCalculatedUnitPrice;
+            Assert.AreEqual(ExpectedCalculatedUnitCost, BillingLine."Unit Cost (LCY)", 'Billing Line Unit Cost not calculated correctly.');
+        end else begin
+            ExpectedCalculatedUnitCost := Round(ExpectedCalculatedUnitPrice / 2, Currency."Unit-Amount Rounding Precision");
+            Assert.AreNearlyEqual(ExpectedCalculatedUnitCost, BillingLine."Unit Cost (LCY)", Currency."Unit-Amount Rounding Precision", 'Billing Line Unit Cost not calculated correctly.');
+        end;
     end;
 
     local procedure CheckNextToDate(PeriodCalculation: Enum "Period Calculation"; PeriodTxt: Text; StartDate: Date; ExpectedEndDate: Date)
@@ -1451,13 +1464,13 @@ codeunit 139688 "Recurring Billing Test"
         Evaluate(PeriodFormula, PeriodTxt);
 
         ServiceCommitment."Period Calculation" := PeriodCalculation;
-        ServiceCommitment."Service Start Date" := StartDate;
-        Assert.AreEqual(ExpectedEndDate, BillingProposal.CalculateNextToDate(ServiceCommitment, PeriodFormula, StartDate), 'Next Date not calculated correctly.');
+        ServiceCommitment."Subscription Line Start Date" := StartDate;
+        Assert.AreEqual(ExpectedEndDate, ServiceCommitment.CalculateNextToDate(PeriodFormula, StartDate), 'Next Date not calculated correctly.');
     end;
 
     local procedure CheckTempBillingLineRecords()
     begin
-        BillingLine.SetFilter("Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
+        BillingLine.SetFilter("Subscription Contract No.", '%1|%2', CustomerContract."No.", CustomerContract2."No.");
         BillingLine.FindSet();
         repeat
             Assert.IsTrue(TempBillingLine.Get(BillingLine."Entry No."), 'Record not found in temporary table.');
@@ -1477,6 +1490,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateCustomerContract(PeriodCalculation, BillingPeriod, BillingBasePeriod, BillFromDate, 200, 100);
         BillingProposal.CreateBillingProposalForContract("Service Partner"::Customer, CustomerContract."No.", '', CustomerContract.GetFilter("Billing Rhythm Filter"), BillToDate, BillToDate);
         Currency.InitRoundingPrecision();
+        IsPartnerVendor := false;
     end;
 
     local procedure CreateBillingProposalForVendorContractUsingRealTemplate()
@@ -1492,6 +1506,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateVendorContract(PeriodCalculation, BillingPeriod, BillingBasePeriod, BillFromDate, 200, 100);
         BillingProposal.CreateBillingProposalForContract("Service Partner"::Vendor, VendorContract."No.", '', VendorContract.GetFilter("Billing Rhythm Filter"), BillToDate, BillToDate);
         Currency.InitRoundingPrecision();
+        IsPartnerVendor := true;
     end;
 
     local procedure CreateCustomerContract(BillingPeriod: Text; BillingBasePeriod: Text)
@@ -1507,7 +1522,7 @@ codeunit 139688 "Recurring Billing Test"
         CreateServiceCommitmentTemplateSetup(BillingBasePeriod);
         CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(PeriodCalculation, BillingPeriod);
         InsertServiceCommitmentFromServiceCommPackageSetup(BillFromDate);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.");
         CustomerContract.SetRange("No.", CustomerContract."No.");
     end;
 
@@ -1542,10 +1557,10 @@ codeunit 139688 "Recurring Billing Test"
     begin
         ContractTestLibrary.CreateCustomerInLCY(Customer);
         ContractTestLibrary.CreateVendorInLCY(Vendor);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, false);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, false);
         ServiceObject.SetHideValidationDialog(true);
         ServiceObject.Validate("End-User Customer Name", Customer.Name);
-        ServiceObject."Quantity Decimal" := 5;
+        ServiceObject.Quantity := 5;
         ServiceObject.Modify(false);
     end;
 
@@ -1564,7 +1579,7 @@ codeunit 139688 "Recurring Billing Test"
         ServiceCommPackageLine.Partner := ServiceCommPackageLine.Partner::Vendor;
         ServiceCommPackageLine.Modify(false);
         InsertServiceCommitmentFromServiceCommPackageSetup(BillFromDate);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.");
         VendorContract.SetRange("No.", VendorContract."No.");
     end;
 
@@ -1588,8 +1603,8 @@ codeunit 139688 "Recurring Billing Test"
 
     local procedure FindFirstServiceCommitment()
     begin
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.SetRange("Package Code", ServiceCommitmentPackage.Code);
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Package Code", ServiceCommitmentPackage.Code);
         ServiceCommitment.SetRange(Template, ServiceCommitmentTemplate.Code);
         ServiceCommitment.FindFirst();
     end;
@@ -1599,12 +1614,12 @@ codeunit 139688 "Recurring Billing Test"
         BillingLine.Reset();
         case GroupBy of
             Enum::"Contract Billing Grouping"::Contract:
-                BillingLine.SetRange("Contract No.", FilterCodeNo);
+                BillingLine.SetRange("Subscription Contract No.", FilterCodeNo);
             Enum::"Contract Billing Grouping"::"Contract Partner":
                 BillingLine.SetRange("Partner No.", FilterCodeNo);
         end;
-        BillingLine.CalcSums("Service Amount");
-        exit(BillingLine."Service Amount");
+        BillingLine.CalcSums(Amount);
+        exit(BillingLine.Amount);
     end;
 
     local procedure InsertServiceCommitmentFromServiceCommPackageSetup(ServiceAndCalculationStartDate: Date)
@@ -1616,8 +1631,8 @@ codeunit 139688 "Recurring Billing Test"
     local procedure MockBillingLineForContractWithAmount(NewContractNo: Code[20]; NewServiceAmount: Decimal)
     begin
         BillingLine.InitNewBillingLine();
-        BillingLine."Contract No." := NewContractNo;
-        BillingLine."Service Amount" := NewServiceAmount;
+        BillingLine."Subscription Contract No." := NewContractNo;
+        BillingLine.Amount := NewServiceAmount;
         BillingLine.Insert(false);
     end;
 
@@ -1627,7 +1642,7 @@ codeunit 139688 "Recurring Billing Test"
         BillingLine.InitNewBillingLine();
         BillingLine.Partner := NewPartner;
         BillingLine."Partner No." := NewPartnerNo;
-        BillingLine."Service Amount" := NewServiceAmount;
+        BillingLine.Amount := NewServiceAmount;
         BillingLine.Insert(false);
     end;
 
@@ -1636,25 +1651,25 @@ codeunit 139688 "Recurring Billing Test"
         BillingLine.InitNewBillingLine();
         BillingLine."Unit Price" := NewUnitPrice;
         BillingLine."Discount %" := NewDiscountPercentage;
-        BillingLine."Service Obj. Quantity Decimal" := NewServiceObjQuantity;
+        BillingLine."Service Object Quantity" := NewServiceObjQuantity;
         BillingLine.Insert(false);
     end;
 
     local procedure RecurringBillingPageSetupForCustomer()
     begin
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.", false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No.", false);
         ContractTestLibrary.CreateCustomer(Customer2);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract2, ServiceObject2, Customer2."No.", false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract2, ServiceObject2, Customer2."No.", false);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
     end;
 
     local procedure RecurringBillingPageSetupForVendor()
     begin
         ContractTestLibrary.CreateVendor(Vendor);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", false);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", false);
         ContractTestLibrary.CreateVendor(Vendor2);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract2, ServiceObject2, Vendor2."No.", false);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract2, ServiceObject2, Vendor2."No.", false);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
     end;
 
@@ -1681,8 +1696,8 @@ codeunit 139688 "Recurring Billing Test"
 
     local procedure TestBillingLineUpdateRequiredSetAndReset(ContractNo: Code[20]; ContractLineNo: Integer)
     begin
-        BillingLine.SetRange("Contract No.", ContractNo);
-        BillingLine.SetRange("Contract Line No.", ContractLineNo);
+        BillingLine.SetRange("Subscription Contract No.", ContractNo);
+        BillingLine.SetRange("Subscription Contract Line No.", ContractLineNo);
         BillingLine.SetRange("Update Required", true);
         BillingLine.FindFirst();
         BillingLine."Update Required" := false;

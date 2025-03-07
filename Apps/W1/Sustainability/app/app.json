@@ -2,7 +2,7 @@
   "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
   "name": "Sustainability",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Sustainability module will enable users to collect and report on their sustainability activities. Solution is the foundation that will be used for being compliant with some of ESG standards.",
   "description": "Sustainability module will enable users to collect and report on their sustainability activities. Solution is the foundation that will be used for being compliant with some of ESG standards.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -16,7 +16,7 @@
       "id": "ea130081-c669-460f-a5f4-5dde14f03131",
       "name": "Statistical Accounts",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -28,7 +28,7 @@
   ],
   "screenshots": [],
   "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 6210,

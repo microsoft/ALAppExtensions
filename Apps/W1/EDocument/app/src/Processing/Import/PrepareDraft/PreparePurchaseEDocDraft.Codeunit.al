@@ -6,9 +6,10 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.Foundation.UOM;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
-using Microsoft.Foundation.UOM;
 
 codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
 {
@@ -26,10 +27,10 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         IPurchaseLineAccountProvider: Interface IPurchaseLineAccountProvider;
         IPurchaseOrderProvider: Interface IPurchaseOrderProvider;
     begin
-        IVendorProvider := EDocImportParameters."Prepare Draft Value Providers";
-        IUnitOfMeasureProvider := EDocImportParameters."Prepare Draft Value Providers";
-        IPurchaseLineAccountProvider := EDocImportParameters."Prepare Draft Value Providers";
-        IPurchaseOrderProvider := EDocImportParameters."Prepare Draft Value Providers";
+        IVendorProvider := EDocImportParameters."Processing Customizations";
+        IUnitOfMeasureProvider := EDocImportParameters."Processing Customizations";
+        IPurchaseLineAccountProvider := EDocImportParameters."Processing Customizations";
+        IPurchaseOrderProvider := EDocImportParameters."Processing Customizations";
 
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");

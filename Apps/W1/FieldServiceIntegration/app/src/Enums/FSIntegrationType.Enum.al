@@ -8,12 +8,12 @@ enum 6612 "FS Integration Type"
 {
     Extensible = true;
 
-    value(0; Project)
+    value(0; Projects)
     {
-        Caption = 'Projects (default)';
+        Caption = 'Projects';
     }
-    value(1; Service)
+    value(1; "Service and projects")
     {
-        Caption = 'Service';
+        Caption = 'Service and projects';
     }
 }

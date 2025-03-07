@@ -29,33 +29,51 @@ pageextension 31342 "Intrastat Report Setup CZ" extends "Intrastat Report Setup"
                 ToolTip = 'Specifies the rounding type for amount calculation for Intrastat declaration.';
             }
         }
+#if not CLEAN26
         addafter(Numbering)
         {
             group("Mandatory Fields")
             {
                 Caption = 'Mandatory Fields';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'This group is moved to Intrastat Core extension.';
 
                 field("Transaction Type Mandatory CZ"; Rec."Transaction Type Mandatory CZ")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies this option to make transaction type specification mandatory.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is moved to Intrastat Core extension.';
                 }
                 field("Transaction Spec. Mandatory CZ"; Rec."Transaction Spec. Mandatory CZ")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if you are using a mandatory transaction specification for reporting.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is moved to Intrastat Core extension.';
                 }
                 field("Transport Method Mandatory CZ"; Rec."Transport Method Mandatory CZ")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies this option to make transport method specification mandatory.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is moved to Intrastat Core extension.';
                 }
                 field("Shipment Method Mandatory CZ"; Rec."Shipment Method Mandatory CZ")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies this option to make shipment method specification mandatory.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is moved to Intrastat Core extension.';
                 }
             }
         }
+#endif
     }
 }
