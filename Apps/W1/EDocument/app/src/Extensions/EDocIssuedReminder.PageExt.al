@@ -16,10 +16,11 @@ pageextension 6148 "E-Doc. Issued Reminder" extends "Issued Reminder"
             {
                 ApplicationArea = All;
                 Caption = 'Your Reference';
-                ToolTip = 'Your Reference';
+                ToolTip = 'Specifies the customer''s reference.';
             }
         }
     }
+
     actions
     {
         addafter("&Reminder")

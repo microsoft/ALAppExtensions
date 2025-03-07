@@ -134,7 +134,6 @@ codeunit 6172 "EDoc PEPPOL Validation"
             Error(this.MissingDescriptionErr);
     end;
 
-    //Copied from codeunit PEPPOL Validation because those procedures are local
     local procedure CheckCurrencyCode(CurrencyCode: Code[10])
     var
         GLSetup: Record "General Ledger Setup";
@@ -184,5 +183,4 @@ codeunit 6172 "EDoc PEPPOL Validation"
         MissingDescriptionErr: Label 'Description field is empty. This field must be filled if you want to send the posted document as an electronic document.';
         MissingCustGLNOrVATRegNoErr: Label 'You must specify either GLN or VAT Registration No. for Customer %1.', Comment = '%1 - Customer No.';
         MissingCompInfGLNOrVATRegNoErr: Label 'You must specify either GLN or VAT Registration No. in %1.', Comment = '%1 - Company Information';
-
 }

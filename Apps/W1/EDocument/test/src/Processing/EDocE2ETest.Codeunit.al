@@ -1484,7 +1484,6 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         this.Assert.AreEqual(IssuedReminderHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
         this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
-
         // [THEN] Check that xml file was created
         this.CheckXmlCreated(EDocument);
     end;
@@ -1511,7 +1510,6 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         this.Assert.AreEqual(IssuedFinChargeMemoHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
         this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
-
         // [THEN] Check that xml file was created
         this.CheckXmlCreated(EDocument);
     end;

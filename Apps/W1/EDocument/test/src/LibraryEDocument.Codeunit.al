@@ -407,7 +407,7 @@ codeunit 139629 "Library - E-Document"
         SalesSetup.Get();
         SalesSetup.Validate("Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
         SalesSetup.Validate("Issued Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
-        SalesSetup.Modify();
+        SalesSetup.Modify(false);
     end;
 
     procedure SetupFinChargeMemoNoSeries()
@@ -417,7 +417,7 @@ codeunit 139629 "Library - E-Document"
         SalesSetup.Get();
         SalesSetup.Validate("Fin. Chrg. Memo Nos.", this.LibraryERM.CreateNoSeriesCode());
         SalesSetup.Validate("Issued Fin. Chrg. M. Nos.", this.LibraryERM.CreateNoSeriesCode());
-        SalesSetup.Modify();
+        SalesSetup.Modify(false);
     end;
 
     procedure Initialize()

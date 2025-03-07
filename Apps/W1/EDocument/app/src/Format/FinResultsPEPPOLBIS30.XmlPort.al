@@ -8,7 +8,7 @@ using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Sales.FinanceCharge;
 
-xmlport 6100 "Reminder - PEPPOL BIS 3.0"
+xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
 {
     Caption = 'Reminder PEPPOL BIS 3.0';
     Direction = Export;
@@ -17,7 +17,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
 
     schema
     {
-        tableelement(reminderheaderloop; Integer)
+        tableelement(HeaderLoop; Integer)
         {
             MaxOccurs = Once;
             XmlName = 'Invoice';
@@ -71,11 +71,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
             textelement(AccountingSupplierParty)
             {
                 NamespacePrefix = 'cac';
-                textelement(supplierparty)
+                textelement(SupplierParty)
                 {
                     NamespacePrefix = 'cac';
                     XmlName = 'Party';
-                    textelement(supplierendpointid)
+                    textelement(SupplierEndpointID)
                     {
                         NamespacePrefix = 'cbc';
                         XmlName = 'EndpointID';
@@ -93,7 +93,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     textelement(PartyIdentification)
                     {
                         NamespacePrefix = 'cac';
-                        textelement(partyidentificationid)
+                        textelement(PartyIdentificationID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ID';
@@ -110,17 +110,17 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                 currXMLport.Skip();
                         end;
                     }
-                    textelement(supplierpartyname)
+                    textelement(SupplierPartyName)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PartyName';
-                        textelement(suppliername)
+                        textelement(SupplierName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Name';
                         }
                     }
-                    textelement(supplierpostaladdress)
+                    textelement(SupplierPostalAddress)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PostalAddress';
@@ -134,7 +134,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(supplieradditionalstreetname)
+                        textelement(SupplierAdditionalStreetName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'AdditionalStreetName';
@@ -211,11 +211,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(suppliertaxscheme)
+                        textelement(SupplierTaxScheme)
                         {
                             NamespacePrefix = 'cac';
                             XmlName = 'TaxScheme';
-                            textelement(taxschemeid)
+                            textelement(TaxSchemeID)
                             {
                                 NamespacePrefix = 'cbc';
                                 XmlName = 'ID';
@@ -231,18 +231,18 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     textelement(PartyLegalEntity)
                     {
                         NamespacePrefix = 'cac';
-                        textelement(partylegalentityregname)
+                        textelement(PartylLegalEntityRegName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'RegistrationName';
 
                             trigger OnBeforePassVariable()
                             begin
-                                if PartyLegalEntityRegName = '' then
+                                if PartylLegalEntityRegName = '' then
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(partylegalentitycompanyid)
+                        textelement(PartyLegalEntityCompanyID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'CompanyID';
@@ -267,7 +267,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     textelement(Contact)
                     {
                         NamespacePrefix = 'cac';
-                        textelement(contactname)
+                        textelement(ContactName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Name';
@@ -345,7 +345,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                       TaxSchemeID);
 
                     this.PEPPOLMgt.GetAccountingSupplierPartyLegalEntityBIS(
-                      PartyLegalEntityRegName,
+                      PartylLegalEntityRegName,
                       PartyLegalEntityCompanyID,
                       PartyLegalEntitySchemeID,
                       SupplierRegAddrCityName,
@@ -364,11 +364,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
             textelement(AccountingCustomerParty)
             {
                 NamespacePrefix = 'cac';
-                textelement(customerparty)
+                textelement(CustomerParty)
                 {
                     NamespacePrefix = 'cac';
                     XmlName = 'Party';
-                    textelement(customerendpointid)
+                    textelement(CustomerEndpointID)
                     {
                         NamespacePrefix = 'cbc';
                         XmlName = 'EndpointID';
@@ -383,11 +383,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                 currXMLport.Skip();
                         end;
                     }
-                    textelement(customerpartyidentification)
+                    textelement(CustomerPartyIdentification)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PartyIdentification';
-                        textelement(customerpartyidentificationid)
+                        textelement(CustomerPartyIdentificationID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ID';
@@ -403,26 +403,26 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                 currXMLport.Skip();
                         end;
                     }
-                    textelement(custoemerpartyname)
+                    textelement(CustomerPartyName)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PartyName';
-                        textelement(customername)
+                        textelement(CustomerName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Name';
                         }
                     }
-                    textelement(customerpostaladdress)
+                    textelement(CustomerPostalAddress)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PostalAddress';
-                        textelement(customerstreetname)
+                        textelement(CustomerStreetName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'StreetName';
                         }
-                        textelement(customeradditionalstreetname)
+                        textelement(CustomerAdditionalStreetName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'AdditionalStreetName';
@@ -433,17 +433,17 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(customercityname)
+                        textelement(CustomerCityName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'CityName';
                         }
-                        textelement(customerpostalzone)
+                        textelement(CustomerPostalZone)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'PostalZone';
                         }
-                        textelement(customercountrysubentity)
+                        textelement(CustomerCountrySubentity)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'CountrySubentity';
@@ -454,22 +454,22 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(customercountry)
+                        textelement(CustomerCountry)
                         {
                             NamespacePrefix = 'cac';
                             XmlName = 'Country';
-                            textelement(customeridentificationcode)
+                            textelement(CustomerIdentificationCode)
                             {
                                 NamespacePrefix = 'cbc';
                                 XmlName = 'IdentificationCode';
                             }
                         }
                     }
-                    textelement(customerpartytaxscheme)
+                    textelement(CustomerPartyTaxScheme)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PartyTaxScheme';
-                        textelement(custpartytaxschemecompanyid)
+                        textelement(CustPartyTaxSchemeCompanyID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'CompanyID';
@@ -490,11 +490,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(custtaxscheme)
+                        textelement(CustTaxScheme)
                         {
                             NamespacePrefix = 'cac';
                             XmlName = 'TaxScheme';
-                            textelement(custtaxschemeid)
+                            textelement(CustTaxSchemeID)
                             {
                                 NamespacePrefix = 'cbc';
                                 XmlName = 'ID';
@@ -507,11 +507,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                 currXMLport.Skip();
                         end;
                     }
-                    textelement(custpartylegalentity)
+                    textelement(CustPartyLegalEntity)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'PartyLegalEntity';
-                        textelement(custpartylegalentityregname)
+                        textelement(CustPartyLegalEntityRegName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'RegistrationName';
@@ -522,7 +522,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(custpartylegalentitycompanyid)
+                        textelement(CustPartyLegalEntityCompanyID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'CompanyID';
@@ -544,16 +544,16 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                             end;
                         }
                     }
-                    textelement(custcontact)
+                    textelement(CustContact)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'Contact';
-                        textelement(custcontactname)
+                        textelement(CustContactName)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Name';
                         }
-                        textelement(custcontacttelephone)
+                        textelement(CustContactTelephone)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Telephone';
@@ -564,7 +564,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(custcontacttelefax)
+                        textelement(CustContactTelefax)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Telefax';
@@ -575,7 +575,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(custcontactelectronicmail)
+                        textelement(CustContactElectronicMail)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ElectronicMail';
@@ -686,7 +686,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                 textelement(PayeeFinancialAccount)
                 {
                     NamespacePrefix = 'cac';
-                    textelement(payeefinancialaccountid)
+                    textelement(PayeeFinancialAccountID)
                     {
                         NamespacePrefix = 'cbc';
                         XmlName = 'ID';
@@ -694,7 +694,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     textelement(FinancialInstitutionBranch)
                     {
                         NamespacePrefix = 'cac';
-                        textelement(financialinstitutionbranchid)
+                        textelement(FinancialInstitutionBranchID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ID';
@@ -720,12 +720,12 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                         FinancialInstitutionBranchID);
                 end;
             }
-            tableelement(pmttermsloop; Integer)
+            tableelement(PmtTermsLoop; Integer)
             {
                 NamespacePrefix = 'cac';
                 XmlName = 'PaymentTerms';
                 SourceTableView = sorting(Number) where(Number = filter(1 ..));
-                textelement(paymenttermsnote)
+                textelement(PaymentTermsNote)
                 {
                     NamespacePrefix = 'cbc';
                     XmlName = 'Note';
@@ -757,7 +757,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                         XmlName = 'currencyID';
                     }
                 }
-                tableelement(taxsubtotalloop; Integer)
+                tableelement(TaxSubtotalLoop; Integer)
                 {
                     NamespacePrefix = 'cac';
                     XmlName = 'TaxSubtotal';
@@ -770,7 +770,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                             XmlName = 'currencyID';
                         }
                     }
-                    textelement(subtotaltaxamount)
+                    textelement(SubtotalTaxAmount)
                     {
                         NamespacePrefix = 'cbc';
                         XmlName = 'TaxAmount';
@@ -779,16 +779,16 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                             XmlName = 'currencyID';
                         }
                     }
-                    textelement(subtotaltaxcategory)
+                    textelement(SubtotalTaxCategory)
                     {
                         NamespacePrefix = 'cac';
                         XmlName = 'TaxCategory';
-                        textelement(taxtotaltaxcategoryid)
+                        textelement(TaxTotalTaxCategoryID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ID';
                         }
-                        textelement(taxcategorypercent)
+                        textelement(TaxCategoryPercent)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Percent';
@@ -803,11 +803,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(taxsubtotaltaxscheme)
+                        textelement(TaxSubtotalTaxScheme)
                         {
                             NamespacePrefix = 'cac';
                             XmlName = 'TaxScheme';
-                            textelement(taxtotaltaxschemeid)
+                            textelement(TaxTotalTaxSchemeID)
                             {
                                 NamespacePrefix = 'cbc';
                                 XmlName = 'ID';
@@ -960,12 +960,12 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                       PayableAmountCurrencyID);
                 end;
             }
-            tableelement(invoicelineloop; Integer)
+            tableelement(InvoiceLineLoop; Integer)
             {
                 NamespacePrefix = 'cac';
                 XmlName = 'InvoiceLine';
                 SourceTableView = sorting(Number) where(Number = filter(1 ..));
-                textelement(invoicelineid)
+                textelement(InvoiceLineID)
                 {
                     NamespacePrefix = 'cbc';
                     XmlName = 'ID';
@@ -977,11 +977,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     {
                     }
                 }
-                textelement(invoicelineextensionamount)
+                textelement(InvoiceLineExtensionAmount)
                 {
                     NamespacePrefix = 'cbc';
                     XmlName = 'LineExtensionAmount';
-                    textattribute(lineextensionamountcurrencyid)
+                    textattribute(LineExtensionAmountCurrencyID)
                     {
                         XmlName = 'currencyID';
                     }
@@ -1006,12 +1006,12 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                     textelement(ClassifiedTaxCategory)
                     {
                         NamespacePrefix = 'cac';
-                        textelement(classifiedtaxcategoryid)
+                        textelement(ClassifiedTaxCategoryID)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'ID';
                         }
-                        textelement(invoicelinetaxpercent)
+                        textelement(InvoiceLineTaxPercent)
                         {
                             NamespacePrefix = 'cbc';
                             XmlName = 'Percent';
@@ -1022,11 +1022,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                                     currXMLport.Skip();
                             end;
                         }
-                        textelement(classifiedtaxcategorytaxscheme)
+                        textelement(ClassifiedTaxCategoryTaxScheme)
                         {
                             NamespacePrefix = 'cac';
                             XmlName = 'TaxScheme';
-                            textelement(classifiedtaxcategoryschemeid)
+                            textelement(ClassifiedTaxCategorySchemeID)
                             {
                                 NamespacePrefix = 'cbc';
                                 XmlName = 'ID';
@@ -1057,11 +1057,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                           this.DummyVar);
                     end;
                 }
-                textelement(invoicelineprice)
+                textelement(InvoiceLinePrice)
                 {
                     NamespacePrefix = 'cac';
                     XmlName = 'Price';
-                    textelement(invoicelinepriceamount)
+                    textelement(InvoiceLinePriceAmount)
                     {
                         NamespacePrefix = 'cbc';
                         XmlName = 'PriceAmount';
@@ -1108,7 +1108,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                       this.DummyVar,
                       InvoicedQuantity,
                       InvoiceLineExtensionAmount,
-                      lineextensionamountcurrencyid,
+                      LineExtensionAmountCurrencyID,
                       this.DummyVar);
 
                     this.PEPPOLMgt.GetLineUnitCodeInfo(this.SalesLine, unitCode, this.DummyVar);
@@ -1118,11 +1118,11 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
             trigger OnAfterGetRecord()
             begin
                 if this.IsReminder then
-                    if not this.FindNextIssuedReminderRec(this.IssuedReminderHeader, this.SalesHeader, ReminderHeaderLoop.Number) then
+                    if not this.FindNextIssuedReminderRec(this.IssuedReminderHeader, this.SalesHeader, HeaderLoop.Number) then
                         currXMLport.Break();
 
                 if this.IsFinChargeMemo then
-                    if not this.FindNextIssuedFinChargeMemoRec(this.IssuedFinChargeMemoHeader, this.SalesHeader, ReminderHeaderLoop.Number) then
+                    if not this.FindNextIssuedFinChargeMemoRec(this.IssuedFinChargeMemoHeader, this.SalesHeader, HeaderLoop.Number) then
                         currXMLport.Break();
 
                 this.GetTotals();
@@ -1142,6 +1142,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
             end;
         }
     }
+
     requestpage
     {
         layout
@@ -1162,6 +1163,7 @@ xmlport 6100 "Reminder - PEPPOL BIS 3.0"
                 }
             }
         }
+
         actions
         {
             area(Processing)

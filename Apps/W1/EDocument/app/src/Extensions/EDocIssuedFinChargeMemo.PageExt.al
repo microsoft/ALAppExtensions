@@ -16,10 +16,11 @@ pageextension 6149 "E-Doc. Issued Fin. Charge Memo" extends "Issued Finance Char
             {
                 ApplicationArea = All;
                 Caption = 'Your Reference';
-                ToolTip = 'Your Reference';
+                ToolTip = 'Specifies the customer''s reference.';
             }
         }
     }
+
     actions
     {
         addafter("&Memo")

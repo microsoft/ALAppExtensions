@@ -16,10 +16,11 @@ pageextension 6141 "E-Doc. Reminder" extends Reminder
             {
                 ApplicationArea = All;
                 Caption = 'Your Reference';
-                ToolTip = 'Your Reference';
+                ToolTip = 'Specifies the customer''s reference.';
             }
         }
     }
+
     actions
     {
         addafter("&Issuing")
