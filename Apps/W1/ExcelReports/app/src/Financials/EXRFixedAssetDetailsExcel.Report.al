@@ -10,7 +10,7 @@ report 4411 "EXR Fixed Asset Details Excel"
 {
     ApplicationArea = All;
     AdditionalSearchTerms = 'FA Details Excel,FA Details';
-    Caption = 'Fixed Asset Details Excel (Preview)';
+    Caption = 'Fixed Asset Details (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetDetailsExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -68,8 +68,8 @@ report 4411 "EXR Fixed Asset Details Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Fixed Asset Details Excel';
-        AboutText = 'This report shows ledger entries for one or more fixed assets.';
+        AboutTitle = 'About Fixed Asset Details (Excel)';
+        AboutText = 'Get details about fixed assets transactions and reference data that can help you manage your fixed assets. You can choose to include reversed entries and inactive fixed assets.';
         layout
         {
             area(content)

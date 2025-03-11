@@ -13,7 +13,7 @@ using Microsoft.ExcelReports;
 report 4406 "EXR Trial BalanceBudgetExcel"
 {
     ApplicationArea = All;
-    Caption = 'Trial Balance/Budget Excel (Preview)';
+    Caption = 'Trial Balance/Budget (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = TrialBalanceBudgetExcelLayout;
     ExcelLayoutMultipleDataSheets = true;
@@ -73,8 +73,9 @@ report 4406 "EXR Trial BalanceBudgetExcel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Trial Balance/Budget Excel';
-        AboutText = 'This report contains aggregated general ledger data for the trial balance with debit/credit columns for net change and balance. A report is shown for both local currency (LCY) and additional reporting currency (ACY, the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. The aggregation is for the period specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        AboutTitle = 'About Trial Balance/Budget (Excel)';
+        AboutText = 'View a snapshot of your chart of accounts at a given point to check the debit and credit net change and closing balance compared to the budget. Amounts are shown in local currency (LCY).';
+
         layout
         {
             area(content)

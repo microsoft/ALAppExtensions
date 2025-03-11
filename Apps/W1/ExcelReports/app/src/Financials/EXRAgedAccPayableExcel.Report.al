@@ -14,7 +14,7 @@ using Microsoft.ExcelReports;
 report 4403 "EXR Aged Acc Payable Excel"
 {
     ApplicationArea = All;
-    Caption = 'Aged Accounts Payable Excel (Preview)';
+    Caption = 'Aged Accounts Payable (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = AgedAccountsPayableExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -166,8 +166,8 @@ report 4403 "EXR Aged Acc Payable Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Aged Accounts Payable Excel';
-        AboutText = 'This report contains aggregated aging data based on vendor ledger entries. The data is aggregated and bucketed according to the ‘Aged as of'' and ‘period length'' parameters in the reports request page. The aggregated data is summarized per the 2 global dimensions.';
+        AboutTitle = 'About Aged Accounts Payables (Excel)';
+        AboutText = 'Analyze vendor balances at the end of each period: by period (LCY), by period (FCY), or with an overview Due by Currencies. Monitor unpaid invoices, and prioritize payments for overdue accounts.';
 
         layout
         {

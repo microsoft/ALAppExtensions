@@ -13,7 +13,7 @@ using Microsoft.ExcelReports;
 report 4407 "EXR Trial Bal. Prev Year Excel"
 {
     ApplicationArea = All;
-    Caption = 'Trial Balance/Previous Year Excel (Preview)';
+    Caption = 'Trial Balance/Previous Year (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = TrialBalancePrevYearExcelLayout;
     ExcelLayoutMultipleDataSheets = true;
@@ -92,8 +92,9 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Trial Balance/Previous Year Excel';
-        AboutText = 'This report contains aggregated general ledger data for the trial balance with debit/credit columns for net change and balance. A report is shown for both local currency (LCY) and additional reporting currency (ACY, the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. The aggregation is for the period specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        AboutTitle = 'About Trial Balance/Previous Year (Excel)';
+        AboutText = 'View a trial balance with debit/credit columns for net change and balance for this year and previous year directly in Excel. See amounts in both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. Data is summarized for the period specified in the report''s request page''s Date Filter parameter and grouped by the 2 global dimensions per G/L account category.';
+
         layout
         {
             area(content)

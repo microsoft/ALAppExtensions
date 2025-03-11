@@ -8,7 +8,7 @@ using Microsoft.ExcelReports;
 report 4410 "EXR Consolidated Trial Balance"
 {
     ApplicationArea = All;
-    Caption = 'Consolidated Trial Balance Excel (Preview)';
+    Caption = 'Consolidated Trial Balance (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = ConsolidatedTrialBalanceExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -74,8 +74,8 @@ report 4410 "EXR Consolidated Trial Balance"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Consolidated Trial Balance Excel';
-        AboutText = 'This report contains Net Change or Balance of the different G/L Accounts for the selected period, aggregated per business unit.';
+        AboutTitle = 'About Consolidated Trial Balance (Excel)';
+        AboutText = 'View a snapshot of your consolidated chart of accounts at a given point to check the debit and credit net change and closing balance. You can see the trial balance in both your local currency (LCY) and additional reporting currency (ACY).';
         layout
         {
             area(Content)

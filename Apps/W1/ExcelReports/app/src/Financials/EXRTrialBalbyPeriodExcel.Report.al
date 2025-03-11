@@ -13,7 +13,7 @@ using Microsoft.ExcelReports;
 report 4408 "EXR Trial Bal by Period Excel"
 {
     ApplicationArea = All;
-    Caption = 'Trial Balance by Period Excel (Preview)';
+    Caption = 'Trial Balance by Period (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = TrialBalancebyPeriodExcelLayout;
     ExcelLayoutMultipleDataSheets = true;
@@ -75,8 +75,8 @@ report 4408 "EXR Trial Bal by Period Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Trial Balance by Period Excel';
-        AboutText = 'This report contains aggregated general ledger data per accounting period for the trial balance with a net debit/credit net change column for each period. The periods covered are specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        AboutTitle = 'About Trial Balance by Period (Excel)';
+        AboutText = 'View a trial balance with debit/credit columns for net change and balance for a period you specify. You get the report directly in Excel. See amounts in both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. Data is summarized for the period specified in the report''s request page''s Date Filter parameter and grouped by the 2 global dimensions per G/L account category.';
 
         layout
         {
