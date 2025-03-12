@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 using System.EMail;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using System.Utilities;
@@ -90,6 +92,10 @@ codeunit 6106 "E-Document Email"
                 exit(GetEDocumentForSalesInvoice(DocNo, EDocument));
             Database::"Sales Cr.Memo Header":
                 exit(GetEDocumentForSalesCrMemo(DocNo, EDocument));
+            Database::"Issued Reminder Header":
+                exit(GetEDocumentForIssuedReminder(DocNo, EDocument));
+            Database::"Issued Fin. Charge Memo Header":
+                exit(GetEDocumentForIssuedFinChargeMemo(DocNo, EDocument));
             else
                 exit(false);
         end;
@@ -130,6 +136,24 @@ codeunit 6106 "E-Document Email"
     begin
         SalesCrMemoHeader.Get(PostedDocNo);
         EDocument.SetRange("Document Record ID", SalesCrMemoHeader.RecordId());
+        exit(EDocument.FindFirst());
+    end;
+
+    local procedure GetEDocumentForIssuedReminder(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
+    var
+        IssuedReminderHeader: Record "Issued Reminder Header";
+    begin
+        IssuedReminderHeader.Get(PostedDocNo);
+        EDocument.SetRange("Document Record ID", IssuedReminderHeader.RecordId());
+        exit(EDocument.FindFirst());
+    end;
+
+    local procedure GetEDocumentForIssuedFinChargeMemo(PostedDocNo: Code[20]; var EDocument: Record "E-Document"): Boolean
+    var
+        IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
+    begin
+        IssuedFinChargeMemoHeader.Get(PostedDocNo);
+        EDocument.SetRange("Document Record ID", IssuedFinChargeMemoHeader.RecordId());
         exit(EDocument.FindFirst());
     end;
 
