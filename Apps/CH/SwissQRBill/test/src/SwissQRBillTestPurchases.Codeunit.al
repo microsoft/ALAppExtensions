@@ -1534,11 +1534,8 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
         QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', QRBillPayRef, QRBillPostingDescr, BillInfo);
 
-        // [GIVEN] Purchase Invoice with Posting Description "MSG2", Payment Reference "REF2", Vendor Invoice No. "INV2".
-        PurchDocPostingDescr := LibraryUtility.GenerateGUID();
-        PurchDocPayRef := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
-        PurchDocVendorInvNo := LibraryUtility.GenerateGUID();
-        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, PurchDocPayRef, PurchDocVendorInvNo, PurchDocPostingDescr);
+        // [GIVEN] Purchase Invoice
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, '', false, '123');
 
         // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
         LibraryVariableStorage.Enqueue(QRCodeText);
