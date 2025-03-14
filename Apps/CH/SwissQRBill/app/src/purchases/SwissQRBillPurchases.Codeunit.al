@@ -539,7 +539,6 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                     if SwissQRBillCreateVendBank.RunModal() = Action::LookupOK then begin
                         SwissQRBillCreateVendBank.GetDetails(VendorBankAccount);
                         VendorBankAccount.Insert(true);
-                        IncomingDocument."Vendor No." := VendorBankAccount."Vendor No.";
                         IncomingDocument."Vendor Bank Account No." := VendorBankAccount.Code;
                         SwissQRBillIncomingDoc.UpdatePurchDocFromIncDoc(PurchaseHeader, IncomingDocument);
                         MessageResult := ImportSuccessMsg;
