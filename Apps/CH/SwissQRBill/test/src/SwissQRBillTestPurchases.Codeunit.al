@@ -1557,6 +1557,63 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler,ConfirmHandler,CreateBankAccountMPH')]
+    procedure BankCodeFillOnPurchaseInvoiceFromScan_CreateBankAccount_Confirm()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorBankAccount: Record "Vendor Bank Account";
+        IBAN: Code[50];
+        PaymentReference: Code[50];
+        PurchDocPayRef: Code[50];
+        PurchDocVendorInvNo: Code[35];
+        QRBillPayRef: Code[50];
+        QRBillVendInvNo: Code[50];
+        VendorBankAccountNo: Code[20];
+        VendorNo: Code[20];
+        BillInfo: Text;
+        PurchDocPostingDescr: Text[100];
+        QRBillPostingDescr: Text;
+        QRCodeText: Text;
+    begin
+        // [SCENARIO 568197] BankCode Filled after Vendor Bank Account ist Create by Scan QR-Bill from Purchase Invoice card.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with Unstructured Message "MSG1", Payment Reference "REF1" and Invoice No. "INV1".
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        QRBillPostingDescr := LibraryUtility.GenerateGUID();
+        QRBillPayRef := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        QRBillVendInvNo := LibraryUtility.GenerateGUID();
+        BillInfo := 'S1/10/' + QRBillVendInvNo + '/11/231015';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', QRBillPayRef, QRBillPostingDescr, BillInfo);
+
+        // [GIVEN] Purchase Invoice
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, '', false, '123');
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        VendorBankAccountNo := CopyStr(LibraryUtility.GenerateRandomCode(VendorBankAccount.FieldNo(Code), DATABASE::"Vendor Bank Account"), 1, LibraryUtility.GetFieldLength(DATABASE::"Vendor Bank Account", VendorBankAccount.FieldNo(Code)));
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        LibraryVariableStorage.Enqueue(true); // confirm to create a new bank account
+        LibraryVariableStorage.Enqueue(VendorBankAccountNo); // new bank account code
+        ScanToInvoice(PurchaseHeader);
+
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] VendorBankAccount that match with IBAN from QRCode was set on Purchase Invoice.
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        Assert.AreEqual(VendorBankAccountNo, PurchaseHeader."Bank Code", 'Bank Code not Synched with VendorBankAccount that found with IBAN');
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
