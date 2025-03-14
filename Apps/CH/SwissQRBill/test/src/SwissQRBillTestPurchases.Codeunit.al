@@ -1522,7 +1522,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         QRBillPayRef: Code[50];
         QRBillPostingDescr: Text;
     begin
-        // [SCENARIO ] BankCode Filled after Scan QR-Bill from Purchase Invoice card.
+        // [SCENARIO 568197] BankCode Filled after Scan QR-Bill from Purchase Invoice card.
         Initialize();
 
         // [GIVEN] QR-Bill text with Billing Information with Unstructured Message "MSG1", Payment Reference "REF1" and Invoice No. "INV1".
