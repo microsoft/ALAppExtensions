@@ -8,9 +8,9 @@ using System.Automation;
 
 codeunit 6139 "E-Document Workflow Setup"
 {
-    Access = Internal;
+    Access = Public;
 
-    procedure InsertSendToSingleServiceTemplate()
+    internal procedure InsertSendToSingleServiceTemplate()
     var
         Workflow: Record Workflow;
         WorkflowSetup: Codeunit "Workflow Setup";
@@ -23,7 +23,7 @@ codeunit 6139 "E-Document Workflow Setup"
         Workflow.Modify();
     end;
 
-    procedure InsertSendToMultiServiceTemplate()
+    internal procedure InsertSendToMultiServiceTemplate()
     var
         Workflow: Record Workflow;
         WorkflowSetup: Codeunit "Workflow Setup";
