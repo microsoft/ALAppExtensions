@@ -5,7 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
-using System.Reflection;
+using System.Utilities;
 using System.Text;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
@@ -456,13 +456,13 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     local procedure CreateUri(AccountId: Guid; SourcePath: Text): Text
     var
         FileShareAccount: Record "Ext. File Share Account";
-        TypeHelper: Codeunit "Type Helper";
+        Uri: Codeunit Uri;
         FileShareUriLbl: Label 'https://%1.file.core.windows.net/%2/%3', Locked = true;
     begin
         FileShareAccount.Get(AccountId);
         FileShareAccount.TestField("Storage Account Name");
         FileShareAccount.TestField("File Share Name");
-        exit(StrSubstNo(FileShareUriLbl, FileShareAccount."Storage Account Name", FileShareAccount."File Share Name", TypeHelper.UrlEncode(SourcePath)));
+        exit(StrSubstNo(FileShareUriLbl, FileShareAccount."Storage Account Name", FileShareAccount."File Share Name", Uri.EscapeDataString(SourcePath)));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]
