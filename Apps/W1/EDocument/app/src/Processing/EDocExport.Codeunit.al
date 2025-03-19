@@ -85,7 +85,7 @@ codeunit 6102 "E-Doc. Export"
             OnAfterCreateEDocument(EDocument, SourceDocumentHeader);
 
             EDocumentLog.InsertLog(EDocument, Enum::"E-Document Service Status"::Created);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument);
 
             if EDocumentService.FindSet() then
                 repeat
@@ -124,7 +124,7 @@ codeunit 6102 "E-Doc. Export"
         EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocServiceStatus);
         EDocumentLog.InsertMappingLog(EDocLog, TempEDocMapping);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
     end;
 
     internal procedure ExportEDocumentBatch(var EDocuments: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; var EDocumentsErrorCount: Dictionary of [Integer, Integer])
@@ -151,7 +151,7 @@ codeunit 6102 "E-Doc. Export"
                 until TempEDocMapping.Next() = 0;
             SourceDocumentLines.Close();
             EDocumentProcessing.ModifyServiceStatus(EDocuments, EDocService, Enum::"E-Document Service Status"::Created);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocuments, Enum::"E-Document Service Status"::Created);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocuments);
             EDocumentsErrorCount.Add(EDocuments."Entry No", EDocumentErrorHelper.ErrorMessageCount(EDocuments));
         until EDocuments.Next() = 0;
 

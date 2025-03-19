@@ -13,32 +13,32 @@ codeunit 148159 "Usage Based Extend Contr. Test"
 
     var
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
+        CustomerContract: Record "Customer Subscription Contract";
         DataExchColumnDef: Record "Data Exch. Column Def";
         DataExchDef: Record "Data Exch. Def";
         DataExchFieldMapping: Record "Data Exch. Field Mapping";
         DataExchLineDef: Record "Data Exch. Line Def";
         DataExchMapping: Record "Data Exch. Mapping";
         GenericImportSettings: Record "Generic Import Settings";
-        ImportedServiceCommitment: Record "Imported Service Commitment";
-        ImportedServiceObject: Record "Imported Service Object";
+        ImportedServiceCommitment: Record "Imported Subscription Line";
+        ImportedServiceObject: Record "Imported Subscription Header";
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
         UsageDataBlob: Record "Usage Data Blob";
         UsageDataImport: Record "Usage Data Import";
-        UsageDataSubscription: Record "Usage Data Subscription";
+        UsageDataSubscription: Record "Usage Data Supp. Subscription";
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
         Vendor: Record Vendor;
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         AssertThat: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
-        CreateServiceCommitment: Codeunit "Create Service Commitment";
+        CreateServiceCommitment: Codeunit "Create Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
         UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
         RecordRef: RecordRef;
@@ -68,32 +68,32 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     [HandlerFunctions('MessageHandler')]
     procedure CreateServiceCommitmentsFromImportedServiceCommitmentsForUsageBasedBilling()
     begin
-        // [GIVEN] When Service Object is created from Imported Service Object (Customer and Vendor Contract prepared)
-        // [GIVEN] Create Imported Service Commitments for that Service Object and
-        // [WHEN] Create Service Commitments
-        // [THEN] Check that Service Commitments are created
+        // [GIVEN] When Subscription is created from Imported Subscription (Customer and Vendor Subscription Contract prepared)
+        // [GIVEN] Create Imported Subscription Lines for that Subscription and
+        // [WHEN] Create Subscription Lines
+        // [THEN] Check that Subscription Lines are created
         Initialize();
 
         SetupImportedServiceObjectAndCreateServiceObject();
-        ContractTestLibrary.CreateImportedServiceCommitmentCustomer(ImportedServiceCommitment, ImportedServiceObject, CustomerContract, "Contract Line Type"::"Service Commitment");
+        ContractTestLibrary.CreateImportedServiceCommitmentCustomer(ImportedServiceCommitment, ImportedServiceObject, CustomerContract, Enum::"Contract Line Type"::Item);
         UpdateImportedServiceCommitment("Usage Based Pricing"::"Unit Cost Surcharge");
-        ContractTestLibrary.CreateImportedServiceCommitmentVendor(ImportedServiceCommitment, ImportedServiceObject, VendorContract, "Contract Line Type"::"Service Commitment");
+        ContractTestLibrary.CreateImportedServiceCommitmentVendor(ImportedServiceCommitment, ImportedServiceObject, VendorContract, Enum::"Contract Line Type"::Item);
         UpdateImportedServiceCommitment("Usage Based Pricing"::"Usage Quantity");
-        Commit(); // retain created Imported Service Commitments
+        Commit(); // retain created Imported Subscription Lines
 
-        ServiceCommitment.SetRange("Service Object No.", ImportedServiceObject."Service Object No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ImportedServiceObject."Subscription Header No.");
         AssertThat.IsTrue(ServiceCommitment.IsEmpty(), 'Service Commitment should be empty.');
 
         ImportedServiceCommitment.Reset();
         Report.Run(Report::"Cr. Serv. Comm. And Contr. L.", false, false, ImportedServiceCommitment); // MessageHandler
         Commit(); // write data to database to be able to read updated values
         ImportedServiceCommitment.FindSet();
-        ImportedServiceCommitment.SetRange("Service Commitment created", true);
+        ImportedServiceCommitment.SetRange("Subscription Line created", true);
         AssertThat.AreEqual(2, ImportedServiceCommitment.Count(), 'Not all Import Service Commitment lines are processed.');
         AssertThat.AreEqual(2, ServiceCommitment.Count(), 'Incorrect number of Service Commitment.');
         repeat
-            ImportedServiceCommitment.TestField("Service Commitment Entry No.");
-            ServiceCommitment.Get(ImportedServiceCommitment."Service Commitment Entry No.");
+            ImportedServiceCommitment.TestField("Subscription Line Entry No.");
+            ServiceCommitment.Get(ImportedServiceCommitment."Subscription Line Entry No.");
             ContractTestLibrary.TestServiceCommitmentAgainstImportedServiceCommitment(ServiceCommitment, ImportedServiceCommitment);
             ServiceCommitment.TestField("Usage Based Billing", ImportedServiceCommitment."Usage Based Billing");
             ServiceCommitment.TestField("Usage Based Pricing", ImportedServiceCommitment."Usage Based Pricing");
@@ -115,17 +115,17 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     [HandlerFunctions('MessageHandler')]
     procedure ExpectMultipleErrorsOnCreateServiceCommitment()
     var
-        InitialImportedServiceCommitment: Record "Imported Service Commitment";
+        InitialImportedServiceCommitment: Record "Imported Subscription Line";
     begin
-        // [GIVEN] Create Imported Service Commitment with incorrect data and
-        // [WHEN] run Create Service Commitment
-        // [THEN] assert errors when running Create Service Commitment
+        // [GIVEN] Create Imported Subscription Line with incorrect data and
+        // [WHEN] run Create Subscription Line
+        // [THEN] assert errors when running Create Subscription Line
         Initialize();
         SetupImportedServiceObjectAndCreateServiceObject();
-        ContractTestLibrary.CreateImportedServiceCommitmentCustomer(ImportedServiceCommitment, ImportedServiceObject, CustomerContract, "Contract Line Type"::"Service Commitment");
+        ContractTestLibrary.CreateImportedServiceCommitmentCustomer(ImportedServiceCommitment, ImportedServiceObject, CustomerContract, Enum::"Contract Line Type"::Item);
         ImportedServiceCommitment.SetRecFilter();
         InitialImportedServiceCommitment := ImportedServiceCommitment;
-        Commit(); // retain Imported Service Commitment
+        Commit(); // retain Imported Subscription Line
 
         ImportedServiceCommitment."Usage Based Pricing" := "Usage Based Pricing"::"Usage Quantity";
         TestAssertErrorOnCreateServiceCommitmentRun(InitialImportedServiceCommitment);
@@ -199,8 +199,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     var
         UsageDataGenericImport: Record "Usage Data Generic Import";
     begin
-        UsageDataGenericImport.SetRange("Subscription ID", UsageDataSupplierReference."Supplier Reference");
-        UsageDataGenericImport.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
+        UsageDataGenericImport.SetRange("Supp. Subscription ID", UsageDataSupplierReference."Supplier Reference");
+        UsageDataGenericImport.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
         UsageDataGenericImport.FindFirst();
     end;
@@ -234,7 +234,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         ServiceCommitmentTemplate."Usage Based Billing" := true;
         ServiceCommitmentTemplate.Modify(false);
 
-        // Standard Service Comm. Package with two Service Comm. Package Lines
+        // Standard Subscription Package with two Subscription Package Lines
         // 1. for Customer
         // 2. for Vendor
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
@@ -257,7 +257,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         ItemServCommitmentPackage.Standard := true;
         ItemServCommitmentPackage.Modify(false);
 
-        // Additional Service Commitment Package
+        // Additional Subscription Package
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ServiceCommPackageLine.Partner := Enum::"Service Partner"::Customer;
         Evaluate(ServiceCommPackageLine."Extension Term", '<1Y>');
@@ -274,7 +274,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         SetupVendorContract();
         ContractTestLibrary.CreateImportedServiceObject(ImportedServiceObject, Customer."No.", '');
         ImportedServiceObject.SetRecFilter();
-        Commit(); // retain created Imported Service Objects
+        Commit(); // retain created Imported Subscriptions
         Report.Run(Report::"Create Service Objects", false, false, ImportedServiceObject); // MessageHandler
     end;
 
@@ -313,13 +313,13 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         CreateMultipleUsageDataBlobFiles();
         UsageDataImport."Processing Step" := Enum::"Processing Step"::"Create Imported Lines";
         UsageDataImport.Modify(false);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
         UsageDataImport."Processing Step" := Enum::"Processing Step"::"Process Imported Lines";
         UsageDataImport.Modify(false);
-        Codeunit.Run(Codeunit::"Generic Usage Data Import", UsageDataImport);
+        Codeunit.Run(Codeunit::"Import And Process Usage Data", UsageDataImport);
     end;
 
-    local procedure TestAssertErrorOnCreateServiceCommitmentRun(var InitialImportedServiceCommitment: Record "Imported Service Commitment")
+    local procedure TestAssertErrorOnCreateServiceCommitmentRun(var InitialImportedServiceCommitment: Record "Imported Subscription Line")
     begin
         ImportedServiceCommitment.Modify(false);
         asserterror CreateServiceCommitment.Run(ImportedServiceCommitment);
@@ -329,8 +329,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     local procedure TestIsUsageDataSubscriptionUpdated()
     begin
         UsageDataSubscription.SetRange("Supplier Reference Entry No.", UsageDataSupplierReference."Entry No.");
-        UsageDataSubscription.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
-        UsageDataSubscription.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+        UsageDataSubscription.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        UsageDataSubscription.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
         UsageDataSubscription.FindFirst();
     end;
 

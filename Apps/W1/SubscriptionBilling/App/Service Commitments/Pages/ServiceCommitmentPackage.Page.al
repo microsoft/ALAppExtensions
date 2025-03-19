@@ -2,9 +2,9 @@ namespace Microsoft.SubscriptionBilling;
 
 page 8056 "Service Commitment Package"
 {
-    Caption = 'Service Commitment Package';
+    Caption = 'Subscription Package';
     PageType = Card;
-    SourceTable = "Service Commitment Package";
+    SourceTable = "Subscription Package";
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -18,7 +18,7 @@ page 8056 "Service Commitment Package"
                 field("Code"; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment package.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package.';
                     trigger OnValidate()
                     begin
                         PackageLinesEnabled := Rec.Code <> '';
@@ -26,18 +26,18 @@ page 8056 "Service Commitment Package"
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                 }
                 field("Price Group"; Rec."Price Group")
                 {
-                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of services.';
+                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of Subscription Lines.';
                 }
             }
             part(PackageLines; "Service Comm. Package Lines")
             {
                 Editable = DynamicEditable;
                 Enabled = PackageLinesEnabled;
-                SubPageLink = "Package Code" = field(Code);
+                SubPageLink = "Subscription Package Code" = field(Code);
                 UpdatePropagation = Both;
             }
 

@@ -5,13 +5,13 @@ using Microsoft.Sales.Document;
 page 8005 "Contract Renewal"
 {
     ApplicationArea = All;
-    Caption = 'Contract Renewal';
+    Caption = 'Subscription Contract Renewal';
     InsertAllowed = false;
     LinksAllowed = false;
     PageType = Worksheet;
     SaveValues = true;
-    SourceTable = "Contract Renewal Line";
-    SourceTableView = sorting("Linked to Contract No.", "Linked to Contract Line No.");
+    SourceTable = "Sub. Contract Renewal Line";
+    SourceTableView = sorting("Linked to Sub. Contract No.", "Linked to Sub. Contr. Line No.");
     UsageCategory = Tasks;
 
     layout
@@ -20,83 +20,83 @@ page 8005 "Contract Renewal"
         {
             repeater(RenewalLines)
             {
-                field("Linked to Contract No."; Rec."Linked to Contract No.")
+                field("Linked to Contract No."; Rec."Linked to Sub. Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the Customer Contract from which the entry originates. This also includes vendor-related services.';
+                    ToolTip = 'Specifies the number of the Customer Subscription Contract from which the entry originates. This also includes vendor-related Subscription Lines.';
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription t Description")
                 {
-                    ToolTip = 'Specifies a description of the service object.';
+                    ToolTip = 'Specifies a description of the Subscription.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Visible = false;
 
                     trigger OnDrillDown()
                     var
-                        ServiceObject: Record "Service Object";
+                        ServiceObject: Record "Subscription Header";
                     begin
-                        ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                        ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                     end;
                 }
-                field("Service End Date"; Rec."Service End Date")
+                field("Service End Date"; Rec."Subscription Line End Date")
                 {
-                    ToolTip = 'Specifies the date up to which the service is valid.';
+                    ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                 }
                 field("Renewal Term"; Rec."Renewal Term")
                 {
-                    ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the service and can be changed manually.';
+                    ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the Subscription Line and can be changed manually.';
                 }
-                field("Agreed Serv. Comm. Start Date"; Rec."Agreed Serv. Comm. Start Date")
+                field("Agreed Serv. Comm. Start Date"; Rec."Agreed Sub. Line Start Date")
                 {
-                    ToolTip = 'Specifies the individually agreed start of the service.';
+                    ToolTip = 'Specifies the individually agreed start of the Subscription Line.';
                 }
                 field(Price; Rec.Price)
                 {
-                    ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for the rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for the rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of the Contract.';
                     Visible = false;
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
-                    Caption = 'Contract Description';
-                    ToolTip = 'Specifies the products or service being offered.';
+                    Caption = 'Subscription Contract Description';
+                    ToolTip = 'Specifies the subscriptions being offered.';
                     Editable = false;
 
                     trigger OnDrillDown()
                     begin
-                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                        ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                     end;
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or vendor contracts.';
+                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
                 }
                 field("Error Message"; Rec."Error Message")
                 {
@@ -136,8 +136,8 @@ page 8005 "Contract Renewal"
 
                 trigger OnAction()
                 var
-                    ContractRenewalLine: Record "Contract Renewal Line";
-                    CreateContractRenewal: Codeunit "Create Contract Renewal";
+                    ContractRenewalLine: Record "Sub. Contract Renewal Line";
+                    CreateContractRenewal: Codeunit "Create Sub. Contract Renewal";
                     SelectionTxt: Text;
                     Selection: Integer;
                     Counter: array[2] of Integer;
@@ -174,21 +174,21 @@ page 8005 "Contract Renewal"
 
                 trigger OnAction()
                 begin
-                    ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Contract No.");
+                    ContractsGeneralMgt.OpenContractCard(Rec.Partner, Rec."Subscription Contract No.");
                 end;
             }
             action(OpenServiceObjectAction)
             {
-                Caption = 'Service Object';
+                Caption = 'Subscription';
                 Image = ServiceAgreement;
                 Scope = Repeater;
-                ToolTip = 'Opens the Service object card.';
+                ToolTip = 'Opens the Subscription card.';
 
                 trigger OnAction()
                 var
-                    ServiceObject: Record "Service Object";
+                    ServiceObject: Record "Subscription Header";
                 begin
-                    ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                    ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                 end;
             }
             action(OpenSalesQuotes)
@@ -200,9 +200,9 @@ page 8005 "Contract Renewal"
             }
             action(OpenPlannedServiceCommitments)
             {
-                Caption = 'Planned Service Commitments';
+                Caption = 'Planned Subscription Lines';
                 Image = EntriesList;
-                ToolTip = 'Opens the List of planned Service Commitments.';
+                ToolTip = 'Opens the List of planned Subscription Lines.';
                 RunObject = page "Planned Service Commitments";
             }
         }
@@ -236,10 +236,10 @@ page 8005 "Contract Renewal"
 
     trigger OnAfterGetRecord()
     begin
-        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Contract No.");
+        ContractDescriptionTxt := ContractsGeneralMgt.GetContractDescription(Rec.Partner, Rec."Subscription Contract No.");
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         ContractDescriptionTxt: Text;
 }

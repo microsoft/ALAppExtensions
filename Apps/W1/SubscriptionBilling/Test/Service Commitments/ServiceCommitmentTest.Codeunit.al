@@ -9,15 +9,15 @@ codeunit 148156 "Service Commitment Test"
     Access = Internal;
 
     var
-        CustomerContract: Record "Customer Contract";
-        CustomerContractLine: Record "Customer Contract Line";
+        CustomerContract: Record "Customer Subscription Contract";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
         Item: Record Item;
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
@@ -76,11 +76,11 @@ codeunit 148156 "Service Commitment Test"
     procedure CheckDeleteServiceCommitmentAfterDeleteCustomerContractLine()
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
+        CustomerContractLine.SetRange("Subscription Contract No.", CustomerContract."No.");
         CustomerContractLine.DeleteAll(true);
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.DeleteAll(true);
     end;
 
@@ -88,14 +88,14 @@ codeunit 148156 "Service Commitment Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure CheckDeleteServiceCommitmentAfterDeleteVendorContractLine()
     var
-        VendorContractLine: Record "Vendor Contract Line";
+        VendorContractLine: Record "Vend. Sub. Contract Line";
     begin
         Initialize();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '', true);
+        VendorContractLine.SetRange("Subscription Contract No.", VendorContract."No.");
         VendorContractLine.DeleteAll(true);
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.DeleteAll(true);
     end;
 
@@ -147,7 +147,7 @@ codeunit 148156 "Service Commitment Test"
         Evaluate(PositiveDateFormula, '<1M>');
         ServiceCommPackageLine.Validate("Billing Base Period", PositiveDateFormula);
         ServiceCommPackageLine.Validate("Billing Rhythm", PositiveDateFormula);
-        ServiceCommPackageLine.Validate("Service Comm. Start Formula", PositiveDateFormula);
+        ServiceCommPackageLine.Validate("Sub. Line Start Formula", PositiveDateFormula);
         ServiceCommPackageLine.Validate("Initial Term", PositiveDateFormula);
         ServiceCommPackageLine.Validate("Extension Term", PositiveDateFormula);
         ServiceCommPackageLine.Validate("Notice Period", PositiveDateFormula);
@@ -173,7 +173,7 @@ codeunit 148156 "Service Commitment Test"
     begin
         Initialize();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine.SetRange("Package Code", ServiceCommitmentPackage.Code);
+        ServiceCommPackageLine.SetRange("Subscription Package Code", ServiceCommitmentPackage.Code);
         ServiceCommitmentPackage.Delete(true);
         Assert.RecordIsEmpty(ServiceCommPackageLine);
     end;
@@ -216,10 +216,10 @@ codeunit 148156 "Service Commitment Test"
         SalesLine: Record "Sales Line";
         FromDocNo: Code[20];
     begin
-        // [SCENARIO] When sales order is created from sales quote expect that qty to invoice is set to 0 in case of service commitment items
+        // [SCENARIO] When sales order is created from sales quote expect that qty to invoice is set to 0 in case of Subscription Items
         ContractTestLibrary.InitContractsApp();
 
-        // [GIVEN]  Create service commitment item
+        // [GIVEN]  Create Subscription Item
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
 
         // [GIVEN] Create sales quote
@@ -257,11 +257,11 @@ codeunit 148156 "Service Commitment Test"
     var
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         UpdateServiceDatesAndCloseCustomerContractLines();
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.DeleteAll(true);
     end;
 
@@ -271,9 +271,9 @@ codeunit 148156 "Service Commitment Test"
     var
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         asserterror ServiceCommitment.DeleteAll(true);
     end;
 
@@ -283,11 +283,11 @@ codeunit 148156 "Service Commitment Test"
     var
     begin
         Initialize();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '', true);
         UpdateServiceDatesAndCloseCustomerContractLines();
 
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         ServiceCommitment.DeleteAll(true);
     end;
 
@@ -297,7 +297,7 @@ codeunit 148156 "Service Commitment Test"
     var
     begin
         Initialize();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         UpdateServiceDatesAndCloseCustomerContractLines();
 
         ServiceCommitment."Next Billing Date" := CalcDate('<1D>', ServiceCommitment."Next Billing Date");
@@ -308,8 +308,8 @@ codeunit 148156 "Service Commitment Test"
     [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestOverdueServiceCommitments()
     var
-        OverdueServiceCommitments: Record "Overdue Service Commitments";
-        ServiceContractSetup: Record "Service Contract Setup";
+        OverdueServiceCommitments: Record "Overdue Subscription Line";
+        ServiceContractSetup: Record "Subscription Contract Setup";
         i: Integer;
         InsertCounter: Integer;
         MaxInsertCount: Integer;
@@ -320,11 +320,11 @@ codeunit 148156 "Service Commitment Test"
         Evaluate(ServiceContractSetup."Overdue Date Formula", '<1M>');
         ServiceContractSetup.Modify(false);
 
-        // Create closed service commitments that should not be considered
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true); // ExchangeRateSelectionModalPageHandler,MessageHandler
+        // Create closed Subscription Lines that should not be considered
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true); // ExchangeRateSelectionModalPageHandler,MessageHandler
         UpdateServiceDatesAndCloseCustomerContractLines();
 
-        // Create service commitments to consider
+        // Create Subscription Lines to consider
         MaxInsertCount := LibraryRandom.RandIntInRange(2, 9);
         InsertCounter := 0;
         for i := 1 to MaxInsertCount do begin
@@ -339,8 +339,8 @@ codeunit 148156 "Service Commitment Test"
     [Test]
     procedure TestServiceCommitmentPackageCopy()
     var
-        CopiedServiceCommPackageLines: Record "Service Comm. Package Line";
-        CopiedServiceCommPackage: Record "Service Commitment Package";
+        CopiedServiceCommPackageLines: Record "Subscription Package Line";
+        CopiedServiceCommPackage: Record "Subscription Package";
         NewPackageFilter: Code[20];
     begin
         Initialize();
@@ -351,7 +351,7 @@ codeunit 148156 "Service Commitment Test"
 
         ServiceCommitmentPackage.CopyServiceCommitmentPackage();
         CopiedServiceCommPackage.Get(NewPackageFilter);
-        CopiedServiceCommPackageLines.SetRange("Package Code", CopiedServiceCommPackage.Code);
+        CopiedServiceCommPackageLines.SetRange("Subscription Package Code", CopiedServiceCommPackage.Code);
         CopiedServiceCommPackageLines.FindFirst();
         CopiedServiceCommPackageLines.TestField(Partner, ServiceCommPackageLine.Partner);
         CopiedServiceCommPackageLines.TestField(Template, ServiceCommPackageLine.Template);
@@ -362,7 +362,7 @@ codeunit 148156 "Service Commitment Test"
         CopiedServiceCommPackageLines.TestField("Calculation Base %", ServiceCommPackageLine."Calculation Base %");
         CopiedServiceCommPackageLines.TestField("Billing Base Period", ServiceCommPackageLine."Billing Base Period");
         CopiedServiceCommPackageLines.TestField("Billing Rhythm", ServiceCommPackageLine."Billing Rhythm");
-        CopiedServiceCommPackageLines.TestField("Service Comm. Start Formula", ServiceCommPackageLine."Service Comm. Start Formula");
+        CopiedServiceCommPackageLines.TestField("Sub. Line Start Formula", ServiceCommPackageLine."Sub. Line Start Formula");
         CopiedServiceCommPackageLines.TestField("Notice Period", ServiceCommPackageLine."Notice Period");
         CopiedServiceCommPackageLines.TestField("Extension Term", ServiceCommPackageLine."Extension Term");
         CopiedServiceCommPackageLines.TestField("Initial Term", ServiceCommPackageLine."Initial Term");
@@ -383,7 +383,7 @@ codeunit 148156 "Service Commitment Test"
     begin
         ServiceCommitment.Init();
         ServiceCommitment.Partner := ServicePartner;
-        ServiceCommitment."Service Object No." := ServiceObject."No.";
+        ServiceCommitment."Subscription Header No." := ServiceObject."No.";
         ServiceCommitment."Entry No." := 0;
         ServiceCommitment."Next Billing Date" := CalcDate('<-1M>', WorkDate());
         ServiceCommitment.Insert(false);
@@ -393,12 +393,12 @@ codeunit 148156 "Service Commitment Test"
     local procedure UpdateServiceDatesAndCloseCustomerContractLines()
     begin
         ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
         if ServiceCommitment.FindSet() then
             repeat
-                ServiceCommitment."Service Start Date" := CalcDate('<-2D>', Today());
-                ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-                ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
+                ServiceCommitment."Subscription Line Start Date" := CalcDate('<-2D>', Today());
+                ServiceCommitment."Subscription Line End Date" := CalcDate('<-1D>', Today());
+                ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Subscription Line End Date");
                 ServiceCommitment.Modify(false);
             until ServiceCommitment.Next() = 0;
         ServiceObject.UpdateServicesDates();
@@ -408,7 +408,7 @@ codeunit 148156 "Service Commitment Test"
     var
         DateFormula1: DateFormula;
     begin
-        ServiceCommPackageLine.Get(ServiceCommPackageLine."Package Code", ServiceCommPackageLine."Line No.");
+        ServiceCommPackageLine.Get(ServiceCommPackageLine."Subscription Package Code", ServiceCommPackageLine."Line No.");
         Evaluate(DateFormula1, DateFormulaText1);
         ServiceCommPackageLine."Billing Base Period" := DateFormula1;
         Evaluate(DateFormula1, DateFormulaText2);

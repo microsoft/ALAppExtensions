@@ -14,11 +14,12 @@ table 6106 "E-Doc. Import Parameters"
         field(1; "Step to Run"; Enum "Import E-Document Steps")
         {
         }
-        field(2; "Prepare Draft Value Providers"; Enum "E-Doc Purchase Providers")
+        field(2; "Processing Customizations"; Enum "E-Doc. Proc. Customizations")
         {
         }
-        field(3; "Finish Purchase Draft Impl."; Enum "E-Doc. Create Purchase Invoice")
+        field(3; "Purch. Journal V1 Behavior"; Option)
         {
+            OptionMembers = "Inherit from service","Create purchase document","Create journal line";
         }
     }
 }

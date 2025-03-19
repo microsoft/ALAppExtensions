@@ -10,11 +10,10 @@ using Microsoft.eServices.EDocument.Service;
 page 6106 "Outbound E-Documents"
 {
     ApplicationArea = Basic, Suite;
+    Extensible = false;
     SourceTable = "E-Document";
     CardPageId = "E-Document";
     PageType = List;
-    UsageCategory = Lists;
-    AdditionalSearchTerms = 'Edoc,Outbound,Outgoing,Out,Electronic Document,EDocuments,E Documents,E invoices,Einvoices,Electronic';
     RefreshOnActivate = true;
     Editable = false;
     DeleteAllowed = false;
@@ -30,6 +29,7 @@ page 6106 "Outbound E-Documents"
                 ShowCaption = false;
                 field("Entry No"; Rec."Entry No")
                 {
+                    Caption = 'No.';
                     ToolTip = 'Specifies the entry number.';
                 }
                 field("Customer Name"; Rec."Bill-to/Pay-to Name")
@@ -67,7 +67,7 @@ page 6106 "Outbound E-Documents"
             }
             part("Outbound E-Doc. Factbox"; "Outbound E-Doc. Factbox")
             {
-                Caption = 'Details';
+                Caption = 'E-Document';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
             }
@@ -97,5 +97,13 @@ page 6106 "Outbound E-Documents"
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            Error('');
+    end;
 
 }

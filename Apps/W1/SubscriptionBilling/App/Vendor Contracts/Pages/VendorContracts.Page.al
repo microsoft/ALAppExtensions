@@ -5,14 +5,14 @@ using Microsoft.Finance.Dimension;
 page 8071 "Vendor Contracts"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'Vendor Contracts';
+    Caption = 'Vendor Subscription Contracts';
     CardPageId = "Vendor Contract";
     DataCaptionFields = "Buy-from Vendor No.";
     Editable = false;
     PageType = List;
-    QueryCategory = 'Vendor Contract List';
+    QueryCategory = 'Vendor Subscription Contracts';
     RefreshOnActivate = true;
-    SourceTable = "Vendor Contract";
+    SourceTable = "Vendor Subscription Contract";
     UsageCategory = Lists;
     layout
     {
@@ -29,7 +29,7 @@ page 8071 "Vendor Contracts"
                 {
                     ApplicationArea = Suite;
                     Caption = 'Description';
-                    ToolTip = 'Specifies the products or service being offered.';
+                    ToolTip = 'Specifies the subscriptions being offered.';
                 }
                 field("Buy-from Vendor No."; Rec."Buy-from Vendor No.")
                 {
@@ -61,7 +61,7 @@ page 8071 "Vendor Contracts"
                 field("Purchaser Code"; Rec."Purchaser Code")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies which purchaser is assigned to the vendor contract.';
+                    ToolTip = 'Specifies which purchaser is assigned to the Vendor Subscription Contract.';
                 }
                 field("Assigned User ID"; Rec."Assigned User ID")
                 {
@@ -93,7 +93,7 @@ page 8071 "Vendor Contracts"
         {
             group(Contract)
             {
-                Caption = 'Vendor Contract';
+                Caption = 'Vendor Subscription Contract';
                 Image = "Order";
                 action(CreateContractInvoice)
                 {
@@ -122,13 +122,13 @@ page 8071 "Vendor Contracts"
                 }
                 action("Vendor Contract Deferrals")
                 {
-                    Caption = 'Vendor Contract Deferrals';
-                    ToolTip = 'Vendor Contract Deferrals.';
+                    Caption = 'Vendor Subscription Contract Deferrals';
+                    ToolTip = 'Vendor Subscription Contract Deferrals.';
                     Image = LedgerEntries;
                     ShortcutKey = 'Ctrl+F7';
                     RunObject = page "Vendor Contract Deferrals";
-                    RunPageView = sorting("Contract No.");
-                    RunPageLink = "Contract No." = field("No.");
+                    RunPageView = sorting("Subscription Contract No.");
+                    RunPageLink = "Subscription Contract No." = field("No.");
 
                 }
                 action(UpdateDimensionsInDeferrals)
@@ -185,7 +185,7 @@ page 8071 "Vendor Contracts"
 
     internal procedure GetVendorContractSelection() FilterText: Text
     var
-        VendorContract: Record "Vendor Contract";
+        VendorContract: Record "Vendor Subscription Contract";
         FilterTextBuilder: TextBuilder;
     begin
         CurrPage.SetSelectionFilter(VendorContract);
