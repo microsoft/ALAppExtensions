@@ -208,14 +208,14 @@ codeunit 6135 "E-Document WorkFlow Processing"
 
     local procedure DoSend(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     var
-        EDocExport: Codeunit "E-Doc. Export";
+        EDocumentLog: Record "E-Document Log";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         SendContext: Codeunit SendContext;
         Sent, IsAsync : Boolean;
     begin
         Sent := false;
-        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Exported) then
             Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then
