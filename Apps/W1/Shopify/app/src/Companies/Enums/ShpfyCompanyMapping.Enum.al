@@ -18,5 +18,9 @@ enum 30151 "Shpfy Company Mapping" implements "Shpfy ICompany Mapping"
         Caption = 'Always take the default Company';
         Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Default Comp.";
     }
-
+    value(3; "By Tax Id")
+    {
+        Caption = 'By Tax Id';
+        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Tax Id";
+    }
 }

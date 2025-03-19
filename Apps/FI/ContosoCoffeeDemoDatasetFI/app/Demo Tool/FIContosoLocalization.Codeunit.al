@@ -3,6 +3,15 @@ codeunit 13414 "FI Contoso Localization"
     InherentEntitlements = X;
     InherentPermissions = X;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
+    local procedure OnBeforeGenerateDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreatePurchaseOrderFI: Codeunit "Create Purchase Order FI";
+    begin
+        if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Historical Data" then
+            CreatePurchaseOrderFI.UpdateInvoiceMessage();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnAfterGeneratingDemoData', '', false, false)]
     local procedure OnAfterGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin

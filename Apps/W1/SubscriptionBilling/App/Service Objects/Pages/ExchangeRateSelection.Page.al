@@ -30,6 +30,7 @@ page 8088 "Exchange Rate Selection"
                 {
                     Caption = 'Exchange Rate';
                     ToolTip = 'Specifies the exchange rate that will be used for the conversion.';
+                    DecimalPlaces = 0 : 7;
                     Editable = not IsCalledFromServiceObject;
                 }
             }

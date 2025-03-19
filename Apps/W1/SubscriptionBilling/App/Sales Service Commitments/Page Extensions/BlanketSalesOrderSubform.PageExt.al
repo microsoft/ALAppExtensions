@@ -8,10 +8,10 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
     {
         addafter("Line Amount")
         {
-            field("Service Commitments"; Rec."Service Commitments")
+            field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the sales line.';
+                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
             }
         }
     }
@@ -22,11 +22,11 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
             action(ShowSalesServiceCommitments)
             {
                 ApplicationArea = All;
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Lines';
                 Image = AllLines;
                 RunObject = page "Sales Service Commitments";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
-                ToolTip = 'Shows the service commitments for the sales line.';
+                ToolTip = 'Shows the Subscription Lines for the sales line.';
             }
         }
         addlast("F&unctions")
@@ -34,13 +34,13 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
             action(AddSalesServiceCommitment)
             {
                 ApplicationArea = All;
-                Caption = 'Add Service Commitments';
+                Caption = 'Add Subscription Lines';
                 Image = ExpandDepositLine;
-                ToolTip = 'Shows all service commitments for the item. Service commitments can be added, changed or removed.';
+                ToolTip = 'Shows all Subscription Lines for the item. Subscription Lines can be added, changed or removed.';
 
                 trigger OnAction()
                 var
-                    SalesServiceCommitmentMgmt: Codeunit "Sales Service Commitment Mgmt.";
+                    SalesServiceCommitmentMgmt: Codeunit "Sales Subscription Line Mgmt.";
                 begin
                     SalesServiceCommitmentMgmt.AddAdditionalSalesServiceCommitmentsForSalesLine(Rec);
                 end;

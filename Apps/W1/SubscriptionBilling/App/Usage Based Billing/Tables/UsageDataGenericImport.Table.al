@@ -49,10 +49,10 @@ table 8018 "Usage Data Generic Import"
             Caption = 'Reason';
             Compressed = false;
         }
-        field(6; "Service Object No."; Code[20])
+        field(6; "Subscription Header No."; Code[20])
         {
-            Caption = 'Service Object No.';
-            TableRelation = "Service Object";
+            Caption = 'Subscription No.';
+            TableRelation = "Subscription Header";
             Editable = false;
         }
         field(7; "Customer ID"; Text[80])
@@ -80,7 +80,7 @@ table 8018 "Usage Data Generic Import"
             trigger OnValidate()
             var
                 UsageDataImport: Record "Usage Data Import";
-                UsageDataCustomer: Record "Usage Data Customer";
+                UsageDataCustomer: Record "Usage Data Supp. Customer";
             begin
                 if "Customer ID" = '' then
                     exit;
@@ -100,7 +100,7 @@ table 8018 "Usage Data Generic Import"
             trigger OnLookup()
             var
                 UsageDataImport: Record "Usage Data Import";
-                UsageDataCustomer: Record "Usage Data Customer";
+                UsageDataCustomer: Record "Usage Data Supp. Customer";
             begin
                 UsageDataImport.Get("Usage Data Import Entry No.");
                 UsageDataCustomer.SetRange("Supplier No.", UsageDataImport."Supplier No.");
@@ -110,7 +110,7 @@ table 8018 "Usage Data Generic Import"
 
             trigger OnValidate()
             var
-                UsageDataCustomer: Record "Usage Data Customer";
+                UsageDataCustomer: Record "Usage Data Supp. Customer";
                 UsageDataImport: Record "Usage Data Import";
             begin
                 if "Customer Name" = '' then begin
@@ -129,33 +129,33 @@ table 8018 "Usage Data Generic Import"
         {
             Caption = 'Invoice ID';
         }
-        field(10; "Subscription ID"; Text[80])
+        field(10; "Supp. Subscription ID"; Text[80])
         {
-            Caption = 'Subscription Id';
+            Caption = 'Supplier Subscription Id';
 
             trigger OnLookup()
             var
                 UsageDataImport: Record "Usage Data Import";
-                UsageDataSubscription: Record "Usage Data Subscription";
+                UsageDataSubscription: Record "Usage Data Supp. Subscription";
             begin
                 UsageDataImport.Get("Usage Data Import Entry No.");
                 UsageDataSubscription.SetRange("Supplier No.", UsageDataImport."Supplier No.");
                 if Page.RunModal(0, UsageDataSubscription) = Action::LookupOK then
-                    Validate("Subscription ID", UsageDataSubscription."Supplier Reference");
+                    Validate("Supp. Subscription ID", UsageDataSubscription."Supplier Reference");
             end;
 
             trigger OnValidate()
             var
                 UsageDataImport: Record "Usage Data Import";
-                UsageDataSubscription: Record "Usage Data Subscription";
+                UsageDataSubscription: Record "Usage Data Supp. Subscription";
             begin
-                if "Subscription ID" = '' then
+                if "Supp. Subscription ID" = '' then
                     exit;
 
                 if UsageDataImport.Get("Usage Data Import Entry No.") then
-                    if UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", "Subscription ID") then begin
-                        if Rec."Subscription Name" = '' then
-                            Rec."Subscription Name" := UsageDataSubscription."Customer Name";
+                    if UsageDataSubscription.FindForSupplierReference(UsageDataImport."Supplier No.", "Supp. Subscription ID") then begin
+                        if Rec."Supp. Subscription Name" = '' then
+                            Rec."Supp. Subscription Name" := UsageDataSubscription."Customer Name";
                         if Rec."Product ID" = '' then
                             Rec."Product ID" := UsageDataSubscription."Product ID";
                         if Rec."Product Name" = '' then
@@ -165,32 +165,32 @@ table 8018 "Usage Data Generic Import"
                     end;
             end;
         }
-        field(11; "Subscription Name"; Text[250])
+        field(11; "Supp. Subscription Name"; Text[250])
         {
-            Caption = 'Subscription Name';
+            Caption = 'Supplier Subscription Name';
 
             trigger OnLookup()
             var
                 UsageDataImport: Record "Usage Data Import";
-                UsageDataSubscription: Record "Usage Data Subscription";
+                UsageDataSubscription: Record "Usage Data Supp. Subscription";
             begin
                 UsageDataImport.Get("Usage Data Import Entry No.");
                 UsageDataSubscription.SetRange("Supplier No.", UsageDataImport."Supplier No.");
                 if Page.RunModal(0, UsageDataSubscription) = Action::LookupOK then
-                    Validate("Subscription ID", UsageDataSubscription."Supplier Reference");
+                    Validate("Supp. Subscription ID", UsageDataSubscription."Supplier Reference");
             end;
         }
-        field(12; "Subscription Description"; Text[250])
+        field(12; "Supp. Subscription Description"; Text[250])
         {
-            Caption = 'Subscription Description';
+            Caption = 'Supplier Subscription Description';
         }
-        field(13; "Subscription Start Date"; Date)
+        field(13; "Supp. Subscription Start Date"; Date)
         {
-            Caption = 'Subscription Start Date';
+            Caption = 'Supplier Subscription Start Date';
         }
-        field(14; "Subscription End Date"; Date)
+        field(14; "Supp. Subscription End Date"; Date)
         {
-            Caption = 'Subscription End Date';
+            Caption = 'Supplier Subscription End Date';
         }
         field(15; "Billing Period Start Date"; Date)
         {
@@ -253,7 +253,7 @@ table 8018 "Usage Data Generic Import"
         }
         field(30; "Service Object Availability"; Enum "Service Object Availability")
         {
-            Caption = 'Service Object Availability';
+            Caption = 'Subscription Availability';
             Editable = false;
         }
         field(50; Text1; Text[80])
@@ -320,7 +320,7 @@ table 8018 "Usage Data Generic Import"
     var
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataImport: Record "Usage Data Import";
-        UsageDataCustomer: Record "Usage Data Customer";
+        UsageDataCustomer: Record "Usage Data Supp. Customer";
     begin
         UsageDataImport.SetRange("Entry No.", "Usage Data Import Entry No.");
         if UsageDataImport.FindFirst() then

@@ -28,5 +28,15 @@
         "codeunitId": 139881,
         "CodeunitName": "PowerBI Sales Test",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139875,
+        "CodeunitName": "PowerBI Core Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139890,
+        "CodeunitName": "PowerBI Sustainability Test",
+        "Method": "*"
     }
 ]

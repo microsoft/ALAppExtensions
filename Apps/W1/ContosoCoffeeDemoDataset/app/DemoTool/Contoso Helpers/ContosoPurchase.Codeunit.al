@@ -13,6 +13,11 @@ codeunit 4781 "Contoso Purchase"
         exit(InsertPurchaseHeader(DocumentType, VendorNo, '', PostingDate, PostingDate, 0D, '', CopyStr(LocationCode, 1, 10), VendorOrderNo, '', PostingDate, ''));
     end;
 
+    procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; YourReference: Code[35]; VendorOrderNo: Code[20]; PostingDate: Date; LocationCode: Code[10]; VendorInvoiceNo: Code[35]; PaymentTermsCode: Code[10]; PaymentMethodCode: Code[10]): Record "Purchase Header"
+    begin
+        exit(InsertPurchaseHeader(DocumentType, VendorNo, YourReference, PostingDate, PostingDate, 0D, PaymentTermsCode, CopyStr(LocationCode, 1, 10), VendorOrderNo, VendorInvoiceNo, PostingDate, PaymentMethodCode));
+    end;
+
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]): Record "Purchase Header";
     var
         PurchaseHeader: Record "Purchase Header";
@@ -26,7 +31,10 @@ codeunit 4781 "Contoso Purchase"
         PurchaseHeader.Validate("Posting Date", PostingDate);
         PurchaseHeader.Validate("Expected Receipt Date", ExpectedReceiptDate);
         PurchaseHeader.Validate("Payment Terms Code", PaymentTermsCode);
-        PurchaseHeader.Validate("Location Code", LocationCode);
+
+        if LocationCode <> '' then
+            PurchaseHeader.Validate("Location Code", LocationCode);
+
         PurchaseHeader.Validate("Vendor Order No.", VendorOrderNo);
 
         if VendorInvoiceNo <> '' then
@@ -75,6 +83,28 @@ codeunit 4781 "Contoso Purchase"
 
         PurchaseLine.Validate(Quantity, Quantity);
         PurchaseLine.Validate("Line Discount %", LineDiscount);
+        PurchaseLine.Insert(true);
+    end;
+
+    procedure InsertPurchaseLineWithGL(PurchaseHeader: Record "Purchase Header"; GLAccNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        PurchaseLine.Validate("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.Validate("Document No.", PurchaseHeader."No.");
+        PurchaseLine.Validate("Line No.", GetNextPurchaseLineNo(PurchaseHeader));
+        PurchaseLine.Validate("Location Code", PurchaseHeader."Location Code");
+        PurchaseLine.Validate(Type, PurchaseLine.Type::"G/L Account");
+        PurchaseLine.Validate("No.", GLAccNo);
+
+        if UnitOfMeasureCode <> '' then
+            PurchaseLine.Validate("Unit of Measure Code", UnitOfMeasureCode);
+
+        PurchaseLine.Validate(Quantity, Quantity);
+
+        if PurchaseLine."Unit Cost" <> 0 then
+            PurchaseLine.Validate("Direct Unit Cost", UnitCost);
+
         PurchaseLine.Insert(true);
     end;
 

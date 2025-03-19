@@ -18,8 +18,8 @@ pageextension 8082 "Order Processor RC" extends "Order Processor Role Center"
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
-                ApplicationArea = Jobs;
-                Caption = 'Subscription & Recurring Billing';
+                ApplicationArea = All;
+                Caption = 'Subscription Billing';
             }
         }
     }

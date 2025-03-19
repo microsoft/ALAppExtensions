@@ -10,11 +10,11 @@ pageextension 8086 "Source Code Setup" extends "Source Code Setup"
         {
             group(SubcriptionBilling)
             {
-                Caption = 'Subcription Billing';
-                field(ContractDeferralsRelease; Rec."Contract Deferrals Release")
+                Caption = 'Subscription Billing';
+                field(ContractDeferralsRelease; Rec."Sub. Contr. Deferrals Release")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies which source code is used in the G/L when posting the release of contract deferrals (Subscription Billing).';
+                    ToolTip = 'Specifies which source code is used in the G/L when posting the release of contract deferrals.';
                 }
             }
         }

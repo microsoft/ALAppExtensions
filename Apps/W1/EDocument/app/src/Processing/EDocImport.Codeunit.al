@@ -52,6 +52,14 @@ codeunit 6140 "E-Doc. Import"
         exit(AllEDocumentsProcessed);
     end;
 
+    procedure ProcessAutomaticallyIncomingEDocument(EDocument: Record "E-Document"): Boolean
+    var
+        EDocumentService: Record "E-Document Service";
+    begin
+        EDocumentService := EDocument.GetEDocumentService();
+        exit(ProcessIncomingEDocument(EDocument, EDocumentService, EDocumentService.GetDefaultImportParameters()));
+    end;
+
     procedure ProcessIncomingEDocument(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): Boolean
     begin
         exit(ProcessIncomingEDocument(EDocument, EDocument.GetEDocumentService(), EDocImportParameters));
@@ -106,7 +114,8 @@ codeunit 6140 "E-Doc. Import"
 
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
             EDocumentLog.InsertLog(Enum::"E-Document Service Status"::"Imported Document Processing Error", EDocument.GetEDocumentImportProcessingStatus());
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::"Imported Document Processing Error");
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocument.GetEDocumentService(), Enum::"E-Document Service Status"::"Imported Document Processing Error");
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument);
             exit(false);
         end;
         exit(true);
@@ -132,10 +141,7 @@ codeunit 6140 "E-Doc. Import"
         EDocLog := EDocumentLog.InsertLog(Enum::"E-Document Service Status"::Imported, Enum::"Import E-Doc. Proc. Status"::Unprocessed);
         EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
 
-        if IBlobType.IsStructured() then
-            EDocument."Structured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No."
-        else
-            EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
+        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
         EDocument.Modify();
     end;
 
@@ -208,11 +214,6 @@ codeunit 6140 "E-Doc. Import"
             EDocAttachmentProcessor.DeleteAll(EDocument, RecordRef);
     end;
 
-    internal procedure V1_ProcessEDocument(EDocument: Record "E-Document")
-    begin
-        V1_ProcessEDocument(EDocument, EDocument.GetEDocumentService()."Create Journal Lines");
-    end;
-
     internal procedure V1_ProcessEDocument(var EDocument: Record "E-Document"; CreateJnlLine: Boolean)
     var
         EDocService: Record "E-Document Service";
@@ -227,7 +228,7 @@ codeunit 6140 "E-Doc. Import"
         EDocService := EDocument.GetEDocumentService();
         EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported);
 
-        V1_ProcessImportedDocument(EDocument, EDocService, TempBlob);
+        V1_ProcessImportedDocument(EDocument, EDocService, TempBlob, CreateJnlLine);
     end;
 
     local procedure GetDocumentBasicInfo(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
@@ -453,7 +454,7 @@ codeunit 6140 "E-Doc. Import"
         EDocument.Modify();
     end;
 
-    internal procedure V1_ProcessImportedDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
+    internal procedure V1_ProcessImportedDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; CreateJnlLine: Boolean)
     var
         EDocLog: Record "E-Document Log";
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
@@ -475,7 +476,12 @@ codeunit 6140 "E-Doc. Import"
             EDocServiceStatus := Enum::"E-Document Service Status"::"Imported document processing error";
             EDocumentLog.InsertLog(EDocument, EDocService, EDocServiceStatus);
             EDocumentProcessing.ModifyServiceStatus(EDocument, EDocService, EDocServiceStatus);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument);
+            exit;
+        end;
+
+        if EDocument.IsDuplicate() then begin
+            EDocument.Delete(true);
             exit;
         end;
 
@@ -484,7 +490,7 @@ codeunit 6140 "E-Doc. Import"
             EDocServiceStatus := Enum::"E-Document Service Status"::"Imported document processing error";
             EDocumentLog.InsertLog(EDocument, EDocService, EDocServiceStatus);
             EDocumentProcessing.ModifyServiceStatus(EDocument, EDocService, EDocServiceStatus);
-            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument);
             exit;
         end;
 
@@ -495,7 +501,7 @@ codeunit 6140 "E-Doc. Import"
             if ValidateEDocumentIsForPurchaseOrder(EDocument, Vendor) then
                 ReceiveEDocumentToPurchaseOrder(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Vendor, Window)
             else
-                ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Window)
+                ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Window, CreateJnlLine)
         else
             EDocErrorHelper.LogErrorMessage(EDocument, Vendor, Vendor.FieldNo("No."), FailedToFindVendorErr);
 
@@ -505,7 +511,7 @@ codeunit 6140 "E-Doc. Import"
         EDocLog := EDocumentLog.InsertLog(EDocument, EDocService, EDocServiceStatus);
         EDocumentLog.InsertMappingLog(EDocLog, TempEDocMapping);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocService, EDocServiceStatus);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
 
         OnAfterProcessImportedDocument(EDocument, DocumentHeader);
     end;
@@ -606,13 +612,13 @@ codeunit 6140 "E-Doc. Import"
         end;
     end;
 
-    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; var WindowInstance: Dialog)
+    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; var WindowInstance: Dialog; CreateJnlLine: Boolean)
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseDocumentType: Enum "Purchase Document Type";
     begin
         PurchaseDocumentType := SourceDocumentHeader.Field(PurchaseHeader.FieldNo("Document Type")).Value();
-        if EDocService."Create Journal Lines" then begin
+        if CreateJnlLine then begin
             if GuiAllowed() then
                 WindowInstance.Update(1, JnlLineCreateMsg);
             CreateJournalLineFromImportedDocument(EDocument, EDocService, EDocServiceStatus);
