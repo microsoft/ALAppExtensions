@@ -785,8 +785,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         LibraryEDocument.SetupStandardVAT();
         LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
-
         CompanyInformation.Get();
+        CompanyInformation."Country/Region Code" := 'GB';
+        CompanyInformation.Modify(false);
 
         BindSubscription(ApiUrlMockSubscribers);
 

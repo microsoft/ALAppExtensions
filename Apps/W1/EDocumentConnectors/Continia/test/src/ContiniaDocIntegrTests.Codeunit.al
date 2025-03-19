@@ -781,7 +781,10 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200/receive');
 
-        // Open and close E-Doc page creates auto import job due to setting
+        // [Given] Empty E-Document table
+        EDocument.DeleteAll();
+
+        // [Given] Auto import job. Open and close E-Doc page creates auto import job due to setting
         EDocServicePage.OpenView();
         EDocServicePage.GoToRecord(EDocumentService);
         EDocServicePage."Resolve Unit Of Measure".SetValue(true);
@@ -791,7 +794,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocServicePage."Validate Line Discount".SetValue(false);
         EDocServicePage.Close();
 
-        // Manually fire job queue job to import
+        // [When] Manually fire job queue job to import Documents
         if EDocument.FindLast() then
             EDocument.SetFilter("Entry No", '>%1', EDocument."Entry No");
         LibraryEDocument.RunImportJob();
@@ -823,8 +826,8 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Initialize();
         ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200/receive/multiple-services');
 
-        // [Given] No of Documents Before import
-        NoOfDocumentsBefore := EDocument.Count;
+        // [Given] Empty E-Document table
+        EDocument.DeleteAll();
 
         // [Given] Auto import job. Open and close E-Doc page creates auto import job due to setting
         EDocServicePage.OpenView();
@@ -841,7 +844,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         // Assert that we have only 1 document imported
         EDocument.FindLast();
-        Assert.AreEqual(1, EDocument.Count - NoOfDocumentsBefore, 'Wrong number of documents imported');
+        Assert.AreEqual(1, EDocument.Count, 'Wrong number of documents imported');
     end;
 
     local procedure Initialize()
