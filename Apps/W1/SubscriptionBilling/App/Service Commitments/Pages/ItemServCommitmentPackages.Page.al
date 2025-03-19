@@ -4,9 +4,9 @@ using Microsoft.Inventory.Item;
 
 page 8061 "Item Serv. Commitment Packages"
 {
-    Caption = 'Item Service Commitment Packages';
+    Caption = 'Item Subscription Packages';
     PageType = List;
-    SourceTable = "Item Serv. Commitment Package";
+    SourceTable = "Item Subscription Package";
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -19,7 +19,7 @@ page 8061 "Item Serv. Commitment Packages"
                 field("Code"; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment package.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -27,15 +27,15 @@ page 8061 "Item Serv. Commitment Packages"
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                 }
                 field(Standard; Rec.Standard)
                 {
-                    ToolTip = 'Specifies whether the package service commitments should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package service commitments can be added manually in the sales process.';
+                    ToolTip = 'Specifies whether the package Subscription Lines should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package Subscription Lines can be added manually in the sales process.';
                 }
                 field("Price Group"; Rec."Price Group")
                 {
-                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of services.';
+                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of Subscription Lines.';
                 }
             }
             part(PackageLines; "Service Comm. Package Lines")
@@ -92,7 +92,7 @@ page 8061 "Item Serv. Commitment Packages"
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
         if Item.Get(Rec."Item No.") then
-            if Item."Service Commitment Option" = Item."Service Commitment Option"::"Service Commitment Item" then
+            if Item."Subscription Option" = Item."Subscription Option"::"Service Commitment Item" then
                 Rec.Standard := true;
     end;
 

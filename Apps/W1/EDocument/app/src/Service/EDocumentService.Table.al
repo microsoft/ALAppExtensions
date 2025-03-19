@@ -266,6 +266,12 @@ table 6103 "E-Document Service"
             ToolTip = 'Specifies if the processing of a document should start automatically after it is imported.';
             DataClassification = SystemMetadata;
         }
+        field(40; "Embed PDF in export"; Boolean)
+        {
+            Caption = 'Embed document PDF to export';
+            ToolTip = 'Specifies whether you want to automatically create a PDF based on Report Selection, as a background process, and embed it into the E-Document export file when posting the document.';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
@@ -300,7 +306,7 @@ table 6103 "E-Document Service"
         Rec.Code := AzureDocumentIntelligenceTok;
         Rec."Import Process" := "Import Process"::"Version 2.0";
         Rec.Description := AzureDocumentIntelligenceServiceTxt;
-        Rec."Automatic Import Processing" := "E-Doc. Automatic Processing"::Yes;
+        Rec."Automatic Import Processing" := "E-Doc. Automatic Processing"::No;
         Rec."E-Document Structured Format" := "E-Document Structured Format"::"Azure Document Intelligence";
         Rec.Insert(true);
     end;
@@ -308,6 +314,15 @@ table 6103 "E-Document Service"
     internal procedure IsAutomaticProcessingEnabled(): Boolean
     begin
         exit(Rec."Automatic Import Processing" = Enum::"E-Doc. Automatic Processing"::Yes);
+    end;
+
+    internal procedure GetImportProcessVersion(): Enum "E-Document Import Process"
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            exit("E-Document Import Process"::"Version 1.0");
+        exit(Rec."Import Process");
     end;
 
     internal procedure LastEDocumentLog(EDocumentServiceStatus: Enum "E-Document Service Status") EDocumentLog: Record "E-Document Log";
@@ -334,7 +349,7 @@ table 6103 "E-Document Service"
 
     var
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
-        AzureDocumentIntelligenceTok: Label 'MSEOCADI';
+        AzureDocumentIntelligenceTok: Label 'MSEOCADI', Locked = true;
         AzureDocumentIntelligenceServiceTxt: Label 'E-Document PDF Service - Process pdfs with Azure Document Intelligence';
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';

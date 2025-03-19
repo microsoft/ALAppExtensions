@@ -330,7 +330,10 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                 SalesLine.Validate("No.", Shop."Refund Account");
                 SalesLine.Validate(Description, RefundShippingLine.Title);
                 SalesLine.Validate(Quantity, 1);
-                SalesLine.Validate("Unit Price", RefundShippingLine."Presentment Subtotal Amount");
+                if SalesHeader."Prices Including VAT" then
+                    SalesLine.Validate("Unit Price", RefundShippingLine."Presentment Subtotal Amount" + RefundShippingLine."Tax Amount")
+                else
+                    SalesLine.Validate("Unit Price", RefundShippingLine."Presentment Subtotal Amount");
                 SalesLine."Shpfy Refund Id" := RefundHeader."Refund Id";
                 SalesLine."Shpfy Refund Shipping Line Id" := RefundShippingLine."Refund Shipping Line Id";
                 SalesLine.Modify();

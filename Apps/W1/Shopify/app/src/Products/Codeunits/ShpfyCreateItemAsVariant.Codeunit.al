@@ -43,7 +43,7 @@ codeunit 30343 "Shpfy Create Item As Variant"
         Events.OnAfterCreateTempShopifyVariant(Item, TempShopifyVariant);
         TempShopifyVariant.Modify();
 
-        if VariantApi.AddProductVariants(TempShopifyVariant, ShopifyProduct.Id, "Shpfy Variant Create Strategy"::DEFAULT) then begin
+        if VariantApi.AddProductVariant(TempShopifyVariant, ShopifyProduct.Id, "Shpfy Variant Create Strategy"::DEFAULT) then begin
             ShopifyProduct."Has Variants" := true;
             ShopifyProduct.Modify(true);
         end;

@@ -2,17 +2,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.eServices.EDocument;
+namespace Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Foundation.Attachment;
+using Microsoft.Purchases.Vendor;
 
 page 6181 "E-Document Purchase Draft"
 {
     ApplicationArea = Basic, Suite;
     DataCaptionExpression = DataCaption;
+    Caption = 'Purchase Document Draft';
     PageType = Card;
     SourceTable = "E-Document";
     InsertAllowed = false;
@@ -39,14 +41,6 @@ page 6181 "E-Document Purchase Draft"
                         CurrPage.Update();
                     end;
                 }
-                field("Status"; Rec.Status)
-                {
-                    Caption = 'Status';
-                    Importance = Promoted;
-                    ToolTip = 'Specifies the current state of the electronic document.';
-                    StyleExpr = StyleStatusTxt;
-                    Editable = false;
-                }
                 group("Buy-from")
                 {
                     ShowCaption = false;
@@ -65,7 +59,7 @@ page 6181 "E-Document Purchase Draft"
                             LookupVendor();
                         end;
                     }
-                    field("Vendor Name"; EDocumentPurchaseHeader."Vendor Name")
+                    field("Vendor Name"; EDocumentPurchaseHeader."Vendor Company Name")
                     {
                         ApplicationArea = Suite;
                         Caption = 'Vendor Name';
@@ -110,6 +104,14 @@ page 6181 "E-Document Purchase Draft"
                         Editable = false;
                     }
                 }
+                field("Status"; Rec.Status)
+                {
+                    Caption = 'Status';
+                    Importance = Promoted;
+                    ToolTip = 'Specifies the current state of the electronic document.';
+                    StyleExpr = StyleStatusTxt;
+                    Editable = false;
+                }
             }
             part(Lines; "E-Doc. Purchase Draft Subform")
             {
@@ -127,7 +129,7 @@ page 6181 "E-Document Purchase Draft"
                     Editable = false;
                     Importance = Promoted;
                 }
-                field("Amount Excl. VAT"; EDocumentPurchaseHeader.Total - EDocumentPurchaseHeader."Total Tax")
+                field("Amount Excl. VAT"; EDocumentPurchaseHeader.Total - EDocumentPurchaseHeader."Total VAT")
                 {
                     Caption = 'Amount Excl. VAT';
                     ToolTip = 'Specifies the total amount of the electronic document excluding VAT.';
@@ -174,10 +176,10 @@ page 6181 "E-Document Purchase Draft"
             action(CreateDocument)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Create Document';
-                ToolTip = 'Process the selected electronic document into a business central document';
+                Caption = 'Finalize Draft';
+                ToolTip = 'Process the electronic document into a business central document';
                 Image = CreateDocument;
-                Visible = ShowCreateDocumentAction;
+                Visible = ShowFinalizeDraftAction;
 
                 trigger OnAction()
                 begin
@@ -197,6 +199,33 @@ page 6181 "E-Document Purchase Draft"
                     AnalyzeEDocument();
                 end;
             }
+            action(ViewFile)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'View source file';
+                ToolTip = 'View the source file.';
+                Image = ViewDetails;
+
+                trigger OnAction()
+                begin
+                    Rec.ViewSourceFile();
+                end;
+            }
+            action(ViewExtractedDocumentData)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'View extracted data';
+                ToolTip = 'View the extracted data from the source file.';
+                Image = ViewRegisteredOrder;
+
+                trigger OnAction()
+                var
+                    EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+                begin
+                    EDocumentPurchaseHeader.GetFromEDocument(Rec);
+                    Page.Run(Page::"E-Doc. Readable Purchase Doc.", EDocumentPurchaseHeader);
+                end;
+            }
         }
         area(Promoted)
         {
@@ -208,12 +237,19 @@ page 6181 "E-Document Purchase Draft"
                 actionref(Promoted_AnalyseDocument; AnalyzeDocument)
                 {
                 }
+                actionref(Promoted_ViewFile; ViewFile)
+                {
+                }
             }
         }
     }
 
     trigger OnOpenPage()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
     begin
+        if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            Error('');
         if EDocumentPurchaseHeader.Get(Rec."Entry No") then;
         if EDocumentHeaderMapping.Get(Rec."Entry No") then;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
@@ -234,7 +270,7 @@ page 6181 "E-Document Purchase Draft"
         SetStyle();
         DataCaption := 'Purchase Document Draft ' + Format(Rec."Entry No");
 
-        ShowCreateDocumentAction := Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Doc. Proc. Status"::"Draft Ready";
+        ShowFinalizeDraftAction := Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Doc. Proc. Status"::"Draft Ready";
         ShowAnalyzeDocumentAction :=
             (Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Document Steps"::"Structure received data") and
             (Rec.Status = Enum::"E-Document Status"::Error);
@@ -323,7 +359,7 @@ page 6181 "E-Document Purchase Draft"
         ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
-        ShowCreateDocumentAction: Boolean;
+        ShowFinalizeDraftAction: Boolean;
         ShowAnalyzeDocumentAction: Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
 

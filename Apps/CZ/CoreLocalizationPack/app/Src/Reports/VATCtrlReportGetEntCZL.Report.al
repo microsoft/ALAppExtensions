@@ -63,11 +63,6 @@ report 31102 "VAT Ctrl. Report Get Ent. CZL"
                         Editable = false;
                         TableRelation = "VAT Statement Template";
                         ToolTip = 'Specifies VAT statement template name';
-
-                        trigger OnValidate()
-                        begin
-                            Clear(VATStatementName);
-                        end;
                     }
                     field(VATStatementNameCZL; VATStatementName)
                     {
@@ -75,18 +70,6 @@ report 31102 "VAT Ctrl. Report Get Ent. CZL"
                         Caption = 'VAT Statement Name';
                         Editable = false;
                         ToolTip = 'Specifies VAT statement name';
-
-                        trigger OnLookup(var Text: Text): Boolean
-                        var
-                            VATStmtManagement: Codeunit VATStmtManagement;
-                            EntrdStmtName: Text[10];
-                        begin
-                            EntrdStmtName := CopyStr(Text, 1, 10);
-                            if VATStmtManagement.LookupName(VATStatementTemplate, VATStatementName, EntrdStmtName) then begin
-                                Text := EntrdStmtName;
-                                exit(true);
-                            end;
-                        end;
                     }
                     field(ProcessEntryTypeCZL; ProcessEntryType)
                     {

@@ -57,9 +57,9 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         TempBlob.CreateOutStream(DocOutStream);
         case EDocument."Document Type" of
             EDocument."Document Type"::"Sales Invoice", EDocument."Document Type"::"Service Invoice":
-                GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream);
+                GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
             EDocument."Document Type"::"Sales Credit Memo", EDocument."Document Type"::"Service Credit Memo":
-                GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream);
+                GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
             else
                 EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
         end;
@@ -89,20 +89,22 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         CreatedDocumentLines.GetTable(TempPurchaseLine);
     end;
 
-    local procedure GenerateInvoiceXMLFile(VariantRec: Variant; var OutStr: OutStream)
+    local procedure GenerateInvoiceXMLFile(VariantRec: Variant; var OutStr: OutStream; GeneratePDF: Boolean)
     var
         SalesInvoicePEPPOLBIS30: XMLport "Sales Invoice - PEPPOL BIS 3.0";
     begin
         SalesInvoicePEPPOLBIS30.Initialize(VariantRec);
+        SalesInvoicePEPPOLBIS30.SetGeneratePDF(GeneratePDF);
         SalesInvoicePEPPOLBIS30.SetDestination(OutStr);
         SalesInvoicePEPPOLBIS30.Export();
     end;
 
-    local procedure GenerateCrMemoXMLFile(VariantRec: Variant; var OutStr: OutStream)
+    local procedure GenerateCrMemoXMLFile(VariantRec: Variant; var OutStr: OutStream; GeneratePDF: Boolean)
     var
         SalesCrMemoPEPPOLBIS30: XMLport "Sales Cr.Memo - PEPPOL BIS 3.0";
     begin
         SalesCrMemoPEPPOLBIS30.Initialize(VariantRec);
+        SalesCrMemoPEPPOLBIS30.SetGeneratePDF(GeneratePDF);
         SalesCrMemoPEPPOLBIS30.SetDestination(OutStr);
         SalesCrMemoPEPPOLBIS30.Export();
     end;

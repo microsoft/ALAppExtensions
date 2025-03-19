@@ -1,21 +1,21 @@
 report 8005 "Create Contract Analysis"
 {
     ApplicationArea = All;
-    Caption = 'Create Contract Analysis Entries';
+    Caption = 'Create Subscription Contract Analysis';
     UsageCategory = Tasks;
     ProcessingOnly = true;
     UseRequestPage = false;
 
     dataset
     {
-        dataitem(ServiceCommitment; "Service Commitment")
+        dataitem(ServiceCommitment; "Subscription Line")
         {
-            DataItemTableView = sorting("Contract No.", "Contract Line No.");
+            DataItemTableView = sorting("Subscription Contract No.", "Subscription Contract Line No.");
 
             trigger OnPreDataItem()
             begin
-                SetFilter("Contract No.", '<>%1', '');
-                SetFilter("Service End Date", '%1|>=%2', 0D, Today());
+                SetFilter("Subscription Contract No.", '<>%1', '');
+                SetFilter("Subscription Line End Date", '%1|>=%2', 0D, Today());
             end;
 
             trigger OnAfterGetRecord()
@@ -45,17 +45,17 @@ report 8005 "Create Contract Analysis"
 
     local procedure ContractAnalysisEntryExist(): Boolean
     var
-        ContractAnalysisEntry: Record "Contract Analysis Entry";
+        ContractAnalysisEntry: Record "Sub. Contr. Analysis Entry";
     begin
-        ContractAnalysisEntry.SetRange("Service Object No.", ServiceCommitment."Service Object No.");
-        ContractAnalysisEntry.SetRange("Service Commitment Entry No.", ServiceCommitment."Entry No.");
+        ContractAnalysisEntry.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        ContractAnalysisEntry.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
         ContractAnalysisEntry.SetRange("Analysis Date", CalcDate('<-CM>', Today()), CalcDate('<CM>', Today()));
         exit(not ContractAnalysisEntry.IsEmpty());
     end;
 
     local procedure CreateContractAnalysisEntry()
     var
-        ContractAnalysisEntry: Record "Contract Analysis Entry";
+        ContractAnalysisEntry: Record "Sub. Contr. Analysis Entry";
     begin
         ContractAnalysisEntry.InitFromServiceCommitment(ServiceCommitment);
         ContractAnalysisEntry."Analysis Date" := Today();

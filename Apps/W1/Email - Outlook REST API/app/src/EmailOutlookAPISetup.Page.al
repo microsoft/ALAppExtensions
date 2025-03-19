@@ -15,6 +15,7 @@ page 4509 "Email - Outlook API Setup"
     UsageCategory = Administration;
     SourceTable = "Email - Outlook API Setup";
     Caption = 'Email Microsoft Entra application registration';
+    ApplicationArea = All;
     DataCaptionExpression = ' ';
     InsertAllowed = false;
     DeleteAllowed = false;

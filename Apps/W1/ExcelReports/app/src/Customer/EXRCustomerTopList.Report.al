@@ -11,7 +11,7 @@ using Microsoft.ExcelReports;
 report 4409 "EXR Customer Top List"
 {
     ApplicationArea = All;
-    Caption = 'Customer - Top List Excel (Preview)';
+    Caption = 'Customer - Top List (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = CustomerTopTrendExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -45,8 +45,8 @@ report 4409 "EXR Customer Top List"
 
     requestpage
     {
-        AboutText = 'This report contains aggregated sales (LCY) and balance (LCY) data for the top number of customers selected. The data is aggregated for the period specified in the request page''s Datefilter parameter.';
-        AboutTitle = 'Customer - Top Trends';
+        AboutTitle = 'About Customer - Top List (Excel)';
+        AboutText = 'Review customers with the most transactions in a selected period. Identify sales trends and manage debt collections. Amounts are shown in local currency (LCY).';
         SaveValues = true;
         layout
         {

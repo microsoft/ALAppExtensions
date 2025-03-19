@@ -2,7 +2,7 @@
   "id": "b4e48c9c-0deb-49a4-ae70-662b33565b1b",
   "name": "PowerBI Reports Test Library",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
+  "version": "27.0.0.0",
   "brief": "Test library for PowerBI Reports",
   "description": "Test library for PowerBI Reports",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,17 +16,17 @@
       "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
       "name": "PowerBI Reports",
       "publisher": "Microsoft",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "publisher": "Microsoft",
       "name": "Tests-TestLibraries",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "platform": "26.0.0.0",
   "target": "OnPrem",
   "idRanges": [

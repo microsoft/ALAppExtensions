@@ -1343,6 +1343,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempItemJnlLine.Validate("Applies-to Entry", ItemLedgEntry."Entry No.");
         TempItemJnlLine.Description := 'Transfer - ' + TransRcptHeader."No.";
         TempItemJnlLine."New Location Code" := TransRcptHeader."Transfer-to Code";
+        TempItemJnlLine."Lot No." := ItemLedgEntry."Lot No.";
     end;
 
     local procedure CreateReservationEntryRevaluation(TransferReceiptHeader: Record "Transfer Receipt Header"; ItemLedgerEntry: Record "Item Ledger Entry"; TransferLine: Record "Transfer Line")

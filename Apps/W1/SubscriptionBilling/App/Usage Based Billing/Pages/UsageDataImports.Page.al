@@ -158,7 +158,7 @@ page 8041 "Usage Data Imports"
             action(CreateCustomerInvoices)
             {
                 Caption = 'Create Customer Invoices';
-                ToolTip = 'Creates the invoices for the customer contracts related to this import.';
+                ToolTip = 'Creates the invoices for the Customer Subscription Contracts related to this import.';
                 Image = Invoice;
                 Scope = Repeater;
                 Enabled = not IsProcessingStatusError;
@@ -173,7 +173,7 @@ page 8041 "Usage Data Imports"
             action(CreateVendorInvoices)
             {
                 Caption = 'Create Vendor Invoices';
-                ToolTip = 'Creates the invoices for the vendor contracts related to this import.';
+                ToolTip = 'Creates the invoices for the Vendor Subscription Contracts related to this import.';
                 Image = Invoice;
                 Scope = Repeater;
                 Enabled = not IsProcessingStatusError;
@@ -209,7 +209,7 @@ page 8041 "Usage Data Imports"
                 action("Process Imported Lines")
                 {
                     Caption = 'Process Imported Lines';
-                    ToolTip = 'Searches the associated service and creates a link to the imported rows.';
+                    ToolTip = 'Searches the associated Subscription Line and creates a link to the imported rows.';
                     Image = ExecuteBatch;
 
                     trigger OnAction()
@@ -224,7 +224,7 @@ page 8041 "Usage Data Imports"
                 action("Create Usage Data Billing")
                 {
                     Caption = 'Create Usage Data Billing';
-                    ToolTip = 'Creates new records based on the service objects and the service commitments they contain.';
+                    ToolTip = 'Creates new records based on the Subscriptions and the Subscription Lines they contain.';
                     Image = ExecuteBatch;
 
                     trigger OnAction()
@@ -239,7 +239,7 @@ page 8041 "Usage Data Imports"
                 action("Process Usage Data Billing")
                 {
                     Caption = 'Process Usage Data Billing';
-                    ToolTip = 'Updates the respective vendor or customer contract lines, service objects and service commitments (quantities and prices). In addition, sales prices are calculated for the customer-side usage data. The basis for this is either the sales price of the associated customer contract line or the usage data (selection "Sales price from import" in "Usage Data Supplier").';
+                    ToolTip = 'Updates the respective vendor or Customer Subscription Contract lines, Subscriptions and Subscription Lines (quantities and prices). In addition, sales prices are calculated for the customer-side usage data. The basis for this is either the sales price of the associated Customer Subscription Contract line or the usage data (selection "Sales price from import" in "Usage Data Supplier").';
                     Image = ExecuteBatch;
 
                     trigger OnAction()
@@ -269,8 +269,8 @@ page 8041 "Usage Data Imports"
                 Caption = 'Usage Based Billing';
                 action(CustomerContracts)
                 {
-                    Caption = 'Customer Contracts';
-                    ToolTip = 'Opens the customer contracts that are related to this import.';
+                    Caption = 'Customer Subscription Contracts';
+                    ToolTip = 'Opens the Customer Subscription Contracts that are related to this import.';
                     Image = Documents;
                     trigger OnAction()
                     var
@@ -282,8 +282,8 @@ page 8041 "Usage Data Imports"
                 }
                 action(CustomerContractInvoices)
                 {
-                    Caption = 'Customer Contract Invoices';
-                    ToolTip = 'Displays the open customer contract invoices that are related to this import.';
+                    Caption = 'Customer Subscription Contract Invoices';
+                    ToolTip = 'Displays the open Customer Subscription Contract invoices that are related to this import.';
                     Image = Documents;
                     Visible = UsageBasedBillingExists;
                     trigger OnAction()
@@ -296,8 +296,8 @@ page 8041 "Usage Data Imports"
                 }
                 action(PostedCustomerContractInvoices)
                 {
-                    Caption = 'Posted Customer Contract Invoices';
-                    ToolTip = 'Opens the posted customer contract invoices that belong to this import.';
+                    Caption = 'Posted Customer Subscription Contract Invoices';
+                    ToolTip = 'Opens the posted Customer Subscription Contract invoices that belong to this import.';
                     Image = Documents;
                     Visible = UsageBasedBillingExists;
                     trigger OnAction()
@@ -310,8 +310,8 @@ page 8041 "Usage Data Imports"
                 }
                 action(VendorContracts)
                 {
-                    Caption = 'Vendor Contracts';
-                    ToolTip = 'Opens the vendor contracts that are related to this import.';
+                    Caption = 'Vendor Subscription Contracts';
+                    ToolTip = 'Opens the Vendor Subscription Contracts that are related to this import.';
                     Image = Documents;
                     trigger OnAction()
                     var
@@ -323,8 +323,8 @@ page 8041 "Usage Data Imports"
                 }
                 action(VendorContractInvoices)
                 {
-                    Caption = 'Vendor Contract Invoices';
-                    ToolTip = 'Displays the open vendor contract invoices that are related to this import.';
+                    Caption = 'Vendor Subscription Contract Invoices';
+                    ToolTip = 'Displays the open Vendor Subscription Contract invoices that are related to this import.';
                     Image = Documents;
                     Visible = UsageBasedBillingExists;
                     trigger OnAction()
@@ -337,8 +337,8 @@ page 8041 "Usage Data Imports"
                 }
                 action(PostedVendorContractInvoices)
                 {
-                    Caption = 'Posted Vendor Contract Invoices';
-                    ToolTip = 'Opens the posted vendor contract invoices that belong to this import.';
+                    Caption = 'Posted Vendor Subscription Contract Invoices';
+                    ToolTip = 'Opens the posted Vendor Subscription Contract invoices that belong to this import.';
                     Image = Documents;
                     Visible = UsageBasedBillingExists;
                     trigger OnAction()
