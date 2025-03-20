@@ -31,10 +31,10 @@ tableextension 6105 "E-Doc Issued Fin. Ch. Memo Hdr" extends "Issued Fin. Charge
     internal procedure CreateEDocument()
     var
         EDocExport: Codeunit "E-Doc. Export";
-        SalesInvoiceRecordRef: RecordRef;
+        IssuedFinChargeMemoRecordRef: RecordRef;
     begin
-        SalesInvoiceRecordRef.GetTable(Rec);
-        EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef);
+        IssuedFinChargeMemoRecordRef.GetTable(Rec);
+        EDocExport.CheckAndCreateEDocument(IssuedFinChargeMemoRecordRef);
     end;
 
     /// <summary>

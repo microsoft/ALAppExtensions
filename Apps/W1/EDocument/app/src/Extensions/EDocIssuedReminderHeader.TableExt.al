@@ -31,10 +31,10 @@ tableextension 6104 "E-Doc. Issued Reminder Header" extends "Issued Reminder Hea
     internal procedure CreateEDocument()
     var
         EDocExport: Codeunit "E-Doc. Export";
-        SalesInvoiceRecordRef: RecordRef;
+        IssuedReminderRecordRef: RecordRef;
     begin
-        SalesInvoiceRecordRef.GetTable(Rec);
-        EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef);
+        IssuedReminderRecordRef.GetTable(Rec);
+        EDocExport.CheckAndCreateEDocument(IssuedReminderRecordRef);
     end;
 
     /// <summary>
