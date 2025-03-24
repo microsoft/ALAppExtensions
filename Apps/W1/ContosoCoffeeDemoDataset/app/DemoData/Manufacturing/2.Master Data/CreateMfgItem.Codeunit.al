@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4770 "Create Mfg Item"
 {
     InherentEntitlements = X;
@@ -20,6 +21,10 @@ codeunit 4770 "Create Mfg Item"
         InsertItemVariants();
 
         ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM1103(), CommonUOM.Set(), 4, 0, 0, 0, 0);
+        ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM1110(), CommonUOM.Set(), 0.005, 0, 0, 0, 0);
+        ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM1111(), CommonUOM.Set(), 0.005, 0, 0, 0, 0);
+        ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM1112(), CommonUOM.Set(), 0.005, 0, 0, 0, 0);
+        ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM2005(), CommonUOM.ML(), 0.005, 0, 0, 0, 0);
 
         CalcStandardCost()
     end;
@@ -49,6 +54,9 @@ codeunit 4770 "Create Mfg Item"
         ContosoItem.InsertItem(SPBOM2004(), Enum::"Item Type"::Inventory, ReservoirTestKitTok, 0, ContosoUtilities.AdjustPrice(18), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
             0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'A-12122', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
+        ContosoItem.InsertItem(SPBOM2005(), Enum::"Item Type"::"Non-Inventory", SiliconeAdhesiveTok, 0, ContosoUtilities.AdjustPrice(17.16), CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, '', '',
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '232002', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+
         ContosoItem.InsertItem(SPBOM1101(), Enum::"Item Type"::Inventory, HousingAirpotTok, 0, ContosoUtilities.AdjustPrice(36.26), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
             0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'ADG-4577', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
@@ -75,6 +83,15 @@ codeunit 4770 "Create Mfg Item"
 
         ContosoItem.InsertItem(SPBOM1109(), Enum::"Item Type"::Inventory, GlassCarafeTok, 0, ContosoUtilities.AdjustPrice(16.01), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
             0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45889', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+
+        ContosoItem.InsertItem(SPBOM1110(), Enum::"Item Type"::"Non-Inventory", MachineScrewPanHeadTok, 0, ContosoUtilities.AdjustPrice(0.1), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-812', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+
+        ContosoItem.InsertItem(SPBOM1111(), Enum::"Item Type"::"Non-Inventory", NutTok, 0, ContosoUtilities.AdjustPrice(0.06), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-816', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+
+        ContosoItem.InsertItem(SPBOM1112(), Enum::"Item Type"::"Non-Inventory", WasherTok, 0, ContosoUtilities.AdjustPrice(0.05), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-819', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
     end;
 
     local procedure CreateItemTrackingItems()
@@ -181,11 +198,15 @@ codeunit 4770 "Create Mfg Item"
         IoTSensorTok: Label 'IoT Sensor', MaxLength = 100;
         FaciaPanelWithDisplayTok: Label 'Facia Panel with display', MaxLength = 100;
         GlassCarafeTok: Label 'Glass Carafe', MaxLength = 100;
+        MachineScrewPanHeadTok: Label 'Machine screw pan head, M4, stainless steel', MaxLength = 100;
+        NutTok: Label 'Nut, M4, stainless steel', MaxLength = 100;
+        WasherTok: Label 'Washer, M4, stainless steel', MaxLength = 100;
         StillCarafeTok: Label 'Stainless steel thermal carafe', MaxLength = 100;
         ReservoirTok: Label 'Reservoir', MaxLength = 100;
         HeatingElementTok: Label 'Heating element', MaxLength = 100;
         WaterTubingTok: Label 'Water tubing', MaxLength = 100;
         ReservoirTestKitTok: Label 'Reservoir testing kit', MaxLength = 100;
+        SiliconeAdhesiveTok: Label 'Silicone adhesive', MaxLength = 100;
         PaintBlackTok: Label 'Paint, black', MaxLength = 100;
         PaintWhiteTok: Label 'Paint, white', MaxLength = 100;
         PaintRedTok: Label 'Paint, red', MaxLength = 100;
@@ -279,6 +300,21 @@ codeunit 4770 "Create Mfg Item"
         exit('SP-BOM1109');
     end;
 
+    procedure SPBOM1110(): Code[20]
+    begin
+        exit('SP-BOM1110');
+    end;
+
+    procedure SPBOM1111(): Code[20]
+    begin
+        exit('SP-BOM1111');
+    end;
+
+    procedure SPBOM1112(): Code[20]
+    begin
+        exit('SP-BOM1112');
+    end;
+
     procedure SPBOM1201(): Code[20]
     begin
         exit('SP-BOM1201');
@@ -342,6 +378,11 @@ codeunit 4770 "Create Mfg Item"
     procedure SPBOM2004(): Code[20]
     begin
         exit('SP-BOM2004');
+    end;
+
+    procedure SPBOM2005(): Code[20]
+    begin
+        exit('SP-BOM2005');
     end;
 
     procedure SPBOM3001(): Code[20]

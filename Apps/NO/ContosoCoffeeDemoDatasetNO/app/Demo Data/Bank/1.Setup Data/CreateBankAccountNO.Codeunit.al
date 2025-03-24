@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10716 "Create Bank Account NO"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5373 "E-Document Contoso Module" implements "Contoso Demo Data Module"
 {
 
@@ -12,6 +13,7 @@ codeunit 5373 "E-Document Contoso Module" implements "Contoso Demo Data Module"
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
     begin
         Dependencies.Add(Enum::"Contoso Demo Data Module"::"Common Module");
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Foundation);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::Finance);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::"Warehouse Module");
     end;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2403 "GL Entries with Dimensions"
 {
     QueryType = Normal;

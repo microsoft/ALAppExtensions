@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;

@@ -37,7 +37,7 @@ table 30102 "Shpfy Shop"
         }
         field(2; "Shopify URL"; Text[250])
         {
-            Caption = 'Shopify URL';
+            Caption = 'Shopify Admin URL';
             Access = Internal;
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;

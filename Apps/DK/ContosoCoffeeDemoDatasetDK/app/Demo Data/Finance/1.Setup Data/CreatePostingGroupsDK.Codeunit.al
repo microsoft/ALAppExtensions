@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13714 "Create Posting Groups DK"
 {
     SingleInstance = true;
@@ -56,6 +57,7 @@ codeunit 13714 "Create Posting Groups DK"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateDKGLAcc.Iteminventoryadjustment(), CreateDKGLAcc.InventoryPosting(), '', '', '', '', '', '', CreateDKGLAcc.Costofgoodssold(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ZeroPostingGroup(), '', '', CreateDKGLAcc.Iteminventoryadjustment(), CreateDKGLAcc.InventoryPosting(), '', '', '', '', '', '', CreateDKGLAcc.Costofgoodssold(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateDKGLAcc.Iteminventoryadjustment(), CreateDKGLAcc.InventoryPosting(), '', '', '', '', '', '', CreateDKGLAcc.Costofgoodssold(), '', '');
 
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateDKGLAcc.Salesofgoodsandservicestoothercountries(), CreateDKGLAcc.InventoryPosting(), CreateDKGLAcc.Iteminventoryadjustment(), CreateDKGLAcc.InventoryPosting(), '', '', CreateDKGLAcc.Discountsgranted(), CreateDKGLAcc.Discountsgranted(), CreateDKGLAcc.Discountsreceived(), CreateDKGLAcc.Discountsreceived(), CreateDKGLAcc.Costofgoodssold(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateDKGLAcc.Salesofgoodsandservicestoothercountries(), CreateDKGLAcc.Foreignlabor(), CreateDKGLAcc.Iteminventoryadjustment(), '', '', '', CreateDKGLAcc.Discountsgranted(), CreateDKGLAcc.Discountsgranted(), CreateDKGLAcc.Discountsreceived(), CreateDKGLAcc.Discountsreceived(), '', '', '');

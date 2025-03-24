@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5481 "CRM Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;

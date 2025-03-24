@@ -250,6 +250,12 @@ table 4810 "Intrastat Report Setup"
             Caption = 'Shipment Method Mandatory';
             ToolTip = 'Specifies if it is mandatory to enter a shipment method on a document header.';
         }
+        field(42; "Max. No. of Lines in File"; Integer)
+        {
+            Caption = 'Max. No. of Lines in File';
+            ToolTip = 'Specifies the maximum number of lines in the Intrastat file.';
+            MinValue = 0;
+        }
     }
 
     keys

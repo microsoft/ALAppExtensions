@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31297 "Create Financial Report CZ"
 {
     InherentEntitlements = X;

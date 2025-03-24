@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31191 "Create Posting Groups CZ"
 {
     SingleInstance = true;

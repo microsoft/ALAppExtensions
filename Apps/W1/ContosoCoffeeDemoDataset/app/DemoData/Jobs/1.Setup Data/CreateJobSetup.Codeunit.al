@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5210 "Create Job Setup"
 {
     InherentEntitlements = X;

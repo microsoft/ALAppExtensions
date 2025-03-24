@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11630 "Create CH Currency Ex. Rate"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13446 "Create Sales Document FI"
 {
     InherentEntitlements = X;

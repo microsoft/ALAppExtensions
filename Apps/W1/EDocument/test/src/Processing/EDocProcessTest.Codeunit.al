@@ -231,7 +231,7 @@ codeunit 139883 "E-Doc Process Test"
 
         EDocumentHeaderMapping := EDocument.GetEDocumentHeaderMapping();
         Assert.AreEqual(Vendor."No.", EDocumentHeaderMapping."Vendor No.", 'The vendor should be found when the tax id is specified and it matches the one in BC.');
-        EDocumentLineMapping.Get(EDocumentPurchaseLine."E-Document Line Id");
+        EDocumentLineMapping.Get(EDocument."Entry No", EDocumentPurchaseLine."Line No.");
         Assert.AreEqual("Purchase Line Type"::"G/L Account", EDocumentLineMapping."Purchase Line Type", 'The purchase line type should be set to G/L Account.');
         Assert.AreEqual(GLAccount."No.", EDocumentLineMapping."Purchase Type No.", 'The G/L Account configured in the Text-to-Account Mapping should be found.');
 

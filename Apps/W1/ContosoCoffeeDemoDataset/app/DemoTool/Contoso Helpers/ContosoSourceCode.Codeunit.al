@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5173 "Contoso Source Code"
 {
     InherentEntitlements = X;

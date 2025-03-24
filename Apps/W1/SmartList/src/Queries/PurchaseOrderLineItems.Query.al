@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2508 "Purchase Order Line Items"
 {
     QueryType = Normal;

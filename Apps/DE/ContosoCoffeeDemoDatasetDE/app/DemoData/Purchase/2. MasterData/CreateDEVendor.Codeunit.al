@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11103 "Create DE Vendor"
 {
     SingleInstance = true;

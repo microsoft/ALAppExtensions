@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19019 "Create IN Gen. Journ. Template"
 {
     InherentEntitlements = X;

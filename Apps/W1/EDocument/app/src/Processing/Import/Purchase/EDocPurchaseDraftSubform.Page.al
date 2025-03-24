@@ -25,7 +25,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
         {
             repeater(DocumentLines)
             {
-                field("Line No."; Rec."E-Document Line Id")
+                field("Line No."; Rec."Line No.")
                 {
                     ApplicationArea = All;
                     StyleExpr = StyleTxt;
@@ -98,7 +98,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
 
     trigger OnAfterGetRecord()
     begin
-        if EDocumentPurchaseLine.Get(Rec."E-Document Line Id") then;
+        if EDocumentPurchaseLine.Get(Rec."E-Document Entry No.", Rec."Line No.") then;
     end;
 
     local procedure SetDimensionsVisibility()

@@ -102,6 +102,7 @@ codeunit 30284 "Shpfy Company Export"
         TempCompanyLocation := CompanyLocation;
 
         ShopifyCompany.Name := Customer.Name;
+        ShopifyCompany."External Id" := Customer."No.";
 
         CompanyLocation.Name := Customer.Address;
         CompanyLocation.Address := Customer.Address;

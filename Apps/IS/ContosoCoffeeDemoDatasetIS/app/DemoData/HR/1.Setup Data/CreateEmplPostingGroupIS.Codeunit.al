@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14610 "Create Empl. Posting Group IS"
 {
     InherentEntitlements = X;

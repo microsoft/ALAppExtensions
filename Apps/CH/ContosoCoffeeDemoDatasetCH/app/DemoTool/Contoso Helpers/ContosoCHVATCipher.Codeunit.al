@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11624 "Contoso CH VAT Cipher"
 {
     InherentEntitlements = X;

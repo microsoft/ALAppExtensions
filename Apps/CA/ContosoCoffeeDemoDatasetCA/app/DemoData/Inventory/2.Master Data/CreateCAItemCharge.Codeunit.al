@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27059 "Create CA Item Charge"
 {
     SingleInstance = true;

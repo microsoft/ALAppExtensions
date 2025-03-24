@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14605 "Common Module IS"
 {
     InherentEntitlements = X;

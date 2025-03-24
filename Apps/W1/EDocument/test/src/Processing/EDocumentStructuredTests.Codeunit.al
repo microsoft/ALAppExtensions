@@ -71,43 +71,36 @@ codeunit 139891 "E-Document Structured Tests"
         Assert.AreEqual(110, EDocumentPurchaseHeader.Total, 'The total does not allign with the mock data.');
         Assert.AreEqual(610, EDocumentPurchaseHeader."Amount Due", 'The amount due does not allign with the mock data.');
         Assert.AreEqual(500, EDocumentPurchaseHeader."Previous Unpaid Balance", 'The previous unpaid balance does not allign with the mock data.');
+        Assert.AreEqual('XYZ', EDocumentPurchaseHeader."Currency Code", 'The currency code does not allign with the mock data.');
         Assert.AreEqual('123 Remit St New York, NY, 10001', EDocumentPurchaseHeader."Remittance Address", 'The remittance address does not allign with the mock data.');
         Assert.AreEqual('Contoso Billing', EDocumentPurchaseHeader."Remittance Address Recipient", 'The remittance address recipient does not allign with the mock data.');
         Assert.AreEqual(DMY2Date(14, 10, 2019), EDocumentPurchaseHeader."Service Start Date", 'The service start date does not allign with the mock data.');
         Assert.AreEqual(DMY2Date(14, 11, 2019), EDocumentPurchaseHeader."Service End Date", 'The service end date does not allign with the mock data.');
 
-#pragma warning disable AA0210
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
-#pragma warning restore AA0210
-        EDocumentPurchaseLine.FindFirst();
-        Assert.AreEqual(60, EDocumentPurchaseLine."Sub Total", 'The amount does not allign with the mock data.');
-        Assert.AreEqual('Consulting Services', EDocumentPurchaseLine.Description, 'The description does not allign with the mock data.');
-        Assert.AreEqual(30, EDocumentPurchaseLine."Unit Price", 'The unit price does not allign with the mock data.');
-        Assert.AreEqual(2, EDocumentPurchaseLine.Quantity, 'The quantity does not allign with the mock data.');
-        Assert.AreEqual('A123', EDocumentPurchaseLine."Product Code", 'The product code does not allign with the mock data.');
-        Assert.AreEqual('hours', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure does not allign with the mock data.');
-        Assert.AreEqual(DMY2Date(4, 3, 2021), EDocumentPurchaseLine.Date, 'The date does not allign with the mock data.');
-        Assert.AreEqual(6, EDocumentPurchaseLine."VAT Rate", 'The amount does not allign with the mock data.');
+        EDocumentPurchaseLine.FindSet();
+        Assert.AreEqual(60, EDocumentPurchaseLine."Sub Total", 'The amount in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('Consulting Services', EDocumentPurchaseLine.Description, 'The description in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(30, EDocumentPurchaseLine."Unit Price", 'The unit price in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(2, EDocumentPurchaseLine.Quantity, 'The quantity in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('XYZ', EDocumentPurchaseLine."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('A123', EDocumentPurchaseLine."Product Code", 'The product code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('hours', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(DMY2Date(4, 3, 2021), EDocumentPurchaseLine.Date, 'The date in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(6, EDocumentPurchaseLine."VAT Rate", 'The amount in the purchase line does not allign with the mock data.');
 
-#pragma warning disable AA0210
-        EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
-#pragma warning restore AA0210
-        EDocumentPurchaseLine.SetRange("E-Document Line Id", EDocumentPurchaseLine."E-Document Line Id" + 1);
-        EDocumentPurchaseLine.FindFirst();
-        Assert.AreEqual(30, EDocumentPurchaseLine."Sub Total", 'The amount does not allign with the mock data.');
-        Assert.AreEqual('Document Fee', EDocumentPurchaseLine.Description, 'The description does not allign with the mock data.');
-        Assert.AreEqual(10, EDocumentPurchaseLine."Unit Price", 'The unit price does not allign with the mock data.');
-        Assert.AreEqual(3, EDocumentPurchaseLine.Quantity, 'The quantity does not allign with the mock data.');
-        Assert.AreEqual('B456', EDocumentPurchaseLine."Product Code", 'The product code does not allign with the mock data.');
-        Assert.AreEqual('', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure does not allign with the mock data.');
-        Assert.AreEqual(DMY2Date(5, 3, 2021), EDocumentPurchaseLine.Date, 'The date does not allign with the mock data.');
-        Assert.AreEqual(3, EDocumentPurchaseLine."VAT Rate", 'The amount does not allign with the mock data.');
+        EDocumentPurchaseLine.Next();
+        Assert.AreEqual(30, EDocumentPurchaseLine."Sub Total", 'The amount in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('Document Fee', EDocumentPurchaseLine.Description, 'The description in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(10, EDocumentPurchaseLine."Unit Price", 'The unit price in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(3, EDocumentPurchaseLine.Quantity, 'The quantity in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('XYZ', EDocumentPurchaseLine."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('B456', EDocumentPurchaseLine."Product Code", 'The product code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(DMY2Date(5, 3, 2021), EDocumentPurchaseLine.Date, 'The date in the purchase line does not allign with the mock data.');
+        Assert.AreEqual(3, EDocumentPurchaseLine."VAT Rate", 'The amount in the purchase line does not allign with the mock data.');
 
-#pragma warning disable AA0210
-        EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
-#pragma warning restore AA0210
-        EDocumentPurchaseLine.SetRange("E-Document Line Id", EDocumentPurchaseLine."E-Document Line Id" + 1);
-        EDocumentPurchaseLine.FindFirst();
+        EDocumentPurchaseLine.Next();
         Assert.AreEqual(10, EDocumentPurchaseLine."Sub Total", 'The amount does not allign with the mock data.');
         Assert.AreEqual('Printing Fee', EDocumentPurchaseLine.Description, 'The description does not allign with the mock data.');
         Assert.AreEqual(1, EDocumentPurchaseLine."Unit Price", 'The unit price does not allign with the mock data.');
@@ -162,11 +155,7 @@ codeunit 139891 "E-Document Structured Tests"
         Assert.AreEqual('103033', EDocumentPurchaseHeader."Sales Invoice No.", 'The sales invoice number does not allign with the mock data.');
         Assert.AreEqual(DMY2Date(22, 01, 2026), EDocumentPurchaseHeader."Document Date", 'The invoice date does not allign with the mock data.');
         Assert.AreEqual(DMY2Date(22, 02, 2026), EDocumentPurchaseHeader."Due Date", 'The due date does not allign with the mock data.');
-        if GLSetup."LCY Code" = 'GBP' then
-            Assert.AreEqual('', EDocumentPurchaseHeader."Currency Code", 'The currency code should be empty because we are working with LCY (GBP).')
-        else
-            Assert.AreEqual('GBP', EDocumentPurchaseHeader."Currency Code", 'The currency code does not allign with the mock data.');
-
+        Assert.AreEqual('XYZ', EDocumentPurchaseHeader."Currency Code", 'The currency code does not allign with the mock data.');
         Assert.AreEqual('2', EDocumentPurchaseHeader."Purchase Order No.", 'The purchase order number does not allign with the mock data.');
         // Assert.AreEqual('', EDocumentPurchaseHeader."Vendor GLN", 'The endpoint schema is not provided to populate the GLN.');
         Assert.AreEqual('CRONUS International', EDocumentPurchaseHeader."Vendor Company Name", 'The vendor name does not allign with the mock data.');
@@ -177,32 +166,23 @@ codeunit 139891 "E-Document Structured Tests"
         Assert.AreEqual('GB789456278', EDocumentPurchaseHeader."Customer VAT Id", 'The customer VAT id does not allign with the mock data.');
         Assert.AreEqual('192 Market Square', EDocumentPurchaseHeader."Customer Address", 'The customer address does not allign with the mock data.');
 
-#pragma warning disable AA0210
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
-#pragma warning restore AA0210
-        EDocumentPurchaseLine.FindFirst();
+        EDocumentPurchaseLine.FindSet();
         Assert.AreEqual(1, EDocumentPurchaseLine."Quantity", 'The quantity in the purchase line does not allign with the mock data.');
         Assert.AreEqual('PCS', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure in the purchase line does not allign with the mock data.');
         Assert.AreEqual(4000, EDocumentPurchaseLine."Sub Total", 'The total amount before taxes in the purchase line does not allign with the mock data.');
-        if GLSetup."LCY Code" = 'GBP' then
-            Assert.AreEqual('', EDocumentPurchaseHeader."Currency Code", 'The currency code in the purchase line should be empty because we are working with LCY (GBP).')
-        else
-            Assert.AreEqual('GBP', EDocumentPurchaseHeader."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('XYZ', EDocumentPurchaseLine."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
         Assert.AreEqual(0, EDocumentPurchaseLine."Total Discount", 'The total discount in the purchase line does not allign with the mock data.');
         Assert.AreEqual('Bicycle', EDocumentPurchaseLine.Description, 'The product description in the purchase line does not allign with the mock data.');
         Assert.AreEqual('1000', EDocumentPurchaseLine."Product Code", 'The product code in the purchase line does not allign with the mock data.');
         Assert.AreEqual(25, EDocumentPurchaseLine."VAT Rate", 'The VAT rate in the purchase line does not allign with the mock data.');
         Assert.AreEqual(4000, EDocumentPurchaseLine."Unit Price", 'The unit price in the purchase line does not allign with the mock data.');
 
-        EDocumentPurchaseLine.SetRange("E-Document Line Id", EDocumentPurchaseLine."E-Document Line Id" + 1);
-        EDocumentPurchaseLine.FindFirst();
+        EDocumentPurchaseLine.Next();
         Assert.AreEqual(2, EDocumentPurchaseLine."Quantity", 'The quantity in the purchase line does not allign with the mock data.');
         Assert.AreEqual('PCS', EDocumentPurchaseLine."Unit of Measure", 'The unit of measure in the purchase line does not allign with the mock data.');
         Assert.AreEqual(10000, EDocumentPurchaseLine."Sub Total", 'The total amount before taxes in the purchase line does not allign with the mock data.');
-        if GLSetup."LCY Code" = 'GBP' then
-            Assert.AreEqual('', EDocumentPurchaseHeader."Currency Code", 'The currency code in the purchase line should be empty because we are working with LCY (GBP).')
-        else
-            Assert.AreEqual('GBP', EDocumentPurchaseHeader."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
+        Assert.AreEqual('XYZ', EDocumentPurchaseLine."Currency Code", 'The currency code in the purchase line does not allign with the mock data.');
         Assert.AreEqual(0, EDocumentPurchaseLine."Total Discount", 'The total discount in the purchase line does not allign with the mock data.');
         Assert.AreEqual('Bicycle v2', EDocumentPurchaseLine.Description, 'The product description in the purchase line does not allign with the mock data.');
         Assert.AreEqual('2000', EDocumentPurchaseLine."Product Code", 'The product code in the purchase line does not allign with the mock data.');
@@ -223,6 +203,7 @@ codeunit 139891 "E-Document Structured Tests"
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         DocumentAttachment: Record "Document Attachment";
+        Currency: Record Currency;
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
@@ -247,6 +228,13 @@ codeunit 139891 "E-Document Structured Tests"
         EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PDF Mock";
         EDocumentService.Modify();
         EDocumentsSetup.InsertNewExperienceSetup();
+
+        // Set a currency that can be used across all localizations
+        // WorkDate(DMY2Date(8, 4, 2024));
+        Currency.Init();
+        Currency.Validate(Code, 'XYZ');
+        Currency.Insert(true);
+        // LibraryERM.CreateExchangeRate('XYZ', WorkDate(), 1, 1);
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();

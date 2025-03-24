@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14102 "Create Company Information MX"
 {
     InherentEntitlements = X;

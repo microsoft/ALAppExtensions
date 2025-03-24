@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5384 "Create Sales Cycle"
 {
     InherentEntitlements = X;

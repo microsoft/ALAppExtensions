@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17120 "Create AU Item Charge"
 {
     SingleInstance = true;
@@ -19,7 +20,7 @@ codeunit 17120 "Create AU Item Charge"
             CreateItemCharge.SaleAllowance(),
             CreateItemCharge.SaleFreight(),
             CreateItemCharge.SaleRestock():
-                ValidateRecordFields(Rec, CreateAUVATPostingGroups.Vat10());
+                ValidateRecordFields(Rec, CreateAUVATPostingGroups.Gst10());
         end;
     end;
 

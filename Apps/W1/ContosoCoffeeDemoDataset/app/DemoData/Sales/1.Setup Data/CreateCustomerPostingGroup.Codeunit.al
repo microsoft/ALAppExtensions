@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5227 "Create Customer Posting Group"
 {
     InherentEntitlements = X;

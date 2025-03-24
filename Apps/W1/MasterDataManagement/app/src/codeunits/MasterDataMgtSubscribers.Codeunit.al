@@ -82,7 +82,8 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     JobQueueEntry.Status := JobQueueEntry.Status::"On Hold with Inactivity Timeout"
             end else
                 JobQueueEntry.Status := JobQueueEntry.Status::Ready;
-            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), '');
+            FeatureTelemetry.LogUptake('0000OUA', MasterDataManagement.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), 'Synch job finished');
             if IntegrationTableMapping.IsFullSynch() then begin
                 Session.LogMessage('0000JIS', StrSubstNo(RunningFullSynchTelemetryTxt, IntegrationTableMapping.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 OriginalIntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);

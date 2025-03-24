@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19070 "Create IN Deductor Category"
 {
     InherentEntitlements = X;

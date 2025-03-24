@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10812 "Create ES Vendor"
 {
     SingleInstance = true;

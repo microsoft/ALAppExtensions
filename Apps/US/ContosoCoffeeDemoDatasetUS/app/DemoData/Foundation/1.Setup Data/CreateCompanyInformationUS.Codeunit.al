@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11491 "Create Company Information US"
 {
     InherentEntitlements = X;

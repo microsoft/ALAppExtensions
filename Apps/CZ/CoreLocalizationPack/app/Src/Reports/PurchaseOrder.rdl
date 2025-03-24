@@ -4478,6 +4478,9 @@ End Function</Code>
         <Field Name="Amount_PurchaseHeaderFormat">
           <DataField>Amount_PurchaseHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_Amount_PurchaseHeader">
+          <DataField>Formatted_Amount_PurchaseHeader</DataField>
+        </Field>
         <Field Name="AmountIncludingVAT_PurchaseHeaderCaption">
           <DataField>AmountIncludingVAT_PurchaseHeaderCaption</DataField>
         </Field>
@@ -4486,6 +4489,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_PurchaseHeaderFormat">
           <DataField>AmountIncludingVAT_PurchaseHeaderFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_PurchaseHeader">
+          <DataField>Formatted_AmountIncludingVAT_PurchaseHeader</DataField>
         </Field>
         <Field Name="DocFooterText">
           <DataField>DocFooterText</DataField>
@@ -4606,6 +4612,9 @@ End Function</Code>
         </Field>
         <Field Name="LineAmount_PurchaseLineFormat">
           <DataField>LineAmount_PurchaseLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_LineAmount_PurchaseLine">
+          <DataField>Formatted_LineAmount_PurchaseLine</DataField>
         </Field>
         <Field Name="InvDiscountAmount_PurchaseLineCaption">
           <DataField>InvDiscountAmount_PurchaseLineCaption</DataField>

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5298 "Create Acc. Sched. Chart Line"
 {
     InherentEntitlements = X;

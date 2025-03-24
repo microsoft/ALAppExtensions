@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17153 "Create AU WHT Revenue Type"
 {
     InherentEntitlements = X;

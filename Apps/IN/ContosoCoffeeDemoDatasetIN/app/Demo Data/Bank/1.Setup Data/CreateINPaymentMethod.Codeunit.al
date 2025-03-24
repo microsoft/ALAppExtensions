@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19058 "Create IN Payment Method"
 {
     InherentEntitlements = X;

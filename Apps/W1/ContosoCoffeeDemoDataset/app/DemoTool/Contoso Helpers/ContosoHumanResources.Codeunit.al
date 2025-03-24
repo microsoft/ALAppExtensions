@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5171 "Contoso Human Resources"
 {
     InherentEntitlements = X;

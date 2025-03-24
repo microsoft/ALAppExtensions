@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5135 "Create Common GL Account"
 {
     InherentEntitlements = X;

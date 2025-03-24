@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11600 "Create CH FA Posting Grp."
 {
     SingleInstance = true;

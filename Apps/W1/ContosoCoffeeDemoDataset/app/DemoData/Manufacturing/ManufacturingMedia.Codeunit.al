@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4785 "Manufacturing Media"
 {
     Access = Internal;

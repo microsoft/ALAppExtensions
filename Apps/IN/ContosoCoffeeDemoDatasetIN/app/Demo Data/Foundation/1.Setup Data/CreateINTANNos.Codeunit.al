@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19013 "Create IN TAN Nos."
 {
     InherentEntitlements = X;

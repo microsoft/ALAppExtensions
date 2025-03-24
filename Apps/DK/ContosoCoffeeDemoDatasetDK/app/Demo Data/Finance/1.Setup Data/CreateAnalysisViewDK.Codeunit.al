@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13715 "Create Analysis View DK"
 {
     SingleInstance = true;

@@ -105,7 +105,7 @@ codeunit 6139 "E-Document Workflow Setup"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnExecuteWorkflowResponse', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", OnExecuteWorkflowResponse, '', true, true)]
     local procedure ExecuteEdocWorkflowResponses(ResponseWorkflowStepInstance: Record "Workflow Step Instance"; var ResponseExecuted: Boolean; var Variant: Variant; xVariant: Variant)
     var
         WorkflowResponse: Record "Workflow Response";

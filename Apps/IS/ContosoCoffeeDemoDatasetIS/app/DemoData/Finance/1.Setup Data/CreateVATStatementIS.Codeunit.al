@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14630 "Create VAT Statement IS"
 {
     SingleInstance = true;

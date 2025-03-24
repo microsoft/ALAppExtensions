@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11084 "Create DE Resource"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11514 "Create Item NL"
 {
     SingleInstance = true;

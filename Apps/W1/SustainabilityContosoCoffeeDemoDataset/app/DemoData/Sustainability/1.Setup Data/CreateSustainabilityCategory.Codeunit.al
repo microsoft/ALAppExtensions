@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5213 "Create Sustainability Category"
 {
     InherentEntitlements = X;

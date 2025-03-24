@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11531 "Create Vendor Posting Group NL"
 {
     SingleInstance = true;

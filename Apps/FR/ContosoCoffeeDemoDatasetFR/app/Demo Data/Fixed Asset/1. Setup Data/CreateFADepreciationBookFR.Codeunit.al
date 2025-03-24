@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10875 "Create FA Depreciation Book FR"
 {
     InherentEntitlements = X;

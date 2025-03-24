@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10801 "Create ES Item Charge"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4768 "Create Mfg Posting Setup"
 {
     InherentEntitlements = X;
@@ -37,7 +38,7 @@ codeunit 4768 "Create Mfg Posting Setup"
         MfgGLAccount: Codeunit "Create Mfg GL Account";
         MfgPostingGroup: Codeunit "Create Mfg Posting Group";
     begin
-        ContosoPostingSetup.InsertGeneralPostingSetup('', MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), '', MfgGLAccount.DirectCostAppliedCap(), MfgGLAccount.OverheadAppliedCap(), MfgGLAccount.PurchaseVarianceCap());
+        ContosoPostingSetup.InsertGeneralPostingSetup('', MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), CommonGLAccount.InventoryAdjRawMat(), MfgGLAccount.DirectCostAppliedCap(), MfgGLAccount.OverheadAppliedCap(), MfgGLAccount.PurchaseVarianceCap());
         ContosoPostingSetup.InsertGeneralPostingSetup(CommonPostingGroup.Domestic(), MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), CommonGLAccount.InventoryAdjRawMat(), CommonGLAccount.DirectCostAppliedRawMat(), CommonGLAccount.OverheadAppliedRawMat(), CommonGLAccount.PurchaseVarianceRawMat());
     end;
 

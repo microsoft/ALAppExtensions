@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11463 "Create Tax Group US"
 {
     InherentEntitlements = X;

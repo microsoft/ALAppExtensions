@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13712 "Create Resource DK"
 {
     SingleInstance = true;

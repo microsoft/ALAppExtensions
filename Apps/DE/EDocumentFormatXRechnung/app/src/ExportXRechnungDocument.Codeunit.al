@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Attachment;
 using System.Text;
+using Microsoft.Finance.VAT.Setup;
 using System.Utilities;
 using System.Telemetry;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -242,7 +243,8 @@ codeunit 13916 "Export XRechnung Document"
             exit;
         InvDiscountPercent := GetInvoiceDiscountPercent(SalesInvLine, BaseAmount);
         InsertAllowanceCharge(
-            RootXMLNode, 'Discount', GetTaxCategoryID(SalesInvLine."VAT Calculation Type".AsInteger(), 0),
+            RootXMLNode, 'Discount',
+            GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"),
             InvDiscountAmount, BaseAmount,
             CurrencyCode, 0, InvDiscountPercent, true);
     end;
@@ -257,7 +259,8 @@ codeunit 13916 "Export XRechnung Document"
             exit;
         InvDiscountPercent := GetInvoiceDiscountPercent(SalesCrMemoLine, BaseAmount);
         InsertAllowanceCharge(
-            RootXMLNode, 'Discount', GetTaxCategoryID(SalesCrMemoLine."VAT Calculation Type".AsInteger(), 0),
+            RootXMLNode, 'Discount',
+            GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),
             InvDiscountAmount, BaseAmount,
             CurrencyCode, 0, InvDiscountPercent, true);
     end;
@@ -399,7 +402,7 @@ codeunit 13916 "Export XRechnung Document"
             ItemElement.Add(XmlElement.Create('Description', XmlNamespaceCBC, SalesInvLine."Description 2"));
         ItemElement.Add(XmlElement.Create('Name', XmlNamespaceCBC, CopyStr(SalesInvLine.Description, 1, 40)));
         InsertSellersItemIdentification(ItemElement, SalesInvLine."No.");
-        InsertTaxCategory(ItemElement, 'ClassifiedTaxCategory', GetTaxCategoryID(SalesInvLine."VAT Calculation Type".AsInteger(), SalesInvLine."VAT %"), SalesInvLine."VAT %");
+        InsertTaxCategory(ItemElement, 'ClassifiedTaxCategory', GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"), SalesInvLine."VAT %");
         RootElement.Add(ItemElement);
     end;
 
@@ -412,7 +415,7 @@ codeunit 13916 "Export XRechnung Document"
             ItemElement.Add(XmlElement.Create('Description', XmlNamespaceCBC, SalesCrMemoLine."Description 2"));
         ItemElement.Add(XmlElement.Create('Name', XmlNamespaceCBC, CopyStr(SalesCrMemoLine.Description, 1, 40)));
         InsertSellersItemIdentification(ItemElement, SalesCrMemoLine."No.");
-        InsertTaxCategory(ItemElement, 'ClassifiedTaxCategory', GetTaxCategoryID(SalesCrMemoLine."VAT Calculation Type".AsInteger(), SalesCrMemoLine."VAT %"), SalesCrMemoLine."VAT %");
+        InsertTaxCategory(ItemElement, 'ClassifiedTaxCategory', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLine."VAT %");
         RootElement.Add(ItemElement);
     end;
 
@@ -631,33 +634,26 @@ codeunit 13916 "Export XRechnung Document"
         RootXMLNode.Add(AllowanceChargeElement);
     end;
 
-    local procedure InsertTaxSubtotal(var RootElement: XmlElement; VATCalculationType: Option; TaxableAmount: Decimal; TaxAmount: Decimal; VATPercentage: Decimal; CurrencyCode: Code[10]);
+    local procedure InsertTaxSubtotal(var RootElement: XmlElement; TaxCategory: Code[10]; TaxableAmount: Decimal; TaxAmount: Decimal; VATPercentage: Decimal; CurrencyCode: Code[10]);
     var
         TaxSubtotalElement: XmlElement;
     begin
         TaxSubtotalElement := XmlElement.Create('TaxSubtotal', XmlNamespaceCAC);
         TaxSubtotalElement.Add(XmlElement.Create('TaxableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxableAmount)));
         TaxSubtotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxAmount)));
-        InsertTaxCategory(TaxSubtotalElement, 'TaxCategory', GetTaxCategoryID(VATCalculationType, VATPercentage), VATPercentage);
+        InsertTaxCategory(TaxSubtotalElement, 'TaxCategory', TaxCategory, VATPercentage);
         RootElement.Add(TaxSubtotalElement);
     end;
 
-    procedure GetTaxCategoryID(Type: Option "Normal VAT","Reverse Charge VAT","Full VAT","Sales Tax"; VATPercent: Decimal): Text[5];
+    procedure GetTaxCategoryID(TaxCategory: Code[10]; VATBusPostingGroup: Code[20]; VATProductPostingGroup: Code[20]): Text[10];
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
     begin
-        case Type of
-            Type::"Normal VAT":
-                begin
-                    if VATPercent <> 0 then
-                        exit('S');
-                    exit('Z');
-                end;
-            Type::"Full VAT":
-                exit('S');
-            Type::"Reverse Charge VAT":
-                exit('R');
-            else
-                exit('E');
-        end;
+        if TaxCategory <> '' then
+            exit(TaxCategory);
+        if not VATPostingSetup.Get(VATBusPostingGroup, VATProductPostingGroup) then
+            exit('');
+        exit(VATPostingSetup."Tax Category");
     end;
 
     local procedure InsertTaxTotal(var RootXMLNode: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; InvDiscountAmount: Decimal)
@@ -677,7 +673,7 @@ codeunit 13916 "Export XRechnung Document"
             repeat
                 if LineVATAmount.ContainsKey(SalesInvLine."VAT %") and LineAmount.ContainsKey(SalesInvLine."VAT %") then begin
                     InsertTaxSubtotal(
-                        TaxTotalElement, SalesInvLine."VAT Calculation Type".AsInteger(), LineAmount.Get(SalesInvLine."VAT %"),
+                        TaxTotalElement, GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"), LineAmount.Get(SalesInvLine."VAT %"),
                         LineVATAmount.Get(SalesInvLine."VAT %"), SalesInvLine."VAT %", CurrencyCode);
                     LineAmount.Remove(SalesInvLine."VAT %");
                     LineVATAmount.Remove(SalesInvLine."VAT %");
@@ -689,7 +685,8 @@ codeunit 13916 "Export XRechnung Document"
         SalesInvLineTotalAmount := SalesInvLine.Amount;
         if SalesInvLine.FindLast() then;
         if (SalesInvLineTotalAmount > 0) or (InvDiscountAmount > 0) then
-            InsertTaxSubtotal(TaxTotalElement, SalesInvLine."VAT Calculation Type".AsInteger(), SalesInvLineTotalAmount + InvDiscountAmount, 0, SalesInvLine."VAT %", CurrencyCode);
+            InsertTaxSubtotal(
+                TaxTotalElement, GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"), SalesInvLineTotalAmount + InvDiscountAmount, 0, SalesInvLine."VAT %", CurrencyCode);
 
         SalesInvLine.SetRange("VAT Calculation Type");
         SalesInvLine.SetRange("VAT %");
@@ -713,7 +710,7 @@ codeunit 13916 "Export XRechnung Document"
             repeat
                 if LineVATAmount.ContainsKey(SalesCrMemoLine."VAT %") and LineAmount.ContainsKey(SalesCrMemoLine."VAT %") then begin
                     InsertTaxSubtotal(
-                        TaxTotalElement, SalesCrMemoLine."VAT Calculation Type".AsInteger(), LineAmount.Get(SalesCrMemoLine."VAT %"),
+                        TaxTotalElement, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"), LineAmount.Get(SalesCrMemoLine."VAT %"),
                         LineVATAmount.Get(SalesCrMemoLine."VAT %"), SalesCrMemoLine."VAT %", CurrencyCode);
                     LineAmount.Remove(SalesCrMemoLine."VAT %");
                     LineVATAmount.Remove(SalesCrMemoLine."VAT %");
@@ -725,7 +722,8 @@ codeunit 13916 "Export XRechnung Document"
         SalesCrMemoLineTotalAmount := SalesCrMemoLine.Amount;
         if SalesCrMemoLine.FindLast() then;
         if (SalesCrMemoLineTotalAmount > 0) or (InvDiscountAmount > 0) then
-            InsertTaxSubtotal(TaxTotalElement, SalesCrMemoLine."VAT Calculation Type".AsInteger(), SalesCrMemoLineTotalAmount + InvDiscountAmount, 0, SalesCrMemoLine."VAT %", CurrencyCode);
+            InsertTaxSubtotal(
+                TaxTotalElement, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLineTotalAmount + InvDiscountAmount, 0, SalesCrMemoLine."VAT %", CurrencyCode);
 
         SalesCrMemoLine.SetRange("VAT Calculation Type");
         SalesCrMemoLine.SetRange("VAT %");
@@ -815,7 +813,7 @@ codeunit 13916 "Export XRechnung Document"
             InsertOrderLineReference(InvoiceLineElement, SalesInvLine."Line No.");
             if SalesInvLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
-                    InvoiceLineElement, 'LineDiscount', GetTaxCategoryID(SalesInvLine."VAT Calculation Type".AsInteger(), SalesInvLine."VAT %"),
+                    InvoiceLineElement, 'LineDiscount', GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"),
                     SalesInvLine."Line Discount Amount", SalesInvLine."Unit Price" * SalesInvLine.Quantity,
                     CurrencyCode, SalesInvLine."Line Discount %", SalesInvLine."Line Discount %", false);
 
@@ -839,7 +837,7 @@ codeunit 13916 "Export XRechnung Document"
             InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
             if SalesCrMemoLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
-                    CrMemoLineElement, 'LineDiscount', GetTaxCategoryID(SalesCrMemoLine."VAT Calculation Type".AsInteger(), SalesCrMemoLine."VAT %"),
+                    CrMemoLineElement, 'LineDiscount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),
                     SalesCrMemoLine."Line Discount Amount", SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity,
                     CurrencyCode, SalesCrMemoLine."Line Discount %", SalesCrMemoLine."Line Discount %", false);
 

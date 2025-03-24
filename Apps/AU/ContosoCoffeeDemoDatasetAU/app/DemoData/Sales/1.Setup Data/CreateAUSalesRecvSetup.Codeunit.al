@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17130 "Create AU Sales Recv Setup"
 {
     InherentEntitlements = X;

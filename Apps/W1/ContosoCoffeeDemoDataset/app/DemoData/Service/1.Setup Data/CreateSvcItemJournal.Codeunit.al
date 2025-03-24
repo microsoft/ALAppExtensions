@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5154 "Create Svc Item Journal"
 {
     InherentEntitlements = X;

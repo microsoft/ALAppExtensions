@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10512 "Create GB Gen Posting Setup"
 {
     InherentEntitlements = X;
@@ -12,6 +13,8 @@ codeunit 10512 "Create GB Gen Posting Setup"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateGBGLAccounts.CostOfMaterials(), CreateGBGLAccounts.GoodsForResale(), '', '', '', '', '', '', CreateGBGLAccounts.CostOfMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ZeroPostingGroup(), '', '', CreateGBGLAccounts.CostOfMaterials(), CreateGBGLAccounts.GoodsForResale(), '', '', '', '', '', '', CreateGBGLAccounts.CostOfMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateGBGLAccounts.CostOfMaterials(), CreateGBGLAccounts.GoodsForResale(), '', '', '', '', '', '', CreateGBGLAccounts.CostOfMaterials(), '', '');
+
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateGBGLAccounts.SaleOfFinishedGoods(), CreateGBGLAccounts.GoodsForResale(), CreateGBGLAccounts.CostOfMaterials(), CreateGBGLAccounts.GoodsForResale(), '', '', CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.CostOfMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateGBGLAccounts.SaleOfResources(), CreateGBGLAccounts.MiscExternalExpenses(), CreateGBGLAccounts.CostOfLabor(), CreateGBGLAccounts.MiscExternalExpenses(), '', '', CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.CostOfLabor(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ZeroPostingGroup(), CreateGBGLAccounts.SaleOfFinishedGoods(), CreateGBGLAccounts.GoodsForResale(), CreateGBGLAccounts.CostOfMaterials(), CreateGBGLAccounts.GoodsForResale(), '', '', CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.DiscountsAndAllowances(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.PurchaseDiscounts(), CreateGBGLAccounts.CostOfMaterials(), '', '');

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4768 "Contoso Coffee Demo Data Setup"
 {
     Caption = 'Contoso Coffee Demo Data Setup';

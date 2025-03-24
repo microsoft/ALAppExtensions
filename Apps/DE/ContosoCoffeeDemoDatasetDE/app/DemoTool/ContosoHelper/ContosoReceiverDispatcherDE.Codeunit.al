@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11117 "Contoso Receiver/Dispatcher DE"
 {
     InherentEntitlements = X;

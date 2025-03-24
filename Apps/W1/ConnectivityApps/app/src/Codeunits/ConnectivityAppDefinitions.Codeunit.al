@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 codeunit 20352 "Connectivity App Definitions"
 {
@@ -284,7 +285,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppProviderSupportURL := 'https://bankfeed.com/banks/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
         AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO,IE,US,EE,CZ,PL';
-        AppWorksOn := 'W1,DK,GB,ES,DE,US';
+        AppWorksOn := 'W1,DK,GB,ES,DE,US,CZ';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
         AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);

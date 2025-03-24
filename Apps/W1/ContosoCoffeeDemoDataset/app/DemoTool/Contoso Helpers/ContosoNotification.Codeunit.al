@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5399 "Contoso Notification"
 {
     InherentEntitlements = X;

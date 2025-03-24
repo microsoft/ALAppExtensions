@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5138 "Contoso Module Dependency"
 {
     Access = Internal;

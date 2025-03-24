@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11460 "Create Tax Detail US"
 {
     InherentEntitlements = X;

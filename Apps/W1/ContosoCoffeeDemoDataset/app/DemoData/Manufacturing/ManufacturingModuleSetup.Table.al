@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4766 "Manufacturing Module Setup"
 {
     DataClassification = CustomerContent;

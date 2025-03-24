@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17155 "Create AU Currency"
 {
     InherentEntitlements = X;

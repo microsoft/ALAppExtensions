@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11613 "Create CH Resource"
 {
     SingleInstance = true;

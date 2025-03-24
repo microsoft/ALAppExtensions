@@ -14,6 +14,7 @@ codeunit 4509 "Email - Outlook API Helper"
                     tabledata "Email - Outlook Account" = rimd;
 
     var
+        EmailAccount: Codeunit "Email Account";
         CannotConnectToMailServerErr: Label 'Client ID or Client secret is not set up on the Email Microsoft Entra application registration page.';
         SetupOutlookAPIQst: Label 'To connect to your email account you must create an App registration in Microsoft Entra and then enter information about the registration on the Email Microsoft Entra application registration page in Business Central. Do you want to do that now?';
         OnPremOnlyErr: Label 'Authentication using the Client ID and secret should only be used for Business Central on-premises.';
@@ -380,6 +381,8 @@ codeunit 4509 "Email - Outlook API Helper"
         if not EmailOutlookAccount.Get(AccountId) then
             Error(AccountNotFoundErr);
 
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
         OAuthClient.GetAccessToken(AccessToken);
 
         EmailsArray := APIClient.RetrieveEmails(AccessToken, EmailOutlookAccount, Filters);
@@ -389,6 +392,28 @@ codeunit 4509 "Email - Outlook API Helper"
             EmailObject := JsonToken.AsObject();
             CreateEmailInboxFromJsonObject(EmailInbox, EmailOutlookAccount, Filters, EmailObject);
         end;
+    end;
+
+    /// <summary>
+    /// The current user connector does not store the actual email address but can be retrieved from the email accounts as it subsitutes the placeholder value.
+    /// The email address is validated and if it is not valid, the email address is replaced with the proper one from calling GetAllAccounts in EmailAccount codeunit.
+    /// </summary>
+    /// <param name="EmailOutlookAccount">The retrieved email outlook account.</param>
+    local procedure EmailOutlookAccountAddressValidation(var EmailOutlookAccount: Record "Email - Outlook Account")
+    begin
+        if not EmailAccount.ValidateEmailAddress(EmailOutlookAccount."Email Address") then
+            EmailOutlookAccount."Email Address" := CopyStr(GetEmailAddressFromEmailAccounts(EmailOutlookAccount.Id), 1, MaxStrLen(EmailOutlookAccount."Email Address"));
+    end;
+
+    local procedure GetEmailAddressFromEmailAccounts(AccountId: Guid): Text
+    var
+        EmailAccounts: Record "Email Account";
+    begin
+        EmailAccount.GetAllAccounts(EmailAccounts);
+        EmailAccounts.SetRange("Account Id", AccountId);
+        EmailAccounts.FindFirst();
+
+        exit(EmailAccounts."Email Address");
     end;
 
     local procedure CreateEmailInboxFromJsonObject(var EmailInbox: Record "Email Inbox"; OutlookAccount: Record "Email - Outlook Account"; var Filters: Record "Email Retrieval Filters"; EmailJsonObject: JsonObject)
@@ -459,15 +484,29 @@ codeunit 4509 "Email - Outlook API Helper"
     /// <remarks>The last message is the message that is the reply to the email. The history of the email is removed.</remarks>
     local procedure KeepLastMessageOnly(Value: Text): Text
     begin
+        Value := RemoveOldOutlookHistory(Value);
         Value := RemoveOutlookHistory(Value);
         Value := RemoveGmailHistory(Value);
         Value := RemoveYahooHistory(Value);
         exit(Value);
     end;
 
+    /// <summary>
+    /// Removes the history from emails that are sent from new Outlook client.
+    /// </summary>
     local procedure RemoveOutlookHistory(Value: Text): Text
     var
         RemoveFromLbl: Label '<div id="appendonsend">', Locked = true;
+    begin
+        exit(RemoveHistory(Value, RemoveFromLbl));
+    end;
+
+    /// <summary>
+    /// Removes the history from emails that are sent from old Outlook client.
+    /// </summary>
+    local procedure RemoveOldOutlookHistory(Value: Text): Text
+    var
+        RemoveFromLbl: Label '<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0in 0in 0in">', Locked = true;
     begin
         exit(RemoveHistory(Value, RemoveFromLbl));
     end;
@@ -565,6 +604,8 @@ codeunit 4509 "Email - Outlook API Helper"
         if not EmailOutlookAccount.Get(AccountId) then
             Error(AccountNotFoundErr);
 
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
         OAuthClient.GetAccessToken(AccessToken);
         APIClient.MarkEmailAsRead(AccessToken, EmailOutlookAccount."Email Address", ExternalMessageId);
     end;
@@ -586,6 +627,8 @@ codeunit 4509 "Email - Outlook API Helper"
         InitializeClients(APIClient, OAuthClient);
         if not EmailOutlookAccount.Get(AccountId) then
             Error(AccountNotFoundErr);
+
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
 
         OAuthClient.GetAccessToken(AccessToken);
 

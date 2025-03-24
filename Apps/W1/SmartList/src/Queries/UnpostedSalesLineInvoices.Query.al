@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2468 "Unposted Sales Line Invoices"
 {
     QueryType = Normal;

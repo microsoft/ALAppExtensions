@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10496 "Create Item Journal TemplateUS"
 {
     SingleInstance = true;

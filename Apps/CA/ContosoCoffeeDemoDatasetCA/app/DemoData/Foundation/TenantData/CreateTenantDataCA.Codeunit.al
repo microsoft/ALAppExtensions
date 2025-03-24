@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27094 "Create Tenant Data CA"
 {
     Access = Internal;

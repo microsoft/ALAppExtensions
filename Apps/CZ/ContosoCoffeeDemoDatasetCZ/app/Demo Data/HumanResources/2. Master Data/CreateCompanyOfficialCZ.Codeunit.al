@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31287 "Create Company Official CZ"
 {
     InherentEntitlements = X;

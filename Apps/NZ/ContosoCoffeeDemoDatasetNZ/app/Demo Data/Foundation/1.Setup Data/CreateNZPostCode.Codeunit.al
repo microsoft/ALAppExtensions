@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17111 "Create NZ Post Code"
 {
     trigger OnRun()

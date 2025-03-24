@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10884 "Create Cust. Posting Grp FR"
 {
     SingleInstance = true;

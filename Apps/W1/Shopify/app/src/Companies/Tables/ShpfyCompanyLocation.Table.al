@@ -87,8 +87,9 @@ table 30151 "Shpfy Company Location"
         }
         field(13; "Recipient"; Text[100])
         {
-            Caption = 'Recipient';
+            Caption = 'Company/Attention';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the recipient name for the company location.';
         }
         field(14; "Default"; Boolean)
         {
@@ -101,6 +102,20 @@ table 30151 "Shpfy Company Location"
             Caption = 'Shopify Payment Terms Id';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the Shopify Payment Terms Id which is mapped with Customer''s Payment Terms.';
+        }
+        field(16; "Company Name"; Text[500])
+        {
+            Caption = 'Company Name';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Shpfy Company".Name where(SystemId = field("Company SystemId")));
+            ToolTip = 'Specifies the name of the company.';
+        }
+        field(17; "Shpfy Payment Term"; Text[150])
+        {
+            Caption = 'Shopify Payment Term';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Shpfy Payment Terms".Description where(Id = field("Shpfy Payment Terms Id")));
+            ToolTip = 'Specifies the description of the Shopify Payment Term.';
         }
     }
     keys

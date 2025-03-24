@@ -1006,6 +1006,50 @@ codeunit 31302 IntrastatReportManagementCZ
     #endregion
 
     #region Intrastat Exclude
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionPurchase(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if PurchaseHeader."Intrastat Exclude CZ" or PurchaseHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionSales(SalesHeader: Record "Sales Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if SalesHeader."Intrastat Exclude CZ" or SalesHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionService(ServiceHeader: Record "Service Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if ServiceHeader."Intrastat Exclude CZ" or ServiceHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Transfer Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionTransfer(TransferHeader: Record "Transfer Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if TransferHeader."Intrastat Exclude CZ" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+#if not CLEAN26
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeUpdateGlobalIsIntrastatTransaction', '', false, false)]
     local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionPurchase(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
@@ -1060,6 +1104,7 @@ codeunit 31302 IntrastatReportManagementCZ
             IsHandled := true;
         end;
     end;
+#endif
     #endregion
 
     #region EU 3-Party Trade functions

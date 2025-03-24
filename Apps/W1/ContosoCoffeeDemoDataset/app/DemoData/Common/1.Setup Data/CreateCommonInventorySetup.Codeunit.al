@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5131 "Create Common Inventory Setup"
 {
     InherentEntitlements = X;

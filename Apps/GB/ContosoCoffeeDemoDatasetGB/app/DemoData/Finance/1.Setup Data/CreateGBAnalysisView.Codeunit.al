@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10515 "Create GB Analysis View"
 {
     SingleInstance = true;

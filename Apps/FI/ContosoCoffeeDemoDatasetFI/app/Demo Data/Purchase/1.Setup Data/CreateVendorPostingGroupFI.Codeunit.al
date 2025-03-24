@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13440 "Create Vendor Posting Group FI"
 {
     SingleInstance = true;

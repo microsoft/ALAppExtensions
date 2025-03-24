@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5128 "Create Common No Series"
 {
     InherentEntitlements = X;

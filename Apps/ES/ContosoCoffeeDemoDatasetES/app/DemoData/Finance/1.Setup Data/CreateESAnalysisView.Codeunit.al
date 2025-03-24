@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10798 "Create ES Analysis View"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5184 "Create Misc. Article Info."
 {
     InherentEntitlements = X;

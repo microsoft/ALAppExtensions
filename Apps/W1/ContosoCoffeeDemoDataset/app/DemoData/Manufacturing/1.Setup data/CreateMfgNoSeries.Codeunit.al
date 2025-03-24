@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4784 "Create Mfg No Series"
 {
     InherentEntitlements = X;

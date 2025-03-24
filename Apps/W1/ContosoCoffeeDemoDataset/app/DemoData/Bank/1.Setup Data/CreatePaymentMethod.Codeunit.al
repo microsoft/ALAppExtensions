@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5295 "Create Payment Method"
 {
     InherentEntitlements = X;

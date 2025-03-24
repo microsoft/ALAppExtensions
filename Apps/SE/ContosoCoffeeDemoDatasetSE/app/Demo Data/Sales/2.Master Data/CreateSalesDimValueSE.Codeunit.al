@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11232 "Create Sales Dim Value SE"
 {
     SingleInstance = true;

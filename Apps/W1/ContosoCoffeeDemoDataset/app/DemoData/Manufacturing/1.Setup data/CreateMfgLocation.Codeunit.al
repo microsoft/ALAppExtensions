@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4764 "Create Mfg Location"
 {
     InherentEntitlements = X;

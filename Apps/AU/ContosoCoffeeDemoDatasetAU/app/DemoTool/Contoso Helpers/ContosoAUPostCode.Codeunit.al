@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17113 "Contoso AU Post Code"
 {
     InherentEntitlements = X;

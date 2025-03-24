@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10817 "Create ES Vendor Bank Account"
 {
     InherentEntitlements = X;

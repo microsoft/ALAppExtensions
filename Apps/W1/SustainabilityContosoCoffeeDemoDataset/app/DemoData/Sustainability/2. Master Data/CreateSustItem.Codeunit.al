@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5254 "Create Sust. Item"
 {
     InherentEntitlements = X;

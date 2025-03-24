@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 6223 "Sustain. Subcategory FactBox"
 {
     ApplicationArea = Basic, Suite;

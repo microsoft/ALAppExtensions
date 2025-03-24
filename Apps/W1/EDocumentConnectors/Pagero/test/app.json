@@ -1,9 +1,9 @@
 {
   "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8d",
-  "name": "E-Documents Connector Tests",
+  "name": "E-Document Connector - Pagero Tests",
   "publisher": "Microsoft",
-  "brief": "E-Documents Connector Tests",
-  "description": "E-Documents Connector Tests",
+  "brief": "E-Document Connector - Pagero Tests",
+  "description": "E-Document Connector - Pagero Tests",
   "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -56,7 +56,7 @@
     }
   ],
   "screenshots": [],
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 148191,
@@ -72,5 +72,8 @@
   "target": "OnPrem",
   "features": [
     "TranslationFile"
+  ],
+  "resourceFolders": [
+    ".resources"
   ]
 }

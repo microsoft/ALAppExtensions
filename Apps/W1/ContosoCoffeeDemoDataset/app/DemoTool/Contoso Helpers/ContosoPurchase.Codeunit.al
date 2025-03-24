@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4781 "Contoso Purchase"
 {
     InherentEntitlements = X;
@@ -102,7 +103,7 @@ codeunit 4781 "Contoso Purchase"
 
         PurchaseLine.Validate(Quantity, Quantity);
 
-        if PurchaseLine."Unit Cost" <> 0 then
+        if UnitCost <> 0 then
             PurchaseLine.Validate("Direct Unit Cost", UnitCost);
 
         PurchaseLine.Insert(true);

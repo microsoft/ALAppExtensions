@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12217 "Create Resource IT"
 {
     SingleInstance = true;

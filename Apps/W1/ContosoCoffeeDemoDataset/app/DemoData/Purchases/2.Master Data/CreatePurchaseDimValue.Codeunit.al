@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5663 "Create Purchase Dim. Value"
 {
     InherentEntitlements = X;

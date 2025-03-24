@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11611 "Create CH Purch. Payable Setup"
 {
     InherentEntitlements = X;

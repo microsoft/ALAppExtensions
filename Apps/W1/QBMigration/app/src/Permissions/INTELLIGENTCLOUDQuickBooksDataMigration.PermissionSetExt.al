@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 27224 "INTELLIGENT CLOUDQuickBooks Data Migration" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "MigrationQB Account" = RIMD,

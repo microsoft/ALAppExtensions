@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13724 "Create Job DK"
 {
     SingleInstance = true;

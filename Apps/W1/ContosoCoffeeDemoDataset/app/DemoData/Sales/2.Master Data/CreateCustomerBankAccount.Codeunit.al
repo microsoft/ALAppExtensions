@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5325 "Create Customer Bank Account"
 {
     InherentEntitlements = X;

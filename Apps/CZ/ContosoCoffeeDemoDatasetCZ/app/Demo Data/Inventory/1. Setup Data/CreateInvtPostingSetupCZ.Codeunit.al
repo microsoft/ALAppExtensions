@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31201 "Create Invt. Posting Setup CZ"
 {
     SingleInstance = true;

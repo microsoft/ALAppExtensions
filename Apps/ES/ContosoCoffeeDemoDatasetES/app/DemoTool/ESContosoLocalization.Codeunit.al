@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10824 "ES Contoso Localization"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11582 "Common Module CH"
 {
     InherentEntitlements = X;

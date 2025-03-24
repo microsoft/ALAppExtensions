@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 40126 "Start Data Upgrade"
 {
     TableNo = "Hybrid Replication Summary";

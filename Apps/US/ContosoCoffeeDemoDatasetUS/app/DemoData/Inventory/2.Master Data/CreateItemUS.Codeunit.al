@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10498 "Create Item US"
 {
     SingleInstance = true;

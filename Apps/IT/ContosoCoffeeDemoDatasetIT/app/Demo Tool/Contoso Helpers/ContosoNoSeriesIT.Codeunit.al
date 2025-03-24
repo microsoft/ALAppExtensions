@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12224 "Contoso No. Series IT"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31292 "Contoso Account Schedule CZ"
 {
     InherentEntitlements = X;

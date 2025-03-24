@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12200 "Create Company Information IT"
 {
     SingleInstance = true;

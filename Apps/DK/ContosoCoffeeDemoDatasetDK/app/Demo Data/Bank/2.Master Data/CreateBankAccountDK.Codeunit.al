@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13710 "Create Bank Account DK"
 {
     SingleInstance = true;

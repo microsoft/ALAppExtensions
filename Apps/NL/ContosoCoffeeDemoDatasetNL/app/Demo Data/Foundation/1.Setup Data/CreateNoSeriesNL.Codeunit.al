@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11515 "Create No. Series NL"
 {
     InherentEntitlements = X;

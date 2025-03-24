@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11410 "Create Word Template BE"
 {
     InherentEntitlements = X;

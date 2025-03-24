@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5168 "Human Resources Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;

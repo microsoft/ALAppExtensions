@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10514 "Create Vendor Bank Account US"
 {
     SingleInstance = true;

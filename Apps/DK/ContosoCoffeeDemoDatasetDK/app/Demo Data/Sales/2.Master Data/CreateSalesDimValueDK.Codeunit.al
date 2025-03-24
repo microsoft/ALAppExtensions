@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13719 "Create Sales Dim Value DK"
 {
     SingleInstance = true;

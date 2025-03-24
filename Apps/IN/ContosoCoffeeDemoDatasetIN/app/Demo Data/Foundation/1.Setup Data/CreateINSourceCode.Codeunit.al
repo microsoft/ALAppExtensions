@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19045 "Create IN Source Code"
 {
     InherentEntitlements = X;

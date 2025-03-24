@@ -1,3 +1,4 @@
+#pragma warning disable AS0050
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18,8 +19,9 @@ page 6181 "E-Document Purchase Draft"
     PageType = Card;
     SourceTable = "E-Document";
     InsertAllowed = false;
-    DeleteAllowed = false;
+    DeleteAllowed = true;
     ModifyAllowed = true;
+    Extensible = false;
     RefreshOnActivate = true;
 
     layout
@@ -113,12 +115,16 @@ page 6181 "E-Document Purchase Draft"
                     Editable = false;
                 }
             }
-            part(Lines; "E-Doc. Purchase Draft Subform")
+            group(LinesAndViewer)
             {
-                ApplicationArea = Suite;
-                Editable = true;
-                SubPageLink = "E-Document Entry No." = field("Entry No");
-                UpdatePropagation = Both;
+                ShowCaption = false;
+                part(Lines; "E-Doc. Purchase Draft Subform")
+                {
+                    ApplicationArea = Suite;
+                    Editable = true;
+                    SubPageLink = "E-Document Entry No." = field("Entry No");
+                    UpdatePropagation = Both;
+                }
             }
             group("E-Document Details")
             {
@@ -202,9 +208,10 @@ page 6181 "E-Document Purchase Draft"
             action(ViewFile)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'View source file';
-                ToolTip = 'View the source file.';
+                Caption = 'View pdf';
+                ToolTip = 'View pdf.';
                 Image = ViewDetails;
+                Visible = Rec."File Type" = Rec."File Type"::PDF;
 
                 trigger OnAction()
                 begin
@@ -247,10 +254,15 @@ page 6181 "E-Document Purchase Draft"
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
+        ImportEDocumentProcess: Codeunit "Import E-Document Process";
     begin
         if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
             Error('');
-        if EDocumentPurchaseHeader.Get(Rec."Entry No") then;
+        if EDocumentPurchaseHeader.Get(Rec."Entry No") then begin
+            AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
+            AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
+            AIGeneratedContentNotification.Send();
+        end;
         if EDocumentHeaderMapping.Get(Rec."Entry No") then;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
         HasErrorsOrWarnings := false;
@@ -268,7 +280,7 @@ page 6181 "E-Document Purchase Draft"
             ClearErrorsAndWarnings();
 
         SetStyle();
-        DataCaption := 'Purchase Document Draft ' + Format(Rec."Entry No");
+        DataCaption := 'Draft ' + Format(Rec."Entry No");
 
         ShowFinalizeDraftAction := Rec.GetEDocumentImportProcessingStatus() = Enum::"Import E-Doc. Proc. Status"::"Draft Ready";
         ShowAnalyzeDocumentAction :=
@@ -357,10 +369,11 @@ page 6181 "E-Document Purchase Draft"
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentProcessing: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
+        AIGeneratedContentNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
         ShowFinalizeDraftAction: Boolean;
         ShowAnalyzeDocumentAction: Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
-
 }
+#pragma warning restore AS0050

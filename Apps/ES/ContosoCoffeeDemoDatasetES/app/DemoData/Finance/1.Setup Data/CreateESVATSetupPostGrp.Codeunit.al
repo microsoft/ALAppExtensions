@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10839 "Create ES Vat Setup Post Grp"
 {
     InherentEntitlements = X;

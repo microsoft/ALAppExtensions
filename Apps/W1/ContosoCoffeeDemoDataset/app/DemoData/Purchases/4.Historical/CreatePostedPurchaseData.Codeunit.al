@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5689 "Create Posted Purchase Data"
 {
     trigger OnRun()

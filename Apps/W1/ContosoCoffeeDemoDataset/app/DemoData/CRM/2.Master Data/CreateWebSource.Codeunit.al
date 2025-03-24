@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5235 "Create Web Source"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10807 "Create ES FA Posting Group"
 {
     SingleInstance = true;

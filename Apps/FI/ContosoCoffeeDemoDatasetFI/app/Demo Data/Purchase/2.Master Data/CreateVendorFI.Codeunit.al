@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13419 "Create Vendor FI"
 {
     SingleInstance = true;

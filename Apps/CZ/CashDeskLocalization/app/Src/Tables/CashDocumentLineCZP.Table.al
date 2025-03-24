@@ -2088,6 +2088,8 @@ table 11733 "Cash Document Line CZP"
 
     local procedure CalcTotalAmounts(var TotalCashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
+        if "Allocation Account No." = '' then
+            exit;
         TotalCashDocumentLineCZP.Init();
         if ("VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax") or
            (("VAT Calculation Type" in
@@ -2098,6 +2100,7 @@ table 11733 "Cash Document Line CZP"
             TotalCashDocumentLineCZP.SetFilter("Line No.", '<>%1', "Line No.");
             TotalCashDocumentLineCZP.SetRange("VAT Identifier", "VAT Identifier");
             TotalCashDocumentLineCZP.SetFilter("VAT %", '<>%1', 0);
+            TotalCashDocumentLineCZP.SetRange("Allocation Account No.", "Allocation Account No.");
             if not TotalCashDocumentLineCZP.IsEmpty() then
                 TotalCashDocumentLineCZP.CalcSums("VAT Base Amount", "Amount Including VAT", "VAT Amount");
         end;
