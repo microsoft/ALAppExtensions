@@ -10,14 +10,14 @@ pageextension 8057 "Vendor List" extends "Vendor List"
         {
             action(NewContract)
             {
-                AccessByPermission = tabledata "Vendor Contract" = RIM;
+                AccessByPermission = tabledata "Vendor Subscription Contract" = RIM;
                 ApplicationArea = Basic, Suite;
-                Caption = 'Contract';
+                Caption = 'Subscription Contract';
                 Image = FileContract;
                 RunObject = page "Vendor Contract";
                 RunPageLink = "Buy-from Vendor No." = field("No.");
                 RunPageMode = Create;
-                ToolTip = 'Create a contract for the vendor.';
+                ToolTip = 'Create a Subscription Contract for the vendor.';
             }
         }
         addlast(Category_Category4)
@@ -30,13 +30,13 @@ pageextension 8057 "Vendor List" extends "Vendor List"
         {
             action(Contracts)
             {
-                AccessByPermission = tabledata "Vendor Contract" = R;
+                AccessByPermission = tabledata "Vendor Subscription Contract" = R;
                 ApplicationArea = Basic, Suite;
-                Caption = 'Contracts';
+                Caption = 'Subscription Contracts';
                 Image = FileContract;
                 RunObject = page "Vendor Contracts";
                 RunPageLink = "Buy-from Vendor No." = field("No.");
-                ToolTip = 'View a list of ongoing vendor contracts.';
+                ToolTip = 'View a list of ongoing Vendor Subscription Contracts.';
             }
         }
         addlast(Category_Category5)

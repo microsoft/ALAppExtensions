@@ -12,6 +12,9 @@ using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+
 
 codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitOfMeasureProvider, IVendorProvider, IPurchaseOrderProvider
 {
@@ -23,7 +26,10 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitO
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
-        if Vendor.Get(EDocumentImportHelper.FindVendor('', EDocumentPurchaseHeader."Vendor GLN", EDocumentPurchaseHeader."Vendor Tax Id")) then
+        if (EDocumentPurchaseHeader."Vendor GLN" = '') and (EDocumentPurchaseHeader."Vendor VAT Id" = '') and (EDocumentPurchaseHeader."Vendor External Id" = '') and (EDocumentPurchaseHeader."Vendor Company Name" = '') and (EDocumentPurchaseHeader."Vendor Address" = '') then
+            Error(NoVendorInformationErr);
+
+        if Vendor.Get(EDocumentImportHelper.FindVendor('', EDocumentPurchaseHeader."Vendor GLN", EDocumentPurchaseHeader."Vendor VAT Id")) then
             exit;
         ServiceParticipant.SetRange("Participant Type", ServiceParticipant."Participant Type"::Vendor);
         ServiceParticipant.SetRange("Participant Identifier", EDocumentPurchaseHeader."Vendor External Id");
@@ -35,7 +41,7 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitO
         if Vendor.Get(ServiceParticipant.Participant) then
             exit;
 
-        if Vendor.Get(EDocumentImportHelper.FindVendorByNameAndAddress(EDocumentPurchaseHeader."Vendor Name", EDocumentPurchaseHeader."Vendor Address")) then;
+        if Vendor.Get(EDocumentImportHelper.FindVendorByNameAndAddress(EDocumentPurchaseHeader."Vendor Company Name", EDocumentPurchaseHeader."Vendor Address")) then;
     end;
 
     procedure GetUnitOfMeasure(EDocumentHeader: Record "E-Document"; EDocumentLineId: Integer; ExternalUnitOfMeasure: Text) UnitOfMeasure: Record "Unit of Measure"
@@ -111,4 +117,7 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitO
     begin
         if PurchaseHeader.Get("Purchase Document Type"::Order, EDocumentPurchaseHeader."Purchase Order No.") then;
     end;
+
+    var
+        NoVendorInformationErr: Label 'There is no vendor information in the source document. Verify that the source document is an invoice, and if it''s not, consider deleting this E-Document.';
 }

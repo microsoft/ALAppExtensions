@@ -3,9 +3,9 @@ namespace Microsoft.SubscriptionBilling;
 page 8076 "Serv. Comm. WO Vend. Contract"
 {
 
-    Caption = 'Service Commitments without Vendor Contract';
+    Caption = 'Subscription Lines without Vendor Subscription Contract';
     PageType = Worksheet;
-    SourceTable = "Service Commitment";
+    SourceTable = "Subscription Line";
     SourceTableTemporary = true;
     ApplicationArea = All;
     UsageCategory = Lists;
@@ -33,70 +33,70 @@ page 8076 "Serv. Comm. WO Vend. Contract"
                 field(ServiceObjectShipToName; ServiceObject."Ship-to Name")
                 {
                     Caption = 'Ship-to Name';
-                    ToolTip = 'Specifies the name that service object were shipped to. Once a service commitment has been transferred to the contract, all service commitments with the same Ship-to Name will be displayed in bold.';
+                    ToolTip = 'Specifies the name that Subscription were shipped to. Once a Subscription Line has been transferred to the contract, all Subscription Lines with the same Ship-to Name will be displayed in bold.';
                     Editable = false;
                     StyleExpr = ShipToStyleExpr;
 
                     trigger OnAssistEdit()
                     begin
-                        ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                        ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                     end;
                 }
                 field(ServiceObjectDescription; ServiceObject.Description)
                 {
-                    Caption = 'Service object description';
-                    ToolTip = 'Specifies a description of the service object.';
+                    Caption = 'Subscription description';
+                    ToolTip = 'Specifies a description of the Subscription.';
                     Editable = false;
 
                     trigger OnAssistEdit()
                     begin
-                        ServiceObject.OpenServiceObjectCard(Rec."Service Object No.");
+                        ServiceObject.OpenServiceObjectCard(Rec."Subscription Header No.");
                     end;
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies the description of the service.';
+                    ToolTip = 'Specifies the description of the Subscription Line.';
                     Editable = false;
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     Caption = 'Assign to Contract No.';
-                    ToolTip = 'Specifies the contract to which the service is to be assigned.';
+                    ToolTip = 'Specifies the contract to which the Subscription Line is to be assigned.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
                     end;
                 }
-                field("Service Start Date"; Rec."Service Start Date")
+                field("Service Start Date"; Rec."Subscription Line Start Date")
                 {
-                    ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                    ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                     Editable = false;
                 }
-                field(Quantity; ServiceObject."Quantity Decimal")
+                field(Quantity; ServiceObject.Quantity)
                 {
-                    ToolTip = 'Number of units of service object.';
+                    ToolTip = 'Number of units of Subscription.';
                     Editable = false;
                     BlankZero = true;
                     Caption = 'Quantity';
                 }
                 field(Price; Rec.Price)
                 {
-                    ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                    ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                     Editable = false;
                 }
-                field("Service Amount"; Rec."Service Amount")
+                field("Service Amount"; Rec.Amount)
                 {
-                    ToolTip = 'Specifies the amount for the service including discount.';
+                    ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                     Editable = false;
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
                     Editable = false;
-                    ToolTip = 'Specifies for which period the Service Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Service Amount refers to.';
+                    ToolTip = 'Specifies for which period the Amount is valid. If you enter 1M here, a period of one month, or 12M, a period of 1 year, to which Amount refers to.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
-                    ToolTip = 'Specifies the Dateformula for rhythm in which the service is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
+                    ToolTip = 'Specifies the Dateformula for rhythm in which the Subscription Line is invoiced. Using a Dateformula rhythm can be, for example, a monthly, a quarterly or a yearly invoicing.';
                     Editable = false;
                 }
                 field("Period Calculation"; Rec."Period Calculation")
@@ -108,7 +108,7 @@ page 8076 "Serv. Comm. WO Vend. Contract"
                 field(ServiceObjectContact; ServiceObject."End-User Contact")
                 {
                     Caption = 'Contact';
-                    ToolTip = 'Specifies the name of the contact using the service.';
+                    ToolTip = 'Specifies the name of the contact using the Subscription Line.';
                     Editable = false;
 
                     trigger OnAssistEdit()
@@ -126,8 +126,8 @@ page 8076 "Serv. Comm. WO Vend. Contract"
             action(AssignSelectedServiceCommitmentsAction)
             {
                 Image = TransferToLines;
-                Caption = 'Assign selected services';
-                ToolTip = 'Assigns all marked services to the contract selected in "Assign to Contract No.".';
+                Caption = 'Assign selected Subscription Lines';
+                ToolTip = 'Assigns all marked Subscription Lines to the contract selected in "Assign to Contract No.".';
 
                 trigger OnAction()
 
@@ -140,8 +140,8 @@ page 8076 "Serv. Comm. WO Vend. Contract"
             action(AssignAllServiceCommitmentsAction)
             {
                 Image = AllLines;
-                Caption = 'Assign all services';
-                ToolTip = 'Assign all services to the contract selected in "Assign to Contract No.".';
+                Caption = 'Assign all Subscription Lines';
+                ToolTip = 'Assign all Subscription Lines to the contract selected in "Assign to Contract No.".';
 
                 trigger OnAction()
                 begin
@@ -173,15 +173,15 @@ page 8076 "Serv. Comm. WO Vend. Contract"
 
     trigger OnAfterGetRecord()
     begin
-        if not ServiceObject.Get(Rec."Service Object No.") then
+        if not ServiceObject.Get(Rec."Subscription Header No.") then
             ServiceObject.Init();
-        if not VendorContract.Get(Rec."Contract No.") then
+        if not VendorContract.Get(Rec."Subscription Contract No.") then
             VendorContract.Init();
     end;
 
     var
-        ServiceObject: Record "Service Object";
-        VendorContract: Record "Vendor Contract";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
         ContactManagement: Codeunit "Contact Management";
         VendorManagement: Codeunit "Vendor Management";
         ShipToStyleExpr: Text;
@@ -194,21 +194,21 @@ page 8076 "Serv. Comm. WO Vend. Contract"
 
     local procedure RefreshServiceCommitments()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
     begin
         Rec.Reset();
         ServiceCommitment.SetRange("Invoicing via", Enum::"Invoicing Via"::Contract);
-        ServiceCommitment.SetRange("Contract No.", '');
+        ServiceCommitment.SetRange("Subscription Contract No.", '');
         ServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Vendor);
         if ServiceCommitment.FindSet() then
             repeat
                 if not Rec.Get(ServiceCommitment."Entry No.") then begin
                     Rec.TransferFields(ServiceCommitment);
                     if VendorContractNo <> '' then
-                        Rec."Contract No." := VendorContractNo;
+                        Rec."Subscription Contract No." := VendorContractNo;
                     Rec.Insert(false);
                 end;
             until ServiceCommitment.Next() = 0;
-        Rec.SetFilter("Service End Date", '>%1|%2', WorkDate(), 0D);
+        Rec.SetFilter("Subscription Line End Date", '>%1|%2', WorkDate(), 0D);
     end;
 }

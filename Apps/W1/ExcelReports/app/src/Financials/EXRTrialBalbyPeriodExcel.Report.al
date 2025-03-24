@@ -13,7 +13,7 @@ using Microsoft.ExcelReports;
 report 4408 "EXR Trial Bal by Period Excel"
 {
     ApplicationArea = All;
-    Caption = 'Trial Balance by Period Excel (Preview)';
+    Caption = 'Trial Balance by Period (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = TrialBalancebyPeriodExcelLayout;
     ExcelLayoutMultipleDataSheets = true;
@@ -75,8 +75,8 @@ report 4408 "EXR Trial Bal by Period Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Trial Balance by Period Excel';
-        AboutText = 'This report contains aggregated general ledger data per accounting period for the trial balance with a net debit/credit net change column for each period. The periods covered are specified in the report''s request page''s Datefilter parameter and summarized per the 2 global dimensions per g/l account category.';
+        AboutTitle = 'About Trial Balance by Period (Excel)';
+        AboutText = 'View a trial balance with debit/credit columns for net change and balance for a period you specify. You get the report directly in Excel. See amounts in both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. Data is summarized for the period specified in the report''s request page''s Date Filter parameter and grouped by the 2 global dimensions per G/L account category.';
 
         layout
         {
@@ -91,6 +91,14 @@ report 4408 "EXR Trial Bal by Period Excel"
                         Caption = 'Period Length';
                         ToolTip = 'Specifies the period for which data is shown in the report. For example, enter "1M" for one month, "30D" for thirty days, "3Q" for three quarters, or "5Y" for five years.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the EXR Trial Bal. by Period Report.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -98,6 +106,11 @@ report 4408 "EXR Trial Bal by Period Excel"
         trigger OnOpenPage()
         begin
             Evaluate(PeriodLength, '<1M>');
+        end;
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TrialBalanceByPeriod.GetFilter("Date Filter");
         end;
     }
 
@@ -115,7 +128,18 @@ report 4408 "EXR Trial Bal by Period Excel"
     {
         DataRetrieved = 'Data retrieved:';
         TrialBalanceByPeriod = 'Trial Balance by Period';
+        TrialBalanceByPeriodPrint = 'Trial Bal. by Period (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceByPeriodAnalysis = 'Trial Bal. by Period (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         YearPeriodStart = 'Year';
+        DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
     trigger OnPreReport()
     var
@@ -137,6 +161,7 @@ report 4408 "EXR Trial Bal by Period Excel"
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         CompanyInformation: Record "Company Information";

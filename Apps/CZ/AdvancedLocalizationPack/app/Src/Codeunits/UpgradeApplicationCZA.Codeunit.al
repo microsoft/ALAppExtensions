@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace System.Upgrade;
 
+using Microsoft;
+using Microsoft.Assembly.Document;
+using Microsoft.Assembly.Setup;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -15,7 +18,10 @@ using System.Environment.Configuration;
 codeunit 31251 "Upgrade Application CZA"
 {
     Subtype = Upgrade;
-    Permissions = tabledata "Detailed G/L Entry CZA" = im,
+    Permissions = tabledata "Assembly Setup" = m,
+                  tabledata "Assembly Header" = m,
+                  tabledata "Assembly Line" = m,
+                  tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
                   tabledata "Inventory Setup" = m,
                   tabledata "Manufacturing Setup" = m,
@@ -27,11 +33,54 @@ codeunit 31251 "Upgrade Application CZA"
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitionsCZA: Codeunit "Upgrade Tag Definitions CZA";
+        InstallApplicationsCZA: Codeunit "Install Application CZA";
 
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
         SetDatabaseUpgradeTags();
+    end;
+
+    trigger OnUpgradePerCompany()
+    begin
+        DataUpgradeMgt.SetUpgradeInProgress();
+        BindSubscription(InstallApplicationsCZA);
+        UpgradeDefaultBusinessPostingGroup();
+        UnbindSubscription(InstallApplicationsCZA);
+    end;
+
+    local procedure UpgradeDefaultBusinessPostingGroup()
+    var
+        ManufacturingSetup: Record "Manufacturing Setup";
+        AssemblySetup: Record "Assembly Setup";
+        AssemblyHeader: Record "Assembly Header";
+        AssemblyLine: Record "Assembly Line";
+        AssemblyHeaderDataTransfer: DataTransfer;
+        AssemblyLineDataTransfer: DataTransfer;
+
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDefaultBusinessPostingGroupUpgradeTag()) then
+            exit;
+
+        if ManufacturingSetup.Get() then begin
+            ManufacturingSetup."Default Gen. Bus. Post. Group" := ManufacturingSetup."Default Gen.Bus.Post. Grp. CZA";
+            ManufacturingSetup.Modify();
+        end;
+
+        if AssemblySetup.Get() then begin
+            AssemblySetup."Default Gen. Bus. Post. Group" := AssemblySetup."Default Gen.Bus.Post. Grp. CZA";
+            AssemblySetup.Modify();
+        end;
+
+        AssemblyHeaderDataTransfer.SetTables(Database::"Assembly Header", Database::"Assembly Header");
+        AssemblyHeaderDataTransfer.AddFieldValue(AssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"), AssemblyHeader.FieldNo("Gen. Bus. Posting Group"));
+        AssemblyHeaderDataTransfer.CopyFields();
+
+        AssemblyLineDataTransfer.SetTables(Database::"Assembly Line", Database::"Assembly Line");
+        AssemblyLineDataTransfer.AddFieldValue(AssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"), AssemblyLine.FieldNo("Gen. Bus. Posting Group"));
+        AssemblyLineDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDefaultBusinessPostingGroupUpgradeTag());
     end;
 
     local procedure SetDatabaseUpgradeTags();

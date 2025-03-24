@@ -22,6 +22,7 @@ codeunit 6104 "Import E-Document Process"
         EDocImport: Codeunit "E-Doc. Import";
         NewStatus: Enum "Import E-Doc. Proc. Status";
         ImportProcessVersion: Enum "E-Document Import Process";
+        CreateJournalLineV1: Boolean;
     begin
         EDocument.SetRecFilter();
         EDocument.FindFirst();
@@ -30,7 +31,7 @@ codeunit 6104 "Import E-Document Process"
         EDocumentLog.SetFields(EDocument, EDocument.GetEDocumentService());
 
         NewStatus := UndoStep ? GetStatusForStep(Step, true) : GetStatusForStep(Step, false);
-        ImportProcessVersion := EDocument.GetEDocumentService()."Import Process";
+        ImportProcessVersion := EDocument.GetEDocumentService().GetImportProcessVersion();
 
         if ImportProcessVersion <> "E-Document Import Process"::"Version 1.0" then
             case Step of
@@ -57,8 +58,17 @@ codeunit 6104 "Import E-Document Process"
             end;
 
         if ImportProcessVersion = "E-Document Import Process"::"Version 1.0" then begin
-            if Step = Step::"Finish draft" then
-                EDocImport.V1_ProcessEDocument(EDocument)
+            if Step = Step::"Finish draft" then begin
+                case EDocImportParameters."Purch. Journal V1 Behavior" of
+                    EDocImportParameters."Purch. Journal V1 Behavior"::"Inherit from service":
+                        CreateJournalLineV1 := EDocument.GetEDocumentService()."Create Journal Lines";
+                    EDocImportParameters."Purch. Journal V1 Behavior"::"Create journal line":
+                        CreateJournalLineV1 := true;
+                    EDocImportParameters."Purch. Journal V1 Behavior"::"Create purchase document":
+                        CreateJournalLineV1 := false;
+                end;
+                EDocImport.V1_ProcessEDocument(EDocument, CreateJournalLineV1)
+            end
         end
         else begin
             EDocLog := EDocumentLog.InsertLog(Enum::"E-Document Service Status"::Imported, NewStatus);
@@ -86,19 +96,28 @@ codeunit 6104 "Import E-Document Process"
     begin
         EDocument.TestField("Unstructured Data Entry No.");
         EDocumentDataStorage.Get(Edocument."Unstructured Data Entry No.");
+        FromBlob.FromRecord(EDocumentDataStorage, EDocumentDataStorage.FieldNo("Data Storage"));
+
         IBlobType := EDocumentDataStorage."Data Type";
+
+        // Store unstructured data as attachment (pdfs)
+        if not IBlobType.IsStructured() and (EDocument."File Name" <> '') then
+            AttachUnstructuredDataAsAttachment(EDocument, FromBlob);
+
         if IBlobType.IsStructured() then begin
             EDocument."Structured Data Entry No." := EDocumentDataStorage."Entry No.";
             EDocument.Modify();
             exit;
         end;
-        FromBlob.FromRecord(EDocumentDataStorage, EDocumentDataStorage.FieldNo("Data Storage"));
 
         if not IBlobType.HasConverter() then
             Error(UnstructuredBlobTypeWithNoConverterErr);
 
         IBlobToStructuredDataConverter := IBlobType.GetStructuredDataConverter();
         Content := IBlobToStructuredDataConverter.Convert(EDocument, FromBlob, EDocumentDataStorage."Data Type", NewType);
+
+        if StrLen(Content) = 0 then
+            Error(UnstructuredBlobConversionErr);
 
         NameWithoutExtension := FileManagement.GetFileNameWithoutExtension(EDocumentDataStorage.Name);
         Name := CopyStr(NameWithoutExtension + '.' + LowerCase(Format(NewType)), 1, 256);
@@ -185,6 +204,11 @@ codeunit 6104 "Import E-Document Process"
         this.EDocImportParameters := EDocImportParameters;
     end;
 
+    procedure IsEDocumentInStateGE(EDocument: Record "E-Document"; QueriedState: Enum "Import E-Doc. Proc. Status"): Boolean
+    begin
+        exit(StatusStepIndex(QueriedState) <= StatusStepIndex(EDocument.GetEDocumentImportProcessingStatus()));
+    end;
+
     procedure StatusStepIndex(Status: Enum "Import E-Doc. Proc. Status"): Integer
     begin
         case Status of
@@ -245,6 +269,15 @@ codeunit 6104 "Import E-Document Process"
         end;
     end;
 
+    local procedure AttachUnstructuredDataAsAttachment(EDocument: Record "E-Document"; FromBlob: Codeunit "Temp Blob")
+    var
+        EDocAttachmentProcessor: Codeunit "E-Doc. Attachment Processor";
+        InStream: InStream;
+    begin
+        FromBlob.CreateInStream(InStream);
+        EDocAttachmentProcessor.Insert(EDocument, InStream, EDocument."File Name");
+    end;
+
     var
         EDocument: Record "E-Document";
         EDocImportParameters: Record "E-Doc. Import Parameters";
@@ -254,4 +287,5 @@ codeunit 6104 "Import E-Document Process"
         Step: Enum "Import E-Document Steps";
         UndoStep: Boolean;
         UnstructuredBlobTypeWithNoConverterErr: Label 'Cant process E-Document as data type does not have a converter implemented.';
+        UnstructuredBlobConversionErr: Label 'Conversion of the source document to structured format failed. Verify that the source document is not corrupted.';
 }
