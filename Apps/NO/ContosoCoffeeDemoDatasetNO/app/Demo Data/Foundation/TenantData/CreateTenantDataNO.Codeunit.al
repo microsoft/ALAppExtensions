@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10693 "Create Tenant Data NO"
 {
     Access = Internal;

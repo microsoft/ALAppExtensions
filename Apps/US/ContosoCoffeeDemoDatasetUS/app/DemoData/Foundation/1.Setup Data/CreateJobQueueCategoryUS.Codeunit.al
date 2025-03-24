@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10534 "Create Job Queue Category US"
 {
     InherentEntitlements = X;

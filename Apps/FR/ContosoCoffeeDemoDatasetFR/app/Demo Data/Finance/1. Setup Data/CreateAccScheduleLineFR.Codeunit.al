@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10859 "Create Acc. Schedule Line FR"
 {
     SingleInstance = true;

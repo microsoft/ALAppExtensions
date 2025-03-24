@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10800 "Create ES Item"
 {
     SingleInstance = true;

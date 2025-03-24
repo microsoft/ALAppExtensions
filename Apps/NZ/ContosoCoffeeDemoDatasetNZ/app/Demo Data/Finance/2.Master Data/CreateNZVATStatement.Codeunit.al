@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17144 "Create NZ VAT Statement"
 {
     SingleInstance = true;

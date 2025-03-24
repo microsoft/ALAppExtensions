@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17158 "Create AU Source Code"
 {
     InherentEntitlements = X;

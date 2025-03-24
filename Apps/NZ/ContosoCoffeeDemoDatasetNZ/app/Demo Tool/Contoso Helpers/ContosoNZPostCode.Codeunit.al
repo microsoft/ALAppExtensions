@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17112 "Contoso NZ Post Code"
 {
     InherentEntitlements = X;

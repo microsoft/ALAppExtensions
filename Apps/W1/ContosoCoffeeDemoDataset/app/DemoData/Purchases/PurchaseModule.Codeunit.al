@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5394 "Purchase Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;

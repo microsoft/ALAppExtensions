@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2469 "Unposted Sales Line Returns"
 {
     QueryType = Normal;

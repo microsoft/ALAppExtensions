@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19006 "Create IN Act Applicable"
 {
     InherentEntitlements = X;

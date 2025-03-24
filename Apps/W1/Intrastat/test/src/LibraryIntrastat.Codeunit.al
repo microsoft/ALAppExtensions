@@ -1032,4 +1032,16 @@ codeunit 139554 "Library - Intrastat"
         SalesLine.Validate("Purchasing Code", Purchasing.Code);
         SalesLine.Modify(true);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToZip', '', true, true)]
+    local procedure OnBeforeExportToZip(DataExch1: Record "Data Exch."; DataExch2: Record "Data Exch."; StatisticsPeriod: Text; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean);
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToFile', '', true, true)]
+    local procedure OnBeforeExportToFile(DataExch: Record "Data Exch."; var FileName: Text; var Handled: Boolean)
+    begin
+        Handled := true;
+    end;
 }

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5245 "Create Sust. Acc. Sch. Name"
 {
     InherentEntitlements = X;

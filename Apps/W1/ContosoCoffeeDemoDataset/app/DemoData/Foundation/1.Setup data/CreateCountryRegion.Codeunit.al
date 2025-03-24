@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5205 "Create Country/Region"
 {
     InherentEntitlements = X;

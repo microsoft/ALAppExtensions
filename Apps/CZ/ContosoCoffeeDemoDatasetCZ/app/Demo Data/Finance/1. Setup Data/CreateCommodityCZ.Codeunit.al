@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31209 "Create Commodity CZ"
 {
     InherentEntitlements = X;

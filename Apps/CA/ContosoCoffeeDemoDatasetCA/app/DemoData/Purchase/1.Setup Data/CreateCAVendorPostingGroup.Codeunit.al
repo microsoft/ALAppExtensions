@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27066 "Create CA Vendor Posting Group"
 {
     InherentEntitlements = X;

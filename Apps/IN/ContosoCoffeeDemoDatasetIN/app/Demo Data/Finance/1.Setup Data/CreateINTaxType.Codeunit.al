@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19043 "Create IN Tax Type"
 {
     InherentEntitlements = X;

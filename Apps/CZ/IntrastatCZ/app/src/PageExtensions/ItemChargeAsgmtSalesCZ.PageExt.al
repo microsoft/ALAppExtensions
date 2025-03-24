@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEAN24
 pageextension 31411 "Item Charge Asgmt. (Sales) CZ" extends "Item Charge Assignment (Sales)"
 {

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11098 "Create DE Company Information"
 {
     InherentEntitlements = X;

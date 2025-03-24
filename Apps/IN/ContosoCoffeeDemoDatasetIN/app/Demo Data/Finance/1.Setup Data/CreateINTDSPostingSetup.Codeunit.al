@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19039 "Create IN TDS Posting Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12206 "Create Marketing Setup IT"
 {
     InherentEntitlements = X;

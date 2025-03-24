@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4767 "Create Mfg Order Promising"
 {
     InherentEntitlements = X;

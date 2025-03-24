@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17107 "Common Module NZ"
 {
     InherentEntitlements = X;

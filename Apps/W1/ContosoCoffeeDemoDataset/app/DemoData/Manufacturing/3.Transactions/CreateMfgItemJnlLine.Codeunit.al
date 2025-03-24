@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4779 "Create Mfg Item Jnl Line"
 {
     InherentEntitlements = X;

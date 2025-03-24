@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10813 "Create ES Payment Method"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 5279 "Accessible Companies Contoso" extends "Accessible Companies"
 {
     layout

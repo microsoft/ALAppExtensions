@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11377 "Create Item Template BE"
 {
     InherentEntitlements = X;

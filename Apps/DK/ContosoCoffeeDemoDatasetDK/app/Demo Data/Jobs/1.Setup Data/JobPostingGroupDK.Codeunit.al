@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13731 "Job Posting Group DK"
 {
     SingleInstance = true;

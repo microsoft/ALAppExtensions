@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27078 "Create CA CountryRegion Trans."
 {
     InherentEntitlements = X;

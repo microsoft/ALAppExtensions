@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5215 "Create Sustainability Account"
 {
     InherentEntitlements = X;

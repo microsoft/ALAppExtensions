@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19050 "Create IN Fixed Asset Block"
 {
     InherentEntitlements = X;

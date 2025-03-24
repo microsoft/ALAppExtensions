@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17121 "Create NZ Posting Groups"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10901 "Create Vendor Posting Grp FR"
 {
     SingleInstance = true;

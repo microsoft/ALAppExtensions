@@ -550,7 +550,7 @@ codeunit 30189 "Shpfy Variant API"
                 ShopifyVariant.Modify();
     end;
 
-    internal procedure UpdateProductPrice(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; var BulkOperationInput: TextBuilder; var GraphQueryList: List of [TextBuilder]; RecordCount: Integer)
+    internal procedure UpdateProductPrice(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; var BulkOperationInput: TextBuilder; var GraphQueryList: Dictionary of [BigInteger, TextBuilder]; RecordCount: Integer; var JRequestData: JsonArray)
     var
         BulkOperationMgt: Codeunit "Shpfy Bulk Operation Mgt.";
         BulkOperationType: Enum "Shpfy Bulk Operation Type";
@@ -560,6 +560,7 @@ codeunit 30189 "Shpfy Variant API"
         JResponse: JsonToken;
         JVariant: JsonToken;
         JVariants: JsonArray;
+        JRequest: JsonObject;
         GraphQuery: TextBuilder;
         Price: Text;
         CompareAtPrice: Text;
@@ -601,7 +602,14 @@ codeunit 30189 "Shpfy Variant API"
                     Price := '0';
                 if CompareAtPrice = '' then
                     CompareAtPrice := '0';
-                GraphQueryList.Add(GraphQuery);
+
+                GraphQueryList.Add(ShopifyVariant.Id, GraphQuery);
+                JRequest.Add('id', ShopifyVariant.Id);
+                JRequest.Add('price', xShopifyVariant.Price);
+                JRequest.Add('compareAtPrice', xShopifyVariant."Compare at Price");
+                JRequest.Add('updatedAt', xShopifyVariant."Updated At");
+                JRequestData.Add(JRequest);
+
                 BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), ShopifyVariant."Product Id", ShopifyVariant.Id, Price, CompareAtPrice));
                 ShopifyVariant."Updated At" := CurrentDateTime();
                 ShopifyVariant.Modify();
@@ -616,9 +624,19 @@ codeunit 30189 "Shpfy Variant API"
             end;
     end;
 
+    [TryFunction]
     internal procedure UpdateProductPrice(GraphQuery: TextBuilder)
+    var
+        JVariants: JsonArray;
+        JVariant: JsonToken;
+        JResponse: JsonToken;
+        VariantUpdateFailedErr: Label 'Failed to update variant price.';
     begin
-        CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+        if JsonHelper.GetJsonArray(JResponse, JVariants, 'data.productVariantsBulkUpdate.productVariants') then
+            if JVariants.Get(0, JVariant) then
+                if JsonHelper.GetValueAsDateTime(JVariant, 'updatedAt') <= 0DT then
+                    Error(VariantUpdateFailedErr);
     end;
 
     /// <summary> 

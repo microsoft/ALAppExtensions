@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11619 "Create CH Vendor"
 {
     SingleInstance = true;

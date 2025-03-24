@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10873 "Create Bank Acc. Post. Grp FR"
 {
     SingleInstance = true;

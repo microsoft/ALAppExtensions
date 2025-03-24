@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5144 "Create Common Item Tracking"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17147 "Create AU FA Posting Group"
 {
     SingleInstance = true;

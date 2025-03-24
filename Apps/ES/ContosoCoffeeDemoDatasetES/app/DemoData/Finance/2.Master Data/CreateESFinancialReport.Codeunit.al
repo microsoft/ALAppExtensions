@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10792 "Create ES Financial Report"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19031 "Create IN Purch. Pay. Setup"
 {
     InherentEntitlements = X;

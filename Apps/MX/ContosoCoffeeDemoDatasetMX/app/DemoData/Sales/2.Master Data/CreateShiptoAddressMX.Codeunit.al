@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14137 "Create Ship-to Address MX"
 {
     InherentEntitlements = X;

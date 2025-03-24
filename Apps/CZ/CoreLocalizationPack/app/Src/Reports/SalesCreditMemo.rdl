@@ -5671,6 +5671,9 @@ End Function</Code>
         <Field Name="Amount_SalesCrMemoHeaderFormat">
           <DataField>Amount_SalesCrMemoHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_Amount_SalesCrMemoHeader">
+          <DataField>Formatted_Amount_SalesCrMemoHeader</DataField>
+        </Field>
         <Field Name="AmountIncludingVAT_SalesCrMemoHeaderCaption">
           <DataField>AmountIncludingVAT_SalesCrMemoHeaderCaption</DataField>
         </Field>
@@ -5679,6 +5682,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_SalesCrMemoHeaderFormat">
           <DataField>AmountIncludingVAT_SalesCrMemoHeaderFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_SalesCrMemoHeader">
+          <DataField>Formatted_AmountIncludingVAT_SalesCrMemoHeader</DataField>
         </Field>
         <Field Name="CalculatedExchRate">
           <DataField>CalculatedExchRate</DataField>
@@ -5779,6 +5785,9 @@ End Function</Code>
         <Field Name="UnitPrice_SalesCrMemoLineFormat">
           <DataField>UnitPrice_SalesCrMemoLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_UnitPrice_SalesCrMemoLine">
+          <DataField>Formatted_UnitPrice_SalesCrMemoLine</DataField>
+        </Field>
         <Field Name="LineDiscount_SalesCrMemoLineCaption">
           <DataField>LineDiscount_SalesCrMemoLineCaption</DataField>
         </Field>
@@ -5806,6 +5815,9 @@ End Function</Code>
         <Field Name="LineAmount_SalesCrMemoLineFormat">
           <DataField>LineAmount_SalesCrMemoLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_LineAmount_SalesCrMemoLine">
+          <DataField>Formatted_LineAmount_SalesCrMemoLine</DataField>
+        </Field>
         <Field Name="InvDiscountAmount_SalesCrMemoLineCaption">
           <DataField>InvDiscountAmount_SalesCrMemoLineCaption</DataField>
         </Field>
@@ -5814,6 +5826,9 @@ End Function</Code>
         </Field>
         <Field Name="InvDiscountAmount_SalesCrMemoLineFormat">
           <DataField>InvDiscountAmount_SalesCrMemoLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_InvDiscountAmount_SalesCrMemoLine">
+          <DataField>Formatted_InvDiscountAmount_SalesCrMemoLine</DataField>
         </Field>
         <Field Name="VATAmtLineVATIdentifier">
           <DataField>VATAmtLineVATIdentifier</DataField>
@@ -5830,11 +5845,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseFormat">
           <DataField>VATAmtLineVATBaseFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBase">
+          <DataField>Formatted_VATAmtLineVATBase</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmt">
           <DataField>VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtFormat">
           <DataField>VATAmtLineVATAmtFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmt">
+          <DataField>Formatted_VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATBaseLCY">
           <DataField>VATAmtLineVATBaseLCY</DataField>

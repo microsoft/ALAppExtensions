@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31202 "Create Invt. Mvmt. Templ. CZ"
 {
     InherentEntitlements = X;

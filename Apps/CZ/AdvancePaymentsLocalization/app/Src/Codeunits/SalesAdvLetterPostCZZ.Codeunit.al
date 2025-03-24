@@ -2206,22 +2206,22 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnPostAdvancePaymentOnBeforePostPaymentApplication(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
+    local procedure OnPostAdvancePaymentOnBeforePostPaymentApplication(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnPostAdvancePaymentOnAfterPostPaymentApplication(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; GenJournalLine: Record "Gen. Journal Line")
+    local procedure OnPostAdvancePaymentOnAfterPostPaymentApplication(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnPostAdvancePaymentOnBeforePostAdvancePayment(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
+    local procedure OnPostAdvancePaymentOnBeforePostAdvancePayment(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnPostAdvancePaymentOnAfterPostAdvancePayment(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; GenJournalLine: Record "Gen. Journal Line")
+    local procedure OnPostAdvancePaymentOnAfterPostAdvancePayment(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line"; AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11401 "Create Area BE"
 {
     InherentEntitlements = X;

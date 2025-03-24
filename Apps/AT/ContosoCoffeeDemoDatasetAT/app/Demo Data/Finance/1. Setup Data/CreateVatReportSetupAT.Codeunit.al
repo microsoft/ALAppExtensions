@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11185 "Create Vat Report Setup AT"
 {
     InherentEntitlements = X;

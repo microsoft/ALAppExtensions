@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19034 "Create IN Vouch. Post. Setup"
 {
     InherentEntitlements = X;

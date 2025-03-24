@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13430 "Create Posting Groups FI"
 {
     InherentEntitlements = X;
@@ -17,6 +18,7 @@ codeunit 13430 "Create Posting Groups FI"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateFIGLAccount.Variationinstocks5(), CreateFIGLAccount.Variationinstocks5(), '', '', '', '', '', '', CreateFIGLAccount.Variationinstocks7(), CreateFIGLAccount.Itemsandsupplies6(), CreateFIGLAccount.Accrualsanddeferredincome2());
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ZeroPostingGroup(), '', '', CreateFIGLAccount.Variationinstocks5(), CreateFIGLAccount.Variationinstocks5(), '', '', '', '', '', '', CreateFIGLAccount.Variationinstocks7(), CreateFIGLAccount.Itemsandsupplies6(), CreateFIGLAccount.Accrualsanddeferredincome2());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateFIGLAccount.Variationinstocks5(), CreateFIGLAccount.Variationinstocks5(), '', '', '', '', '', '', CreateFIGLAccount.Variationinstocks7(), CreateFIGLAccount.Itemsandsupplies6(), CreateFIGLAccount.Accrualsanddeferredincome2());
 
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateFIGLAccount.Salesofgoodsdom(), CreateFIGLAccount.Reductioninvalue1(), CreateFIGLAccount.Variationinstocks5(), CreateFIGLAccount.Variationinstocks5(), '', '', CreateFIGLAccount.Discounts1(), CreateFIGLAccount.Discounts1(), CreateFIGLAccount.Discounts4(), CreateFIGLAccount.Discounts4(), CreateFIGLAccount.Variationinstocks7(), CreateFIGLAccount.Itemsandsupplies6(), CreateFIGLAccount.Accrualsanddeferredincome2());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateFIGLAccount.Salesofservicesdom(), CreateFIGLAccount.Reductioninvalue1(), CreateFIGLAccount.Variationinstocks5(), CreateFIGLAccount.Variationinstocks5(), '', '', CreateFIGLAccount.Discounts1(), CreateFIGLAccount.Discounts1(), CreateFIGLAccount.Discounts4(), CreateFIGLAccount.Discounts4(), CreateFIGLAccount.Variationinstocks7(), CreateFIGLAccount.Itemsandsupplies6(), CreateFIGLAccount.Accrualsanddeferredincome2());

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5271 "Create Sales Receivable Setup"
 {
     InherentEntitlements = X;

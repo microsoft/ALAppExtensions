@@ -6868,6 +6868,9 @@ End Function</Code>
         <Field Name="Amount_SalesInvoiceHeaderFormat">
           <DataField>Amount_SalesInvoiceHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_Amount_SalesInvoiceHeader">
+          <DataField>Formatted_Amount_SalesInvoiceHeader</DataField>
+        </Field>
         <Field Name="AmountIncludingVAT_SalesInvoiceHeaderCaption">
           <DataField>AmountIncludingVAT_SalesInvoiceHeaderCaption</DataField>
         </Field>
@@ -6877,11 +6880,17 @@ End Function</Code>
         <Field Name="AmountIncludingVAT_SalesInvoiceHeaderFormat">
           <DataField>AmountIncludingVAT_SalesInvoiceHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_AmountIncludingVAT_SalesInvoiceHeader">
+          <DataField>Formatted_AmountIncludingVAT_SalesInvoiceHeader</DataField>
+        </Field>
         <Field Name="PrepaymentAmt_SalesInvoiceHeader">
           <DataField>PrepaymentAmt_SalesInvoiceHeader</DataField>
         </Field>
         <Field Name="PrepaymentAmt_SalesInvoiceHeaderFormat">
           <DataField>PrepaymentAmt_SalesInvoiceHeaderFormat</DataField>
+        </Field>
+        <Field Name="Formatted_PrepaymentAmt_SalesInvoiceHeader">
+          <DataField>Formatted_PrepaymentAmt_SalesInvoiceHeader</DataField>
         </Field>
         <Field Name="TotalAfterPrepayed_SalesInvoiceHeader">
           <DataField>TotalAfterPrepayed_SalesInvoiceHeader</DataField>
@@ -6988,6 +6997,9 @@ End Function</Code>
         <Field Name="UnitPrice_SalesInvoiceLineFormat">
           <DataField>UnitPrice_SalesInvoiceLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_UnitPrice_SalesInvoiceLine">
+          <DataField>Formatted_UnitPrice_SalesInvoiceLine</DataField>
+        </Field>
         <Field Name="LineDiscount_SalesInvoiceLineCaption">
           <DataField>LineDiscount_SalesInvoiceLineCaption</DataField>
         </Field>
@@ -7015,6 +7027,9 @@ End Function</Code>
         <Field Name="LineAmount_SalesInvoiceLineFormat">
           <DataField>LineAmount_SalesInvoiceLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_LineAmount_SalesInvoiceLine">
+          <DataField>Formatted_LineAmount_SalesInvoiceLine</DataField>
+        </Field>
         <Field Name="InvDiscountAmount_SalesInvoiceLineCaption">
           <DataField>InvDiscountAmount_SalesInvoiceLineCaption</DataField>
         </Field>
@@ -7023,6 +7038,9 @@ End Function</Code>
         </Field>
         <Field Name="InvDiscountAmount_SalesInvoiceLineFormat">
           <DataField>InvDiscountAmount_SalesInvoiceLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_InvDiscountAmount_SalesInvoiceLine">
+          <DataField>Formatted_InvDiscountAmount_SalesInvoiceLine</DataField>
         </Field>
         <Field Name="LetterNo_SalesAdvanceUsageCaption">
           <DataField>LetterNo_SalesAdvanceUsageCaption</DataField>
@@ -7038,6 +7056,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_SalesAdvanceUsageFormat">
           <DataField>AmountIncludingVAT_SalesAdvanceUsageFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_SalesAdvanceUsage">
+          <DataField>Formatted_AmountIncludingVAT_SalesAdvanceUsage</DataField>
         </Field>
         <Field Name="VATDocLetterNo_SalesAdvanceUsage">
           <DataField>VATDocLetterNo_SalesAdvanceUsage</DataField>
@@ -7060,11 +7081,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseFormat">
           <DataField>VATAmtLineVATBaseFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBase">
+          <DataField>Formatted_VATAmtLineVATBase</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmt">
           <DataField>VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtFormat">
           <DataField>VATAmtLineVATAmtFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmt">
+          <DataField>Formatted_VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATBaseLCY">
           <DataField>VATAmtLineVATBaseLCY</DataField>
@@ -7072,11 +7099,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseLCYFormat">
           <DataField>VATAmtLineVATBaseLCYFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBaseLCY">
+          <DataField>Formatted_VATAmtLineVATBaseLCY</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmtLCY">
           <DataField>VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtLCYFormat">
           <DataField>VATAmtLineVATAmtLCYFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmtLCY">
+          <DataField>Formatted_VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="VATClauseIdentifier">
           <DataField>VATClauseIdentifier</DataField>

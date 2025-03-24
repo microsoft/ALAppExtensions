@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4772 "Create Mfg Prod. Routing"
 {
     InherentEntitlements = X;

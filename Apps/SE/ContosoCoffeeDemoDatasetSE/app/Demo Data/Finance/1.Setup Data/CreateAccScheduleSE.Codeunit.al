@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11212 "Create Acc. Schedule SE"
 {
     SingleInstance = true;

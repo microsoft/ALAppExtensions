@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31182 "Create G/L Account CZ"
 {
     InherentEntitlements = X;
@@ -180,7 +181,7 @@ codeunit 31182 "Create G/L Account CZ"
         ContosoGLAccount.InsertGLAccount(AcquisitionRawMaterial(), AcquisitionRawMaterialName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         ContosoGLAccount.InsertGLAccount(AcquisitionRawMaterialInterim(), AcquisitionRawMaterialInterimName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
 
-        ContosoGLAccount.InsertGLAccount(AcquisitionOfGoodsTotal(), AcquisitionOfGoodsTotalName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, AcquisitionOfGoodsTotal() + '..' + AcquisitionOfGoodsTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(AcquisitionOfGoodsTotal(), AcquisitionOfGoodsTotalName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, AcquisitionOfGoodsBegin() + '..' + AcquisitionOfGoodsTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         #endregion
 
         #region Inventory - Goods - Goods in Stock
@@ -209,7 +210,7 @@ codeunit 31182 "Create G/L Account CZ"
 
         ContosoGLAccount.InsertGLAccount(CashDeskLm(), CashDeskLmName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
 
-        ContosoGLAccount.InsertGLAccount(CashTotal(), CashTotalName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, CreateGLAccount.Cash() + '..' + CashTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(CashTotal(), CashTotalName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, CashBegin() + '..' + CashTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         #endregion
 
         #region Current Financial Assets - Bank Accounts
@@ -227,7 +228,7 @@ codeunit 31182 "Create G/L Account CZ"
         SubCategory := Format(GLAccountCategoryMgtCZL.GetCIII2OtherShorttermFinancialAssets(), 80);
         ContosoGLAccount.InsertGLAccount(ShortTermSecurities(), ShortTermSecuritiesName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         SubCategory := Format(GLAccountCategoryMgtCZL.GetCIV1Cash(), 80);
-        ContosoGLAccount.InsertGLAccount(CashTransfer(), CashTransferName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(CashTransfer(), CashTransferName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         SubCategory := Format(GLAccountCategoryMgtCZL.GetCIV2BankAccounts(), 80);
         ContosoGLAccount.InsertGLAccount(Unidentifiedpayments(), UnidentifiedpaymentsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
 
@@ -447,7 +448,7 @@ codeunit 31182 "Create G/L Account CZ"
         ContosoGLAccount.InsertGLAccount(Advertisement(), AdvertisementName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.MiscPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), CreateVATPostingGroupsCZ.VAT21I(), true, false, false);
         ContosoGLAccount.InsertGLAccount(OtherServices(), OtherServicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.MiscPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), CreateVATPostingGroupsCZ.VAT21I(), true, false, false);
 
-        ContosoGLAccount.InsertGLAccount(OtherServicesTotal(), OtherServicesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, OtherServices() + '..' + OtherServicesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(OtherServicesTotal(), OtherServicesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, OtherServicesBegin() + '..' + OtherServicesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         #endregion
 
         #region Expenses - Personal Expenses
@@ -483,7 +484,7 @@ codeunit 31182 "Create G/L Account CZ"
         ContosoGLAccount.InsertGLAccount(Othertaxesandfees(), OthertaxesandfeesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.MiscPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), CreateVATPostingGroupsCZ.VAT21I(), true, false, false);
         ContosoGLAccount.InsertGLAccount(Othernotaxtaxesandfees(), OthernotaxtaxesandfeesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.MiscPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), CreateVATPostingGroupsCZ.VAT21I(), true, false, false);
 
-        ContosoGLAccount.InsertGLAccount(OthertaxesandfeesTotal(), OthertaxesandfeesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, Othertaxesandfees() + '..' + OthertaxesandfeesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(OthertaxesandfeesTotal(), OthertaxesandfeesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, OthertaxesandfeesBegin() + '..' + OthertaxesandfeesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         #endregion
 
         #region Expenses - Other Operating Expenses
@@ -507,7 +508,7 @@ codeunit 31182 "Create G/L Account CZ"
         ContosoGLAccount.InsertGLAccount(Shortagesanddamagefromoperact(), ShortagesanddamagefromoperactName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
 
         SubCategory := '';
-        ContosoGLAccount.InsertGLAccount(OtheroperatingexpensesTotal(), OtheroperatingexpensesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, Otheroperatingexpenses() + '..' + OtheroperatingexpensesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(OtheroperatingexpensesTotal(), OtheroperatingexpensesTotalName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, OtheroperatingexpensesBegin() + '..' + OtheroperatingexpensesTotal(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         #endregion
 
         #region Expenses - Depreciation and Reserves

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11586 "Create CH Bank Acc Posting Grp"
 {
     SingleInstance = true;

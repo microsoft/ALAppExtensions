@@ -41,7 +41,7 @@
       "to": 148135
     }
   ],
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "target": "OnPrem",
   "resourceExposurePolicy": {
     "allowDebugging": false,

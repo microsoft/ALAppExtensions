@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12233 "Create Bill Code IT"
 {
     InherentEntitlements = X;

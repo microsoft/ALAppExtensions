@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2553 "Item Purchase Receipts"
 {
     QueryType = Normal;

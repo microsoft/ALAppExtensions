@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11618 "Create CH Vendor Posting Grp"
 {
     SingleInstance = true;

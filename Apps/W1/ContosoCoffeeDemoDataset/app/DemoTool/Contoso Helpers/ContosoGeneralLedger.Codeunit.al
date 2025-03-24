@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5112 "Contoso General Ledger"
 {
     InherentEntitlements = X;

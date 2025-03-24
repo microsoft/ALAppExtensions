@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5491 "Create KPI Web Srv Line"
 {
     InherentEntitlements = X;

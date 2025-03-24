@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4782 "Create Mfg Posting Group"
 {
     InherentEntitlements = X;

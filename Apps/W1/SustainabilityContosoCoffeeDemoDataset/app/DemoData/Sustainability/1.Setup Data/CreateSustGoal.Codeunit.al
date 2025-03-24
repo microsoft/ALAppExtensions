@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5249 "Create Sust. Goal"
 {
     InherentEntitlements = X;

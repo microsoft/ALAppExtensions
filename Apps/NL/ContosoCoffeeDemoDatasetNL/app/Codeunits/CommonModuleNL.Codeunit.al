@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11495 "Common Module NL"
 {
     InherentEntitlements = X;

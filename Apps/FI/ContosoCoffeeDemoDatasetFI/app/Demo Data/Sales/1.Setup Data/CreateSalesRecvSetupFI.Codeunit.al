@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13456 "Create Sales Recv. Setup FI"
 {
     InherentEntitlements = X;

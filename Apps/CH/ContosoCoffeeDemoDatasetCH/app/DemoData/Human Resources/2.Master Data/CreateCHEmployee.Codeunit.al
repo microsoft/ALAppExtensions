@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11599 "Create CH Employee"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31204 "Create Vendor Posting Group CZ"
 {
     SingleInstance = true;

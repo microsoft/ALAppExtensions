@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 interface "Contoso Demo Data Module"
 {
     procedure RunConfigurationPage();

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19044 "Create IN Tax Acc. Period"
 {
     InherentEntitlements = X;

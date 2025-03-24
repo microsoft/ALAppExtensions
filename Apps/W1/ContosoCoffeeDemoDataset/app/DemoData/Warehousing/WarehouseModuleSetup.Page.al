@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 4766 "Warehouse Module Setup"
 {
     PageType = Card;

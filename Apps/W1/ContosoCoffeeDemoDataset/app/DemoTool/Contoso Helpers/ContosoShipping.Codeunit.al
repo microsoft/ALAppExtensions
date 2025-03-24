@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5182 "Contoso Shipping"
 {
     InherentEntitlements = X;

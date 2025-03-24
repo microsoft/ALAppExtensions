@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2684 "Data Search Serv. Man. RC Ext" extends "Service Manager Role Center"
 {
     ObsoleteState = Pending;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11179 "CreateReminder Setup AT"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13722 "Create Purchase Document DK"
 {
     InherentEntitlements = X;

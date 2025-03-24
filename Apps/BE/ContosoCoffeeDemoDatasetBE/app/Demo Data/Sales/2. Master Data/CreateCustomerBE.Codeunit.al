@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11387 "Create Customer BE"
 {
     SingleInstance = true;
@@ -35,10 +36,10 @@ codeunit 11387 "Create Customer BE"
 
     local procedure ValidateCustomer(var Customer: Record Customer; LanguageCode: Code[10]; CountryRegionCode: Code[10]; TerritoryCode: Code[20]; PostCode: Code[20]; VatRegistraionNo: Text[20]; City: Text[30])
     begin
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer."VAT Registration No." := VatRegistraionNo;
-        if CountryRegionCode <> '' then
-            Customer.Validate("Country/Region Code", CountryRegionCode);
+        Customer.Validate("Country/Region Code", CountryRegionCode);
         Customer.Validate(City, City);
         Customer.Validate("Post Code", PostCode);
         Customer.Validate("Territory Code", TerritoryCode);

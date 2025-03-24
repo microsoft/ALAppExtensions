@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11354 "Create Shipping Data BE"
 {
     InherentEntitlements = X;

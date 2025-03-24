@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 14100 "CD Location Setup"
 {
     Caption = 'CD Location Setup';

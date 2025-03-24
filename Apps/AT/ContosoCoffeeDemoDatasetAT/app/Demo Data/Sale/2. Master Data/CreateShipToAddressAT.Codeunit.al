@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11178 "Create Ship-to Address AT"
 {
     SingleInstance = true;

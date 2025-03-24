@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5143 "Contoso Item"
 {
     InherentEntitlements = X;
@@ -98,7 +99,8 @@ codeunit 5143 "Contoso Item"
         Item.Validate("Put-away Template Code", PutAwayTemplateCode);
         Item.Validate("Service Item Group", ServiceItemGroupCode);
         Item.Validate(GTIN, GTIN);
-        Item.Validate("Unit Cost", UnitCost);
+        if UnitCost <> 0 then
+            Item.Validate("Unit Cost", UnitCost);
         Item.validate("Reorder Point", ReorderPoint);
         Item.Validate("Gross Weight", GrossWeight);
         Item.Validate("Unit Volume", UnitVolume);

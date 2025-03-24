@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5549 "Create Cue Setup"
 {
     InherentEntitlements = X;

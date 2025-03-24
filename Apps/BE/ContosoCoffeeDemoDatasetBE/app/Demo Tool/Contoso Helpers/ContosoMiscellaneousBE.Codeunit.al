@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11402 "Contoso Miscellaneous BE"
 {
     InherentEntitlements = X;

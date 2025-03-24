@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14126 "Create Sales Dim Value MX"
 {
     SingleInstance = true;

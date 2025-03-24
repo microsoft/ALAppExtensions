@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 5169 "Contoso Module Dependency"
 {
     DataClassification = CustomerContent;

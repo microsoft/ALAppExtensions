@@ -1062,35 +1062,36 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     procedure ApplyAdvanceLetter(var SalesInvoiceHeader: Record "Sales Invoice Header")
     var
-        AdvanceLetterApplication: Record "Advance Letter Application CZZ";
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
         CustLedgerEntry: Record "Cust. Ledger Entry";
-        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
+        SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
         ConfirmManagement: Codeunit "Confirm Management";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         ApplyAdvanceLetterQst: Label 'Apply Advance Letter?';
         CannotApplyErr: Label 'You cannot apply more than %1.', Comment = '%1 = Remaining amount to apply';
     begin
-        AdvanceLetterApplication.SetRange("Document Type", AdvanceLetterApplication."Document Type"::"Posted Sales Invoice");
-        AdvanceLetterApplication.SetRange("Document No.", SalesInvoiceHeader."No.");
-        if AdvanceLetterApplication.IsEmpty() then
-            SalesAdvLetterManagement.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Posted Sales Invoice", SalesInvoiceHeader."No.", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Posting Date", SalesInvoiceHeader."Currency Code");
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvanceLetterApplicationCZZ."Document Type"::"Posted Sales Invoice");
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", SalesInvoiceHeader."No.");
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
+            SalesAdvLetterManagementCZZ.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Posted Sales Invoice", SalesInvoiceHeader."No.", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Posting Date", SalesInvoiceHeader."Currency Code");
 
-        if AdvanceLetterApplication.IsEmpty() then
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
             exit;
 
         if not ConfirmManagement.GetResponseOrDefault(ApplyAdvanceLetterQst, false) then
             exit;
 
-        CheckAdvancePayment(AdvanceLetterApplication."Document Type"::"Posted Sales Invoice", SalesInvoiceHeader);
-        AdvanceLetterApplication.CalcSums(Amount);
+        CheckAdvancePayment(AdvanceLetterApplicationCZZ."Document Type"::"Posted Sales Invoice", SalesInvoiceHeader);
+        AdvanceLetterApplicationCZZ.CalcSums(Amount);
         CustLedgerEntry.SetCurrentKey("Document No.");
         CustLedgerEntry.SetRange("Document No.", SalesInvoiceHeader."No.");
         CustLedgerEntry.SetRange(Open, true);
+        OnApplyAdvanceLetterOnAfterSetCustLedgerEntryFilter(CustLedgerEntry, SalesInvoiceHeader, AdvanceLetterApplicationCZZ);
         CustLedgerEntry.FindLast();
         CustLedgerEntry.CalcFields("Remaining Amount");
-        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplication, CustLedgerEntry);
-        if AdvanceLetterApplication.Amount > CustLedgerEntry."Remaining Amount" then
+        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplicationCZZ, CustLedgerEntry);
+        if AdvanceLetterApplicationCZZ.Amount > CustLedgerEntry."Remaining Amount" then
             Error(CannotApplyErr, CustLedgerEntry."Remaining Amount");
 
         SalesAdvLetterPostCZZ.PostAdvanceLetterApplying(SalesInvoiceHeader, GenJnlPostLine, AdvancePostingParametersCZZ);
@@ -1659,6 +1660,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnCheckAdvancePaymentOnAfterSetFilters(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnApplyAdvanceLetterOnAfterSetCustLedgerEntryFilter(var CustLedgerEntry: Record "Cust. Ledger Entry"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var AdvanceLetterApplication: Record "Advance Letter Application CZZ")
     begin
     end;
 }

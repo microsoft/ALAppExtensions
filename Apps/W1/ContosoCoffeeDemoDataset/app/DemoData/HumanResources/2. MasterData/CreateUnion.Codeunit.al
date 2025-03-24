@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5174 "Create Union"
 {
     InherentEntitlements = X;

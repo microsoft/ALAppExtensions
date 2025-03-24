@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14635 "Create Bank Account IS"
 {
     SingleInstance = true;

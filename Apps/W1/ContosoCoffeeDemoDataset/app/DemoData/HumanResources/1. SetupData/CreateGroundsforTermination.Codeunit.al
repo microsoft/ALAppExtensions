@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5169 "Create Grounds for Termination"
 {
     InherentEntitlements = X;

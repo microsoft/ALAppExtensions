@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17157 "Create AU Job Posting Group"
 {
     SingleInstance = true;

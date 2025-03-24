@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13706 "Create FA SubClass DK"
 {
     InherentEntitlements = X;

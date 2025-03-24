@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5306 "Create Bank Ex/Import Setup"
 {
     InherentEntitlements = X;

@@ -1,4 +1,5 @@
-﻿page 14103 "Customs Declaration"
+#pragma warning disable AA0247
+page 14103 "Customs Declaration"
 {
     Caption = 'Customs Declaration';
     PageType = Document;

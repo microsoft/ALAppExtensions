@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11595 "Create CH Sales Dim. Value"
 {
     SingleInstance = true;

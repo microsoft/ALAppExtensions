@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17134 "Create AU Ship-To Address"
 {
     SingleInstance = true;

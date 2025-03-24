@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13729 "Create Item DK"
 {
     SingleInstance = true;

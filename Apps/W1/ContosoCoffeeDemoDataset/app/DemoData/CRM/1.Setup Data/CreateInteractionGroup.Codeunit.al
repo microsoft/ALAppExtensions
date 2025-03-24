@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5534 "Create Interaction Group"
 {
     InherentEntitlements = X;

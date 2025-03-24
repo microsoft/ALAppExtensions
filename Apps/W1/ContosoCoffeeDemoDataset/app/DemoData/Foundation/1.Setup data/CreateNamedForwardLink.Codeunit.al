@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5541 "Create Named Forward Link"
 {
     InherentEntitlements = X;

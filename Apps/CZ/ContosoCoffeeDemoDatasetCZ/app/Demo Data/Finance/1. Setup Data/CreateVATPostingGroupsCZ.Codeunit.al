@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31189 "Create Vat Posting Groups CZ"
 {
     SingleInstance = true;

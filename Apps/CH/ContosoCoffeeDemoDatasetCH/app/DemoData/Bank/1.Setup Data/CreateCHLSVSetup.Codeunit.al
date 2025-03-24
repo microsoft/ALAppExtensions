@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11626 "Create CH LSV Setup"
 {
     InherentEntitlements = X;

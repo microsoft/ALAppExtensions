@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27043 "Create CA Acc. Schedule Line"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17154 "Create AU Resource"
 {
     SingleInstance = true;
@@ -14,11 +15,11 @@ codeunit 17154 "Create AU Resource"
         case Rec."No." of
             CreateResource.Katherine(),
             CreateResource.Terry():
-                ValidateRecordFields(Rec, CanberraLbl, 150, 165, 43.10345, 290, PostCode2600Lbl, CreateAUVatPostingGroups.Vat10());
+                ValidateRecordFields(Rec, CanberraLbl, 150, 165, 43.10345, 290, PostCode2600Lbl, CreateAUVatPostingGroups.Gst10());
             CreateResource.Marty():
-                ValidateRecordFields(Rec, CanberraLbl, 130, 143, 45, 260, PostCode2600Lbl, CreateAUVatPostingGroups.Vat10());
+                ValidateRecordFields(Rec, CanberraLbl, 130, 143, 45, 260, PostCode2600Lbl, CreateAUVatPostingGroups.Gst10());
             CreateResource.Lina():
-                ValidateRecordFields(Rec, CanberraLbl, 170, 187, 46.57143, 350, PostCode2600Lbl, CreateAUVatPostingGroups.Vat10());
+                ValidateRecordFields(Rec, CanberraLbl, 170, 187, 46.57143, 350, PostCode2600Lbl, CreateAUVatPostingGroups.Gst10());
         end;
     end;
 

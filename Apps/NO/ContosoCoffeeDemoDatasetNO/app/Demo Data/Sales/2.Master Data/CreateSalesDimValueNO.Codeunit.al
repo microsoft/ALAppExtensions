@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10702 "Create Sales Dim Value NO"
 {
     SingleInstance = true;

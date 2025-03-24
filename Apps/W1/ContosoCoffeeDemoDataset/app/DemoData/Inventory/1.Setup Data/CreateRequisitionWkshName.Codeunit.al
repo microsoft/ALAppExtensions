@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5250 "Create Requisition Wksh. Name"
 {
     InherentEntitlements = X;

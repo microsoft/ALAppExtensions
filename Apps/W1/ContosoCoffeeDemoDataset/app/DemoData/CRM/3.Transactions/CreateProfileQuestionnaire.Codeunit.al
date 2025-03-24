@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5681 "Create Profile Questionnaire"
 {
     trigger OnRun()

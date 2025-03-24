@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11478 "Create Curr Exchange Rate US"
 {
     SingleInstance = true;
