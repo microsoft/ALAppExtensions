@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
-table 71107792 "B2Brouter Setup"
+table 6490 "B2Brouter Setup"
 {
+    Access = Internal;
     DataClassification = CustomerContent;
 
     fields
@@ -13,25 +14,21 @@ table 71107792 "B2Brouter Setup"
         field(1; PK; Code[20])
         {
             Caption = 'Primary Key';
-            DataClassification = CustomerContent;
         }
 
         field(2; "Production Project"; Text[1024])
         {
             Caption = 'Project';
-            DataClassification = CustomerContent;
         }
 
         field(3; "Sandbox Project"; Text[1024])
         {
             Caption = 'Sandbox Project';
-            DataClassification = CustomerContent;
         }
 
         field(4; "Sandbox Mode"; Boolean)
         {
             Caption = 'Sandbox Mode';
-            DataClassification = CustomerContent;
         }
     }
 
@@ -69,7 +66,7 @@ table 71107792 "B2Brouter Setup"
             IsolatedStorage.Delete(ApiKeyIdentifier, DataScope::Company);
     end;
 
-    procedure StoreApiKey(SandboxMode: Boolean; APIKey: Text)
+    procedure StoreApiKey(SandboxMode: Boolean; APIKey: SecretText)
     var
         ApiKeyIdentifier: Text;
     begin
@@ -97,8 +94,7 @@ table 71107792 "B2Brouter Setup"
         exit('SandboxApiKey');
     end;
 
-    [NonDebuggable]
-    internal procedure GetApiKey(SandboxMode: Boolean; var ApiKey: Text): Boolean
+    internal procedure GetApiKey(SandboxMode: Boolean; var ApiKey: SecretText): Boolean
     begin
         exit(IsolatedStorage.Get(GetApiKeyIdentifier(SandboxMode), DataScope::Company, ApiKey));
     end;

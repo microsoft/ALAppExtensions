@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
-page 71107792 "B2Brouter Setup"
+page 6490 "B2Brouter Setup"
 {
     Caption = 'B2Brouter Setup';
     PageType = Card;
@@ -19,9 +19,18 @@ page 71107792 "B2Brouter Setup"
     {
         area(Content)
         {
+
+            field("Staging Mode"; Rec."Sandbox Mode")
+            {
+                Caption = 'Staging Mode';
+                ToolTip = 'If true, the extension is working in non production mode.';
+                ApplicationArea = All;
+            }
+
             group(Production)
             {
                 Caption = 'Production Environment';
+                Visible = not Rec."Sandbox Mode";
 
                 field("Production API-Key"; ProductionApiKey)
                 {
@@ -34,7 +43,7 @@ page 71107792 "B2Brouter Setup"
                     trigger OnValidate()
                     begin
                         if ProductionApiKey <> '' then
-                            Rec.StoreApiKey(false, ProductionApiKey)
+                            StoreKey(false, ProductionApiKey)
                         else
                             Rec.DeleteApiKey(false);
                     end;
@@ -51,6 +60,7 @@ page 71107792 "B2Brouter Setup"
             group(Staging)
             {
                 Caption = 'Sandbox Environment';
+                Visible = rec."Sandbox Mode";
 
                 field("Staging API-Key"; SandboxApiKey)
                 {
@@ -63,7 +73,7 @@ page 71107792 "B2Brouter Setup"
                     trigger OnValidate()
                     begin
                         if SandboxApiKey <> '' then
-                            Rec.StoreApiKey(true, SandboxApiKey)
+                            StoreKey(true, SandboxApiKey)
                         else
                             Rec.DeleteApiKey(true);
                     end;
@@ -77,15 +87,15 @@ page 71107792 "B2Brouter Setup"
                     ApplicationArea = All;
                 }
 
-                field("Staging Mode"; Rec."Sandbox Mode")
-                {
-                    Caption = 'Staging Mode';
-                    ToolTip = 'If true, the extension is working in non production mode.';
-                    ApplicationArea = All;
-                }
             }
         }
     }
+
+    local procedure StoreKey(Sandbox: Boolean; var ApiKey: Text)
+    begin
+        Rec.StoreApiKey(Sandbox, ApiKey);
+        ApiKey := '*';
+    end;
 
     trigger OnOpenPage()
     begin

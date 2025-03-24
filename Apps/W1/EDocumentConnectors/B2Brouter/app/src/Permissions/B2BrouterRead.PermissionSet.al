@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
-permissionset 71107792 "B2Brouter Read"
+permissionset 6491 "B2Brouter Read"
 {
     Assignable = true;
     Permissions =

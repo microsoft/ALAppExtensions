@@ -39,7 +39,7 @@ codeunit 50111 "Test Request Creation"
         //[THEN] 
         // ApiKeyArg = StagApiKey
         // ProjectArg = 'Sandbox'
-        AssertThat.AreEqual(APIMgmt.GetApiKey(), StagApiKey, IncorrectValueErr);
+        AssertThat.AreEqual(APIMgmt.GetApiKey().Unwrap(), StagApiKey, IncorrectValueErr);
         AssertThat.AreEqual(APIMgmt.GetProject(), 'Sandbox', IncorrectValueErr);
         AssertThat.AreEqual(APIMgmt.GetBaseURL(), SandboxBaseUrlLbl, IncorrectValueErr);
         B2BrouterSetup.Delete();
@@ -75,7 +75,7 @@ codeunit 50111 "Test Request Creation"
         //[THEN] 
         // ApiKeyArg = ProdApiKey
         // ProjectArg = 'Prod'
-        AssertThat.AreEqual(ProdApiKey, APIMgmt.GetApiKey(), IncorrectValueErr);
+        AssertThat.AreEqual(ProdApiKey, APIMgmt.GetApiKey().Unwrap(), IncorrectValueErr);
         AssertThat.AreEqual('Prod', APIMgmt.GetProject(), IncorrectValueErr);
         AssertThat.AreEqual(ProdBaseUrlLbl, APIMgmt.GetBaseURL(), IncorrectValueErr);
         B2BrouterSetup.Delete();
@@ -154,7 +154,7 @@ codeunit 50111 "Test Request Creation"
         Initialize();
 
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(true, CreateGuid());
+        StoreApiKey(true, CreateGuid());
         B2BrouterSetup."Sandbox Project" := 'Sandbox';
         B2BrouterSetup."Sandbox Mode" := true;
         if not B2BrouterSetup.Insert() then
@@ -179,7 +179,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(true, CreateGuid());
+        StoreApiKey(true, CreateGuid());
         B2BrouterSetup."Sandbox Project" := 'Sandbox';
         B2BrouterSetup."Sandbox Mode" := true;
         if not B2BrouterSetup.Insert() then
@@ -204,7 +204,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(true, CreateGuid());
+        StoreApiKey(true, CreateGuid());
         B2BrouterSetup."Sandbox Project" := 'Sandbox';
         B2BrouterSetup."Sandbox Mode" := true;
         if not B2BrouterSetup.Insert() then
@@ -230,7 +230,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(true, CreateGuid());
+        StoreApiKey(true, CreateGuid());
         B2BrouterSetup."Sandbox Project" := 'Sandbox';
         B2BrouterSetup."Sandbox Mode" := true;
         if not B2BrouterSetup.Insert() then
@@ -256,7 +256,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(true, CreateGuid());
+        StoreApiKey(true, CreateGuid());
         B2BrouterSetup."Sandbox Project" := 'Sandbox';
         B2BrouterSetup."Sandbox Mode" := true;
         if not B2BrouterSetup.Insert() then
@@ -285,7 +285,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(false, CreateGuid());
+        StoreApiKey(false, CreateGuid());
         B2BrouterSetup."Production Project" := 'Production';
         B2BrouterSetup."Sandbox Mode" := false;
         if not B2BrouterSetup.Insert() then
@@ -310,7 +310,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(false, CreateGuid());
+        StoreApiKey(false, CreateGuid());
         B2BrouterSetup."Production Project" := 'Production';
         B2BrouterSetup."Sandbox Mode" := false;
         if not B2BrouterSetup.Insert() then
@@ -336,7 +336,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(false, CreateGuid());
+        StoreApiKey(false, CreateGuid());
         B2BrouterSetup."Production Project" := 'Production';
         B2BrouterSetup."Sandbox Mode" := false;
         if not B2BrouterSetup.Insert() then
@@ -362,7 +362,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(false, CreateGuid());
+        StoreApiKey(false, CreateGuid());
         B2BrouterSetup."Production Project" := 'Production';
         B2BrouterSetup."Sandbox Mode" := false;
         if not B2BrouterSetup.Insert() then
@@ -389,7 +389,7 @@ codeunit 50111 "Test Request Creation"
     begin
         Initialize();
         //[GIVEN] given
-        B2BrouterSetup.StoreApiKey(false, CreateGuid());
+        StoreApiKey(false, CreateGuid());
         B2BrouterSetup."Production Project" := 'Production';
         B2BrouterSetup."Sandbox Mode" := false;
         if not B2BrouterSetup.Insert() then
@@ -409,6 +409,7 @@ codeunit 50111 "Test Request Creation"
     end;
 
     [Test]
+    [NonDebuggable]
     procedure TestStoringMultipleKeys()
     var
         B2BrouterSetup: Record "B2Brouter Setup";
@@ -430,7 +431,7 @@ codeunit 50111 "Test Request Creation"
         APIMgmt.InitRequestData();
 
         //[THEN] New api key should be returned
-        AssertThat.AreEqual(Key2, APIMgmt.GetApiKey(), IncorrectValueErr);
+        AssertThat.AreEqual(Key2, APIMgmt.GetApiKey().Unwrap(), IncorrectValueErr);
     end;
 
     local procedure Initialize()
@@ -440,6 +441,14 @@ codeunit 50111 "Test Request Creation"
         if B2BrouterSetup.Get() then
             B2BrouterSetup.Delete();
         B2BrouterSetup.DeleteApiKeys();
+    end;
+
+    local procedure StoreApiKey(Sandbox: Boolean; ApiKeyTxt: Text)
+    var
+        B2BrouterSetup: Record "B2Brouter Setup";
+    begin
+        ApiKeyTxt := CreateGuid();
+        B2BrouterSetup.StoreApiKey(Sandbox, ApiKeyTxt);
     end;
 
     var

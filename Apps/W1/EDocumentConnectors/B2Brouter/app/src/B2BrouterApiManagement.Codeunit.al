@@ -10,18 +10,18 @@ using Microsoft.EServices.EDocument;
 using Microsoft.EServices.EDocument.Integration.Send;
 using Microsoft.EServices.EDocument.Integration.Receive;
 
-codeunit 71107792 "B2Brouter Api Management"
+codeunit 6490 "B2Brouter Api Management"
 {
-    procedure SendDocument(var EDocument: Record "E-Document"; SendContext: Codeunit SendContext; var IsAsync: Boolean)
+    Access = Internal;
+
+    procedure SendDocument(var EDocument: Record "E-Document"; SendContext: Codeunit SendContext)
     var
-        EDocumentToModify: Record "E-Document";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         TempBlob: Codeunit "Temp Blob";
         RecordRef: RecordRef;
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
     begin
-        IsAsync := true;
         TempBlob := SendContext.GetTempBlob();
 
         if EDocument."B2Brouter File Id" = 0 then begin
@@ -34,9 +34,9 @@ codeunit 71107792 "B2Brouter Api Management"
 
         case HttpResponse.HttpStatusCode of
             201:
-                if EDocumentToModify.Get(EDocument."Entry No") then begin
-                    EDocumentToModify."B2Brouter File Id" := ReadInvoiceIdFromJsonResponseAfterInvoiceCreation(HttpResponse);
-                    EDocumentToModify.Modify();
+                begin
+                    EDocument."B2Brouter File Id" := ReadInvoiceIdFromJsonResponseAfterInvoiceCreation(HttpResponse);
+                    EDocument.Modify();
                 end;
             else begin
                 RecordRef.Get(EDocument."Document Record ID");
@@ -280,14 +280,14 @@ codeunit 71107792 "B2Brouter Api Management"
         B2BrouterSetup.Get();
 
         if B2BrouterSetup."Sandbox Mode" then begin
-            if (not B2BrouterSetup.GetApiKey(true, ApiKey)) or (ApiKey = '') then
+            if (not B2BrouterSetup.GetApiKey(true, ApiKey)) or ApiKey.IsEmpty() then
                 Error(NoApiKeyFoundErr, 'staging');
 
             B2BrouterSetup.TestField("Sandbox Project");
             Project := B2BrouterSetup."Sandbox Project";
             BaseUrl := GetBaseURL(true);
         end else begin
-            if (not B2BrouterSetup.GetApiKey(false, ApiKey)) or (ApiKey = '') then
+            if (not B2BrouterSetup.GetApiKey(false, ApiKey)) or ApiKey.IsEmpty() then
                 Error(NoApiKeyFoundErr, 'production');
 
             B2BrouterSetup.TestField("Production Project");
@@ -323,7 +323,7 @@ codeunit 71107792 "B2Brouter Api Management"
         exit(Project)
     end;
 
-    internal procedure GetApiKey(): Text
+    internal procedure GetApiKey(): SecretText
     begin
         InitRequestData();
         exit(ApiKey);
@@ -411,7 +411,6 @@ codeunit 71107792 "B2Brouter Api Management"
 
     internal procedure CreateNewHttpRequest(Url: Text; Method: Text) Result: HttpRequestMessage
     begin
-        OnBeforeCreateHttpRequest(Url, Method);
         Result.SetRequestUri(Url);
         Result.Method := Method;
     end;
@@ -420,11 +419,6 @@ codeunit 71107792 "B2Brouter Api Management"
     begin
         if not this.HttpClient.Send(HttpRequest, HttpResponse) then
             Error(this.FailedToConsumeApiErr);
-    end;
-
-    [IntegrationEvent(false, false)]
-    internal procedure OnBeforeCreateHttpRequest(var Url: Text; var Method: Text)
-    begin
     end;
 
     var
@@ -442,6 +436,5 @@ codeunit 71107792 "B2Brouter Api Management"
         BaseUrl: Text;
         Project: Text;
         RequestDataInitialized: Boolean;
-        [NonDebuggable]
-        ApiKey: Text;
+        ApiKey: SecretText;
 }

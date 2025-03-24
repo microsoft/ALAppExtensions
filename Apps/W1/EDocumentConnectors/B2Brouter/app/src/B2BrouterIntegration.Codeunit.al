@@ -6,19 +6,18 @@ namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
 using System.Utilities;
 using Microsoft.EServices.EDocument;
+using Microsoft.EServices.EDocument.Integration;
 using Microsoft.EServices.EDocument.Integration.Send;
 using Microsoft.EServices.EDocument.Integration.Receive;
 using Microsoft.EServices.EDocument.Integration.Interfaces;
 
-codeunit 71107795 "B2Brouter Integration" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
+codeunit 6495 "B2Brouter Integration" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
 {
-    procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
-    var
-        IsAsync: Boolean;
-    begin
-        IsAsync := true;
+    Access = Internal;
 
-        ApiManagement.SendDocument(EDocument, SendContext, IsAsync);
+    procedure Send(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext)
+    begin
+        ApiManagement.SendDocument(EDocument, SendContext);
     end;
 
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; DocumentsMetadata: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
@@ -32,15 +31,11 @@ codeunit 71107795 "B2Brouter Integration" implements IDocumentSender, IDocumentR
     end;
 
     procedure GetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext): Boolean
-    var
-        Success: Boolean;
     begin
-        Success := ApiManagement.GetResponse(EDocument, SendContext);
-        exit(Success);
+        exit(ApiManagement.GetResponse(EDocument, SendContext));
     end;
 
     procedure MarkFetched(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var DocumentBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
-    var
     begin
         ApiManagement.MarkFetched(EDocument."B2Brouter File Id", ReceiveContext);
     end;
@@ -50,7 +45,7 @@ codeunit 71107795 "B2Brouter Integration" implements IDocumentSender, IDocumentR
     var
         B2BrouterSetupCard: page "B2Brouter Setup";
     begin
-        if EDocumentService."Service Integration V2" <> Enum::Microsoft.EServices.EDocument.Integration."Service Integration"::B2Brouter then
+        if EDocumentService."Service Integration V2" <> "Service Integration"::B2Brouter then
             exit;
 
         B2BrouterSetupCard.RunModal();

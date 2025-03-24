@@ -1,4 +1,3 @@
-// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -28,18 +27,17 @@ codeunit 50112 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
     var
         JobQueueEntry: Record "Job Queue Entry";
         EDocument: Record "E-Document";
-        MockService: Codeunit "Mock Service";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         // Steps:
         // Pending response -> Sent 
-        Initialize(MockService);
-        MockService.SetImportUrl(MockImportUrl());
+        Initialize();
 
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
@@ -62,9 +60,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has "Pending Response"
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, format(EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code"), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), format(EDocumentPage."Outbound E-Doc. Factbox".SingleStatus), IncorrectValueErr);
+        Assert.AreEqual('2', format(EDocumentPage."Outbound E-Doc. Factbox".Log), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -77,7 +75,7 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        MockService.SetGetDocumentUrl(MockPositiveResponseUrl());
+        MockPositiveResponse();
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -94,9 +92,10 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has Sent
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+
+        Assert.AreEqual(EDocumentService.Code, format(EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code"), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sent"), format(EDocumentPage."Outbound E-Doc. Factbox".SingleStatus), IncorrectValueErr);
+        Assert.AreEqual('3', format(EDocumentPage."Outbound E-Doc. Factbox".Log), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -114,19 +113,18 @@ codeunit 50112 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
     var
         EDocument: Record "E-Document";
         JobQueueEntry: Record "Job Queue Entry";
-        MockService: Codeunit "Mock Service";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         // Steps:
         // Pending response -> Pending response -> Sent 
-        Initialize(MockService);
-        MockService.SetImportUrl(MockImportUrl());
-
+        Initialize();
+        MockPositiveResponse();
 
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
@@ -152,9 +150,10 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('2', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
+
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
@@ -167,7 +166,7 @@ codeunit 50112 "Integration Tests"
 
 
         // [WHEN] Executing Get Response succesfully
-        MockService.SetGetDocumentUrl(MockPendingResponseUrl());
+        MockPendingResponse();
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -184,9 +183,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('3', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -200,7 +199,7 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        MockService.SetGetDocumentUrl(MockPositiveResponseUrl());
+        MockPositiveResponse();
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -217,9 +216,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('4', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -238,21 +237,20 @@ codeunit 50112 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
     var
         EDocument: Record "E-Document";
         JobQueueEntry: Record "Job Queue Entry";
-        MockService: Codeunit "Mock Service";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         // Steps:
         // Pending response -> Error -> Pending response -> Sent 
-        Initialize(MockService);
+        Initialize();
 
         // [When] Posting invoice and EDocument is created
-        MockService.SetImportUrl(MockImportUrl());
+
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
@@ -273,9 +271,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('2', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -288,7 +286,7 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        MockService.SetGetDocumentUrl(MockErrorResponse());
+        MockErrorResponse();
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -305,9 +303,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has sending error
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('3', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('3', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -334,10 +332,10 @@ codeunit 50112 "Integration Tests"
 
         // Then user manually send 
 
-        MockService.SetSendUrl(MockImportUrl());
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
+        //MockPendingResponse();
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.Send_Promoted.Invoke();
@@ -354,9 +352,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('4', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Pending Response"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('4', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -370,7 +368,7 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         EDocumentPage.Close();
 
-        MockService.SetGetDocumentUrl(MockPositiveResponseUrl());
+        MockPositiveResponse();
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -389,9 +387,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has pending response
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('5', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::Sent), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('5', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -411,16 +409,16 @@ codeunit 50112 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocumentB2BRouterServiceDown()
     var
         EDocument: Record "E-Document";
-        MockService: Codeunit "Mock Service";
         EDocumentPage: TestPage "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
-        Initialize(MockService);
+        Initialize();
 
-        MockService.SetImportUrl(MockInternalErrorResponse());
+        MockImportServiceDown();
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
@@ -441,9 +439,9 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(EDocument."Document No.", EDocumentPage."Document No.".Value(), IncorrectValueErr);
 
         // [THEN] E-Document Service Status has correct error status
-        Assert.AreEqual(EDocumentService.Code, EDocumentPage.EdocoumentServiceStatus."E-Document Service Code".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual('2', EDocumentPage.EdocoumentServiceStatus.Logs.Value(), IncorrectValueErr);
+        Assert.AreEqual(EDocumentService.Code, EDocumentPage."Outbound E-Doc. Factbox"."E-Document Service Code".Value(), IncorrectValueErr);
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Sending Error"), EDocumentPage."Outbound E-Doc. Factbox".SingleStatus.Value(), IncorrectValueErr);
+        Assert.AreEqual('2', EDocumentPage."Outbound E-Doc. Factbox".Log.Value(), IncorrectValueErr);
 
         Clear(EDocLogList);
         EDocLogList.Add(Enum::"E-Document Service Status"::"Exported");
@@ -459,15 +457,15 @@ codeunit 50112 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitGetDocuments()
     var
         Unit: Record "Unit of Measure";
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
-        MockService: Codeunit "Mock Service";
         EDocServicePage: TestPage "E-Document Service";
     begin
-        Initialize(MockService);
+        Initialize();
 
         if Unit.Get('Piece') then
             Unit.Delete();
@@ -475,10 +473,6 @@ codeunit 50112 "Integration Tests"
         Unit.Code := 'Piece';
         Unit."International Standard Code" := 'EA';
         Unit.Insert();
-
-        MockService.SetReceiveUrl(MockReceiveUrl());
-        MockService.SetDownloadDocumentUrl(MockDownloadDocumentUrl());
-        MockService.SetFetchUrl(MockMarkFetchedUrl());
 
         // Open and close E-Doc page creates auto import job due to setting
         EDocServicePage.OpenView();
@@ -506,7 +500,7 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual(Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
     end;
 
-    local procedure Initialize(MockService: Codeunit "Mock Service")
+    local procedure Initialize()
     var
         b2brouterSetup: Record "b2brouter Setup";
         CompanyInformation: Record "Company Information";
@@ -516,18 +510,19 @@ codeunit 50112 "Integration Tests"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentLog: Record "E-Document Log";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
+        ApiKey: Text;
     begin
-        BindSubscription(MockService);
+        MockImport201();
         if IsInitialized then
             exit;
-
 
         if b2brouterSetup.Get() then
             b2brouterSetup.DeleteAll();
 
+        ApiKey := 'test';
         b2brouterSetup."Sandbox Mode" := true;
         b2brouterSetup."Sandbox Project" := 'test';
-        b2brouterSetup.StoreApiKey(true, 'test');
+        b2brouterSetup.StoreApiKey(true, ApiKey);
         b2brouterSetup.Insert();
 
         ErrorMessage.DeleteAll();
@@ -572,49 +567,83 @@ codeunit 50112 "Integration Tests"
         EDocServicesPage.OK().Invoke();
     end;
 
-    internal procedure MockImportUrl(): Text
+    [HttpClientHandler]
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit System.Utilities.Regex;
     begin
-        exit('http://localhost:8888/201/import');
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/projects/.*/invoices/import\.json'):
+                begin
+                    LoadResourceIntoHttpResponse(ImportResourceUrl, Response);
+                    Response.HttpStatusCode := ImportStatusCode;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/invoices/[0-9]+\.json$'):
+                begin
+                    LoadResourceIntoHttpResponse(ResponseResourceUrl, Response);
+                    Response.HttpStatusCode := ResponseStatusCode;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/invoices/[0-9]+/as/'):
+                begin
+                    LoadResourceIntoHttpResponse('DownloadDocument.txt', Response);
+                    Response.HttpStatusCode := 200;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/projects/.*/received\.json$'):
+                begin
+                    LoadResourceIntoHttpResponse('ReceivedInvoices.txt', Response);
+                    Response.HttpStatusCode := 200;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/invoices/send_invoice/[0-9]+\.json$'):
+                begin
+                    LoadResourceIntoHttpResponse('ImportDocument.txt', Response);
+                    Response.HttpStatusCode := 201;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/invoices/[0-9]+/ack\.json$'):
+                begin
+                    LoadResourceIntoHttpResponse('MarkFetched.txt', Response);
+                    Response.HttpStatusCode := 200;
+                end;
+        end;
     end;
 
-    internal procedure MockPositiveResponseUrl(): Text
+    internal procedure MockImport201()
     begin
-        exit('http://localhost:8888/200/response');
+        ImportResourceUrl := 'ImportDocument.txt';
+        ImportStatusCode := 201;
     end;
 
-    internal procedure MockPendingResponseUrl(): Text
+    internal procedure MockImportServiceDown()
     begin
-        exit('http://localhost:8888/200/pendingResponse');
+        ImportResourceUrl := 'internalErrorResponse.txt';
+        ImportStatusCode := 500;
+    end;
+
+    internal procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
+    end;
+
+    internal procedure MockPositiveResponse(): Text
+    begin
+        ResponseResourceUrl := 'PositiveResponse.txt';
+        ResponseStatusCode := 201;
+    end;
+
+    internal procedure MockPendingResponse(): Text
+    begin
+        ResponseResourceUrl := 'PendingResponse.txt';
+        ResponseStatusCode := 201;
     end;
 
     internal procedure MockErrorResponse(): Text
     begin
-        exit('http://localhost:8888/400/errorResponse');
-    end;
-
-    internal procedure MockInternalErrorResponse(): Text
-    begin
-        exit('http://localhost:8888/500/internalErrorResponse');
-    end;
-
-    internal procedure MockReceiveUrl(): Text
-    begin
-        exit('http://localhost:8888/200/receiveDocuments');
-    end;
-
-    internal procedure MockReceiveSingleDocumentUrl(): Text
-    begin
-        exit('http://localhost:8888/200/ReceiveSingleDocument');
-    end;
-
-    internal procedure MockMarkFetchedUrl(): Text
-    begin
-        exit('http://localhost:8888/200/MarkFetched');
-    end;
-
-    internal procedure MockDownloadDocumentUrl(): Text
-    begin
-        exit('http://localhost:8888/200/DownloadDocument');
+        ResponseResourceUrl := 'errorResponse.txt';
+        ResponseStatusCode := 201;
     end;
 
     var
@@ -626,5 +655,9 @@ codeunit 50112 "Integration Tests"
         Assert: Codeunit "Library Assert";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        ResponseResourceUrl: Text;
+        ResponseStatusCode: Integer;
 
+        ImportResourceUrl: Text;
+        ImportStatusCode: Integer;
 }
