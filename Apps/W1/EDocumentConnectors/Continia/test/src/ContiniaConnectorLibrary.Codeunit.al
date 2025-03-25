@@ -6,11 +6,6 @@ using System.Environment.Configuration;
 
 codeunit 148202 "Continia Connector Library"
 {
-    internal procedure ApiMockBaseUrl(): Text
-    begin
-        exit(ApiMockBaseUrlLbl);
-    end;
-
     internal procedure ParticipationId(): Text
     begin
         exit(ParticipationIdLbl);
@@ -54,21 +49,6 @@ codeunit 148202 "Continia Connector Library"
     local procedure ConvertToGuid(GuidText: Text) GuidValue: Guid
     begin
         Evaluate(GuidValue, GuidText);
-    end;
-
-    internal procedure EnableConnectorHttpTraffic()
-    var
-        NAVAppSetting: Record "NAV App Setting";
-    begin
-        if not NAVAppSetting.Get(ConnectorAppIdLbl) then begin
-            NAVAppSetting."App ID" := ConnectorAppIdLbl;
-            NAVAppSetting."Allow HttpClient Requests" := true;
-            NAVAppSetting.Insert();
-        end else begin
-            NAVAppSetting."Allow HttpClient Requests" := true;
-            NAVAppSetting.Modify();
-        end;
-        Commit();
     end;
 
     internal procedure InitiateClientCredentials()
@@ -220,8 +200,6 @@ codeunit 148202 "Continia Connector Library"
 
     var
         LibraryRandom: Codeunit "Library - Random";
-        ApiMockBaseUrlLbl: Label 'http://127.0.0.1:8080', Locked = true;
-        ConnectorAppIdLbl: Label 'd852a468-263e-49e5-bfda-f09e33342b89', Locked = true;
         ParticipationIdLbl: Label '0de4aedc-f84a-41bc-b511-387aaf96263e', Locked = true;
         ActivatedNetworkProfileIdLbl: Label '1f4111a0-cd49-45e1-9f1e-ed14e71e3438', Locked = true;
         DefaultNetworkProfileIdLbl: Label 'dd2af6bc-a05a-4fd4-a577-0216a56bea84', Locked = true; //Peppol Credit Note profile used as default

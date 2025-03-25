@@ -1,10 +1,10 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
+using Microsoft.EServices.EDocumentConnector.Continia;
 using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Customer;
 using Microsoft.Inventory.Item;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item.Catalog;
-using Microsoft.eServices.EDocument.Integration.Action;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Foundation.Company;
 using System.TestLibraries.Environment;
@@ -14,16 +14,17 @@ using Microsoft.eServices.EDocument.Integration;
 codeunit 148203 "Continia Doc. Integr. Tests"
 {
     Subtype = Test;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
     /// <summary>
     /// SubmitDocument - Tests successful document submission.
     /// This test verifies that a document is created, assigned a valid Document ID, and transitions through
     /// the expected statuses ("In Progress" -> "Processed") as the Continia API processes it. Additionally,
     /// it validates that the e-Document logs contain the correct status entries.
-    /// Requires MockService to be running.
     /// </summary>
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
@@ -39,13 +40,20 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -56,6 +64,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -76,16 +94,15 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// SubmitDocumentCdnServiceDown - Tests error handling when the Continia service is down.
     /// This test ensures that when the Continia API returns a 500 error, the document moves to an "Error" 
     /// status. It verifies that the Document ID is not set and that the error is logged correctly.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure SubmitDocumentCdnServiceDown()
     var
         EDocument: Record "E-Document";
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
 
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
@@ -93,6 +110,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            500,
+            GetMockResponseContent('Common500.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
@@ -115,9 +138,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// This test simulates a scenario where the Continia API is temporarily down while retrieving responses.
     /// It verifies that the document status remains "In Progress" and is successfully updated to "Sent" once
     /// the service is back online.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure SubmitDocument_ResponseServerDown_Sent()
     var
         EDocument: Record "E-Document";
@@ -133,13 +156,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then]  E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -151,7 +180,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [When] Service is down
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            500,
+            GetMockResponseContent('Common500.txt'));
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -168,7 +202,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [When] Service is up again
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -190,9 +233,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// SubmitDocument_Pending_Sent - Tests handling of pending responses before successful document sending.
     /// This test checks that the document moves to "In Progress" and remains in this status until the API 
     /// confirms it is processed, transitioning it to "Sent."
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure SubmitDocument_Pending_Sent()
     var
         EDocument: Record "E-Document";
@@ -208,13 +251,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -226,7 +275,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [When] Executing Get Response successfully (pending)
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-response-pending');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Pending.txt'));
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -243,7 +297,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [When] Executing Get Response successfully (Success)
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-response-success');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -266,10 +329,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// This test ensures that when the API response indicates an error (e.g., recipient not registered), the 
     /// document moves to "Error" status, and the error is properly logged. It also verifies successful resubmission 
     /// after the issue is resolved.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_Error_Sent()
     var
         EDocument: Record "E-Document";
@@ -286,13 +348,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -303,8 +371,17 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocLogList.Add(Enum::"E-Document Service Status"::"Pending Response");
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
-        // [When] Executing Get Response successfully (pending)
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-response-error');
+        // [When] Executing Get Response successfully (error)
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Error.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -321,7 +398,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Error, Enum::"E-Document Service Status"::"Sending Error", EDocLogList, 'Error', 'ReceiverNotRegistered - The recipient of the document is not registered to receive this type of document.');
 
         // Then user manually send 
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
@@ -346,7 +428,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [When] Executing Get Response successfully (Success)
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-response-success');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -370,10 +461,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// This test ensures that if no approval is returned, the document remains in the "Sent" state 
     /// without transitioning to "Approved" or other statuses. It validates that the document stays 
     /// in "Sent" when approval is not received.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_NoApproval()
     var
         EDocument: Record "E-Document";
@@ -390,13 +480,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -407,6 +503,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -424,7 +530,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
 
         // [Then] Open E-Document page and Get Approval
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-noapproval');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.BusinessResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('BusinessResponse200-noresponse.txt'));
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.GetApproval.Invoke();
@@ -451,10 +562,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// the document is treated as though no approval has been received and remains in the "Sent" state. 
     /// It validates that the system does not move the document to an "Approved" status 
     /// without an explicit approval response.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_StatusInfo()
     var
         EDocument: Record "E-Document";
@@ -471,13 +581,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -488,6 +604,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -505,7 +631,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
 
         // [Then] Open E-Document page and Get Approval
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-statusinfo');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.BusinessResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('BusinessResponse200-multiple-statusinfo.txt'));
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.GetApproval.Invoke();
@@ -530,10 +661,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// SubmitDocument_Approved - Tests document status update upon approval.
     /// This test ensures that when an approved response is received, the document status is updated 
     /// from "Sent" to "Approved," validating proper handling and logging of approvals.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_Approved()
     var
         EDocument: Record "E-Document";
@@ -550,13 +680,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -567,6 +703,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -582,9 +728,13 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocLogList.Add(Enum::"E-Document Service Status"::Sent);
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::Processed, Enum::"E-Document Service Status"::Sent, EDocLogList, '', '');
 
-
         // [Then] Open E-Document page and Get Approval
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-approved');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.BusinessResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('BusinessResponse200-multiple-accepted.txt'));
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.GetApproval.Invoke();
@@ -610,10 +760,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// SubmitDocument_Rejected - Tests error handling for rejected documents with rejection reasons.
     /// This test validates that when the document is rejected by the API, it moves to an "Error" status 
     /// with the rejection reason logged, ensuring accurate status updates for failed submissions.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_Rejected()
     var
         EDocument: Record "E-Document";
@@ -630,13 +779,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -647,6 +802,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -664,7 +829,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
 
         // [Then] Open E-Document page and Get Approval
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-rejected');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.BusinessResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('BusinessResponse200-multiple-rejected.txt'));
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.GetApproval.Invoke();
@@ -690,10 +860,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// SubmitDocument_GetApprovalServiceDown - Tests handling of approval retrieval when the service is down.
     /// This test simulates a scenario where the approval API is temporarily down, verifying that the document 
     /// can be processed as "Sent" and retries approval retrieval once the service is available.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpClientHandler')]
     procedure SubmitDocument_GetApprovalServiceDown()
     var
         EDocument: Record "E-Document";
@@ -710,13 +879,19 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Posting invoice and EDocument is created
         LibraryEDocument.PostInvoice(Customer);
         EDocument.FindLast();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('SubmitDocument200.txt'));
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
         // [When] EDocument is fetched after running Continia SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockDocumentId(), EDocument."Continia Document Id", 'Continia integration failed to set Document Id on E-Document');
         // [Then] E-Document is "In Progress"
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
@@ -727,6 +902,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestEDocumentPage(EDocument, Enum::"E-Document Status"::"In Progress", Enum::"E-Document Service Status"::"Pending Response", EDocLogList, '', '');
 
         // [WHEN] Executing Get Response successfully
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.TechnicalResponseUrl(MockDocumentId()),
+            200,
+            GetMockResponseContent('TechnicalResponse200-Success.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl(MockDocumentId()),
+            200);
         RunGetResponseJob();
 
         // [When] EDocument is fetched after running Continia GetResponse 
@@ -744,7 +929,12 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
 
         // [Then] Open E-Document page and Get Approval
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.BusinessResponseUrl(MockDocumentId()),
+            500,
+            GetMockResponseContent('Common500.txt'));
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         EDocumentPage.GetApproval.Invoke();
@@ -769,9 +959,9 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// ReceiveDocuments_SingleDocument - Tests receiving a single document and creating a Purchase Invoice.
     /// This test verifies that a single document is correctly received from the API and that a Purchase 
     /// Invoice is created, linking the document to the correct vendor.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure ReceiveDocuments_SingleDocument()
     var
         EDocument: Record "E-Document";
@@ -779,8 +969,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200/receive');
-
         // [Given] Empty E-Document table
         EDocument.DeleteAll();
 
@@ -797,6 +985,22 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         // [When] Manually fire job queue job to import Documents
         if EDocument.FindLast() then
             EDocument.SetFilter("Entry No", '>%1', EDocument."Entry No");
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('ReceiveDocuments.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            StrSubstNo(DownloadUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('ReceivePeppolInvoiceDocument200.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl('65DD7456-7A49-4382-9F76-1211FA8AD0BF'),
+            200);
+
         LibraryEDocument.RunImportJob();
 
         // Assert that we have Purchase Invoice created
@@ -813,19 +1017,16 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     /// ReceiveDocuments_Peppol_MultipleEdocServices - Tests handling documents from multiple e-Document services.
     /// This test ensures that only documents associated with the specified e-Document service are imported, 
     /// even when multiple documents from various services are present in the API response.
-    /// Requires MockService to be running.
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure ReceiveDocuments_Peppol_MultipleEdocServices()
     var
         EDocument: Record "E-Document";
         EDocServicePage: TestPage "E-Document Service";
-        NoOfDocumentsBefore: Integer;
     begin
         // Receive only 1 E-Document service related documents when there are Documents from multiple E-Document services
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200/receive/multiple-services');
-
         // [Given] Empty E-Document table
         EDocument.DeleteAll();
 
@@ -840,6 +1041,21 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocServicePage.Close();
 
         // [When] Manually fire job queue job to import Documents
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('ReceiveDocuments-multiple-services.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            StrSubstNo(DownloadUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            200,
+            GetMockResponseContent('ReceivePeppolInvoiceDocument200.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.DocumentActionUrl('65DD7456-7A49-4382-9F76-1211FA8AD0BF'),
+            200);
         LibraryEDocument.RunImportJob();
 
         // Assert that we have only 1 document imported
@@ -851,8 +1067,8 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     var
         CompanyInformation: Record "Company Information";
         ContiniaConnectionSetup: Record "Continia Connection Setup";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         PurchaseHeader: Record "Purchase Header";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
     begin
         LibraryPermission.SetOutsideO365Scope();
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
@@ -861,14 +1077,10 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         ContiniaConnectionSetup.Init();
         ContiniaConnectionSetup.Insert(true);
 
-        ApiUrlMockSubscribers.SetCoApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
-
         PurchaseHeader.DeleteAll();
 
         if IsInitialized then
             exit;
-        ConnectorLibrary.EnableConnectorHttpTraffic();
         LibraryEDocument.SetupStandardVAT();
         LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
 
@@ -889,8 +1101,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         CreateTestItem();
 
         ConnectorLibrary.PrepareParticipation(EDocumentService);
-
-        BindSubscription(ApiUrlMockSubscribers);
 
         IsInitialized := true;
     end;
@@ -957,7 +1167,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
     end;
 
-    local procedure MockServiceDocumentId() DocumentId: Guid
+    local procedure MockDocumentId() DocumentId: Guid
     begin
         Evaluate(DocumentId, '{3fa85f64-5717-4562-b3fc-2c963f66afa6}');
     end;
@@ -967,6 +1177,20 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     begin
         EDocServicesPage.Filter.SetFilter(Code, EDocumentService.Code);
         EDocServicesPage.OK().Invoke();
+    end;
+
+    local procedure GetMockResponseContent(ResourceFileName: Text): Text
+    begin
+        exit(NavApp.GetResourceAsText(ResourceFileName, TextEncoding::UTF8));
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        if ContiniaMockHttpHandler.HandleAuthorization(Request, Response) then
+            exit;
+
+        Response := ContiniaMockHttpHandler.GetResponse(Request);
     end;
 
     var
@@ -979,10 +1203,14 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Assert: Codeunit Assert;
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryItemReference: Codeunit "Library - Item Reference";
-        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
         ConnectorLibrary: Codeunit "Continia Connector Library";
+        ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
         TestVendorItemNoTok: Label '1908-S', Locked = true;
         TestItemIsoUomTok: Label 'EA', Locked = true;
+        DocumentUriPatternTok: Label '%1/documents.xml', Comment = '%1 - Base URL', Locked = true;
+        DownloadUriPatternTok: Label '%1/documents.xml/download/peppol', Comment = '%1 - Base URL', Locked = true;
 }

@@ -1,0 +1,626 @@
+<network_profiles xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <network_profile>
+        <description>EHF Advanced Order Initiation 3.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3:extended:urn:fdc:anskaffelser.no:2019:ehf:spec:3.0::2.2</document_identifier>
+        <network_profile_id>3692d1e1-2c15-4a2a-b097-5d9c6ecc271a</network_profile_id>
+        <process_identifier>urn:fdc:anskaffelser.no:2019:ehf:postaward:g3:02:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Advanced Order Response 3.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3:extended:urn:fdc:anskaffelser.no:2019:ehf:spec:3.0::2.2</document_identifier>
+        <network_profile_id>2782a870-a968-43aa-918d-2baafd96bd47</network_profile_id>
+        <process_identifier>urn:fdc:anskaffelser.no:2019:ehf:postaward:g3:02:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 Invoice (w. extension)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2#conformant#urn:xoev-de:kosit:extension:xrechnung_2.2::2.1</document_identifier>
+        <group_description>XRechnung v2.2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.2</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DE</mandatory_in_country_iso3166>
+        <network_profile_id>72ee5de2-0ed3-4b30-b848-37dd3726bf87</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL Invoice V2.3</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::2.1</document_identifier>
+        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.3</group_name>
+        <network_profile_id>86427376-2b53-4e60-a34c-23fb1c78808e</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Credit Note (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</document_identifier>
+        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>PEPPOL BIS3.0</group_name>
+        <mandatory>true</mandatory>
+        <network_profile_id>dd2af6bc-a05a-4fd4-a577-0216a56bea84</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 Invoice</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0::2.1</document_identifier>
+        <network_profile_id>f533f6d9-815b-4d5b-b55e-1822c60d71ae</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 CrossIndustryInvoice (w. extension) for Continia (Freshdesk Ticket #7787) - document id version upgraded at 2021-04-23</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0#conformant#urn:xoev-de:kosit:extension:xrechnung_2.0::16B</document_identifier>
+        <network_profile_id>a9fac71d-8024-4509-af9f-18405a39ca74</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 Invoice (w. extension)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0#conformant#urn:xoev-de:kosit:extension:xrechnung_2.0::2.1</document_identifier>
+        <group_description>XRechnung v2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DE</mandatory_in_country_iso3166>
+        <network_profile_id>11d205a6-0e77-4aac-a8dc-18fc4bd1eee8</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Invoice (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</document_identifier>
+        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>PEPPOL BIS3.0</group_name>
+        <mandatory>true</mandatory>
+        <network_profile_id>8f9ab973-c6f0-4dfb-9936-19b56c5a588b</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 CrossIndustryInvoice (w. extension)</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2#conformant#urn:xoev-de:kosit:extension:xrechnung_2.2::D16B</document_identifier>
+        <group_description>XRechnung v2.2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.2</group_name>
+        <network_profile_id>80c9993b-27c7-4999-9c51-11ae6b3bd1ea</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 Invoice</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2::2.1</document_identifier>
+        <network_profile_id>668f126f-06d0-44fb-8e37-0bb64a23a3c9</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 1.3 Invoice</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.3#conformant#urn:xoev-de:kosit:extension:xrechnung_1.3::2.1</document_identifier>
+        <network_profile_id>3ba4a204-0c9d-433d-ae0f-0e7aa763eece</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung CII Invoice V3.0 Extension</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0::D16B</document_identifier>
+        <network_profile_id>8da41879-e1e5-4c94-9200-5fed43cff8f7</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL Invoice V3.0 Extension</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0::2.1</document_identifier>
+        <network_profile_id>f33fe036-73d0-47b9-b5ae-57da988856cf</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SG PEPPOL Invoice (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:sg:3.0::2.1</document_identifier>
+        <group_description>SG PEPPOL BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>SG PEPPOL BIS3</group_name>
+        <network_profile_id>ff1c8f4d-f467-48d8-8c6f-46fad815802f</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung Invoice v1.2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.2::2.1</document_identifier>
+        <group_description>XRechnung v1 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V1</group_name>
+        <network_profile_id>7063e792-d4b0-4654-a5a0-46fd0659bff8</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL CreditNote V3.0 Extension</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0::2.1</document_identifier>
+        <network_profile_id>fff93ede-42cb-4098-8da5-4a70375442d0</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 CrossIndustryInvoice (w. extension)</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0#conformant#urn:xoev-de:kosit:extension:xrechnung_2.0::D16B</document_identifier>
+        <group_description>XRechnung v2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2</group_name>
+        <network_profile_id>94b2b716-7f62-4266-b103-856231dfec36</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 CreditNote</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2::2.1</document_identifier>
+        <network_profile_id>a5abcfce-a6be-4bc1-a7b1-65692166c1b4</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL CreditNote V2.3 Extension</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3#conformant#urn:xoev-de:kosit:extension:xrechnung_2.3::2.1</document_identifier>
+        <network_profile_id>ec07f4e6-20c1-4d6c-849e-70432571cb83</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SG PEPPOL Credit Note (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:sg:3.0::2.1</document_identifier>
+        <group_description>SG PEPPOL BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>SG PEPPOL BIS3</group_name>
+        <network_profile_id>3ff9a216-0f44-47ab-ac9a-68af8795d9d0</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 1.3 CreditNote</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.3#conformant#urn:xoev-de:kosit:extension:xrechnung_1.3::2.1</document_identifier>
+        <network_profile_id>9825dd2d-94b7-4fcd-ae24-68dc4432c335</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung CII Invoice V3.0</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::D16B</document_identifier>
+        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V3.0</group_name>
+        <network_profile_id>d80fc971-7a72-48d7-8617-69132f97781f</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL CreditNote V2.3</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::2.1</document_identifier>
+        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.3</group_name>
+        <network_profile_id>ee8cd57b-6817-4e6f-8c33-6c83e078b43a</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung Cross Industry Invoice v1.2</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.2::D16B</document_identifier>
+        <group_description>XRechnung v1 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V1</group_name>
+        <network_profile_id>48f96989-0367-46c6-89f0-ec31ff0f178d</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL Invoice V3.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::2.1</document_identifier>
+        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V3.0</group_name>
+        <network_profile_id>09f2bd71-d019-439f-8fff-e68ce01fe105</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung CII Invoice V2.3 Extension</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3#conformant#urn:xoev-de:kosit:extension:xrechnung_2.3::D16B</document_identifier>
+        <network_profile_id>23baf699-f30c-4f7e-9b60-e7da553a6e48</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 CrossIndustryInvoice</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2::D16B</document_identifier>
+        <network_profile_id>bce0f939-d4b7-47e8-8345-fc363019b875</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.2 CreditNote (w. extension)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2#conformant#urn:xoev-de:kosit:extension:xrechnung_2.2::2.1</document_identifier>
+        <group_description>XRechnung v2.2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.2</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DE</mandatory_in_country_iso3166>
+        <network_profile_id>e7f15d5f-35a7-47e3-abbf-ffb7fbb55785</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL CreditNote V3.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::2.1</document_identifier>
+        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V3.0</group_name>
+        <network_profile_id>d5e10b17-3070-437e-9277-c2144d160b1b</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>AU/NZ PEPPOL Credit Note (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0::2.1</document_identifier>
+        <group_description>AU-NZ PEPPOL BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>PEPPOL AU-NZ BIS3</group_name>
+        <network_profile_id>f688e5a3-a387-4abf-bf05-c4847820e6fa</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung UBL Invoice V2.3 Extension</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3#conformant#urn:xoev-de:kosit:extension:xrechnung_2.3::2.1</document_identifier>
+        <network_profile_id>c0ef92e8-0633-4018-a603-c7fbae53503e</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 CreditNote</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0::2.1</document_identifier>
+        <network_profile_id>9446a757-8cb3-4ad6-82d6-ca206a09fb16</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SI-UBL 2.0 Invoice</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0::2.1</document_identifier>
+        <network_profile_id>2c43d76d-15f4-4e79-a831-daa6868f9b81</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung Credit Note v1.2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.2::2.1</document_identifier>
+        <group_description>XRechnung v1 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V1</group_name>
+        <network_profile_id>13a2bd12-b46f-4ae5-9316-a60c2a8ebc34</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>AU/NZ PEPPOL Invoice (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0::2.1</document_identifier>
+        <group_description>AU-NZ PEPPOL BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>PEPPOL AU-NZ BIS3</group_name>
+        <network_profile_id>1fcad749-bb5e-432c-8d23-96bcbda4b875</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SI-UBL 2.0 Credit Note</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0::2.1</document_identifier>
+        <network_profile_id>1d292f60-a6b5-419d-a0d0-97acd9cdb5fc</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 1.3 CrossIndustryInvoice</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.3#conformant#urn:xoev-de:kosit:extension:xrechnung_1.3::16B</document_identifier>
+        <network_profile_id>f9087999-af28-4897-9eaf-87ed9151d887</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Xrechnung 2.0 CreditNote (w. extension)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0#conformant#urn:xoev-de:kosit:extension:xrechnung_2.0::2.1</document_identifier>
+        <group_description>XRechnung v2 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DE</mandatory_in_country_iso3166>
+        <network_profile_id>890ecf6a-d9f1-4c79-9175-ab55e3e193cc</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>XRechnung CII Invoice V2.3</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::D16B</document_identifier>
+        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>XRECHNUNG V2.3</group_name>
+        <network_profile_id>410ef408-c418-4e23-9952-b86e32b86d63</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Cross Industry Invoice (BIS 3.0)</description>
+        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::D16B</document_identifier>
+        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+        <group_name>PEPPOL BIS3.0</group_name>
+        <network_profile_id>24498487-81a8-4f46-9104-bb3915a6eee0</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>AU/NZ PEPPOL Self-Billing Credit Note (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:selfbilling:international:aunz:3.0::2.1</document_identifier>
+        <group_description>AU-NZ PEPPOL Self-Billing BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>PEPPOL AU-NZ SBIS3</group_name>
+        <network_profile_id>43aafd3d-2de0-46c9-bad2-b4e7608f88ca</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:selfbilling:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>AU/NZ PEPPOL Self-Billing Invoice (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:selfbilling:international:aunz:3.0::2.1</document_identifier>
+        <group_description>AU-NZ PEPPOL Self-Billing BIS3 (Invoice, Credit Note)</group_description>
+        <group_name>PEPPOL AU-NZ SBIS3</group_name>
+        <network_profile_id>34df4209-079c-4d01-b58e-5fe6c42d2008</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:2017:poacc:selfbilling:01:1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol Advanced Order (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1</document_identifier>
+        <network_profile_id>9357d973-e4a3-49e8-a054-9fad3dcdb171</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:advanced_ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol Order Change (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderChange-2::OrderChange##urn:fdc:peppol.eu:poacc:trns:order_change:3::2.3</document_identifier>
+        <network_profile_id>f6d47008-04c6-47c7-9f31-e21445b204d5</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:advanced_ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol Order Response Advanced (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response_advanced:3::2.3</document_identifier>
+        <network_profile_id>4dd648a6-7cae-4e8b-ba25-c82eb6edf4b6</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:advanced_ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol Order Cancellation (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderCancellation-2::OrderCancellation##urn:fdc:peppol.eu:poacc:trns:order_cancellation:3::2.3</document_identifier>
+        <network_profile_id>3592ed68-d63d-4d26-8c9b-22b5be8d6dd9</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:advanced_ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Despatch Advice (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2::DespatchAdvice##urn:fdc:peppol.eu:poacc:trns:despatch_advice:3::2.1</document_identifier>
+        <network_profile_id>88e08943-2863-43e5-b5b4-aca6f411dbfb</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:despatch_advice:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Invoice Response (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1</document_identifier>
+        <network_profile_id>4f333069-936c-4f2d-af71-0f4d261ad4a4</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:invoice_response:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Message Level Response (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:mlr:3::2.1</document_identifier>
+        <network_profile_id>64bb189a-3f65-4c28-a2e2-a257dba5c04b</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:mlr:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order Agreement (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_agreement:3::2.1</document_identifier>
+        <network_profile_id>454f32e9-c413-41d6-8ccf-576e76ea6020</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:order_agreement:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order Only (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1</document_identifier>
+        <network_profile_id>3824b968-c417-4be8-bb09-b6217cbfc50b</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:order_only:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order Response (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1</document_identifier>
+        <group_description>PEPPOL BIS Ordering 3 (Order, Order Response)</group_description>
+        <group_name>PEPPOL EORDERING</group_name>
+        <network_profile_id>5784790c-3ee1-4511-bbd2-b34260cad657</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1</document_identifier>
+        <group_description>PEPPOL BIS Ordering 3 (Order, Order Response)</group_description>
+        <group_name>PEPPOL EORDERING</group_name>
+        <network_profile_id>8002d670-23e6-4d8a-b813-749abd3aadb0</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:ordering:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Punch Out (BIS 3.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2::Catalogue##urn:fdc:peppol.eu:poacc:trns:punch_out:3::2.1</document_identifier>
+        <network_profile_id>8211f941-a7ea-4143-ac10-1c551649369b</network_profile_id>
+        <process_identifier>urn:fdc:peppol.eu:poacc:bis:punch_out:3</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>JP PINT Invoice 1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:peppol:pint:billing-1@jp-1*::2.1</document_identifier>
+        <network_profile_id>7915c00a-4f28-4255-b108-169a02b29e7d</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>A-NZ PINT Credit Note v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:peppol:pint:billing-1@aunz-1*::2.1</document_identifier>
+        <network_profile_id>02b22d34-b1a2-44e6-b568-74f07130a8dd</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol PINT Invoice v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:peppol:pint:billing-1*::2.1</document_identifier>
+        <network_profile_id>43306d19-935f-4f1b-bae0-830cb62857d2</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>JP PINT Invoice 1.0 (busdox)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:peppol:pint:billing-1@jp-1::2.1</document_identifier>
+        <network_profile_id>1d9fd652-cbe9-4665-b4c0-d01461292d65</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Peppol PINT CreditNote v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:peppol:pint:billing-1*::2.1</document_identifier>
+        <network_profile_id>3bc1506d-ef9b-4925-9500-f22b74a98f45</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>A-NZ PINT Invoice v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:peppol:pint:billing-1@aunz-1*::2.1</document_identifier>
+        <network_profile_id>88bf3985-acdb-4e4c-8778-f3415a3cad1c</network_profile_id>
+        <process_identifier>urn:peppol:bis:billing</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>A-NZ PINT Self-Billing Credit Note v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:peppol:pint:selfbilling-1@aunz-1*::2.1</document_identifier>
+        <network_profile_id>137f47f9-8a4f-4c58-a00d-f398f224c5cb</network_profile_id>
+        <process_identifier>urn:peppol:bis:selfbilling</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>A-NZ PINT Self-Billing Invoice v1.0* (wildcard)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:peppol:pint:selfbilling-1@aunz-1*::2.1</document_identifier>
+        <network_profile_id>b6aa6023-25be-4d8f-8b7e-a72e82042d96</network_profile_id>
+        <process_identifier>urn:peppol:bis:selfbilling</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SFTI Svefaktura v1 w/ attachment</description>
+        <document_identifier>urn:sfti:documents:StandardBusinessDocumentHeader::Invoice##urn:sfti:documents:BasicInvoice:1:0:#BasicInvoice_ObjectEnvelope::1.0</document_identifier>
+        <group_description>Svefaktura simple and with attachment</group_description>
+        <group_name>SVEFAKTURA V1</group_name>
+        <network_profile_id>e7073408-aaee-4706-aa4d-c919e46c5523</network_profile_id>
+        <process_identifier>urn:sfti:services:documentprocessing:BasicInvoice:1:0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SFTI Svefaktura v1</description>
+        <document_identifier>urn:sfti:documents:BasicInvoice:1:0::Invoice##urn:sfti:documents:BasicInvoice:1:0::1.0</document_identifier>
+        <group_description>Svefaktura simple and with attachment</group_description>
+        <group_name>SVEFAKTURA V1</group_name>
+        <network_profile_id>66f94162-96ad-444d-9278-2a0b208d8df8</network_profile_id>
+        <process_identifier>urn:sfti:services:documentprocessing:BasicInvoice:1:0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Catalogue v2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2::Catalogue##urn:www.cenbii.eu:transaction:biitrns019:ver2.0:extended:urn:www.peppol.eu:bis:peppol1a:ver2.0:extended:urn:www.difi.no:ehf:katalog:ver1.0::2.1</document_identifier>
+        <network_profile_id>85ac7894-851e-47fb-ac08-d683d479bbfb</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii01:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SFTI Svekatalog (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2::Catalogue##urn:www.cenbii.eu:transaction:biitrns019:ver2.0:extended:urn:www.sfti.se:svekatalog:ver2.0::2.1</document_identifier>
+        <network_profile_id>241602cd-6ab1-47c1-9c16-465dc8d3825a</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii01:ver2.0#urn:www.sfti.se:svekatalog:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SFTI Sveorder v1</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0::2.0</document_identifier>
+        <network_profile_id>c41e3243-4a2d-4caa-9b94-abd79028e43f</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii03:ver1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order 3a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0:extended:urn:www.ubl-italia.org:spec:ordine:ver2.1::2.1</document_identifier>
+        <network_profile_id>eb255817-235d-424d-9678-d591ebf2c69d</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii03:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1</document_identifier>
+        <network_profile_id>9d953397-2a5c-41c5-bf4a-67d3efddb707</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii03:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>SimplerInvoicing Invoice v1.1</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.1.x::2.1</document_identifier>
+        <network_profile_id>2f299842-3d95-4f33-89ef-f7bc8819680c</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii04:ver1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Invoice (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.1</document_identifier>
+        <network_profile_id>a43e5c64-7766-4afa-93bc-b61743888005</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii04:ver1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Invoice (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.1</document_identifier>
+        <network_profile_id>752be514-ada7-4674-8dbd-56d632934f4d</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii04:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Invoice v2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.difi.no:ehf:faktura:ver2.0::2.1</document_identifier>
+        <group_description>EHF v2</group_description>
+        <group_name>EHF V2</group_name>
+        <network_profile_id>eaf45a75-f04a-4d09-a360-56f2a98c8b02</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii04:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>ATGOV Invoice 5a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1</document_identifier>
+        <network_profile_id>2ea82b29-73fc-4a07-b7f6-3ed775695b80</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii04:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Invoice (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1</document_identifier>
+        <network_profile_id>b1b72cf1-78b5-4678-a688-507e4de9b17c</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>ATGOV Credit Note 5a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1</document_identifier>
+        <network_profile_id>aa1b11de-58d3-4b3c-b7ce-24bdc651bf17</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>UBL Italia Fattura (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.ubl-italia.org:spec:fatturapa:ver2.0::2.1</document_identifier>
+        <group_description>UBL Italia (Fattura,Nota Di Credito)</group_description>
+        <group_name>UBL ITALIA BIS2</group_name>
+        <network_profile_id>2b324310-9be5-4b5a-91e1-2ccf38908469</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Credit Note v2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.difi.no:ehf:kreditnota:ver2.0::2.1</document_identifier>
+        <group_description>EHF v2</group_description>
+        <group_name>EHF V2</group_name>
+        <network_profile_id>7ebf777b-2443-49cd-b63f-14f27a2520f1</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>ATGOV Invoice 4a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1</document_identifier>
+        <network_profile_id>76e3b177-b402-471c-a021-00cea16e0054</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Credit Note (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1</document_identifier>
+        <network_profile_id>6ad21574-b81e-4b99-a6ab-c1586e9da727</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>UBL Italia Nota Di Credito (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.ubl-italia.org:spec:fatturapa:ver2.0::2.1</document_identifier>
+        <group_description>UBL Italia (Fattura,Nota Di Credito)</group_description>
+        <group_name>UBL ITALIA BIS2</group_name>
+        <network_profile_id>49cca1f6-46ee-49b1-a06a-a235c2fe9292</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii05:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order Response (BIS 1.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:www.cenbii.eu:transaction:biitrns076:ver2.0:extended:urn:www.peppol.eu:bis:peppol28a:ver1.0::2.1</document_identifier>
+        <network_profile_id>82fe8d10-79f1-465a-8d95-c1cbde43a4bd</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii28:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order 28a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol28a:ver1.0::2.1</document_identifier>
+        <network_profile_id>60b08aa7-5021-40a9-b02d-c2105e554218</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii28:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Order Response v2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:www.cenbii.eu:transaction:biitrns076:ver2.0:extended:urn:www.peppol.eu:bis:peppol28a:ver1.0:extended:urn:www.difi.no:ehf:ordrebekreftelse:ver1.0::2.1</document_identifier>
+        <network_profile_id>b4d86c60-7eb6-4fd4-9abf-b59a83141b4d</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii28:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Despatch Advice 30a (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2::DespatchAdvice##urn:www.cenbii.eu:transaction:biitrns016:ver1.0:extended:urn:www.peppol.eu:bis:peppol30a:ver1.0::2.1</document_identifier>
+        <network_profile_id>6002dbc9-4c0a-411c-977b-d6aa60eaabe9</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii30:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>UBL Italia Despatch Advice (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2::DespatchAdvice##urn:www.cenbii.eu:transaction:biitrns016:ver1.0:extended:urn:www.peppol.eu:bis:peppol30a:ver1.0:extended:urn:www.ubl-italia.org:spec:ddt:ver2.1::2.1</document_identifier>
+        <network_profile_id>dc0f7dfc-446f-4f85-93be-24a0f6d61ae2</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii30:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PEPPOL Order Agreement (BIS 2.0)</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:www.cenbii.eu:transaction:biitrns110:ver1.0:extended:urn:www.peppol.eu:bis:peppol42a:ver1.0::2.1</document_identifier>
+        <network_profile_id>a0c3063c-a4cc-4d76-91ac-11a07b46dc9d</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:bii42:ver1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>EHF Credit Note v2</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.cenbii.eu:profile:biixx:ver2.0:extended:urn:www.difi.no:ehf:kreditnota:ver2.0::2.1</document_identifier>
+        <group_description>EHF v2</group_description>
+        <group_name>EHF V2</group_name>
+        <network_profile_id>0ebb2ea6-cfc6-46e8-a322-57d4d6c9f6d1</network_profile_id>
+        <process_identifier>urn:www.cenbii.eu:profile:biixx:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>NES UBL Invoice</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##NESUBL-2.0::2.0</document_identifier>
+        <group_description>NESUBL</group_description>
+        <group_name>NESUBL V2</group_name>
+        <network_profile_id>710fec3d-a170-4b5d-a28f-8860c5d9851f</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile4:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>PPPOL Invoice Response v1.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:www.peppol.eu:transaction:biitrns111:ver1.0::2.1</document_identifier>
+        <network_profile_id>6dd1ab70-bf54-4bc3-92a8-298191a3f893</network_profile_id>
+        <process_identifier>urn:www.peppol.eu:profile:bis63a:ver1.0</process_identifier>
+    </network_profile>
+</network_profiles>

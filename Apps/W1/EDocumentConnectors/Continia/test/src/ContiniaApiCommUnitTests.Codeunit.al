@@ -1,20 +1,21 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
+using System.Utilities;
+
 codeunit 148200 "Continia Api Comm. Unit Tests"
 {
     Subtype = Test;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure GetParticipation200()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(200, GetMockResponseContent('Participation200-InProcess.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -27,17 +28,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure GetParticipation400()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -49,17 +48,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure GetParticipation401()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -71,17 +68,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure GetParticipation404()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -93,17 +88,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure GetParticipation500()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -115,10 +108,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation200()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -126,7 +117,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(200, GetMockResponseContent('Participation200-Draft.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -140,10 +131,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation201()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -151,7 +140,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith201ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(201, GetMockResponseContent('Participation201-Draft.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -165,17 +154,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Registration Status"::Draft, Participation."Registration Status", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation400()
     var
         TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -187,17 +174,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation401()
     var
         TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -209,17 +194,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation404()
     var
         TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -231,17 +214,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation422()
     var
         TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(422, GetMockResponseContent('Common422.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -253,17 +234,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response422ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipation500()
     var
         TempParticipation: Record "Continia Participation" temporary;
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] Filled in Participation info
         ConnectorLibrary.PrepareParticipation(TempParticipation);
@@ -275,10 +254,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation200()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -286,7 +263,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(200, GetMockResponseContent('Participation200-InProcess.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -301,10 +278,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Registration Status"::InProcess, Participation."Registration Status", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation400()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -312,7 +287,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -325,10 +300,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation401()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -336,7 +309,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -349,10 +322,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation404()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -360,7 +331,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -373,10 +344,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation409()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -384,7 +353,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith409ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(409, GetMockResponseContent('Common409.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -397,10 +366,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response409ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation422()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -408,7 +375,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(422, GetMockResponseContent('Common422.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -421,10 +388,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response422ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipation500()
     var
         TempParticipation: Record "Continia Participation" temporary;
@@ -432,7 +397,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -445,17 +410,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation200()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200');
+        ContiniaMockHttpHandler.AddResponse(200, '');
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -467,17 +430,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(true, Participation.IsEmpty, 'Participation should not exist');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation202()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('202');
+        ContiniaMockHttpHandler.AddResponse(202, '');
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -491,17 +452,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Registration Status"::Disabled, Participation."Registration Status", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation400()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -513,17 +472,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation401()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -535,17 +492,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation404()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -557,17 +512,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation422()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(422, GetMockResponseContent('Common422.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -579,17 +532,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response422ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipation500()
     var
         Participation: Record "Continia Participation";
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
@@ -601,10 +552,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile200()
     var
         Participation: Record "Continia Participation";
@@ -613,7 +562,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(200, GetMockResponseContent('ParticipationProfile200-randomId.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -625,10 +574,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(true, ConnectorLibrary.GetActivatedNetworkProfile(ActivatedNetProf), 'Activated Network Profile must exist');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile400()
     var
         Participation: Record "Continia Participation";
@@ -636,7 +583,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -648,10 +595,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile401()
     var
         Participation: Record "Continia Participation";
@@ -659,7 +604,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -671,10 +616,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile404()
     var
         Participation: Record "Continia Participation";
@@ -682,7 +625,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -694,10 +637,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile422()
     var
         Participation: Record "Continia Participation";
@@ -705,7 +646,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(422, GetMockResponseContent('Common422.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -717,10 +658,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response422ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PostParticipationProfile500()
     var
         Participation: Record "Continia Participation";
@@ -728,7 +667,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation without Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, TempActivatedNetProf);
@@ -740,10 +679,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile200()
     var
         Participation: Record "Continia Participation";
@@ -752,12 +689,12 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
-
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
         ActivatedNetProf."Profile Direction" := ActivatedNetProf."Profile Direction"::Outbound;
         ActivatedNetProf.Modify();
+
+        ContiniaMockHttpHandler.AddResponse(200, GetMockResponseContent('ParticipationProfile200.txt'));
 
         // [When] Patch Participation Profile
         TempActivatedNetProf := ActivatedNetProf;
@@ -769,10 +706,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreEqual(Enum::"Continia Profile Direction"::Both, ActivatedNetProf."Profile Direction", IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile400()
     var
         Participation: Record "Continia Participation";
@@ -781,7 +716,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -796,10 +731,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile401()
     var
         Participation: Record "Continia Participation";
@@ -808,7 +741,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -823,10 +756,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile404()
     var
         Participation: Record "Continia Participation";
@@ -835,7 +766,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -850,10 +781,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile422()
     var
         Participation: Record "Continia Participation";
@@ -862,7 +791,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith422ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(422, GetMockResponseContent('Common422.txt'));
 
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -877,10 +806,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response422ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure PatchParticipationProfile500()
     var
         Participation: Record "Continia Participation";
@@ -889,7 +816,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation with Outbound Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -904,10 +831,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipationProfile200()
     var
         Participation: Record "Continia Participation";
@@ -915,7 +840,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200');
+        ContiniaMockHttpHandler.AddResponse(200, '');
 
         // [Given] a Connected Participation with Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -929,10 +854,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.AreNotEqual(0DT, ActivatedNetProf.Disabled, 'Network Profile should be disabled');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipationProfile400()
     var
         Participation: Record "Continia Participation";
@@ -940,7 +863,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith400ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(400, GetMockResponseContent('Common400.txt'));
 
         // [Given] a Connected Participation with Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -952,10 +875,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response400ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipationProfile401()
     var
         Participation: Record "Continia Participation";
@@ -963,7 +884,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith401ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(401, GetMockResponseContent('Common401.txt'));
 
         // [Given] a Connected Participation with Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -975,10 +896,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response401ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipationProfile404()
     var
         Participation: Record "Continia Participation";
@@ -986,7 +905,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith404ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(404, GetMockResponseContent('Common404.txt'));
 
         // [Given] a Connected Participation with Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -998,10 +917,8 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response404ErrorMessageLbl);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure DeleteParticipationProfile500()
     var
         Participation: Record "Continia Participation";
@@ -1009,7 +926,7 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         Initialize();
-        ApiUrlMockSubscribers.SetCdnApiWith500ResponseCodeCase();
+        ContiniaMockHttpHandler.AddResponse(500, GetMockResponseContent('Common500.txt'));
 
         // [Given] a Connected Participation with Activated Network Profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf);
@@ -1025,24 +942,33 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
     begin
         LibraryPermission.SetOutsideO365Scope();
         ConnectorLibrary.CleanParticipations();
-
-        ApiUrlMockSubscribers.SetCoApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
+        ContiniaMockHttpHandler.ClearHandler();
 
         if IsInitialized then
             exit;
-        ConnectorLibrary.EnableConnectorHttpTraffic();
-
-        BindSubscription(ApiUrlMockSubscribers);
 
         IsInitialized := true;
+    end;
+
+    local procedure GetMockResponseContent(FileName: Text) ContentText: Text
+    begin
+        ContentText := NavApp.GetResourceAsText(FileName, TextEncoding::UTF8);
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        if ContiniaMockHttpHandler.HandleAuthorization(Request, Response) then
+            exit;
+
+        Response := ContiniaMockHttpHandler.GetResponse(Request);
     end;
 
     var
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
         ConnectorLibrary: Codeunit "Continia Connector Library";
+        ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
         Response400ErrorMessageLbl: Label 'The Continia Delivery Network API returned the following error: Error Code Bad Request - Missing parameter';

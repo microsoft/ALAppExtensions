@@ -808,7 +808,6 @@ codeunit 6393 "Continia Api Requests"
         EDocumentDescription: Text;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
-        DocumentReceiptIdNode: XmlNode;
         DocumentStatusNode: XmlNode;
         ErrorCodeNode: XmlNode;
         ErrorMessageNode: XmlNode;

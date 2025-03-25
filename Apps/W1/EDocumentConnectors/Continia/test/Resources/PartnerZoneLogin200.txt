@@ -1,0 +1,1 @@
+<PartnerZoneToken xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Value="PartnerToken" Expires="0001-01-01T00:00:00" />

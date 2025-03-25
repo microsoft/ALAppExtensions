@@ -8,6 +8,7 @@ using Microsoft.Foundation.Company;
 codeunit 148204 "Continia Reg. Integr. Tests"
 {
     Subtype = Test;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
     /// <summary>
     /// Scenario: This test verifies the complete advanced registration flow in the e-Document service.
@@ -15,9 +16,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// handles invalid credentials, and successfully registers a new participation with various document types.
     /// Additionally, it checks for the correct handling of external errors such as duplicate registrations in
     /// the Peppol network.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure Registration_AdvancedFlow()
     var
         EDocServicePage: TestPage "E-Document Service";
@@ -25,7 +26,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
         ParticipationAlreadyRegisteredPeppolErr: Label 'There is already a registration in Peppol network with the identifier type';
-        EDocServiceMustBeAssignedErr: Label 'You must assign an E-Document Service Code to each selected network profile in the Advanced Setup';
     begin
         Initialize();
 
@@ -57,14 +57,63 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         // [When] set Credential Click Next and expect Credentials are not correct
         OnboardingWizard.PartnerUserName.SetValue('PartnerUserName@contoso.com');
         OnboardingWizard.PartnerPassword.SetValue('PartnerPassword');
-        ApiUrlMockSubscribers.SetCoApiCaseUrlSegment('200-incorrect');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.PartnerAccessTokenUrl(),
+            200,
+            GetMockResponseContent('PartnerZoneLogin200Incorrect.txt')
+        );
         asserterror OnboardingWizard.ActionNext.Invoke();
 
         // [Then] check the error exists
         Assert.ExpectedError('Partner credentials for Continia PartnerZone are invalid or missing.');
 
         // [When] Click Next and expect Credentials are correct
-        ApiUrlMockSubscribers.SetCoApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.PartnerAccessTokenUrl(),
+            200,
+            GetMockResponseContent('PartnerZoneLogin200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.ClientEnvironmentInitializeUrl(),
+            200,
+            GetMockResponseContent('InitializeClient200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.PartnerZoneUrl(),
+            200,
+            GetMockResponseContent('PartnerZoneConnect200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.NetworkIdentifiersUrl(Enum::"Continia E-Delivery Network"::Peppol, 1, 100),
+            200,
+            GetMockResponseContent('PeppolNetworkIdTypes200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.NetworkIdentifiersUrl(Enum::"Continia E-Delivery Network"::Nemhandel, 1, 100),
+            200,
+            GetMockResponseContent('NemhandelNetworkIdTypes200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.NetworkProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, 1, 100),
+            200,
+            GetMockResponseContent('PeppolNetworkProfiles200.txt')
+        );
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.NetworkProfilesUrl(Enum::"Continia E-Delivery Network"::Nemhandel, 1, 100),
+            200,
+            GetMockResponseContent('NemhandelNetworkProfiles200.txt')
+        );
+
         OnboardingWizard.ActionNext.Invoke();
         Commit();
 
@@ -133,7 +182,16 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         OnboardingWizard.SendInvoiceResponse.SetValue(true);
         OnboardingWizard.SendOrder.SetValue(true);
         OnboardingWizard.ReceiveOrderResponse.SetValue(true);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-external');
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200-external.txt'));
+
         asserterror OnboardingWizard.ActionNext.Invoke();
 
         // [Then] check the error thrown
@@ -161,7 +219,15 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.ExpectedError(ParticipationAlreadyRegisteredPeppolErr);
 
         // [When] Participation is not registered externally and click Next
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200.txt'));
         OnboardingWizard.ActionNext.Invoke();
 
         // [Then] Last step opens
@@ -170,6 +236,42 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.UpdateSubscriptionUrl(),
+            200,
+            GetMockResponseContent('UpdateSubscription200.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.GetAcceptCompanyLicenseUrl(),
+            200,
+            GetMockResponseContent('AcceptCompanyLicense200.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.ParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol),
+            200,
+            GetMockResponseContent('Participation200-Draft.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, ConnectorLibrary.ParticipationId(true)),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Patch,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, ConnectorLibrary.ParticipationId(true)),
+            200,
+            GetMockResponseContent('Participation200-InProcess.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, ConnectorLibrary.ParticipationId(true)),
+            200,
+            GetMockResponseContent('Participation200-InProcess.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, ConnectorLibrary.ParticipationId(true), 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         OnboardingWizard.ActionFinish.Invoke();
         Commit();
 
@@ -192,9 +294,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// Scenario: This test confirms the correct process for unregistering a connected participation.
     /// It starts with a configured, connected participation and verifies the status change to "Disabled"
     /// upon successful unregistration, ensuring that the process is completed without errors.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure Unregister_Connected()
     var
         Participation: Record "Continia Participation";
@@ -206,8 +308,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [Given] Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-connected');
-
         // [Given] Team Member + 'E-Doc. Core - Edit' permissions
         LibraryPermission.SetTeamMember();
         LibraryPermission.AddPermissionSet('E-Doc. Core - Edit');
@@ -226,6 +326,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+            200,
+            GetMockResponseContent('Participation200-Connected.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -234,7 +345,11 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Unregister
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('202'); // Response code 202 means it was disabled
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Delete,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+            202);
         Participations.DeleteParticipation.Invoke();
 
         // [Then] Participation status is Disabled
@@ -250,9 +365,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// Scenario: This test case validates the behavior of unregistering a participation with the status "InProcess."
     /// The test confirms that the participation is properly deleted upon completion of the unregistering action,
     /// verifying that no residual records are left in the system.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure Unregister_InProcess()
     var
         Participation: Record "Continia Participation";
@@ -264,7 +379,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [Given] Connected Participation
         ConnectorLibrary.PrepareParticipation(Participation);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-inprocess');
 
         // [Given] Team Member + 'E-Doc. Core - Edit' permissions
         LibraryPermission.SetTeamMember();
@@ -284,6 +398,16 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-InProcess.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -292,7 +416,11 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::InProcess), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Unregister
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200'); // Response code 200 means it was deleted
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Delete,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+            200);
         Participations.DeleteParticipation.Invoke();
 
         // [Then] Participation must be deleted
@@ -307,9 +435,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// Scenario: This test evaluates the process of editing an existing participation to modify its profile direction.
     /// It ensures that changes are successfully applied and that the onboarding wizard navigates through the necessary steps,
     /// ending with a status verification of the updated profile direction.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure EditParticipation_ChangeProfileDirection()
     var
         Participation: Record "Continia Participation";
@@ -323,7 +451,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [Given] Connected Participation with a profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf, EDocumentService);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-connected');
 
         // [Given] Configured Client Credentials
         ConnectorLibrary.InitiateClientCredentials();
@@ -346,6 +473,16 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-Connected.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -383,9 +520,18 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Set participation profile direction to Outgoing and click Next 
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-outgoing');
         OnboardingWizard.SelectProfilesPeppol.First();
         OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Outbound);
+
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200.txt'));
         OnboardingWizard.ActionNext.Invoke();
         Commit();
 
@@ -395,6 +541,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Patch,
+            ContiniaApiUrlMgt.UpdateSubscriptionUrl(),
+            200,
+            GetMockResponseContent('Participation200-InProcess.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Patch,
+            ContiniaApiUrlMgt.SingleParticipationProfileUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, ActivatedNetProf.Id),
+            200,
+            GetMockResponseContent('ParticipationProfile-outgoing.txt'));
         OnboardingWizard.ActionFinish.Invoke();
         Commit();
 
@@ -411,10 +568,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// Scenario: This test checks the functionality of adding an additional network profile to an existing participation.
     /// It confirms that the onboarding wizard proceeds through each step and that the newly added profile is correctly
     /// registered in the system, verifying that both activated and required profiles are present after completion.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HandlePeppolInvoiceProfileSelection')]
+    [HandlerFunctions('HandlePeppolInvoiceProfileSelection,HttpClientHandler')]
     procedure EditParticipation_AddProfile()
     var
         Participation: Record "Continia Participation";
@@ -429,7 +585,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [Given] Connected Participation with a profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf, EDocumentService);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-connected');
 
         // [Given] Configured Client Credentials
         ConnectorLibrary.InitiateClientCredentials();
@@ -452,6 +607,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-Connected.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -489,7 +655,15 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Add participation profile and click Next 
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200.txt'));
         OnboardingWizard.SelectProfilesPeppol.New();
         OnboardingWizard.SelectProfilesPeppol."Profile Name".Lookup();
         // HandlePeppolInvoiceProfileSelection()
@@ -504,6 +678,12 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Post,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         OnboardingWizard.ActionFinish.Invoke();
         Commit();
 
@@ -521,9 +701,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// Scenario: This test verifies the process of removing a network profile from a participation.
     /// It checks that the onboarding wizard accurately reflects the deletion of the profile and that remaining
     /// active and required profiles are correctly identified, with no errors upon completion.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure EditParticipation_RemoveProfile()
     var
         Participation: Record "Continia Participation";
@@ -539,7 +719,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         // [Given] Connected Participation with 2 network profiles
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf, EDocumentService);
         ConnectorLibrary.AddActivatedNetworkProfile(Participation, ConnectorLibrary.NetworkProfileIdPeppolBis3Invoice(), CreateGuid(), ActivatedNetProf, EDocumentService.Code);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-connected');
 
         // [Given] Configured Client Credentials
         ConnectorLibrary.InitiateClientCredentials();
@@ -562,6 +741,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-Connected.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -599,7 +789,15 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Delete invoice participation profile and click Next 
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200.txt'));
         ConnectorLibrary.GetActivatedNetworkProfile(ConnectorLibrary.NetworkProfileIdPeppolBis3Invoice(), ActivatedNetProf);
         OnboardingWizard.SelectProfilesPeppol.GoToRecord(ActivatedNetProf);
         OnboardingWizard.SelectProfilesPeppol.DeleteProfile.Invoke();
@@ -612,6 +810,11 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Delete,
+            ContiniaApiUrlMgt.SingleParticipationProfileUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, ActivatedNetProf.Id),
+            200);
         OnboardingWizard.ActionFinish.Invoke();
         Commit();
 
@@ -632,9 +835,9 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     /// It verifies that the VAT change triggers the correct flow through the onboarding wizard and that the
     /// participation status is accurately updated to "In Process." Additionally, it checks for error handling
     /// when a participation is suspended.
-    /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure EditParticipation_ChangeVat()
     var
         Participation: Record "Continia Participation";
@@ -648,7 +851,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [Given] Connected Participation with a profile
         ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf, EDocumentService);
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-connected');
 
         // [Given] Configured Client Credentials
         ConnectorLibrary.InitiateClientCredentials();
@@ -671,6 +873,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] DrillDown on No of Participations
         Participations.Trap();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-Connected.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            200,
+            GetMockResponseContent('ParticipationProfile200-randomId.txt'));
         ExtConnectionSetup.NoOfParticipations.Drilldown();
         Commit();
 
@@ -694,7 +907,6 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] Change VAT number and Accept License terms
-        ApiUrlMockSubscribers.SetCdnApiCaseUrlSegment('200-suspended');
         OnboardingWizard."VAT Registration No.".SetValue('111222334');
         OnboardingWizard.LicenseTerms.SetValue(true);
 
@@ -710,6 +922,15 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] click Next
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationLookupUrl(
+                Enum::"Continia E-Delivery Network"::Peppol,
+                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+            200,
+            GetMockResponseContent('ParticipationLookup200.txt'));
         OnboardingWizard.ActionNext.Invoke();
         Commit();
 
@@ -719,6 +940,12 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Patch,
+            ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+            200,
+            GetMockResponseContent('Participation200-Suspended.txt'));
         OnboardingWizard.ActionFinish.Invoke();
         Commit();
 
@@ -728,6 +955,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
 
         // [When] Participations Page close and open again
         Participations.Close();
+        ContiniaMockHttpHandler.ClearHandler();
+        ContiniaMockHttpHandler.AddResponse(
+           HttpRequestType::Get,
+           ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
+           200,
+           GetMockResponseContent('Participation200-Suspended.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, 1, 100),
+            404,
+            GetMockResponseContent('Common404.txt'));
         asserterror ExtConnectionSetup.NoOfParticipations.Drilldown();
 
         // [Then] Error appears, since Participation is not found
@@ -775,21 +1013,15 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         ConnectorLibrary.ClearClientCredentials();
         ConnectorLibrary.CleanParticipations();
 
-        ApiUrlMockSubscribers.SetCoApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
-        ApiUrlMockSubscribers.SetCdnApiWith200ResponseCodeCase(ConnectorLibrary.ApiMockBaseUrl());
-
         if IsInitialized then
             exit;
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        ConnectorLibrary.EnableConnectorHttpTraffic();
 
         LibraryEDocument.SetupStandardVAT();
         LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
         CompanyInformation.Get();
         CompanyInformation."Country/Region Code" := 'GB';
         CompanyInformation.Modify(false);
-
-        BindSubscription(ApiUrlMockSubscribers);
 
         IsInitialized := true;
     end;
@@ -813,6 +1045,20 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         until ActivatedNetProf.Next() = 0;
     end;
 
+    local procedure GetMockResponseContent(ResourceFileName: Text): Text
+    begin
+        exit(NavApp.GetResourceAsText(ResourceFileName, TextEncoding::UTF8));
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        if ContiniaMockHttpHandler.HandleAuthorization(Request, Response) then
+            exit;
+
+        Response := ContiniaMockHttpHandler.GetResponse(Request);
+    end;
+
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
@@ -820,7 +1066,8 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         LibraryEDocument: Codeunit "Library - E-Document";
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        ApiUrlMockSubscribers: Codeunit "Continia Api Url Mock Subsc.";
+        ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
+        ContiniaApiUrlMgt: Codeunit "Continia API URL Mgt.";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         ConnectorLibrary: Codeunit "Continia Connector Library";
         IsInitialized: Boolean;

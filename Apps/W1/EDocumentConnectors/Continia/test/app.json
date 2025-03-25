@@ -64,5 +64,8 @@
                                  "includeSourceInSymbolFile":  true
                              },
   "application":  "26.0.0.0",
+  "resourceFolders": [
+    "Resources"
+  ],
   "target":  "OnPrem"
 }

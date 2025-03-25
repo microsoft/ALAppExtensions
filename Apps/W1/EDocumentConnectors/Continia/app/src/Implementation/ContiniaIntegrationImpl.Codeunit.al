@@ -23,12 +23,6 @@ codeunit 6390 "Continia Integration Impl." implements IDocumentSender, IDocument
         EDocumentProcessing.SendEDocument(EDocument, EDocumentService, SendContext);
     end;
 
-    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
-    begin
-        IsAsync := false;
-        Error(BatchSendingNotSupportedErr);
-    end;
-
     procedure GetResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; SendContext: Codeunit SendContext): Boolean
     var
         EDocumentProcessing: Codeunit "Continia EDocument Processing";
@@ -96,7 +90,4 @@ codeunit 6390 "Continia Integration Impl." implements IDocumentSender, IDocument
         ExtConnectionSetup.Run();
         IsServiceIntegrationSetupRun := true;
     end;
-
-    var
-        BatchSendingNotSupportedErr: Label 'Batch sending is not supported in this version';
 }
