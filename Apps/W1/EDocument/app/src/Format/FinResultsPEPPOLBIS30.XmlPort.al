@@ -1196,7 +1196,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
             this.IssuedReminderLine.SetRange("Reminder No.", this.IssuedReminderHeader."No.");
             if this.IssuedReminderLine.FindSet() then
                 repeat
-                    this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
+                    this.CopyReminderLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
                     this.PEPPOLMgt.GetTotals(this.SalesLine, this.TempVATAmtLine);
                     this.PEPPOLMgt.GetTaxCategories(this.SalesLine, this.TempVATProductPostingGroup);
                 until this.IssuedReminderLine.Next() = 0;
@@ -1206,7 +1206,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
             this.IssuedFinChargeMemoLine.SetRange("Finance Charge Memo No.", this.IssuedFinChargeMemoHeader."No.");
             if this.IssuedFinChargeMemoLine.FindSet() then
                 repeat
-                    this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
+                    this.CopyFinChargeMemoLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
                     this.PEPPOLMgt.GetTotals(this.SalesLine, this.TempVATAmtLine);
                     this.PEPPOLMgt.GetTaxCategories(this.SalesLine, this.TempVATProductPostingGroup);
                 until this.IssuedFinChargeMemoLine.Next() = 0;
@@ -1235,7 +1235,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
 
                     if this.IssuedReminderLine.FindSet() then
                         repeat
-                            this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
+                            this.CopyReminderLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
                         until this.IssuedReminderLine.Next() = 0;
 
                     this.IsReminder := true;
@@ -1251,7 +1251,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
 
                     if this.IssuedFinChargeMemoLine.FindSet() then
                         repeat
-                            this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
+                            this.CopyFinChargeMemoLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
                         until this.IssuedFinChargeMemoLine.Next() = 0;
 
                     this.IsFinChargeMemo := true;
@@ -1261,50 +1261,72 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         end;
     end;
 
-    local procedure CopyDocumentToSalesHeader(var SalesHeader: Record "Sales Header"; DocumentToCopy: Variant)
-    var
-        RecRef: RecordRef;
+    local procedure CopyReminderToSalesHeader(var SalesHeader: Record "Sales Header"; IssuedReminderHeader: Record "Issued Reminder Header")
     begin
-        RecRef.GetTable(DocumentToCopy);
-
         Clear(SalesHeader);
-        SalesHeader."No." := RecRef.Field(this.IssuedReminderHeader.FieldNo("No.")).Value;
-        SalesHeader."Document Date" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Document Date")).Value;
-        SalesHeader."Due Date" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Due Date")).Value;
-        SalesHeader."Posting Date" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Posting Date")).Value;
-        SalesHeader."Currency Code" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Currency Code")).Value;
-        SalesHeader.Validate("Sell-to Customer No.", RecRef.Field(this.IssuedReminderHeader.FieldNo("Customer No.")).Value);
-        SalesHeader.Validate("Sell-to Contact", RecRef.Field(this.IssuedReminderHeader.FieldNo(Contact)).Value);
-        SalesHeader."Your Reference" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Your Reference")).Value;
-        SalesHeader."Customer Posting Group" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Customer Posting Group")).Value;
-        SalesHeader."Gen. Bus. Posting Group" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Gen. Bus. Posting Group")).Value;
-        SalesHeader."VAT Bus. Posting Group" := RecRef.Field(this.IssuedReminderHeader.FieldNo("VAT Bus. Posting Group")).Value;
-        SalesHeader."Reason Code" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Reason Code")).Value;
-        SalesHeader."Company Bank Account Code" := RecRef.Field(this.IssuedReminderHeader.FieldNo("Company Bank Account Code")).Value;
+        SalesHeader."No." := IssuedReminderHeader."No.";
+        SalesHeader."Document Date" := IssuedReminderHeader."Document Date";
+        SalesHeader."Due Date" := IssuedReminderHeader."Due Date";
+        SalesHeader."Posting Date" := IssuedReminderHeader."Posting Date";
+        SalesHeader."Currency Code" := IssuedReminderHeader."Currency Code";
+        SalesHeader.Validate("Sell-to Customer No.", IssuedReminderHeader."Customer No.");
+        SalesHeader.Validate("Sell-to Contact", IssuedReminderHeader.Contact);
+        SalesHeader."Your Reference" := IssuedReminderHeader."Your Reference";
+        SalesHeader."Customer Posting Group" := IssuedReminderHeader."Customer Posting Group";
+        SalesHeader."Gen. Bus. Posting Group" := IssuedReminderHeader."Gen. Bus. Posting Group";
+        SalesHeader."VAT Bus. Posting Group" := IssuedReminderHeader."VAT Bus. Posting Group";
+        SalesHeader."Reason Code" := IssuedReminderHeader."Reason Code";
+        SalesHeader."Company Bank Account Code" := IssuedReminderHeader."Company Bank Account Code";
     end;
 
-    local procedure CopyDocumentLineToSalesLine(var SalesLine: Record "Sales Line"; DocumentToCopy: Variant; DocumentLineToCopy: Variant)
-    var
-        RecRef: RecordRef;
-        DocRecRef: RecordRef;
+    local procedure CopyFinChargeMemoToSalesHeader(var SalesHeader: Record "Sales Header"; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header")
     begin
-        DocRecRef.GetTable(DocumentToCopy);
-        RecRef.GetTable(DocumentLineToCopy);
+        Clear(SalesHeader);
+        SalesHeader."No." := IssuedFinChargeMemoHeader."No.";
+        SalesHeader."Document Date" := IssuedFinChargeMemoHeader."Document Date";
+        SalesHeader."Due Date" := IssuedFinChargeMemoHeader."Due Date";
+        SalesHeader."Posting Date" := IssuedFinChargeMemoHeader."Posting Date";
+        SalesHeader."Currency Code" := IssuedFinChargeMemoHeader."Currency Code";
+        SalesHeader.Validate("Sell-to Customer No.", IssuedFinChargeMemoHeader."Customer No.");
+        SalesHeader.Validate("Sell-to Contact", IssuedFinChargeMemoHeader.Contact);
+        SalesHeader."Your Reference" := IssuedFinChargeMemoHeader."Your Reference";
+        SalesHeader."Customer Posting Group" := IssuedFinChargeMemoHeader."Customer Posting Group";
+        SalesHeader."Gen. Bus. Posting Group" := IssuedFinChargeMemoHeader."Gen. Bus. Posting Group";
+        SalesHeader."VAT Bus. Posting Group" := IssuedFinChargeMemoHeader."VAT Bus. Posting Group";
+        SalesHeader."Reason Code" := IssuedFinChargeMemoHeader."Reason Code";
+        SalesHeader."Company Bank Account Code" := IssuedFinChargeMemoHeader."Company Bank Account Code";
+    end;
 
+    local procedure CopyReminderLineToSalesLine(var SalesLine: Record "Sales Line"; IssuedReminderHeader: Record "Issued Reminder Header"; IssuedReminderLine: Record "Issued Reminder Line")
+    begin
         Clear(SalesLine);
-        SalesLine."Document No." := RecRef.Field(this.IssuedReminderLine.FieldNo("Reminder No.")).Value;
-        SalesLine."Line No." := RecRef.Field(this.IssuedReminderLine.FieldNo("Line No.")).Value;
-        SalesLine."Type" := SalesLine."Type"::"G/L Account";
-        SalesLine."No." := RecRef.Field(this.IssuedReminderLine.FieldNo("No.")).Value;
-        SalesLine."VAT %" := RecRef.Field(this.IssuedReminderLine.FieldNo("VAT %")).Value;
+        SalesLine."Document No." := IssuedReminderLine."Reminder No.";
+        SalesLine."Line No." := IssuedReminderLine."Line No.";
+        SalesLine.Type := SalesLine.Type::"G/L Account";
+        SalesLine."No." := IssuedReminderLine."No.";
+        SalesLine."VAT %" := IssuedReminderLine."VAT %";
         SalesLine.Quantity := 1;
-        SalesLine.Validate(Amount, RecRef.Field(this.IssuedReminderLine.FieldNo(Amount)).Value);
-        SalesLine.Description := RecRef.Field(this.IssuedReminderLine.FieldNo(Description)).Value;
-        SalesLine."Unit Price" := RecRef.Field(this.IssuedReminderLine.FieldNo(Amount)).Value;
-        SalesLine."VAT Prod. Posting Group" := RecRef.Field(this.IssuedReminderLine.FieldNo("VAT Prod. Posting Group")).Value;
+        SalesLine.Validate(Amount, IssuedReminderLine.Amount);
+        SalesLine.Description := IssuedReminderLine.Description;
+        SalesLine."Unit Price" := IssuedReminderLine.Amount;
+        SalesLine."VAT Prod. Posting Group" := IssuedReminderLine."VAT Prod. Posting Group";
+        SalesLine."VAT Bus. Posting Group" := IssuedReminderHeader."VAT Bus. Posting Group";
+    end;
 
-        //Reminder/Finance Charge Memo Line does not have the "VAT Bus. Posting Group" field, copying from header instead
-        SalesLine."VAT Bus. Posting Group" := DocRecRef.Field(this.IssuedReminderHeader.FieldNo("VAT Bus. Posting Group")).Value;
+    local procedure CopyFinChargeMemoLineToSalesLine(var SalesLine: Record "Sales Line"; IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; IssuedFinChargeMemoLine: Record "Issued Fin. Charge Memo Line")
+    begin
+        Clear(SalesLine);
+        SalesLine."Document No." := IssuedFinChargeMemoLine."Finance Charge Memo No.";
+        SalesLine."Line No." := IssuedFinChargeMemoLine."Line No.";
+        SalesLine.Type := SalesLine.Type::"G/L Account";
+        SalesLine."No." := IssuedFinChargeMemoLine."No.";
+        SalesLine."VAT %" := IssuedFinChargeMemoLine."VAT %";
+        SalesLine.Quantity := 1;
+        SalesLine.Validate(Amount, IssuedFinChargeMemoLine.Amount);
+        SalesLine.Description := IssuedFinChargeMemoLine.Description;
+        SalesLine."Unit Price" := IssuedFinChargeMemoLine.Amount;
+        SalesLine."VAT Prod. Posting Group" := IssuedFinChargeMemoLine."VAT Prod. Posting Group";
+        SalesLine."VAT Bus. Posting Group" := IssuedFinChargeMemoHeader."VAT Bus. Posting Group";
     end;
 
     local procedure FindNextIssuedReminderRec(var IssuedReminderHeader: Record "Issued Reminder Header"; var SalesHeader: Record "Sales Header"; Position: Integer) Found: Boolean
@@ -1314,7 +1336,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         else
             Found := IssuedReminderHeader.Next() <> 0;
         if Found then
-            this.CopyDocumentToSalesHeader(SalesHeader, IssuedReminderHeader);
+            this.CopyReminderToSalesHeader(SalesHeader, IssuedReminderHeader);
         SalesHeader."Document Type" := SalesHeader."Document Type"::Invoice;
     end;
 
@@ -1325,7 +1347,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         else
             Found := this.IssuedReminderLine.Next() <> 0;
         if Found then
-            this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
+            this.CopyReminderLineToSalesLine(this.SalesLine, this.IssuedReminderHeader, this.IssuedReminderLine);
     end;
 
     local procedure FindNextIssuedFinChargeMemoRec(var IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"; var SalesHeader: Record "Sales Header"; Position: Integer) Found: Boolean
@@ -1335,7 +1357,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         else
             Found := IssuedFinChargeMemoHeader.Next() <> 0;
         if Found then
-            this.CopyDocumentToSalesHeader(SalesHeader, IssuedFinChargeMemoHeader);
+            this.CopyFinChargeMemoToSalesHeader(SalesHeader, IssuedFinChargeMemoHeader);
         SalesHeader."Document Type" := SalesHeader."Document Type"::Invoice;
     end;
 
@@ -1346,7 +1368,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         else
             Found := this.IssuedFinChargeMemoLine.Next() <> 0;
         if Found then
-            this.CopyDocumentLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
+            this.CopyFinChargeMemoLineToSalesLine(this.SalesLine, this.IssuedFinChargeMemoHeader, this.IssuedFinChargeMemoLine);
     end;
 
     local procedure GetCustomizationID(): Text
