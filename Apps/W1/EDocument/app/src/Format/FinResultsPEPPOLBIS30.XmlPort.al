@@ -1213,11 +1213,11 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         end;
     end;
 
-    local procedure FindNextVATAmtRec(var VATAmtLine: Record "VAT Amount Line"; Position: Integer): Boolean
+    local procedure FindNextVATAmtRec(var TempVATAmountLine: Record "VAT Amount Line" temporary; Position: Integer): Boolean
     begin
         if Position = 1 then
-            exit(VATAmtLine.Find('-'));
-        exit(VATAmtLine.Next() <> 0);
+            exit(TempVATAmountLine.FindSet());
+        exit(TempVATAmountLine.Next() <> 0);
     end;
 
     procedure Initialize(DocVariant: Variant)
