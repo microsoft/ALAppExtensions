@@ -7,6 +7,9 @@ namespace Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 permissionset 6101 "E-Doc. Core - Read"
 {
@@ -26,5 +29,12 @@ permissionset 6101 "E-Doc. Core - Read"
         tabledata "E-Doc. Service Supported Type" = R,
         tabledata "E-Doc. Imported Line" = R,
         tabledata "E-Doc. Order Match" = R,
-        tabledata "Service Participant" = R;
+        tabledata "Service Participant" = R,
+        tabledata "E-Doc. Import Parameters" = R,
+        tabledata "E-Doc. PO Match Prop. Buffer" = R,
+        tabledata "E-Document Header Mapping" = R,
+        tabledata "E-Document Line Mapping" = R,
+        tabledata "E-Document Purchase Header" = R,
+        tabledata "E-Document Purchase Line" = R,
+        tabledata "E-Documents Setup" = R;
 }
