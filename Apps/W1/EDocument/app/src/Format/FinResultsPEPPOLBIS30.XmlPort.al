@@ -1310,7 +1310,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
     local procedure FindNextIssuedReminderRec(var IssuedReminderHeader: Record "Issued Reminder Header"; var SalesHeader: Record "Sales Header"; Position: Integer) Found: Boolean
     begin
         if Position = 1 then
-            Found := IssuedReminderHeader.Find('-')
+            Found := IssuedReminderHeader.FindSet()
         else
             Found := IssuedReminderHeader.Next() <> 0;
         if Found then
@@ -1321,7 +1321,7 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
     local procedure FindNextReminderLineRec(Position: Integer) Found: Boolean
     begin
         if Position = 1 then
-            Found := this.IssuedReminderLine.Find('-')
+            Found := this.IssuedReminderLine.FindSet()
         else
             Found := this.IssuedReminderLine.Next() <> 0;
         if Found then

@@ -14,6 +14,18 @@ using Microsoft.Sales.Reminder;
 
 codeunit 6172 "EDoc PEPPOL Validation"
 {
+    /// <summary>
+    /// Validates if a reminder meets PEPPOL requirements.
+    /// </summary>
+    /// <param name="ReminderHeader">Record "Reminder Header" that contains the reminder document to validate.</param>
+    /// <remarks>
+    /// Checks both header and line information for PEPPOL compliance including:
+    /// - Required fields
+    /// - Currency codes
+    /// - Country codes
+    /// - Company/Customer identification
+    /// - Banking information
+    /// </remarks>
     internal procedure CheckReminder(ReminderHeader: Record "Reminder Header");
     var
         ReminderLine: Record "Reminder Line";
@@ -26,6 +38,18 @@ codeunit 6172 "EDoc PEPPOL Validation"
             until ReminderLine.Next() = 0;
     end;
 
+    /// <summary>
+    /// Validates if a finance charge memo meets PEPPOL requirements.
+    /// </summary>
+    /// <param name="FinChargeMemoHeader">Record "Finance Charge Memo Header" that contains the finance charge memo to validate.</param>
+    /// <remarks>
+    /// Checks both header and line information for PEPPOL compliance including:
+    /// - Required fields
+    /// - Currency codes
+    /// - Country codes
+    /// - Company/Customer identification
+    /// - Banking information
+    /// </remarks>
     internal procedure CheckFinChargeMemo(FinChargeMemoHeader: Record "Finance Charge Memo Header");
     var
         FinChargeMemoLine: Record "Finance Charge Memo Line";
@@ -80,7 +104,7 @@ codeunit 6172 "EDoc PEPPOL Validation"
         CompanyInfo.TestField("SWIFT Code");
     end;
 
-    procedure CheckReminderLine(ReminderLine: Record "Reminder Line")
+    local procedure CheckReminderLine(ReminderLine: Record "Reminder Line")
     begin
         if (ReminderLine.Type <> ReminderLine.Type::" ") and (ReminderLine.Description = '') then
             Error(this.MissingDescriptionErr);
@@ -128,7 +152,7 @@ codeunit 6172 "EDoc PEPPOL Validation"
         CompanyInfo.TestField("SWIFT Code");
     end;
 
-    procedure CheckFinChargeMemoLine(FinChargeMemoLine: Record "Finance Charge Memo Line")
+    local procedure CheckFinChargeMemoLine(FinChargeMemoLine: Record "Finance Charge Memo Line")
     begin
         if (FinChargeMemoLine.Type <> FinChargeMemoLine.Type::" ") and (FinChargeMemoLine.Description = '') then
             Error(this.MissingDescriptionErr);

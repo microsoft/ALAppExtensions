@@ -16,7 +16,7 @@ pageextension 6140 "E-Doc. Fin. Charge Memo" extends "Finance Charge Memo"
             {
                 ApplicationArea = All;
                 Caption = 'Your Reference';
-                ToolTip = 'Specifies the customer''s reference.';
+                ToolTip = 'Specifies the customer''s reference. The contents will be printed on e-document.';
             }
         }
     }
