@@ -12,5 +12,6 @@ permissionset 6104 "E-Doc. Core - Admin"
     Permissions =
         tabledata "E-Document Service" = IMD,
         tabledata "E-Doc. Service Data Exch. Def." = IMD,
-        tabledata "E-Doc. Service Supported Type" = IMD;
+        tabledata "E-Doc. Service Supported Type" = IMD,
+        tabledata "E-Documents Setup" = IMD;
 }
