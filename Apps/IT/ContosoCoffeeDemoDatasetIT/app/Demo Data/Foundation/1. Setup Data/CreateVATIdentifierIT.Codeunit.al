@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12219 "Create VAT Identifier IT"
 {
     trigger OnRun()

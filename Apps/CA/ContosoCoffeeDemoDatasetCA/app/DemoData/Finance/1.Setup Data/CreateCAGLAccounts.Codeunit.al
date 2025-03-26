@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27009 "Create CA GL Accounts"
 {
     InherentPermissions = X;

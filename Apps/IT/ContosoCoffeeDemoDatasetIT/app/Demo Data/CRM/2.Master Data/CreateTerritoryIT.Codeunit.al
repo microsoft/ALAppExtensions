@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12230 "Create Territory IT"
 {
     InherentEntitlements = X;

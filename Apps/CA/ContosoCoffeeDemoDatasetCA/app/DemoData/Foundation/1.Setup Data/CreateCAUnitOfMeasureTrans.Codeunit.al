@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27037 "Create CA UnitOfMeasureTrans."
 {
     trigger OnRun()

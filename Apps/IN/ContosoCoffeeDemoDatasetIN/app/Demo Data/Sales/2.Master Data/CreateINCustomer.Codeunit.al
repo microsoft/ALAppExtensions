@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19015 "Create IN Customer"
 {
     SingleInstance = true;

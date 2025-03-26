@@ -82,6 +82,11 @@ table 6165 "E-Doc. Imported Line"
         {
             Caption = 'No.';
         }
+        field(12; "Converted to Internal Notation"; Boolean)
+        {
+            Caption = 'Converted to Internal Notation';
+            Editable = false;
+        }
     }
 
     keys
@@ -105,7 +110,7 @@ table 6165 "E-Doc. Imported Line"
             Page.Run(Page::"E-Doc. Order Match", EDocOrderMatch);
     end;
 
-    procedure Insert(EDocument: Record "E-Document"; TempDocumentLine: RecordRef; var TempEDocImportedLine: Record "E-Doc. Imported Line" temporary)
+    procedure Insert(EDocument: Record "E-Document"; TempDocumentLine: RecordRef; var TempEDocImportedLine: Record "E-Doc. Imported Line" temporary; NoConvertedToInternalNotation: Boolean)
     var
         PurchaseLine: Record "Purchase Line";
         LineNo: Integer;
@@ -127,6 +132,7 @@ table 6165 "E-Doc. Imported Line"
             TempEDocImportedLine."No." := CopyStr(PurchaseLine."Item Reference No.", 1, MaxStrLen(PurchaseLine."No."));
             TempEDocImportedLine."Unit Of Measure Code" := PurchaseLine."Item Reference Unit of Measure";
         end;
+        TempEDocImportedLine."Converted to Internal Notation" := NoConvertedToInternalNotation;
 
         TempEDocImportedLine.Description := PurchaseLine.Description;
         TempEDocImportedLine.Type := PurchaseLine.Type;

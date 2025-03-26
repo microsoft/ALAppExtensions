@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10816 "Create ES Vendor Posting Group"
 {
     InherentEntitlements = X;

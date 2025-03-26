@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5187 "Job Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;

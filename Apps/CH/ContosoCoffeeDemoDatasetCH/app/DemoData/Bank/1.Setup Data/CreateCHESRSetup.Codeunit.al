@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11628 "Create CH ESR Setup"
 {
     InherentEntitlements = X;

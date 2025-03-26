@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12207 "Contoso ABI CAB IT"
 {
     InherentEntitlements = X;

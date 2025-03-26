@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5273 "Create Inventory Setup"
 {
     InherentEntitlements = X;

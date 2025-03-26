@@ -1,4 +1,5 @@
-﻿permissionset 11732 "CZ Core Pack - Objects CZL"
+#pragma warning disable AA0247
+permissionset 11732 "CZ Core Pack - Objects CZL"
 {
     Access = Public;
     Assignable = false;

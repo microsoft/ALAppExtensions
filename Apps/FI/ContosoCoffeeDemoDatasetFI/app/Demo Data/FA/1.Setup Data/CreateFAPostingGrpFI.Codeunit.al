@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13445 "Create FA Posting Grp. FI"
 {
     SingleInstance = true;

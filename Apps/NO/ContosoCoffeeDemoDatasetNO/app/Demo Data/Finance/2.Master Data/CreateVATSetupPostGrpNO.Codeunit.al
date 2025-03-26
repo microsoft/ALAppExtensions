@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10725 "Create VAT Setup Post Grp. NO"
 {
     InherentEntitlements = X;

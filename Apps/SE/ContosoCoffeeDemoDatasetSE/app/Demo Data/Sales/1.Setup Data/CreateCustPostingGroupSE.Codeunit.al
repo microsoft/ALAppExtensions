@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11228 "Create Cust. Posting Group SE"
 {
     SingleInstance = true;

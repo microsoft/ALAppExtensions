@@ -22,7 +22,12 @@ page 30165 "Shpfy Comp. Locations"
             repeater(General)
             {
                 field(Id; Rec.Id) { }
-                field("Company SystemId"; Rec."Company SystemId") { }
+                field("Company SystemId"; Rec."Company SystemId")
+                {
+                    Visible = false;
+                }
+                field(Name; Rec.Name) { }
+                field("Company Name"; Rec."Company Name") { }
                 field("Default"; Rec."Default") { }
                 field(Address; Rec.Address) { }
                 field("Address 2"; Rec."Address 2") { }
@@ -30,11 +35,15 @@ page 30165 "Shpfy Comp. Locations"
                 field(City; Rec.City) { }
                 field("Country/Region Code"; Rec."Country/Region Code") { }
                 field("Phone No."; Rec."Phone No.") { }
-                field(Name; Rec.Name) { }
                 field("Province Code"; Rec."Province Code") { }
                 field("Province Name"; Rec."Province Name") { }
+                field(Recipient; Rec.Recipient) { }
                 field("Tax Registration Id"; Rec."Tax Registration Id") { }
-                field("Shpfy Payment Terms Id"; Rec."Shpfy Payment Terms Id") { }
+                field("Shpfy Payment Terms Id"; Rec."Shpfy Payment Terms Id")
+                {
+                    Visible = false;
+                }
+                field("Shpfy Payment Term"; Rec."Shpfy Payment Term") { }
             }
         }
     }

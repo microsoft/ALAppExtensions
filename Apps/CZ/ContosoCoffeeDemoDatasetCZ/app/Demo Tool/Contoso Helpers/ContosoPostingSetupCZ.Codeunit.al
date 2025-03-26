@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31219 "Contoso Posting Setup CZ"
 {
     InherentEntitlements = X;

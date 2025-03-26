@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14127 "Create Reminder Level MX"
 {
     SingleInstance = true;

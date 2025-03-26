@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19068 "Contoso IN Purch. Document"
 {
     InherentEntitlements = X;

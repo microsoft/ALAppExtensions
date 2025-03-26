@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10724 "Create Vendor Template NO"
 {
     SingleInstance = true;

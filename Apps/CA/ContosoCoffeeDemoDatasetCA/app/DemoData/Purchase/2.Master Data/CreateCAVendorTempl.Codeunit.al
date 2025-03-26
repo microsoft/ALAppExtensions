@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27072 "Create CA Vendor Templ."
 {
     SingleInstance = true;

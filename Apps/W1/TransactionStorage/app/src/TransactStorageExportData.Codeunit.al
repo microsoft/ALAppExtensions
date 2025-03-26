@@ -256,6 +256,7 @@ codeunit 6202 "Transact. Storage Export Data"
         FilterRecFromDate: Date;
         FilterRecFromTime: Time;
         FilterRecFrom: DateTime;
+        PrevFilterRecTo: DateTime;
         FilterRecToDate: Date;
         FilterRecToTime: Time;
         RecordCount: Integer;
@@ -283,11 +284,6 @@ codeunit 6202 "Transact. Storage Export Data"
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             FilterRecToDate := FilterRecFromDate + (FilterRecToDate - FilterRecFromDate) div 2;
         until (RecRef.CountApprox() <= MaxRecordCount) or (FilterRecToDate - FilterRecFromDate < 1);
-        if FilterRecTo = 0DT then begin
-            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
-            CustomDimensions.Add('FilterRecToDate', Format(FilterRecToDate));
-            TransactStorageExport.LogWarning('0000OHJ', FilterRecToDateTimeErr, CustomDimensions);
-        end;
         if RecRef.CountApprox() <= MaxRecordCount then
             exit;
 
@@ -306,25 +302,24 @@ codeunit 6202 "Transact. Storage Export Data"
                 SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             end;
         end;
-        if FilterRecTo = 0DT then begin
-            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
-            CustomDimensions.Add('PeriodDelta', Format(PeriodDelta));
-            TransactStorageExport.LogWarning('0000OHK', FilterRecToDateTimeErr, CustomDimensions);
-        end;
 
         // try to export all entries for the last document
         if GetDocumentNoField(RecRef, DocumentNoFieldRef) then begin
+            RecRef.ReadIsolation(IsolationLevel::ReadCommitted);
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             if RecRef.FindLast() then begin
                 RecRef.Reset();
+                RecRef.ReadIsolation(IsolationLevel::ReadCommitted);
                 DocumentNoFieldRef.SetRange(DocumentNoFieldRef.Value());
-                if RecRef.FindLast() then
+                if RecRef.FindLast() then begin
+                    PrevFilterRecTo := FilterRecTo;
                     FilterRecTo := SystemModifiedAtFieldRef.Value();
+                end;
                 RecRef.Reset();
             end;
         end;
         if FilterRecTo = 0DT then begin
-            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, TaskStartingDateTime);
+            CustomDimensions := GetCustomDimForZeroFilterRecToLog(RecRef.Number, FilterRecFrom, PrevFilterRecTo, TaskStartingDateTime);
             TransactStorageExport.LogWarning('0000OHL', FilterRecToDateTimeErr, CustomDimensions);
         end;
 
@@ -341,7 +336,7 @@ codeunit 6202 "Transact. Storage Export Data"
         end;
     end;
 
-    local procedure GetCustomDimForZeroFilterRecToLog(TableID: Integer; FilterRecFrom: DateTime; TaskStartingDateTime: DateTime) CustomDimensions: Dictionary of [Text, Text]
+    local procedure GetCustomDimForZeroFilterRecToLog(TableID: Integer; FilterRecFrom: DateTime; PrevFilterRecTo: DateTime; TaskStartingDateTime: DateTime) CustomDimensions: Dictionary of [Text, Text]
     var
         RecRef: RecordRef;
         SystemModifiedAtFieldRef: FieldRef;
@@ -353,6 +348,7 @@ codeunit 6202 "Transact. Storage Export Data"
         CustomDimensions.Add('RecordCountApprox', Format(RecRef.CountApprox()));
         CustomDimensions.Add('MaxRecordCount', Format(GetMaxRecordCount()));
         CustomDimensions.Add('FilterRecFrom', Format(FilterRecFrom));
+        CustomDimensions.Add('PrevFilterRecTo', Format(PrevFilterRecTo));
         CustomDimensions.Add('TaskStartingDateTime', Format(TaskStartingDateTime));
         RecRef.Close();
     end;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31208 "Create FA Setup CZF"
 {
     InherentEntitlements = X;

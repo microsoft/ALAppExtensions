@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5226 "Create Doc Sending Profile"
 {
     InherentEntitlements = X;

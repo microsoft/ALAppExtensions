@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5129 "Contoso Unit of Measure"
 {
     InherentEntitlements = X;

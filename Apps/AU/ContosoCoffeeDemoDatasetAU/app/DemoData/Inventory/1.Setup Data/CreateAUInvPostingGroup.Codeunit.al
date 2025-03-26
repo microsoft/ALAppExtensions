@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17117 "Create AU Inv Posting Group"
 {
     InherentEntitlements = X;

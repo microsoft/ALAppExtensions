@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11144 "Create No. Series AT"
 {
     SingleInstance = true;

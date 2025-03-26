@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5682 "Create Salutation Formula"
 {
     InherentEntitlements = X;

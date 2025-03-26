@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5124 "Contoso Sales"
 {
     InherentEntitlements = X;
@@ -22,13 +23,17 @@ codeunit 5124 "Contoso Sales"
         SalesHeader.Insert(true);
 
         SalesHeader.Validate("Your Reference", YourReference);
-        SalesHeader.Validate("Order Date", OrderDate);
-        SalesHeader.Validate("Posting Date", PostingDate);
+        if OrderDate <> 0D then
+            SalesHeader.Validate("Order Date", OrderDate);
+        if PostingDate <> 0D then
+            SalesHeader.Validate("Posting Date", PostingDate);
         SalesHeader.Validate("Payment Terms Code", PaymentTermsCode);
-        SalesHeader.Validate("Document Date", DocumentDate);
+        if DocumentDate <> 0D then
+            SalesHeader.Validate("Document Date", DocumentDate);
         SalesHeader.Validate("Payment Method Code", PaymentMethodCode);
         SalesHeader.Validate("Shipping Agent Code", ShippingAgentCode);
-        SalesHeader.Validate("Requested Delivery Date", RequestedDeliveryDate);
+        if RequestedDeliveryDate <> 0D then
+            SalesHeader.Validate("Requested Delivery Date", RequestedDeliveryDate);
         SalesHeader.Validate("Shipping Agent Service Code", ShippingAgentServiceCode);
         SalesHeader.Validate("External Document No.", ExternalDocumentNo);
         SalesHeader.Validate("Location Code", LocationCode);

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13720 "Create Employee DK"
 {
     SingleInstance = true;

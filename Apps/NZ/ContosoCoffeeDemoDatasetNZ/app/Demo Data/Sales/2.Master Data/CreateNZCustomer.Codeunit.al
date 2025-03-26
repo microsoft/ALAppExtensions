@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17138 "Create NZ Customer"
 {
     SingleInstance = true;
@@ -37,6 +38,7 @@ codeunit 17138 "Create NZ Customer"
         Customer.Validate("Post Code", PostCode);
         Customer.Validate("Territory Code", TerritoryCode);
         Customer.Validate("Customer Posting Group", CustomerPostingGroup);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer.Validate("Payment Terms Code", PaymentTermsCode);
         Customer.Validate("Gen. Bus. Posting Group", GenBusPostingGroup);

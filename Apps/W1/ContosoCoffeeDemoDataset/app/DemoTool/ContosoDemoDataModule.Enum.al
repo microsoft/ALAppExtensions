@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 enum 5160 "Contoso Demo Data Module" implements "Contoso Demo Data Module"
 {
     Extensible = true;

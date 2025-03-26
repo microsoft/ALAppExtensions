@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 14603 "IS Sales & Receivables Setup" extends "Sales & Receivables Setup"
 {
     fields

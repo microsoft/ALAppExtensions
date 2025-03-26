@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2460 "Posted Sales Invoices"
 {
     QueryType = Normal;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10664 "Create Currency Ex. Rate NO"
 {
     SingleInstance = true;

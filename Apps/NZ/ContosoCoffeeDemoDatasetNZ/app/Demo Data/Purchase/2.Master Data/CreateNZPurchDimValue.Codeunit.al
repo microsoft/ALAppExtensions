@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17151 "Create NZ Purch. Dim. Value"
 {
     SingleInstance = true;

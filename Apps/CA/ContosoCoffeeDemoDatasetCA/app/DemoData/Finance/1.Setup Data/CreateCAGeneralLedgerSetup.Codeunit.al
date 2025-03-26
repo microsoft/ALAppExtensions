@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27069 "Create CA General Ledger Setup"
 {
     InherentEntitlements = X;

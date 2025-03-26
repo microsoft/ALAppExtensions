@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 report 8005 "Create Contract Analysis"
 {
     ApplicationArea = All;

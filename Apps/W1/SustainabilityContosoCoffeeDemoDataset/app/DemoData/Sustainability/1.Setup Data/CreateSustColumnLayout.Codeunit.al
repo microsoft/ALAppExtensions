@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5247 "Create Sust. Column Layout"
 {
     InherentEntitlements = X;

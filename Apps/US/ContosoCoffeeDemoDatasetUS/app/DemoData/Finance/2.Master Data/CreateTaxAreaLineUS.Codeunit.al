@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10525 "Create Tax Area Line US"
 {
     InherentEntitlements = X;

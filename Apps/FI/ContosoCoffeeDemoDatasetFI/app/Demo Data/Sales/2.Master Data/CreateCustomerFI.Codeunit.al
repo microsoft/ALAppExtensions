@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13442 "Create Customer FI"
 {
     SingleInstance = true;
@@ -32,6 +33,7 @@ codeunit 13442 "Create Customer FI"
         Customer.Validate("VAT Registration No.", VatRegNo);
         Customer.Validate("Post Code", PostCode);
         Customer.Validate("Payment Terms Code", PaymentTermsCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
     end;
 

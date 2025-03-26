@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13727 "Create Vendor Posting Group DK"
 {
     SingleInstance = true;

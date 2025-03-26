@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5111 "Create Svc Loaner"
 {
     InherentEntitlements = X;

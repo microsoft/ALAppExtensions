@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 5272 "G/L Acc. Mapping Card"
 {
     PageType = ListPlus;

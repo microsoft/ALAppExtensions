@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12213 "Create VAT Posting Groups IT"
 {
     SingleInstance = true;

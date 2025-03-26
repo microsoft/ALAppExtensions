@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17146 "Create NZ Gen. Journ. Template"
 {
     InherentEntitlements = X;

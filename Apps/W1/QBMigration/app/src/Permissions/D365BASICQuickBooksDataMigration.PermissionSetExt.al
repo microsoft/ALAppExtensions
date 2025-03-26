@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 46049 "D365 BASICQuickBooks Data Migration" extends "D365 BASIC"
 {
     Permissions = tabledata "MigrationQB Account" = RIMD,

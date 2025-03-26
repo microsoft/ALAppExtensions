@@ -130,6 +130,8 @@ codeunit 139879 "PowerBI Project Test"
         Assert.AreEqual(JobTask.Totaling, JsonMgt.GetValue('totaling'), 'Totaling did not match.');
         Assert.AreEqual(Format(JobTask."Job Task Type"), JsonMgt.GetValue('jobTaskType'), 'Job task type did not match.');
         Assert.AreEqual(Format(JobTask.Indentation), JsonMgt.GetValue('indentation'), 'Indentation did not match.');
+        Assert.AreEqual(Format(JobTask."Start Date", 0, 9), JsonMgt.GetValue('startDate'), 'Start date did not match.');
+        Assert.AreEqual(Format(JobTask."End Date", 0, 9), JsonMgt.GetValue('endDate'), 'End date did not match.');
     end;
 
     [Test]

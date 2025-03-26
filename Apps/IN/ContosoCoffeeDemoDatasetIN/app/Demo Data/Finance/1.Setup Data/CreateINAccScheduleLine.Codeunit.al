@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19005 "Create IN Acc. Schedule Line"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4767 "FA Module Setup"
 {
     DataClassification = CustomerContent;

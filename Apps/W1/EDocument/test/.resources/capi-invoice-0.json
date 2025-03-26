@@ -42,7 +42,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": "$"
+              "currency_symbol": "$",
+              "currency_code": null
             },
             "billingAddress": {
               "value_text": "123 Bill St, Redmond WA, 98052",
@@ -78,7 +79,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "billingAddressRecipient": {
               "value_text": "Microsoft Finance",
@@ -114,7 +116,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "customerAddress": {
               "value_text": "123 Other St, Redmond WA, 98052",
@@ -150,7 +153,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "customerAddressRecipient": {
               "value_text": "Microsoft Corp",
@@ -186,7 +190,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "customerId": {
               "value_text": "CID-12345",
@@ -222,7 +227,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "customerName": {
               "value_text": "MICROSOFT CORPORATION",
@@ -258,7 +264,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "dueDate": {
               "value_text": "12/15/2019",
@@ -294,7 +301,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "invoiceDate": {
               "value_text": "11/15/2019",
@@ -330,7 +338,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "invoiceId": {
               "value_text": "INV-100",
@@ -366,7 +375,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "invoiceTotal": {
               "value_text": "$110.00",
@@ -402,7 +412,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": "$"
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
             },
             "previousUnpaidBalance": {
               "value_text": "$500.00",
@@ -438,7 +449,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": "$"
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
             },
             "purchaseOrder": {
               "value_text": "PO-3333",
@@ -474,7 +486,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "remittanceAddress": {
               "value_text": "123 Remit St New York, NY, 10001",
@@ -510,7 +523,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "remittanceAddressRecipient": {
               "value_text": "Contoso Billing",
@@ -546,7 +560,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "serviceAddress": {
               "value_text": "123 Service St, Redmond WA, 98052",
@@ -582,7 +597,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "serviceAddressRecipient": {
               "value_text": "Microsoft Services",
@@ -618,7 +634,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "serviceEndDate": {
               "value_text": "11/14/2019",
@@ -654,7 +671,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "serviceStartDate": {
               "value_text": "10/14/2019",
@@ -690,7 +708,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "shippingAddress": {
               "value_text": "123 Ship St, Redmond WA, 98052",
@@ -726,7 +745,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "shippingAddressRecipient": {
               "value_text": "Microsoft Delivery",
@@ -762,7 +782,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "subTotal": {
               "value_text": "$100.00",
@@ -798,7 +819,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": "$"
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
             },
             "totalTax": {
               "value_text": "$10.00",
@@ -834,7 +856,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": "$"
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
             },
             "vendorAddress": {
               "value_text": "123 456th St New York, NY, 10001",
@@ -870,7 +893,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "vendorAddressRecipient": {
               "value_text": "Contoso Headquarters",
@@ -906,7 +930,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "vendorName": {
               "value_text": "CONTOSO LTD.",
@@ -942,7 +967,8 @@
                 },
                 "page": 1
               },
-              "currency_symbol": null
+              "currency_symbol": null,
+              "currency_code": null
             },
             "customerTaxId": null,
             "vendorTaxId": null,
@@ -985,7 +1011,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "description": {
                   "value_text": "Consulting Services",
@@ -1021,7 +1048,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unitPrice": {
                   "value_text": "$30.00",
@@ -1057,7 +1085,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "quantity": {
                   "value_text": "2",
@@ -1093,7 +1122,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "productCode": {
                   "value_text": "A123",
@@ -1129,7 +1159,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unit": {
                   "value_text": "hours",
@@ -1165,7 +1196,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "date": {
                   "value_text": "3/4/2021",
@@ -1201,7 +1233,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "tax": {
                   "value_text": "$6.00",
@@ -1237,7 +1270,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 }
               },
               "row_text": "3/4/2021 A123 Consulting Services 2 hours $30.00 $6.00 $60.00",
@@ -1308,7 +1342,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "description": {
                   "value_text": "Document Fee",
@@ -1344,7 +1379,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unitPrice": {
                   "value_text": "$10.00",
@@ -1380,7 +1416,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "quantity": {
                   "value_text": "3",
@@ -1416,7 +1453,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "productCode": {
                   "value_text": "B456",
@@ -1452,7 +1490,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unit": null,
                 "date": {
@@ -1489,7 +1528,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "tax": {
                   "value_text": "$3.00",
@@ -1525,7 +1565,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 }
               },
               "row_text": "3/5/2021 B456 Document Fee 3 $10.00 $3.00 $30.00",
@@ -1596,7 +1637,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "description": {
                   "value_text": "Printing Fee",
@@ -1632,7 +1674,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unitPrice": {
                   "value_text": "$1.00",
@@ -1668,7 +1711,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 },
                 "quantity": {
                   "value_text": "10",
@@ -1704,7 +1748,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "productCode": {
                   "value_text": "C789",
@@ -1740,7 +1785,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "unit": {
                   "value_text": "pages",
@@ -1776,7 +1822,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "date": {
                   "value_text": "3/6/2021",
@@ -1812,7 +1859,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": null
+                  "currency_symbol": null,
+                  "currency_code": null
                 },
                 "tax": {
                   "value_text": "$1.00",
@@ -1848,7 +1896,8 @@
                     },
                     "page": 1
                   },
-                  "currency_symbol": "$"
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
                 }
               },
               "row_text": "3/6/2021 C789 Printing Fee 10 pages $1.00 $1.00 $10.00",

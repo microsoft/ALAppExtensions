@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5329 "Create Business Relation"
 {
     InherentEntitlements = X;

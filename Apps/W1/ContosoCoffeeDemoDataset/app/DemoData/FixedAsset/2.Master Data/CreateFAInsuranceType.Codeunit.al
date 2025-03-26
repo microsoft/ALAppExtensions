@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5156 "Create FA Insurance Type"
 {
     InherentEntitlements = X;

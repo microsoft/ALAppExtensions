@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10796 "Create ES Column Layout"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17128 "Create NZ Item Template"
 {
     SingleInstance = true;

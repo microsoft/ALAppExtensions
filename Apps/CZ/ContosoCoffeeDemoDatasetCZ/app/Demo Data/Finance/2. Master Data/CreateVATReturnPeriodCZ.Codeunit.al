@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31289 "Create VAT Return Period CZ"
 {
     InherentEntitlements = X;

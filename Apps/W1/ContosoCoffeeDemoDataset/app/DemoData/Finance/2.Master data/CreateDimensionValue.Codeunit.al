@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5417 "Create Dimension Value"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13449 "Create VATSetupPostingGrp. FI"
 {
     SingleInstance = true;

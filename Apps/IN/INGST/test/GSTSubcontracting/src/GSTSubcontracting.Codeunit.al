@@ -926,6 +926,34 @@ codeunit 18479 "GST Subcontracting"
         VerifyQuantityToSendInSubOrderComponentList(ProductionOrder);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,CreditMemoCreateMsgHandler')]
+    procedure TestDuplicateOrderThroughPlanningWhenSendToSubconLocation()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        ReqLine: Record "Requisition Line";
+        Item: Record Item;
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] Check if no duplicate orders are created from planning worksheet when send component item to Vendor Location
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, false);
+
+        // [GIVEN] Update Item with Reordering Policy and Stockeeping Unit with Company Location
+        UpdateItemWithReorderingPolicy(Item);
+
+        // [GIVEN] Create Subcontracting Order from Released Purchase Order, Update Deliver Comp. For In Order Subcon. Details Delivery
+        CreateSubcontractingOrderFromReleasedProdOrderForPlanning(ProductionOrder, PurchaseLine);
+        DeliverSubconComponents(PurchaseLine, 0);
+
+        // [THEN] Verify No Record Exist for Component Item
+        LibraryPlanning.CalcRegenPlanForPlanWksh(Item, WorkDate(), WorkDate());
+        FindRequsitionLine(ReqLine, Item."No.");
+        Assert.RecordIsEmpty(ReqLine);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -2267,6 +2295,84 @@ codeunit 18479 "GST Subcontracting"
         exit(PurchaseLine."Outstanding Qty. (Base)");
     end;
 
+    local procedure UpdateItemWithReorderingPolicy(var Item: Record Item)
+    var
+        StockeepingUnit: Record "Stockkeeping Unit";
+        CompanyLocation: Code[10];
+    begin
+        Item.Get(Storage.Get(XComponentItemNoTok));
+        Item.Validate("Reordering Policy", Item."Reordering Policy"::"Lot-for-Lot");
+        Item.Modify(true);
+
+        CompanyLocation := (Storage.Get(XCompanyLocationCodeTok));
+        LibraryInventory.CreateStockkeepingUnitForLocationAndVariant(StockeepingUnit, CompanyLocation, Item."No.", '');
+    end;
+
+    local procedure CreateSubcontractingOrderFromReleasedProdOrderForPlanning(var ProductionOrder: Record "Production Order"; var PurchaseLine: Record "Purchase Line")
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+        ProdOrderRoutingLine: Record "Prod. Order Routing Line";
+        ProdOrderComponent: Record "Prod. Order Component";
+        RequisitionLine: Record "Requisition Line";
+        Item: Record Item;
+        SubOrderComponentList: Record "Sub Order Component List";
+        ProdOrderStatus: Enum "Production order Status";
+        ProdOrderSourceType: Enum "Prod. Order Source Type";
+        MainItemNo: Code[20];
+        CompanyLocationCode: Code[10];
+    begin
+        MainItemNo := (Storage.Get(XMainItemNoTok));
+        CompanyLocationCode := (Storage.Get(XCompanyLocationCodeTok));
+        CreateAndRefreshProductionOrder(ProductionOrder, ProdOrderStatus::Released, ProdOrderSourceType::Item, MainItemNo, 110, CompanyLocationCode);
+
+        ProdOrderLine.Reset();
+        ProdOrderLine.SetRange(Status, ProdOrderStatus::Released);
+        ProdOrderLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        if ProdOrderLine.FindFirst() then begin
+            ProdOrderComponent.SetRange(Status, ProdOrderLine.Status);
+            ProdOrderComponent.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+            ProdOrderComponent.SetRange("Prod. Order Line No.", ProdOrderLine."Line No.");
+            if ProdOrderComponent.FindSet() then
+                repeat
+                    ProdOrderComponent.Validate("Unit Cost", LibraryRandom.RandInt(100));
+                    ProdOrderComponent.Modify();
+                until ProdOrderComponent.Next() = 0;
+
+            ProdOrderRoutingLine.SetRange(Status, ProdOrderLine.Status);
+            ProdOrderRoutingLine.SetRange("Prod. Order No.", ProdOrderLine."Prod. Order No.");
+            ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
+            ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
+            if ProdOrderRoutingLine.FindSet() then
+                LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+        end;
+
+        FindRequisitionLineForProductionOrder(RequisitionLine, ProductionOrder);
+        LibraryPlanning.CarryOutAMSubcontractWksh(RequisitionLine);
+
+        Item.Get(MainItemNo);
+        PurchaseLine.SetRange("No.", MainItemNo);
+        PurchaseLine.SetRange("Prod. Order No.", ProductionOrder."No.");
+        PurchaseLine.FindFirst();
+        PurchaseLine.Validate("Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group");
+        PurchaseLine.Validate("VAT Prod. Posting Group", Item."VAT Prod. Posting Group");
+        PurchaseLine.Validate("Qty. per Unit of Measure", 1);
+        PurchaseLine.Validate(Quantity, PurchaseLine.Quantity);
+        PurchaseLine.Validate(PurchaseLine."Qty. to Receive", PurchaseLine.Quantity);
+        PurchaseLine.Validate(PurchaseLine."Qty. to Invoice", PurchaseLine.Quantity);
+        PurchaseLine.Modify();
+        Storage.Set(DeliveryChallanNoLbl, PurchaseLine."Document No.");
+
+        SubOrderComponentList.Reset();
+        SubOrderComponentList.SetRange("Document No.", PurchaseLine."Document No.");
+        SubOrderComponentList.SetRange("Document Line No.", PurchaseLine."Line No.");
+        SubOrderComponentList.ModifyAll("Company Location", CompanyLocationCode);
+    end;
+
+    local procedure FindRequsitionLine(var RequisitionLine: Record "Requisition Line"; ItemNo: Code[20])
+    begin
+        RequisitionLine.SetRange("No.", ItemNo);
+    end;
+
     [PageHandler]
     procedure TaxRatePageHandler(var TaxRates: TestPage "Tax Rates")
     begin
@@ -2296,7 +2402,7 @@ codeunit 18479 "GST Subcontracting"
     procedure DeliveryChallanSentMsgHandler(MsgTxt: Text[1024])
     begin
         if MsgTxt <> StrSubstNo(SuccessMsg, Storage.Get(DeliveryChallanNoLbl)) then
-            Error(NotPostedErr);
+            Error('NotPostedErr %1', Storage.Get(DeliveryChallanNoLbl));
     end;
 
     [MessageHandler]

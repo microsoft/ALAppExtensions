@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11095 "Create DE Item Charge"
 {
     SingleInstance = true;

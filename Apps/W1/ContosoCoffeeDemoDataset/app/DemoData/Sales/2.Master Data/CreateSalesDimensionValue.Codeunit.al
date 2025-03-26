@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5412 "Create Sales Dimension Value"
 {
     InherentEntitlements = X;

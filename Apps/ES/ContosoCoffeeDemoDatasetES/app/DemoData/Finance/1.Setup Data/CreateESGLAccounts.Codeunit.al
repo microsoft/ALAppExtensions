@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10780 "Create ES GL Accounts"
 {
     InherentPermissions = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13421 "Create Country Region FI"
 {
     SingleInstance = true;

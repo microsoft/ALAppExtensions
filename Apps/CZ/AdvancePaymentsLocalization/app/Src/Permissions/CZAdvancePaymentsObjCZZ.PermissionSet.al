@@ -1,4 +1,5 @@
-﻿permissionset 11752 "CZ Advance Payments - Obj. CZZ"
+#pragma warning disable AA0247
+permissionset 11752 "CZ Advance Payments - Obj. CZZ"
 {
     Access = Public;
     Assignable = false;

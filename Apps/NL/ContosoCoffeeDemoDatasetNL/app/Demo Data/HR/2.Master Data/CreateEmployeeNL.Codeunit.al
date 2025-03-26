@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11507 "Create Employee NL"
 {
     InherentEntitlements = X;

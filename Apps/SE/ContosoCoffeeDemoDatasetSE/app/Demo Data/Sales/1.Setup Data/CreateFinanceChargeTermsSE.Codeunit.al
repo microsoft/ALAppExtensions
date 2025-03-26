@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 
 codeunit 11245 "Create Finance Charge Terms SE"
 {

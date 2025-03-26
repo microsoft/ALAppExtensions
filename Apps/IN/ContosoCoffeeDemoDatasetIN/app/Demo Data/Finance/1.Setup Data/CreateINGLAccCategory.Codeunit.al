@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19066 "Create IN GL Acc. Category"
 {
     InherentEntitlements = X;

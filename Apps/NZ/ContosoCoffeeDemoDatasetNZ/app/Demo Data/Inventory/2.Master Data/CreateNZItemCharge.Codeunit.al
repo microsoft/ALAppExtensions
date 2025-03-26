@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17127 "Create NZ Item Charge"
 {
     SingleInstance = true;

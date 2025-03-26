@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11587 "Create CH Bank Ex/Import"
 {
     trigger OnRun()

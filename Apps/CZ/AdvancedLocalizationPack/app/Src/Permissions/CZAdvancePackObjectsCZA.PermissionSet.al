@@ -1,4 +1,5 @@
-﻿permissionset 11742 "CZ Advance Pack - Objects CZA"
+#pragma warning disable AA0247
+permissionset 11742 "CZ Advance Pack - Objects CZA"
 {
     Access = Public;
     Assignable = false;

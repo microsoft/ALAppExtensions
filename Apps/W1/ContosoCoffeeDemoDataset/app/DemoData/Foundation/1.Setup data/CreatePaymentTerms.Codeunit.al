@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5206 "Create Payment Terms"
 {
     InherentEntitlements = X;

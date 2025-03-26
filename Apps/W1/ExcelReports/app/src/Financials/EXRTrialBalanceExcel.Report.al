@@ -82,7 +82,6 @@ report 4405 "EXR Trial Balance Excel"
         SaveValues = true;
         AboutTitle = 'About Trial Balance (Excel)';
         AboutText = 'View a snapshot of your chart of accounts at a given point to check the debit and credit net change and closing balance. You can see the trial balance in both your local currency (LCY) and additional reporting currency (ACY).';
-
         layout
         {
             area(content)

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11534 "Create VAT Posting Groups NL"
 {
     InherentEntitlements = X;

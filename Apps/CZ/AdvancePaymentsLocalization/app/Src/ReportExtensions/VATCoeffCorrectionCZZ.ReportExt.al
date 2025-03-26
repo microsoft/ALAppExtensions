@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 reportextension 31007 "VAT Coeff. Correction CZZ" extends "VAT Coeff. Correction CZL"
 {
     dataset

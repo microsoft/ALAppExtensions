@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11544 "Create Gen. Journal Line NL"
 {
     SingleInstance = true;

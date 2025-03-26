@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10867 "Contoso Post Code FR"
 {
     InherentEntitlements = X;

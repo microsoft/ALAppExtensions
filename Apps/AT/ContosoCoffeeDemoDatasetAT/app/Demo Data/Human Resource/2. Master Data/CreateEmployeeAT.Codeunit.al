@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11184 "Create Employee AT"
 {
     SingleInstance = true;

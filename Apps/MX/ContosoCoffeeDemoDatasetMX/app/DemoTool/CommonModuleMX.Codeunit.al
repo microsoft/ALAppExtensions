@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14095 "Common Module MX"
 {
     InherentEntitlements = X;

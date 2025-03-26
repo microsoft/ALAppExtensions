@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14110 "Create Posting Groups MX"
 {
     SingleInstance = true;

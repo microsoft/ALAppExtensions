@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11116 "Create DE Receiver/Dispatcher"
 {
     InherentEntitlements = X;

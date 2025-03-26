@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4795 "Contoso Customer/Vendor"
 {
     InherentEntitlements = X;

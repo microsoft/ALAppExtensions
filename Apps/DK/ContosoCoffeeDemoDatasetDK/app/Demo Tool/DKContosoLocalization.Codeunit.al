@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13750 "DK Contoso Localization"
 {
     InherentEntitlements = X;

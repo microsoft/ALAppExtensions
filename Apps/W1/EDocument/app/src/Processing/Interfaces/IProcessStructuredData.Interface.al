@@ -10,6 +10,7 @@ using Microsoft.eServices.EDocument.Processing.Import;
 /// <summary>
 /// Describe the data processing used to assign Business Central values to the E-Document data structures
 /// </summary>
+#pragma warning disable AS0066 
 interface IProcessStructuredData
 {
 
@@ -19,6 +20,17 @@ interface IProcessStructuredData
     procedure PrepareDraft(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): Enum "E-Document Type";
 
 
+    /// <summary>
+    /// Open the draft page for the E-Document
+    /// </summary>
     procedure OpenDraftPage(var EDocument: Record "E-Document");
 
+
+    /// <summary>
+    /// Clean up any custom or scenario specific records using during processing 
+    /// </summary>
+    /// <param name="EDocument"></param>
+    procedure CleanUpDraft(EDocument: Record "E-Document");
+
 }
+#pragma warning restore AS0066

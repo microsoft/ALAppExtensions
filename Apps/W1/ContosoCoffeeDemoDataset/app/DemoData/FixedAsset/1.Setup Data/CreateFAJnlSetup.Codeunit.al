@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5150 "Create FA Jnl. Setup"
 {
     InherentEntitlements = X;

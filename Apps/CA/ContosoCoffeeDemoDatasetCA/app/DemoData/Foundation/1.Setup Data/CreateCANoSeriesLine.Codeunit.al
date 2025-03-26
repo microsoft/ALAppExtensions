@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27055 "Create CA No. Series Line"
 {
     SingleInstance = true;

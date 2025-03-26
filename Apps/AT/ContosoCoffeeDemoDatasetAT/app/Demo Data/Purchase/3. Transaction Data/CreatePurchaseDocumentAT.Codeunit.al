@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11153 "Create Purchase Document AT"
 {
     InherentEntitlements = X;

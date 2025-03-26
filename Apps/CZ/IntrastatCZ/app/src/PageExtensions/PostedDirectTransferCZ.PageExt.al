@@ -10,14 +10,26 @@ pageextension 31377 "Posted Direct Transfer CZ" extends "Posted Direct Transfer"
 {
     layout
     {
-        addafter(IsIntrastatTransactionCZL)
+        addafter("Transfer-from")
         {
-            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            group("Foreign Trade CZ")
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude';
-                Editable = false;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                Caption = 'Foreign Trade';
+
+                field(IsIntrastatTransactionCZ; Rec.IsIntrastatTransactionCZ())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Transaction';
+                    Editable = false;
+                    ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                }
+                field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Exclude';
+                    Editable = false;
+                    ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                }
             }
         }
     }

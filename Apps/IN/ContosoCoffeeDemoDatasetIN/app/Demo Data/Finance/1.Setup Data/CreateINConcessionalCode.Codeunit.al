@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19049 "Create IN Concessional Code"
 {
     InherentEntitlements = X;

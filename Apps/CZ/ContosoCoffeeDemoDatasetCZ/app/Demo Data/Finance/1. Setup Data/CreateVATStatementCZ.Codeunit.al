@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31282 "Create VAT Statement CZ"
 {
     InherentEntitlements = X;

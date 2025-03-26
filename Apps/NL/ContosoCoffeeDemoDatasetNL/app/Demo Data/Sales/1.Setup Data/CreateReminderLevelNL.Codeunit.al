@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11501 "Create Reminder Level NL"
 {
     SingleInstance = true;

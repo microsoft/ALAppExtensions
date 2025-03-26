@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31206 "Create Payment Method CZ"
 {
     InherentEntitlements = X;

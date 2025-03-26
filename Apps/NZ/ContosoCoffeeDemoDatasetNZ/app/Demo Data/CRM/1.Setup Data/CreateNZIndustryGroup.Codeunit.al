@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17132 "Create NZ Industry Group"
 {
     InherentEntitlements = X;

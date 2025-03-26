@@ -70,7 +70,8 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
 
         for i := 1 to LineXMLList.Count do begin
             Clear(EDocumentPurchaseLine);
-            EDocumentPurchaseLine."E-Document Entry No." := EDocumentEntryNo;
+            EDocumentPurchaseLine.Validate("E-Document Entry No.", EDocumentEntryNo);
+            EDocumentPurchaseLine."Line No." := (i * 10000);
             LineXMLList.Get(i, LineXMLNode);
             NewLineXML.ReplaceNodes(LineXMLNode);
             PopulateEDocumentPurchaseLine(NewLineXML, XmlNamespaces, EDocumentPurchaseLine);

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5193 "Contoso Demo Tool"
 {
     InherentEntitlements = X;

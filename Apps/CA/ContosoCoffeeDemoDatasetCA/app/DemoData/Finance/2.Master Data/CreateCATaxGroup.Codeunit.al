@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27011 "Create CA Tax Group"
 {
     InherentEntitlements = X;

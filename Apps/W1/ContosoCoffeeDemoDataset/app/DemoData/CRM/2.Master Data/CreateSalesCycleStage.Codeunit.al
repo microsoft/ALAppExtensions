@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5677 "Create Sales Cycle Stage"
 {
     InherentEntitlements = X;

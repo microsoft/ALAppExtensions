@@ -1,0 +1,19 @@
+{
+    "id": "1234567890",
+    "sendingCompany": {
+        "id": "string",
+        "name": "string",
+        "department": "string"
+    },
+    "sendingUser": {
+        "id": "string",
+        "fullName": "string",
+        "username": "string",
+        "email": "string",
+        "phone": "string"
+    },
+    "sendMode": "Production",
+    "createTime": "string",
+    "documentType": "string",
+    "senderReference": "string"
+}

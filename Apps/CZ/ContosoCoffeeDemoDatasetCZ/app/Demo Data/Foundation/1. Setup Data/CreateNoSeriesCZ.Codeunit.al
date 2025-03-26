@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31196 "Create No. Series CZ"
 {
     InherentEntitlements = X;

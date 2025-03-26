@@ -1,4 +1,5 @@
-﻿xmlport 11759 "Unreliable Payer Status CZL"
+#pragma warning disable AA0247
+xmlport 11759 "Unreliable Payer Status CZL"
 {
     Caption = 'Unreliable Payer Status';
     DefaultNamespace = 'http://adis.mfcr.cz/rozhraniCRPDPH/';

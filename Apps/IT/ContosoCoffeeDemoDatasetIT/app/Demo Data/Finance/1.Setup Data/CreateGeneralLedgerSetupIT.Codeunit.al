@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12168 "Create General Ledger Setup IT"
 {
     InherentEntitlements = X;

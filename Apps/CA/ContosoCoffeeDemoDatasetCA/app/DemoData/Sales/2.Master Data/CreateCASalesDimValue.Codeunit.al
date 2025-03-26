@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27082 "Create CA Sales Dim. Value"
 {
     SingleInstance = true;

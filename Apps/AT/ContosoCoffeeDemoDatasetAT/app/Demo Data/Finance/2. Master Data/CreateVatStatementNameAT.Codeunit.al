@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11189 "Create VAT Statement Name AT"
 {
     InherentEntitlements = X;

@@ -254,6 +254,7 @@ codeunit 31155 "Cash Doc. Alloc. Acc. Mgt. CZP"
 
         VerifyAllocationAccount(AllocationAccount);
 
+        AllocationAccountCashDocumentLineCZP.Find();
         GetOrGenerateAllocationLines(AllocationLine, AllocationAccountCashDocumentLineCZP.SystemId);
 #pragma warning disable AA0210
         AllocationLine.SetFilter(Amount, '<>%1', 0);
@@ -352,12 +353,12 @@ codeunit 31155 "Cash Doc. Alloc. Acc. Mgt. CZP"
             if AllocationCashDocumentLineCZP."Description 2" <> '' then
                 CashDocumentLineCZP."Description 2" := AllocationCashDocumentLineCZP."Description 2";
         end;
+        CashDocumentLineCZP."Allocation Account No." := AllocationLine."Allocation Account No.";
+        CashDocumentLineCZP."Selected Alloc. Account No." := '';
 
         MoveAmounts(CashDocumentLineCZP, AllocationLine, AllocationAccount);
 
         TransferDimensionSetID(CashDocumentLineCZP, AllocationLine, AllocationCashDocumentLineCZP."Alloc. Acc. Modified by User");
-        CashDocumentLineCZP."Allocation Account No." := AllocationLine."Allocation Account No.";
-        CashDocumentLineCZP."Selected Alloc. Account No." := '';
         OnBeforeCreateCashDocumentLine(CashDocumentLineCZP, AllocationLine, AllocationCashDocumentLineCZP);
         CashDocumentLineCZP.Insert(true);
         LastLineNo := CashDocumentLineCZP."Line No.";

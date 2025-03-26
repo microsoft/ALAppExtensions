@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11097 "Create DE Location"
 {
     SingleInstance = true;

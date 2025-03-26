@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10838 "Create ES Vat Reg. No. Format"
 {
     SingleInstance = true;

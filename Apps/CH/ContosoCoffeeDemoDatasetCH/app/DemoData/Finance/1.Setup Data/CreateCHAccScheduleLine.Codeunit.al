@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11583 "Create CH Acc Schedule Line"
 {
     SingleInstance = true;

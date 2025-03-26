@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2690 "Data Search Security RC Ext" extends "Security Admin Role Center"
 {
     ObsoleteState = Pending;

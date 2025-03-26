@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11520 "Create Vendor NL"
 {
     SingleInstance = true;

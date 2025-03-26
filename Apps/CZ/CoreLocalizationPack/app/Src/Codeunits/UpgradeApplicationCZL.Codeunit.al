@@ -179,7 +179,6 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeVATStatementTemplate();
         UpgradeAllowVATPosting();
         UpgradeOriginalVATAmountsInVATEntries();
-        UpgradeFunctionalCurrency();
         UpgradeEnableNonDeductibleVATCZ();
         UpgradeVATReport();
         UpgradeSetEnableNonDeductibleVATCZ();
@@ -643,40 +642,6 @@ codeunit 31017 "Upgrade Application CZL"
         VATEntryDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
-    end;
-
-    local procedure UpgradeFunctionalCurrency()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        PurchaseHeader: Record "Purchase Header";
-        SalesHeader: Record "Sales Header";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetFunctionalCurrencyUpgradeTag()) then
-            exit;
-
-        if GeneralLedgerSetup.IsAdditionalCurrencyEnabled() then begin
-            SalesHeader.SetLoadFields("Additional Currency Factor CZL", "Posting Date");
-            SalesHeader.SetRange("Additional Currency Factor CZL", 0);
-            if SalesHeader.FindSet(true) then
-                repeat
-                    SalesHeader.UpdateAddCurrencyFactorCZL();
-#pragma warning disable AA0214
-                    if SalesHeader.Modify() then;
-#pragma warning restore AA0214
-                until SalesHeader.Next() = 0;
-
-            PurchaseHeader.SetLoadFields("Additional Currency Factor CZL", "Posting Date");
-            PurchaseHeader.SetRange("Additional Currency Factor CZL", 0);
-            if PurchaseHeader.FindSet(true) then
-                repeat
-                    PurchaseHeader.UpdateAddCurrencyFactorCZL();
-#pragma warning disable AA0214
-                    if PurchaseHeader.Modify() then;
-#pragma warning restore AA0214
-                until PurchaseHeader.Next() = 0;
-        end;
-
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetFunctionalCurrencyUpgradeTag());
     end;
 
     local procedure UpgradeEnableNonDeductibleVATCZ()

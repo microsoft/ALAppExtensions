@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4791 "Create Whse Put Away Template"
 {
     InherentEntitlements = X;

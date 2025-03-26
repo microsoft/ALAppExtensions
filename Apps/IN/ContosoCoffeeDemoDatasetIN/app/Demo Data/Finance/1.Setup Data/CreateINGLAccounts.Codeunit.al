@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19000 "Create IN GL Accounts"
 {
     InherentPermissions = X;

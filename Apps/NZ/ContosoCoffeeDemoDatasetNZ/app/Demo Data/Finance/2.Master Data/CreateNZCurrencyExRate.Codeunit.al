@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17149 "Create NZ Currency Ex. Rate"
 {
     SingleInstance = true;

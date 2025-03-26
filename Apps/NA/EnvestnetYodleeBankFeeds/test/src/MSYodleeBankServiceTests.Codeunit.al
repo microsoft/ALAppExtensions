@@ -104,13 +104,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         CryptographyManagement: Codeunit "Cryptography Management";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MSYodleeBankServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
     begin
         Initialize();
-
-        // Enable SaaS mode
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(TRUE);
 
         // Configure encryption key if it does not exist
         IF NOT CryptographyManagement.IsEncryptionEnabled() THEN BEGIN
@@ -144,6 +140,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetup."Accept Terms of Use" := TRUE;
         IF MSYodleeBankServiceSetup."Bank Feed Import Format" = '' THEN
             MSYodleeBankServiceSetup."Bank Feed Import Format" := 'YODLEEBANKFEED';
+        IF MSYodleeBankServiceSetup."User Profile Email Address" = '' THEN
+            MSYodleeBankServiceSetup."User Profile Email Address" := 'cristina@contoso.com';
         MSYodleeBankServiceSetup.MODIFY();
     end;
 
@@ -1734,6 +1732,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         MSYodleeBankServiceSetupPage.OPENEDIT();
         MSYodleeBankServiceSetupPage.SetDefaults.INVOKE();
+        MSYodleeBankServiceSetupPage."User Profile Email Address".SetValue('cristina@contoso.com');
         MSYodleeBankServiceSetupPage.Enabled.SETVALUE(TRUE);
         MSYodleeBankServiceSetupPage.CLOSE();
 
@@ -1929,11 +1928,13 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
     procedure TestDemoCompanyWarnsUserOnAction();
     var
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         BankAccountList: TestPage "Bank Account List";
         BankAccountCard: TestPage "Bank Account Card";
     begin
         // Setup
         Initialize();
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         SetDemoCompanyState(TRUE);
         BankAccountCard.OPENVIEW();
         BankAccountList.OPENVIEW();
@@ -1950,6 +1951,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         LibraryVariableStorage.Enqueue(DemoCompanyWithDefaultCredentialMsg);
         BankAccountCard.LinkToOnlineBankAccount.INVOKE();
+
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]

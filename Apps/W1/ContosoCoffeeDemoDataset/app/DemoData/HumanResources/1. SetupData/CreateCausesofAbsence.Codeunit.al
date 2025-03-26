@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5158 "Create Causes of Absence"
 {
     InherentEntitlements = X;
