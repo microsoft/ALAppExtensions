@@ -1163,13 +1163,6 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
                 }
             }
         }
-
-        actions
-        {
-            area(Processing)
-            {
-            }
-        }
     }
 
     var
