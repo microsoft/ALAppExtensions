@@ -126,6 +126,11 @@ table 30119 "Shpfy Order Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(21; "Gift Card Id"; BigInteger)
+        {
+            Caption = 'Gift Card Id';
+            DataClassification = SystemMetadata;
+        }
         field(1000; "Item No."; Code[20])
         {
             Caption = 'Item No.';
