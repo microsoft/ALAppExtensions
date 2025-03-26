@@ -1505,6 +1505,116 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         SwissQRBillTestLibrary.ClearVendor(PurchaseHeader."Buy-from Vendor No.");
     end;
 
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillWithOptionalInfo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        IBAN: Code[50];
+        BillInfo: Text;
+        PurchDocVendorInvNo: Code[35];
+        PurchDocPayRef: Code[50];
+        PurchDocPostingDescr: Text[100];
+        QRBillVendInvNo: Code[50];
+        QRBillPayRef: Code[50];
+        QRBillPostingDescr: Text;
+    begin
+        // [SCENARIO 568198] Scan QR-Bill from Purchase Invoice card when all Billing details are specified.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with Unstructured Message "MSG1", Payment Reference "REF1" and Invoice No. "INV1".
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        QRBillPostingDescr := LibraryUtility.GenerateGUID();
+        QRBillPayRef := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        QRBillVendInvNo := LibraryUtility.GenerateGUID();
+        BillInfo := 'S1/10/' + QRBillVendInvNo + '/11/231015';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', QRBillPayRef, QRBillPostingDescr, BillInfo);
+
+        // [GIVEN] Purchase Invoice with Posting Description "MSG2", Payment Reference "REF2", Vendor Invoice No. "INV2".
+        PurchDocPostingDescr := LibraryUtility.GenerateGUID();
+        PurchDocPayRef := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        PurchDocVendorInvNo := LibraryUtility.GenerateGUID();
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, PurchDocPayRef, PurchDocVendorInvNo, PurchDocPostingDescr);
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] QR-Bill billing information was set on Purchase Invoice.
+        // [THEN] Posting Description = "MSG1", Payment Reference = "REF1", Vendor Invoice No. = "INV1".
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        Assert.AreEqual(QRBillPostingDescr, PurchaseHeader."Posting Description", 'Incorrect Posting Description');
+        Assert.AreEqual(QRBillPayRef, PurchaseHeader."Payment Reference", 'Incorrect Payment Reference');
+        Assert.AreEqual(QRBillVendInvNo, PurchaseHeader."Vendor Invoice No.", 'Incorrect Vendor Invoice No.');
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,MessageHandler')]
+    procedure InvoiceScanQRBillWithoutOptionalInfo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        VendorBankAccountNo: Code[20];
+        QRCodeText: Text;
+        IBAN: Code[50];
+        BillInfo: Text;
+        PurchDocVendorInvNo: Code[35];
+        PurchDocPayRef: Code[50];
+        PurchDocPostingDescr: Text[100];
+        QRBillVendInvNo: Code[50];
+        QRBillPayRef: Code[50];
+        QRBillPostingDescr: Text;
+    begin
+        // [SCENARIO 568198] Scan QR-Bill from Purchase Invoice card when optional Billing details are not specified.
+        Initialize();
+
+        // [GIVEN] QR-Bill text with Billing Information with empty Unstructured Message, Payment Reference and Invoice No..
+        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        QRBillPostingDescr := '';
+        QRBillPayRef := '';
+        QRBillVendInvNo := '';
+        BillInfo := 'S1/10/' + QRBillVendInvNo + '/11/231015';
+        SwissQRBillTestLibrary.CreateVendorWithBankAccount(VendorNo, VendorBankAccountNo, IBAN);
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', QRBillPayRef, QRBillPostingDescr, BillInfo);
+
+        // [GIVEN] Purchase Invoice with Posting Description "MSG2", Payment Reference "REF2", Vendor Invoice No. "INV2".
+        PurchDocPostingDescr := LibraryUtility.GenerateGUID();
+        PurchDocPayRef := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        PurchDocVendorInvNo := LibraryUtility.GenerateGUID();
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, VendorNo, false, PurchDocPayRef, PurchDocVendorInvNo, PurchDocPostingDescr);
+
+        // [WHEN] Run scan QR-Bill from Purhchase Invoice card on the given QR-Bill text.
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] QR-Bill billing information was not overridden in Purchase Invoice with empty values.
+        // [THEN] Posting Description = "MSG2", Payment Reference = "REF2", Vendor Invoice No. = "INV2".
+        Assert.ExpectedMessage(ImportSuccessMsg, LibraryVariableStorage.DequeueText());
+        PurchaseHeader.Get(PurchaseHeader."Document Type", PurchaseHeader."No.");
+        Assert.AreEqual(PurchDocPostingDescr, PurchaseHeader."Posting Description", 'Incorrect Posting Description');
+        Assert.AreEqual(PurchDocPayRef, PurchaseHeader."Payment Reference", 'Incorrect Payment Reference');
+        Assert.AreEqual(PurchDocVendorInvNo, PurchaseHeader."Vendor Invoice No.", 'Incorrect Vendor Invoice No.');
+
+        // tear down
+        VoidInvoice(PurchaseHeader);
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(VendorNo);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -1564,6 +1674,16 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         PurchaseHeader."Swiss QR-Bill" := QRBill;
         PurchaseHeader."Vendor Invoice No." := '';
         PurchaseHeader."Payment Reference" := PmtRef;
+        PurchaseHeader.Modify();
+    end;
+
+    local procedure CreatePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; QRBill: Boolean; PmtRef: Code[50]; VendorInvoiceNo: Code[35]; PostingDescription: Text[100])
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PurchaseHeader."Swiss QR-Bill" := QRBill;
+        PurchaseHeader."Vendor Invoice No." := VendorInvoiceNo;
+        PurchaseHeader."Payment Reference" := PmtRef;
+        PurchaseHeader."Posting Description" := PostingDescription;
         PurchaseHeader.Modify();
     end;
 
