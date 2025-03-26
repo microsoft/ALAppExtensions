@@ -1,0 +1,4 @@
+<error xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <code>Conflict</code>
+  <message>Conflict</message>
+</error>

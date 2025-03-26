@@ -1,0 +1,180 @@
+<network_profiles xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <network_profile>
+        <description>Simpel Fakturaproces - Procurement-BilSim-1.0
+</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##OIOUBL-2.02::2.0</document_identifier>
+        <group_description>Simpel Fakturaproces
+</group_description>
+        <group_name>BILSIM</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DK</mandatory_in_country_iso3166>
+        <network_profile_id>48c21be4-5e96-4541-a60e-3491c6a06346</network_profile_id>
+        <process_identifier>Procurement-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Fakturabekræftelse - Procurement-BilSimR-1.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##OIOUBL-2.02::2.0</document_identifier>
+        <network_profile_id>3680b59b-3713-4d23-b20d-8512ecde8b88</network_profile_id>
+        <process_identifier>Procurement-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-BilSimReminderOnly</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>a5f1de22-c0f3-4b26-99a5-f46ca57401cb</network_profile_id>
+        <process_identifier>Procurement-BilSimReminderOnly</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdAdv-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>8754c52d-b3d6-47a1-bead-00558935f5af</network_profile_id>
+        <process_identifier>Procurement-OrdAdv-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdAdv-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>020395e4-946e-404e-bfe8-3c0135b71799</network_profile_id>
+        <process_identifier>Procurement-OrdAdv-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdAdv-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>cf1de5f3-b4a8-4b4c-beb4-1523f7f4f0ba</network_profile_id>
+        <process_identifier>Procurement-OrdAdvR-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdAdv-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>edd27514-5313-42d8-a9cb-2cc3d40c7d12</network_profile_id>
+        <process_identifier>Procurement-OrdAdvR-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdRes-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>d7527254-541e-4c50-9525-ee50d5373171</network_profile_id>
+        <process_identifier>Procurement-OrdRes-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdSel-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>66ccd864-ccc7-4dde-8765-ae0f0aa44596</network_profile_id>
+        <process_identifier>Procurement-OrdSel-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdSel-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>7b45a341-7119-491a-be95-1bc207e88c3b</network_profile_id>
+        <process_identifier>Procurement-OrdSel-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Simpel Ordreproces - Procurement-OrdSim-1.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##OIOUBL-2.02::2.0</document_identifier>
+        <network_profile_id>09436b54-c4fc-4227-bc55-7a359d804d1f</network_profile_id>
+        <process_identifier>Procurement-OrdSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Simpel Ordre til Simpel Fakturasproces</description>
+        <document_identifier></document_identifier>
+        <network_profile_id>93267abe-72ef-4cf3-b911-8d2398c2f32d</network_profile_id>
+        <process_identifier>Procurement-OrdSim-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdSim-BilSimR-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>adccf54b-939a-4abb-aea4-2bd6d66b8c41</network_profile_id>
+        <process_identifier>Procurement-OrdSim-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Simpel Ordrebekræftelse - Procurement-OrdSimR-1.0</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:OrderResponseSimple-2::OrderResponseSimple##OIOUBL-2.02::2.0</document_identifier>
+        <network_profile_id>6a7d52f4-1cb8-4817-9ff8-f5dab2ee0deb</network_profile_id>
+        <process_identifier>Procurement-OrdSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdSimR-BilSim-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>0ff94e31-7383-41c1-abba-92d11aa2e0d6</network_profile_id>
+        <process_identifier>Procurement-OrdSimR-BilSim-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-OrdSimR-BilSimR-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>710a60cf-3081-48b6-8e0e-edd37252aaec</network_profile_id>
+        <process_identifier>Procurement-OrdSimR-BilSimR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-PayBas-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>838ad4c4-1fd0-44bf-b219-ee1ed1646e93</network_profile_id>
+        <process_identifier>Procurement-PayBas-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-PayBas-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>00470c20-06f0-4f3f-a888-90d41fa0d7cf</network_profile_id>
+        <process_identifier>Procurement-PayBasR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Procurement-TecRes-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>822b5f8a-caf2-4377-aaca-6f6802d144c4</network_profile_id>
+        <process_identifier>Procurement-TecRes-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Reference Utility - OIOUTS</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:UtilityStatement-2::UtilityStatement##OIOUBL-2.1::2.1</document_identifier>
+        <group_description>Simpel Fakturaproces
+</group_description>
+        <group_name>BILSIM</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DK</mandatory_in_country_iso3166>
+        <network_profile_id>8cd2c16a-80c0-4ddb-9bfd-86718093cbe0</network_profile_id>
+        <process_identifier>Reference-Utility-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>Reference-UtilityR-1.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>d5240ea0-e195-4dea-8d4c-ea18c2fec974</network_profile_id>
+        <process_identifier>Reference-UtilityR-1.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>urn:www.nesubl.eu:profiles:profile1:ver2.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>8d0e8868-499d-4a66-a6ac-87a8225e653b</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile1:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>urn:www.nesubl.eu:profiles:profile2:ver2.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>6fb3889c-5b4a-45e6-9cc2-a355252709b4</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile2:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>urn:www.nesubl.eu:profiles:profile3:ver2.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>0013e8f5-ebe6-4103-b6c6-e418209fd1fe</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile3:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>NES5</description>
+        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##OIOUBL-2.02::2.0</document_identifier>
+        <group_description>Simpel Fakturaproces
+</group_description>
+        <group_name>BILSIM</group_name>
+        <mandatory>true</mandatory>
+        <mandatory_in_country_iso3166>DK</mandatory_in_country_iso3166>
+        <network_profile_id>9dea826b-8857-4b48-8cc7-e151e10cd427</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile5:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>urn:www.nesubl.eu:profiles:profile7:ver2.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>5665b6e9-27e3-4525-a3c8-3ecee87667a1</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile7:ver2.0</process_identifier>
+    </network_profile>
+    <network_profile>
+        <description>urn:www.nesubl.eu:profiles:profile8:ver2.0</description>
+        <document_identifier> </document_identifier>
+        <network_profile_id>23233193-06e7-47d3-ae43-5f75edcdecbd</network_profile_id>
+        <process_identifier>urn:www.nesubl.eu:profiles:profile8:ver2.0</process_identifier>
+    </network_profile>
+</network_profiles>

@@ -1,0 +1,101 @@
+<participation_lookups xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <participation_lookup>
+        <code_iso6523-1>9930</code_iso6523-1>
+        <continia_access_points />
+        <external_access_points>
+            <access_point>
+                <email>peppol@storecove.com</email>
+                <name>Storecove Document Service TEST</name>
+                <supported_profiles>
+                    <network_profile>
+                        <description>PEPPOL Invoice Response (BIS 3.0)</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1</document_identifier>
+                        <network_profile_id>4f333069-936c-4f2d-af71-0f4d261ad4a4</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:poacc:bis:invoice_response:3</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>PEPPOL Message Level Response (BIS 3.0)</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:mlr:3::2.1</document_identifier>
+                        <network_profile_id>64bb189a-3f65-4c28-a2e2-a257dba5c04b</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:poacc:bis:mlr:3</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>PEPPOL Credit Note (BIS 3.0)</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</document_identifier>
+                        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>PEPPOL BIS3.0</group_name>
+                        <network_profile_id>dd2af6bc-a05a-4fd4-a577-0216a56bea84</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung UBL CreditNote V3.0</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::2.1</document_identifier>
+                        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V3.0</group_name>
+                        <network_profile_id>d5e10b17-3070-437e-9277-c2144d160b1b</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung UBL CreditNote V2.3</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::2.1</document_identifier>
+                        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V2.3</group_name>
+                        <network_profile_id>ee8cd57b-6817-4e6f-8c33-6c83e078b43a</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>PEPPOL Invoice (BIS 3.0)</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</document_identifier>
+                        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>PEPPOL BIS3.0</group_name>
+                        <network_profile_id>8f9ab973-c6f0-4dfb-9936-19b56c5a588b</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung UBL Invoice V3.0</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::2.1</document_identifier>
+                        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V3.0</group_name>
+                        <network_profile_id>09f2bd71-d019-439f-8fff-e68ce01fe105</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung UBL Invoice V2.3</description>
+                        <document_identifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::2.1</document_identifier>
+                        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V2.3</group_name>
+                        <network_profile_id>86427376-2b53-4e60-a34c-23fb1c78808e</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>PEPPOL Cross Industry Invoice (BIS 3.0)</description>
+                        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::D16B</document_identifier>
+                        <group_description>PEPPOL BIS3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>PEPPOL BIS3.0</group_name>
+                        <network_profile_id>24498487-81a8-4f46-9104-bb3915a6eee0</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung CII Invoice V3.0</description>
+                        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0::D16B</document_identifier>
+                        <group_description>XRechnung v3.0 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V3.0</group_name>
+                        <network_profile_id>d80fc971-7a72-48d7-8617-69132f97781f</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                    <network_profile>
+                        <description>XRechnung CII Invoice V2.3</description>
+                        <document_identifier>urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3::D16B</document_identifier>
+                        <group_description>XRechnung v2.3 (Invoice, Credit Note, CII)</group_description>
+                        <group_name>XRECHNUNG V2.3</group_name>
+                        <network_profile_id>410ef408-c418-4e23-9952-b86e32b86d63</network_profile_id>
+                        <process_identifier>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</process_identifier>
+                    </network_profile>
+                </supported_profiles>
+                <transport_protocol>peppol-transport-as4-v2_0</transport_protocol>
+                <url>https://www.storecove.com/docs</url>
+            </access_point>
+        </external_access_points>
+        <network_id_value>DE111111111</network_id_value>
+    </participation_lookup>
+</participation_lookups>
