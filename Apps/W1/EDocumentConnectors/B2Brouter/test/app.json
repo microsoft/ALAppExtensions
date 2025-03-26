@@ -2,7 +2,7 @@
     "id": "b6c85849-fe8a-46f4-930f-2f026571678a",
     "name": "E-Document Connector - B2Brouter Tests",
     "publisher": "Microsoft",
-    "version": "26.0.0.0",
+    "version": "27.0.0.0",
     "brief": "E-Document Connector - B2Brouter Tests",
     "description": "E-Document Connector - B2Brouter Tests",
     "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -14,47 +14,47 @@
         {
             "id": "b4305a63-f987-425b-8520-ca9ccf7b22b6",
             "name": "E-Document Connector - B2Brouter",
-            "version": "1.0.0.0",
+            "version": "27.0.0.0",
             "publisher": "Microsoft"
         },
         {
             "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
             "name": "E-Document Core",
-            "version": "1.0.0.0",
+            "version": "27.0.0.0",
             "publisher": "Microsoft"
         },
         {
             "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
             "name": "Library Assert",
-            "version": "1.0.0.0",
+            "version": "27.0.0.0",
             "publisher": "Microsoft"
         },
         {
             "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
             "name": "E-Document Core Tests",
-            "version": "1.0.0.0",
+            "version": "27.0.0.0",
             "publisher": "Microsoft"
         },
         {
             "id": "E737590A-FEDE-4692-AC4E-D1D4849DD043",
             "name": "Tests-Service",
             "publisher": "Microsoft",
-            "version": "26.0.0.0"
+            "version": "27.0.0.0"
         },
         {
             "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
             "name": "Tests-TestLibraries",
             "publisher": "Microsoft",
-            "version": "1.0.0.0"
+            "version": "27.0.0.0"
         }
     ],
     "screenshots": [],
-    "platform": "1.0.0.0",
-    "application": "26.0.0.0",
+    "platform": "27.0.0.0",
+    "application": "27.0.0.0",
     "idRanges": [
         {
-            "from": 50100,
-            "to": 50149
+            "from": 148199,
+            "to": 148200
         }
     ],
     "resourceExposurePolicy": {
@@ -62,7 +62,6 @@
         "allowDownloadingSource": true,
         "includeSourceInSymbolFile": true
     },
-    "runtime": "15.0",
     "features": [
         "NoImplicitWith"
     ],

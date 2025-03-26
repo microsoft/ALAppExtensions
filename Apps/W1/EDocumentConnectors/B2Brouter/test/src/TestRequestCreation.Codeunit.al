@@ -5,7 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 using System.Utilities;
 
-codeunit 50111 "Test Request Creation"
+codeunit 148200 "Test Request Creation"
 {
     Subtype = Test;
     TestPermissions = Disabled;

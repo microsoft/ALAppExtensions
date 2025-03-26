@@ -41,7 +41,7 @@ codeunit 6495 "B2Brouter Integration" implements IDocumentSender, IDocumentRecei
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure "E-Document Service_OnBeforeOpenServiceIntegrationSetupPage"(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
+    local procedure OnBeforeOpenServiceIntegrationSetupPageB2Brouter(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
     var
         B2BrouterSetupCard: page "B2Brouter Setup";
     begin

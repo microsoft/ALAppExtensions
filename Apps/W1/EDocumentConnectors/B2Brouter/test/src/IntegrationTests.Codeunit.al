@@ -14,7 +14,8 @@ using System.Threading;
 using Microsoft.Foundation.UOM;
 using System.Automation;
 using Microsoft.eServices.EDocument.Integration;
-codeunit 50112 "Integration Tests"
+
+codeunit 148199 "Integration Tests"
 {
     Subtype = Test;
     Permissions =
@@ -23,9 +24,6 @@ codeunit 50112 "Integration Tests"
 
     TestPermissions = Disabled;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
@@ -109,9 +107,6 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
@@ -233,9 +228,6 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
@@ -405,9 +397,6 @@ codeunit 50112 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocumentB2BRouterServiceDown()
@@ -453,9 +442,6 @@ codeunit 50112 "Integration Tests"
         Assert.AreEqual('500: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitGetDocuments()
