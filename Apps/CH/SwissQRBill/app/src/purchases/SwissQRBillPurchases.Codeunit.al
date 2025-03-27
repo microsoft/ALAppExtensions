@@ -413,6 +413,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
             if not Confirm(PurchDocAlreadyQRImportedQst) then
                 exit;
 
+        OnBeforeQRBillImportDecodeToPurchase(PurchaseHeader);
         if SwissQRBillIncomingDoc.QRBillImportDecodeToPurchase(TempIncomingDocument, FromFile) then
             ImportToPurchaseDoc(PurchaseHeader, TempIncomingDocument);
     end;
@@ -574,5 +575,10 @@ codeunit 11502 "Swiss QR-Bill Purchases"
             end;
             VoidPurchDocQRBill(PurchHeader);
         end;
+    end;
+    
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeQRBillImportDecodeToPurchase(var PurchaseHeader: Record "Purchase Header")
+    begin
     end;
 }
