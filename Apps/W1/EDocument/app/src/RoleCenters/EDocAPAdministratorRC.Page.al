@@ -165,7 +165,7 @@ page 6101 "E-Doc. A/P Administrator RC"
                     ToolTip = 'Handle incoming documents, such as vendor invoices in PDF or as image files, that you can manually or automatically convert to document records, such as purchase invoices. The external files that represent incoming documents can be attached at any process stage, including to posted documents and to the resulting vendor, customer, and general ledger entries.';
                 }
             }
-            group(Reports)
+            group(SectionReports)
             {
                 Caption = 'Reports';
 
@@ -311,6 +311,19 @@ page 6101 "E-Doc. A/P Administrator RC"
                     RunObject = Page "Purchasing Codes";
                 }
             }
+            group(ActionBarReports)
+            {
+                Caption = 'Reports';
+
+                action("Aged Accounts Payable")
+                {
+                    Caption = 'Aged Accounts Payable';
+                    ToolTip = 'View the aged accounts payable report.';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Report "Aged Accounts Payable";
+                }
+            }
+
         }
     }
 }
