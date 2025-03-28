@@ -9,7 +9,10 @@ using Microsoft.Purchases.History;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Setup;
 using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item.Catalog;
 
 page 6101 "E-Doc. A/P Administrator RC"
 {
@@ -263,7 +266,7 @@ page 6101 "E-Doc. A/P Administrator RC"
                 action("Payment Journal")
                 {
                     Caption = 'Payment Journal';
-                    ToolTip = 'ay your vendors by filling the payment journal automatically according to payments due, and potentially export all payment to your bank for automatic processing.';
+                    ToolTip = 'Pay your vendors by filling the payment journal automatically according to payments due, and potentially export all payment to your bank for automatic processing.';
                     ApplicationArea = Basic, Suite;
                     RunObject = Page "Payment Journal";
                 }
@@ -273,6 +276,39 @@ page 6101 "E-Doc. A/P Administrator RC"
                     ToolTip = 'Prepare to post any transaction to the company books.';
                     ApplicationArea = Basic, Suite;
                     RunObject = Page "General Journal";
+                }
+            }
+            group(Setup)
+            {
+                Caption = 'Setup';
+
+                action(PurchAndPayablesSetup)
+                {
+                    Caption = 'Purchases & Payables Setup';
+                    ToolTip = 'Set up the purchasing and payables features.';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Purchases & Payables Setup";
+                }
+                action(GeneralLedgerSetup)
+                {
+                    Caption = 'General Ledger Setup';
+                    ToolTip = 'Set up the general ledger features.';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "General Ledger Setup";
+                }
+                action(StandardPurchaseCodes)
+                {
+                    Caption = 'Standard Purchase Codes';
+                    ToolTip = 'Set up standard purchase codes.';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Standard Purchase Codes";
+                }
+                action(PurchasingCodes)
+                {
+                    Caption = 'Purchasing Codes';
+                    ToolTip = 'Set up purchasing codes.';
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Purchasing Codes";
                 }
             }
         }
