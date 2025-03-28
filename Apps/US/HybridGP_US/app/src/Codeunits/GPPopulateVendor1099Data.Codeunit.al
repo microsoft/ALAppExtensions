@@ -332,9 +332,11 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         GenJournalLine.Validate("Bal. Gen. Prod. Posting Group", '');
         GenJournalLine.Validate("Bal. VAT Prod. Posting Group", '');
         GenJournalLine.Validate("Bal. VAT Bus. Posting Group", '');
+
 #if not CLEAN25
+        if not GPCloudMigrationUS.IsIRSFormsFeatureEnabled() then
 #pragma warning disable AL0432
-        GenJournalLine.Validate("IRS 1099 Code", IRS1099Code);
+            GenJournalLine.Validate("IRS 1099 Code", IRS1099Code);
 #pragma warning restore AL0432
 #endif
         GenJournalLine.Validate("Document Type", DocumentType);
