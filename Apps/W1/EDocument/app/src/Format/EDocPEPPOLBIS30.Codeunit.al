@@ -6,7 +6,9 @@ using Microsoft.Sales.Peppol;
 using Microsoft.Purchases.Document;
 using Microsoft.Service.History;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
 
 codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
 {
@@ -17,8 +19,11 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ReminderHeader: Record "Reminder Header";
+        FinChargeMemoHeader: Record "Finance Charge Memo Header";
         PEPPOLValidation: Codeunit "PEPPOL Validation";
         PEPPOLServiceValidation: Codeunit "PEPPOL Service Validation";
+        EDocPEPPOLValidation: Codeunit "EDoc PEPPOL Validation";
     begin
         case SourceDocumentHeader.Number of
             Database::"Sales Header":
@@ -46,6 +51,16 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
                     SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
                     PEPPOLServiceValidation.CheckServiceCreditMemo(ServiceCrMemoHeader);
                 end;
+            Database::"Reminder Header":
+                begin
+                    SourceDocumentHeader.SetTable(ReminderHeader);
+                    EDocPEPPOLValidation.CheckReminder(ReminderHeader);
+                end;
+            Database::"Finance Charge Memo Header":
+                begin
+                    SourceDocumentHeader.SetTable(FinChargeMemoHeader);
+                    EDocPEPPOLValidation.CheckFinChargeMemo(FinChargeMemoHeader);
+                end;
         end;
     end;
 
@@ -60,6 +75,8 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
                 GenerateInvoiceXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
             EDocument."Document Type"::"Sales Credit Memo", EDocument."Document Type"::"Service Credit Memo":
                 GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
+            EDocument."Document Type"::"Issued Reminder", EDocument."Document Type"::"Issued Finance Charge Memo":
+                GenerateFinancialResultsXMLFile(SourceDocumentHeader, DocOutStream);
             else
                 EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
         end;
@@ -107,6 +124,15 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesCrMemoPEPPOLBIS30.SetGeneratePDF(GeneratePDF);
         SalesCrMemoPEPPOLBIS30.SetDestination(OutStr);
         SalesCrMemoPEPPOLBIS30.Export();
+    end;
+
+    local procedure GenerateFinancialResultsXMLFile(VariantRec: Variant; var OutStr: OutStream)
+    var
+        FinResultsPEPPOLBIS30: XMLport "Fin. Results - PEPPOL BIS 3.0";
+    begin
+        FinResultsPEPPOLBIS30.Initialize(VariantRec);
+        FinResultsPEPPOLBIS30.SetDestination(OutStr);
+        FinResultsPEPPOLBIS30.Export();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]

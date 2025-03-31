@@ -8,6 +8,18 @@ using Microsoft.eServices.EDocument;
 
 pageextension 6141 "E-Doc. Reminder" extends Reminder
 {
+    layout
+    {
+        addlast(General)
+        {
+            field("Your Reference"; Rec."Your Reference")
+            {
+                ApplicationArea = All;
+                Caption = 'Your Reference';
+                ToolTip = 'Specifies the customer''s reference. The contents will be printed on e-document.';
+            }
+        }
+    }
     actions
     {
         addafter("&Issuing")

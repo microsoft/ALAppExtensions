@@ -1640,6 +1640,58 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Delete();
     end;
 
+    [Test]
+    procedure CreateEDocumentReminderSuccessful()
+    var
+        IssuedReminderHeader: Record "Issued Reminder Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when issuing reminder
+
+        // [GIVEN] SETUP
+        this.Initialize(Enum::"Service Integration"::"Mock");
+        this.LibraryEDoc.SetupReminderNoSeries();
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Issue reminder
+        IssuedReminderHeader := this.LibraryEDoc.IssueReminder(this.Customer);
+
+        // [THEN] Check that E-Document is created and status is "Processed"
+        EDocument.FindLast();
+        this.Assert.AreEqual(IssuedReminderHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
+        // [THEN] Check that xml file was created
+        this.CheckXmlCreated(EDocument);
+    end;
+
+    [Test]
+    procedure CreateEDocumentFinChargeMemoSuccessful()
+    var
+        IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when issuing finance charge memo
+
+        // [GIVEN] SETUP
+        this.Initialize(Enum::"Service Integration"::"Mock");
+        this.LibraryEDoc.SetupFinChargeMemoNoSeries();
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Issue finance charge memo
+        IssuedFinChargeMemoHeader := this.LibraryEDoc.IssueFinChargeMemo(this.Customer);
+
+        // [THEN] Check that E-Document is created and status is "Processed"
+        EDocument.FindLast();
+        this.Assert.AreEqual(IssuedFinChargeMemoHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
+        // [THEN] Check that xml file was created
+        this.CheckXmlCreated(EDocument);
+    end;
+
     local procedure CheckPDFEmbedToXML(TempBlob: Codeunit "Temp Blob")
     var
         TempXMLBuffer: Record "XML Buffer" temporary;
@@ -1651,6 +1703,15 @@ codeunit 139624 "E-Doc E2E Test"
 
         TempXMLBuffer.SetRange(Path, '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
         Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    local procedure CheckXmlCreated(EDocument: Record "E-Document")
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
+        Assert.IsTrue(TempBlob.HasValue(), 'No XML created');
     end;
 
     [Test]
