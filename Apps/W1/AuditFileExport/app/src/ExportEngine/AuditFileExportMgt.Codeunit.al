@@ -108,18 +108,15 @@ codeunit 5261 "Audit File Export Mgt."
         if not AuditFileExportLine.FindSet() then
             exit;
 
+        AuditFileExportLine.SetRange(ID, AuditFileExportLine.ID);
         repeat
-            AuditFileExportLine.SetRange(ID, AuditFileExportLine.ID);
-            repeat
-                CancelTask(AuditFileExportLine);
-                AuditFileExportHeader.Get(AuditFileExportLine.ID);
-                NotBefore := CurrentDateTime();
-                RunGenerateAuditFileOnSingleLine(AuditFileExportLine, AuditFileExportHeader, DummyNoOfJobs, NotBefore);
-            until AuditFileExportLine.Next() = 0;
-            AuditFileExportHeader.Find();
-            UpdateExportStatus(AuditFileExportHeader);
-            AuditFileExportLine.SetRange(ID);
+            CancelTask(AuditFileExportLine);
+            AuditFileExportHeader.Get(AuditFileExportLine.ID);
+            NotBefore := CurrentDateTime();
+            RunGenerateAuditFileOnSingleLine(AuditFileExportLine, AuditFileExportHeader, DummyNoOfJobs, NotBefore);
         until AuditFileExportLine.Next() = 0;
+        AuditFileExportHeader.Find();
+        UpdateExportStatus(AuditFileExportHeader);
     end;
 
     procedure SendTraceTagOfExport(Category: Text; TraceTagMessage: Text)
