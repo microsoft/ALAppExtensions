@@ -709,11 +709,11 @@ codeunit 6393 "Continia Api Requests"
     end;
     #endregion
 
-    #region Get Documents for current company
-    internal procedure GetDocumentsForCompany(ReceiveContext: Codeunit ReceiveContext): Boolean
+    #region Get Documents for E-Document service
+    internal procedure GetDocuments(ActivatedNetworkProfile: Record "Continia Activated Net. Prof."; ReceiveContext: Codeunit ReceiveContext): Boolean
     var
+        Participation: Record "Continia Participation";
         ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
-        CredentialManagement: Codeunit "Continia Credential Management";
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         CurrPage: Integer;
@@ -723,7 +723,19 @@ codeunit 6393 "Continia Api Requests"
         CurrPage := 1;
         PageSize := 100; // only get 100 documents at a time.
 
-        Success := ExecuteRequest('GET', ApiUrlMgt.DocumentsForCompanyUrl(CredentialManagement.GetCompanyId(), CurrPage, PageSize, true), HttpRequest, HttpResponse);
+        Participation.Get(ActivatedNetworkProfile.Network, ActivatedNetworkProfile."Identifier Type Id", ActivatedNetworkProfile."Identifier Value");
+
+        Success := ExecuteRequest(
+            'GET',
+            ApiUrlMgt.DocumentsFoParticipationProfile(
+                ActivatedNetworkProfile.Network,
+                Participation.Id,
+                ActivatedNetworkProfile.Id,
+                CurrPage,
+                PageSize,
+                true),
+            HttpRequest,
+            HttpResponse);
         ReceiveContext.Http().SetHttpRequestMessage(HttpRequest);
         ReceiveContext.Http().SetHttpResponseMessage(HttpResponse);
         exit(Success);

@@ -78,7 +78,7 @@ codeunit 148201 "Continia Mock Http Handler"
 
         if OriginalContent.Contains('{participationProfileId.ToLower}') then begin
             UriSegments := Uri.Split('/');
-            ParticipationProfileId := UriSegments.Get(UriSegments.Count());
+            ParticipationProfileId := UriSegments.Get(UriSegments.IndexOf('profiles') + 1);
             if ParticipationProfileId.EndsWith('.xml') then
                 ParticipationProfileId := ParticipationProfileId.Substring(1, StrLen(ParticipationProfileId) - 4);
             OriginalContent := Regex.Replace(OriginalContent, '{participationProfileId.ToLower}', ParticipationProfileId.ToLower());
@@ -90,6 +90,6 @@ codeunit 148201 "Continia Mock Http Handler"
     var
         KeyPatternTok: Label '%1;%2', Comment = '%1 = Method, %2 = RequestPath', Locked = true;
     begin
-        returnValue := StrSubstNo(KeyPatternTok, Format(Method), RequestPath);
+        returnValue := StrSubstNo(KeyPatternTok, Format(Method), RequestPath).ToLower();
     end;
 }

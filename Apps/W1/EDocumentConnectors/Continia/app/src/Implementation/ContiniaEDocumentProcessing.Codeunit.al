@@ -161,8 +161,20 @@ codeunit 6391 "Continia EDocument Processing"
 
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; ReceivedEDocuments: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
-        TempBlob: Codeunit "Temp Blob";
+        ActivatedNetworkProfile: Record "Continia Activated Net. Prof.";
+    begin
+        ActivatedNetworkProfile.SetRange("E-Document Service Code", EDocumentService.Code);
+        if not ActivatedNetworkProfile.FindSet() then
+            exit;
+        repeat
+            ReceiveNetworkProfileDocuments(ActivatedNetworkProfile, ReceivedEDocuments, ReceiveContext);
+        until ActivatedNetworkProfile.Next() = 0;
+    end;
+
+    local procedure ReceiveNetworkProfileDocuments(ActivatedNetworkProfile: Record "Continia Activated Net. Prof."; ReceivedEDocuments: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    var
         ApiRequests: Codeunit "Continia Api Requests";
+        TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
         ContentData: Text;
         DocumentResponse: XmlDocument;
@@ -170,7 +182,7 @@ codeunit 6391 "Continia EDocument Processing"
         DocumentNode: XmlNode;
         i: Integer;
     begin
-        if not ApiRequests.GetDocumentsForCompany(ReceiveContext) then
+        if not ApiRequests.GetDocuments(ActivatedNetworkProfile, ReceiveContext) then
             exit;
 
         ReceiveContext.Http().GetHttpResponseMessage().Content.ReadAs(ContentData);
@@ -183,32 +195,11 @@ codeunit 6391 "Continia EDocument Processing"
 
         for i := 1 to DocumentNodeList.Count do begin
             DocumentNodeList.Get(i, DocumentNode);
-            // Check if the document should be processed with current EDocumentService
-            if DocumentSupportedByEDocumentService(EDocumentService, DocumentNode) then begin
-                Clear(TempBlob);
-                TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-                DocumentNode.WriteTo(OutStream);
-                ReceivedEDocuments.Add(TempBlob);
-            end;
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+            DocumentNode.WriteTo(OutStream);
+            ReceivedEDocuments.Add(TempBlob);
         end;
-    end;
-
-    local procedure DocumentSupportedByEDocumentService(EDocumentService: Record "E-Document Service"; DocumentNode: XmlNode): Boolean
-    var
-        ActivatedNetworkProfile: Record "Continia Activated Net. Prof.";
-        ParticipationProfileIdNode: XmlNode;
-        ParticipationNetworkProfileId: Guid;
-    begin
-        DocumentNode.SelectSingleNode('participation_profile_id', ParticipationProfileIdNode);
-        Evaluate(ParticipationNetworkProfileId, ParticipationProfileIdNode.AsXmlElement().InnerText);
-
-        ActivatedNetworkProfile.SetCurrentKey(Id);
-        ActivatedNetworkProfile.SetRange(Id, ParticipationNetworkProfileId);
-        if not ActivatedNetworkProfile.FindFirst() then
-            exit(false);
-
-        if EDocumentService.Code = ActivatedNetworkProfile."E-Document Service Code" then
-            exit(true);
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
@@ -243,7 +234,7 @@ codeunit 6391 "Continia EDocument Processing"
         ApiRequests: Codeunit "Continia Api Requests";
     begin
         // Mark document as processed in Continia Online
-        ApiRequests.MarkDocumentAsProcessed( EDocument."Continia Document Id", ReceiveContext);
+        ApiRequests.MarkDocumentAsProcessed(EDocument."Continia Document Id", ReceiveContext);
     end;
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext) Success: Boolean
@@ -258,9 +249,6 @@ codeunit 6391 "Continia EDocument Processing"
     begin
         if Rec."Service Integration V2" <> Rec."Service Integration V2"::Continia then
             exit;
-
-        if Rec."Document Format" = Rec."Document Format"::"Data Exchange" then
-            Error(DocumentFormatUnsupportedErr);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnAfterValidateEvent, "Export Format", true, true)]
@@ -268,14 +256,10 @@ codeunit 6391 "Continia EDocument Processing"
     begin
         if Rec."Service Integration V2" <> Rec."Service Integration V2"::Continia then
             exit;
-
-        if Rec."Document Format" = Rec."Document Format"::"Data Exchange" then
-            Error(DocumentFormatUnsupportedErr);
     end;
 
     var
         ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
         UnknownRejectionReasonErr: Label 'Unknown rejection reason';
         ReasonLbl: Label 'Reason: %1 - %2', Comment = '%1 - Reason code, %2 - Reason description';
-        DocumentFormatUnsupportedErr: Label 'Data Exchange is not supported with the Continia Service Integration in this version';
 }

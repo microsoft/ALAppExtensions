@@ -1,7 +1,5 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-using System.Utilities;
-
 codeunit 148200 "Continia Api Comm. Unit Tests"
 {
     Subtype = Test;

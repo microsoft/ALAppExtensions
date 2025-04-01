@@ -967,6 +967,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
         EDocServicePage: TestPage "E-Document Service";
+        ReceiveDocumentsUri: Text;
     begin
         Initialize();
         // [Given] Empty E-Document table
@@ -983,17 +984,22 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         EDocServicePage.Close();
 
         // [When] Manually fire job queue job to import Documents
-        if EDocument.FindLast() then
-            EDocument.SetFilter("Entry No", '>%1', EDocument."Entry No");
         ContiniaMockHttpHandler.ClearHandler();
+        ReceiveDocumentsUri :=
+            StrSubstNo(
+                ParticipationProfileDocumentsUriPatternTok,
+                ContiniaApiUrlMgt.CdnBaseUrl(),
+                Enum::"Continia E-Delivery Network"::Peppol,
+                ConnectorLibrary.ParticipationId(),
+                ConnectorLibrary.ActiveNetworkProfileId());
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
-            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            ReceiveDocumentsUri,
             200,
             GetMockResponseContent('ReceiveDocuments.txt'));
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
-            StrSubstNo(DownloadUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            StrSubstNo(DownloadUriPatternTok, ReceiveDocumentsUri),
             200,
             GetMockResponseContent('ReceivePeppolInvoiceDocument200.txt'));
         ContiniaMockHttpHandler.AddResponse(
@@ -1014,19 +1020,24 @@ codeunit 148203 "Continia Doc. Integr. Tests"
     end;
 
     /// <summary>
-    /// ReceiveDocuments_Peppol_MultipleEdocServices - Tests handling documents from multiple e-Document services.
-    /// This test ensures that only documents associated with the specified e-Document service are imported, 
-    /// even when multiple documents from various services are present in the API response.
+    /// ReceiveDocuments_Peppol_MultipleEdocServices - Tests handling documents from multiple network profiles.
+    /// This test ensures that only documents associated with the specified network profiles are imported.
     /// </summary>
     [Test]
     [HandlerFunctions('HttpClientHandler')]
     procedure ReceiveDocuments_Peppol_MultipleEdocServices()
     var
+        ActivatedNetProf: Record "Continia Activated Net. Prof.";
         EDocument: Record "E-Document";
+        Participation: Record "Continia Participation";
         EDocServicePage: TestPage "E-Document Service";
+        ReceiveDocumentsUri: Text;
     begin
-        // Receive only 1 E-Document service related documents when there are Documents from multiple E-Document services
+        // Receive documents from multiple network profiles
         Initialize();
+        ConnectorLibrary.CleanParticipations();
+        ConnectorLibrary.PrepareParticipation(Participation, ActivatedNetProf, EDocumentService);
+        ConnectorLibrary.AddActivatedNetworkProfile(Participation, ConnectorLibrary.NetworkProfileIdPeppolBis3Invoice(), CreateGuid(), ActivatedNetProf, EDocumentService.Code);
         // [Given] Empty E-Document table
         EDocument.DeleteAll();
 
@@ -1042,14 +1053,38 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         // [When] Manually fire job queue job to import Documents
         ContiniaMockHttpHandler.ClearHandler();
+        ReceiveDocumentsUri :=
+            StrSubstNo(
+                ParticipationProfileDocumentsUriPatternTok,
+                ContiniaApiUrlMgt.CdnBaseUrl(),
+                Enum::"Continia E-Delivery Network"::Peppol,
+                ConnectorLibrary.ParticipationId(),
+                ConnectorLibrary.ActiveNetworkProfileId());
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
-            StrSubstNo(DocumentUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            ReceiveDocumentsUri,
             200,
-            GetMockResponseContent('ReceiveDocuments-multiple-services.txt'));
+            GetMockResponseContent('ReceiveDocuments.txt'));
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
-            StrSubstNo(DownloadUriPatternTok, ContiniaApiUrlMgt.CdnBaseUrl()),
+            StrSubstNo(DownloadUriPatternTok, ReceiveDocumentsUri),
+            200,
+            GetMockResponseContent('ReceivePeppolInvoiceDocument200.txt'));
+        ReceiveDocumentsUri :=
+            StrSubstNo(
+                ParticipationProfileDocumentsUriPatternTok,
+                ContiniaApiUrlMgt.CdnBaseUrl(),
+                Enum::"Continia E-Delivery Network"::Peppol,
+                ConnectorLibrary.ParticipationId(),
+                ActivatedNetProf.Id);
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            ReceiveDocumentsUri,
+            200,
+            GetMockResponseContent('ReceiveDocuments.txt'));
+        ContiniaMockHttpHandler.AddResponse(
+            HttpRequestType::Get,
+            StrSubstNo(DownloadUriPatternTok, ReceiveDocumentsUri),
             200,
             GetMockResponseContent('ReceivePeppolInvoiceDocument200.txt'));
         ContiniaMockHttpHandler.AddResponse(
@@ -1212,5 +1247,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         TestVendorItemNoTok: Label '1908-S', Locked = true;
         TestItemIsoUomTok: Label 'EA', Locked = true;
         DocumentUriPatternTok: Label '%1/documents.xml', Comment = '%1 - Base URL', Locked = true;
-        DownloadUriPatternTok: Label '%1/documents.xml/download/peppol', Comment = '%1 - Base URL', Locked = true;
+        ParticipationProfileDocumentsUriPatternTok: Label '%1/networks/%2/participations/%3/profiles/%4/documents.xml', Comment = '%1 - Base URL, %2- Participation Id, %3 - Profile Id', Locked = true;
+        DownloadUriPatternTok: Label '%1/download/peppol', Comment = '%1 - Receive documents URI', Locked = true;
 }
