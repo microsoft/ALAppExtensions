@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27048 "Create CA Tax Jurisd. Transl."
 {
     InherentEntitlements = X;

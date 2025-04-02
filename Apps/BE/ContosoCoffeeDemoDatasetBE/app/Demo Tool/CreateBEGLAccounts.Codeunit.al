@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11345 "Create BE GL Accounts"
 {
     InherentPermissions = X;
@@ -21,14 +22,14 @@ codeunit 11345 "Create BE GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesVATStandardName(), '451000');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVATStandardName(), '411000');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '609291');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRetailName(), '609191');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '609292');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '609192');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '609293');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '609193');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.InventoryAdjRawMatName(), '609270');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.InventoryAdjRetailName(), '609170');
@@ -49,7 +50,7 @@ codeunit 11345 "Create BE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         SvcGLAccount: Codeunit "Create Svc GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(SvcGLAccount.ServiceContractSaleName(), '');
+        ContosoGLAccount.AddAccountForLocalization(SvcGLAccount.ServiceContractSaleName(), '705000');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Mfg GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -58,9 +59,9 @@ codeunit 11345 "Create BE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         MfgGLAccount: Codeunit "Create Mfg GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '609791');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '609792');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '609793');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '609890');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '609891');

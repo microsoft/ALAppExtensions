@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17162 "Create AU VAT Statement"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10799 "Create ES Inv Posting Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5119 "Create Employee Stat. Group"
 {
     InherentEntitlements = X;

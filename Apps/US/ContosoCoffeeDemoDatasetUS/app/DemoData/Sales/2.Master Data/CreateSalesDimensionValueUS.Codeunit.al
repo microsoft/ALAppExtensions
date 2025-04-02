@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10531 "Create Sales Dimension ValueUS"
 {
     SingleInstance = true;

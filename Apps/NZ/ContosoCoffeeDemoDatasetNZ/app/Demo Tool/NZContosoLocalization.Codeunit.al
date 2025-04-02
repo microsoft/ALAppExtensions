@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17142 "NZ Contoso Localization"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11164 "Create Item AT"
 {
     SingleInstance = true;

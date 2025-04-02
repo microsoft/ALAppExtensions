@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31198 "Create Currency CZ"
 {
     InherentEntitlements = X;

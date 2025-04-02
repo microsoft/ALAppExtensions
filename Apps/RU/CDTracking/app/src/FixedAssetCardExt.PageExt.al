@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14110 FixedAssetCardExt extends "Fixed Asset Card"
 {
     layout

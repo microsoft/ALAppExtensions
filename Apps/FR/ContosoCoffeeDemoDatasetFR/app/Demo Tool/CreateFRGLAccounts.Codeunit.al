@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10850 "Create FR GL Accounts"
 {
     InherentPermissions = X;
@@ -27,7 +28,7 @@ codeunit 10850 "Create FR GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '905100');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '603711');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '961000');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '603712');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.RawMaterialsName(), '350000');

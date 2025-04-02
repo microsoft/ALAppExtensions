@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11104 "Create DE No. Series"
 {
     SingleInstance = true;

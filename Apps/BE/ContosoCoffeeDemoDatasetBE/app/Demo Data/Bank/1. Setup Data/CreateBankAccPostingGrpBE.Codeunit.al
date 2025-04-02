@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11370 "Create Bank Acc Posting Grp BE"
 {
     SingleInstance = true;

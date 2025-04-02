@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11357 "Create GL Account BE"
 {
     InherentEntitlements = X;

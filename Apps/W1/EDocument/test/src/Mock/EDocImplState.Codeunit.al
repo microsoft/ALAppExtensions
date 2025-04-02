@@ -276,6 +276,23 @@ codeunit 139630 "E-Doc. Impl. State"
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, 'TEST');
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock V2", OnGetCancellation, '', false, false)]
+    local procedure OnOnGetCancellationV2(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"; var Update: Boolean);
+    var
+        EDocErrorHelper: Codeunit "E-Document Error Helper";
+    begin
+        Status := ActionStatus;
+        Update := ActionHasUpdate;
+        HttpResponse := LocalHttpResponse;
+
+        if ThrowIntegrationRuntimeError then
+            Error('TEST');
+
+        if ThrowIntegrationLoggedError then
+            EDocErrorHelper.LogSimpleErrorMessage(EDocument, 'TEST');
+    end;
+
+
 #if not CLEAN26
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnSend', '', false, false)]
     local procedure OnSend(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)

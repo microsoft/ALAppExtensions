@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27053 "Create CA Purchase Line"
 {
     InherentEntitlements = X;

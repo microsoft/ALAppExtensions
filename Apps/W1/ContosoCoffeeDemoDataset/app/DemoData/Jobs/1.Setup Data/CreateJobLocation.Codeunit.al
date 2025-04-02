@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5196 "Create Job Location"
 {
     InherentEntitlements = X;

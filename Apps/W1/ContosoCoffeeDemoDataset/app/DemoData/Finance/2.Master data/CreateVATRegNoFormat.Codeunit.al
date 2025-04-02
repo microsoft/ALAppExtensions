@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5695 "Create VAT Reg. No. Format"
 {
     InherentEntitlements = X;

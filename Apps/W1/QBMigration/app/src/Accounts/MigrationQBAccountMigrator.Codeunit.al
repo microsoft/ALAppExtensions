@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1911 "MigrationQB Account Migrator"
 {
     TableNo = "MigrationQB Account";

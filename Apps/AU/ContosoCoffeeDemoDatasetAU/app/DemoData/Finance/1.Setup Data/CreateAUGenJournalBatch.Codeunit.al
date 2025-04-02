@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17161 "Create AU Gen. Journal Batch"
 {
     InherentEntitlements = X;

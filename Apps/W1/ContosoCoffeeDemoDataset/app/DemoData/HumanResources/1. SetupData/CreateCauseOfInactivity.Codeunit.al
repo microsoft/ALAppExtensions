@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5157 "Create Cause Of Inactivity"
 {
     InherentEntitlements = X;

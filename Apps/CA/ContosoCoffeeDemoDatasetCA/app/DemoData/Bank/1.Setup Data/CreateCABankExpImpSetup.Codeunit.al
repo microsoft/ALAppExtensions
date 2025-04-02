@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27016 "Create CA Bank Exp/Imp Setup"
 {
     InherentEntitlements = X;

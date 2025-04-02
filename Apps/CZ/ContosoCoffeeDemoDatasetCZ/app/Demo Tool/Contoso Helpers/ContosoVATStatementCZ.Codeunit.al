@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31224 "Contoso VAT Statement CZ"
 {
     InherentEntitlements = X;

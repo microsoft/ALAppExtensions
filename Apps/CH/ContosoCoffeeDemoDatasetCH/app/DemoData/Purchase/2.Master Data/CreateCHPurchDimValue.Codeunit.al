@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11596 "Create CH Purch. Dim. Value"
 {
     SingleInstance = true;

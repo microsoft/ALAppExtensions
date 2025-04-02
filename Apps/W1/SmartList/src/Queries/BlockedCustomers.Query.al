@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2452 "Blocked Customers"
 {
     QueryType = Normal;

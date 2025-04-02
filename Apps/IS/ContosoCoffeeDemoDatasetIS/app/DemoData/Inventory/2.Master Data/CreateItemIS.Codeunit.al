@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14624 "Create Item IS"
 {
     SingleInstance = true;

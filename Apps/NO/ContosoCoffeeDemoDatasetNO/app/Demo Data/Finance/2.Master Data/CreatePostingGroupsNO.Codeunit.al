@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10708 "Create Posting Groups NO"
 {
     InherentEntitlements = X;
@@ -61,26 +62,26 @@ codeunit 10708 "Create Posting Groups NO"
     var
         ContosoGenPostingSetup: Codeunit "Contoso Posting Setup";
         CreatePostingGroups: Codeunit "Create Posting Groups";
+        CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoGenPostingSetup.SetOverwriteData(true);
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoVatPostingGroup(), '', '', '7170', '7170', '', '', '', '', '', '', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', '7170', '7170', '', '', '', '', '', '', '7190', '2112', '5510');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoVatPostingGroup(), '', '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', '', '', '', '', CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
 
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), NoVatPostingGroup(), '6210', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), CreatePostingGroups.RetailPostingGroup(), '6110', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), CreatePostingGroups.ServicesPostingGroup(), '6410', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), NoVatPostingGroup(), CreateGLAccount.SalesRawMaterialsDom(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), CreatePostingGroups.RetailPostingGroup(), CreateGLAccount.SalesRetailDom(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustDom(), CreatePostingGroups.ServicesPostingGroup(), CreateGLAccount.SalesResourcesDom(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
 
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), NoVatPostingGroup(), '6210', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), CreatePostingGroups.RetailPostingGroup(), '6130', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), CreatePostingGroups.ServicesPostingGroup(), '6430', '', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), NoVatPostingGroup(), CreateGLAccount.SalesRawMaterialsDom(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), CreatePostingGroups.RetailPostingGroup(), CreateGLAccount.SalesRetailExport(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CustFor(), CreatePostingGroups.ServicesPostingGroup(), CreateGLAccount.SalesResourcesExport(), '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
 
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), NoVatPostingGroup(), '', '7110', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), CreatePostingGroups.RetailPostingGroup(), '', '7110', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), CreatePostingGroups.ServicesPostingGroup(), '', '7110', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), NoVatPostingGroup(), '', CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), CreatePostingGroups.RetailPostingGroup(), '', CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendDom(), CreatePostingGroups.ServicesPostingGroup(), '', CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
 
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), NoVatPostingGroup(), '', '7230', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), CreatePostingGroups.RetailPostingGroup(), '', '7130', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), CreatePostingGroups.ServicesPostingGroup(), '', '7130', '7170', '7170', '', '', '6910', '6910', '7140', '7140', '7190', '2112', '5510');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), NoVatPostingGroup(), '', CreateGLAccount.PurchRawMaterialsExport(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), CreatePostingGroups.RetailPostingGroup(), '', CreateGLAccount.PurchRetailExport(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(VendFor(), CreatePostingGroups.ServicesPostingGroup(), '', CreateGLAccount.PurchRetailExport(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
         ContosoGenPostingSetup.SetOverwriteData(false);
     end;
 
@@ -88,7 +89,6 @@ codeunit 10708 "Create Posting Groups NO"
     begin
         exit(NoVatTok);
     end;
-
 
     var
         NoVatTok: Label 'NO VAT', Locked = true, MaxLength = 20;

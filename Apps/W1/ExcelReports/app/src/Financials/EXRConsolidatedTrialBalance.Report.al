@@ -8,7 +8,7 @@ using Microsoft.ExcelReports;
 report 4410 "EXR Consolidated Trial Balance"
 {
     ApplicationArea = All;
-    Caption = 'Consolidated Trial Balance Excel (Preview)';
+    Caption = 'Consolidated Trial Balance (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = ConsolidatedTrialBalanceExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -74,8 +74,8 @@ report 4410 "EXR Consolidated Trial Balance"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Consolidated Trial Balance Excel';
-        AboutText = 'This report contains Net Change or Balance of the different G/L Accounts for the selected period, aggregated per business unit.';
+        AboutTitle = 'About Consolidated Trial Balance (Excel)';
+        AboutText = 'View a snapshot of your consolidated chart of accounts at a given point to check the debit and credit net change and closing balance. You can see the trial balance in both your local currency (LCY) and additional reporting currency (ACY).';
         layout
         {
             area(Content)
@@ -111,15 +111,25 @@ report 4410 "EXR Consolidated Trial Balance"
     labels
     {
         DataRetrieved = 'Data retrieved:';
-        TrialBalanceLCY = 'Trial Balance (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
-        TrialBalanceACY = 'Trial Balance (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        ConsolidatedTrialBalance = 'Consolidated Trial Balance';
+        ConsolidatedTrialBalPrint = 'Consolidated Trial Bal. (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceLCY = 'Trial Balance (LCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TrialBalanceACY = 'Trial Balance (ACY)', MaxLength = 31, Comment = 'Excel worksheet name.';
         TrialBalanceLCYByBusinessUnit = 'Trial Balance by Business Unit (LCY)';
         TrialBalanceACYByBusinessUnit = 'Trial Balance by Business Unit (ACY)';
         BlankBU = '(Blank)';
         Period = 'Period:';
         UntilDate = 'Until:';
-        ByBusinessUnitLCY = 'By Business Unit (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
-        ByBusinessUnitACY = 'By Business Unit (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
+        ByBusinessUnitLCY = 'By Business Unit (LCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        ByBusinessUnitACY = 'By Business Unit (ACY)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()

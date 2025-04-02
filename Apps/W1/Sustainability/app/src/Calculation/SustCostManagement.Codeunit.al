@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 6257 "SustCostManagement"
 {
     Permissions = TableData Item = rm,

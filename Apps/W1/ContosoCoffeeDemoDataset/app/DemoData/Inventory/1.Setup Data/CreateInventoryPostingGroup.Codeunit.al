@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5229 "Create Inventory Posting Group"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17119 "Create AU Inv Posting Setup"
 {
     SingleInstance = true;

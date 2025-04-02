@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17111 "Create AU Country Region"
 {
     SingleInstance = true;

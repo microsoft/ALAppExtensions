@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31285 "Create Gen. Journal Line CZ"
 {
     SingleInstance = true;
@@ -10,6 +11,7 @@ codeunit 31285 "Create Gen. Journal Line CZ"
     var
         CreateBankAccount: Codeunit "Create Bank Account";
         CreateBankAccountCZ: Codeunit "Create Bank Account CZ";
+        CreateCurrencyExRateCZ: Codeunit "Create Currency Ex. Rate CZ";
     begin
         if (Rec."Account Type" = Rec."Account Type"::"Bank Account") and
            (Rec."Account No." = CreateBankAccount.Checking())
@@ -27,5 +29,7 @@ codeunit 31285 "Create Gen. Journal Line CZ"
            (Rec."Bal. Account No." = CreateBankAccount.Savings())
         then
             Rec.Validate("Bal. Account No.", CreateBankAccountCZ.NBL());
+        if Rec."Currency Code" = '' then
+            Rec.Validate(Amount, Rec.Amount / CreateCurrencyExRateCZ.GetLocalCurrencyFactor());
     end;
 }

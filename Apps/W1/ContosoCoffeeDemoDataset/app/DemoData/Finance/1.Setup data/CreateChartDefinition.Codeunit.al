@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5427 "Create Chart Definition"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5382 "Company Creation Contoso"
 {
     Access = Internal;

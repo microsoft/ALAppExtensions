@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10874 "Create Bank Account FR"
 {
     SingleInstance = true;

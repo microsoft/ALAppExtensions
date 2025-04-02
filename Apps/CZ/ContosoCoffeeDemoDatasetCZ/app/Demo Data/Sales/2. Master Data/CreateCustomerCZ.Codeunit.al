@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31293 "Create Customer CZ"
 {
     SingleInstance = true;
@@ -5,25 +6,25 @@ codeunit 31293 "Create Customer CZ"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnBeforeInsert', '', false, false)]
-    local procedure OnBeforeInsertCustomer(var Customer: Record Customer)
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnBeforeInsertEvent', '', false, false)]
+    local procedure OnBeforeInsertCustomer(var Rec: Record Customer)
     var
         CreateCurrency: Codeunit "Create Currency";
         CreateCustomer: Codeunit "Create Customer";
         CreateLanguage: Codeunit "Create Language";
         CreatePaymentTerms: Codeunit "Create Payment Terms";
     begin
-        case Customer."No." of
+        case Rec."No." of
             CreateCustomer.DomesticAdatumCorporation():
-                ValidateCustomer(Customer, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsM8D(), '', '696 42', 'CZ789456278');
+                ValidateCustomer(Rec, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsM8D(), '', '696 42', 'CZ789456278');
             CreateCustomer.DomesticTreyResearch():
-                ValidateCustomer(Customer, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsDAYS14(), '', '696 42', 'CZ733495789');
+                ValidateCustomer(Rec, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsDAYS14(), '', '696 42', 'CZ733495789');
             CreateCustomer.ExportSchoolofArt():
-                ValidateCustomer(Customer, CreateLanguage.ENU(), CreatePaymentTerms.PaymentTermsM8D(), CreateCurrency.USD(), 'FL 37125', '');
+                ValidateCustomer(Rec, CreateLanguage.ENU(), CreatePaymentTerms.PaymentTermsM8D(), CreateCurrency.USD(), 'FL 37125', '');
             CreateCustomer.EUAlpineSkiHouse():
-                ValidateCustomer(Customer, CreateLanguage.DEU(), CreatePaymentTerms.PaymentTermsM8D(), CreateCurrency.EUR(), 'DE-80807', '582048936');
+                ValidateCustomer(Rec, CreateLanguage.DEU(), CreatePaymentTerms.PaymentTermsM8D(), CreateCurrency.EUR(), 'DE-80807', '582048936');
             CreateCustomer.DomesticRelecloud():
-                ValidateCustomer(Customer, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsCOD(), '', '669 02', '');
+                ValidateCustomer(Rec, CreateLanguage.CSY(), CreatePaymentTerms.PaymentTermsCOD(), '', '669 02', '');
         end;
     end;
 

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10600 "Create Item Charge US"
 {
     SingleInstance = true;

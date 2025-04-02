@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14125 "Create Location MX"
 {
     SingleInstance = true;

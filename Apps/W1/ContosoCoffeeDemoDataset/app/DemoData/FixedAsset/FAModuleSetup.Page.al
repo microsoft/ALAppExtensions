@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 4760 "FA Module Setup"
 {
     PageType = Card;

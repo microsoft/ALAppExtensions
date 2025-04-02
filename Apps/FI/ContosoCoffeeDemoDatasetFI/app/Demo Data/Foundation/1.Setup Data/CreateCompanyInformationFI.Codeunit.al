@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13443 "Create Company Information FI"
 {
     InherentEntitlements = X;

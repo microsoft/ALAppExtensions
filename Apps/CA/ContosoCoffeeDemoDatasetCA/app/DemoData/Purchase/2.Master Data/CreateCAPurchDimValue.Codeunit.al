@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27083 "Create CA Purch. Dim. Value"
 {
     SingleInstance = true;

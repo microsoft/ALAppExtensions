@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10897 "Create VAT Statement FR"
 {
     InherentEntitlements = X;

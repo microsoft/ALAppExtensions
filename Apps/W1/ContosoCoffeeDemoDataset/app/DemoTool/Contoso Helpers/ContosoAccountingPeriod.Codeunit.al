@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5439 "Contoso Accounting Period"
 {
     InherentEntitlements = X;

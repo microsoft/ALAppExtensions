@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11484 "Create Gen. Journal Batch US"
 {
     SingleInstance = true;

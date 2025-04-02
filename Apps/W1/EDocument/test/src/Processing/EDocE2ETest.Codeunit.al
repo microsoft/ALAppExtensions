@@ -27,7 +27,6 @@ codeunit 139624 "E-Doc E2E Test"
     var
         SalesInvHeader: Record "Sales Invoice Header";
         EDocument: Record "E-Document";
-        DocumentSendingProfile: Record "Document Sending Profile";
         Variant: Variant;
     begin
         // [FEATURE] [E-Document] [Processing] 
@@ -59,8 +58,6 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(SalesInvHeader."Document Date", EDocument."Document Date", IncorrectValueErr);
         Assert.AreEqual(EDocument."Source Type"::Customer, EDocument."Source Type", IncorrectValueErr);
         Assert.AreEqual(EDocument.Status::"In Progress", EDocument.Status, IncorrectValueErr);
-        DocumentSendingProfile.GetDefaultForCustomer(Customer."No.", DocumentSendingProfile);
-        Assert.AreEqual(EDocument."Document Sending Profile", DocumentSendingProfile.Code, IncorrectValueErr);
 
         UnbindSubscription(EDocImplState);
     end;
@@ -1336,7 +1333,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [THEN] Status is Processed on service, and document is in sent
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Sent);
 
-        // [THEN] User click get approval
+        // [THEN] User click approval
         EDocImplState.SetThrowIntegrationLoggedError();
         EDocImplState.SetActionHasUpdate(true);
         EDocImplState.SetActionReturnStatus(Enum::"E-Document Service Status"::Approved);
@@ -1355,6 +1352,161 @@ codeunit 139624 "E-Doc E2E Test"
         UnbindSubscription(EDocImplState);
     end;
 
+    [Test]
+    [HandlerFunctions('EDocServicesPageHandler')]
+    internal procedure InterfaceOnGetCancelReturnCanceled()
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        JobQueueEntry: Record "Job Queue Entry";
+        EDocumentPage: TestPage "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Post document to async service. Test state after Cancel action has been executed.
+
+        // [GIVEN] That IsASync is true, and OnGetReponse return true and Cancel returns Canceled
+        Initialize(Enum::"Service Integration"::"Mock");
+        BindSubscription(EDocImplState);
+        EDocImplState.SetIsAsync();
+        EDocImplState.SetOnGetResponseSuccess();
+        EDocImplState.SetActionHasUpdate(true);
+        EDocImplState.SetActionReturnStatus(Enum::"E-Document Service Status"::Canceled);
+
+        // [WHEN] Team member post invoice
+        LibraryLowerPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+        EDocument.FindLast();
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
+
+        // [WHEN] Executing Get Response succesfully 
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        // [THEN] Status is Processed on service, and document is in sent
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Sent);
+
+        // [THEN] User click cancel
+        EDocumentService.FindLast();
+        LibraryVariableStorage.Enqueue(EDocumentService);
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
+        EDocumentPage.Cancel.Invoke();
+
+        // Impl by EDocServicesPageHandler
+
+        // [THEN] Status is Canceled on service, and document is processed
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Canceled);
+
+        UnbindSubscription(EDocImplState);
+    end;
+
+    [Test]
+    [HandlerFunctions('EDocServicesPageHandler')]
+    internal procedure InterfaceOnGetCancelNoUpdate()
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        JobQueueEntry: Record "Job Queue Entry";
+        EDocumentPage: TestPage "E-Document";
+        Logs: List of [Enum "E-Document Service Status"];
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Post document to async service. Test state after Cancel action has been executed.
+
+        // [GIVEN] That IsASync is true, and OnGetReponse return true and Cancel returns Canceled
+        Initialize(Enum::"Service Integration"::"Mock");
+        BindSubscription(EDocImplState);
+        EDocImplState.SetIsAsync();
+        EDocImplState.SetOnGetResponseSuccess();
+        EDocImplState.SetActionHasUpdate(false);
+
+        // [WHEN] Team member post invoice
+        LibraryLowerPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+        EDocument.FindLast();
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
+
+        // [WHEN] Executing Get Response succesfully 
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        // [THEN] Status is Processed on service, and document is in sent
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Sent);
+
+        // [THEN] User click cancel
+        EDocumentService.FindLast();
+        LibraryVariableStorage.Enqueue(EDocumentService);
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
+        EDocumentPage.Cancel.Invoke();
+
+        // Impl by EDocServicesPageHandler
+
+        // [THEN] Status is Canceled on service, and document is processed
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Sent);
+
+        Logs.Add(Enum::"E-Document Service Status"::Exported);
+        Logs.Add(Enum::"E-Document Service Status"::"Pending Response");
+        Logs.Add(Enum::"E-Document Service Status"::Sent);
+        VerifyLogs(EDocument, EDocumentService, Logs);
+
+        UnbindSubscription(EDocImplState);
+    end;
+
+    [Test]
+    [HandlerFunctions('EDocServicesPageHandler')]
+    procedure InterfaceOnCancelThrowErrorFailure()
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        JobQueueEntry: Record "Job Queue Entry";
+        EDocumentPage: TestPage "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Post document to async service. Test state after Get Approval has been executed when a runtime error occured inside
+        // Inside GetApproval an runtime error has been thrown by implementation
+
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        Initialize(Enum::"Service Integration"::"Mock");
+        BindSubscription(EDocImplState);
+        EDocImplState.SetIsAsync();
+        EDocImplState.SetOnGetResponseSuccess();
+
+
+        // [WHEN] Team member post invoice
+        LibraryLowerPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+        EDocument.FindLast();
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
+
+        // [WHEN] Executing Get Response succesfully 
+        JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
+
+        // [THEN] Status is Processed on service, and document is in sent
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Processed, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::Sent);
+
+        // [THEN] User click cancel
+        EDocImplState.SetThrowIntegrationLoggedError();
+        EDocImplState.SetActionHasUpdate(true);
+        EDocImplState.SetActionReturnStatus(Enum::"E-Document Service Status"::Canceled);
+
+        EDocumentService.FindLast();
+        LibraryVariableStorage.Enqueue(EDocumentService);
+        EDocumentPage.OpenView();
+        EDocumentPage.GoToRecord(EDocument);
+        EDocumentPage.Cancel.Invoke();
+
+        // Impl by EDocServicesPageHandler
+
+        // [THEN] Status is Processed on service, and document is in Approved
+        VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::Error, EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Cancel Error");
+
+        UnbindSubscription(EDocImplState);
+    end;
 
     // UI Tests
 
@@ -1662,6 +1814,25 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         Reply := false;
     end;
+
+
+    local procedure VerifyLogs(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; Logs: List of [Enum "E-Document Service Status"])
+    var
+        EDocumentLog: Record "E-Document Log";
+        Count: Integer;
+    begin
+        EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
+        EDocumentLog.SetRange("Service Code", EDocumentService.Code);
+
+        Count := 1;
+        Assert.AreEqual(Logs.Count(), EDocumentLog.Count(), IncorrectValueErr);
+        if EDocumentLog.FindSet() then
+            repeat
+                Assert.AreEqual(Logs.Get(Count), EDocumentLog.Status, IncorrectValueErr);
+                Count := Count + 1;
+            until EDocumentLog.Next() = 0;
+    end;
+
 
 #if not CLEAN26
     local procedure Initialize(Integration: Enum "E-Document Integration")

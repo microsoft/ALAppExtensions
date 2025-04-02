@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5393 "Create Item Attribute"
 {
     InherentEntitlements = X;

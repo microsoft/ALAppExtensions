@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13736 "Create Customer DK"
 {
     SingleInstance = true;
@@ -45,6 +46,7 @@ codeunit 13736 "Create Customer DK"
         Customer.Validate(County, County);
         Customer.Validate("Post Code", PostCode);
         Customer.Validate("VAT Bus. Posting Group", VATBusPostingGroup);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer.Validate("Reminder Terms Code", ReminderTermsCode);
     end;

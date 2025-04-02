@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11548 "Create Data Exchange NL"
 {
     trigger OnRun()

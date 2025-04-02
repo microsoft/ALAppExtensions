@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19042 "Create IN TCS Posting Setup"
 {
     InherentEntitlements = X;

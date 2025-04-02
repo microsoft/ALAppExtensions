@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4764 "Warehouse Module Setup"
 {
     DataClassification = CustomerContent;

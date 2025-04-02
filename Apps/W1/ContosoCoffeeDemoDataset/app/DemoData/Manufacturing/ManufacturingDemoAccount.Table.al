@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEANSCHEMA26
 table 4761 "Manufacturing Demo Account"
 {

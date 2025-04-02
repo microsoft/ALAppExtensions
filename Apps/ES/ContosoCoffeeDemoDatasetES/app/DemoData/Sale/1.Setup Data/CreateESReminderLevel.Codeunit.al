@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10835 "Create ES Reminder Level"
 {
     SingleInstance = true;

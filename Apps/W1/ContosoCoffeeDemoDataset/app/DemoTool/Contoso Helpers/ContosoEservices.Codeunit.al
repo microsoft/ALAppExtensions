@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5462 "Contoso eServices"
 {
     InherentEntitlements = X;

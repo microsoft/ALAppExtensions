@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17164 "Create Reminder Level AU"
 {
     SingleInstance = true;

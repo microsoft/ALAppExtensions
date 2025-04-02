@@ -96,13 +96,19 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN26
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The declaration of the field is moved to Intrastat CZ extension.';
+                ObsoleteTag = '26.0';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

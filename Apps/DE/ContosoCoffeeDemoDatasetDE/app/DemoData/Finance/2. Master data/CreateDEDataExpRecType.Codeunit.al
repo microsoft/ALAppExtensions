@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11124 "Create DE Data Exp. Rec. Type"
 {
     InherentEntitlements = X;

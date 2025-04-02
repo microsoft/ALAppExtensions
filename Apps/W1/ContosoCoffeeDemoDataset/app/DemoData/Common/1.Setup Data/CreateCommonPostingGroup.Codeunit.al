@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5134 "Create Common Posting Group"
 {
     InherentEntitlements = X;

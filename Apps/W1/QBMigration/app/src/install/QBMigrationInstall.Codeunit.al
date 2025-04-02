@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1921 "QB Migration Install"
 {
     Subtype = install;

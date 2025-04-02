@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5105 "Create Svc Resource"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10518 "Create GB General Ledger Setup"
 {
     InherentEntitlements = X;

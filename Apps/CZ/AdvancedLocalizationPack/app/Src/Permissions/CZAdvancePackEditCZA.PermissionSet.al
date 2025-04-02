@@ -1,4 +1,5 @@
-﻿permissionset 11741 "CZ Advance Pack - Edit CZA"
+#pragma warning disable AA0247
+permissionset 11741 "CZ Advance Pack - Edit CZA"
 {
     Access = Internal;
     Assignable = false;

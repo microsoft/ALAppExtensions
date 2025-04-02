@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13402 "Create No. Series FI"
 {
     InherentEntitlements = X;

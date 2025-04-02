@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13723 "Create Location DK"
 {
     SingleInstance = true;

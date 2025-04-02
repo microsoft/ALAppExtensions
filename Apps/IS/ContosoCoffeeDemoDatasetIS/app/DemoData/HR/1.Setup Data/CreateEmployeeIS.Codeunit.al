@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14634 "Create Employee IS"
 {
     InherentEntitlements = X;

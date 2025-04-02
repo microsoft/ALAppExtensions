@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10713 "Create Cust. Posting Grp NO"
 {
     SingleInstance = true;

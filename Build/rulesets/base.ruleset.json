@@ -58,8 +58,7 @@
     },
     {
       "id": "AA0247",
-      "action": "None",
-      "justification": "Elevate when the all apps are namespaced."
+      "action": "Error"
     },
     {
       "id": "AA0604",
@@ -173,23 +172,9 @@
       "justification": "Action must have a value for the ApplicationArea property so that they are visible to users. From runtime 11.0, you can specify on the application object level the ApplicationArea to use as default for all its controls and actions."
     },
     {
-      "id": "AS0077",
-      "action": "Warning",
-      "justification": "A var modifier has been added on the parameter 'ShowDialog' in the event 'OnBeforeEmailRecords'. This might break the runtime behavior of dependent extensions subscribing to this event."
-    },
-    {
-      "id": "AS0078",
-      "action": "Warning"
-    },
-    {
       "id": "AS0099",
       "action": "Warning",
       "justification": "The ID '0' for the EnumValue 'Marketing Text' is not valid. It should be within the range '[1..2147483647]', which is allocated to the application, and outside the range '[50000..99999]', which is allocated to per-tenant customizations."
-    },
-    {
-      "id": "AS0102",
-      "action": "Warning",
-      "justification": "It is not allowed to add a return value to procedure, because it might break dependent extensions at runtime."
     },
     {
       "id": "AS0103",

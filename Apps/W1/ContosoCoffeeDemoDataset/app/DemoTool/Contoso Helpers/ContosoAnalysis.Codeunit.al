@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5452 "Contoso Analysis"
 {
     InherentEntitlements = X;

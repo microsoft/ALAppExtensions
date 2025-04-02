@@ -1078,7 +1078,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     procedure ApplyAdvanceLetter(var PurchInvHeader: Record "Purch. Inv. Header")
     var
-        AdvanceLetterApplication: Record "Advance Letter Application CZZ";
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         ConfirmManagement: Codeunit "Confirm Management";
@@ -1086,26 +1086,27 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         ApplyAdvanceLetterQst: Label 'Apply Advance Letter?';
         CannotApplyErr: Label 'You cannot apply more than %1.', Comment = '%1 = Remaining amount to apply';
     begin
-        AdvanceLetterApplication.SetRange("Document Type", AdvanceLetterApplication."Document Type"::"Posted Purchase Invoice");
-        AdvanceLetterApplication.SetRange("Document No.", PurchInvHeader."No.");
-        if AdvanceLetterApplication.IsEmpty() then
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvanceLetterApplicationCZZ."Document Type"::"Posted Purchase Invoice");
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", PurchInvHeader."No.");
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
             LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Posted Purchase Invoice", PurchInvHeader."No.", PurchInvHeader."Pay-to Vendor No.", PurchInvHeader."Posting Date", PurchInvHeader."Currency Code");
 
-        if AdvanceLetterApplication.IsEmpty() then
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
             exit;
 
         if not ConfirmManagement.GetResponseOrDefault(ApplyAdvanceLetterQst, false) then
             exit;
 
-        CheckAdvancePayment(AdvanceLetterApplication."Document Type"::"Posted Purchase Invoice", PurchInvHeader);
-        AdvanceLetterApplication.CalcSums(Amount);
+        CheckAdvancePayment(AdvanceLetterApplicationCZZ."Document Type"::"Posted Purchase Invoice", PurchInvHeader);
+        AdvanceLetterApplicationCZZ.CalcSums(Amount);
         VendorLedgerEntry.SetCurrentKey("Document No.");
         VendorLedgerEntry.SetRange("Document No.", PurchInvHeader."No.");
         VendorLedgerEntry.SetRange(Open, true);
+        OnApplyAdvanceLetterOnAfterSetVendorLedgerEntryFilter(VendorLedgerEntry, PurchInvHeader, AdvanceLetterApplicationCZZ);
         VendorLedgerEntry.FindLast();
         VendorLedgerEntry.CalcFields("Remaining Amount");
-        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplication, VendorLedgerEntry);
-        if AdvanceLetterApplication.Amount > -VendorLedgerEntry."Remaining Amount" then
+        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplicationCZZ, VendorLedgerEntry);
+        if AdvanceLetterApplicationCZZ.Amount > -VendorLedgerEntry."Remaining Amount" then
             Error(CannotApplyErr, -VendorLedgerEntry."Remaining Amount");
 
         PurchAdvLetterPostCZZ.PostAdvanceLetterApplying(PurchInvHeader, GenJnlPostLine, AdvancePostingParametersCZZ);
@@ -1666,6 +1667,11 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnCheckAdvancePaymentOnAfterSetFilters(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnApplyAdvanceLetterOnAfterSetVendorLedgerEntryFilter(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var PurchInvHeader: Record "Purch. Inv. Header"; var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
     begin
     end;
 }

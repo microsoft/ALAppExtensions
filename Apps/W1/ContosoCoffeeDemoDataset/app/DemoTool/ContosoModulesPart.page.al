@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 5548 "Contoso Modules Part"
 {
     PageType = ListPart;

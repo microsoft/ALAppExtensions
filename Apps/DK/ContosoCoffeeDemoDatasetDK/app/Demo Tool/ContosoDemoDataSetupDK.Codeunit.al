@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13700 "Contoso Demo Data Setup DK"
 {
     InherentPermissions = X;

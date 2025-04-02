@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13699 "Create DK GL Accounts"
 {
     InherentPermissions = X;
@@ -27,8 +28,8 @@ codeunit 13699 "Create DK GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '02020');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '02020');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '02410');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '02410');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.RawMaterialsName(), '16400');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchRawMatDomName(), '02020');
@@ -50,7 +51,7 @@ codeunit 13699 "Create DK GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         SvcGLAccount: Codeunit "Create Svc GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(SvcGLAccount.ServiceContractSaleName(), '');
+        ContosoGLAccount.AddAccountForLocalization(SvcGLAccount.ServiceContractSaleName(), '01750');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Mfg GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -61,7 +62,7 @@ codeunit 13699 "Create DK GL Accounts"
     begin
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '02100');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '02100');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '02410');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '02420');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '02421');

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11220 "Create Item Charge SE"
 {
     SingleInstance = true;

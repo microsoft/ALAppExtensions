@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEANSCHEMA25
 tableextension 4762 "Additional Demo Data" extends "Assisted Company Setup Status"
 {

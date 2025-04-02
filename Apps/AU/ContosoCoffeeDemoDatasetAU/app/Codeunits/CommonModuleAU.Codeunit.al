@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17109 "Common Module AU"
 {
     InherentEntitlements = X;

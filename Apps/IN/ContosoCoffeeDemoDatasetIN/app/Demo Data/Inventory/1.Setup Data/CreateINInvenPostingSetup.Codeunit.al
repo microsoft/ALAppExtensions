@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19027 "Create IN Inven. Posting Setup"
 {
     SingleInstance = true;

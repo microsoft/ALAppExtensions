@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19061 "Create IN FA Class"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12202 "Create Payment Term IT"
 {
     SingleInstance = true;

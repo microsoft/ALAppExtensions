@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11234 "Create Customer SE"
 {
     SingleInstance = true;
@@ -30,6 +31,7 @@ codeunit 11234 "Create Customer SE"
         Customer.Validate(City, City);
         Customer.Validate("Post Code", PostCode);
         Customer."VAT Registration No." := VatRegNo;
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
     end;
 

@@ -309,7 +309,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     [NonDebuggable]
     internal procedure Get(var Client: HttpClient; Url: Text; var Response: HttpResponseMessage)
     begin
-        Client.Get(Url, Response);
+        if IsTestInProgress then
+            CommunicationEvents.OnClientGet(Url, Response)
+        else
+            Client.Get(Url, Response);
     end;
 
     [TryFunction]

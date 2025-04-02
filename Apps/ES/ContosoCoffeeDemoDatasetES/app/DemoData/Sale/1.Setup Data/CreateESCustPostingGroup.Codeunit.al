@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10819 "Create ES Cust Posting Group"
 {
     SingleInstance = true;

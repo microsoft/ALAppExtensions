@@ -11,7 +11,7 @@
   "url": "https://go.microsoft.com/fwlink/?linkid=724011",
   "logo": "ExtensionLogo.png",
   "application": "27.0.0.0",
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "internalsVisibleTo": [
     {
       "id": "adcda309-4da8-43b8-b05d-d0287462ed42",

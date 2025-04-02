@@ -16,7 +16,6 @@ table 8061 "Billing Line"
     LookupPageId = "Billing Lines";
     DrillDownPageId = "Billing Lines";
     Caption = 'Billing Line';
-    Access = Internal;
 
     fields
     {

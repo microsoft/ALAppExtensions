@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 1919 "MigrationQB Default Accounts"
 {
     Caption = 'QuickBooks Migration Setup';

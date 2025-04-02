@@ -22,7 +22,7 @@ codeunit 134244 "Shpfy Company Mapping Subs."
         Uri: Text;
         GraphQlQuery: Text;
         GetCompanyGQLStartTok: Label '{"query":"{company(id: \"gid://shopify/Company/', Locked = true;
-        GetCompanyGQLEndTok: Label '\") {name id note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}', Locked = true;
+        GetCompanyGQLEndTok: Label '\") {name id externalId note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of

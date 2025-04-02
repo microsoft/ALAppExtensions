@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13711 "Create Bank Acc Posting Grp DK"
 {
     SingleInstance = true;

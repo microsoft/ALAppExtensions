@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12222 "Create Sales Document IT"
 {
     SingleInstance = true;

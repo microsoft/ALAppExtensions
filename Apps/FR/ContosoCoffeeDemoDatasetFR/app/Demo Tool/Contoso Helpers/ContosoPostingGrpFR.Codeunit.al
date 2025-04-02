@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10870 "Contoso Posting Grp FR"
 {
     InherentEntitlements = X;

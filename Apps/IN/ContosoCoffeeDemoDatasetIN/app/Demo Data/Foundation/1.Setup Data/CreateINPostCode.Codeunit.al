@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19055 "Create IN Post Code"
 {
     InherentEntitlements = X;

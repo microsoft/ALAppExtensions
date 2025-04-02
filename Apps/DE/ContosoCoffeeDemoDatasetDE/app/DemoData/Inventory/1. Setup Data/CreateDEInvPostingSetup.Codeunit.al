@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11093 "Create DE Inv. Posting Setup"
 {
     SingleInstance = true;

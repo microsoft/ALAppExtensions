@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13743 "Create Currency Ex. Rate DK"
 {
     SingleInstance = true;

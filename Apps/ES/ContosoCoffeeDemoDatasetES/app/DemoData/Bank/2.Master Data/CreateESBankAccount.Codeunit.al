@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10806 "Create ES Bank Account"
 {
     SingleInstance = true;

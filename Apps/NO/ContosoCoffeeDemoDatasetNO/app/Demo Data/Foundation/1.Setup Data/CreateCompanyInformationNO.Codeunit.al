@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10705 "Create Company Information NO"
 {
     InherentEntitlements = X;

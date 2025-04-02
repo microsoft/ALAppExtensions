@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4799 "Create FA Setup"
 {
     InherentEntitlements = X;

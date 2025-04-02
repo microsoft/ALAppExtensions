@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5117 "Contoso Country Or Region"
 {
     InherentEntitlements = X;

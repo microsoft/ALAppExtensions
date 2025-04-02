@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5192 "Create Job Item"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19052 "Create IN TDS Rates"
 {
     InherentEntitlements = X;

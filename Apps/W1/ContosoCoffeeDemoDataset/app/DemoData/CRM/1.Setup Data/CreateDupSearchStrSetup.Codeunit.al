@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5351 "Create Dup. Search Str. Setup"
 {
     InherentEntitlements = X;
