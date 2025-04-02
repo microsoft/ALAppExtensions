@@ -88,7 +88,7 @@ codeunit 6103 "E-Document Subscription"
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
-        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') then
+        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') and (SalesShptHdrNo = '') then
             exit;
 
         if not EDocumentProcessing.GetDocSendingProfileForCust(SalesHeader."Bill-to Customer No.", DocumentSendingProfile) then
