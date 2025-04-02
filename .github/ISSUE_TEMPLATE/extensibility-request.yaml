@@ -22,7 +22,7 @@ body:
     id: additional-context
     attributes:
       label: Additional context
-      description: Explain the benefits of what you’re requesting. Help us assess the best way to fulfil your need.
+      description: Explain the benefits of what you’re requesting. Help us assess the best way to fulfill your need.
       placeholder: Explain the benefits
     validations:
       required: true
