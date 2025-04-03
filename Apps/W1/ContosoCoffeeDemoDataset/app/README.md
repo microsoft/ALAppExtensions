@@ -43,6 +43,7 @@ The tool is a 1st party app, which means it is open source and partner can both 
 # Major changes:
 ## Creating new company wizard:
 This change required breaking changes to the company creation wizard. Previously, the wizard loaded the demo data packages and imported/applied them. With the new tool, users can select the specific modules they need to demo in the new company, and only those modules and their dependencies will be executed.
+
 ![CreateCompanyWizard1.png](.docs/CreateCompanyWizard1.png)
 ![CreateCompanyWizard2.png](.docs/CreateCompanyWizard2.png)
 
