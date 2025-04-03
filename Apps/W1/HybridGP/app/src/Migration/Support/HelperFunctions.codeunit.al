@@ -1695,6 +1695,10 @@ codeunit 4037 "Helper Functions"
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         DimCode: Code[20];
     begin
+        // First delete any dimensions created during company initialization
+        if not Dimension.IsEmpty() then
+            Dimension.DeleteAll();
+
         if GPSegments.FindSet() then begin
             repeat
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPSegments.RecordId()));
