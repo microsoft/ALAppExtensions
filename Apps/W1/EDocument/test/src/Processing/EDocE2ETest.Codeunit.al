@@ -1580,6 +1580,34 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    procedure CreateEDocumentShipmentSuccessful()
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting sales shipment
+
+        // [GIVEN] SETUP
+        this.Initialize(Enum::"Service Integration"::"Mock");
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Create sales order and post shipment for it
+        SalesShipmentHeader := this.LibraryEDoc.PostSalesShipment(this.Customer);
+
+        // [THEN] Check that E-Document is created for posted shipment
+        EDocument.FindLast();
+        this.Assert.AreEqual(SalesShipmentHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
+
+        // [WHEN] Export E-Document 
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+
+        // [THEN] Check that xml file was created
+        this.CheckXmlCreated(EDocument);
+    end;
+
+    [Test]
     procedure PostDocumentNoDefaultOrElectronicProfile()
     var
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -1651,6 +1679,15 @@ codeunit 139624 "E-Doc E2E Test"
 
         TempXMLBuffer.SetRange(Path, '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
         Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    local procedure CheckXmlCreated(EDocument: Record "E-Document")
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
+        Assert.IsTrue(TempBlob.HasValue(), 'No XML created');
     end;
 
     [Test]
