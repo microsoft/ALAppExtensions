@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5419 "Create Gen. Journal Template"
 {
     InherentEntitlements = X;

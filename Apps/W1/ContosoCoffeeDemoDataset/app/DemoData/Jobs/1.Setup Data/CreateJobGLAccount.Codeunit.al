@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5199 "Create Job GL Account"
 {
     InherentEntitlements = X;

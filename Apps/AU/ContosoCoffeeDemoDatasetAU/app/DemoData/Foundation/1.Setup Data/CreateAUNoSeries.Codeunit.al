@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17116 "Create AU No. Series"
 {
     InherentEntitlements = X;

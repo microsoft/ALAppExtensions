@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17123 "Create NZ VAT Setup PostingGrp"
 {
     SingleInstance = true;

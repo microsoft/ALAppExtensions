@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11364 "Create Posting Group BE"
 {
     InherentEntitlements = X;
@@ -59,6 +60,7 @@ codeunit 11364 "Create Posting Group BE"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoVATPostingGroup(), '', '', CreateBEGLAccount.InventAdjRetail(), CreateBEGLAccount.Goods(), '', '', '', '', '', '', CreateBEGLAccount.PurchaseCostsRetail(), CreateBEGLAccount.PurchaseCostsInterim(), CreateGLAccount.VATPayable());
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.RetailPostingGroup(), '', '', CreateBEGLAccount.InventAdjRetail(), CreateBEGLAccount.Goods(), '', '', '', '', '', '', CreateBEGLAccount.PurchaseCostsRetail(), CreateBEGLAccount.PurchaseCostsInterim(), CreateGLAccount.VATPayable());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.ServicesPostingGroup(), '', '', CreateBEGLAccount.InventAdjRetail(), CreateBEGLAccount.Goods(), '', '', '', '', '', '', CreateBEGLAccount.PurchaseCostsRetail(), CreateBEGLAccount.PurchaseCostsInterim(), CreateGLAccount.VATPayable());
 
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), NoVATPostingGroup(), CreateGLAccount.SalesRetailDom(), CreateBEGLAccount.PurchasesRetailDom(), CreateBEGLAccount.InventAdjRetail(), CreateBEGLAccount.Goods(), '', '', CreateBEGLAccount.PaymentDiscReceived(), CreateBEGLAccount.PaymentDiscReceived(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateBEGLAccount.PurchaseCostsRetail(), CreateBEGLAccount.PurchaseCostsInterim(), CreateGLAccount.VATPayable());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), CreateGLAccount.SalesRetailDom(), CreateBEGLAccount.PurchasesRetailDom(), CreateBEGLAccount.InventAdjRetail(), CreateBEGLAccount.Goods(), '', '', CreateBEGLAccount.PaymentDiscReceived(), CreateBEGLAccount.PaymentDiscReceived(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateBEGLAccount.PurchaseCostsRetail(), CreateBEGLAccount.PurchaseCostsInterim(), CreateGLAccount.VATPayable());

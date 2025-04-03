@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31291 "Create Column Layout CZ"
 {
     InherentEntitlements = X;

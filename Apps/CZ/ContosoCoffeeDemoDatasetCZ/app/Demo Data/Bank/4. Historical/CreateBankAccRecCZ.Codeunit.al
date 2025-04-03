@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31286 "Create Bank Acc. Rec. CZ"
 {
     SingleInstance = true;

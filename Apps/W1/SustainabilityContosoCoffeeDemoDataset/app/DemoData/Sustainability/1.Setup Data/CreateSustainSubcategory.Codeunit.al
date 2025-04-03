@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5214 "Create Sustain. Subcategory"
 {
     InherentEntitlements = X;

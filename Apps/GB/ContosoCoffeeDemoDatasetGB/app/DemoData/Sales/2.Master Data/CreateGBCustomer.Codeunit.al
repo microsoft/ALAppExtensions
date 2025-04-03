@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11494 "Create GB Customer"
 {
     SingleInstance = true;

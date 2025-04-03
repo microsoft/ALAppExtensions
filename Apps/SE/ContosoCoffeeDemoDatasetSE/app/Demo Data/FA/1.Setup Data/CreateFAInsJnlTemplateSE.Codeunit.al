@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11243 "Create FA Ins Jnl. Template SE"
 {
     InherentEntitlements = X;

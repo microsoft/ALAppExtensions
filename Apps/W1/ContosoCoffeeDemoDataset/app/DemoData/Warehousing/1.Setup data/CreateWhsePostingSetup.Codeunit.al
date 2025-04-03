@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4788 "Create Whse Posting Setup"
 {
     InherentEntitlements = X;

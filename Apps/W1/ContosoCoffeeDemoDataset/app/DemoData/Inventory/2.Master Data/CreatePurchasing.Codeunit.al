@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5379 "Create Purchasing"
 {
     InherentEntitlements = X;

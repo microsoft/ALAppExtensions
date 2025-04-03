@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12208 "Create ABI CAB Code IT"
 {
     InherentEntitlements = X;

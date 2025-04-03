@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31222 "Contoso Inventory CZ"
 {
     InherentEntitlements = X;

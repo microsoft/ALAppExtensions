@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27013 "Create CA Sales Document"
 {
     InherentEntitlements = X;

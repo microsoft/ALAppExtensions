@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10823 "Create ES Customer"
 {
     SingleInstance = true;
@@ -38,9 +39,9 @@ codeunit 10823 "Create ES Customer"
         Customer.Validate("Territory Code", TerritoryCode);
         Customer.Validate("Payment Terms Code", PaymentTermsCode);
         Customer."VAT Registration No." := VATRegistrationNo;
-        if CountryRegionCode <> '' then
-            Customer.Validate("Country/Region Code", CountryRegionCode);
+        Customer.Validate("Country/Region Code", CountryRegionCode);
         Customer.Validate("Payment Method Code", PaymentMethodCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer.Validate(County, CustomerCounty);
     end;

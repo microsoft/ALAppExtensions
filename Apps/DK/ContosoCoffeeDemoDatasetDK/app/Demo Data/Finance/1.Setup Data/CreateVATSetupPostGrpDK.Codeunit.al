@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13703 "Create VAT Setup Post.Grp. DK"
 {
     InherentEntitlements = X;

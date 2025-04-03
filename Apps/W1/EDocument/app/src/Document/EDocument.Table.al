@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.Currency;
+using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
@@ -13,6 +14,8 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 table 6121 "E-Document"
 {
@@ -219,6 +222,12 @@ table 6121 "E-Document"
             Caption = 'Structured Data Process';
             ToolTip = 'Specifies the structured data process to run on the E-Document data.';
         }
+        field(38; "Service Integration"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration';
+            ToolTip = 'Specifies the service integration to use for the E-Document.';
+            Editable = false;
+        }
     }
     keys
     {
@@ -255,6 +264,23 @@ table 6121 "E-Document"
         this.DeleteRelatedRecords();
     end;
 
+    /// <summary>
+    /// Inserts a new E-Document record with the specified parameters.
+    /// </summary>
+    internal procedure Create(
+        EDocumentDirection: Enum "E-Document Direction";
+        EDocumentType: Enum "E-Document Type";
+        EDocumentService: Record "E-Document Service"
+    )
+    begin
+        Rec."Entry No" := 0;
+        Rec.Direction := EDocumentDirection;
+        Rec."Document Type" := EDocumentType;
+        Rec.Service := EDocumentService.Code;
+        Rec."Service Integration" := EDocumentService."Service Integration V2";
+        Rec.Insert(true);
+    end;
+
     internal procedure IsDuplicate(): Boolean
     var
         EDocument: Record "E-Document";
@@ -266,6 +292,20 @@ table 6121 "E-Document"
         exit(not EDocument.IsEmpty());
     end;
 
+    internal procedure GetTotalAmountIncludingVAT(): Decimal
+    var
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        if Rec."Amount Incl. VAT" <> 0 then
+            exit(Rec."Amount Incl. VAT");
+        if Rec.Direction = Rec.Direction::Outgoing then
+            exit(-Rec."Amount Incl. VAT");
+        if GetEDocumentService()."Import Process" = "E-Document Import Process"::"Version 1.0" then
+            exit(Rec."Amount Incl. VAT");
+        EDocumentPurchaseHeader.GetFromEDocument(Rec);
+        exit(EDocumentPurchaseHeader.Total);
+    end;
+
     local procedure DeleteRelatedRecords()
     var
         DocumentAttachment: Record "Document Attachment";
@@ -273,6 +313,9 @@ table 6121 "E-Document"
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentLog: Record "E-Document Log";
         EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentLineMapping: Record "E-Document Line Mapping";
+        IProcessStructuredData: Interface IProcessStructuredData;
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
         if not EDocumentLog.IsEmpty() then
@@ -294,6 +337,17 @@ table 6121 "E-Document"
         EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
         if not EDocMappingLog.IsEmpty() then
             EDocMappingLog.DeleteAll(true);
+
+        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocumentHeaderMapping.IsEmpty() then
+            EDocumentHeaderMapping.DeleteAll(true);
+
+        EDocumentLineMapping.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocumentLineMapping.IsEmpty() then
+            EDocumentLineMapping.DeleteAll(true);
+
+        IProcessStructuredData := Rec."Structured Data Process";
+        IProcessStructuredData.CleanUpDraft(Rec);
     end;
 
     internal procedure PreviewContent()

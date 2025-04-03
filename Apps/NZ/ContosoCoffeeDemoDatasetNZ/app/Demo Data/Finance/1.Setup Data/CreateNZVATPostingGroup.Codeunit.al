@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17124 "Create NZ VAT Posting Group"
 {
     SingleInstance = true;

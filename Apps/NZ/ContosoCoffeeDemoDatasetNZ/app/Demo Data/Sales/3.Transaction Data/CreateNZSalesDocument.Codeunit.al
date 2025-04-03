@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17140 "Create NZ Sales Document"
 {
     InherentEntitlements = X;

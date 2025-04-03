@@ -46,8 +46,9 @@ codeunit 14601 "IS Core Install"
         GeneralLedgerSetup: Record "General Ledger Setup";
         DocsRetentionPeriodDef: Enum "Docs - Retention Period Def.";
     begin
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.Validate("Document Retention Period", DocsRetentionPeriodDef::"IS Docs Retention Period");
-        GeneralLedgerSetup.Modify();
+        if GeneralLedgerSetup.Get() then begin
+            GeneralLedgerSetup.Validate("Document Retention Period", DocsRetentionPeriodDef::"IS Docs Retention Period");
+            GeneralLedgerSetup.Modify();
+        end;
     end;
 }

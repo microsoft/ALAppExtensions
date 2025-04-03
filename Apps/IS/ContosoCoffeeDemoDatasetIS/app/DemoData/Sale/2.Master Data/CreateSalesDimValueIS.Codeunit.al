@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14616 "Create Sales Dim Value IS"
 {
     SingleInstance = true;

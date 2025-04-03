@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5683 "Create Cont Job Responsibility"
 {
     InherentEntitlements = X;

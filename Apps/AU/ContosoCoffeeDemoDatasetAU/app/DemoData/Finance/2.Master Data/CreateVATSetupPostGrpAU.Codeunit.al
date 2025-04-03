@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17168 "Create VAT Setup Post.Grp. AU"
 {
     InherentEntitlements = X;
@@ -28,7 +29,6 @@ codeunit 17168 "Create VAT Setup Post.Grp. AU"
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateAUVATPostingGroups.Gst10(), true, 10, CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), true, 1, GST10DescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateAUVATPostingGroups.NoVat(), true, 0, '', '', true, 1, NoVATDescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateAUVATPostingGroups.NonGst(), true, 0, CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), true, 1, NonGSTDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateAUVATPostingGroups.Vat10(), true, 0, '', '', true, 1, Vat10DescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateAUVATPostingGroups.Vat15(), true, 0, '', '', true, 1, Vat15DescriptionLbl);
         ContosoVATStatement.SetOverwriteData(false);
     end;
@@ -82,7 +82,6 @@ codeunit 17168 "Create VAT Setup Post.Grp. AU"
         GST10DescriptionLbl: Label 'Setup for MISC / GST10', MaxLength = 100;
         NoVATDescriptionLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         NonGSTDescriptionLbl: Label 'Setup for MISC / NON GST', MaxLength = 100;
-        Vat10DescriptionLbl: Label 'Miscellaneous 10 VAT', MaxLength = 100;
         Vat15DescriptionLbl: Label 'Miscellaneous 15 VAT', MaxLength = 100;
         MiscPostingGroupDescriptionLbl: Label 'Customers and vendors in MISC', MaxLength = 100;
         ExportPostingGroupDescriptionLbl: Label 'Other customers and vendors (not MISC)', MaxLength = 100;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11120 "Create DE VAT Statement"
 {
     InherentEntitlements = X;

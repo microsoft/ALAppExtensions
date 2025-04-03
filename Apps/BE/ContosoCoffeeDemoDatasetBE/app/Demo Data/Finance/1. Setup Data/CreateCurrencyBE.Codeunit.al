@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11360 "Create Currency BE"
 {
     SingleInstance = true;

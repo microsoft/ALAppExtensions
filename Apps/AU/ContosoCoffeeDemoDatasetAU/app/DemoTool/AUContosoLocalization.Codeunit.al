@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17131 "AU Contoso Localization"
 {
     InherentEntitlements = X;

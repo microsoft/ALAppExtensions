@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5297 "Create Acc. Schedule Chart"
 {
     InherentEntitlements = X;

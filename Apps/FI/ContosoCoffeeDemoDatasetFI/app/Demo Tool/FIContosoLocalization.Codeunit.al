@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13414 "FI Contoso Localization"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 6158 "E-Doc. Inv. Manager RC" extends "Whse. Basic Role Center"
 {
     layout

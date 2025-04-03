@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5279 "Generate Contoso Demo Data"
 {
     Access = Internal;

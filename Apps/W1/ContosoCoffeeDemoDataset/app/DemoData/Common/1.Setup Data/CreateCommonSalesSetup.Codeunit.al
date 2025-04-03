@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5141 "Create Common Sales Setup"
 {
     InherentEntitlements = X;

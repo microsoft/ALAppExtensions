@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17109 "Create NZ Country Region"
 {
     SingleInstance = true;

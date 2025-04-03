@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31294 "Create Custom Report Layout CZ"
 {
     InherentEntitlements = X;

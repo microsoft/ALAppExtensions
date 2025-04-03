@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11464 "Contoso Tax US"
 {
     InherentEntitlements = X;

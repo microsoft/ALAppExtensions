@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11142 "Common Module AT"
 {
     InherentEntitlements = X;

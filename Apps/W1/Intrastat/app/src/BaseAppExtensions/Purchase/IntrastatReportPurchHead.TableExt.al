@@ -28,7 +28,7 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
         }
     }
 
-    internal procedure IsIntrastatTransaction(): Boolean
+    procedure IsIntrastatTransaction(): Boolean
     var
         CountryRegion: Record "Country/Region";
         IsHandled: Boolean;

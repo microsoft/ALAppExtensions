@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31212 "Create CZ GL Accounts"
 {
     SingleInstance = true;

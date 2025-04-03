@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10834 "Create ES Currency Exch"
 {
     SingleInstance = true;

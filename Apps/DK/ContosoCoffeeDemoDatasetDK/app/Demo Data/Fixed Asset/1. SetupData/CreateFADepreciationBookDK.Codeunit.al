@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13742 "Create FA Depreciation Book DK"
 {
     SingleInstance = true;

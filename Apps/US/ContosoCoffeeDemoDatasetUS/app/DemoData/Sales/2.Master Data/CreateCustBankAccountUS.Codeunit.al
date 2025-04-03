@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11498 "Create Cust. Bank Account US"
 {
     SingleInstance = true;

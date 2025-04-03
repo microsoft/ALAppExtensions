@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11224 "Create Vendor Posting Group SE"
 {
     SingleInstance = true;

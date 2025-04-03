@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10836 "Create ES Sales Dim Value"
 {
     SingleInstance = true;

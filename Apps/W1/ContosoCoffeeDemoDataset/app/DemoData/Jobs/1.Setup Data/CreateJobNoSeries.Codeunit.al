@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5195 "Create Job No Series"
 {
     InherentEntitlements = X;

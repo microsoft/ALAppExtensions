@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4770 "Human Resources Module Setup"
 {
     DataClassification = CustomerContent;

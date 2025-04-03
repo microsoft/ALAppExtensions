@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11511 "Create Resource NL"
 {
     SingleInstance = true;

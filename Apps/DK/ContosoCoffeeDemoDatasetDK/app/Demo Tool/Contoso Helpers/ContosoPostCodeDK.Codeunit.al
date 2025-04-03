@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13740 "Contoso Post Code DK"
 {
     InherentEntitlements = X;

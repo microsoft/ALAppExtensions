@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4765 "Create Mfg Item Journal Setup"
 {
     InherentEntitlements = X;

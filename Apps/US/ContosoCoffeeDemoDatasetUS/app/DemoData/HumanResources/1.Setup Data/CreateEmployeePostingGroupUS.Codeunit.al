@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10522 "Create Employee PostingGroupUS"
 {
     SingleInstance = true;

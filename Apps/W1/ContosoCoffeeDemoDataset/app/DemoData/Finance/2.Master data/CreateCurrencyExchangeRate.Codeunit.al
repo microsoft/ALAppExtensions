@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5438 "Create Currency Exchange Rate"
 {
     InherentEntitlements = X;

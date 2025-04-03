@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5269 "Contoso Sales Receivable Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5443 "Create Over-Receipt Code"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12205 "Create Location IT"
 {
     SingleInstance = true;

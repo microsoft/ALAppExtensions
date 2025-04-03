@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19071 "Create IN Ministry"
 {
     InherentEntitlements = X;

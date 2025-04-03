@@ -75,7 +75,6 @@ report 4406 "EXR Trial BalanceBudgetExcel"
         SaveValues = true;
         AboutTitle = 'About Trial Balance/Budget (Excel)';
         AboutText = 'View a snapshot of your chart of accounts at a given point to check the debit and credit net change and closing balance compared to the budget. Amounts are shown in local currency (LCY).';
-
         layout
         {
             area(content)

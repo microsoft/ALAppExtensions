@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 14101 "CD Number Formats"
 {
     ApplicationArea = Basic, Suite;

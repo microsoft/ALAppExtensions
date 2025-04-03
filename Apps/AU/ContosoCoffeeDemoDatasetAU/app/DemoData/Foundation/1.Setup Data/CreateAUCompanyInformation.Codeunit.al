@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17114 "Create AU Company Information"
 {
     InherentEntitlements = X;

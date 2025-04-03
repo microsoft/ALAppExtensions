@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11510 "Create General Ledger Setup NL"
 {
     InherentEntitlements = X;

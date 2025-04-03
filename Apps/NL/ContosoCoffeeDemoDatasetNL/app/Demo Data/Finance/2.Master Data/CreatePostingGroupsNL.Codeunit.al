@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11538 "Create Posting Groups NL"
 {
     InherentEntitlements = X;
@@ -34,6 +35,7 @@ codeunit 11538 "Create Posting Groups NL"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateNLGLAccounts.CostofMaterials(), CreateNLGLAccounts.GoodsforResale(), CreateNLGLAccounts.GoodsforResale(), '', '', '', '', '', CreateNLGLAccounts.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ZeroPostingGroup(), '', '', CreateNLGLAccounts.CostofMaterials(), CreateNLGLAccounts.GoodsforResale(), CreateNLGLAccounts.GoodsforResale(), '', '', '', '', '', CreateNLGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateNLGLAccounts.CostofMaterials(), CreateNLGLAccounts.GoodsforResale(), CreateNLGLAccounts.GoodsforResale(), '', '', '', '', '', CreateNLGLAccounts.CostofMaterials(), '', '');
 
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateNLGLAccounts.ResaleofGoods(), CreateNLGLAccounts.GoodsforResale(), CreateNLGLAccounts.CostofMaterials(), CreateNLGLAccounts.GoodsforResale(), CreateNLGLAccounts.GoodsforResale(), '', CreateNLGLAccounts.SalesDiscounts(), CreateNLGLAccounts.SalesDiscounts(), CreateNLGLAccounts.PurchaseDiscounts(), CreateNLGLAccounts.PurchaseDiscounts(), CreateNLGLAccounts.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateNLGLAccounts.SalesofServiceWork(), CreateNLGLAccounts.OtherExternalServices(), CreateNLGLAccounts.CostofLabor(), CreateNLGLAccounts.OtherExternalServices(), CreateNLGLAccounts.OtherExternalServices(), '', CreateNLGLAccounts.SalesDiscounts(), CreateNLGLAccounts.SalesDiscounts(), CreateNLGLAccounts.PurchaseDiscounts(), CreateNLGLAccounts.PurchaseDiscounts(), CreateNLGLAccounts.CostofLabor(), '', '');

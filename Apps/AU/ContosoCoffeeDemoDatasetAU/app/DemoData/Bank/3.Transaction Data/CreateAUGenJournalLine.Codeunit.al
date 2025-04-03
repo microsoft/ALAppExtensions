@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17163 "Create AU Gen. Journal Line"
 {
     InherentEntitlements = X;

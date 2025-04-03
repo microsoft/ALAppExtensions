@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2514 "Purchasing Inv Line Items"
 {
     QueryType = Normal;

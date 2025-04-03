@@ -33,7 +33,7 @@ tableextension 4826 "Intrastat Report Trsf. Header" extends "Transfer Header"
         end;
     end;
 
-    internal procedure IsIntrastatTransaction(): Boolean
+    procedure IsIntrastatTransaction(): Boolean
     var
         CountryRegion: Record "Country/Region";
         CompanyInformation: Record "Company Information";

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27046 "Create CA Post Code"
 {
     InherentEntitlements = X;

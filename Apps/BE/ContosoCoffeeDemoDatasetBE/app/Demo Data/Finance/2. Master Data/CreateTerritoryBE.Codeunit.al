@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11397 "Create Territory BE"
 {
     InherentEntitlements = X;

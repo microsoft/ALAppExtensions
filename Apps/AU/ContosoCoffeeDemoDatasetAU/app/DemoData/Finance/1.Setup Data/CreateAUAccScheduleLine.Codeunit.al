@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17156 "Create AU Acc. Schedule Line"
 {
     SingleInstance = true;

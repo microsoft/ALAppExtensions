@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11386 "Create Sales Rec. Setup BE"
 {
     InherentEntitlements = X;

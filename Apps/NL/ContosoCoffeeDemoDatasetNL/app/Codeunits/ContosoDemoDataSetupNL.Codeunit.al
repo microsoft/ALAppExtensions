@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11498 "Contoso Demo Data Setup NL"
 {
     InherentPermissions = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11617 "Create CH VAT Reg. No. Format"
 {
     InherentEntitlements = X;

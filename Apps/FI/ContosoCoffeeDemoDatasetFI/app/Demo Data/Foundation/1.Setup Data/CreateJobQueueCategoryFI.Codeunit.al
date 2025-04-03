@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13412 "Create Job Queue Category FI"
 {
     InherentEntitlements = X;

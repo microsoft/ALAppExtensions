@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11382 "Contoso DE Gen ledger Setup"
 {
     InherentEntitlements = X;

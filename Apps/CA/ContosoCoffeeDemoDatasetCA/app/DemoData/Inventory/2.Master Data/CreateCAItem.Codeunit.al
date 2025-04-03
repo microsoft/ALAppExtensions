@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27057 "Create CA Item"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10896 "Create Source Code FR"
 {
     InherentEntitlements = X;

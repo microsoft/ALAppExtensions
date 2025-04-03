@@ -48,7 +48,6 @@ report 4404 "EXR Vendor Top List"
     {
         AboutTitle = 'About Vendor - Top List (Excel)';
         AboutText = 'Analyze the effect of vendors on cash flow, and prioritize vendor payments. Amounts are shown in local currency (LCY).';
-
         SaveValues = true;
         layout
         {

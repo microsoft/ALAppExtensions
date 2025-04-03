@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11605 "Create CH Item Template"
 {
     InherentEntitlements = X;

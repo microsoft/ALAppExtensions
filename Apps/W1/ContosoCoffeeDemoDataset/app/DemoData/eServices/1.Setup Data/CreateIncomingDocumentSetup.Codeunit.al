@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5232 "Create Incoming Document Setup"
 {
     InherentEntitlements = X;

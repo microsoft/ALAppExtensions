@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4771 "Jobs Module Setup"
 {
     DataClassification = CustomerContent;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 5296 "EService Demo Data Setup"
 {
     PageType = Card;

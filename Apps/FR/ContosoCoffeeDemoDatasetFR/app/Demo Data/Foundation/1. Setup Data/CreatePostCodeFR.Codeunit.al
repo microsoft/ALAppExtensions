@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10894 "Create Post Code FR"
 {
     InherentEntitlements = X;

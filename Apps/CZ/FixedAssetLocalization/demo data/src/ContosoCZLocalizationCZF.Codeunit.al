@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31217 "Contoso CZ Localization CZF"
 {
     InherentEntitlements = X;

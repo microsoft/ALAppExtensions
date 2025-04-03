@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 4405 EXRARRoleCenter extends "Account Receivables"
 {
     actions

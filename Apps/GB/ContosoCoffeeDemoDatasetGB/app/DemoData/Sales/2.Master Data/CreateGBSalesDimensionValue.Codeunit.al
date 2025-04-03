@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10509 "Create GB Sales DimensionValue"
 {
     SingleInstance = true;

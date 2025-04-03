@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10841 "Create ES No. Series"
 {
     SingleInstance = true;

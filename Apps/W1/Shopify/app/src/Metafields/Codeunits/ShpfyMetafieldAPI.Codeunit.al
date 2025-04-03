@@ -216,7 +216,7 @@ codeunit 30316 "Shpfy Metafield API"
         TypeText: Text;
     begin
         Namespace := JsonHelper.GetValueAsText(JNode, 'namespace');
-        Name := JsonHelper.GetValueAsText(JNode, 'name');
+        Name := JsonHelper.GetValueAsText(JNode, 'key');
         TypeText := JsonHelper.GetValueAsText(JNode, 'type.name');
 
         // Some metafield types are unsupported in Business Central (i.e. Rating)

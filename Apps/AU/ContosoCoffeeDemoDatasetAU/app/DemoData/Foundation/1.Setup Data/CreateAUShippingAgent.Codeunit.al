@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17115 "Create AU Shipping Agent"
 {
     SingleInstance = true;

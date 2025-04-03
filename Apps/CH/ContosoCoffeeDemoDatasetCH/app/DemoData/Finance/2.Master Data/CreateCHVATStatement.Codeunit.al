@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11622 "Create CH VAT Statement"
 {
     SingleInstance = true;

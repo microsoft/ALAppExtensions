@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11459 "Create Data Exchange Def US"
 {
     InherentEntitlements = X;

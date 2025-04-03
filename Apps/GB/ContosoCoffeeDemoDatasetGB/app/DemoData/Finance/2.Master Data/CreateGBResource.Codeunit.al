@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11501 "Create GB Resource"
 {
     SingleInstance = true;

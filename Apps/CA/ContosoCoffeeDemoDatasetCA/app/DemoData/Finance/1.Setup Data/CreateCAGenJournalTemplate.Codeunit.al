@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27029 "Create CA Gen Journal Template"
 {
     SingleInstance = true;

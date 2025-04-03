@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13428 "Create Item FI"
 {
     SingleInstance = true;

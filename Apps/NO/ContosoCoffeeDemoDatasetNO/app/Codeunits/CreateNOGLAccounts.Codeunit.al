@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10660 "Create NO GL Accounts"
 {
     InherentPermissions = X;
@@ -26,8 +27,8 @@ codeunit 10660 "Create NO GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '7270');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '7170');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '7810');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '7810');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.RawMaterialsName(), '2130');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchRawMatDomName(), '7210');
@@ -57,7 +58,7 @@ codeunit 10660 "Create NO GL Accounts"
     begin
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '7700');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '7700');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '7810');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '7820');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '7821');
@@ -89,7 +90,7 @@ codeunit 10660 "Create NO GL Accounts"
     var
         HRGLAccount: Codeunit "Create HR GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(HRGLAccount.EmployeesPayableName(), '');
+        ContosoGLAccount.AddAccountForLocalization(HRGLAccount.EmployeesPayableName(), '1520');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Job GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -106,7 +107,6 @@ codeunit 10660 "Create NO GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.JobCostsAppliedName(), '7180');
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.RecognizedCostsName(), '7620');
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create G/L Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
     local procedure ModifyGLAccountforNO()

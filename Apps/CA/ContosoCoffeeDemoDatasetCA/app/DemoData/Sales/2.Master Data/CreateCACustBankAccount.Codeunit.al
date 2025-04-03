@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27070 "Create CA Cust. Bank Account"
 {
     SingleInstance = true;

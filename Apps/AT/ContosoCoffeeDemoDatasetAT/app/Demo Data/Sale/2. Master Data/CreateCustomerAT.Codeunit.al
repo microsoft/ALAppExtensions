@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11175 "Create Customer AT"
 {
     SingleInstance = true;
@@ -34,6 +35,7 @@ codeunit 11175 "Create Customer AT"
     local procedure ValidateCustomer(var Customer: Record Customer; LanguageCode: Code[10]; CountryRegionCode: Code[10]; PostCode: Code[20]; VatRegistraionNo: Text[20]; City: Text[30])
     begin
         Customer.Validate("Post Code", PostCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer.Validate(City, City);
         Customer."Country/Region Code" := CountryRegionCode;
@@ -47,6 +49,7 @@ codeunit 11175 "Create Customer AT"
     local procedure ValidateCustomerFields(var Customer: Record Customer; LanguageCode: Code[10]; PostCode: Code[20]; VatRegistraionNo: Text[20]; City: Text[30]; CustomerCounty: Text[30])
     begin
         Customer.Validate("Post Code", PostCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer."VAT Registration No." := VatRegistraionNo;
         Customer.Validate(City, City);

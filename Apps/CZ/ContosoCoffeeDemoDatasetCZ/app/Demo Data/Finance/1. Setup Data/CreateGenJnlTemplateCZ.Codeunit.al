@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31199 "Create Gen. Jnl. Template CZ"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10517 "Contoso GB Account Schedule"
 {
     InherentEntitlements = X;

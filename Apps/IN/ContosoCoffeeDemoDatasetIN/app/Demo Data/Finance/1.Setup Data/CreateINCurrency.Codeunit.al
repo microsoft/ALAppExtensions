@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19001 "Create IN Currency"
 {
     SingleInstance = true;

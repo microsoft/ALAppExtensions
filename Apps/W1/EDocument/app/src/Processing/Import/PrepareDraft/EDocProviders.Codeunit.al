@@ -1,3 +1,4 @@
+#pragma warning disable AS0049
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18,6 +19,7 @@ using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitOfMeasureProvider, IVendorProvider, IPurchaseOrderProvider
 {
+    Access = Internal;
 
     procedure GetVendor(EDocument: Record "E-Document") Vendor: Record Vendor
     var
@@ -121,3 +123,4 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineAccountProvider, IUnitO
     var
         NoVendorInformationErr: Label 'There is no vendor information in the source document. Verify that the source document is an invoice, and if it''s not, consider deleting this E-Document.';
 }
+#pragma warning restore AS0049
