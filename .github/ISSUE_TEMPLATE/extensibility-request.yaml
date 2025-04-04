@@ -10,19 +10,23 @@ body:
         ⚠️⚠️ Before you start ⚠️⚠️
         Before you create a new issue, please check the following:
         🔎 Search the existing issues to avoid a duplicate.
+        📖 [How to structure the requests](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/create-extensibility-request)
+        📖 [Types of events by value](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/types-of-events-for-extensibility)
+
+  - type: textarea
+    id: explaining-the-need
+    attributes:
+      label: Why do you need this change?
+      description: Explain the benefits of what you’re requesting. Help us assess the best way to fulfil your need. Requests with good explanations are more likely to be accepted.
+      placeholder: Explain why you need us to fulfill your request.
+    validations:
+      required: true
+
   - type: textarea
     id: describe-the-request
     attributes:
       label: Describe the request
-      description: Provide a clear, concise description of what you need. Tell us what you want to address.
+      description: Provide a clear, concise description of what you need. Tell us what you want to address. If your request requires changes to multiple objects, or the objects have dependencies, include all the objects in one request.
       placeholder: Describe the extensibility request
-    validations:
-      required: true
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional context
-      description: Explain the benefits of what you’re requesting. Help us assess the best way to fulfill your need.
-      placeholder: Explain the benefits
     validations:
       required: true
