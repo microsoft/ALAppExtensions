@@ -150,5 +150,16 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                 ToolTip = 'View which customers purchase the most or owe the most in a selected period. Only customers that have either purchases during the period or a balance at the end of the period will be included.';
             }
         }
+        addafter("Vendor - Summary Aging")
+        {
+            action(EXRVendorTopListExcel)
+            {
+                ApplicationArea = Suite;
+                Caption = 'Vendor - Top List (Excel)';
+                Image = "Report";
+                RunObject = Report "EXR Vendor Top List";
+                ToolTip = 'View a list of the vendors from whom you purchase the most or to whom you owe the most.';
+            }
+        }
     }
 }
