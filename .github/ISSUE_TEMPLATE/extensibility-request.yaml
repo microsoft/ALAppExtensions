@@ -10,8 +10,8 @@ body:
         ⚠️⚠️ Before you start ⚠️⚠️
         Before you create a new issue, please check the following:
         🔎 Search the existing issues to avoid a duplicate.
-        [How to structure the requests](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/create-extensibility-request)
-        [Types of events by value](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/types-of-events-for-extensibility)
+        📖 [How to structure the requests](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/create-extensibility-request)
+        📖 [Types of events by value](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/types-of-events-for-extensibility)
 
   - type: textarea
     id: explaining-the-need
