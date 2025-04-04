@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<technical_response>
+	<document_receipt_id>1842e99d-5f91-4479-aa18-8c73c52fbef0</document_receipt_id>
+	<document_status>SuccessEnum</document_status>
+</technical_response>

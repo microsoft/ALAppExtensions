@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<Token xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" AccessToken="TestAccessToken" ExpiresIn="86399" TokenType="bearer" />
