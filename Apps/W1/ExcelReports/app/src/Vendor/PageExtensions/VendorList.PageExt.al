@@ -8,7 +8,7 @@ pageextension 4418 "Vendor List" extends "Vendor List"
     {
         addafter("Vendor - Labels")
         {
-            action(EXRVendorTopListExcel)
+            action("Vendor Top List - Excel")
             {
                 ApplicationArea = Suite;
                 Caption = 'Vendor - Top List (Excel)';

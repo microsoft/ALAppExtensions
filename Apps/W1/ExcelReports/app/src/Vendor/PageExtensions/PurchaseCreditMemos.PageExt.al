@@ -8,7 +8,7 @@ pageextension 4419 "Purchase Credit Memos" extends "Purchase Credit Memos"
     {
         addfirst(Sales)
         {
-            action(EXRVendorTopListExcel)
+            action("Vendor Top List - Excel")
             {
                 ApplicationArea = Suite;
                 Caption = 'Vendor - Top List (Excel)';
