@@ -126,6 +126,7 @@ codeunit 4025 "GP Cloud Migration"
         SelectLatestVersion();
         HelperFunctions.SetProcessesRunning(true);
 
+        HelperFunctions.RunPreMigrationCleanup();
         GPPopulateCombinedTables.PopulateAllMappedTables();
         Commit();
 
