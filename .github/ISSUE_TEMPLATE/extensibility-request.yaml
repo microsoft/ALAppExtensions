@@ -26,7 +26,7 @@ body:
     id: describe-the-request
     attributes:
       label: Describe the request
-      description: A clear and concise description of what the extensibility request you want Microsoft to address. If you have multiple bounded changes required, include all of them in one request.
+      description: Provide a clear, concise description of what you need. Tell us what you want to address. If your request requires changes to multiple objects, or the objects have dependencies, include all the objects in one request.
       placeholder: Describe the extensibility request
     validations:
       required: true
