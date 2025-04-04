@@ -190,6 +190,7 @@ report 4412 "EXR Fixed Asset Analysis Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     trigger OnPreReport()

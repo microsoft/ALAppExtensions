@@ -130,6 +130,7 @@ report 4410 "EXR Consolidated Trial Balance"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     trigger OnPreReport()

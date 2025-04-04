@@ -134,6 +134,7 @@ report 4405 "EXR Trial Balance Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     trigger OnPreReport()
