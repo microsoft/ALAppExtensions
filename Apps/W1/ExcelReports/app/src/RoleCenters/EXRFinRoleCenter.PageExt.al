@@ -57,14 +57,6 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Aged Accounts Rec Excel";
                     ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
                 }
-                action(EXRCustomerTopListExcel1)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Customer - Top List (Excel)';
-                    Image = "Report";
-                    RunObject = report "EXR Customer Top List";
-                    ToolTip = 'Open a spreadsheet that shows a list of top customers.';
-                }
                 action(EXRVendorTopList)
                 {
                     ApplicationArea = Basic, Suite;
