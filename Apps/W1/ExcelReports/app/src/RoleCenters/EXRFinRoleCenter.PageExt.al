@@ -57,14 +57,6 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Aged Accounts Rec Excel";
                     ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
                 }
-                action(EXRVendorTopList)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Vendor - Top List (Excel)';
-                    Image = "Report";
-                    RunObject = report "EXR Vendor Top List";
-                    ToolTip = 'Open a spreadsheet that shows a list of top vendors.';
-                }
                 action(EXRAgedAccPayableExcel)
                 {
                     ApplicationArea = Basic, Suite;
@@ -154,7 +146,7 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
         {
             action(EXRVendorTopListExcel)
             {
-                ApplicationArea = Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Vendor - Top List (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Vendor Top List";
