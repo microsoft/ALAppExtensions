@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
@@ -22,6 +23,7 @@ using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Service.Posting;
 using System.Automation;
+using Microsoft.Inventory.Transfer;
 
 codeunit 6103 "E-Document Subscription"
 {
@@ -221,6 +223,22 @@ codeunit 6103 "E-Document Subscription"
         if not IsNullGuid(PurchaseHeader."E-Document Link") then
             Error(DeleteNotAllowedErr);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Shipment", OnAfterTransferOrderPostShipment, '', false, false)]
+    local procedure CreateEDocumentFromPostedTransferShipment(var TransferHeader: Record "Transfer Header"; CommitIsSuppressed: Boolean; var TransferShipmentHeader: Record "Transfer Shipment Header"; InvtPickPutaway: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+    begin
+        if TransferShipmentHeader."No." = '' then
+            exit;
+
+        if not EDocumentProcessing.GetDocSendingProfileForLocation(TransferHeader."Transfer-to Code", DocumentSendingProfile) then
+            exit;
+
+        CreateEDocumentFromPostedDocument(TransferShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Transfer Shipment");
+    end;
+
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
     var

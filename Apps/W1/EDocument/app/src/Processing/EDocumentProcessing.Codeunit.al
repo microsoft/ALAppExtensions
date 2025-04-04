@@ -19,6 +19,7 @@ using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Reflection;
 using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.Inventory.Location;
 
 codeunit 6108 "E-Document Processing"
 {
@@ -316,6 +317,25 @@ codeunit 6108 "E-Document Processing"
     begin
         if Customer.Get(CustomerNo) then
             if DocumentSendingProfile.Get(Customer."Document Sending Profile") then
+                exit(true);
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if DocumentSendingProfile.FindFirst() then
+            exit(true);
+    end;
+
+    /// <summary>
+    /// Get the document sending profile for the location.
+    /// </summary>
+    /// <param name="TransfertoCode"></param>
+    /// <param name="DocumentSendingProfile"></param>
+    /// <returns>Boolean value = True if Document sendong profile was found</returns>
+    internal procedure GetDocSendingProfileForLocation(TransfertoCode: Code[10]; DocumentSendingProfile: Record "Document Sending Profile"): Boolean
+    var
+        Location: Record Location;
+    begin
+        if Location.Get(TransfertoCode) then
+            if DocumentSendingProfile.Get(Location."E-Document Sending Profile") then
                 exit(true);
 
         DocumentSendingProfile.SetRange(Default, true);
