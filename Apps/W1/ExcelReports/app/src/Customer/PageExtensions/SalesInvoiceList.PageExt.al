@@ -7,7 +7,7 @@ pageextension 4414 "Sales Invoice List" extends "Sales Invoice List"
     {
         addfirst(SalesReports)
         {
-            action(EXRCustomerTopListExcel)
+            action("Customer Top List - Excel")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customer - Top List (Excel)';

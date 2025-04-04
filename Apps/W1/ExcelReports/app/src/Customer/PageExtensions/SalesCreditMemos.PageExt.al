@@ -7,7 +7,7 @@ pageextension 4413 "Sales Credit Memos" extends "Sales Credit Memos"
     {
         addfirst(SalesReports)
         {
-            action(EXRCustomerTopListExcel)
+            action("Customer Top List - Excel")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customer - Top List (Excel)';

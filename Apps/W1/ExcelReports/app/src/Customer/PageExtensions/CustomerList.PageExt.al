@@ -8,7 +8,7 @@ pageextension 4410 "Customer List" extends "Customer List"
     {
         addfirst(SalesReports)
         {
-            action(EXRCustomerTopListExcel)
+            action("Customer Top List - Excel")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customer - Top List (Excel)';
@@ -19,7 +19,7 @@ pageextension 4410 "Customer List" extends "Customer List"
         }
         addafter("Customer Register")
         {
-            action(EXRCustomerTopListExcel1)
+            action("Customer Top List - Excel1")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customer - Top List (Excel)';
