@@ -1571,6 +1571,7 @@ codeunit 139624 "E-Doc E2E Test"
         this.LibraryEDoc.PostInvoice(this.Customer);
 
         // [WHEN] Export EDocument
+        EDocument.SetRange("Document Type", EDocument."Document Type"::"Sales Invoice");
         EDocument.FindLast();
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Exported);
