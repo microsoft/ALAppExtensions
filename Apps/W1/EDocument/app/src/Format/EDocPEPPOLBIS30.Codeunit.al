@@ -97,7 +97,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesInvoicePEPPOLBIS30: XMLport "Sales Invoice - PEPPOL BIS 3.0";
     begin
         SalesInvoicePEPPOLBIS30.Initialize(VariantRec);
-        //SalesInvoicePEPPOLBIS30.SetGeneratePDF(GeneratePDF);
+        SalesInvoicePEPPOLBIS30.SetGeneratePDF(GeneratePDF);
         SalesInvoicePEPPOLBIS30.SetDestination(OutStr);
         SalesInvoicePEPPOLBIS30.Export();
     end;
@@ -107,7 +107,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesCrMemoPEPPOLBIS30: XMLport "Sales Cr.Memo - PEPPOL BIS 3.0";
     begin
         SalesCrMemoPEPPOLBIS30.Initialize(VariantRec);
-        //SalesCrMemoPEPPOLBIS30.SetGeneratePDF(GeneratePDF);
+        SalesCrMemoPEPPOLBIS30.SetGeneratePDF(GeneratePDF);
         SalesCrMemoPEPPOLBIS30.SetDestination(OutStr);
         SalesCrMemoPEPPOLBIS30.Export();
     end;
