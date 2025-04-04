@@ -16,9 +16,9 @@ body:
   - type: textarea
     id: explaining-the-need
     attributes:
-      label: Why is the change needed?
-      description: Explain why you need this request to be fulfilled. What else did you try before requesting the change. This will help Microsoft assess, if your request could be solved in other ways. Requests without good justification have a higher chance of being rejected.
-      placeholder: Explain why you need this request to be fulfilled
+      label: Why do you need this change?
+      description: Explain the benefits of what you’re requesting. Help us assess the best way to fulfil your need. Requests with good explanations are more likely to be accepted.
+      placeholder: Explain why you need us to fulfill your request.
     validations:
       required: true
 
