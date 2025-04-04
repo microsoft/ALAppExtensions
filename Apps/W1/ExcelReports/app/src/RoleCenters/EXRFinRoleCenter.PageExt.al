@@ -85,14 +85,6 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Fixed Asset Analysis Excel";
                     ToolTip = 'Open an Excel workbook that shows a comparison of fixed asset values across a date range.';
                 }
-                action(EXRFixedAssetDetailsExcel)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Fixed Asset Details (Excel)';
-                    Image = "Report";
-                    RunObject = report "EXR Fixed Asset Details Excel";
-                    ToolTip = 'Open an Excel workbook that shows fixed asset ledger entries.';
-                }
                 action(EXRFixedAssetProjected)
                 {
                     ApplicationArea = Basic, Suite;
@@ -151,6 +143,17 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                 Image = "Report";
                 RunObject = Report "EXR Vendor Top List";
                 ToolTip = 'View a list of the vendors from whom you purchase the most or to whom you owe the most.';
+            }
+        }
+        addafter("Book Value 02")
+        {
+            action(EXRFixedAssetDetailsExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Fixed Asset Details (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Details Excel";
+                ToolTip = 'View detailed information about the fixed asset ledger entries that have been posted to a specified depreciation book for each fixed asset.';
             }
         }
     }
