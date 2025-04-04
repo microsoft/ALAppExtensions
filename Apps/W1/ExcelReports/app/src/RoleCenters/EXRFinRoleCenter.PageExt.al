@@ -57,7 +57,7 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Aged Accounts Rec Excel";
                     ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
                 }
-                action(EXRCustomerTopListExcel)
+                action(EXRCustomerTopListExcel1)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Customer - Top List (Excel)';
@@ -146,6 +146,17 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                 ToolTip = 'Open an Excel workbook that shows posted fixed asset ledger entries and projected fixed asset ledger entries.';
             }
 
+        }
+        addafter("Customer - Labels")
+        {
+            action(EXRCustomerTopListExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Customer - Top List (Excel)';
+                Image = "Report";
+                RunObject = Report "EXR Customer Top List";
+                ToolTip = 'View which customers purchase the most or owe the most in a selected period. Only customers that have either purchases during the period or a balance at the end of the period will be included.';
+            }
         }
     }
 }
