@@ -1,4 +1,4 @@
-pageextension 4022 "Fixed Asset Card" extends "Fixed Asset Card"
+pageextension 4422 "Fixed Asset Card" extends "Fixed Asset Card"
 {
     actions
     {
