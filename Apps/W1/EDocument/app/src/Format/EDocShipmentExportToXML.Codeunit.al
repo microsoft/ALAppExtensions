@@ -35,7 +35,7 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
         this.AddNonEmptyNode(this.RootNode, 'DueDate', Format(SalesShipmentHeader."Due Date", 0, 9), '', ChildNode);
 
         this.XMLDOMManagement.AddElement(this.RootNode, 'SupplierInformation', '', '', ChildNode);
-        this.AddCompanyInfoToXML(ChildNode, SalesShipmentHeader);
+        this.AddCompanyInfoToXML(ChildNode);
 
         this.XMLDOMManagement.AddElement(this.RootNode, 'CustomerInformation', '', '', ChildNode);
         this.AddCustomerDataToXML(ChildNode, SalesShipmentHeader);
@@ -44,7 +44,7 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
         this.AddDeliveryInfoToXML(ChildNode, SalesShipmentHeader);
     end;
 
-    local procedure AddCompanyInfoToXML(SupplierNode: XmlNode; SalesShipmentHeader: Record "Sales Shipment Header")
+    local procedure AddCompanyInfoToXML(SupplierNode: XmlNode)
     var
         CompanyInformation: Record "Company Information";
         AddressNode: XmlNode;
