@@ -77,14 +77,6 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Consolidated Trial Balance";
                     ToolTip = 'Open an Excel workbook that shows the G/L entries totals in the different business units.';
                 }
-                action(EXRFixedAssetAnalysisExcel)
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Fixed Asset Analysis (Excel)';
-                    Image = "Report";
-                    RunObject = report "EXR Fixed Asset Analysis Excel";
-                    ToolTip = 'Open an Excel workbook that shows a comparison of fixed asset values across a date range.';
-                }
                 action(EXRFixedAssetProjected)
                 {
                     ApplicationArea = Basic, Suite;
@@ -154,6 +146,17 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                 Image = "Report";
                 RunObject = report "EXR Fixed Asset Details Excel";
                 ToolTip = 'View detailed information about the fixed asset ledger entries that have been posted to a specified depreciation book for each fixed asset.';
+            }
+        }
+        addafter("Acquisition List")
+        {
+            action(EXRFixedAssetAnalysisExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Fixed Asset Analysis (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Analysis Excel";
+                ToolTip = 'Open an Excel workbook that shows a comparison of fixed asset values across a date range.';
             }
         }
     }
