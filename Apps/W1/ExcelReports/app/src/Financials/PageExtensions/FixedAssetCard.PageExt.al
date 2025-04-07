@@ -12,6 +12,14 @@ pageextension 4022 "Fixed Asset Card" extends "Fixed Asset Card"
                 RunObject = report "EXR Fixed Asset Analysis Excel";
                 ToolTip = 'View an analysis of your fixed assets with various types of data for both individual assets and groups of fixed assets.';
             }
+            action("Fixed Asset Projected - Excel")
+            {
+                ApplicationArea = All;
+                Caption = 'Projected Value (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Projected";
+                ToolTip = 'View the calculated future depreciation and book value.';
+            }
             action("Fixed Asset Details - Excel")
             {
                 ApplicationArea = All;
@@ -24,6 +32,9 @@ pageextension 4022 "Fixed Asset Card" extends "Fixed Asset Card"
         addlast(Category_Report)
         {
             actionref(FAAnalysisExcel_Promoted; "Fixed Asset Analysis - Excel")
+            {
+            }
+            actionref(FAProjectedExcel_Promoted; "Fixed Asset Projected - Excel")
             {
             }
             actionref(FADetailsExcel_Promoted; "Fixed Asset Details - Excel")
