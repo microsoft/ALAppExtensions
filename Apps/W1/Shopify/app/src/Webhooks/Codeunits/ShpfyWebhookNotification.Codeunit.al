@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 30363 "Shpfy Webhook Notification"
 {
     TableNo = "Webhook Notification";

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17144 "Create AU Vendor"
 {
     SingleInstance = true;

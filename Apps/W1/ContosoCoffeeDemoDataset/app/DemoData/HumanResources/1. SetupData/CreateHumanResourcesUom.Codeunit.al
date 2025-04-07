@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5162 "Create Human Resources UoM"
 {
     InherentEntitlements = X;

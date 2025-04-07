@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11188 "Create VAT Template AT"
 {
     SingleInstance = true;

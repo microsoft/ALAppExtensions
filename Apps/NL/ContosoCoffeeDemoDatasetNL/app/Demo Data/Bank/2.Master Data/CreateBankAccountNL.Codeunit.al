@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11517 "Create Bank Account NL"
 {
     SingleInstance = true;

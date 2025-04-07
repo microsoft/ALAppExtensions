@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11374 "Create Inv. Setup BE"
 {
     InherentEntitlements = X;

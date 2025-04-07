@@ -1,3 +1,4 @@
+#pragma warning disable AS0050
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -12,6 +13,7 @@ page 6182 "E-Doc. Readable Purchase Doc."
     Caption = 'Received purchase document data';
     SourceTable = "E-Document Purchase Header";
     Editable = false;
+    Extensible = false;
     DataCaptionExpression = DataCaption;
 
     layout
@@ -236,7 +238,19 @@ page 6182 "E-Doc. Readable Purchase Doc."
         DataCaption := 'Extracted Data - Purchase Document ' + Format(Rec."E-Document Entry No.");
     end;
 
+    trigger OnOpenPage()
     var
-        DataCaption: Text;
+        ImportEDocumentProcess: Codeunit "Import E-Document Process";
+    begin
+        if Rec."E-Document Entry No." <> 0 then begin
+            AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
+            AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
+            AIGeneratedContentNotification.Send();
+        end;
+    end;
 
+    var
+        AIGeneratedContentNotification: Notification;
+        DataCaption: Text;
 }
+#pragma warning restore AS0050

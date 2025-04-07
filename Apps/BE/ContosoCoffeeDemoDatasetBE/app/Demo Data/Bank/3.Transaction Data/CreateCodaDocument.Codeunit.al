@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11415 "Create Coda Document"
 {
     InherentEntitlements = X;

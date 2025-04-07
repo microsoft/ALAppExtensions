@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 139757 "MDM Test Table A"
 {
     DataClassification = SystemMetadata;

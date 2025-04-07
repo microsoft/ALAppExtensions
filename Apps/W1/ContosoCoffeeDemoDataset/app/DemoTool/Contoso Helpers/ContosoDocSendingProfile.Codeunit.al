@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5464 "Contoso Doc. Sending Profile"
 {
     InherentEntitlements = X;

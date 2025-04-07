@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14112 "Create Acc. Schedule Line MX"
 {
     SingleInstance = true;

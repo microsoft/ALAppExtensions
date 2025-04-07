@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14133 "Create Inv. Posting Setup MX"
 {
     SingleInstance = true;

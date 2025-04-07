@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14105 "Create VAT Statement MX"
 {
     SingleInstance = true;

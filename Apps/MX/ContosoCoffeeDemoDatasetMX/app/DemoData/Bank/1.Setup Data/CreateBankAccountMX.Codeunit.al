@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14120 "Create Bank Account MX"
 {
     SingleInstance = true;

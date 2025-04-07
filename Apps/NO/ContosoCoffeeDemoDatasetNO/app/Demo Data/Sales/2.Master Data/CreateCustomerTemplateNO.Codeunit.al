@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10723 "Create Customer Template NO"
 {
     SingleInstance = true;

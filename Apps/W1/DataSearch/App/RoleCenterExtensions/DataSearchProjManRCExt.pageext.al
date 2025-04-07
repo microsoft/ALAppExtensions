@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2685 "Data Search Proj. Man. RC Ext" extends "Project Manager Role Center"
 {
     ObsoleteState = Pending;

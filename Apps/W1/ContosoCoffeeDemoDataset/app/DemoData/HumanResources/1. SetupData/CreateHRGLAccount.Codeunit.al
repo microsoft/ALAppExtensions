@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5161 "Create HR GL Account"
 {
     InherentEntitlements = X;

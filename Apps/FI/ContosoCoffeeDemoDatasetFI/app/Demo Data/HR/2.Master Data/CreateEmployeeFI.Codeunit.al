@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13441 "Create Employee FI"
 {
     SingleInstance = true;

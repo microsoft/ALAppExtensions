@@ -2,6 +2,7 @@ codeunit 139511 "Intrastat IT Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    EventSubscriberInstance = Manual;
 
     trigger OnRun()
     begin
@@ -1368,6 +1369,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report] [Error handling]
         // [SCENARIO 219210] Deliverable 219210:Reporting - End to end error handling
         // [GIVEN] Posted Sales Order for intrastat
@@ -1405,6 +1407,8 @@ codeunit 139511 "Intrastat IT Test"
         IntrastatReportPage.CreateFile.Invoke();
 
         IntrastatReportPage.Close();
+
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -1957,6 +1961,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -1982,6 +1987,8 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for sales monthly invoice 
         CheckFileContentForNormalReporting(IntrastatReportPage, 'C', 'M');
         IntrastatReportPage.Close();
+
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -1993,6 +2000,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Purchase Order for intrastat
@@ -2019,6 +2027,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for purchase monthly invoice 
         CheckFileContentForNormalReporting(IntrastatReportPage, 'A', 'M');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2030,6 +2039,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -2055,6 +2065,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for sales quarterly invoice 
         CheckFileContentForNormalReporting(IntrastatReportPage, 'C', 'T');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2066,6 +2077,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Purchase Order for intrastat
@@ -2092,6 +2104,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for purchase quaterly invoice 
         CheckFileContentForNormalReporting(IntrastatReportPage, 'A', 'T');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2103,6 +2116,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -2128,6 +2142,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for sales monthly correction
         CheckFileContentForCorrectionReporting(IntrastatReportPage, 'C', 'M');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2139,6 +2154,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -2166,6 +2182,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for purchase monthly correction
         CheckFileContentForCorrectionReporting(IntrastatReportPage, 'A', 'M');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2177,6 +2194,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -2202,6 +2220,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for sales quarterly correction
         CheckFileContentForCorrectionReporting(IntrastatReportPage, 'C', 'T');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -2213,6 +2232,7 @@ codeunit 139511 "Intrastat IT Test"
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
     begin
+        BindSubscription(LibraryIntrastat);
         // [FEATURE] [Intrastat Report IT] [File Validation]
         // [SCENARIO] End to end file creation
         // [GIVEN] Posted Sales Order for intrastat
@@ -2240,6 +2260,7 @@ codeunit 139511 "Intrastat IT Test"
         // [THEN] Check file content for purchase quarterly correction
         CheckFileContentForCorrectionReporting(IntrastatReportPage, 'A', 'T');
         IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]

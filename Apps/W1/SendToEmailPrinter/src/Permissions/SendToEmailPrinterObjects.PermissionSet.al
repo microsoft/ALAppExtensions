@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionset 5659 "SendToEmailPrinter - Objects"
 {
     Assignable = false;

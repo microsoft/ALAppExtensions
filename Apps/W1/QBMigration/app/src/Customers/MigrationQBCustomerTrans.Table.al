@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 1913 "MigrationQB CustomerTrans"
 {
     ReplicateData = false;

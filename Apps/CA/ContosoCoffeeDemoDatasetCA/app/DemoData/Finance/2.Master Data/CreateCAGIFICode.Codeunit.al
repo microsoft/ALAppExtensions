@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27035 "Create CA GIFI Code"
 {
     trigger OnRun()

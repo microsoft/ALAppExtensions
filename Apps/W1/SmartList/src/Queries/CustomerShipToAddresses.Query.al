@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2450 "Customer Ship To Addresses"
 {
     QueryType = Normal;

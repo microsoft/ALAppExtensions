@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5685 "Create Media Repository"
 {
     Access = Internal;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11614 "Create CH Sales Recev. Setup"
 {
     InherentEntitlements = X;

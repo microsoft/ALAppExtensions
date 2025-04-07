@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10808 "Create ES Area"
 {
     InherentEntitlements = X;

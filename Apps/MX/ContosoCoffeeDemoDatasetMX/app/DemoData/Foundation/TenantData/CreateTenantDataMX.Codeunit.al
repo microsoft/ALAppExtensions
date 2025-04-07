@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14104 "Create Tenant Data MX"
 {
     Access = Internal;

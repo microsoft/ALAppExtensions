@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17129 "Create AU Cust Posting Group"
 {
     SingleInstance = true;

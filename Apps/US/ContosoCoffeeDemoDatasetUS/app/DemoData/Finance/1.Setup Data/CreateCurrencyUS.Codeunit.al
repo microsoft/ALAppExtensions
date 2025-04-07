@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11486 "Create Currency US"
 {
     SingleInstance = true;

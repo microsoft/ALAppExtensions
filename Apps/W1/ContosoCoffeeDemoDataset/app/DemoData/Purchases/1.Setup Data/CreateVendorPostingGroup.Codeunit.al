@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5568 "Create Vendor Posting Group"
 {
     InherentEntitlements = X;

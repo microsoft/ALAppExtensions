@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5177 "Create Employee No Series"
 {
     InherentEntitlements = X;

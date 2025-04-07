@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2470 "Unposted Sales Line Crdt Memo"
 {
     QueryType = Normal;

@@ -74,6 +74,14 @@ report 4409 "EXR Customer Top List"
                         Caption = 'Quantity';
                         ToolTip = 'Specifies the number of Customers that will be included in the report.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the EXR Top Customer Report Buffer.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -82,6 +90,11 @@ report 4409 "EXR Customer Top List"
         begin
             NoOfRecordsToPrint := 10;
             ChangeShowType(GlobalExtTopCustomerReportBuffer."Ranking Based On"::"Sales (LCY)");
+        end;
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TopCustomerData.GetFilter("Date Filter");
         end;
     }
     rendering
@@ -99,11 +112,22 @@ report 4409 "EXR Customer Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopCustomerListLabel = 'Top Customer List';
+        TopCustomerListPrint = 'Top Customer List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TopCustomerListAnalysis = 'Top Customer List (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         GlobalExtTopCustomerReportBuffer: Record "EXR Top Customer Report Buffer";

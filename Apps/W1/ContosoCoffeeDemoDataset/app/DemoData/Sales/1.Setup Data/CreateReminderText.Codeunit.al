@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5268 "Create Reminder Text"
 {
     InherentEntitlements = X;

@@ -1318,7 +1318,7 @@ codeunit 139877 "PowerBI Inventory Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
         LibManufacturing.CreateAndRefreshProductionOrder(
             ProdOrder,
@@ -1413,7 +1413,7 @@ codeunit 139877 "PowerBI Inventory Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
         LibInv.CreateItem(ItemComp);
         LibManufacturing.CreateCertifiedProductionBOM(ProdBOMHeader, ItemComp."No.", LibRandom.RandDecInRange(1, 10, 2));

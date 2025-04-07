@@ -258,7 +258,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         LibWhse.CreateLocation(Location);
@@ -331,7 +331,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
         LibInv.CreateItem(ItemComp);
         CreateBOMForItem(Item, ItemComp);
@@ -483,7 +483,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         CreateRoutingForItem(Item);
@@ -599,7 +599,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         CreateRoutingForItem(Item);
@@ -684,7 +684,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         CreateRoutingForItem(Item);
@@ -1008,7 +1008,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         LibWhse.CreateLocation(Location);
@@ -1190,7 +1190,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
             Item."Costing Method"::Standard,
             LibRandom.RandDecInRange(1, 10, 2),
             Item."Reordering Policy"::Order,
-            Item."Flushing Method"::Manual,
+            Item."Flushing Method"::"Pick + Manual",
             '', '');
 
         LibWhse.CreateLocation(Location);

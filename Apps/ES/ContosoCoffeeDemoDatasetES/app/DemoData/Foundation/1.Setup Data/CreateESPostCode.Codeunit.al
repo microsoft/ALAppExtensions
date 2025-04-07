@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10786 "Create ES Post Code"
 {
     InherentEntitlements = X;

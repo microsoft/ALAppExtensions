@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13424 "Create Bank Account FI"
 {
     SingleInstance = true;

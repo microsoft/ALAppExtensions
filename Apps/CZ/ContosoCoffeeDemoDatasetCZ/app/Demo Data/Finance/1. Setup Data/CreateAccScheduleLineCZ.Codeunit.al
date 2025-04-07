@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31296 "Create Acc. Schedule Line CZ"
 {
     InherentEntitlements = X;

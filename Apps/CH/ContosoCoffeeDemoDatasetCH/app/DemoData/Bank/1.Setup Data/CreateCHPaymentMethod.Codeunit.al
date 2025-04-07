@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11609 "Create CH Payment Method"
 {
     InherentEntitlements = X;

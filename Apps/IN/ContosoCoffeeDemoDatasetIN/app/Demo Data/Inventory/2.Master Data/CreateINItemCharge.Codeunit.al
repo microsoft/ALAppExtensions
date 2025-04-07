@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19029 "Create IN Item Charge"
 {
     SingleInstance = true;

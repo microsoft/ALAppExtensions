@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4711 "Install VAT Group"
 {
     Subtype = Install;

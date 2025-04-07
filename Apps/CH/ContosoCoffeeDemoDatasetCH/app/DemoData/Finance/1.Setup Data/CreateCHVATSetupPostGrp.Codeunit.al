@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11623 "Create CH VAT Setup Post. Grp."
 {
     InherentEntitlements = X;

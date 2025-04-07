@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5132 "Contoso Posting Group"
 {
     InherentEntitlements = X;

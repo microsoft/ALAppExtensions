@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11113 "DE Contoso Localization"
 {
     InherentEntitlements = X;

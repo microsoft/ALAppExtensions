@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12223 "Contoso Payment Lines"
 {
     InherentEntitlements = X;

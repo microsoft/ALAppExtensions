@@ -68,7 +68,7 @@ codeunit 6136 "E-Document Create Purch. Doc."
         // Process date fields
         DocumentHeader.Field(PurchaseHeader.FieldNo("Document Date")).Value(TempDocumentHeader.Field(PurchaseHeader.FieldNo("Document Date")).Value());
         DocumentHeader.Field(PurchaseHeader.FieldNo("Due Date")).Value(TempDocumentHeader.Field(PurchaseHeader.FieldNo("Due Date")).Value());
-        
+
         // Processing the rest of the header fields
         PurchaseField.Reset();
         PurchaseField.SetRange(TableNo, Database::"Purchase Header");
@@ -95,7 +95,7 @@ codeunit 6136 "E-Document Create Purch. Doc."
                 if (DocumentHeader.Field(PurchaseField."No.").Value() = DefaultDocumentHeader.Field(PurchaseField."No.").Value()) and
                    (TempDocumentHeader.Field(PurchaseField."No.").Value() <> DefaultDocumentHeader.Field(PurchaseField."No.").Value())
                 then
-                    EDocumentImportHelper.ProcessField(EDocument, DocumentHeader, PurchaseField."No.", TempDocumentHeader.Field(PurchaseField."No.").Value());
+                    EDocumentImportHelper.ProcessField(EDocument, DocumentHeader, PurchaseField, TempDocumentHeader.Field(PurchaseField."No."));
             until PurchaseField.Next() = 0;
 
         OnCreateNewPurchHdrOnBeforeRecRefModify(EDocument, TempDocumentHeader, DocumentHeader);
@@ -122,9 +122,9 @@ codeunit 6136 "E-Document Create Purch. Doc."
                 if Format(DocumentLine.Field(PurchaseLine.FieldNo(Type)).Value()) <> '0' then begin
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("No."), TempDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Description), TempDocumentLine.Field(PurchaseLine.FieldNo(Description)).Value());
-                    EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Quantity), TempDocumentLine.Field(PurchaseLine.FieldNo(Quantity)).Value());
+                    EDocumentImportHelper.ProcessDecimalField(EDocument, DocumentLine, PurchaseLine.FieldNo(Quantity), TempDocumentLine.Field(PurchaseLine.FieldNo(Quantity)).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Unit of Measure Code"), TempDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value());
-                    EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Direct Unit Cost"), TempDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value());
+                    EDocumentImportHelper.ProcessDecimalField(EDocument, DocumentLine, PurchaseLine.FieldNo("Direct Unit Cost"), TempDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value());
                 end;
 
                 // Processing the rest of the line fields
@@ -153,7 +153,7 @@ codeunit 6136 "E-Document Create Purch. Doc."
                         if (DocumentLine.Field(PurchaseField."No.").Value() = DefaultDocumentLine.Field(PurchaseField."No.").Value()) and
                            (TempDocumentLine.Field(PurchaseField."No.").Value() <> DefaultDocumentLine.Field(PurchaseField."No.").Value())
                         then
-                            EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseField."No.", TempDocumentLine.Field(PurchaseField."No.").Value());
+                            EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseField, TempDocumentLine.Field(PurchaseField."No."));
                     until PurchaseField.Next() = 0;
 
                 OnCreateNewPurchLineOnBeforeRecRefModify(EDocument, TempDocumentHeader, DocumentHeader, TempDocumentLine, DocumentLine);

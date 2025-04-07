@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 xmlport 31220 "Contoso Post Code CZ"
 {
     Caption = 'Contoso Post Code';

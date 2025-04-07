@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10542 "Create GB VAT Report Setup"
 {
     SingleInstance = true;

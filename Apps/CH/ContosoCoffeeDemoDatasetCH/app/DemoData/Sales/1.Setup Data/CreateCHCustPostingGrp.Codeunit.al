@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11593 "Create CH Cust. Posting Grp"
 {
     SingleInstance = true;

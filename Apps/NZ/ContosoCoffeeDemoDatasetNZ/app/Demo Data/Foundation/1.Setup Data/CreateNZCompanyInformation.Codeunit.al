@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 17110 "Create NZ Company Information"
 {
     InherentEntitlements = X;

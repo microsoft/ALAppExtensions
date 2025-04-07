@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5110 "Create Svc Item Jnl Lines"
 {
     InherentEntitlements = X;

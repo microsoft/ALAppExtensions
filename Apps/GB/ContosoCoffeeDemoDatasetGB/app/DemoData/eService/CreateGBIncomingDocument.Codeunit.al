@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11504 "Create GB Incoming Document"
 {
     InherentEntitlements = X;

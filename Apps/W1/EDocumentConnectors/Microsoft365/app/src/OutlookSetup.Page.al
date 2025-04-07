@@ -41,12 +41,12 @@ page 6384 "Outlook Setup"
             group(General)
             {
                 Caption = 'Mailbox Details';
-                InstructionalText = 'Specify the e-mail address of the Microsoft 365 mailbox in which you receive document attachments. You must have read and write access to the specified mailbox, and it must be in the same tenant in which your Businesss Central environment is hosted.';
+                InstructionalText = 'Specify the Microsoft 365 mailbox that should be monitored. This will import PDF attachments from unread mail messages that were received since the last import attempt. You must have read/write permission for the mailbox, and the mailbox must be in the same Entra tenant as the Business Central environment.';
 
                 field(Mailbox; MailboxName)
                 {
                     Caption = 'Account';
-                    ToolTip = 'Specifies the Microsoft 365 mailbox from which to download document attachments.';
+                    ToolTip = 'Specifies the Microsoft 365 mailbox where you receive invoice attachments.';
                     Editable = false;
                     ShowMandatory = true;
 

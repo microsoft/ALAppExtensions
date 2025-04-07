@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27060 "Create CA Inv. Posting Setup"
 {
     SingleInstance = true;

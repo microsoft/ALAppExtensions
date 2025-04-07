@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 31067 "VAT Setup CZL" extends "VAT Setup"
 {
     fields

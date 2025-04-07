@@ -103,7 +103,7 @@ codeunit 139638 "Shpfy Company Initialize"
         exit(JResult);
     end;
 
-    internal procedure CompanyResponse(Name: Text; CompanyContactId: BigInteger; CustomerId: BigInteger): JsonObject
+    internal procedure CompanyResponse(Name: Text; ExternalId: Text; CompanyContactId: BigInteger; CustomerId: BigInteger): JsonObject
     var
         JResult: JsonObject;
         ResInStream: InStream;
@@ -111,7 +111,7 @@ codeunit 139638 "Shpfy Company Initialize"
     begin
         NavApp.GetResource('Companies/CompanyResponse.txt', ResInStream, TextEncoding::UTF8);
         ResInStream.ReadText(Body);
-        JResult.ReadFrom(StrSubstNo(Body, Name, CompanyContactId, CustomerId));
+        JResult.ReadFrom(StrSubstNo(Body, Name, ExternalId, CompanyContactId, CustomerId));
         exit(JResult);
     end;
 

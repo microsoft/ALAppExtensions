@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31186 "Create General Ledger Setup CZ"
 {
     InherentEntitlements = X;

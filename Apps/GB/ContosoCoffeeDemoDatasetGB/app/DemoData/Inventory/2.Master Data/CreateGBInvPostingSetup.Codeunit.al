@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11505 "Create GB Inv Posting Setup"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11100 "Create DE Purch. Payable Setup"
 {
     InherentEntitlements = X;

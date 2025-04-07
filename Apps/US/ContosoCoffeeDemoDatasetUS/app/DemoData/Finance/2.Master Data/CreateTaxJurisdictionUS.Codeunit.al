@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11462 "Create Tax Jurisdiction US"
 {
     InherentEntitlements = X;

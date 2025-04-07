@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19053 "Create IN TCS Rates"
 {
     InherentEntitlements = X;

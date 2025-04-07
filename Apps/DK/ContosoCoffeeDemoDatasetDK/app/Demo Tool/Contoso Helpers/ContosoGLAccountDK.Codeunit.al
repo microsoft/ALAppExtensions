@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13747 "Contoso GL Account DK"
 {
     SingleInstance = true;

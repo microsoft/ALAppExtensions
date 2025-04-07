@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14131 "Create Purch. Dim. Value MX"
 {
     SingleInstance = true;

@@ -1863,7 +1863,7 @@ codeunit 148110 "SAF-T XML Tests 1.3"
 
     begin
         SAFTTestHelper.FindSAFTHeaderElement(TempXMLBuffer);
-        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AuditFileVersion', '1.0');
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AuditFileVersion', '1.3');
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AuditFileCountry', CompanyInformation."Country/Region Code");

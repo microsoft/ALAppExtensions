@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5109 "Create Common Posting Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19041 "Create IN TCS Nature of Coll."
 {
     InherentEntitlements = X;

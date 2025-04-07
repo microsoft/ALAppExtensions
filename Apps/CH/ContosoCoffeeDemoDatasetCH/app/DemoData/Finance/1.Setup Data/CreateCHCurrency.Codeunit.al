@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11629 "Create CH Currency"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11122 "Create DE Data Export"
 {
     InherentEntitlements = X;

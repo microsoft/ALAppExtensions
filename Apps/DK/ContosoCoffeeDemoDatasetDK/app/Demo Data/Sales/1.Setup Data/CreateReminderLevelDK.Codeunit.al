@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13733 "Create Reminder Level DK"
 {
     SingleInstance = true;

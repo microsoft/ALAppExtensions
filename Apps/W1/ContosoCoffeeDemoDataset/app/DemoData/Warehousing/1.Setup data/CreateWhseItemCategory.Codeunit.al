@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5145 "Create Whse Item Category"
 {
     InherentEntitlements = X;

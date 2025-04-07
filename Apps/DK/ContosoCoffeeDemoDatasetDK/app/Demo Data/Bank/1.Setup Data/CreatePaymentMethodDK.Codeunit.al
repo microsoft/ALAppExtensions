@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13709 "Create Payment Method DK"
 {
     SingleInstance = true;

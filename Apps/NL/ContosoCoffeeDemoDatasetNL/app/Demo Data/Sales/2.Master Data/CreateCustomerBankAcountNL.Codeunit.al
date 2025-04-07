@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11523 "Create Customer Bank Acount NL"
 {
     InherentEntitlements = X;

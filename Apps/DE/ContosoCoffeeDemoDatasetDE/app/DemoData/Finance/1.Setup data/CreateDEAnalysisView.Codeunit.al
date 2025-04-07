@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11384 "Create DE Analysis View"
 {
     SingleInstance = true;

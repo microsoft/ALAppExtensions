@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27052 "Create CA Tax Jurisdiction"
 {
     InherentEntitlements = X;

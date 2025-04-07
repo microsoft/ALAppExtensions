@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5388 "Create Item Tracking Code"
 {
     InherentEntitlements = X;

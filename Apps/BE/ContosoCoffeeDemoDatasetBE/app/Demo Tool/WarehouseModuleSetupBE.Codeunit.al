@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11349 "Warehouse Module Setup BE"
 {
     InherentEntitlements = X;

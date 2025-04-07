@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11547 "Create Payment Method NL"
 {
     SingleInstance = true;

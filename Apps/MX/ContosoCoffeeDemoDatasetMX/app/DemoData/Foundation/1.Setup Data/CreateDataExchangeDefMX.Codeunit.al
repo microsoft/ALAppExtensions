@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 14114 "Create Data Exchange Def MX"
 {
     InherentEntitlements = X;

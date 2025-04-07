@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11123 "Contoso DE Digital Audit"
 {
     InherentEntitlements = X;

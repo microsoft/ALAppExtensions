@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11585 "Create CH Bank Account"
 {
     SingleInstance = true;

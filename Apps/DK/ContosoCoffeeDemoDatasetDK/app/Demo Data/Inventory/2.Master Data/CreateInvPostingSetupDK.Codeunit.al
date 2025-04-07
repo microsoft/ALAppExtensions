@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13725 "Create Inv. Posting Setup DK"
 {
     SingleInstance = true;

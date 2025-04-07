@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11499 "Create GB Purch Payable Setup"
 {
     InherentEntitlements = X;

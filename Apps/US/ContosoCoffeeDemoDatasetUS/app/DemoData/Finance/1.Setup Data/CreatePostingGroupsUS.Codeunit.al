@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11480 "Create Posting Groups US"
 {
     InherentEntitlements = X;
@@ -36,6 +37,7 @@ codeunit 11480 "Create Posting Groups US"
     begin
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateUSGLAccounts.ResaleofGoods(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateUSGLAccounts.SalesofServiceWork(), CreateUSGLAccounts.OtherExternalServices(), CreateUSGLAccounts.CostofLabor(), CreateUSGLAccounts.OtherExternalServices(), CreateUSGLAccounts.OtherExternalServices(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofLabor(), '', '');
         ContosoGenPostingSetup.SetOverwriteData(false);

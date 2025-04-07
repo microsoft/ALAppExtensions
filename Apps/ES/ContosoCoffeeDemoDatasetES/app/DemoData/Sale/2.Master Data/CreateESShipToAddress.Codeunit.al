@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10822 "Create ES Ship-to Address"
 {
     SingleInstance = true;

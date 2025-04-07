@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5102 "Create Svc GL Account"
 {
     InherentEntitlements = X;

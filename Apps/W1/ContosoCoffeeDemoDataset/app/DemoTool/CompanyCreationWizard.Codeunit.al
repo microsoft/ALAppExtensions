@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEAN26
 #pragma warning disable AS0049, AS0072
 codeunit 4786 "Company Creation Wizard"

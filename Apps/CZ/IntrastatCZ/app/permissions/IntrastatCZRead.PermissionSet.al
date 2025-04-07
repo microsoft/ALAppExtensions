@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionset 31300 "Intrastat CZ - Read"
 {
     Access = Internal;

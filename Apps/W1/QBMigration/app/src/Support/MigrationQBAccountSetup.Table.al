@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 1918 "MigrationQB Account Setup"
 {
     ReplicateData = false;

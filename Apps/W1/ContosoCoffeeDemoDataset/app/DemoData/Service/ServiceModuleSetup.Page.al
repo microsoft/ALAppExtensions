@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 4763 "Service Module Setup"
 {
     PageType = Card;

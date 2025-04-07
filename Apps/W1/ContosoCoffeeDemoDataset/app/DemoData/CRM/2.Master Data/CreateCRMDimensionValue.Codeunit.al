@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5294 "Create CRM Dimension Value"
 {
     InherentEntitlements = X;

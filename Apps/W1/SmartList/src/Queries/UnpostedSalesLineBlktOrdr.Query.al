@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2471 "Unposted Sales Line Blkt Ordr"
 {
     QueryType = Normal;

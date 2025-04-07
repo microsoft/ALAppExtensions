@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11085 "Create Payment Terms DE"
 {
     SingleInstance = true;

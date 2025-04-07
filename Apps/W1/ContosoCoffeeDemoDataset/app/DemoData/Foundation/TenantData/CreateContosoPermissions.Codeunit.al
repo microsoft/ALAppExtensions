@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5684 "Create Contoso Permissions"
 {
     Access = Internal;

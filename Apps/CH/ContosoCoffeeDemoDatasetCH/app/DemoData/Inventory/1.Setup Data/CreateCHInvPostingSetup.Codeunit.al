@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11603 "Create CH Inv. Posting Setup"
 {
     SingleInstance = true;

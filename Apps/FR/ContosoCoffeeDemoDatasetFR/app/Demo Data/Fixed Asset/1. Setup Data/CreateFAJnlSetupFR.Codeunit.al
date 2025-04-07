@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10893 "Create FA Jnl. Setup FR"
 {
     InherentEntitlements = X;

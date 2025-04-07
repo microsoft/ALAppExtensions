@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2680 "Data Search Order Proc RC Ext" extends "Order Processor Role Center"
 {
     ObsoleteState = Pending;

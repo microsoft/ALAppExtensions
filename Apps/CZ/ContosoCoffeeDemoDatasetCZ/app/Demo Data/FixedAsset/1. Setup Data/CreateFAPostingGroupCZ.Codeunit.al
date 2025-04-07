@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31185 "Create FA Posting Group CZ"
 {
     SingleInstance = true;

@@ -175,7 +175,7 @@ codeunit 148121 "Intrastat Report Management IT"
                 DataExchangeDefinitionCode := IntrastatReportSetup."Data Exch. Def. Code CSQ";
         end;
 
-        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch);
+        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch, IntrastatReportSetup."Max. No. of Lines in File");
         DataExch.CalcFields("File Content");
         IntrastatReportHeader.Validate("Dispatches Reported", true);
         IntrastatReportHeader.Validate("Arrivals Reported", true);

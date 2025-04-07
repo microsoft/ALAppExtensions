@@ -14,7 +14,7 @@ page 6105 "Inbound E-Documents"
     PageType = List;
     RefreshOnActivate = true;
     Editable = false;
-    DeleteAllowed = false;
+    DeleteAllowed = true;
     InsertAllowed = false;
     SourceTableView = sorting(SystemCreatedAt) order(descending) where(Direction = const("E-Document Direction"::Incoming));
 
@@ -86,6 +86,10 @@ page 6105 "Inbound E-Documents"
                 field(Service; Rec.Service)
                 {
                     ToolTip = 'Specifies the service code of the electronic document.';
+                }
+                field("Service Integration"; Rec."Service Integration")
+                {
+                    ToolTip = 'Specifies the integration code of the electronic document.';
                 }
             }
         }

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5248 "Create Unit of Measure"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10877 "Create Inv. Posting Setup FR"
 {
     InherentEntitlements = X;

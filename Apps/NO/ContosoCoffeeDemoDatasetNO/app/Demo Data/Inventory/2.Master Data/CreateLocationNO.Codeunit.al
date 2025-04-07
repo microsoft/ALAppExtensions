@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10700 "Create Location NO"
 {
     SingleInstance = true;

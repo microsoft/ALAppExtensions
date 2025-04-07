@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10882 "Create Purch. Dim. Value FR"
 {
     SingleInstance = true;

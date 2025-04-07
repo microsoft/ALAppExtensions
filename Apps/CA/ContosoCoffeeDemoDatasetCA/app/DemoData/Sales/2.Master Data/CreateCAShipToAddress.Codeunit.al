@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 27027 "Create CA Ship-to Address"
 {
     InherentEntitlements = X;

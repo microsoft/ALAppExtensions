@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5660 "Contoso Vendor Bank Account"
 {
     InherentEntitlements = X;

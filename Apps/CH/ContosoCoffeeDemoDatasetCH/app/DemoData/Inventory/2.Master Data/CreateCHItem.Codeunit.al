@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11606 "Create CH Item"
 {
     SingleInstance = true;

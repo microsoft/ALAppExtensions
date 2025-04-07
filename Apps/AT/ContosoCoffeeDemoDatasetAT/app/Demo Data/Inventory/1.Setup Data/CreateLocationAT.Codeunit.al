@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11167 "Create Location AT"
 {
     SingleInstance = true;

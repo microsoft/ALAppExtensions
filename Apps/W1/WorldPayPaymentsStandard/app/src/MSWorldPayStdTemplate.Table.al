@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEANSCHEMA26
 table 1361 "MS - WorldPay Std. Template"
 {

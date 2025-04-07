@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 13455 "Create Cust. Posting Group FI"
 {
     SingleInstance = true;

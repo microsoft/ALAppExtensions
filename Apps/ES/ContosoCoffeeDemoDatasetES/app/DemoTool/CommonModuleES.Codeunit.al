@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10782 "Common Module ES"
 {
     InherentEntitlements = X;

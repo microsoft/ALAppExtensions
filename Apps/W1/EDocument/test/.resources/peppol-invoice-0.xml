@@ -12,7 +12,7 @@
 	<cbc:IssueDate>2026-01-22</cbc:IssueDate>
 	<cbc:DueDate>2026-02-22</cbc:DueDate>
 	<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
-	<cbc:DocumentCurrencyCode>GBP</cbc:DocumentCurrencyCode>
+	<cbc:DocumentCurrencyCode>XYZ</cbc:DocumentCurrencyCode>
 	<cbc:BuyerReference>1</cbc:BuyerReference>
 	<cac:OrderReference>
 		<cbc:ID>2</cbc:ID>
@@ -129,10 +129,10 @@
 		<cbc:Note>1 Month/2% 8 days</cbc:Note>
 	</cac:PaymentTerms>
 	<cac:TaxTotal>
-		<cbc:TaxAmount currencyID="GBP">1000</cbc:TaxAmount>
+		<cbc:TaxAmount currencyID="XYZ">1000</cbc:TaxAmount>
 		<cac:TaxSubtotal>
-			<cbc:TaxableAmount currencyID="GBP">4000</cbc:TaxableAmount>
-			<cbc:TaxAmount currencyID="GBP">1000</cbc:TaxAmount>
+			<cbc:TaxableAmount currencyID="XYZ">4000</cbc:TaxableAmount>
+			<cbc:TaxAmount currencyID="XYZ">1000</cbc:TaxAmount>
 			<cac:TaxCategory>
 				<cbc:ID>S</cbc:ID>
 				<cbc:Percent>25</cbc:Percent>
@@ -143,19 +143,19 @@
 		</cac:TaxSubtotal>
 	</cac:TaxTotal>
 	<cac:LegalMonetaryTotal>
-		<cbc:LineExtensionAmount currencyID="GBP">4000</cbc:LineExtensionAmount>
-		<cbc:TaxExclusiveAmount currencyID="GBP">4000</cbc:TaxExclusiveAmount>
-		<cbc:TaxInclusiveAmount currencyID="GBP">5000</cbc:TaxInclusiveAmount>
-		<cbc:AllowanceTotalAmount currencyID="GBP">0</cbc:AllowanceTotalAmount>
-		<cbc:PrepaidAmount currencyID="GBP">0.00</cbc:PrepaidAmount>
-		<cbc:PayableRoundingAmount currencyID="GBP">0</cbc:PayableRoundingAmount>
-		<cbc:PayableAmount currencyID="GBP">5000</cbc:PayableAmount>
+		<cbc:LineExtensionAmount currencyID="XYZ">4000</cbc:LineExtensionAmount>
+		<cbc:TaxExclusiveAmount currencyID="XYZ">4000</cbc:TaxExclusiveAmount>
+		<cbc:TaxInclusiveAmount currencyID="XYZ">5000</cbc:TaxInclusiveAmount>
+		<cbc:AllowanceTotalAmount currencyID="XYZ">0</cbc:AllowanceTotalAmount>
+		<cbc:PrepaidAmount currencyID="XYZ">0.00</cbc:PrepaidAmount>
+		<cbc:PayableRoundingAmount currencyID="XYZ">0</cbc:PayableRoundingAmount>
+		<cbc:PayableAmount currencyID="XYZ">5000</cbc:PayableAmount>
 	</cac:LegalMonetaryTotal>
 	<cac:InvoiceLine>
 		<cbc:ID>10000</cbc:ID>
 		<cbc:Note>Item</cbc:Note>
 		<cbc:InvoicedQuantity unitCode="PCS">1</cbc:InvoicedQuantity>
-		<cbc:LineExtensionAmount currencyID="GBP">4000</cbc:LineExtensionAmount>
+		<cbc:LineExtensionAmount currencyID="XYZ">4000</cbc:LineExtensionAmount>
 		<cac:Item>
 			<cbc:Name>Bicycle</cbc:Name>
 			<cac:StandardItemIdentification>
@@ -170,7 +170,7 @@
 			</cac:ClassifiedTaxCategory>
 		</cac:Item>
 		<cac:Price>
-			<cbc:PriceAmount currencyID="GBP">4000.00</cbc:PriceAmount>
+			<cbc:PriceAmount currencyID="XYZ">4000.00</cbc:PriceAmount>
 			<cbc:BaseQuantity unitCode="PCS">1</cbc:BaseQuantity>
 		</cac:Price>
 	</cac:InvoiceLine>
@@ -178,7 +178,7 @@
 		<cbc:ID>20000</cbc:ID>
 		<cbc:Note>Item</cbc:Note>
 		<cbc:InvoicedQuantity unitCode="PCS">2</cbc:InvoicedQuantity>
-		<cbc:LineExtensionAmount currencyID="GBP">10000</cbc:LineExtensionAmount>
+		<cbc:LineExtensionAmount currencyID="XYZ">10000</cbc:LineExtensionAmount>
 		<cac:Item>
 			<cbc:Name>Bicycle v2</cbc:Name>
 			<cac:StandardItemIdentification>
@@ -193,7 +193,7 @@
 			</cac:ClassifiedTaxCategory>
 		</cac:Item>
 		<cac:Price>
-			<cbc:PriceAmount currencyID="GBP">5000.00</cbc:PriceAmount>
+			<cbc:PriceAmount currencyID="XYZ">5000.00</cbc:PriceAmount>
 			<cbc:BaseQuantity unitCode="PCS">2</cbc:BaseQuantity>
 		</cac:Price>
 	</cac:InvoiceLine>

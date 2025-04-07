@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5217 "Create Sustain. Jnl. Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14112 ItemTrackingCodesExt extends "Item Tracking Codes"
 {
     layout

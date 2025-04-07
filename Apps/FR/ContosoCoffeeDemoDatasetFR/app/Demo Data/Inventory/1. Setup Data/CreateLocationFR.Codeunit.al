@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10878 "Create Location FR"
 {
     SingleInstance = true;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5242 "Create Emission Fee"
 {
     InherentEntitlements = X;
