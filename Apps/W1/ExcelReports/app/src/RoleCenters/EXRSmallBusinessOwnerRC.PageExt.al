@@ -1,6 +1,7 @@
 namespace Microsoft.Sales.ExcelReports;
 
 using Microsoft.RoleCenters;
+using Microsoft.Finance.ExcelReports;
 
 pageextension 4411 "EXR Small Business Owner RC" extends "Small Business Owner RC"
 {
@@ -15,6 +16,17 @@ pageextension 4411 "EXR Small Business Owner RC" extends "Small Business Owner R
                 Image = "Report";
                 RunObject = Report "EXR Customer Top List";
                 ToolTip = 'View which customers purchase the most or owe the most in a selected period. Only customers that have either purchases during the period or a balance at the end of the period will be included.';
+            }
+        }
+        addafter(Action129)
+        {
+            action(EXRTrialBalanceExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'G/L Trial Balance (Excel)';
+                Image = "Report";
+                RunObject = Report "EXR Trial Balance Excel";
+                ToolTip = 'View, print, or send a report that shows the balances for the general ledger accounts, including the debits and credits. You can use this report to ensure accurate accounting practices.';
             }
         }
     }
