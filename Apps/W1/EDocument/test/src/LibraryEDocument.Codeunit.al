@@ -707,6 +707,9 @@ codeunit 139629 "Library - E-Document"
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Issued Reminder";
         EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Transfer Shipment";
+        EDocServiceSupportedType.Insert(false);
     end;
 
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")

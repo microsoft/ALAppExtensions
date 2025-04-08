@@ -1750,6 +1750,80 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
     end;
 
+    [Test]
+    procedure CreateEDocumentTransferShipmentSuccess()
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        TransferHeader: Record "Transfer Header";
+        Item: Record Item;
+        ItemJournalLine: Record "Item Journal Line";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryInventory: Codeunit "Library - Inventory";
+        EDocument: Record "E-Document";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+        InventoryPostingSetupFromLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupToLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupInTransitLocation: Record "Inventory Posting Setup";
+        LibraryRandom: Codeunit "Library - Random";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting transfer shipment
+        Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] E-Document service with format peppol
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [GIVEN] Transfer Shipment Document Sending Profile
+        DocumentSendingProfile.Get(Customer."Document Sending Profile");
+        DocumentSendingProfile."Transfer Shipment Profile" := true;
+        DocumentSendingProfile.Modify(false);
+
+        // [WHEN] Create transfer shipment
+        LibraryWarehouse.CreateLocation(FromLocation);
+        LibraryWarehouse.CreateLocation(ToLocation);
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroup);
+        LibraryInventory.CreateInventoryPostingSetup(InventoryPostingSetupFromLocation, FromLocation.Code, InventoryPostingGroup.Code);
+        LibraryInventory.UpdateInventoryPostingSetup(FromLocation, InventoryPostingGroup.Code);
+        InventoryPostingSetupFromLocation.Get(FromLocation.Code, InventoryPostingGroup.Code);
+        InventoryPostingSetupToLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupToLocation."Location Code" := ToLocation.Code;
+        InventoryPostingSetupToLocation.Insert(false);
+        InventoryPostingSetupInTransitLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupInTransitLocation."Location Code" := InTransitLocation.Code;
+        InventoryPostingSetupInTransitLocation.Insert(false);
+        LibraryInventory.CreateItem(Item);
+        Item."Inventory Posting Group" := InventoryPostingGroup.Code;
+        Item.Modify(false);
+        LibraryInventory.CreateItemJournalLineInItemTemplate(
+          ItemJournalLine, Item."No.", FromLocation.Code, '', LibraryRandom.RandIntInRange(10, 20));
+        LibraryInventory.PostItemJournalLine(
+          ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
+        LibraryInventory.CreateAndPostTransferOrder(
+            TransferHeader,
+            Item,
+            FromLocation,
+            ToLocation,
+            InTransitLocation,
+            '',
+            1,
+            Workdate(),
+            Workdate(),
+            true,
+            false);
+
+        // [THEN] Check that E-Document is created
+        TransferShipmentHeader.SetRange("Transfer Order No.", TransferHeader."No.");
+        TransferShipmentHeader.FindFirst();
+        EDocument.SetRange("Document Record ID", TransferShipmentHeader.RecordId);
+        EDocument.FindFirst();
+    end;
+
     local procedure CreateIncomingEDocument(VendorNo: Code[20]; Status: Enum "E-Document Status")
     var
         EDocument: Record "E-Document";
