@@ -22,6 +22,7 @@ pageextension 6103 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                     Caption = 'Open E-Document';
                     Image = CopyDocument;
                     ToolTip = 'Opens electronic document card.';
+                    Enabled = HasEDocument;
 
                     trigger OnAction()
                     var
@@ -29,9 +30,24 @@ pageextension 6103 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                     begin
                         EDocument.OpenEdocument(Rec.RecordId);
                     end;
-
                 }
             }
         }
     }
+
+    var
+        HasEDocument: Boolean;
+
+    trigger OnAfterGetRecord()
+    begin
+        HasEDocument := CheckIfEDocumentExists(Rec.RecordId);
+    end;
+
+    local procedure CheckIfEDocumentExists(DocumentRecordId: RecordId): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Document Record ID", DocumentRecordId);
+        exit(not EDocument.IsEmpty());
+    end;
 }
