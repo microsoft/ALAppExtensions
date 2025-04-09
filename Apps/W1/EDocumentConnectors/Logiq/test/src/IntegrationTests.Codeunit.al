@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
+using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Foundation.Company;
@@ -20,12 +21,14 @@ codeunit 139780 "Integration Tests"
     Permissions = tabledata "Logiq Connection Setup" = rimd,
                   tabledata "Logiq Connection User Setup" = rimd,
                     tabledata "E-Document" = rd;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
 
     /// <summary>
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure CreateLogiqUserSetup()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -47,6 +50,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure ChangeLogiqCredentials()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -72,6 +76,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure DeleteLogiqUserSetup()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -97,6 +102,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiq()
     var
         EDocument: Record "E-Document";
@@ -154,6 +160,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqInProgress()
     var
         EDocument: Record "E-Document";
@@ -208,6 +215,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqFailed()
     var
         EDocument: Record "E-Document";
@@ -263,6 +271,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqServerDown()
     var
         EDocument: Record "E-Document";
@@ -300,6 +309,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure DownloadOneDocument()
     var
         EDocument: Record "E-Document";
@@ -330,6 +340,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure DownloadMultipleDocuments()
     var
         EDocument: Record "E-Document";
@@ -527,6 +538,23 @@ codeunit 139780 "Integration Tests"
         EDocumentServices.OK().Invoke();
     end;
 
+    [HttpClientHandler]
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
+                LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+        end;
+    end;
+
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
+    end;
+
+
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
@@ -538,4 +566,6 @@ codeunit 139780 "Integration Tests"
         LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        ResponseResourceUrl: Text;
+        ResponseStatusCode: Integer;
 }
