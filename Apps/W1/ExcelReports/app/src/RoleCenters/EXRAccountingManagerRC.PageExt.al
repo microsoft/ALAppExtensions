@@ -1,23 +1,19 @@
-namespace Microsoft.Sales.ExcelReports;
-using Microsoft.RoleCenters;
-using Microsoft.Finance.ExcelReports;
-
-pageextension 4409 "EXR CEO and President RC" extends "CEO and President Role Center"
+pageextension 4423 "EXR Accounting Manager RC" extends "Accounting Manager Role Center"
 {
     actions
     {
-        addafter("Customer - &Balance")
+        addfirst(reporting)
         {
-            action(EXRCustomerTopListExcel)
+            action("G/L Trial Balance (Excel)")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Customer - Top List (Excel)';
+                Caption = 'G/L Trial Balance (Excel)';
                 Image = "Report";
-                RunObject = Report "EXR Customer Top List";
-                ToolTip = 'View which customers purchase the most or owe the most in a selected period. Only customers that have either purchases during the period or a balance at the end of the period will be included.';
+                RunObject = Report "EXR Trial Balance Excel";
+                ToolTip = 'View, print, or send a report that shows the balances for the general ledger accounts, including the debits and credits. You can use this report to ensure accurate accounting practices.';
             }
         }
-        addafter("Recei&vables-Payables")
+        addafter("Bu&dget")
         {
             action(EXRTrialBalanceBudgetExcel)
             {

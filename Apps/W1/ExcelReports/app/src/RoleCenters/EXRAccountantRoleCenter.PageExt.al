@@ -16,14 +16,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
     {
         addlast("Excel Reports")
         {
-            action(EXRTrialBalanceBudgetExcel)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Trial Balance/Budget (Excel)';
-                Image = "Report";
-                RunObject = report "EXR Trial BalanceBudgetExcel";
-                ToolTip = 'Open a spreadsheet that shows Trial Balance/Budget data.';
-            }
             action(EXRTrialBalbyPeriodExcel)
             {
                 ApplicationArea = Basic, Suite;
@@ -126,6 +118,17 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 Image = "Report";
                 RunObject = report "EXR Trial Balance Excel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
+            }
+        }
+        addafter("Bu&dget")
+        {
+            action(EXRTrialBalanceBudgetExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Trial Balance/Budget (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Trial BalanceBudgetExcel";
+                ToolTip = 'Open a spreadsheet that shows Trial Balance/Budget data.';
             }
         }
     }
