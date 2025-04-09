@@ -14,6 +14,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
+        LibraryInventory: Codeunit "Library - Inventory";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Incorrect value found';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
@@ -1758,7 +1759,6 @@ codeunit 139624 "E-Doc E2E Test"
         FromLocation: Record Location;
         ToLocation: Record Location;
         InTransitLocation: Record Location;
-        LibraryInventory: Codeunit "Library - Inventory";
         DocumentSendingProfile: Record "Document Sending Profile";
         InventoryPostingGroup: Record "Inventory Posting Group";
     begin
@@ -1776,7 +1776,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [GIVEN] Transfer locations with posting setup
         CreateLocationsWithPostingSetups(FromLocation, ToLocation, InTransitLocation, InventoryPostingGroup);
         // [GIVEN] Item with inventory stock in from location
-        CreateItemWIthInventoryStock(Item, FromLocation, LibraryInventory, InventoryPostingGroup);
+        CreateItemWIthInventoryStock(Item, FromLocation, InventoryPostingGroup);
 
         // [WHEN] Create transfer shipment
         LibraryInventory.CreateAndPostTransferOrder(
@@ -1937,7 +1937,6 @@ codeunit 139624 "E-Doc E2E Test"
         InventoryPostingSetupToLocation: Record "Inventory Posting Setup";
         InventoryPostingSetupInTransitLocation: Record "Inventory Posting Setup";
         LibraryWarehouse: Codeunit "Library - Warehouse";
-        LibraryInventory: Codeunit "Library - Inventory";
     begin
         LibraryWarehouse.CreateLocation(FromLocation);
         LibraryWarehouse.CreateLocation(ToLocation);
@@ -1955,15 +1954,13 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     local procedure CreateItemWithInventoryPostingGroup(var Item: Record Item; InventoryPostingGroupCode: Code[20])
-    var
-        LibraryInventory: Codeunit "Library - Inventory";
     begin
         LibraryInventory.CreateItem(Item);
         Item."Inventory Posting Group" := InventoryPostingGroupCode;
         Item.Modify(false);
     end;
 
-    local procedure CreateItemWIthInventoryStock(var Item: Record Item; var FromLocation: Record Location; var LibraryInventory: Codeunit "Library - Inventory"; var InventoryPostingGroup: Record "Inventory Posting Group")
+    local procedure CreateItemWIthInventoryStock(var Item: Record Item; var FromLocation: Record Location; var InventoryPostingGroup: Record "Inventory Posting Group")
     var
         ItemJournalLine: Record "Item Journal Line";
         LibraryRandom: Codeunit "Library - Random";
