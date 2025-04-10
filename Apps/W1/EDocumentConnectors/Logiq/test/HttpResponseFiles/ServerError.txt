@@ -1,6 +1,3 @@
-HTTP/1.1 500 Internal Server Error
-Date: Fri, 08 Nov 2024 08:59:03 GMT
-
 {
   "error": "An error occurred"
 }

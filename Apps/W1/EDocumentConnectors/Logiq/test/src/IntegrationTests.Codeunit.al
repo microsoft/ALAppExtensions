@@ -76,7 +76,6 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
     procedure DeleteLogiqUserSetup()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -546,6 +545,36 @@ codeunit 139780 "Integration Tests"
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
                 LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer/200'):
+                LoadResourceIntoHttpResponse('DocumentSent.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer/500'):
+                begin
+                    LoadResourceIntoHttpResponse('ServerError.txt', Response);
+                    Response.HttpStatusCode := 500;
+                end;
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/distributed/\d+'):
+                LoadResourceIntoHttpResponse('DocumentStatusDistributed.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/received/\d+'):
+                LoadResourceIntoHttpResponse('DocumentStatusReceived.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/failed/\d+'):
+                LoadResourceIntoHttpResponse('DocumentStatusFailed.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/one'):
+                LoadResourceIntoHttpResponse('OneDocumentResponse.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/multiple'):
+                LoadResourceIntoHttpResponse('MultipleDocumentsResponse.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
+                LoadResourceIntoHttpResponse('testfile1.xml', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile2.xml'):
+                LoadResourceIntoHttpResponse('testfile2.xml', Response);
         end;
     end;
 
@@ -566,6 +595,4 @@ codeunit 139780 "Integration Tests"
         LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
-        ResponseResourceUrl: Text;
-        ResponseStatusCode: Integer;
 }
