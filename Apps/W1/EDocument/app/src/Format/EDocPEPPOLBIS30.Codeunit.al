@@ -119,7 +119,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         TransferShipmentExport: Codeunit "E-Doc. Transfer Shpt. To XML";
         TempBlob: Codeunit "Temp Blob";
     begin
-        TransferShipmentHeaderRecRef.SetTable(TransferShipmentHeader);
+        TransferShipmentHeader := TransferShipmentHeaderRecRef;
         TransferShipmentExport.Run(TransferShipmentHeader);
         TransferShipmentExport.GetTransferShipmentXML(TempBlob);
         CopyStream(DocOutStream, TempBlob.CreateInStream());
