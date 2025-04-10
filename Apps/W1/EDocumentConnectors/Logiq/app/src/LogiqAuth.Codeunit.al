@@ -122,7 +122,7 @@ codeunit 6430 "Logiq Auth"
             Error(this.MissingBaseUrlErr);
     end;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     local procedure ParseTokens(ResponseMessage: HttpResponseMessage; var AccessToken: SecretText; var RefreshToken: SecretText; var AccessTokExpires: DateTime; var RefreshTokExpires: DateTime)
     var
         ContentJson: JsonObject;
