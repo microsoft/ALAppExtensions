@@ -1,0 +1,23 @@
+<document_business_responses xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <document_business_response>
+        <id>53395377-9da3-444d-8ca6-c3fa4a7fd232</id>
+        <created_date>2024-10-03T15:26:04.577</created_date>
+        <reason_code>PRI</reason_code>
+        <reason>Prices incorrect</reason>
+        <response_code>RE</response_code>
+        <xml_document>
+            <file_token>http://testcompany.com/application-response-RE.xml
+            </file_token>
+        </xml_document>
+    </document_business_response>
+    <document_business_response>
+        <id>b4c00a73-ec0c-456e-9a4f-f26671dfcf69</id>
+        <created_date>2024-10-04T15:30:04.597</created_date>
+        <reason></reason>
+        <response_code>AP</response_code>
+        <xml_document>
+            <file_token>http://testcompany.com/application-response-AP.xml
+            </file_token>
+        </xml_document>
+    </document_business_response>
+</document_business_responses>

@@ -1,0 +1,7 @@
+<participation_profile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <created_utc>2024-10-23T12:00:00</created_utc>
+  <direction>BothEnum</direction>
+  <network_profile_id>dd2af6bc-a05a-4fd4-a577-0216a56bea84</network_profile_id>
+  <participation_profile_id>{participationProfileId.ToLower}</participation_profile_id>
+  <updated_utc>2024-10-23T13:00:00</updated_utc>
+</participation_profile>
