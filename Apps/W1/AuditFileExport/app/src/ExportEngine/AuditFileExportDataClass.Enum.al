@@ -8,9 +8,9 @@ enum 5265 "Audit File Export Data Class"
 {
     Extensible = true;
 
-    value(0; None) { }
-    value(1; MasterData) { }
-    value(2; GeneralLedgerEntries) { }
-    value(3; SourceDocuments) { }
-    value(4; Custom) { }
+    value(0; None) { Caption = 'None'; }
+    value(1; MasterData) { Caption = 'Master Data'; }
+    value(2; GeneralLedgerEntries) { Caption = 'General Ledger Entries'; }
+    value(3; SourceDocuments) { Caption = 'Source Documents'; }
+    value(4; Custom) { Caption = 'Custom'; }
 }
