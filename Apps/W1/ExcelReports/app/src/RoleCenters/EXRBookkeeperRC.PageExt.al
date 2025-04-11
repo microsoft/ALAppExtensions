@@ -24,5 +24,16 @@ pageextension 4424 "EXR Bookkeeper RC" extends "Bookkeeper Role Center"
                 ToolTip = 'View a trial balance in comparison to a budget. You can choose to see a trial balance for selected dimensions. You can use the report at the close of an accounting period or fiscal year.';
             }
         }
+        addafter(Action49)
+        {
+            action(EXRAgedAccountsRecExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Aged Accounts Receivable (Excel)';
+                Image = "Report";
+                RunObject = Report "EXR Aged Accounts Rec Excel";
+                ToolTip = 'View overdue customer payments.';
+            }
+        }
     }
 }

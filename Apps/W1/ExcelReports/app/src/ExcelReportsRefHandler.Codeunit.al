@@ -23,12 +23,23 @@ codeunit 4413 "Excel Reports Ref. Handler"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Small Business Report Catalog", OnBeforeRunTrialBalanceReport, '', false, false)]
-    local procedure "Small Business Report Catalog_OnBeforeRunTrialBalanceReport"(UseRequestPage: Boolean; var IsHandled: Boolean)
+    local procedure SmallBusinessReportCatalog_OnBeforeRunTrialBalanceReport(UseRequestPage: Boolean; var IsHandled: Boolean)
     var
         TrialBalance: Report "EXR Trial Balance Excel";
     begin
         TrialBalance.UseRequestPage(UseRequestPage);
         TrialBalance.Run();
+
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Small Business Report Catalog", OnBeforeRunAgedAccountsReceivableReport, '', false, false)]
+    local procedure SmallBusinessReportCatalog_OnBeforeRunAgedAccountsReceivableReport(UseRequestPage: Boolean; var IsHandled: Boolean)
+    var
+        AgedAccountsReceivable: Report "EXR Aged Accounts Rec Excel";
+    begin
+        AgedAccountsReceivable.UseRequestPage(UseRequestPage);
+        AgedAccountsReceivable.Run();
 
         IsHandled := true;
     end;
