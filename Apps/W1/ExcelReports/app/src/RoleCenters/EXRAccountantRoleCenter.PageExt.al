@@ -48,18 +48,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 RunObject = report "EXR Vendor Top List";
                 ToolTip = 'Open a spreadsheet that shows a list of top vendors.';
             }
-            action(EXRAgedAccPayableExcel)
-            {
-                ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Aged Accounts Payable (Preview)';
-#else
-                Caption = 'Aged Accounts Payable (Excel)';
-#endif
-                Image = "Report";
-                RunObject = report "EXR Aged Acc Payable Excel";
-                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
-            }
             action(EXRConsolidatedTrialBalance)
             {
                 ApplicationArea = Basic, Suite;
@@ -132,6 +120,18 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 Image = "Report";
                 RunObject = report "EXR Aged Accounts Rec Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
+            }
+            action(EXRAgedAccPayableExcel)
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN25
+                Caption = 'Aged Accounts Payable (Preview)';
+#else
+                Caption = 'Aged Accounts Payable (Excel)';
+#endif
+                Image = "Report";
+                RunObject = report "EXR Aged Acc Payable Excel";
+                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
             }
         }
     }

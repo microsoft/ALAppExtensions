@@ -43,4 +43,15 @@ codeunit 4413 "Excel Reports Ref. Handler"
 
         IsHandled := true;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Small Business Report Catalog", OnBeforeRunAgedAccountsPayableReport, '', false, false)]
+    local procedure SmallBusinessReportCatalog_OnBeforeRunAgedAccountsPayableReport(UseRequestPage: Boolean; var IsHandled: Boolean)
+    var
+        AgedAccountsPayable: Report "EXR Aged Acc Payable Excel";
+    begin
+        AgedAccountsPayable.UseRequestPage(UseRequestPage);
+        AgedAccountsPayable.Run();
+
+        IsHandled := true;
+    end;
 }

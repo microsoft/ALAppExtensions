@@ -1,6 +1,7 @@
 namespace Microsoft.Purchases.ExcelReports;
 
 using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.ExcelReports;
 
 pageextension 4418 "Vendor List" extends "Vendor List"
 {
@@ -15,6 +16,17 @@ pageextension 4418 "Vendor List" extends "Vendor List"
                 Image = "Report";
                 RunObject = Report "EXR Vendor Top List";
                 ToolTip = 'View a list of the vendors from whom you purchase the most or to whom you owe the most.';
+            }
+        }
+        addfirst("Financial Management")
+        {
+            action("Aged Accounts Payable - Excel")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Aged Accounts Payable';
+                Image = "Report";
+                RunObject = Report "EXR Aged Acc Payable Excel";
+                ToolTip = 'View a list of aged remaining balances for each vendor.';
             }
         }
     }

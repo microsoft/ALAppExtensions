@@ -25,18 +25,6 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                     RunObject = report "EXR Trial Bal. Prev Year Excel";
                     ToolTip = 'Open a spreadsheet that shows Trial Balance/Previous Year data';
                 }
-                action(EXRAgedAccPayableExcel)
-                {
-                    ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                    Caption = 'Aged Accounts Payable (Preview)';
-#else
-                    Caption = 'Aged Accounts Payable (Excel)';
-#endif
-                    Image = "Report";
-                    RunObject = report "EXR Aged Acc Payable Excel";
-                    ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
-                }
                 action(EXRConsolidatedTrialBalance)
                 {
                     ApplicationArea = Basic, Suite;
@@ -166,6 +154,21 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
                 Image = "Report";
                 RunObject = report "EXR Aged Accounts Rec Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
+            }
+        }
+        addfirst(Group40)
+        {
+            action(EXRAgedAccPayableExcel)
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN25
+                Caption = 'Aged Accounts Payable (Preview)';
+#else
+                Caption = 'Aged Accounts Payable (Excel)';
+#endif
+                Image = "Report";
+                RunObject = report "EXR Aged Acc Payable Excel";
+                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
             }
         }
     }
