@@ -1,5 +1,9 @@
-namespace Microsoft.Sales.ExcelReports;
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Sales.ExcelReports;
 using Microsoft.CRM.RoleCenters;
 
 pageextension 4417 "EXR Sales & Rel. Mgr. RC" extends "Sales & Relationship Mgr. RC"

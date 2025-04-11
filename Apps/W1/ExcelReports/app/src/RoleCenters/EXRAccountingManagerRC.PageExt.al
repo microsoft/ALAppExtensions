@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.ExcelReports;
+using Microsoft.Finance.RoleCenters;
+using Microsoft.Finance.ExcelReports;
+
 pageextension 4423 "EXR Accounting Manager RC" extends "Accounting Manager Role Center"
 {
     actions
