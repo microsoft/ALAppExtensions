@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Finance.ExcelReports;
+using Microsoft.Foundation.Period;
+
 pageextension 4425 "Accounting Periods" extends "Accounting Periods"
 {
     actions

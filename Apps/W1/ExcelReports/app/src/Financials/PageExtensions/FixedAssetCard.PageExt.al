@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Finance.ExcelReports;
+using Microsoft.FixedAssets.FixedAsset;
+
 pageextension 4422 "Fixed Asset Card" extends "Fixed Asset Card"
 {
     actions
