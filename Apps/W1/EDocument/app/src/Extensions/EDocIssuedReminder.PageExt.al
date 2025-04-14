@@ -20,6 +20,7 @@ pageextension 6148 "E-Doc. Issued Reminder" extends "Issued Reminder"
             }
         }
     }
+
     actions
     {
         addafter("&Reminder")

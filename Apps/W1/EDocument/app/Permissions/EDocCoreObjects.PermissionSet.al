@@ -69,6 +69,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Doc. PO Copilot Matching" = X,
         codeunit "E-Doc. Attachment Processor" = X,
         codeunit "Service Participant" = X,
+        codeunit "EDoc PEPPOL Validation" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,
@@ -91,5 +92,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Doc. PO Copilot Prop" = X,
         page "E-Doc. PO Match Prop. Sub" = X,
         page "E-Doc. Order Match Act." = X,
-        page "Service Participants" = X;
+        page "Service Participants" = X,
+        xmlport "Fin. Results - PEPPOL BIS 3.0" = X;
 }

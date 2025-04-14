@@ -1649,7 +1649,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [FEATURE] [E-Document] [Processing] 
         // [SCENARIO] Check that E-Document is created when issuing reminder
 
-        // [GIVEN] SETUP
+        // [GIVEN] Setup E-Document service for exporting reminder
         this.Initialize(Enum::"Service Integration"::"Mock");
         this.LibraryEDoc.SetupReminderNoSeries();
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
@@ -1675,7 +1675,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [FEATURE] [E-Document] [Processing] 
         // [SCENARIO] Check that E-Document is created when issuing finance charge memo
 
-        // [GIVEN] SETUP
+        // [GIVEN] Setup E-Document service for exporting finance charge memo 
         this.Initialize(Enum::"Service Integration"::"Mock");
         this.LibraryEDoc.SetupFinChargeMemoNoSeries();
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
@@ -1711,7 +1711,7 @@ codeunit 139624 "E-Doc E2E Test"
         TempBlob: Codeunit "Temp Blob";
     begin
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
-        Assert.IsTrue(TempBlob.HasValue(), 'No XML created');
+        Assert.IsTrue(TempBlob.HasValue(), 'XML not created.');
     end;
 
     [Test]

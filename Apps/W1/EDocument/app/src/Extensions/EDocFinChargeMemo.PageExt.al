@@ -20,6 +20,7 @@ pageextension 6140 "E-Doc. Fin. Charge Memo" extends "Finance Charge Memo"
             }
         }
     }
+
     actions
     {
         addafter("&Issuing")
