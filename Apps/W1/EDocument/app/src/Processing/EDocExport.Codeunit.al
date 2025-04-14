@@ -350,7 +350,6 @@ codeunit 6102 "E-Doc. Export"
             Database::"Sales Shipment Header":
                 begin
                     EDocument."Document Type" := EDocument."Document Type"::"Sales Shipment";
-
                     EDocument."Document No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("No.")).Value;
                     EDocument."Order No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Order No.")).Value;
                     EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Customer No.")).Value;

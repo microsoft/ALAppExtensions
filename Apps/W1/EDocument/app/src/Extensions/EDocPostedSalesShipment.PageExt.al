@@ -14,7 +14,7 @@ pageextension 6103 "E-Doc. Posted Sales Shipment" extends "Posted Sales Shipment
         {
             group("E-Document")
             {
-                action("OpenEDocument")
+                action(OpenEDocument)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Open E-Document';

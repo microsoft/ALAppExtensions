@@ -132,5 +132,4 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
         XMLDOMManagement: Codeunit "XML DOM Management";
         ShipmentXML: XmlDocument;
         RootNode: XmlNode;
-
 }

@@ -1589,7 +1589,7 @@ codeunit 139624 "E-Doc E2E Test"
         // [FEATURE] [E-Document] [Processing] 
         // [SCENARIO] Check that E-Document is created when posting sales shipment
 
-        // [GIVEN] SETUP
+        // [GIVEN] Setup E-Document service for sending shipment
         this.Initialize(Enum::"Service Integration"::"Mock");
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
         this.EDocumentService.Modify(false);
@@ -1688,7 +1688,7 @@ codeunit 139624 "E-Doc E2E Test"
         TempBlob: Codeunit "Temp Blob";
     begin
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
-        Assert.IsTrue(TempBlob.HasValue(), 'No XML created');
+        Assert.IsTrue(TempBlob.HasValue(), 'XML not created.');
     end;
 
     [Test]
