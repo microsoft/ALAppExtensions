@@ -13,6 +13,7 @@ using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Service;
 using Microsoft.Finance.Currency;
+using System.Utilities;
 
 codeunit 148191 "Integration Tests"
 {
@@ -20,11 +21,13 @@ codeunit 148191 "Integration Tests"
     Subtype = Test;
     Permissions = tabledata "Connection Setup" = rimd,
                     tabledata "E-Document" = r;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
     /// <summary>
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
@@ -660,6 +663,24 @@ codeunit 148191 "Integration Tests"
         EDocServicesPage.Filter.SetFilter(Code, EDocumentService.Code);
         EDocServicesPage.OK().Invoke();
     end;
+
+    [HttpClientHandler]
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/connect/token'):
+                LoadResourceIntoHttpResponse('Token.json', Response);
+        end;
+    end;
+
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
+    end;
+
+    //Post https://localhost:8080/avalara/200/connect/token
 
     var
         Customer: Record Customer;
