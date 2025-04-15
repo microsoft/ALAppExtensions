@@ -1,0 +1,51 @@
+{
+	"id": "0addc017-80c4-40ad-bac6-5852f4fc4c55",
+	"name": "Peppol Core",
+	"publisher": "ForNAV",
+	"brief": "",
+	"description": "",
+	"version": "1.0.0.0",
+	"privacyStatement": "",
+	"EULA": "",
+	"help": "",
+	"url": "https://www.fornav.com",
+	"logo": "./ExtensionLogo.png",
+	"screenshots": [],
+	"resourceExposurePolicy": {
+		"allowDebugging": true,
+		"allowDownloadingSource": false,
+		"includeSourceInSymbolFile": false
+	},
+	"applicationInsightsConnectionString": "InstrumentationKey=fc504ced-39ce-4473-b5e4-a7142ef614ac;IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/",
+	"dependencies": [
+		{
+			"id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+			"name":  "E-Document Core",
+			"publisher":  "Microsoft",
+			"version":  "26.0.0.0"
+		}
+	],
+	"internalsVisibleTo": [
+		{
+			"id": "c848de8f-5f8b-4adf-8a7a-8de832b204dd",
+			"name": "ForNAV Peppol Test",
+			"publisher": "ForNAV"
+		}	],	
+	"target": "Cloud",
+	"application": "26.0.0.0",
+	"platform": "26.0.0.0",
+	"runtime": "15.0",
+	"idRanges": [
+		{
+			"from": 6246260,
+			"to": 6246275
+		}
+	],
+
+	"preprocessorSymbols": [
+    ],
+	"features": [
+		"TranslationFile",
+		"NoImplicitWith"
+	]
+}
