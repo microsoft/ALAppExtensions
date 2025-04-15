@@ -15,7 +15,7 @@ pageextension 4434 "G/L Budget Names" extends "G/L Budget Names"
             action("Trial Balance/Budget - Excel")
             {
                 ApplicationArea = Suite;
-                Caption = 'Trial Balance/Budget';
+                Caption = 'Trial Balance/Budget (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Trial BalanceBudgetExcel";
                 ToolTip = 'View budget details for the specified period.';

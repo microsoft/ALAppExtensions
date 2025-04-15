@@ -28,7 +28,7 @@ pageextension 4418 "Vendor List" extends "Vendor List"
             action("Aged Accounts Payable - Excel")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Aged Accounts Payable';
+                Caption = 'Aged Accounts Payable (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Aged Acc Payable Excel";
                 ToolTip = 'View a list of aged remaining balances for each vendor.';

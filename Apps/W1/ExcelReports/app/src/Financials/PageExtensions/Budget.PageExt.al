@@ -15,7 +15,7 @@ pageextension 4433 Budget extends Budget
             action("Trial Balance/Budget - Excel")
             {
                 ApplicationArea = Suite;
-                Caption = 'Trial Balance/Budget';
+                Caption = 'Trial Balance/Budget (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Trial BalanceBudgetExcel";
                 ToolTip = 'View budget details for the specified period.';
