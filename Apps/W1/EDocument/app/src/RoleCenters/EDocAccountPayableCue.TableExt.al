@@ -13,38 +13,38 @@ tableextension 6101 "E-Doc. Account Payable Cue" extends "Account Payable Cue"
     {
         field(6100; "Unprocessed E-Documents"; Integer)
         {
-            Caption = 'Unprocessed E-Documents';
-            ToolTip = 'Number of unprocessed E-Documents';
-            FieldClass = FlowField;
-            Editable = false;
             CalcFormula = count("E-Document" where(Status = filter("In Progress" | Error)));
+            Caption = 'Unprocessed E-Documents';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Number of unprocessed E-Documents.';
         }
         field(6101; "Linked Purchase Orders"; Integer)
         {
-            Caption = 'Linked Purchase Orders';
-            ToolTip = 'Number of linked purchase orders';
-            FieldClass = FlowField;
-            Editable = false;
             CalcFormula = count("Purchase Header" where("Document Type" = filter("Order"),
                                                         "E-Document Link" = filter('<>00000000-0000-0000-0000-000000000000')));
+            Caption = 'Linked Purchase Orders';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Number of linked purchase orders.';
         }
         field(6102; "E-Documents with Errors"; Integer)
         {
-            Caption = 'E-Documents with Errors';
-            ToolTip = 'Number of E-Documents with errors';
-            FieldClass = FlowField;
-            Editable = false;
             CalcFormula = count("E-Document" where(Status = filter(Error)));
+            Caption = 'E-Documents with Errors';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Number of E-Documents with errors.';
         }
         //TODO Shouldnt we add Processing date to calculate when was the edocs processed?
         field(6103; "Processed E-Documents TM"; Integer)
         {
-            Caption = 'Processed E-Documents This Month';
-            ToolTip = 'Number of processed E-Documents this month';
-            FieldClass = FlowField;
-            Editable = false;
             CalcFormula = count("E-Document" where(Status = filter(Processed),
                                                 "Posting Date" = field("Posting Date Filter")));
+            Caption = 'Processed E-Documents This Month';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Number of processed E-Documents this month.';
         }
     }
 }
