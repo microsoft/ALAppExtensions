@@ -52,7 +52,7 @@ page 8008 "Imported Service Objects"
                 }
                 field(Quantity; Rec."Quantity (Decimal)")
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnValidate()
                     begin

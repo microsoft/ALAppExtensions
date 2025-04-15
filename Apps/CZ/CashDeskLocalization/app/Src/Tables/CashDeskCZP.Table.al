@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -625,17 +625,10 @@ table 11744 "Cash Desk CZP"
     var
         CashDesk: Record "Cash Desk CZP";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             GeneralLedgerSetup.Get();
             GeneralLedgerSetup.TestField("Cash Desk Nos. CZP");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(GeneralLedgerSetup."Cash Desk Nos. CZP", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := GeneralLedgerSetup."Cash Desk Nos. CZP";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -644,10 +637,6 @@ table 11744 "Cash Desk CZP"
                 CashDesk.SetLoadFields("No.");
                 while CashDesk.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", GeneralLedgerSetup."Cash Desk Nos. CZP", 0D, "No.");
-            end;
-#endif
         end;
         DimensionManagement.UpdateDefaultDim(Database::"Cash Desk CZP", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
 
@@ -704,9 +693,6 @@ table 11744 "Cash Desk CZP"
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         CommentLine: Record "Comment Line";
         PostCode: Record "Post Code";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         ConfirmManagement: Codeunit "Confirm Management";
         MoveEntries: Codeunit MoveEntries;
         DimensionManagement: Codeunit DimensionManagement;

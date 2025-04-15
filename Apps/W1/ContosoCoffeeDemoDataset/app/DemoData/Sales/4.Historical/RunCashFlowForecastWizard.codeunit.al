@@ -1,4 +1,15 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.CashFlow.Setup;
+using System.Environment.Configuration;
+using Microsoft.CashFlow.Forecast;
+using System.Environment;
+
 codeunit 5686 "Run CashFlow Forecast Wizard"
 {
     InherentEntitlements = X;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -233,17 +233,10 @@ table 11793 "Company Official CZL"
     var
         CompanyOfficial: Record "Company Official CZL";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             StatutoryReportingSetupCZL.Get();
             StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(StatutoryReportingSetupCZL."Company Official Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := StatutoryReportingSetupCZL."Company Official Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -252,10 +245,6 @@ table 11793 "Company Official CZL"
                 CompanyOfficial.SetLoadFields("No.");
                 while CompanyOfficial.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", StatutoryReportingSetupCZL."Company Official Nos.", 0D, "No.");
-            end;
-#endif
         end;
     end;
 
@@ -274,9 +263,6 @@ table 11793 "Company Official CZL"
         Employee: Record Employee;
         PostCode: Record "Post Code";
         CompanyOfficialCZL: Record "Company Official CZL";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
 
     procedure AssistEdit(OldCompanyOfficialCZL: Record "Company Official CZL"): Boolean
     var

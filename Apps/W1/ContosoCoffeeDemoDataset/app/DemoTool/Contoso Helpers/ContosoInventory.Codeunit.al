@@ -1,4 +1,19 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Inventory.Availability;
+using Microsoft.Inventory.Requisition;
+using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Tracking;
+using Microsoft.DemoTool;
+
 codeunit 5699 "Contoso Inventory"
 {
     InherentEntitlements = X;

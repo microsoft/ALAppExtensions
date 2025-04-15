@@ -57,6 +57,9 @@ query 36993 "Job Planning Lines"
             column(totalPriceLCY; "Total Price (LCY)")
             {
             }
+            column(planningDate; "Planning Date")
+            {
+            }
         }
     }
 }

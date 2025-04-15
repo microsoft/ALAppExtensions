@@ -1,0 +1,520 @@
+{
+    "outputs": {
+      "1": {
+        "page_count": 1,
+        "result": {
+          "context": {
+            "start_page": 1,
+            "end_page": 1
+          },
+          "fields": {
+            "amountDue": {
+              "value_text": "$610.00",
+              "value_number": "abc",
+              "value_date": null,
+              "confidence": 0.943,
+              "currency_symbol": "$",
+              "currency_code": null
+            },
+            "billingAddress": {
+              "value_text": "123 Bill St, Redmond WA, 98052",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.888,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "billingAddressRecipient": {
+              "value_text": "Microsoft Finance",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.937,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "customerAddress": {
+              "value_text": "123 Other St, Redmond WA, 98052",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.888,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "customerAddressRecipient": {
+              "value_text": "Microsoft Corp",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.931,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "customerId": {
+              "value_text": "CID-12345",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.938,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "customerName": {
+              "value_text": "MICROSOFT CORPORATION",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.91,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "dueDate": {
+              "value_text": "12/15/2019",
+              "value_number": null,
+              "value_date": "2019-12-15",
+              "confidence": 0.948,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "invoiceDate": {
+              "value_text": "11/15/2019",
+              "value_number": null,
+              "value_date": "2019-11-15",
+              "confidence": 0.947,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "invoiceId": {
+              "value_text": "INV-100",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.947,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "invoiceTotal": {
+              "value_text": "$110.00",
+              "value_number": 110,
+              "value_date": null,
+              "confidence": 0.944,
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
+            },
+            "previousUnpaidBalance": {
+              "value_text": "$500.00",
+              "value_number": 500,
+              "value_date": null,
+              "confidence": 0.938,
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
+            },
+            "purchaseOrder": {
+              "value_text": "PO-3333",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.934,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "remittanceAddress": {
+              "value_text": "123 Remit St New York, NY, 10001",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.886,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "remittanceAddressRecipient": {
+              "value_text": "Contoso Billing",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.937,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "serviceAddress": {
+              "value_text": "123 Service St, Redmond WA, 98052",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.887,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "serviceAddressRecipient": {
+              "value_text": "Microsoft Services",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.93,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "serviceEndDate": {
+              "value_text": "11/14/2019",
+              "value_number": null,
+              "value_date": "aaa",
+              "confidence": 0.939,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "serviceStartDate": {
+              "value_text": "10/14/2019",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.788,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "shippingAddress": {
+              "value_text": null,
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.887,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "shippingAddressRecipient": {
+              "value_text": 1,
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.93,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "subTotal": {
+              "value_text": "$100.00",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.946,
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
+            },
+            "totalTax": {
+              "value_text": "$10.00",
+              "value_number": "10",
+              "value_date": null,
+              "confidence": 0.945,
+              "currency_symbol": "$",
+              "currency_code": "XYZ"
+            },
+            "vendorAddress": {
+              "value_text": "123 456th St New York, NY, 10001",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.886,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "vendorAddressRecipient": {
+              "value_text": "Contoso Headquarters",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.937,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "vendorName": {
+              "value_text": "CONTOSO LTD.",
+              "value_number": null,
+              "value_date": null,
+              "confidence": 0.929,
+              "currency_symbol": null,
+              "currency_code": null
+            },
+            "customerTaxId": null,
+            "vendorTaxId": null,
+            "paymentTerms": null
+          },
+          "items": [
+            {
+              "fields": {
+                "amount": {
+                  "value_text": "$60.00",
+                  "value_number": 60,
+                  "value_date": null,
+                  "confidence": 0.89,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "description": {
+                  "value_text": "Consulting Services",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.893,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unitPrice": {
+                  "value_text": "$30.00",
+                  "value_number": 30,
+                  "value_date": null,
+                  "confidence": 0.888,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "quantity": {
+                  "value_text": "2",
+                  "value_number": 2,
+                  "value_date": null,
+                  "confidence": 0.887,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "productCode": {
+                  "value_text": "A123",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.885,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unit": {
+                  "value_text": "hours",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.889,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "date": {
+                  "value_text": "3/4/2021",
+                  "value_number": null,
+                  "value_date": "2021-03-04",
+                  "confidence": 0.888,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "tax": {
+                  "value_text": "$6.00",
+                  "value_number": 6,
+                  "value_date": null,
+                  "confidence": 0.887,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                }
+              },
+              "row_text": "3/4/2021 A123 Consulting Services 2 hours $30.00 $6.00 $60.00",
+              "confidence": 0.923
+            },
+            {
+              "fields": {
+                "amount": {
+                  "value_text": "$30.00",
+                  "value_number": 30,
+                  "value_date": null,
+                  "confidence": 0.889,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "description": {
+                  "value_text": "Document Fee",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.889,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unitPrice": {
+                  "value_text": "$10.00",
+                  "value_number": 10,
+                  "value_date": null,
+                  "confidence": 0.888,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "quantity": {
+                  "value_text": "3",
+                  "value_number": 3,
+                  "value_date": null,
+                  "confidence": 0.888,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "productCode": {
+                  "value_text": "B456",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.885,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unit": null,
+                "date": {
+                  "value_text": "3/5/2021",
+                  "value_number": null,
+                  "value_date": "2021-03-05",
+                  "confidence": 0.888,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "tax": {
+                  "value_text": "$3.00",
+                  "value_number": 3,
+                  "value_date": null,
+                  "confidence": 0.887,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                }
+              },
+              "row_text": "3/5/2021 B456 Document Fee 3 $10.00 $3.00 $30.00",
+              "confidence": 0.923
+            },
+            {
+              "fields": {
+                "amount": {
+                  "value_text": "$10.00",
+                  "value_number": 10,
+                  "value_date": null,
+                  "confidence": 0.888,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "description": {
+                  "value_text": "Printing Fee",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.89,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unitPrice": {
+                  "value_text": "$1.00",
+                  "value_number": 1,
+                  "value_date": null,
+                  "confidence": 0.889,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                },
+                "quantity": {
+                  "value_text": "10",
+                  "value_number": 10,
+                  "value_date": null,
+                  "confidence": 0.887,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "productCode": {
+                  "value_text": "C789",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.885,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "unit": {
+                  "value_text": "pages",
+                  "value_number": null,
+                  "value_date": null,
+                  "confidence": 0.89,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "date": {
+                  "value_text": "3/6/2021",
+                  "value_number": null,
+                  "value_date": "2021-03-06",
+                  "confidence": 0.889,
+                  "currency_symbol": null,
+                  "currency_code": null
+                },
+                "tax": {
+                  "value_text": "$1.00",
+                  "value_number": 1,
+                  "value_date": null,
+                  "confidence": 0.887,
+                  "currency_symbol": "$",
+                  "currency_code": "XYZ"
+                }
+              },
+              "row_text": "3/6/2021 C789 Printing Fee 10 pages $1.00 $1.00 $10.00",
+              "confidence": 0.923
+            }
+          ],
+          "key_value_pairs": [
+            {
+              "key": "INVOICE:",
+              "value": "INV-100",
+              "confidence": 0.924
+            },
+            {
+              "key": "INVOICE DATE:",
+              "value": "11/15/2019",
+              "confidence": 0.908
+            },
+            {
+              "key": "DUE DATE:",
+              "value": "12/15/2019",
+              "confidence": 0.908
+            },
+            {
+              "key": "CUSTOMER NAME:",
+              "value": "MICROSOFT CORPORATION",
+              "confidence": 0.89
+            },
+            {
+              "key": "SERVICE PERIOD:",
+              "value": "10/14/2019 - 11/14/2019",
+              "confidence": 0.88
+            },
+            {
+              "key": "CUSTOMER ID:",
+              "value": "CID-12345",
+              "confidence": 0.908
+            },
+            {
+              "key": "BILL TO:",
+              "value": "Microsoft Finance 123 Bill St, Redmond WA, 98052",
+              "confidence": 0.832
+            },
+            {
+              "key": "SHIP TO:",
+              "value": "Microsoft Delivery 123 Ship St, Redmond WA, 98052",
+              "confidence": 0.832
+            },
+            {
+              "key": "SERVICE ADDRESS:",
+              "value": "Microsoft Services 123 Service St, Redmond WA, 98052",
+              "confidence": 0.832
+            },
+            {
+              "key": "SALESPERSON",
+              "value": "PO-3333",
+              "confidence": 0.229
+            },
+            {
+              "key": "P.O. NUMBER",
+              "value": null,
+              "confidence": 0.741
+            },
+            {
+              "key": "SUBTOTAL",
+              "value": "$100.00",
+              "confidence": 0.924
+            },
+            {
+              "key": "SALES TAX",
+              "value": "$10.00",
+              "confidence": 0.908
+            },
+            {
+              "key": "TOTAL",
+              "value": "$110.00",
+              "confidence": 0.92
+            },
+            {
+              "key": "PREVIOUS UNPAID BALANCE",
+              "value": "$500.00",
+              "confidence": 0.889
+            },
+            {
+              "key": "AMOUNT DUE",
+              "value": "$610.00",
+              "confidence": 0.908
+            },
+            {
+              "key": "REMIT TO:",
+              "value": "Contoso Billing 123 Remit St New York, NY, 10001",
+              "confidence": 0.825
+            }
+          ]
+        },
+        "error": null
+      }
+    },
+    "error": null
+  }

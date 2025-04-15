@@ -25,28 +25,32 @@ table 6105 "E-Document Line Mapping"
     InherentPermissions = RIMDX;
 #pragma warning restore AS0034
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {
         field(1; "E-Document Entry No."; Integer)
         {
+            Caption = 'E-Document Entry No.';
+            ToolTip = 'Specifies the entry number of the e-document.';
             TableRelation = "E-Document"."Entry No";
             DataClassification = SystemMetadata;
         }
         field(2; "Line No."; Integer)
         {
-            DataClassification = SystemMetadata;
+            Caption = 'Line No.';
             ToolTip = 'Specifies the line number.';
+            DataClassification = SystemMetadata;
         }
         field(3; "Purchase Line Type"; Enum "Purchase Line Type")
         {
             Caption = 'Type';
-            ToolTip = 'Specifies the type of purchase line.';
+            ToolTip = 'Specifies the type of entity that will be posted for this purchase line, such as Item, Resource, or G/L Account.';
         }
         field(4; "Purchase Type No."; Code[20])
         {
             Caption = 'No.';
-            ToolTip = 'Specifies the number of the purchase type.';
+            ToolTip = 'Specifies what you''re selling. The options vary, depending on what you choose in the Type field.';
             TableRelation = if ("Purchase Line Type" = const(" ")) "Standard Text"
             else
             if ("Purchase Line Type" = const("G/L Account")) "G/L Account"

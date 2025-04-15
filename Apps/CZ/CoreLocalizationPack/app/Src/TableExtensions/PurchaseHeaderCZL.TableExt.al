@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -302,13 +302,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             trigger OnValidate()
             begin
                 if "EU 3-Party Intermed. Role CZL" then
-#if not CLEAN24
-#pragma warning disable AL0432
-                    if not IsEU3PartyTradeFeatureEnabled() then
-                        "EU 3-Party Trade CZL" := true
-                    else
-#pragma warning restore AL0432
-#endif
                         "EU 3 Party Trade" := true;
             end;
         }
@@ -317,22 +310,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         {
             Caption = 'EU 3-Party Trade';
             DataClassification = CustomerContent;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
-#if not CLEAN24
-
-            trigger OnValidate()
-            begin
-                if not "EU 3-Party Trade CZL" then
-                    "EU 3-Party Intermed. Role CZL" := false;
-            end;
-#endif
         }
 #endif
         field(31112; "Original Doc. VAT Date CZL"; Date)
@@ -589,15 +569,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             exit(BankAccountNo);
         exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
     end;
-#if not CLEAN24
-
-    internal procedure IsEU3PartyTradeFeatureEnabled(): Boolean
-    var
-        EU3PartyTradeFeatMgt: Codeunit Microsoft.Finance.EU3PartyTrade."EU3 Party Trade Feat Mgt. CZL";
-    begin
-        exit(EU3PartyTradeFeatMgt.IsEnabled());
-    end;
-#endif
 
     local procedure UpdateNonDeductVATAmountsByFieldNo(ChangedFieldNo: Integer; AskQuestion: Boolean)
     var

@@ -75,7 +75,7 @@ page 8060 "Service Object"
                 }
                 field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
