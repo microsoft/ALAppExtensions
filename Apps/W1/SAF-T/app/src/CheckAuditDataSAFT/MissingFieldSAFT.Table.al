@@ -12,11 +12,26 @@ table 5280 "Missing Field SAF-T"
 
     fields
     {
-        field(1; "Table No."; Integer) { }
-        field(2; "Field No."; Integer) { }
-        field(3; "Record ID"; RecordId) { }
-        field(4; "Group No."; Integer) { }
-        field(5; "Field Caption"; Text[1024]) { }
+        field(1; "Table No."; Integer)
+        {
+            Caption = 'Table No.', Locked = true;
+        }
+        field(2; "Field No."; Integer)
+        {
+            Caption = 'Field No.', Locked = true;
+        }
+        field(3; "Record ID"; RecordId)
+        {
+            Caption = 'Record ID', Locked = true;
+        }
+        field(4; "Group No."; Integer)
+        {
+            Caption = 'Group No.', Locked = true;
+        }
+        field(5; "Field Caption"; Text[1024])
+        {
+            Caption = 'Field Caption', Locked = true;
+        }
     }
 
     keys
