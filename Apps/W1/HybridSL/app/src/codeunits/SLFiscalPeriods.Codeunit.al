@@ -110,6 +110,11 @@ codeunit 47004 "SL Fiscal Periods"
                         AccountingPeriod.Validate("Starting Date", StartingDate);
                         AccountingPeriod.Validate(Name, Format(SLFiscalPeriods.Year1) + '-12');
                     end;
+                13:
+                    begin
+                        AccountingPeriod.Validate("Starting Date", StartingDate);
+                        AccountingPeriod.Validate(Name, Format(SLFiscalPeriods.Year1) + '-13');
+                    end;
             end;
             AccountingPeriod.Insert();
         end;

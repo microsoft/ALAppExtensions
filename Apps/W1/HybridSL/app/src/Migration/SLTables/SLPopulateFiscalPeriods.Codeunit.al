@@ -324,7 +324,7 @@ codeunit 47003 "SL Populate Fiscal Periods"
                         SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd10;
                     12:
                         SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd11;
-                    else
+                    13:
                         SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd12;
                 end;
 
