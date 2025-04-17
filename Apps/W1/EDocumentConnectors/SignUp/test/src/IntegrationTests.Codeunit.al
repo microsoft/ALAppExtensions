@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 
+using System.Utilities;
 using System.Threading;
 using System.Environment.Configuration;
 using System.Apps;
@@ -43,6 +44,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
@@ -130,6 +132,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
     var
         EDocument: Record "E-Document";
@@ -260,7 +263,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
     var
         EDocument: Record "E-Document";
@@ -547,16 +550,53 @@ codeunit 148193 IntegrationTests
         EDocumentServicesPage.OK().Invoke();
     end;
 
+    [HttpClientHandler]
+
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+        I: Integer;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/oauth2/token'):
+                LoadResourceIntoHttpResponse('AccessToken.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
+                LoadResourceIntoHttpResponse(('DocumentStatusProcessing.json'), Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/api/v2/Peppol/outbox/transactions'):
+                LoadResourceIntoHttpResponse('SubmitDocumentResponse.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/response-pending/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
+                LoadResourceIntoHttpResponse('DocumentStatusProcessing.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/response-error/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
+                LoadResourceIntoHttpResponse('DocumentStatusError.json', Response);
+        end;
+    end;
+
+    // Post https://localhost:8080/signup/oauth2/token
+    // Post https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions
+    // Get https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
+    // Get https://localhost:8080/signup/200/response-pending/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
+    // Get https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
+    // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
+    // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
+    // Get https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
+
+
+
+
     #endregion
 
     #region local methods
 
     local procedure Initialize()
     var
-        SignUpConnectionSetup: Record "SignUp Connection Setup";
-        CompanyInformation: Record "Company Information";
-        ServiceParticipant: Record "Service Participant";
-        SignUpAuthentication: Codeunit "SignUp Authentication";
+        SignUpConnectionSetup:
+            Record "SignUp Connection Setup";
+        CompanyInformation:
+                Record "Company Information";
+        ServiceParticipant:
+                Record "Service Participant";
+        SignUpAuthentication:
+                Codeunit "SignUp Authentication";
     begin
         this.AllowEDocConnectorHttpRequests();
         this.LibraryLowerPermissions.SetOutsideO365Scope();
@@ -685,6 +725,11 @@ codeunit 148193 IntegrationTests
         EDocumentLog.SetRange("Service Code", EDocumentServiceStatus."E-Document Service Code");
         EDocumentLog.SetRange("E-Doc. Entry No", EDocumentServiceStatus."E-Document Entry No");
         exit(EDocumentLog.Count());
+    end;
+
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 
     #endregion

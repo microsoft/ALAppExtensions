@@ -1,0 +1,10 @@
+{
+    "status": "failed",
+    "events": 
+    [
+        {
+            "level": "ERROR",
+            "description": "Http error 404 document identifier not found"
+        }
+    ]
+}
