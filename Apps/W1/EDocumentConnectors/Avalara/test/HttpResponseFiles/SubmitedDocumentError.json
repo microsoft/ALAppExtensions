@@ -1,0 +1,18 @@
+{
+    "id": "52f60401-44d0-4667-ad47-4afe519abb53",
+    "status": "Error",
+    "events": [
+          {
+              "eventDateTime": "2022-01-09T12:36:02",
+              "message": "Document started processing"
+          },
+          {
+               "eventDateTime": "2022-01-09T12:36:02",
+               "message": "Wrong data in send xml"
+          }, 
+          {
+               "eventDateTime": "2022-01-09T12:36:02",
+               "message": "An error has been identified in the submitted document."
+          }    
+    ]
+}

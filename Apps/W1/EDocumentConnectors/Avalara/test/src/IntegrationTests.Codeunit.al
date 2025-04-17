@@ -109,6 +109,7 @@ codeunit 148191 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
     var
         EDocument: Record "E-Document";
@@ -226,7 +227,7 @@ codeunit 148191 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
     var
         EDocument: Record "E-Document";
@@ -393,6 +394,7 @@ codeunit 148191 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocumentAvalaraServiceDown()
     var
         EDocument: Record "E-Document";
@@ -441,6 +443,7 @@ codeunit 148191 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitGetDocuments()
     var
         EDocument: Record "E-Document";
@@ -486,7 +489,7 @@ codeunit 148191 "Integration Tests"
     end;
 
     [Test]
-    [HandlerFunctions('SelectCompany')]
+    [HandlerFunctions('SelectCompany,HttpSubmitHandler')]
     procedure OpenCompanyList()
     var
         ConnectionSetup: Record "Connection Setup";
@@ -670,8 +673,22 @@ codeunit 148191 "Integration Tests"
         Regex: Codeunit Regex;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/connect/token'):
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/.+/token'):
                 LoadResourceIntoHttpResponse('Token.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/500/connect/token'):
+                Response.HttpStatusCode := 500;
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/einvoicing/documents'):
+                LoadResourceIntoHttpResponse('SubmitDocument.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-complete/einvoicing/documents/.+/status'):
+                LoadResourceIntoHttpResponse('SubmitedDocumentComplete.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-pending/einvoicing/documents/.+/status'):
+                LoadResourceIntoHttpResponse('SubmitedDocumentPending.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-error/einvoicing/documents/.+/status'):
+                LoadResourceIntoHttpResponse('SubmitedDocumentError.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/receive/einvoicing/documents'):
+                LoadResourceIntoHttpResponse('GetDocumentsResponse.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/scs/companies'):
+                LoadResourceIntoHttpResponse('Companies.json', Response);
         end;
     end;
 
@@ -680,7 +697,11 @@ codeunit 148191 "Integration Tests"
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 
-    //Post https://localhost:8080/avalara/200/connect/token
+    //Get https://localhost:8080/avalara/200/receive/einvoicing/documents
+    // Get https://localhost:8080/avalara/200/receive/einvoicing/documents/52f60401-44d0-4667-ad47-4afe519abb53/$download
+    // Get https://localhost:8080/avalara/200/scs/companies
+
+
 
     var
         Customer: Record Customer;
@@ -693,5 +714,4 @@ codeunit 148191 "Integration Tests"
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
-
 }

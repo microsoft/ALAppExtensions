@@ -1,0 +1,55 @@
+{
+    "@recordsetCount": 1,
+    "value": [
+         {
+              "id": "610f55f3-76b6-42eb-a697-2b0b2e02a5bf",
+              "companyName": "MS Business Central Ltd - ELR SBX",
+              "defaultCountry": "US",
+              "tenant": {
+                   "identifier": "e53e9fc9-d1c6-465c-aeff-faa4d88af348",
+                   "displayName": "MS Business Central Ltd - ELR SBX",
+                   "location": "/reference/id"
+              },
+              "companyCode": "DEFAULT",
+              "isActive": "",
+              "aspects": [
+                   {
+                        "identifier": "610f55f3-76b6-42eb-a697-2b0b2e02a5bf",
+                        "displayName": "MS Business Central Ltd - ELR SBX",
+                        "location": "/iam/systems/626a9303fa6495f5742fdd6d",
+                        "namespace": "urn:avalara:systems:avatax",
+                        "isDeleted": ""
+                   }
+              ],
+              "tags": [
+                   {
+                        "name": "scs-avatax",
+                        "value": "scs-2023"
+                   }
+              ],
+              "parent": {
+                   "identifier": "e53e9fc9-d1c6-465c-aeff-faa4d88af348",
+                   "displayName": "MS Business Central Ltd - ELR SBX",
+                   "location": "/reference/id"
+              },
+              "children": [
+                   {
+                        "identifier": "e53e9fc9-d1c6-465c-aeff-faa4d88af348",
+                        "displayName": "MS Business Central Ltd - ELR SBX",
+                        "location": "/reference/id"
+                   }
+              ],
+              "meta": {
+                   "createdBy": "32ec41da-c69f-4db4-9b77-424eab75edae",
+                   "created": "2023-03-31T13:18:12",
+                   "modifiedBy": "32ec41da-c69f-4db4-9b77-424eab75edae",
+                   "lastModified": "2023-03-31T13:18:12",
+                   "location": "/companies/32ec41da-c69f-4db4-9b77-424eab75edae",
+                   "version": "1.0"
+              },
+              "isReportingEntity": ""
+         }
+    ],
+    "@nextLink": "nextlink",
+    "pageKey": "1"
+}

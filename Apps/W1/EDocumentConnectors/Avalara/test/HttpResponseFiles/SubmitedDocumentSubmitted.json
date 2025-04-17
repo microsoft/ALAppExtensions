@@ -1,0 +1,12 @@
+{
+    "id": "52f60401-44d0-4667-ad47-4afe519abb53",
+    "status": "Complete",
+    "events": [
+         {
+              "eventDateTime": "2022-01-09T12:36:02",
+              "message": "E-Invoice sent to SDI",
+              "responseKey": "IdentificativoSdI",
+              "responseValue": "2865701"
+         }
+    ]
+}
