@@ -436,6 +436,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocumentServiceDown()
     var
         EDocument: Record "E-Document";
@@ -520,24 +521,25 @@ codeunit 148193 IntegrationTests
     /// <summary>
     /// Test needs MockService running to work. 
     /// </summary>
-    // [Test]
-    // procedure GetMetadataProfiles()
-    // var
-    //     SignUpMetadataProfile: Record "SignUp Metadata Profile";
-    //     EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
-    // begin
-    //     this.Initialize();
+    [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
+    procedure GetMetadataProfiles()
+    var
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
+        EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
+    begin
+        this.Initialize();
 
-    //     SignUpMetadataProfile.Reset();
-    //     SignUpMetadataProfile.DeleteAll();
+        SignUpMetadataProfile.Reset();
+        SignUpMetadataProfile.DeleteAll();
 
-    //     // Populate metadata profiles
-    //     EDocServiceSupportedTypes.OpenView();
-    //     EDocServiceSupportedTypes.PopulateMetaData.Invoke();
-    //     EDocServiceSupportedTypes.Close();
+        // Populate metadata profiles
+        EDocServiceSupportedTypes.OpenView();
+        EDocServiceSupportedTypes.PopulateMetaData.Invoke();
+        EDocServiceSupportedTypes.Close();
 
-    //     this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
-    // end;
+        this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
+    end;
 
     #endregion
 
@@ -568,6 +570,8 @@ codeunit 148193 IntegrationTests
                 LoadResourceIntoHttpResponse('DocumentStatusProcessing.json', Response);
             Regex.IsMatch(Request.Path, 'https?://.+/signup/200/response-error/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
                 LoadResourceIntoHttpResponse('DocumentStatusError.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/signup/500/api/v2/Peppol/outbox/transactions'):
+                Response.HttpStatusCode := 500;
         end;
     end;
 
@@ -579,6 +583,10 @@ codeunit 148193 IntegrationTests
     // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
     // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
     // Get https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
+    // Post https://localhost:8080/signup/500/api/v2/Peppol/outbox/transactions
+    // Get https://localhost:8080/signup/200/api/v2/Peppol/metadataprofile
+
+
 
 
 
