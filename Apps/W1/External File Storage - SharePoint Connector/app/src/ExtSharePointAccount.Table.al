@@ -58,6 +58,22 @@ table 4580 "Ext. SharePoint Account"
             Caption = 'Disabled';
             ToolTip = 'Specifies if the account is disabled. This happens automatically when a sandbox is created.';
         }
+        field(10; "Authentication Type"; Enum "Ext. SharePoint Auth Type")
+        {
+            Caption = 'Authentication Type';
+            ToolTip = 'Specifies the authentication method used for this SharePoint account.';
+            InitValue = "Client Secret";
+        }
+        field(11; "Certificate Key"; Guid)
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+        }
+        field(12; "Certificate Password Key"; Guid)
+        {
+            Access = Internal;
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -71,11 +87,21 @@ table 4580 "Ext. SharePoint Account"
     var
         UnableToGetClientMsg: Label 'Unable to get SharePoint Account Client Secret.';
         UnableToSetClientSecretMsg: Label 'Unable to set SharePoint Client Secret.';
+        UnableToGetCertificateMsg: Label 'Unable to get SharePoint Account Certificate.';
+        UnableToSetCertificateMsg: Label 'Unable to set SharePoint Certificate.';
+        UnableToGetCertificatePasswordMsg: Label 'Unable to get SharePoint Account Certificate Password.';
+        UnableToSetCertificatePasswordMsg: Label 'Unable to set SharePoint Certificate Password.';
 
     trigger OnDelete()
     begin
         if not IsNullGuid(Rec."Client Secret Key") then
             if IsolatedStorage.Delete(Rec."Client Secret Key") then;
+
+        if not IsNullGuid(Rec."Certificate Key") then
+            if IsolatedStorage.Delete(Rec."Certificate Key") then;
+
+        if not IsNullGuid(Rec."Certificate Password Key") then
+            if IsolatedStorage.Delete(Rec."Certificate Password Key") then;
     end;
 
     procedure SetClientSecret(ClientSecret: SecretText)
@@ -91,5 +117,35 @@ table 4580 "Ext. SharePoint Account"
     begin
         if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
             Error(UnableToGetClientMsg);
+    end;
+
+    internal procedure SetCertificate(Certificate: SecretText)
+    begin
+        if IsNullGuid(Rec."Certificate Key") then
+            Rec."Certificate Key" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Certificate Key"), Certificate, DataScope::Company) then
+            Error(UnableToSetCertificateMsg);
+    end;
+
+    internal procedure GetCertificate(CertificateKey: Guid) Certificate: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(CertificateKey), DataScope::Company, Certificate) then
+            Error(UnableToGetCertificateMsg);
+    end;
+
+    internal procedure SetCertificatePassword(CertificatePassword: SecretText)
+    begin
+        if IsNullGuid(Rec."Certificate Password Key") then
+            Rec."Certificate Password Key" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Certificate Password Key"), CertificatePassword, DataScope::Company) then
+            Error(UnableToSetCertificatePasswordMsg);
+    end;
+
+    internal procedure GetCertificatePassword(CertificatePasswordKey: Guid) CertificatePassword: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(CertificatePasswordKey), DataScope::Company, CertificatePassword) then
+            Error(UnableToGetCertificatePasswordMsg);
     end;
 }

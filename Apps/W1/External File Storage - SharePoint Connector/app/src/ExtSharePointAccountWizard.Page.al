@@ -71,12 +71,42 @@ page 4581 "Ext. SharePoint Account Wizard"
                 end;
             }
 
+            field("Authentication Type"; Rec."Authentication Type")
+            {
+                ToolTip = 'Specifies the authentication method used for this SharePoint account.';
+
+                trigger OnValidate()
+                begin
+                    UpdateAuthTypeVisibility();
+                    IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
+                end;
+            }
+
             field(ClientSecretField; ClientSecret)
             {
                 Caption = 'Client Secret';
                 ExtendedDatatype = Masked;
                 ShowMandatory = true;
                 ToolTip = 'Specifies the Client Secret of the App Registration.';
+                Visible = ClientSecretVisible;
+            }
+
+            field(CertificateField; Certificate)
+            {
+                Caption = 'Certificate (Base64-encoded)';
+                ExtendedDatatype = Masked;
+                ShowMandatory = true;
+                ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in the Azure Portal.';
+                Visible = CertificateVisible;
+            }
+
+            field(CertificatePasswordField; CertificatePassword)
+            {
+                Caption = 'Certificate Password';
+                ExtendedDatatype = Masked;
+                ShowMandatory = false;
+                ToolTip = 'Specifies the password for the certificate.';
+                Visible = CertificatePasswordVisible;
             }
 
             field("SharePoint Url"; Rec."SharePoint Url")
@@ -119,7 +149,6 @@ page 4581 "Ext. SharePoint Account Wizard"
                     CurrPage.Close();
                 end;
             }
-
             action(Next)
             {
                 Caption = 'Next';
@@ -129,8 +158,17 @@ page 4581 "Ext. SharePoint Account Wizard"
                 ToolTip = 'Move to next step.';
 
                 trigger OnAction()
+                var
+                    SecretToPass: SecretText;
                 begin
-                    SharePointConnectorImpl.CreateAccount(Rec, ClientSecret, SharePointAccount);
+                    case Rec."Authentication Type" of
+                        Enum::"Ext. SharePoint Auth Type"::"Client Secret":
+                            SecretToPass := ClientSecret;
+                        Enum::"Ext. SharePoint Auth Type"::Certificate:
+                            SecretToPass := Certificate;
+                    end;
+
+                    SharePointConnectorImpl.CreateAccount(Rec, SecretToPass, CertificatePassword, SharePointAccount);
                     CurrPage.Close();
                 end;
             }
@@ -143,8 +181,15 @@ page 4581 "Ext. SharePoint Account Wizard"
         SharePointConnectorImpl: Codeunit "Ext. SharePoint Connector Impl";
         [NonDebuggable]
         ClientSecret: Text;
+        [NonDebuggable]
+        Certificate: Text;
+        [NonDebuggable]
+        CertificatePassword: Text;
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
+        ClientSecretVisible: Boolean;
+        CertificateVisible: Boolean;
+        CertificatePasswordVisible: Boolean;
 
     trigger OnOpenPage()
     var
@@ -155,6 +200,8 @@ page 4581 "Ext. SharePoint Account Wizard"
 
         if MediaResources.Get(AssistedSetupLogoTok) and (CurrentClientType() = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue();
+
+        UpdateAuthTypeVisibility();
     end;
 
     internal procedure GetAccount(var FileAccount: Record "File Account"): Boolean
@@ -165,5 +212,23 @@ page 4581 "Ext. SharePoint Account Wizard"
         FileAccount := SharePointAccount;
 
         exit(true);
+    end;
+
+    local procedure UpdateAuthTypeVisibility()
+    begin
+        case Rec."Authentication Type" of
+            Enum::"Ext. SharePoint Auth Type"::"Client Secret":
+                begin
+                    ClientSecretVisible := true;
+                    CertificateVisible := false;
+                    CertificatePasswordVisible := false;
+                end;
+            Enum::"Ext. SharePoint Auth Type"::Certificate:
+                begin
+                    ClientSecretVisible := false;
+                    CertificateVisible := true;
+                    CertificatePasswordVisible := true;
+                end;
+        end;
     end;
 }
