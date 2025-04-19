@@ -35,63 +35,73 @@ page 4580 "Ext. SharePoint Account"
             field("Client Id"; Rec."Client Id") { }
             field("Authentication Type"; Rec."Authentication Type")
             {
-                ToolTip = 'Specifies the authentication method used for this SharePoint account.';
-
                 trigger OnValidate()
                 begin
+                    MaskSensitiveFields();
                     UpdateAuthTypeVisibility();
+                    CurrPage.Update(true);
                 end;
             }
-            field(SecretField; ClientSecret)
+            group(Credentials)
             {
-                Caption = 'Client Secret';
-                Editable = ClientSecretEditable;
-                ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the Client Secret of the App Registration.';
-                Visible = ClientSecretVisible;
+                Caption = 'Credentials';
+                Editable = IsPageEditable;
 
-                trigger OnValidate()
-                begin
-                    Rec.SetClientSecret(ClientSecret);
-                end;
-            }
-            field(CertificateField; Certificate)
-            {
-                Caption = 'Certificate (Base64-encoded)';
-                Editable = CertificateEditable;
-                ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in the Azure Portal.';
-                Visible = CertificateVisible;
+                group(SharePointClientSecretGroup)
+                {
+                    ShowCaption = false;
+                    Visible = ClientSecretVisible;
 
-                trigger OnValidate()
-                begin
-                    Rec.SetCertificate(Certificate);
-                end;
-            }
-            field(CertificatePasswordField; CertificatePassword)
-            {
-                Caption = 'Certificate Password';
-                Editable = CertificatePasswordEditable;
-                ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the password for the certificate.';
-                Visible = CertificatePasswordVisible;
+                    field(SecretField; ClientSecret)
+                    {
+                        Caption = 'Client Secret';
+                        ExtendedDatatype = Masked;
+                        ToolTip = 'Specifies the Client Secret value from the App Registration in Microsoft Entra ID. This value is used to authenticate the connection to SharePoint.';
 
-                trigger OnValidate()
-                begin
-                    Rec.SetCertificatePassword(CertificatePassword);
-                end;
+                        trigger OnValidate()
+                        begin
+                            Rec.SetClientSecret(ClientSecret);
+                        end;
+                    }
+                }
+                group(SharePointCertificateGroup)
+                {
+                    ShowCaption = false;
+                    Visible = CertificateVisible;
+
+                    field(CertificateField; Certificate)
+                    {
+                        Caption = 'Certificate (Base64-encoded)';
+                        ExtendedDatatype = Masked;
+                        ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in Microsoft Entra ID. This provides a more secure authentication method than Client Secret.';
+
+                        trigger OnValidate()
+                        begin
+                            Rec.SetCertificate(Certificate);
+                        end;
+                    }
+
+                    field(CertificatePasswordField; CertificatePassword)
+                    {
+                        Caption = 'Certificate Password';
+                        ExtendedDatatype = Masked;
+                        ToolTip = 'Specifies the password used to protect the private key in the certificate. Leave empty if the certificate is not password-protected.';
+
+                        trigger OnValidate()
+                        begin
+                            Rec.SetCertificatePassword(CertificatePassword);
+                        end;
+                    }
+                }
             }
             field(Disabled; Rec.Disabled) { }
         }
     }
 
     var
-        ClientSecretEditable: Boolean;
+        IsPageEditable: Boolean;
         ClientSecretVisible: Boolean;
-        CertificateEditable: Boolean;
         CertificateVisible: Boolean;
-        CertificatePasswordEditable: Boolean;
-        CertificatePasswordVisible: Boolean;
         [NonDebuggable]
         ClientSecret: Text;
         [NonDebuggable]
@@ -107,9 +117,17 @@ page 4580 "Ext. SharePoint Account"
 
     trigger OnAfterGetCurrRecord()
     begin
-        ClientSecretEditable := CurrPage.Editable();
-        CertificateEditable := CurrPage.Editable();
-        CertificatePasswordEditable := CurrPage.Editable();
+        IsPageEditable := CurrPage.Editable();
+
+        MaskSensitiveFields();
+        UpdateAuthTypeVisibility();
+    end;
+
+    local procedure MaskSensitiveFields()
+    begin
+        Clear(ClientSecret);
+        Clear(Certificate);
+        Clear(CertificatePassword);
 
         if not IsNullGuid(Rec."Client Secret Key") then
             ClientSecret := '***';
@@ -119,25 +137,11 @@ page 4580 "Ext. SharePoint Account"
 
         if not IsNullGuid(Rec."Certificate Password Key") then
             CertificatePassword := '***';
-
-        UpdateAuthTypeVisibility();
     end;
 
     local procedure UpdateAuthTypeVisibility()
     begin
-        case Rec."Authentication Type" of
-            Enum::"Ext. SharePoint Auth Type"::"Client Secret":
-                begin
-                    ClientSecretVisible := true;
-                    CertificateVisible := false;
-                    CertificatePasswordVisible := false;
-                end;
-            Enum::"Ext. SharePoint Auth Type"::Certificate:
-                begin
-                    ClientSecretVisible := false;
-                    CertificateVisible := true;
-                    CertificatePasswordVisible := true;
-                end;
-        end;
+        ClientSecretVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::"Client Secret";
+        CertificateVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::Certificate;
     end;
 }

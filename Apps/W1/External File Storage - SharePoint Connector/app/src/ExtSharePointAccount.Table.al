@@ -24,12 +24,12 @@ table 4580 "Ext. SharePoint Account"
         field(2; Name; Text[250])
         {
             Caption = 'Account Name';
-            ToolTip = 'Specifies the name of the storage account connection.';
+            ToolTip = 'Specifies a descriptive name for this SharePoint storage account connection.';
         }
         field(4; "SharePoint Url"; Text[2048])
         {
             Caption = 'SharePoint Url';
-            ToolTip = 'Specifies the the url to your SharePoint site.';
+            ToolTip = 'Specifies the complete URL to your SharePoint site (e.g., https://mysharepoint.sharepoint.com/sites/ProjectX). This is the site URL where your documents will be stored.';
         }
         field(5; "Base Relative Folder Path"; Text[2048])
         {
@@ -40,13 +40,13 @@ table 4580 "Ext. SharePoint Account"
         {
             Access = Internal;
             Caption = 'Tenant Id';
-            ToolTip = 'Specifies the Tenant Id of the App Registration.';
+            ToolTip = 'Specifies the Microsoft Entra ID Tenant ID (Directory ID) where your SharePoint site and app registration are located.';
         }
         field(7; "Client Id"; Guid)
         {
             Access = Internal;
             Caption = 'Client Id';
-            ToolTip = 'Specifies the the Client Id of the App Registration.';
+            ToolTip = 'Specifies the Client ID (Application ID) of the App Registration in Microsoft Entra ID.';
         }
         field(8; "Client Secret Key"; Guid)
         {
@@ -56,12 +56,12 @@ table 4580 "Ext. SharePoint Account"
         field(9; Disabled; Boolean)
         {
             Caption = 'Disabled';
-            ToolTip = 'Specifies if the account is disabled. This happens automatically when a sandbox is created.';
+            ToolTip = 'Specifies if the account is disabled. Accounts are automatically disabled when a sandbox environment is created from production.';
         }
         field(10; "Authentication Type"; Enum "Ext. SharePoint Auth Type")
         {
             Caption = 'Authentication Type';
-            ToolTip = 'Specifies the authentication method used for this SharePoint account.';
+            ToolTip = 'Specifies the authentication flow used for this SharePoint account. Client Secret uses User grant flow, which means that the user must sign in when using this account. Certificate uses Client credentials flow, which means that the user does not need to sign in when using this account.';
             InitValue = "Client Secret";
         }
         field(11; "Certificate Key"; Guid)
@@ -94,14 +94,9 @@ table 4580 "Ext. SharePoint Account"
 
     trigger OnDelete()
     begin
-        if not IsNullGuid(Rec."Client Secret Key") then
-            if IsolatedStorage.Delete(Rec."Client Secret Key") then;
-
-        if not IsNullGuid(Rec."Certificate Key") then
-            if IsolatedStorage.Delete(Rec."Certificate Key") then;
-
-        if not IsNullGuid(Rec."Certificate Password Key") then
-            if IsolatedStorage.Delete(Rec."Certificate Password Key") then;
+        TryDeleteIsolatedStorageValue(Rec."Client Secret Key");
+        TryDeleteIsolatedStorageValue(Rec."Certificate Key");
+        TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
     end;
 
     procedure SetClientSecret(ClientSecret: SecretText)
@@ -109,14 +104,26 @@ table 4580 "Ext. SharePoint Account"
         if IsNullGuid(Rec."Client Secret Key") then
             Rec."Client Secret Key" := CreateGuid();
 
-        if not IsolatedStorage.Set(Format(Rec."Client Secret Key"), ClientSecret, DataScope::Company) then
-            Error(UnableToSetClientSecretMsg);
+        SetIsolatedStorageValue(Rec."Client Secret Key", ClientSecret, UnableToSetClientSecretMsg);
+
+        // When setting client secret, clear certificate authentication 
+        // as only one authentication method can be active
+        ClearCertificateAuthentication();
     end;
 
-    procedure GetClientSecret(ClientSecretKey: Guid) ClientSecret: SecretText
+    local procedure ClearCertificateAuthentication()
     begin
-        if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
-            Error(UnableToGetClientMsg);
+        if not IsNullGuid(Rec."Certificate Key") then begin
+            TryDeleteIsolatedStorageValue(Rec."Certificate Key");
+            TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
+            Clear(Rec."Certificate Key");
+            Clear(Rec."Certificate Password Key");
+        end;
+    end;
+
+    procedure GetClientSecret(ClientSecretKey: Guid): SecretText
+    begin
+        exit(GetIsolatedStorageValue(ClientSecretKey, UnableToGetClientMsg));
     end;
 
     internal procedure SetCertificate(Certificate: SecretText)
@@ -124,14 +131,24 @@ table 4580 "Ext. SharePoint Account"
         if IsNullGuid(Rec."Certificate Key") then
             Rec."Certificate Key" := CreateGuid();
 
-        if not IsolatedStorage.Set(Format(Rec."Certificate Key"), Certificate, DataScope::Company) then
-            Error(UnableToSetCertificateMsg);
+        SetIsolatedStorageValue(Rec."Certificate Key", Certificate, UnableToSetCertificateMsg);
+
+        // When setting certificate, clear client secret authentication
+        // as only one authentication method can be active
+        ClearClientSecretAuthentication();
     end;
 
-    internal procedure GetCertificate(CertificateKey: Guid) Certificate: SecretText
+    local procedure ClearClientSecretAuthentication()
     begin
-        if not IsolatedStorage.Get(Format(CertificateKey), DataScope::Company, Certificate) then
-            Error(UnableToGetCertificateMsg);
+        if not IsNullGuid(Rec."Client Secret Key") then begin
+            TryDeleteIsolatedStorageValue(Rec."Client Secret Key");
+            Clear(Rec."Client Secret Key");
+        end;
+    end;
+
+    internal procedure GetCertificate(CertificateKey: Guid): SecretText
+    begin
+        exit(GetIsolatedStorageValue(CertificateKey, UnableToGetCertificateMsg));
     end;
 
     internal procedure SetCertificatePassword(CertificatePassword: SecretText)
@@ -139,13 +156,29 @@ table 4580 "Ext. SharePoint Account"
         if IsNullGuid(Rec."Certificate Password Key") then
             Rec."Certificate Password Key" := CreateGuid();
 
-        if not IsolatedStorage.Set(Format(Rec."Certificate Password Key"), CertificatePassword, DataScope::Company) then
-            Error(UnableToSetCertificatePasswordMsg);
+        SetIsolatedStorageValue(Rec."Certificate Password Key", CertificatePassword, UnableToSetCertificatePasswordMsg);
     end;
 
-    internal procedure GetCertificatePassword(CertificatePasswordKey: Guid) CertificatePassword: SecretText
+    internal procedure GetCertificatePassword(CertificatePasswordKey: Guid): SecretText
     begin
-        if not IsolatedStorage.Get(Format(CertificatePasswordKey), DataScope::Company, CertificatePassword) then
-            Error(UnableToGetCertificatePasswordMsg);
+        exit(GetIsolatedStorageValue(CertificatePasswordKey, UnableToGetCertificatePasswordMsg));
+    end;
+
+    local procedure TryDeleteIsolatedStorageValue(StorageKey: Guid)
+    begin
+        if not IsNullGuid(StorageKey) then
+            if IsolatedStorage.Delete(StorageKey) then;
+    end;
+
+    local procedure SetIsolatedStorageValue(StorageKey: Guid; Value: SecretText; ErrorMessage: Text)
+    begin
+        if not IsolatedStorage.Set(Format(StorageKey), Value, DataScope::Company) then
+            Error(ErrorMessage);
+    end;
+
+    local procedure GetIsolatedStorageValue(StorageKey: Guid; ErrorMessage: Text) Value: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(StorageKey), DataScope::Company, Value) then
+            Error(ErrorMessage);
     end;
 }
