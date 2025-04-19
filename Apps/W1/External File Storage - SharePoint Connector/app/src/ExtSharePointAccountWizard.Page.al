@@ -43,7 +43,7 @@ page 4581 "Ext. SharePoint Account Wizard"
                 Caption = 'Account Name';
                 NotBlank = true;
                 ShowMandatory = true;
-                ToolTip = 'Specifies the name of the Azure SharePoint account.';
+                ToolTip = 'Specifies a descriptive name for this SharePoint storage account connection.';
 
                 trigger OnValidate()
                 begin
@@ -54,6 +54,7 @@ page 4581 "Ext. SharePoint Account Wizard"
             field("Tenant Id"; Rec."Tenant Id")
             {
                 ShowMandatory = true;
+                ToolTip = 'Specifies the Microsoft Entra ID Tenant ID (Directory ID) where your SharePoint site and app registration are located.';
 
                 trigger OnValidate()
                 begin
@@ -64,6 +65,7 @@ page 4581 "Ext. SharePoint Account Wizard"
             field("Client Id"; Rec."Client Id")
             {
                 ShowMandatory = true;
+                ToolTip = 'Specifies the Client ID (Application ID) of the App Registration in Microsoft Entra ID.';
 
                 trigger OnValidate()
                 begin
@@ -73,47 +75,52 @@ page 4581 "Ext. SharePoint Account Wizard"
 
             field("Authentication Type"; Rec."Authentication Type")
             {
-                ToolTip = 'Specifies the authentication method used for this SharePoint account.';
-
+                ToolTip = 'Specifies the authentication flow used for this SharePoint account. Client Secret uses User grant flow, which means that the user must sign in when using this account. Certificate uses Client credentials flow, which means that the user does not need to sign in when using this account.';
                 trigger OnValidate()
                 begin
                     UpdateAuthTypeVisibility();
                     IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
                 end;
             }
-
-            field(ClientSecretField; ClientSecret)
+            group(SharePointClientSecretCredentials)
             {
-                Caption = 'Client Secret';
-                ExtendedDatatype = Masked;
-                ShowMandatory = true;
-                ToolTip = 'Specifies the Client Secret of the App Registration.';
+                ShowCaption = false;
                 Visible = ClientSecretVisible;
+
+                field(ClientSecretField; ClientSecret)
+                {
+                    Caption = 'Client Secret';
+                    ExtendedDatatype = Masked;
+                    ShowMandatory = true;
+                    ToolTip = 'Specifies the Client Secret value from the App Registration in Microsoft Entra ID. This value is used to authenticate the connection to SharePoint.';
+                }
             }
 
-            field(CertificateField; Certificate)
+            group(SharePointCertificateCredentials)
             {
-                Caption = 'Certificate (Base64-encoded)';
-                ExtendedDatatype = Masked;
-                ShowMandatory = true;
-                ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in the Azure Portal.';
+                ShowCaption = false;
                 Visible = CertificateVisible;
-            }
 
-            field(CertificatePasswordField; CertificatePassword)
-            {
-                Caption = 'Certificate Password';
-                ExtendedDatatype = Masked;
-                ShowMandatory = false;
-                ToolTip = 'Specifies the password for the certificate.';
-                Visible = CertificatePasswordVisible;
-            }
+                field(CertificateField; Certificate)
+                {
+                    Caption = 'Certificate (Base64-encoded)';
+                    ExtendedDatatype = Masked;
+                    ShowMandatory = true;
+                    ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in Microsoft Entra ID. This provides a more secure authentication method than Client Secret.';
+                }
 
+                field(CertificatePasswordField; CertificatePassword)
+                {
+                    Caption = 'Certificate Password';
+                    ExtendedDatatype = Masked;
+                    ShowMandatory = false;
+                    ToolTip = 'Specifies the password used to protect the private key in the certificate. Leave empty if the certificate is not password-protected.';
+                }
+            }
             field("SharePoint Url"; Rec."SharePoint Url")
             {
                 Caption = 'SharePoint Name';
                 ShowMandatory = true;
-                ToolTip = 'Specifies the SharePoint to use of the storage account.';
 
                 trigger OnValidate()
                 begin
@@ -189,7 +196,6 @@ page 4581 "Ext. SharePoint Account Wizard"
         TopBannerVisible: Boolean;
         ClientSecretVisible: Boolean;
         CertificateVisible: Boolean;
-        CertificatePasswordVisible: Boolean;
 
     trigger OnOpenPage()
     var
@@ -216,19 +222,7 @@ page 4581 "Ext. SharePoint Account Wizard"
 
     local procedure UpdateAuthTypeVisibility()
     begin
-        case Rec."Authentication Type" of
-            Enum::"Ext. SharePoint Auth Type"::"Client Secret":
-                begin
-                    ClientSecretVisible := true;
-                    CertificateVisible := false;
-                    CertificatePasswordVisible := false;
-                end;
-            Enum::"Ext. SharePoint Auth Type"::Certificate:
-                begin
-                    ClientSecretVisible := false;
-                    CertificateVisible := true;
-                    CertificatePasswordVisible := true;
-                end;
-        end;
+        ClientSecretVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::"Client Secret";
+        CertificateVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::Certificate;
     end;
 }
