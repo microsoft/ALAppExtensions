@@ -45,7 +45,7 @@ page 4580 "Ext. SharePoint Account"
             group(Credentials)
             {
                 Caption = 'Credentials';
-                Editable = IsPageEditable;
+                Editable = PageEditable;
 
                 group(SharePointClientSecretGroup)
                 {
@@ -99,7 +99,7 @@ page 4580 "Ext. SharePoint Account"
     }
 
     var
-        IsPageEditable: Boolean;
+        PageEditable: Boolean;
         ClientSecretVisible: Boolean;
         CertificateVisible: Boolean;
         [NonDebuggable]
@@ -117,7 +117,7 @@ page 4580 "Ext. SharePoint Account"
 
     trigger OnAfterGetCurrRecord()
     begin
-        IsPageEditable := CurrPage.Editable();
+        PageEditable := CurrPage.Editable();
 
         MaskSensitiveFields();
         UpdateAuthTypeVisibility();
