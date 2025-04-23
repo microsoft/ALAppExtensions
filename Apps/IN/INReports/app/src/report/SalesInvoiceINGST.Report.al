@@ -877,7 +877,11 @@ report 18016 "Sales - Invoice IN GST"
 
                 trigger OnPreDataItem()
                 begin
+#if not CLEAN27
                     NoOfLoops := Abs(NoOfCopy) + Cust."Invoice Copies" + 1;
+#else
+                    NoOfLoops := Abs(NoOfCopy) + 1;
+#endif
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 

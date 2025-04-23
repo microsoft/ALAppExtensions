@@ -33,7 +33,7 @@ page 8017 "Archived Billing Lines List"
                 }
                 field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the Contract No.';
+                    ToolTip = 'Specifies the number of the Subscription Contract.';
                 }
                 field("Billing from"; Rec."Billing from")
                 {
@@ -53,7 +53,7 @@ page 8017 "Archived Billing Lines List"
                 }
                 field("Service Obj. Quantity Decimal"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from Subscription.';
+                    ToolTip = 'Specifies the quantity from the Subscription.';
                 }
                 field("Unit Price"; Rec."Unit Price")
                 {
@@ -119,7 +119,7 @@ page 8017 "Archived Billing Lines List"
                 }
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Visible = false;
                 }
                 field("Service Start Date"; Rec."Subscription Line Start Date")

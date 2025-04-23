@@ -278,45 +278,6 @@ table 4060 "GPPOPReceiptApply"
     {
     }
 
-#if not CLEAN24
-    [Obsolete('This procedure is no longer used, use GetSumQtyShippedByUnitCost instead.', '24.0')]
-    procedure GetSumQtyShipped(PO_Number: Text[18]; PO_LineNo: Integer): Decimal
-    var
-        GPPOPReceiptApply: Record GPPOPReceiptApply;
-        TotalShipped: Decimal;
-    begin
-        TotalShipped := 0;
-        GPPOPReceiptApply.SetRange(PONUMBER, PO_Number);
-        GPPOPReceiptApply.SetRange(POLNENUM, PO_LineNo);
-        GPPOPReceiptApply.SetFilter(Status, '%1', Status::Posted);
-        if GPPOPReceiptApply.FindSet() then
-            repeat
-                if GPPOPReceiptApply.QTYSHPPD > 0 then
-                    TotalShipped := TotalShipped + GPPOPReceiptApply.QTYSHPPD;
-            until GPPOPReceiptApply.Next() = 0;
-
-        exit(TotalShipped);
-    end;
-
-    [Obsolete('This procedure is no longer used, use GetSumQtyInvoicedByUnitCost instead.', '24.0')]
-    procedure GetSumQtyInvoiced(PO_Number: Text[18]; PO_LineNo: Integer): Decimal
-    var
-        GPPOPReceiptApply: Record GPPOPReceiptApply;
-        TotalInvoiced: Decimal;
-    begin
-        TotalInvoiced := 0;
-        GPPOPReceiptApply.SetRange(PONUMBER, PO_Number);
-        GPPOPReceiptApply.SetRange(POLNENUM, PO_LineNo);
-        GPPOPReceiptApply.SetFilter(Status, '%1', Status::Posted);
-        if GPPOPReceiptApply.FindSet() then
-            repeat
-                if GPPOPReceiptApply.QTYINVCD > 0 then
-                    TotalInvoiced := TotalInvoiced + GPPOPReceiptApply.QTYINVCD;
-            until GPPOPReceiptApply.Next() = 0;
-
-        exit(TotalInvoiced);
-    end;
-#endif
 
     procedure GetSumQtyShippedByUnitCost(PO_Number: Text[18]; PO_LineNo: Integer; Location: Text[12]; UnitCost: Decimal): Decimal
     var

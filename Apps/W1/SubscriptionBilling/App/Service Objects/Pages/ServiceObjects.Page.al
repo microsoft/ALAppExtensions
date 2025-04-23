@@ -53,7 +53,7 @@ page 8059 "Service Objects"
                 }
                 field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                 }
                 field("Serial No."; Rec."Serial No.")
                 {

@@ -318,7 +318,7 @@ page 8064 "Service Commitments"
             {
                 ApplicationArea = All;
                 Caption = 'Disconnect from Subscription';
-                ToolTip = 'Disconnects the Subscription Line from the subscription.';
+                ToolTip = 'Disconnects the Subscription Line from the Supplier Subscription.';
                 Enabled = Rec."Supplier Reference Entry No." <> 0;
                 Image = DeleteQtyToHandle;
                 Scope = Repeater;

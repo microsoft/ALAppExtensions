@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -590,11 +590,7 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetVATStatementReportExtensionUpgradeTag()) then
             exit;
 
-#if not CLEAN24
-        VATStatementTemplate.SetRange("VAT Statement Report ID", Report::"VAT Statement CZL");
-#else
         VATStatementTemplate.SetRange("VAT Statement Report ID", 11769); // VAT Statement CZL
-#endif
         VATStatementTemplate.ModifyAll("VAT Statement Report ID", Report::"VAT Statement");
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetVATStatementReportExtensionUpgradeTag());

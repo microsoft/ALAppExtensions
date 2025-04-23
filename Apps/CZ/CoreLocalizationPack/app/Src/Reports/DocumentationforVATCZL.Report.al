@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -29,14 +29,6 @@ report 11757 "Documentation for VAT CZL"
             column(CompanyName; CompanyProperty.DisplayName())
             {
             }
-#if not CLEAN24
-            column(UseAmtsInAddCurr; UseAmtsInAddCurr)
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'This column is not used and will be removed in a future version.';
-            }
-#endif
             column(PrintVATEntries; PrintVATEntries)
             {
             }
@@ -165,32 +157,6 @@ report 11757 "Documentation for VAT CZL"
                     {
                         IncludeCaption = true;
                     }
-#if not CLEAN24
-                    column(AddCurrUnrlzdAmt_VATEntry; "Add.-Currency Unrealized Amt.")
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-                    column(AddCurrUnrlzdBas_VATEntry; "Add.-Currency Unrealized Base")
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-                    column(AdditionlCurrAmt_VATEntry; "Additional-Currency Amount")
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-                    column(AdditinlCurrBase_VATEntry; "Additional-Currency Base")
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-#endif
                     column(VATRegistrationNo_VATEntry; "VAT Registration No.")
                     {
                         IncludeCaption = true;
@@ -289,14 +255,6 @@ report 11757 "Documentation for VAT CZL"
                     column(VATEntryTotalCaption; StrSubstNo(TotalPerTxt, "VAT Posting Setup"."VAT Bus. Posting Group", "VAT Posting Setup"."VAT Prod. Posting Group", VATEntry.GetFilter(Type)))
                     {
                     }
-#if not CLEAN24
-                    column(VATEntryTotalWithRevChrgVATCaption; StrSubstNo(VATEntryTotalWithRevChrgVATTxt, "VAT Posting Setup"."VAT Bus. Posting Group", "VAT Posting Setup"."VAT Prod. Posting Group", VATEntry.GetFilter(Type)))
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-#endif
                     column(VATEntrySumCalculatedBase; VATEntrySubtotalAmt[1])
                     {
                     }
@@ -309,20 +267,6 @@ report 11757 "Documentation for VAT CZL"
                     column(VATEntrySumOriginalAmount; VATEntrySubtotalAmt[4])
                     {
                     }
-#if not CLEAN24
-                    column(VATEntrySumAddCurrBase; VATEntrySubtotalAmt[3])
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-                    column(VATEntrySumAddCurrAmount; VATEntrySubtotalAmt[4])
-                    {
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'This column is not used and will be removed in a future version.';
-                    }
-#endif
                 }
                 trigger OnAfterGetRecord()
                 begin
@@ -589,9 +533,6 @@ report 11757 "Documentation for VAT CZL"
         CurrencyTxt: Label 'All amounts are in %1', Comment = '%1 = Currency Code';
         TotalPerTxt: Label 'Total for %1 %2 %3', Comment = '%1 = VAT Bus. Posting Group; %2 = VAT Prod. Posting Group; %3 = Type';
         CountrySubtotalCaptionTxt: Label 'Total for Country/Region %1', Comment = '%1 = Country Code';
-#if not CLEAN24
-        VATEntryTotalWithRevChrgVATTxt: Label 'Total for %1 %2 %3 with Reverse Charge VAT', Comment = '%1 = VAT Bus. Posting Group, %2 = VAT Prod. Posting Group, %3 = VAT Entry Type';
-#endif
 
     procedure InitializeRequest(NewStartDate: Date; NewEndDate: Date; NewPrintVATEntries: Boolean; NewUseAmtsInAddCurr: Boolean)
     begin

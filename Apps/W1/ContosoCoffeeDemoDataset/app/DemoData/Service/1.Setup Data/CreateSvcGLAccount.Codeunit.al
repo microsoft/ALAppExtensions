@@ -1,4 +1,14 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5102 "Create Svc GL Account"
 {
     InherentEntitlements = X;

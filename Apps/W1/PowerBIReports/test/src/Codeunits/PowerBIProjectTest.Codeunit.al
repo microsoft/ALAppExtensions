@@ -191,6 +191,7 @@ codeunit 139879 "PowerBI Project Test"
         Assert.AreEqual(Format(JobPlanningLine."Unit Price (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('unitPriceLCY'), 'Unit price (LCY) did not match.');
         Assert.AreEqual(Format(JobPlanningLine."Line Amount (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('lineAmountLCY'), 'Line amount (LCY) did not match.');
         Assert.AreEqual(Format(JobPlanningLine."Total Price (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('totalPriceLCY'), 'Total price (LCY) did not match.');
+        Assert.AreEqual(Format(JobPlanningLine."Planning Date", 0, 9), JsonMgt.GetValue('planningDate'), 'Planning date did not match.');
     end;
 
     [Test]

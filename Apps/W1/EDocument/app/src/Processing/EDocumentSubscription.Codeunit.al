@@ -12,16 +12,23 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.eServices.EDocument.OrderMatch;
+using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
 using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Service.Posting;
 using System.Automation;
+using Microsoft.EServices.EDocument.Processing;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.IO.Peppol;
 
 codeunit 6103 "E-Document Subscription"
 {
@@ -220,6 +227,33 @@ codeunit 6103 "E-Document Subscription"
     begin
         if not IsNullGuid(PurchaseHeader."E-Document Link") then
             Error(DeleteNotAllowedErr);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Eval. Data", 'OnCreateEvaluationDataOnAfterClassifyTablesToNormal', '', false, false)]
+    local procedure ClassifyDataSensitivity()
+    var
+        DataClassificationEvalData: Codeunit "Data Classification Eval. Data";
+    begin
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Service Data Exch. Def.");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Documents Setup");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Data Storage");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Integration Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Mapping Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Header Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Line Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Purchase Header");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Purchase Line");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Imported Line");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Order Match");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Service Supported Type");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Service");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Service Status");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"Service Participant");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Purchase Line History");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Record Link");
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")

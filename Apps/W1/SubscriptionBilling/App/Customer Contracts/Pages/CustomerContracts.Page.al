@@ -31,7 +31,7 @@ page 8053 "Customer Contracts"
                 field(DescriptionText; DescriptionText)
                 {
                     Caption = 'Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                 }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.")
                 {

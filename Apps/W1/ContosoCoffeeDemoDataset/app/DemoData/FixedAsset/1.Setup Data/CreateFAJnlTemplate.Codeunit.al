@@ -1,4 +1,14 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.FixedAsset;
+
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 5149 "Create FA Jnl. Template"
 {
 

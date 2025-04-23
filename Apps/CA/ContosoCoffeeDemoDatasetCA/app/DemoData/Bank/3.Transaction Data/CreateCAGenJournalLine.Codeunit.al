@@ -1,4 +1,13 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Bank;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.DemoData.Finance;
+
 codeunit 27025 "Create CA Gen. Journal Line"
 {
     InherentEntitlements = X;

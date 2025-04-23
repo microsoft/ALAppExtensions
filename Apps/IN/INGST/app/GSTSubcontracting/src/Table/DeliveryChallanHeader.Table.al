@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -127,55 +127,26 @@ table 18468 "Delivery Challan Header"
     trigger OnInsert()
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         PurchSetup.Get();
         InitRecord();
         if "No." = '' then begin
             PurchSetup.TestField("Posted Delivery Challan Nos.");
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(PurchSetup."Posted Delivery Challan Nos.", xRec."No. Series", Today(), "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series", Today());
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.", Today(), "No.");
-            end;
-#endif
         end;
     end;
 
     procedure InitRecord()
     var
-#if CLEAN24
         NoSeries: Codeunit "No. Series";
-#else
-#pragma warning disable AL0432
-        NoSeriesManagement2: Codeunit "NoSeriesManagement";
-#pragma warning restore AL0432
-#endif
     begin
-#if CLEAN24
         if NoSeries.IsAutomatic(PurchSetup."Posted Delivery Challan Nos.") then
             "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
-#else
-#pragma warning disable AL0432
-        NoSeriesManagement2.SetDefaultSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.");
-#pragma warning restore AL0432
-#endif
     end;
 
     var
         PurchSetup: Record "Purchases & Payables Setup";
-#if not CLEAN24
-#pragma warning disable AL0432
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
-#pragma warning restore AL0432
-#endif
 }

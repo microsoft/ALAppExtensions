@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -231,20 +231,6 @@ report 31187 "Sales Order Confirmation CZL"
             column(Formatted_AmountIncludingVAT_SalesHeader; format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
             {
             }
-#if not CLEAN24
-            column(DueDate_SalesHeaderCaption; FieldCaption("Due Date"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore.';
-            }
-            column(DueDateFormat_SalesHeader; Format("Due Date"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore.';
-            }
-#endif
             column(DocFooterText; DocFooterText)
             {
             }

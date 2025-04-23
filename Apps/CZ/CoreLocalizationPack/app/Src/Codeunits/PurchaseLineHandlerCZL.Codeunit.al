@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.Document;
 
-using Microsoft.Inventory;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Archive;
 
@@ -91,8 +90,6 @@ codeunit 11784 "Purchase Line Handler CZL"
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Prod. Order No.', false, false)]
     local procedure ProdOrderNoOnAfterValidate(var Rec: Record "Purchase Line"; var xRec: Record "Purchase Line"; CurrFieldNo: Integer)
-    var
-        AddOnIntegrManagement: Codeunit AddOnIntegrManagement;
     begin
         if (CurrFieldNo <> 0) and (Rec."Prod. Order No." <> xRec."Prod. Order No.") then begin
             Rec."Routing No." := '';
@@ -102,6 +99,6 @@ codeunit 11784 "Purchase Line Handler CZL"
             Rec."Routing Reference No." := 0;
         end;
 
-        AddOnIntegrManagement.ValidateProdOrderOnPurchLine(Rec);
+        Rec.ValidateProdOrderOnPurchLine();
     end;
 }

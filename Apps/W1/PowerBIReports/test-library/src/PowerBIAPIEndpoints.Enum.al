@@ -200,4 +200,13 @@ enum 139793 "PowerBI API Endpoints"
     value(67; "Inv. Adj. Ent Order")
     {
     }
+    value(68; "Sales Cycle Stages")
+    {
+    }
+    value(69; "Close Opporturnity Codes")
+    {
+    }
+    value(70; "Sustainability Goals")
+    {
+    }
 }

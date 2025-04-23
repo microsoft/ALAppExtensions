@@ -6,9 +6,6 @@ namespace Microsoft.Finance;
 
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.IRS;
-#if not CLEAN24
-using Microsoft.Finance.VAT.Reporting;
-#endif
 
 report 14603 "IS IRS Details"
 {
@@ -123,17 +120,6 @@ report 14603 "IS IRS Details"
         DateFil := "G/L Account".GetFilter("Date Filter");
     end;
 
-#if not CLEAN24
-    trigger OnInitReport()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Report.Run(Report::"IRS Details");
-            Error('');
-        end;
-    end;
-#endif
 
     var
         "Sum": Decimal;
@@ -144,4 +130,3 @@ report 14603 "IS IRS Details"
         ValueinIRSnumberlistCaptionLbl: Label 'Value in IRS number list';
         EmptyStringCaption1Lbl: Label '------------------------------';
 }
-

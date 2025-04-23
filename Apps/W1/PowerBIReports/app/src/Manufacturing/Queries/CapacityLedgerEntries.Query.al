@@ -18,6 +18,7 @@ query 36984 "Capacity Ledger Entries"
     {
         dataitem(CapacityLedgerEntry; "Capacity Ledger Entry")
         {
+            column(entryNo; "Entry No.") { }
             column(orderType; "Order Type") { }
             column(orderNo; "Order No.") { }
             column(orderLineNo; "Order Line No.") { }
@@ -26,38 +27,14 @@ query 36984 "Capacity Ledger Entries"
             column(description; Description) { }
             column(postingDate; "Posting Date") { }
             column(itemNo; "Item No.") { }
-            column(setupTime; "Setup Time")
-            {
-                Method = Sum;
-            }
-            column(runTime; "Run Time")
-            {
-                Method = Sum;
-            }
-            column(stopTime; "Stop Time")
-            {
-                Method = Sum;
-            }
-            column(quantity; Quantity)
-            {
-                Method = Sum;
-            }
-            column(outputQuantity; "Output Quantity")
-            {
-                Method = Sum;
-            }
-            column(scrapQuantity; "Scrap Quantity")
-            {
-                Method = Sum;
-            }
-            column(directCost; "Direct Cost")
-            {
-                Method = Sum;
-            }
-            column(overheadCost; "Overhead Cost")
-            {
-                Method = Sum;
-            }
+            column(setupTime; "Setup Time") { }
+            column(runTime; "Run Time") { }
+            column(stopTime; "Stop Time") { }
+            column(quantity; Quantity) { }
+            column(outputQuantity; "Output Quantity") { }
+            column(scrapQuantity; "Scrap Quantity") { }
+            column(directCost; "Direct Cost") { }
+            column(overheadCost; "Overhead Cost") { }
             column(routingNo; "Routing No.") { }
             column(routingReferenceNo; "Routing Reference No.") { }
             column(operationNo; "Operation No.") { }
@@ -66,6 +43,10 @@ query 36984 "Capacity Ledger Entries"
             column(dimensionSetID; "Dimension Set ID") { }
             column(workCenterNo; "Work Center No.") { }
             column(workShiftCode; "Work Shift Code") { }
+            column(subcontracting; Subcontracting) { }
+            column(qtyPerCapUnitOfMeasure; "Qty. per Cap. Unit of Measure") { }
+            column(capUnitOfMeasureCode; "Cap. Unit of Measure Code") { }
+            column(qtyPerUnitOfMeasure; "Qty. per Unit of Measure") { }
         }
     }
 

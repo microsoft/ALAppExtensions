@@ -303,7 +303,7 @@ codeunit 6104 "Import E-Document Process"
         UndoStep: Boolean;
         UnstructuredBlobTypeWithNoConverterErr: Label 'Cant process E-Document as data type does not have a converter implemented.';
         UnstructuredBlobConversionErr: Label 'Conversion of the source document to structured format failed. Verify that the source document is not corrupted.';
-        AIGeneratedContentTxt: Label 'AI-extracted content may be incorrect';
+        AIGeneratedContentTxt: Label 'Data was read from a PDF - check for accuracy. AI-generated content may be incorrect.​';
         TermsAndConditionsTxt: Label 'Terms and Conditions';
         TermsAndConditionsHyperlinkTxt: Label 'https://www.microsoft.com/en-us/business-applications/legal/supp-powerplatform-preview', Locked = true;
 }

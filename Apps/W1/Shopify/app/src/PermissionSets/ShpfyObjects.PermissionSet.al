@@ -265,9 +265,6 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy IDocSource Refund" = X,
         codeunit "Shpfy Import Order" = X,
         codeunit "Shpfy Initial Import" = X,
-#if not CLEAN24
-        codeunit "Shpfy Install Mgt." = X,
-#endif
         codeunit "Shpfy Installer" = X,
         codeunit "Shpfy Inventory API" = X,
         codeunit "Shpfy Inventory Events" = X,
