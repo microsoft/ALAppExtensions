@@ -16,6 +16,7 @@ codeunit 30290 "Shpfy Catalog API"
         JsonHelper: Codeunit "Shpfy Json Helper";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         ShopifyCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
+        ShopifyMarketCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/settings/markets/%2/pricing', Comment = '%1 - Shop Name, %2 - Market Catalog Id', Locked = true;
         CatalogNotFoundLbl: Label 'Catalog is not found.';
 
     internal procedure CreateCatalog(ShopifyCompany: Record "Shpfy Company"; Customer: Record Customer)
@@ -86,6 +87,28 @@ codeunit 30290 "Shpfy Catalog API"
                     else
                         Parameters.Add('After', Cursor);
                     GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogs;
+                end else
+                    break;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
+    end;
+
+    internal procedure GetMarketCatalogs()
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Cursor: Text;
+        JResponse: JsonToken;
+        Parameters: Dictionary of [Text, Text];
+    begin
+        GraphQLType := "Shpfy GraphQL Type"::GetMarketCatalogs;
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JResponse.IsObject() then
+                if ExtractShopifyMarketCatalogs(JResponse.AsObject(), Cursor) then begin
+                    if Parameters.ContainsKey('After') then
+                        Parameters.Set('After', Cursor)
+                    else
+                        Parameters.Add('After', Cursor);
+                    GraphQLType := "Shpfy GraphQL Type"::GetNextMarketCatalogs;
                 end else
                     break;
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
@@ -208,20 +231,51 @@ codeunit 30290 "Shpfy Catalog API"
                 Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
                 if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
                     CatalogId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
-                    Catalog.Id := CatalogId;
-                    Catalog."Company SystemId" := ShopifyCompany.SystemId;
-                    Catalog."Shop Code" := Shop.Code;
-                    Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
-
                     Catalog.SetRange(Id, CatalogId);
                     Catalog.SetRange("Company SystemId", ShopifyCompany.SystemId);
-                    if Catalog.IsEmpty() then begin
-                        Catalog.Insert();
+                    Catalog.SetRange("Catalog Type", "Shpfy Catalog Type"::Company);
+                    if not Catalog.FindFirst() then begin
+                        Catalog.Id := CatalogId;
+                        Catalog."Company SystemId" := ShopifyCompany.SystemId;
                         Catalog."Sync Prices" := false;
-                    end else begin
-                        Catalog.FindFirst();
-                        Catalog.Modify();
+                        Catalog."Catalog Type" := "Shpfy Catalog Type"::Company;
+                        Catalog.Insert(true);
                     end;
+                    Catalog."Shop Code" := Shop.Code;
+                    Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
+                    Catalog.Modify(true);
+                end;
+            end;
+            exit(true);
+        end;
+    end;
+
+    internal procedure ExtractShopifyMarketCatalogs(JResponse: JsonObject; var Cursor: Text): Boolean
+    var
+        Catalog: Record "Shpfy Catalog";
+        JCatalogs: JsonArray;
+        JEdge: JsonToken;
+        JNode: JsonObject;
+        CatalogId: BigInteger;
+        MarketId: BigInteger;
+    begin
+        if JsonHelper.GetJsonArray(JResponse, JCatalogs, 'data.catalogs.edges') then begin
+            foreach JEdge in JCatalogs do begin
+                Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
+                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
+                    CatalogId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                    Catalog.SetRange(Id, CatalogId);
+                    Catalog.SetRange("Catalog Type", "Shpfy Catalog Type"::Market);
+                    if not Catalog.FindFirst() then begin
+                        Catalog.Id := CatalogId;
+                        Catalog."Catalog Type" := "Shpfy Catalog Type"::Market;
+                        Catalog.Insert(true);
+                    end;
+                    Catalog."Shop Code" := Shop.Code;
+                    Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
+                    // TODO: Assign the market id to the catalog
+                    // MarketId :=
+                    Catalog.Modify(true);
                 end;
             end;
             exit(true);
@@ -278,7 +332,12 @@ codeunit 30290 "Shpfy Catalog API"
 
     internal procedure GetCatalogProductsURL(CatalogId: BigInteger): Text
     begin
-        exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).TrimStart('https://'), Format(CatalogId)));
+        exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
+    end;
+
+    internal procedure GetMarketCatalogProductsURL(MarketId: BigInteger): Text
+    begin
+        exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(MarketId)));
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
