@@ -45,10 +45,6 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
                             FeatureTelemetry.LogUptake('0000KZ5', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::"Set Up");
                     end;
                 }
-                field("Transfer Shipment Profile"; Rec."Transfer Shipment Profile")
-                {
-                    ApplicationArea = Basic, Suite;
-                }
             }
         }
     }

@@ -17,11 +17,5 @@ tableextension 6100 "E-Document Sending Profile" extends "Document Sending Profi
             DataClassification = CustomerContent;
             TableRelation = Workflow where(Template = const(false), Category = const('EDOC'));
         }
-        field(6103; "Transfer Shipment Profile"; Boolean)
-        {
-            Caption = 'Transfer Shipment Profile';
-            ToolTip = 'Indicates whether the shipment profile is used for transfer shipment E-Documents.';
-            DataClassification = CustomerContent;
-        }
     }
 }

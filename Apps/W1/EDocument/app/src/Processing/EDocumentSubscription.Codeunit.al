@@ -233,7 +233,7 @@ codeunit 6103 "E-Document Subscription"
         if TransferShipmentHeader."No." = '' then
             exit;
 
-        if not EDocumentProcessing.GetDocSendingProfileForTransferShipment(DocumentSendingProfile) then
+        if not EDocumentProcessing.GetDocSendingProfileForTransferShipment(DocumentSendingProfile, TransferShipmentHeader."Transfer-to Code") then
             exit;
 
         CreateEDocumentFromPostedDocument(TransferShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Transfer Shipment");

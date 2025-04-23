@@ -1769,14 +1769,15 @@ codeunit 139624 "E-Doc E2E Test"
         // [GIVEN] E-Document service with format peppol
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
         this.EDocumentService.Modify(false);
-        // [GIVEN] Transfer Shipment Document Sending Profile
+        // [GIVEN] Document Sending Profile
         DocumentSendingProfile.Get(Customer."Document Sending Profile");
-        DocumentSendingProfile."Transfer Shipment Profile" := true;
-        DocumentSendingProfile.Modify(false);
         // [GIVEN] Transfer locations with posting setup
         CreateLocationsWithPostingSetups(FromLocation, ToLocation, InTransitLocation, InventoryPostingGroup);
         // [GIVEN] Item with inventory stock in from location
         CreateItemWIthInventoryStock(Item, FromLocation, InventoryPostingGroup);
+        // [GIVEN] Transfer-to location with Document Sending Profile set
+        ToLocation."Tranfer Doc. Sending Profile" := DocumentSendingProfile.Code;
+        ToLocation.Modify(false);
 
         // [WHEN] Create transfer shipment
         LibraryInventory.CreateAndPostTransferOrder(
