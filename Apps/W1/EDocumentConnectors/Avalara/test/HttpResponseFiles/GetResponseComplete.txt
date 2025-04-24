@@ -1,0 +1,17 @@
+{
+	"id": "52f60401-44d0-4667-ad47-4afe519abb53",
+	"companyId": "610f55f3-76b6-42eb-a697-2b0b2e02a5bf",
+	"status": "Complete",
+	"events": [
+		{
+			"eventDateTime": "2024-08-16T12:14:06:653",
+			"message": "Document started processing"
+		},
+		{
+			"eventDateTime": "2024-08-16T12:14:12:435",
+			"message": "The document was delivered to the recipient",
+			"responseKey": "Receipt Message ID",
+			"responseValue": "f9681599-aaa4-47cd-a987-ce8b08818050@einvoicing.sbx.avalara.io"
+		}
+	]
+}

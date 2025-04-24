@@ -74,7 +74,7 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetDocumentStatus(DocumentStatus::Completed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -120,7 +120,6 @@ codeunit 148191 "Integration Tests"
         // Steps:
         // Pending response -> Pending response -> Sent 
         Initialize();
-        SetAPIWith200Code();
 
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
@@ -160,7 +159,7 @@ codeunit 148191 "Integration Tests"
 
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-pending');
+        SetDocumentStatus(DocumentStatus::Pending);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -191,7 +190,7 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetDocumentStatus(DocumentStatus::Completed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -238,7 +237,6 @@ codeunit 148191 "Integration Tests"
         // Steps:
         // Pending response -> Error -> Pending response -> Sent 
         Initialize();
-        SetAPIWith200Code();
 
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
@@ -277,7 +275,7 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-error');
+        SetDocumentStatus(DocumentStatus::Error);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -321,7 +319,6 @@ codeunit 148191 "Integration Tests"
 
         // Then user manually send 
 
-        SetAvalaraConnectionBaseUrl('/avalara/avalara/200');
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
@@ -355,7 +352,7 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         EDocumentPage.Close();
 
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetDocumentStatus(DocumentStatus::Completed);
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -394,7 +391,7 @@ codeunit 148191 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('ServiceDownHandler')]
     procedure SubmitDocumentAvalaraServiceDown()
     var
         EDocument: Record "E-Document";
@@ -402,7 +399,6 @@ codeunit 148191 "Integration Tests"
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         Initialize();
-        SetAPIWith500Code();
 
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
@@ -452,7 +448,6 @@ codeunit 148191 "Integration Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         Initialize();
-        SetAPIWithReceiveCode();
         SetCompanyIdInConnectionSetup(MockCompanyId(), 'Mock Name');
 
         // Use date and currency exchange rate in document that is loaded
@@ -549,7 +544,6 @@ codeunit 148191 "Integration Tests"
 
         ConnectionSetup.DeleteAll();
         AvalaraAuth.CreateConnectionSetupRecord();
-        SetAPIWith200Code();
 
         ConnectionSetup.Get();
         AvalaraAuth.SetClientId(KeyGuid, MockServiceGuid());
@@ -582,16 +576,6 @@ codeunit 148191 "Integration Tests"
         IsInitialized := true;
     end;
 
-    local procedure SetAvalaraConnectionBaseUrl(Base: Text)
-    var
-        ConnectionSetup: Record "Connection Setup";
-    begin
-        ConnectionSetup.Get();
-        ConnectionSetup."API URL" := SetMockServiceUrl(Base);
-        ConnectionSetup."Sandbox API URL" := ConnectionSetup."API URL";
-        ConnectionSetup.Modify(true);
-    end;
-
     local procedure SetCompanyIdInConnectionSetup(Id: Text[100]; Name: Text[100])
     var
         ConnectionSetup: Record "Connection Setup";
@@ -600,42 +584,6 @@ codeunit 148191 "Integration Tests"
         ConnectionSetup."Company Id" := Id;
         ConnectionSetup."Company Name" := Name;
         ConnectionSetup.Modify(true);
-    end;
-
-    local procedure SetAPIWithReceiveCode()
-    begin
-        SetAPICode('/avalara/200/receive');
-    end;
-
-    local procedure SetAPIWith200Code()
-    begin
-        SetAPICode('/avalara/200');
-    end;
-
-    local procedure SetAPIWith500Code()
-    begin
-        SetAPICode('/avalara/500');
-    end;
-
-    local procedure SetAPICode(Path: Text)
-    var
-        ConnectionSetup: Record "Connection Setup";
-    begin
-        ConnectionSetup.Get();
-        ConnectionSetup."API URL" := SetMockServiceUrl(Path);
-        ConnectionSetup."Authentication URL" := SetMockServiceUrl(Path);
-        ConnectionSetup."Sandbox API URL" := ConnectionSetup."API URL";
-        ConnectionSetup."Sandbox Authentication URL" := ConnectionSetup."Authentication URL";
-        ConnectionSetup."Send Mode" := ConnectionSetup."Send Mode"::Test;
-        ConnectionSetup.Modify(true);
-    end;
-
-    // Mock values used in mock response files. 
-    // Do not change without fixing MockService files
-
-    local procedure SetMockServiceUrl(Path: Text): Text[200]
-    begin
-        exit('https://localhost:8080' + Path);
     end;
 
     local procedure MockServiceGuid(): Text
@@ -673,23 +621,35 @@ codeunit 148191 "Integration Tests"
         Regex: Codeunit Regex;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/.+/token'):
-                LoadResourceIntoHttpResponse('Token.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/500/connect/token'):
-                Response.HttpStatusCode := 500;
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/einvoicing/documents'):
-                LoadResourceIntoHttpResponse('SubmitDocument.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-complete/einvoicing/documents/.+/status'):
-                LoadResourceIntoHttpResponse('SubmitedDocumentComplete.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-pending/einvoicing/documents/.+/status'):
-                LoadResourceIntoHttpResponse('SubmitedDocumentPending.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/response-error/einvoicing/documents/.+/status'):
-                LoadResourceIntoHttpResponse('SubmitedDocumentError.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/receive/einvoicing/documents'):
-                LoadResourceIntoHttpResponse('GetDocumentsResponse.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/avalara/200/scs/companies'):
-                LoadResourceIntoHttpResponse('Companies.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/connect/token'):
+                LoadResourceIntoHttpResponse('ConnectToken.txt', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/status'):
+                GetStatusResponse(Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/\$download'):
+                LoadResourceIntoHttpResponse('DownloadDocument.txt', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents'):
+                case Request.RequestType of
+                    HttpRequestType::POST:
+                        LoadResourceIntoHttpResponse('SubmitDocument.txt', Response);
+                    HttpRequestType::GET:
+                        begin
+                            LoadResourceIntoHttpResponse('GetDocuments.txt', Response);
+                            Response.HttpStatusCode := 200;
+                        end;
+                end;
+            Regex.IsMatch(Request.Path, 'https?://.+/scs/companies'):
+                begin
+                    LoadResourceIntoHttpResponse('Companies.txt', Response);
+                    Response.HttpStatusCode := 200;
+                end;
         end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure ServiceDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        LoadResourceIntoHttpResponse('Http500.txt', Response);
+        Response.HttpStatusCode := 500;
     end;
 
     local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
@@ -697,11 +657,22 @@ codeunit 148191 "Integration Tests"
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 
-    //Get https://localhost:8080/avalara/200/receive/einvoicing/documents
-    // Get https://localhost:8080/avalara/200/receive/einvoicing/documents/52f60401-44d0-4667-ad47-4afe519abb53/$download
-    // Get https://localhost:8080/avalara/200/scs/companies
+    local procedure SetDocumentStatus(NewDocumentStatus: Option Completed,Pending,Error)
+    begin
+        DocumentStatus := NewDocumentStatus;
+    end;
 
-
+    local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
+    begin
+        case DocumentStatus of
+            DocumentStatus::Completed:
+                LoadResourceIntoHttpResponse('GetResponseComplete.txt', Response);
+            DocumentStatus::Pending:
+                LoadResourceIntoHttpResponse('GetResponsePending.txt', Response);
+            DocumentStatus::Error:
+                LoadResourceIntoHttpResponse('GetResponseError.txt', Response);
+        end;
+    end;
 
     var
         Customer: Record Customer;
@@ -714,4 +685,5 @@ codeunit 148191 "Integration Tests"
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        DocumentStatus: Option Completed,Pending,Error;
 }
