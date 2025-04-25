@@ -2,7 +2,7 @@
   "id": "237981b4-9e3c-437c-9b92-988aae978e8f",
   "name": "Dynamics SL Migration",
   "publisher": "Microsoft",
-  "version": "26.0.0.1",
+  "version": "26.0.0.0",
   "brief": "Migrate Microsoft Dynamics SL Data to Dynamics 365 Business Central",
   "description": "Enables users to migrate their Customers, Vendors, Items and Accounts from Microsoft Dynamics SL to Dynamics 365 Business Central along with opening balances for those master records. It also migrates historical data, including your SL Financial Transactions.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",

@@ -63,36 +63,37 @@ codeunit 47002 "SL Populate Account History"
 
     internal procedure ProcessAccountQueryPeriod(AccountQuery: Query "SL AcctHist Active Accounts"; var SLGLAcctBalByPeriod: Record SLGLAcctBalByPeriod; PtdBal: Decimal; PeriodID: Integer)
     begin
-        if PtdBal <> 0 then begin
-            SLGLAcctBalByPeriod.ACCT := AccountQuery.Acct;
-            SLGLAcctBalByPeriod.SUB := AccountQuery.Sub;
-            SLGLAcctBalByPeriod.FISCYR := AccountQuery.FiscYr;
-            SLGLAcctBalByPeriod.PERIODID := PeriodID;
-            case (AccountQuery.AcctType.Substring(2, 1)) of
-                'A', 'E':  // Asset, Expense
-                    if PtdBal < 0 then begin
-                        SLGLAcctBalByPeriod.DEBITAMT := 0;
-                        SLGLAcctBalByPeriod.CREDITAMT := PtdBal * -1;
-                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
-                    end else begin
-                        SLGLAcctBalByPeriod.DEBITAMT := PtdBal;
-                        SLGLAcctBalByPeriod.CREDITAMT := 0;
-                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
-                    end;
-                'L', 'I':  // Liability, Income
-                    if PtdBal < 0 then begin
-                        SLGLAcctBalByPeriod.CREDITAMT := 0;
-                        SLGLAcctBalByPeriod.DEBITAMT := PtdBal * -1;
-                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
-                    end else begin
-                        SLGLAcctBalByPeriod.CREDITAMT := PtdBal;
-                        SLGLAcctBalByPeriod.DEBITAMT := 0;
-                        SLGLAcctBalByPeriod.PERBAL := PtdBal;
-                    end;
-            end;
-            SLGLAcctBalByPeriod.Insert();
-            Commit();
+        if PtdBal = 0 then
+            exit;
+        Clear(SLGLAcctBalByPeriod);
+        SLGLAcctBalByPeriod.ACCT := AccountQuery.Acct;
+        SLGLAcctBalByPeriod.SUB := AccountQuery.Sub;
+        SLGLAcctBalByPeriod.FISCYR := AccountQuery.FiscYr;
+        SLGLAcctBalByPeriod.PERIODID := PeriodID;
+        case (AccountQuery.AcctType.Substring(2, 1)) of
+            'A', 'E':  // Asset, Expense
+                if PtdBal < 0 then begin
+                    SLGLAcctBalByPeriod.DEBITAMT := 0;
+                    SLGLAcctBalByPeriod.CREDITAMT := PtdBal * -1;
+                    SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                end else begin
+                    SLGLAcctBalByPeriod.DEBITAMT := PtdBal;
+                    SLGLAcctBalByPeriod.CREDITAMT := 0;
+                    SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                end;
+            'L', 'I':  // Liability, Income
+                if PtdBal < 0 then begin
+                    SLGLAcctBalByPeriod.CREDITAMT := 0;
+                    SLGLAcctBalByPeriod.DEBITAMT := PtdBal * -1;
+                    SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                end else begin
+                    SLGLAcctBalByPeriod.CREDITAMT := PtdBal;
+                    SLGLAcctBalByPeriod.DEBITAMT := 0;
+                    SLGLAcctBalByPeriod.PERBAL := PtdBal;
+                end;
         end;
+        SLGLAcctBalByPeriod.Insert();
+        Commit();
     end;
 
     internal procedure PopulateSLAccountTransactions()
