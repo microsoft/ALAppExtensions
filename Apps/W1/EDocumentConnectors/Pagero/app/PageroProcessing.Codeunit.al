@@ -8,7 +8,6 @@ using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.Document;
-using Microsoft.Utilities;
 using System.Telemetry;
 using System.Text;
 using System.Utilities;
@@ -56,8 +55,10 @@ codeunit 6369 "Pagero Processing"
     begin
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
 
-        if not (EDocumentServiceStatus.Status in [EDocumentServiceStatus.Status::"Cancel Error", EDocumentServiceStatus.Status::"Sending Error"]) then
-            Error(CancelCheckStatusErr, EDocumentServiceStatus.Status);
+        if not (EDocumentServiceStatus.Status in [EDocumentServiceStatus.Status::"Cancel Error", EDocumentServiceStatus.Status::"Sending Error"]) then begin
+            EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument."Entry No", StrSubstNo(CancelCheckStatusErr, EDocumentServiceStatus.Status));
+            exit(false);
+        end;
 
         if PageroConnection.HandleSendActionRequest(EDocument, HttpRequest, HttpResponse, 'Cancel', false) then begin
             Status := Enum::"E-Document Service Status"::Canceled;
@@ -80,89 +81,38 @@ codeunit 6369 "Pagero Processing"
         EDocumentServiceStatus: Record "E-Document Service Status";
         PageroAPIRequests: Codeunit "Pagero API Requests";
         HttpContentResponse: HttpContent;
-        StatusText, StatusDescription : Text;
+        StatusDescription, ApplicationResponseId, APStatus : Text;
     begin
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
-        if EDocumentServiceStatus.Status <> EDocumentServiceStatus.Status::Sent then
-            Error(GetApprovalCheckStatusErr, EDocumentServiceStatus.Status);
+        if EDocumentServiceStatus.Status <> EDocumentServiceStatus.Status::Sent then begin
+            EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument."Entry No", StrSubstNo(GetApprovalCheckStatusErr, EDocumentServiceStatus.Status));
+            exit(false);
+        end;
 
-        PageroAPIRequests.GetADocument(EDocument, HttpRequestMessage, HttpResponseMessage);
-
+        PageroAPIRequests.GetReceivedApplicationResponsesForDocument(EDocument, HttpRequestMessage, HttpResponseMessage);
         HttpContentResponse := HttpResponseMessage.Content;
-        if ParseGetADocumentApprovalResponse(HttpContentResponse, StatusText, StatusDescription) then
-            case StatusText of
-                'Accepted':
-                    begin
-                        Status := Enum::"E-Document Service Status"::Approved;
-                        exit(true);
-                    end;
-                'Rejected':
-                    begin
-                        Status := Enum::"E-Document Service Status"::Rejected;
-                        if StatusDescription <> '' then
-                            EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument."Entry No", 'Reason: ' + StatusDescription);
-                        exit(true);
-                    end;
-            end;
-        // Return false. We have no update for the document
-        exit(false);
-    end;
 
-    procedure GetEDocumentsApproval(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        EDocumentService: Record "E-Document Service";
-        EDocumentServiceStatus: Record "E-Document Service Status";
-        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
-        PageroAPIRequests: Codeunit "Pagero API Requests";
-        HttpContentResponse: HttpContent;
-    begin
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
-        EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
-        if EDocumentServiceStatus.Status <> EDocumentServiceStatus.Status::Sent then
-            Error(GetApprovalCheckStatusErr, EDocumentServiceStatus.Status);
-
-        PageroAPIRequests.GetAppResponseDocumentsRequest(EDocument, HttpRequestMessage, HttpResponseMessage);
-
-        HttpContentResponse := HttpResponseMessage.Content;
-        ParseGetDocumentsApprovalResponse(HttpContentResponse, TempNameValueBuffer);
-
-        if TempNameValueBuffer.IsEmpty then
+        if not ParseReceivedApplicationResponses(HttpContentResponse, EDocument."Document No.", ApplicationResponseId, APStatus) then
             exit(false);
 
-        TempNameValueBuffer.FindSet();
-        repeat
-            UpdateEDocumentApprovalRejection(TempNameValueBuffer);
-        until TempNameValueBuffer.Next() = 0;
+        // Mark the AP response as fetched before returning.
+        FetchEDocument(EDocument, EDocumentService, ApplicationResponseId);
 
-        exit(false);
-    end;
-
-    local procedure UpdateEDocumentApprovalRejection(NameValueBuffer: Record "Name/Value Buffer")
-    var
-        EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
-        EDocuemtServiceStatus: Record "E-Document Service Status";
-    begin
-        EDocument.SetRange(Direction, EDocument.Direction::Outgoing);
-        EDocument.SetRange("Document No.", NameValueBuffer.Value);
-        if not EDocument.FindLast() then
-            exit;
-
-        EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
-        EDocuemtServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
-        case EDocuemtServiceStatus.Status of
-            "E-Document Service Status"::Approved, "E-Document Service Status"::Rejected:
-                FetchEDocument(EDocument, EDocumentService, NameValueBuffer.Name);
-            "E-Document Service Status"::Sent:
+        case APStatus of
+            'RecipientAccept':
                 begin
-                    case NameValueBuffer."Value Long" of
-                        'RecipientAccept':
-                            EDocuemtServiceStatus.Status := "E-Document Service Status"::Approved;
-                        'RecipientReject':
-                            EDocuemtServiceStatus.Status := "E-Document Service Status"::Rejected;
-                    end;
-                    FetchEDocument(EDocument, EDocumentService, NameValueBuffer.Name);
+                    Status := Enum::"E-Document Service Status"::Approved;
+                    exit(true);
                 end;
+            'RecipientReject', 'RecipientRejectWithClearanceRemoval':
+                begin
+                    Status := Enum::"E-Document Service Status"::Rejected;
+                    if StatusDescription <> '' then
+                        EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument."Entry No", 'Reason: ' + StatusDescription);
+                    exit(true);
+                end;
+            else
+                exit(false);
         end;
     end;
 
@@ -174,6 +124,7 @@ codeunit 6369 "Pagero Processing"
     begin
         if DocumentId = '' then
             exit;
+
         // Mark document as fetched
         Documents.Add(DocumentId);
         PageroConnection.HandleSendFetchDocumentRequest(Documents, LocalHttpRequest, LocalHttpResponse, false);
@@ -489,92 +440,42 @@ codeunit 6369 "Pagero Processing"
         EDocument.Modify();
     end;
 
-
-    procedure ParseGetADocumentApprovalResponse(HttpContentResponse: HttpContent; var Status: Text; var StatusDescription: Text): Boolean
+    procedure ParseReceivedApplicationResponses(HttpContentResponse: HttpContent; DocumentReference: Text; var ApplicationResponseId: Text; var Status: Text): Boolean
     var
-        JsonManagement: Codeunit "JSON Management";
-        JsonManagement2: Codeunit "JSON Management";
-        JsonManagement3: Codeunit "JSON Management";
-        Value: Text;
-        IncrementalTable: Text;
-        i: Integer;
         Result: Text;
+        ResponseJObject, Item, DocumentInfo : JsonObject;
+        Items: JsonArray;
+        ItemToken: JsonToken;
     begin
-        Result := ParseJsonString(HttpContentResponse);
-        if Result = '' then
-            exit(false);
+        HttpContentResponse.ReadAs(Result);
+        if not ResponseJObject.ReadFrom(Result) then
+            Error(ParseErr);
 
-        if not JsonManagement.InitializeFromString(Result) then
-            exit(false);
+        // API returns item by sorting order is createTime descending.
+        // We need to check the first item in the list as it is the latest one.
+        Items := ResponseJObject.GetArray('items', true);
+        foreach ItemToken in Items do begin
+            if not ItemToken.IsObject() then
+                continue;
 
-        JsonManagement.GetArrayPropertyValueAsStringByName('items', Value);
-        JsonManagement.InitializeCollection(Value);
+            Item := ItemToken.AsObject();
+            DocumentInfo := Item.GetObject('documentInfo');
 
-        if JsonManagement.GetCollectionCount() = 0 then
-            exit(false);
+            if DocumentInfo.GetText('direction') <> 'Received' then
+                continue;
 
-        for i := 0 to JsonManagement.GetCollectionCount() - 1 do begin
-            JsonManagement.GetObjectFromCollectionByIndex(IncrementalTable, i);
-            JsonManagement2.InitializeObject(IncrementalTable);
-            JsonManagement2.GetArrayPropertyValueAsStringByName('documentInfo', Value);
+            if DocumentInfo.GetText('documentIdentifier') <> DocumentReference then
+                Error(ReceivedApplicationResponseErr, DocumentReference);
 
-            JsonManagement3.InitializeFromString(Value);
-            JsonManagement3.GetArrayPropertyValueAsStringByName('direction', Value);
-            if Value = 'Received' then
-                if JsonManagement2.GetArrayPropertyValueAsStringByName('latestBusinessStatus', Value) then begin
-                    JsonManagement2.InitializeFromString(Value);
+            if DocumentInfo.GetText('documentType') <> 'ApplicationResponse' then
+                continue;
 
-                    JsonManagement2.GetArrayPropertyValueAsStringByName('businessStatus', Status);
-                    JsonManagement2.GetArrayPropertyValueAsStringByName('description', StatusDescription);
-                    exit(true);
-                end;
+            ApplicationResponseId := Item.GetText('id');
+            Status := DocumentInfo.GetText('documentSubType', true);
+            if Status <> '' then
+                exit(true);
+
         end;
-        exit(false);
-    end;
-
-    procedure ParseGetDocumentsApprovalResponse(HttpContentResponse: HttpContent; var TempNameValueBuffer: Record "Name/Value Buffer" temporary): Boolean
-    var
-        JsonManagement: Codeunit "JSON Management";
-        JsonManagement2: Codeunit "JSON Management";
-        JsonManagement3: Codeunit "JSON Management";
-        Value, DocumentId, DocumentNo, Status : Text;
-        IncrementalTable: Text;
-        i: Integer;
-        Result: Text;
-    begin
-        Result := ParseJsonString(HttpContentResponse);
-        if Result = '' then
-            exit(false);
-
-        if not JsonManagement.InitializeFromString(Result) then
-            exit(false);
-
-        JsonManagement.GetArrayPropertyValueAsStringByName('items', Value);
-        JsonManagement.InitializeCollection(Value);
-
-        if JsonManagement.GetCollectionCount() = 0 then
-            exit(false);
-
-        for i := 0 to JsonManagement.GetCollectionCount() - 1 do begin
-            JsonManagement.GetObjectFromCollectionByIndex(IncrementalTable, i);
-            JsonManagement2.InitializeObject(IncrementalTable);
-            JsonManagement2.GetArrayPropertyValueAsStringByName('documentInfo', Value);
-            JsonManagement2.GetArrayPropertyValueAsStringByName('id', DocumentId);
-
-            JsonManagement3.InitializeFromString(Value);
-            JsonManagement3.GetArrayPropertyValueAsStringByName('direction', Value);
-            JsonManagement3.GetArrayPropertyValueAsStringByName('documentIdentifier', DocumentNo);
-            JsonManagement3.GetArrayPropertyValueAsStringByName('documentSubType', Status);
-
-            if Value = 'Received' then begin
-                TempNameValueBuffer.Init();
-                TempNameValueBuffer.Name := CopyStr(DocumentId, 1, 250);
-                TempNameValueBuffer.Value := CopyStr(DocumentNo, 1, 250);
-                TempNameValueBuffer."Value Long" := CopyStr(Status, 1, 2048);
-                TempNameValueBuffer.Insert();
-            end;
-        end;
-        exit(false);
     end;
 
     procedure ParseJsonString(HttpContentResponse: HttpContent): Text
@@ -616,14 +517,13 @@ codeunit 6369 "Pagero Processing"
 
     var
         PageroConnection: Codeunit "Pagero Connection";
-        EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         GetApprovalCheckStatusErr: Label 'You cannot ask for approval with the E-Document in this current status %1. You can request for approval when E-document status is Sent.', Comment = '%1 - Status';
         SendApproveRejectCheckStatusErr: Label 'You cannot send %1 response with the E-Socument in this current status %2. You can send response when E-document status is ''Imported Document Created''.', Comment = '%1 - Action response, %2 - Status';
         CancelCheckStatusErr: Label 'You cannot ask for cancel with the E-Document in this current status %1. You can request for cancel when E-document status is ''Cancel Error'' or ''Sending Error''.', Comment = '%1 - Status';
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
-        //DocumentIdNotFoundErr: Label 'Document ID not found in response';
+        ReceivedApplicationResponseErr: Label 'Received application response for wrong document %1', Comment = '%1 - Document ID';
         ParseErr: Label 'Failed to parse document from Pagero API';
         CannotRejectErr: Label 'Failed to delete purchase document %1 as it is currently linked to another E-Document %2', Comment = '%1 - Purchase header Document No., %2 - E-Document Entry No.';
         WrongParseStatusErr: Label 'Got unexected status from Pagero API: %1', Comment = '%1 - Status that we received from API', Locked = true;

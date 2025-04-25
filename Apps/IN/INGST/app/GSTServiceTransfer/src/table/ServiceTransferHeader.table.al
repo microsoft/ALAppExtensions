@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -437,29 +437,16 @@ table 18350 "Service Transfer Header"
     trigger OnInsert()
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
         NoSeriesCode: Code[20];
     begin
         GetInventorySetup();
         if "No." = '' then begin
             InventorySetup.TestField("Service Transfer Order Nos.");
             NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Shipment Date", "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := NoSeriesCode;
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Shipment Date", "No.");
-            end;
-#endif
         end;
         InitRecord();
     end;

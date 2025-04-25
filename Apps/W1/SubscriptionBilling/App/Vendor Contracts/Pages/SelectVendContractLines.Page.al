@@ -50,7 +50,7 @@ page 8092 "Select Vend. Contract Lines"
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                 }
             }
         }

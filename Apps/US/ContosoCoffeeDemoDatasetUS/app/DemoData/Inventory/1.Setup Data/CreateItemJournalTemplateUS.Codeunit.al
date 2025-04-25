@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Inventory;
+
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Reports;
+
 codeunit 10496 "Create Item Journal TemplateUS"
 {
     SingleInstance = true;

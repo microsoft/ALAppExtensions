@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -122,13 +122,7 @@ table 18552 "Posting No. Series"
     var
         PostingNoSeries: Record "Posting No. Series";
         SalesSetup: Record "Sales & Receivables Setup";
-#if CLEAN24
         NoSeries: Codeunit "No. Series";
-#else
-#pragma warning disable AL0432
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-#pragma warning restore AL0432
-#endif
         NoSeriesCode: Code[20];
         TableID: Integer;
     begin
@@ -144,27 +138,15 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         SalesHeader."Shipping No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(SalesSetup."Posted Shipment Nos.") then
                             SalesHeader."Shipping No. Series" := SalesSetup."Posted Shipment Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(SalesHeader."Shipping No. Series", SalesSetup."Posted Shipment Nos.");
-#pragma warning restore AL0432
-#endif
 
                     NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, SalesHeader, PostingNoSeries."Document Type"::"Sales Invoice Header");
                     if NoSeriesCode <> '' then
                         SalesHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(SalesSetup."Posted Invoice Nos.") then
                             SalesHeader."Posting No. Series" := SalesSetup."Posted Invoice Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(SalesHeader."Posting No. Series", SalesSetup."Posted Invoice Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
 
             SalesHeader."Document Type"::"Return Order",
@@ -174,28 +156,16 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         SalesHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(SalesSetup."Posted Credit Memo Nos.") then
                             SalesHeader."Posting No. Series" := SalesSetup."Posted Credit Memo Nos.";
-#else
-#pragma warning disable AL0432
-                            NoSeriesMgt.SetDefaultSeries(SalesHeader."Posting No. Series", SalesSetup."Posted Credit Memo Nos.");
-#pragma warning restore AL0432
-#endif
 
                     NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, SalesHeader, PostingNoSeries."Document Type"::"Sales Return Receipt No.");
                     if NoSeriesCode <> '' then
                         SalesHeader."Return Receipt No. Series" := NoSeriesCode
                     else
                         if SalesSetup."Return Receipt on Credit Memo" then
-#if CLEAN24
                                 if NoSeries.IsAutomatic(SalesSetup."Posted Return Receipt Nos.") then
                                 SalesHeader."Return Receipt No. Series" := SalesSetup."Posted Return Receipt Nos.";
-#else
-#pragma warning disable AL0432
-                                NoSeriesMgt.SetDefaultSeries(SalesHeader."Return Receipt No. Series", SalesSetup."Posted Return Receipt Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
         end;
     end;
@@ -217,13 +187,7 @@ table 18552 "Posting No. Series"
     var
         PostingNoSeries: Record "Posting No. Series";
         PurchSetup: Record "Purchases & Payables Setup";
-#if CLEAN24
         NoSeries: Codeunit "No. Series";
-#else
-#pragma warning disable AL0432
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-#pragma warning restore AL0432
-#endif
         NoSeriesCode: Code[20];
         TableID: Integer;
     begin
@@ -239,26 +203,14 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         PurchaseHeader."Receiving No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(PurchSetup."Posted Receipt Nos.") then
                             PurchaseHeader."Receiving No. Series" := PurchSetup."Posted Receipt Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(PurchaseHeader."Receiving No. Series", PurchSetup."Posted Receipt Nos.");
-#pragma warning restore AL0432
-#endif
                     NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, PurchaseHeader, PostingNoSeries."Document Type"::"Purch. Inv. Header");
                     if NoSeriesCode <> '' then
                         PurchaseHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(PurchSetup."Posted Invoice Nos.") then
                             PurchaseHeader."Posting No. Series" := PurchSetup."Posted Invoice Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(PurchaseHeader."Posting No. Series", PurchSetup."Posted Invoice Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
 
             PurchaseHeader."Document Type"::"Return Order",
@@ -268,28 +220,16 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         PurchaseHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(PurchSetup."Posted Credit Memo Nos.") then
                             PurchaseHeader."Posting No. Series" := PurchSetup."Posted Credit Memo Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(PurchaseHeader."Posting No. Series", PurchSetup."Posted Credit Memo Nos.");
-#pragma warning restore AL0432
-#endif
 
                     NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, PurchaseHeader, PostingNoSeries."Document Type"::"Purchase Return Shipment No.");
                     if NoSeriesCode <> '' then
                         PurchaseHeader."Return Shipment No. Series" := NoSeriesCode
                     else
                         if PurchSetup."Return Shipment on Credit Memo" then
-#if CLEAN24
                             if NoSeries.IsAutomatic(PurchSetup."Posted Return Shpt. Nos.") then
                                 PurchaseHeader."Return Shipment No. Series" := PurchSetup."Posted Return Shpt. Nos.";
-#else
-#pragma warning disable AL0432
-                            NoSeriesMgt.SetDefaultSeries(PurchaseHeader."Return Shipment No. Series", PurchSetup."Posted Return Shpt. Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
         end;
     end;
@@ -298,13 +238,7 @@ table 18552 "Posting No. Series"
     var
         PostingNoSeries: Record "Posting No. Series";
         ServiceSetup: Record "Service Mgt. Setup";
-#if CLEAN24
         NoSeries: Codeunit "No. Series";
-#else
-#pragma warning disable AL0432
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-#pragma warning restore AL0432
-#endif
         NoSeriesCode: Code[20];
         TableID: Integer;
     begin
@@ -319,27 +253,15 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         ServiceHeader."Shipping No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(ServiceSetup."Posted Service Shipment Nos.") then
                             ServiceHeader."Shipping No. Series" := ServiceSetup."Posted Service Shipment Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Shipping No. Series", ServiceSetup."Posted Service Shipment Nos.");
-#pragma warning restore AL0432
-#endif
 
                     NoSeriesCode := LoopPostingNoSeries(TableID, PostingNoSeries, ServiceHeader, PostingNoSeries."Document Type"::"Service Invoice Header");
                     if NoSeriesCode <> '' then
                         ServiceHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(ServiceSetup."Posted Service Invoice Nos.") then
                             ServiceHeader."Posting No. Series" := ServiceSetup."Posted Service Invoice Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Posting No. Series", ServiceSetup."Posted Service Invoice Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
             ServiceHeader."Document Type"::"Credit Memo":
                 begin
@@ -347,14 +269,8 @@ table 18552 "Posting No. Series"
                     if NoSeriesCode <> '' then
                         ServiceHeader."Posting No. Series" := NoSeriesCode
                     else
-#if CLEAN24
                         if NoSeries.IsAutomatic(ServiceSetup."Posted Serv. Credit Memo Nos.") then
                             ServiceHeader."Posting No. Series" := ServiceSetup."Posted Serv. Credit Memo Nos.";
-#else
-#pragma warning disable AL0432
-                        NoSeriesMgt.SetDefaultSeries(ServiceHeader."Posting No. Series", ServiceSetup."Posted Serv. Credit Memo Nos.");
-#pragma warning restore AL0432
-#endif
                 end;
         end;
     end;

@@ -5,7 +5,7 @@
   "description": "This app is used for testing that the transactions are not executed. If any transaction is detected with this extension published we will throw an error.",
   "publisher": "Microsoft",
   "version": "27.0.0.0",
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
   "help": "https://go.microsoft.com/fwlink/?linkid=2206178",

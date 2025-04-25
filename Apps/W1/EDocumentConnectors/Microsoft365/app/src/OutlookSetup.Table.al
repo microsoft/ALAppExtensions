@@ -5,7 +5,10 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using System.Telemetry;
+using Microsoft.eServices.EDocument;
 using System.Email;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6383 "Outlook Setup"
 {
@@ -29,6 +32,7 @@ table 6383 "Outlook Setup"
 
             trigger OnValidate()
             var
+                EDocumentService: Record "E-Document Service";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 OutlookProcessing: Codeunit "Outlook Processing";
                 DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
@@ -44,6 +48,8 @@ table 6383 "Outlook Setup"
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
                 end else
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
+                EDocumentService.SetRange("Service Integration V2", "Service Integration"::Outlook);
+                EDocumentService.ModifyAll("Import Process", "E-Document Import Process"::"Version 2.0");
             end;
         }
         field(3; "Email Account ID"; Guid)

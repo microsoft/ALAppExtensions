@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Warehousing;
+
+using System.Utilities;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 4798 "Warehouse Media"
 {
     Access = Internal;

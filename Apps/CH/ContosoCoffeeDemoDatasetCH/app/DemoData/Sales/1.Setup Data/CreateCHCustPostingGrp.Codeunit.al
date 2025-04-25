@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.Sales.Customer;
+using Microsoft.DemoData.Finance;
+
 codeunit 11593 "Create CH Cust. Posting Grp"
 {
     SingleInstance = true;

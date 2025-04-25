@@ -1,5 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Common;
+
 codeunit 8107 "Update Sub. Bill. Post. Setup"
 {
     InherentEntitlements = X;

@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 10780 "Create ES GL Accounts"
 {
     InherentPermissions = X;
@@ -125,6 +143,7 @@ codeunit 10780 "Create ES GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.AllowancesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.LongtermLiabilitiesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherLiabilitiesName(), '589');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.INCOMESTATEMENTName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesofResourcesName(), '');

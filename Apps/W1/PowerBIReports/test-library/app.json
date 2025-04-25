@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
-      "name": "PowerBI Reports",
+      "name": "Power BI Report embeddings for Dynamics 365 Business Central",
       "publisher": "Microsoft",
       "version": "27.0.0.0"
     },
@@ -27,7 +27,7 @@
   ],
   "screenshots": [],
   "application": "27.0.0.0",
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "target": "OnPrem",
   "idRanges": [
     {

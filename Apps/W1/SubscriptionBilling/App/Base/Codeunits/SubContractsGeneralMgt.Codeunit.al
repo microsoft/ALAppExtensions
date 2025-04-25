@@ -424,8 +424,7 @@ codeunit 8059 "Sub. Contracts General Mgt."
         ServiceCommitment.TestField("Customer Price Group", PrevServiceCommitment."Customer Price Group");
     end;
 
-#if not CLEAN25
-    [EventSubscriber(ObjectType::Page, Page::"Document Attachment Factbox", OnBeforeDrillDown, '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterGetRefTable, '', false, false)]
     local procedure SetServiceObjectAsRecRef(DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
     var
         ServiceObject: Record "Subscription Header";
@@ -446,7 +445,7 @@ codeunit 8059 "Sub. Contracts General Mgt."
                 end;
         end;
     end;
-#endif
+
     [EventSubscriber(ObjectType::Page, Page::"Document Attachment Details", OnAfterOpenForRecRef, '', false, false)]
     local procedure FilterDocumentAttachmentOnRecRefPrimaryKey(var DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
     var

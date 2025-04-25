@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Foundation.Address;
+
 codeunit 14621 "Contoso Post Code IS"
 {
     InherentEntitlements = X;

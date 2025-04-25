@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 table 11021 "Sales VAT Advance Notif."
 {
@@ -228,10 +229,6 @@ table 11021 "Sales VAT Advance Notif."
     var
         CompanyInformation: Record "Company Information";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         FeatureTelemetry.LogUptake('0001Q0G', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Used");
         if xRec.FindLast() then;
@@ -245,19 +242,10 @@ table 11021 "Sales VAT Advance Notif."
         if "No." = '' then begin
             ElecVATDeclSetup.Get();
             ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", WorkDate(), "No.");
-            end;
-#endif
         end;
         FeatureTelemetry.LogUsage('0001Q0H', ElecVATAdvanceNotTok, 'Elec. VAT advance notif generated');
     end;

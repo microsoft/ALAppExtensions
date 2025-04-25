@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Enums;
+
 codeunit 5208 "Create G/L Account"
 {
     InherentEntitlements = X;
@@ -186,6 +197,7 @@ codeunit 5208 "Create G/L Account"
         ContosoGLAccount.InsertGLAccount(VacationCompensationPayable(), VacationCompensationPayableName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(EmployeesPayable(), EmployeesPayableName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TotalPersonnelrelatedItems(), TotalPersonnelrelatedItemsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, PersonnelrelatedItems() + '..' + TotalPersonnelrelatedItems(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(OtherAccruedExpensesAndDeferredIncome(), OtherAccruedExpensesAndDeferredIncomeName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(OtherLiabilities(), OtherLiabilitiesName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::"Begin-Total", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         ContosoGLAccount.InsertGLAccount(DividendsfortheFiscalYear(), DividendsfortheFiscalYearName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CorporateTaxesPayable(), CorporateTaxesPayableName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Liabilities, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
@@ -526,6 +538,7 @@ codeunit 5208 "Create G/L Account"
         ContosoGLAccount.AddAccountForLocalization(OtherLiabilitiesName(), '5900');
         ContosoGLAccount.AddAccountForLocalization(DividendsfortheFiscalYearName(), '5910');
         ContosoGLAccount.AddAccountForLocalization(CorporateTaxesPayableName(), '5920');
+        ContosoGLAccount.AddAccountForLocalization(OtherAccruedExpensesAndDeferredIncomeName(), '5950');
         ContosoGLAccount.AddAccountForLocalization(OtherLiabilitiesTotalName(), '5990');
         ContosoGLAccount.AddAccountForLocalization(ShorttermLiabilitiesTotalName(), '5995');
         ContosoGLAccount.AddAccountForLocalization(TotalLiabilitiesName(), '5997');
@@ -1138,6 +1151,11 @@ codeunit 5208 "Create G/L Account"
     procedure AccountsReceivable(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(AccountsReceivableName()));
+    end;
+
+    procedure OtherAccruedExpensesandDeferredIncome(): Code[20]
+    begin
+        exit(ContosoGLAccount.GetAccountNo(OtherAccruedExpensesandDeferredIncomeName()));
     end;
 
     procedure AccountsReceivableName(): Text[100]
@@ -1903,6 +1921,11 @@ codeunit 5208 "Create G/L Account"
     procedure OtherLiabilitiesTotalName(): Text[100]
     begin
         exit(OtherLiabilitiesTotalLbl);
+    end;
+
+    procedure OtherAccruedExpensesAndDeferredIncomeName(): Text[100]
+    begin
+        exit(OtherAccruedExpensesAndDeferredIncomeTok);
     end;
 
     procedure ShorttermLiabilitiesTotal(): Code[20]
@@ -3467,6 +3490,7 @@ codeunit 5208 "Create G/L Account"
         DividendsfortheFiscalYearLbl: Label 'Dividends for the Fiscal Year', MaxLength = 100;
         CorporateTaxesPayableLbl: Label 'Corporate Taxes Payable', MaxLength = 100;
         OtherLiabilitiesTotalLbl: Label 'Other Liabilities, Total', MaxLength = 100;
+        OtherAccruedExpensesAndDeferredIncomeTok: Label 'Other Accrued Expenses and Deferred Income', MaxLength = 100;
         ShorttermLiabilitiesTotalLbl: Label 'Short-term Liabilities, Total', MaxLength = 100;
         TotalLiabilitiesLbl: Label 'Total Liabilities', MaxLength = 100;
         TotalLiabilitiesAndEquityLbl: Label 'TOTAL LIABILITIES AND EQUITY', MaxLength = 100;

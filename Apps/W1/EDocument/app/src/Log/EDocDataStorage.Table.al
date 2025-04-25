@@ -11,6 +11,7 @@ namespace Microsoft.eServices.EDocument;
 table 6125 "E-Doc. Data Storage"
 {
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {

@@ -41,31 +41,23 @@ page 6384 "Outlook Setup"
             group(General)
             {
                 Caption = 'Mailbox Details';
-                InstructionalText = 'Specify the e-mail address of the Microsoft 365 mailbox in which you receive document attachments. You must have read and write access to the specified mailbox, and it must be in the same tenant in which your Businesss Central environment is hosted.';
+                InstructionalText = 'Specify the Microsoft 365 mailbox that should be monitored. This will import PDF attachments from unread mail messages that were received since the last import attempt. You must have read/write permission for the mailbox, and the mailbox must be in the same Entra tenant as the Business Central environment.';
 
                 field(Mailbox; MailboxName)
                 {
                     Caption = 'Account';
-                    ToolTip = 'Specifies the Microsoft 365 mailbox from which to download document attachments.';
+                    ToolTip = 'Specifies the Microsoft 365 mailbox where you receive invoice attachments.';
                     Editable = false;
                     ShowMandatory = true;
 
                     trigger OnAssistEdit()
                     var
-                        EmailAccounts: Page "Email Accounts";
+                        OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
                     begin
                         if Rec.Enabled then
                             Error(DisableToConfigErr);
 
-                        if not CheckMailboxExists() then
-                            Page.RunModal(Page::"Email Account Wizard");
-
-                        if not CheckMailboxExists() then
-                            exit;
-                        EmailAccounts.EnableLookupMode();
-                        EmailAccounts.FilterConnectorV3Accounts(true);
-                        if EmailAccounts.RunModal() = Action::LookupOK then begin
-                            EmailAccounts.GetAccount(TempEmailAccount);
+                        if OutlookIntegrationImpl.SelectEmailAccountV3(TempEmailAccount) then begin
                             TempOutlookSetup."Email Account ID" := TempEmailAccount."Account Id";
                             TempOutlookSetup."Email Connector" := TempEmailAccount.Connector;
                             if Format(TempOutlookSetup."Email Connector") <> M365Lbl then
@@ -129,23 +121,6 @@ page 6384 "Outlook Setup"
         if not Rec.Enabled then
             if not Confirm(StrSubstNo(EnableServiceQst, CurrPage.Caption), true) then
                 exit(false);
-    end;
-
-    local procedure CheckMailboxExists(): Boolean
-    var
-        EmailAccounts: Record "Email Account";
-        EmailAccount: Codeunit "Email Account";
-        IConnector: Interface "Email Connector";
-    begin
-        EmailAccount.GetAllAccounts(false, EmailAccounts);
-        if EmailAccounts.IsEmpty() then
-            exit(false);
-
-        repeat
-            IConnector := EmailAccounts.Connector;
-            if IConnector is "Email Connector v3" then
-                exit(true);
-        until EmailAccounts.Next() = 0;
     end;
 
     local procedure ConfigUpdated()

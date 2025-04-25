@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5238 "Create Statistical Account"
 {
     InherentEntitlements = X;

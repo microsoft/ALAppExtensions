@@ -282,15 +282,16 @@ codeunit 148198 "Outlook Int. Test"
     internal procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         OutlookProcessing: Codeunit "Outlook Processing";
-        MessageId, FileId, ExternalMessageId, AttachmentId : Text;
+        MessageId, FileId, ExternalMessageId : Text;
         LocalOutStream: OutStream;
+        AttachmentId: BigInteger;
     begin
         OutlookProcessing.ExtractMessageAndAttachmentIds(DocumentMetadataBlob, MessageId, ExternalMessageId, FileId, AttachmentId);
 
         ReceiveContext.GetTempBlob().CreateOutStream(LocalOutStream, TextEncoding::UTF8);
         LocalOutStream.WriteText(Format(EDocument."Index In Batch"));
 
-        OutlookProcessing.UpdateEDocumentAfterMailAttachmentDownload(EDocument, ExternalMessageId, AttachmentId);
+        OutlookProcessing.UpdateEDocumentAfterMailAttachmentDownload(EDocument, ExternalMessageId, Format(AttachmentId));
         OutlookProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
     end;
 
@@ -303,40 +304,40 @@ codeunit 148198 "Outlook Int. Test"
         case EDocumentService.Description of
             TestImportOneDocumentTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "9", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hBGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hBGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Propsoal.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "9", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hBGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": 1, "name": "Propsoal.pdf", "contentType": "application/pdf", "size": 199264 }');
                     MockArray.Add(Mock);
                 end;
             TestImportOneDocumentNoExtTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "10", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hCGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hCGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Propsoal", "contentType": "application/pdf", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "10", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hCGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1", "name": "Propsoal", "contentType": "application/pdf", "size": 199264 }');
                     MockArray.Add(Mock);
                 end;
             TestImportTwoDocumentsTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "1", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Propsoal.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "1", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1", "name": "Propsoal.pdf", "contentType": "application/pdf", "size": 199264 }');
                     MockArray.Add(Mock);
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "2", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj4VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Medical-Bill-Receipt.pdf", "contentType": "application/pdf", "size": 88764 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "2", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hDGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "2", "name": "Medical-Bill-Receipt.pdf", "contentType": "application/pdf", "size": 88764 }');
                     MockArray.Add(Mock);
                 end;
             TestImportNoDocumentsTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "3", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hEGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hEGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Propsoal", "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "3", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hEGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1", "name": "Propsoal", "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "size": 199264 }');
                     MockArray.Add(Mock);
                 end;
             TestImportOnlyPdfDocumentsTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "4", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "DoImport.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "4", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1", "name": "DoImport.pdf", "contentType": "application/pdf", "size": 199264 }');
                     MockArray.Add(Mock);
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "5", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "DontImport.docx", "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "5", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hFGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "2", "name": "DontImport.docx", "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "size": 199264 }');
                     MockArray.Add(Mock);
                 end;
             TestImportDocumentsFromTwoMessagesTxt:
                 begin
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "6", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "PropsoalX.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "6", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1", "name": "PropsoalX.pdf", "contentType": "application/pdf", "size": 199264 }');
                     MockArray.Add(Mock);
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "7", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj4VTqP9lOsW0rxmAAAfYCJIAAABEgAQACPMWmWivqlMhtW3uIJkXnw=", "name": "Medical-Bill-ReceiptX.pdf", "contentType": "application/pdf", "size": 88764 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "7", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "2", "name": "Medical-Bill-ReceiptX.pdf", "contentType": "application/pdf", "size": 88764 }');
                     MockArray.Add(Mock);
-                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hHGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "contentid": "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hHGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj4VTqP9lOsW0rxmAAAfYCJIAAABEgBQACPMWmWivqlMhtW3uIJkXnw=", "name": "AnotherPropsoalX.pdf", "contentType": "application/pdf", "size": 88764 }');
+                    Mock.ReadFrom('{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hHGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "3", "name": "AnotherPropsoalX.pdf", "contentType": "application/pdf", "size": 88764 }');
                     MockArray.Add(Mock);
                 end;
         end;

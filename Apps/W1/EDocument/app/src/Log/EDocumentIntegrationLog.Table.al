@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument;
 table 6127 "E-Document Integration Log"
 {
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {

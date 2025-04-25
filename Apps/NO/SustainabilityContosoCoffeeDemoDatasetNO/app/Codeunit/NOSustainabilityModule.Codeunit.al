@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 10761 "NO Sustainability Module"
 {
     InherentEntitlements = X;

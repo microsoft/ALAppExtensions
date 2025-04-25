@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 14100 "LOCAL - Customs Declaration Tracking" extends "LOCAL"
 {
     Permissions = tabledata "CD Location Setup" = RIMD,

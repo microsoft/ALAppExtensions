@@ -25,6 +25,7 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31190 "Sales Credit Memo CZL"
@@ -84,16 +85,15 @@ report 31190 "Sales Credit Memo CZL"
                     column(VATCurrencyCode; VATCurrencyCode)
                     {
                     }
+                    trigger OnAfterGetRecord()
+                    begin
+                        UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+                        if UseFunctionalCurrency then
+                            VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                        else
+                            VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                    end;
                 }
-
-                trigger OnAfterGetRecord()
-                begin
-                    UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
-                    if UseFunctionalCurrency then
-                        VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
-                    else
-                        VATCurrencyCode := "General Ledger Setup"."LCY Code";
-                end;
             }
             trigger OnAfterGetRecord()
             begin
@@ -282,10 +282,16 @@ report 31190 "Sales Credit Memo CZL"
             column(Amount_SalesCrMemoHeader; Amount)
             {
             }
+            column(Formatted_Amount_SalesCrMemoHeader; format(Amount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
+            {
+            }
             column(AmountIncludingVAT_SalesCrMemoHeaderCaption; FieldCaption("Amount Including VAT"))
             {
             }
             column(AmountIncludingVAT_SalesCrMemoHeader; "Amount Including VAT")
+            {
+            }
+            column(Formatted_AmountIncludingVAT_SalesCrMemoHeader; format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
             {
             }
             column(CalculatedExchRate; CalculatedExchRate)
@@ -392,6 +398,9 @@ report 31190 "Sales Credit Memo CZL"
                     column(UnitPrice_SalesCrMemoLine; UnitPriceExclVAT)
                     {
                     }
+                    column(Formatted_UnitPrice_SalesCrMemoLine; format(UnitPriceExclVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
+                    {
+                    }
                     column(LineDiscount_SalesCrMemoLineCaption; FieldCaption("Line Discount %"))
                     {
                     }
@@ -410,10 +419,16 @@ report 31190 "Sales Credit Memo CZL"
                     column(LineAmount_SalesCrMemoLine; "Line Amount")
                     {
                     }
+                    column(Formatted_LineAmount_SalesCrMemoLine; format("Line Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
+                    {
+                    }
                     column(InvDiscountAmount_SalesCrMemoLineCaption; FieldCaption("Inv. Discount Amount"))
                     {
                     }
                     column(InvDiscountAmount_SalesCrMemoLine; "Inv. Discount Amount")
+                    {
+                    }
+                    column(Formatted_InvDiscountAmount_SalesCrMemoLine; format("Inv. Discount Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
                     {
                     }
 
@@ -442,10 +457,16 @@ report 31190 "Sales Credit Memo CZL"
                         AutoFormatExpression = "Sales Cr.Memo Line".GetCurrencyCode();
                         AutoFormatType = 1;
                     }
+                    column(Formatted_VATAmtLineVATBase; format(-TempVATAmountLine."VAT Base", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
+                    {
+                    }
                     column(VATAmtLineVATAmt; -TempVATAmountLine."VAT Amount")
                     {
                         AutoFormatExpression = "Sales Cr.Memo Header"."Currency Code";
                         AutoFormatType = 1;
+                    }
+                    column(Formatted_VATAmtLineVATAmt; format(-TempVATAmountLine."VAT Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Cr.Memo Header"."Currency Code")))
+                    {
                     }
                     column(VATAmtLineVATBaseLCY; -TempVATAmountLine."VAT Base (LCY) CZL")
                     {
@@ -522,7 +543,11 @@ report 31190 "Sales Credit Memo CZL"
 
                 trigger OnPreDataItem()
                 begin
+#if not CLEAN27
                     NoOfLoops := Abs(NoOfCopies) + Customer."Invoice Copies" + 1;
+#else
+                    NoOfLoops := Abs(NoOfCopies) + 1;
+#endif
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 
@@ -578,16 +603,12 @@ report 31190 "Sales Credit Memo CZL"
 
                 if UseFunctionalCurrency then begin
                     if ("Additional Currency Factor CZL" <> 0) and ("Additional Currency Factor CZL" <> 1) then begin
-                        if CalculatedExchRate <> 1 then begin
-                            CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
-                            CalculatedExchRate := Round(((1 / "VAT Currency Factor CZL") / (1 / "Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
-                        end else begin
-                            CurrencyExchangeRate."Exchange Rate Amount" := 1;
-                            CalculatedExchRate := Round("Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                        end;
+                        if ("VAT Currency Factor CZL" = 0) or ((TempVATAmountLine."VAT Base" + TempVATAmountLine."VAT Amount") = 0) then
+                            CalculatedExchRate := Round("Additional Currency Factor CZL", 0.00001)
+                        else
+                            CalculatedExchRate := Round((TempVATAmountLine."Additional-Currency Base CZL" + TempVATAmountLine."Additional-Currency Amount CZL") / (TempVATAmountLine."VAT Base" + TempVATAmountLine."VAT Amount"), 0.00001);
                         ExchRateText :=
-                          StrSubstNo(ExchRateLbl, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                          CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                          StrSubstNo(ExchRateLbl, 1, "Currency Code", CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
                     end;
                     if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
                         ExchRateText := '';
@@ -687,6 +708,7 @@ report 31190 "Sales Credit Memo CZL"
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+        AutoFormat: Codeunit "Auto Format";
         ExchRateText: Text[50];
         VATClauseText: Text;
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = LCY Code, %3 = Exchange Rate, %4 = Currency Code';

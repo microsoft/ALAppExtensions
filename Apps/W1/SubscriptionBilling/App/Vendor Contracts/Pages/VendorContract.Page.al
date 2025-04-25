@@ -159,7 +159,7 @@ page 8070 "Vendor Contract"
                     {
                         MultiLine = true;
                         ShowCaption = false;
-                        ToolTip = 'Specifies the subscriptions being offered.';
+                        ToolTip = 'Specifies the description of the Subscription Contract.';
 
                         trigger OnValidate()
                         begin

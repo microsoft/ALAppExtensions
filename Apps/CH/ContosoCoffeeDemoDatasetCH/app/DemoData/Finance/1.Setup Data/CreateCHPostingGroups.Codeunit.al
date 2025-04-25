@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 11602 "Create CH Posting Groups"
 {
     InherentEntitlements = X;
@@ -39,7 +49,6 @@ codeunit 11602 "Create CH Posting Groups"
     begin
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.RetailPostingGroup(), '', '', CreateCHGLAccounts.InvChangeCommGoods(), '', '', '', '', '', '', '', CreateCHGLAccounts.InvChangeCommGoods(), '', '');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.ServicesPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), CreateCHGLAccounts.TradeDomestic(), CreateCHGLAccounts.CostOfCommGoodsDomestic(), CreateCHGLAccounts.InvChangeCommGoods(), CreateCHGLAccounts.InvChangeCommGoods(), '', '', CreateCHGLAccounts.TradeDomestic(), CreateCHGLAccounts.Discounts(), CreateCHGLAccounts.CostOfCommGoodsDomestic(), CreateCHGLAccounts.CostReductionDiscount(), CreateCHGLAccounts.InvChangeCommGoods(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.ServicesPostingGroup(), CreateCHGLAccounts.ServiceEarningsDomestic(), CreateCHGLAccounts.SubcontrOfSpOperations(), CreateCHGLAccounts.InvChangeFinishedProducts(), '', '', '', CreateCHGLAccounts.ServiceEarningsDomestic(), CreateCHGLAccounts.Discounts(), CreateCHGLAccounts.SubcontrOfSpOperations(), CreateCHGLAccounts.CostReductionDiscount(), CreateCHGLAccounts.InvChangeFinishedProducts(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.EUPostingGroup(), CreatePostingGroup.RetailPostingGroup(), CreateCHGLAccounts.TradeEurope(), CreateCHGLAccounts.CostOfCommGoodsEurope(), CreateCHGLAccounts.InvChangeCommGoods(), CreateCHGLAccounts.InvChangeCommGoods(), '', '', CreateCHGLAccounts.TradeEurope(), CreateCHGLAccounts.Discounts(), CreateCHGLAccounts.CostOfCommGoodsEurope(), CreateCHGLAccounts.CostReductionDiscount(), CreateCHGLAccounts.InvChangeCommGoods(), '', '');

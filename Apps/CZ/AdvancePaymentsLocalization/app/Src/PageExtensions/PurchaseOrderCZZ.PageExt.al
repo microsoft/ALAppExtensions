@@ -11,27 +11,7 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
 {
     layout
     {
-        modify("Prepayment %")
-        {
-            Visible = false;
-        }
-        modify("Compress Prepayment")
-        {
-            Visible = false;
-        }
-        modify("Prepmt. Payment Terms Code")
-        {
-            Visible = false;
-        }
-        modify("Prepayment Due Date")
-        {
-            Visible = false;
-        }
-        modify("Prepmt. Payment Discount %")
-        {
-            Visible = false;
-        }
-        modify("Prepmt. Pmt. Discount Date")
+        modify(Prepayment)
         {
             Visible = false;
         }

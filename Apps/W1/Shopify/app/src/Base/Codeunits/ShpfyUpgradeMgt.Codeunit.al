@@ -28,9 +28,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         LocationUpgrade();
         SyncPricesWithProductsUpgrade();
         SendShippingConfirmationUpgrade();
-#if CLEAN24
         OrderAttributeValueUpgrade();
-#endif
         CreditMemoCanBeCreatedUpgrade();
     end;
 
@@ -325,7 +323,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetSendShippingConfirmationUpgradeTag());
     end;
 
-#if CLEAN24
     local procedure OrderAttributeValueUpgrade()
     var
         OrderAttribute: Record "Shpfy Order Attribute";
@@ -344,7 +341,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
         UpgradeTag.SetUpgradeTag(GetOrderAttributeValueUpgradeTag());
     end;
-#endif
 
     local procedure CreditMemoCanBeCreatedUpgrade()
     var
@@ -428,12 +424,10 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit('MS-495193-SendShippingConfirmationUpgradeTag-20231221');
     end;
 
-#if CLEAN24
     local procedure GetOrderAttributeValueUpgradeTag(): Code[250]
     begin
         exit('MS-497909-OrderAttributeValueUpgradeTag-20240125');
     end;
-#endif
 
     local procedure GetCreditMemoCanBeCreatedUpgradeTag(): Code[250]
     begin

@@ -626,6 +626,24 @@ page 36950 "PowerBI Assisted Setup"
                         }
                     }
                 }
+                group(SubscriptionBillingReportSetup)
+                {
+                    Caption = 'Subscription Billing';
+                    InstructionalText = 'Configure the Power BI Subscription Billing App.';
+                    field("Subscription Billing Report Name"; Rec."Subs. Billing Report Name")
+                    {
+                        Caption = 'Power BI Subscription Billing Report';
+                        ToolTip = 'Specifies the Power BI Subscription Billing Report.';
+                        ApplicationArea = All;
+                        Editable = false;
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Subscription Billing Report ID", Rec."Subs. Billing Report Name");
+                        end;
+                    }
+                }
+
             }
 
             group(Step6)

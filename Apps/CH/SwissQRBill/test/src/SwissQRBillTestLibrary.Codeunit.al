@@ -167,6 +167,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
         VendorNo := LibraryPurchase.CreateVendorNo();
         LibraryPurchase.CreateVendorBankAccount(VendorBankAccount, VendorNo);
         VendorBankAccount.IBAN := IBAN;
+        VendorBankAccount."Payment Form" := VendorBankAccount."Payment Form"::"Bank Payment Domestic";
         VendorBankAccount.Modify();
         VendorBankaccountNo := VendorBankAccount.Code;
     end;

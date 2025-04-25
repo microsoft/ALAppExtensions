@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Foundation.NoSeries;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 8103 "Create Sub. Billing No. Series"
 {

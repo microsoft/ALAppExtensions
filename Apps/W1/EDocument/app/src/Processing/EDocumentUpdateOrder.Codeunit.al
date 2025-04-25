@@ -62,7 +62,7 @@ codeunit 6138 "E-Document Update Order"
         if PurchaseField.FindSet() then
             repeat
                 if (Format(DocumentHeader.Field(PurchaseField."No.").Value()) = '') and (Format(TempDocumentHeader.Field(PurchaseField."No.").Value()) <> '') then
-                    EDocumentImportHelper.ProcessField(EDocument, DocumentHeader, PurchaseField."No.", TempDocumentHeader.Field(PurchaseField."No.").Value());
+                    EDocumentImportHelper.ProcessField(EDocument, DocumentHeader, PurchaseField, TempDocumentHeader.Field(PurchaseField."No."));
             until PurchaseField.Next() = 0;
 
         OnCreateNewPurchHdrOnBeforeRecRefModify(EDocument, TempDocumentHeader, DocumentHeader);

@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5243 "Create Ship-to Address"
 {
     InherentEntitlements = X;

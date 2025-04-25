@@ -29,7 +29,7 @@ enum 6100 "Import E-Doc. Proc. Status"
     // Prepare draft
     value(3; "Draft Ready")
     {
-        Caption = 'Draft Ready';
+        Caption = 'Draft ready';
     }
     // Finish draft
     value(4; "Processed")

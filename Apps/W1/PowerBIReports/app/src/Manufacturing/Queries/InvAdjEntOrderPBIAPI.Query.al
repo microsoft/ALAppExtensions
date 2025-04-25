@@ -18,7 +18,7 @@ query 37020 "Inv. Adj. Ent Order - PBI API"
     {
         dataitem(Inventory_Adjmt__Entry__Order_; "Inventory Adjmt. Entry (Order)")
         {
-            DataItemTableFilter = "Order Type" = const("Production"), "Completely Invoiced" = const(true);
+            DataItemTableFilter = "Order Type" = const("Production");
             column(itemNo; "Item No.") { }
             column(orderLineNo; "Order Line No.") { }
             column(orderNo; "Order No.") { }
@@ -28,6 +28,9 @@ query 37020 "Inv. Adj. Ent Order - PBI API"
             column(singleLevelCapOvhdCost; "Single-Level Cap. Ovhd Cost") { }
             column(singleLevelMfgOvhdCost; "Single-Level Mfg. Ovhd Cost") { }
             column(iSFinished; "Is Finished") { }
+            column(completelyInvoiced; "Completely Invoiced") { }
+            column(indirectCostPercent; "Indirect Cost %") { }
+            column(overheadRate; "Overhead Rate") { }
         }
     }
 }

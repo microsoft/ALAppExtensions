@@ -34,12 +34,10 @@ codeunit 8028 "Usage Based Contr. Subscribers"
         SynchronizeItemVendorUsageDataSupplierReferenceEntryNo(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Reference", 'OnAfterCreateItemVendor', '', false, false)]
-    local procedure SynchronizeItemVendorUsageDataSupplierReferenceEntryNoOnAfterCreateItemVendor(var ItemReference: Record "Item Reference"; ItemVendor: Record "Item Vendor")
+    [EventSubscriber(ObjectType::Table, Database::"Item Reference", 'OnBeforeCreateItemVendor', '', false, false)]
+    local procedure SynchronizeItemVendorUsageDataSupplierReferenceEntryNoOnBeforeCreateItemVendor(var ItemReference: Record "Item Reference"; var ItemVendor: Record "Item Vendor")
     begin
-        Commit();
         ItemVendor."Supplier Ref. Entry No." := ItemReference."Supplier Ref. Entry No.";
-        ItemVendor.Modify(false);
     end;
 
     local procedure SynchronizeItemVendorUsageDataSupplierReferenceEntryNo(ItemReference: Record "Item Reference")

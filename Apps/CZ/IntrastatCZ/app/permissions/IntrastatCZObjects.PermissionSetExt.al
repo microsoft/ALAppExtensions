@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 31300 "Intrastat CZ - Objects" extends "Intrastat Core - Objects"
 {
     Permissions =

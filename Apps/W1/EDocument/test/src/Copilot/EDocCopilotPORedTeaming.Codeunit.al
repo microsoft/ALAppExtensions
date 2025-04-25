@@ -16,7 +16,7 @@ codeunit 133501 EDocCopilotPORedTeaming
         EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
 
     [Test]
-    procedure TestPromptAccuacy()
+    procedure TestPromptAccuracy()
     var
         EDocument: Record "E-Document";
         TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary;

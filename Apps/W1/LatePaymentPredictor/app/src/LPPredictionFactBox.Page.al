@@ -11,6 +11,13 @@ page 1951 "LP Prediction FactBox"
     {
         area(Content)
         {
+            group(Disclaimer)
+            {
+                Caption = ' ';
+                ShowCaption = false;
+                Editable = false;
+                InstructionalText = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+            }
             field(Prediction; Rec."Payment Prediction")
             {
                 ApplicationArea = Basic, Suite;

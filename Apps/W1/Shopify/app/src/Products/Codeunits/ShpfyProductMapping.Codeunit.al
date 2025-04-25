@@ -68,9 +68,6 @@ codeunit 30181 "Shpfy Product Mapping"
         SetShop(ShopifyProduct."Shop Code");
         Direction := Direction::ShopifyToBC;
         if IsNullGuid(ShopifyProduct."Item SystemId") or (ShopifyProduct."Has Variants" and IsNullGuid(ShopifyVariant."Item Variant SystemId") and not ShopifyVariant."Mapped By Item") then begin
-#if not CLEAN24
-            ProductEvents.OnBeforeFindMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant, Handled);
-#endif
             ProductEvents.OnBeforeFindProductMapping(Direction, ShopifyProduct, ShopifyVariant, Item, ItemVariant, Handled);
             if Handled then
                 MappingResult := true

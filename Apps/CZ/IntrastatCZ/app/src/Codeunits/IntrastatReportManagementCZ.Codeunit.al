@@ -549,52 +549,6 @@ codeunit 31302 IntrastatReportManagementCZ
         end;
     end;
 
-#if not CLEAN24
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertValueEntryLine', '', false, false)]
-    local procedure OnBeforeInsertValueEntryLine(var IntrastatReportLine: Record "Intrastat Report Line"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
-    var
-        IntrastatReportHeader: Record "Intrastat Report Header";
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-        SpecificMovementCZ: Record "Specific Movement CZ";
-        TempSalesHeader: Record "Sales Header" temporary;
-        DocumentType: Enum "Item Ledger Document Type";
-        RoundingDirection: Text[1];
-    begin
-        IntrastatReportHeader.Get(IntrastatReportLine."Intrastat No.");
-        IntrastatReportLine."Partner VAT ID" := '';
-        IntrastatReportLine."Statistics Period" := IntrastatReportHeader."Statistics Period";
-        IntrastatReportLine.Type := ItemLedgerEntry.GetIntrastatReportLineType();
-        IntrastatReportLine.Amount := ItemLedgerEntry.GetIntrastatAmountSign() * IntrastatReportLine.Amount;
-        IntrastatReportLine.Validate(Quantity, ItemLedgerEntry.GetIntrastatQuantitySign() * IntrastatReportLine.Quantity);
-        IntrastatReportLine.Validate("Source Type");
-        if IntrastatReportLine."Specific Movement CZ" = '' then begin
-            SpecificMovementCZ.GetOrCreate(SpecificMovementCZ.GetStandardCode());
-            IntrastatReportLine."Specific Movement CZ" := SpecificMovementCZ.Code;
-        end;
-
-        DocumentType := GetDocumentType(IntrastatReportLine.Date, IntrastatReportLine."Document No.");
-        if GetDocument(DocumentType, IntrastatReportLine."Document No.", TempSalesHeader) and
-           (TempSalesHeader."Currency Code" <> '')
-        then begin
-            RoundingDirection := IntrastatReportSetup.GetRoundingDirectionCZ();
-            IntrastatReportLine.Amount :=
-                Round(
-                    CalculateExchangeAmount(
-                        IntrastatReportLine.Amount,
-                        TempSalesHeader."Currency Factor",
-                        TempSalesHeader."VAT Currency Factor CZL"),
-                    1, RoundingDirection);
-            IntrastatReportLine."Indirect Cost" :=
-                Round(
-                    CalculateExchangeAmount(
-                        IntrastatReportLine."Indirect Cost",
-                        TempSalesHeader."Currency Factor",
-                        TempSalesHeader."VAT Currency Factor CZL"),
-                    1, RoundingDirection);
-        end;
-    end;
-#endif
     procedure GetDocument(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20]; var SalesHeader: Record "Sales Header") IsDocumentExist: Boolean
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
@@ -1006,6 +960,50 @@ codeunit 31302 IntrastatReportManagementCZ
     #endregion
 
     #region Intrastat Exclude
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionPurchase(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if PurchaseHeader."Intrastat Exclude CZ" or PurchaseHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionSales(SalesHeader: Record "Sales Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if SalesHeader."Intrastat Exclude CZ" or SalesHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionService(ServiceHeader: Record "Service Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if ServiceHeader."Intrastat Exclude CZ" or ServiceHeader."EU 3-Party Intermed. Role CZL" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Transfer Header", 'OnBeforeCheckIsIntrastatTransaction', '', false, false)]
+    local procedure CheckIntrastatExcludeOnBeforeCheckIsIntrastatTransactionTransfer(TransferHeader: Record "Transfer Header"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if TransferHeader."Intrastat Exclude CZ" then begin
+            Result := false;
+            IsHandled := true;
+        end;
+    end;
+#if not CLEAN26
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeUpdateGlobalIsIntrastatTransaction', '', false, false)]
     local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionPurchase(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
@@ -1060,6 +1058,7 @@ codeunit 31302 IntrastatReportManagementCZ
             IsHandled := true;
         end;
     end;
+#endif
     #endregion
 
     #region EU 3-Party Trade functions

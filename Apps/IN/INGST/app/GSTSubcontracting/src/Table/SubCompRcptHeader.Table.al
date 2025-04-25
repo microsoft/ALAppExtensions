@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -269,27 +269,14 @@ table 18474 "Sub. Comp. Rcpt. Header"
     trigger OnInsert()
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         PurchasesPayablesSetup.Get();
         if "No." = '' then begin
             PurchasesPayablesSetup.TestField("Posted SC Comp. Rcpt. Nos.");
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(PurchasesPayablesSetup."Posted SC Comp. Rcpt. Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := PurchasesPayablesSetup."Posted SC Comp. Rcpt. Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchasesPayablesSetup."Posted SC Comp. Rcpt. Nos.", "Posting Date", "No.");
-            end;
-#endif
         end;
     end;
 
