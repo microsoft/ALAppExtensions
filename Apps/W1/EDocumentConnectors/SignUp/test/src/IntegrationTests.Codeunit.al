@@ -37,6 +37,7 @@ codeunit 148193 IntegrationTests
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value', Locked = true;
+        DocumentStatus: Option Processing,Error;
 
     #region tests
 
@@ -144,7 +145,6 @@ codeunit 148193 IntegrationTests
         // Steps:
         // Pending response -> Pending response -> Sent 
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith200Code();
 
         // [Given] Team member
         this.LibraryLowerPermissions.SetTeamMember();
@@ -187,7 +187,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPICode('/signup/200/response-pending');
+        this.SetDocumentStatus(DocumentStatus::Processing);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -223,7 +223,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPIWith200Code();
+        this.SetDocumentStatus(DocumentStatus::Processing);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -275,7 +275,6 @@ codeunit 148193 IntegrationTests
         // Steps:
         // Pending response -> Error -> Pending response -> Sent 
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith200Code();
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
@@ -319,7 +318,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPICode('/signup/200/response-error');
+        this.SetDocumentStatus(DocumentStatus::Error);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -356,12 +355,12 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
 
         // Then user manually send 
-        this.IntegrationHelpers.SetAPIWith200Code();
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
+        this.SetDocumentStatus(DocumentStatus::Processing);
         EDocumentPage.Send_Promoted.Invoke();
         EDocumentPage.Close();
 
@@ -394,7 +393,6 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
 
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPIWith200Code();
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
@@ -436,7 +434,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('ServiceDownHandler')]
     procedure SubmitDocumentServiceDown()
     var
         EDocument: Record "E-Document";
@@ -445,7 +443,6 @@ codeunit 148193 IntegrationTests
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith500Code();
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
@@ -490,6 +487,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
+    [HandlerFunctions('ReceiveDocumentHandler')]
     procedure SubmitGetDocuments()
     var
         EDocument: Record "E-Document";
@@ -514,7 +512,7 @@ codeunit 148193 IntegrationTests
         this.LibraryEDocument.RunImportJob();
 
         // Assert that we have Purchase Invoice created
-        this.Assert.AreEqual(EDocument.Count(), TmpDocCount + 1, 'The document was not imported!');
+        this.Assert.AreEqual(TmpDocCount + 1, EDocument.Count(), 'The document was not imported!');
     end;
 
     /// Enable test when migrated to HTTP client handler
@@ -553,27 +551,50 @@ codeunit 148193 IntegrationTests
     end;
 
     [HttpClientHandler]
-
     internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
-        I: Integer;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/oauth2/token'):
+            Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
                 LoadResourceIntoHttpResponse('AccessToken.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
-                LoadResourceIntoHttpResponse(('DocumentStatusProcessing.json'), Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/api/v2/Peppol/outbox/transactions'):
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
+                GetStatusResponse(Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions'):
                 LoadResourceIntoHttpResponse('SubmitDocumentResponse.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/response-pending/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
-                LoadResourceIntoHttpResponse('DocumentStatusProcessing.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/200/response-error/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
-                LoadResourceIntoHttpResponse('DocumentStatusError.json', Response);
-            Regex.IsMatch(Request.Path, 'https?://.+/signup/500/api/v2/Peppol/outbox/transactions'):
-                Response.HttpStatusCode := 500;
         end;
     end;
+
+    // Get https://edoc.exflow.io/api/v2/Peppol/inbox/transactions
+
+    [HttpClientHandler]
+    internal procedure ReceiveDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
+                LoadResourceIntoHttpResponse('AccessToken.json', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions'):
+                LoadResourceIntoHttpResponse('GetReceivedDocumentsRequest.txt', Response);
+        end;
+    end;
+
+
+    [HttpClientHandler]
+    internal procedure ServiceDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
+            LoadResourceIntoHttpResponse('AccessToken.json', Response)
+        else
+            Response.HttpStatusCode := 500;
+    end;
+
+    //Post https://login.microsoftonline.com/eef4ab2c-2b10-4380-bf4b-214157971162/oauth2/token
+    // Post https://edoc.exflow.io/api/v2/Peppol/outbox/transactions
+
 
     // Post https://localhost:8080/signup/oauth2/token
     // Post https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions
@@ -597,22 +618,18 @@ codeunit 148193 IntegrationTests
 
     local procedure Initialize()
     var
-        SignUpConnectionSetup:
-            Record "SignUp Connection Setup";
-        CompanyInformation:
-                Record "Company Information";
-        ServiceParticipant:
-                Record "Service Participant";
-        SignUpAuthentication:
-                Codeunit "SignUp Authentication";
+        SignUpConnectionSetup: Record "SignUp Connection Setup";
+        CompanyInformation: Record "Company Information";
+        ServiceParticipant: Record "Service Participant";
+        SignUpAuthentication: Codeunit "SignUp Authentication";
     begin
         this.AllowEDocConnectorHttpRequests();
         this.LibraryLowerPermissions.SetOutsideO365Scope();
 
         SignUpConnectionSetup.DeleteAll();
         SignUpAuthentication.InitConnectionSetup();
-        this.IntegrationHelpers.SetCommonConnectionSetup();
-        this.IntegrationHelpers.SetAPIWith200Code();
+        // this.IntegrationHelpers.SetCommonConnectionSetup();
+        // this.IntegrationHelpers.SetAPIWith200Code();
 
         if this.IsInitialized then
             exit;
@@ -740,5 +757,19 @@ codeunit 148193 IntegrationTests
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 
+    local procedure SetDocumentStatus(NewDocumentStatus: Option Processing,Error)
+    begin
+        this.DocumentStatus := NewDocumentStatus;
+    end;
+
+    local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
+    begin
+        case this.DocumentStatus of
+            this.DocumentStatus::Processing:
+                LoadResourceIntoHttpResponse('DocumentStatusProcessing.json', Response);
+            this.DocumentStatus::Error:
+                LoadResourceIntoHttpResponse('DocumentStatusError.json', Response);
+        end;
+    end;
     #endregion
 }
