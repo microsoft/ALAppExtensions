@@ -123,7 +123,8 @@ page 30171 "Shpfy Market Catalogs"
                 begin
                     if Shop.Get(Rec."Shop Code") then begin
                         CatalogAPI.SetShop(Shop);
-                        Hyperlink(CatalogAPI.GetMarketCatalogProductsURL(Rec."Market Id"));
+                        CatalogAPI.SetCatalogType(Rec."Catalog Type");
+                        Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec."Market Id"));
                     end;
                 end;
             }
@@ -144,14 +145,15 @@ page 30171 "Shpfy Market Catalogs"
                 trigger OnAction()
                 var
                     Shop: Record "Shpfy Shop";
-                    SyncMarketCatalogs: Report "Shpfy Sync Market Catalogs";
+                    SyncCatalogs: Report "Shpfy Sync Catalogs";
                 begin
                     if Rec.GetFilter("Shop Code") <> '' then begin
                         Shop.SetRange(Code, Rec.GetFilter("Shop Code"));
-                        SyncMarketCatalogs.SetTableView(Shop);
-                        SyncMarketCatalogs.UseRequestPage(false);
+                        SyncCatalogs.SetTableView(Shop);
+                        SyncCatalogs.UseRequestPage(false);
                     end;
-                    SyncMarketCatalogs.Run();
+                    SyncCatalogs.SetCatalogType(Rec."Catalog Type");
+                    SyncCatalogs.Run();
                 end;
             }
             action(PriceSync)

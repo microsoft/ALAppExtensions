@@ -15,6 +15,7 @@ codeunit 30290 "Shpfy Catalog API"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
+        CatalogType: Enum "Shpfy Catalog Type";
         ShopifyCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
         ShopifyMarketCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/settings/markets/%2/pricing', Comment = '%1 - Shop Name, %2 - Market Catalog Id', Locked = true;
         CatalogNotFoundLbl: Label 'Catalog is not found.';
@@ -332,17 +333,22 @@ codeunit 30290 "Shpfy Catalog API"
 
     internal procedure GetCatalogProductsURL(CatalogId: BigInteger): Text
     begin
-        exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
-    end;
-
-    internal procedure GetMarketCatalogProductsURL(MarketId: BigInteger): Text
-    begin
-        exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(MarketId)));
+        case CatalogType of
+            "Shpfy Catalog Type"::Company:
+                exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
+            "Shpfy Catalog Type"::Market:
+                exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
+        end;
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
         CommunicationMgt.SetShop(Shop);
+    end;
+
+    internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        CatalogType := ShopifyCatalogType;
     end;
 }

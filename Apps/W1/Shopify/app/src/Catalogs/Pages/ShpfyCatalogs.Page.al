@@ -124,6 +124,7 @@ page 30159 "Shpfy Catalogs"
                 begin
                     if Shop.Get(Rec."Shop Code") then begin
                         CatalogAPI.SetShop(Shop);
+                        CatalogAPI.SetCatalogType(Rec."Catalog Type");
                         Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec.Id));
                     end;
                 end;
@@ -152,6 +153,7 @@ page 30159 "Shpfy Catalogs"
                         SyncCatalogs.SetCompany(ShopifyCompany);
                         SyncCatalogs.UseRequestPage(false);
                     end;
+                    SyncCatalogs.SetCatalogType(Rec."Catalog Type");
                     SyncCatalogs.Run();
                 end;
             }

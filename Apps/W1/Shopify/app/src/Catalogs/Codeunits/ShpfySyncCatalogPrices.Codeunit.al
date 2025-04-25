@@ -113,5 +113,6 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
     internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
     begin
         CatalogType := ShopifyCatalogType;
+        CatalogAPI.SetCatalogType(ShopifyCatalogType);
     end;
 }
