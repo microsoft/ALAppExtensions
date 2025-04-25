@@ -36,7 +36,6 @@ tableextension 6101 "E-Doc. Account Payable Cue" extends "Account Payable Cue"
             FieldClass = FlowField;
             ToolTip = 'Number of E-Documents with errors.';
         }
-        //TODO Shouldnt we add Processing date to calculate when was the edocs processed?
         field(6103; "Processed E-Documents TM"; Integer)
         {
             CalcFormula = count("E-Document" where(Status = filter(Processed),
