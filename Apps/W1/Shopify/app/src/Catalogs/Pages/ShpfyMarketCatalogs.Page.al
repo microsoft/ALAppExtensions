@@ -47,6 +47,11 @@ page 30171 "Shpfy Market Catalogs"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the customer''s no.  When Customer No. is Selected: Parameters like ''Customer Discount Group'', ''Customer Price Group'', and ''Allow Line Discount'' on the customer card take precedence over catalog settings';
                 }
+                field("Currency Code"; Rec."Currency Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the currency code for the market catalog.';
+                }
                 field(CustomerPriceGroup; Rec."Customer Price Group")
                 {
                     ApplicationArea = All;

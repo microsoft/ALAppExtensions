@@ -6,6 +6,7 @@ using Microsoft.Foundation.Address;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.Currency;
 
 /// <summary>
 /// Table Shpfy Catalog (ID 30152).
@@ -127,6 +128,12 @@ table 30152 "Shpfy Catalog"
         {
             Caption = 'Catalog Type';
             DataClassification = CustomerContent;
+        }
+        field(20; "Currency Code"; Code[10])
+        {
+            Caption = 'Currency Code';
+            DataClassification = CustomerContent;
+            TableRelation = "Currency";
         }
     }
     keys

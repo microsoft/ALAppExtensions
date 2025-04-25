@@ -10,7 +10,7 @@ codeunit 30400 "Shpfy GQL Market Catalogs" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "{catalogs(first:25, type: MARKET, query: \"status:ACTIVE\"){ pageInfo{hasNextPage} edges{cursor node{ id title}}}}"}');
+        exit('{"query": "{ catalogs (first:25, type: MARKET, query: \"status:ACTIVE\"){ pageInfo{ hasNextPage } edges { cursor node { id title priceList { currency }}}}}"}');
     end;
 
     /// <summary>

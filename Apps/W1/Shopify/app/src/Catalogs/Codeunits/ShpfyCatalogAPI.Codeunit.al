@@ -258,13 +258,14 @@ codeunit 30290 "Shpfy Catalog API"
         JEdge: JsonToken;
         JNode: JsonObject;
         CatalogId: BigInteger;
-        MarketId: BigInteger;
+        CurrencyCode: Text;
     begin
         if JsonHelper.GetJsonArray(JResponse, JCatalogs, 'data.catalogs.edges') then begin
             foreach JEdge in JCatalogs do begin
                 Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
                 if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
                     CatalogId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                    CurrencyCode := JsonHelper.GetValueAsText(JNode, 'priceList.currency');
                     Catalog.SetRange(Id, CatalogId);
                     Catalog.SetRange("Catalog Type", "Shpfy Catalog Type"::Market);
                     if not Catalog.FindFirst() then begin
@@ -274,7 +275,8 @@ codeunit 30290 "Shpfy Catalog API"
                     end;
                     Catalog."Shop Code" := Shop.Code;
                     Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
-                    // TODO: Assign the market id to the catalog
+                    Catalog."Currency Code" := CopyStr(CurrencyCode, 1, MaxStrLen(Catalog."Currency Code"));
+                    // TODO: JZA Assign the market id to the catalog
                     // MarketId :=
                     Catalog.Modify(true);
                 end;
