@@ -143,12 +143,12 @@ page 30171 "Shpfy Market Catalogs"
 
                 trigger OnAction()
                 var
+                    Shop: Record "Shpfy Shop";
                     SyncMarketCatalogs: Report "Shpfy Sync Market Catalogs";
-                    ShopCode: Code[20];
                 begin
-                    ShopCode := CopyStr(Rec.GetFilter("Shop Code"), 1, MaxStrLen(ShopCode));
-                    if ShopCode <> '' then begin
-                        SyncMarketCatalogs.SetShop(ShopCode);
+                    if Rec.GetFilter("Shop Code") <> '' then begin
+                        Shop.SetRange(Code, Rec.GetFilter("Shop Code"));
+                        SyncMarketCatalogs.SetTableView(Shop);
                         SyncMarketCatalogs.UseRequestPage(false);
                     end;
                     SyncMarketCatalogs.Run();
@@ -170,13 +170,18 @@ page 30171 "Shpfy Market Catalogs"
                     SyncCatalogsPrices: Report "Shpfy Sync Catalog Prices";
                     BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                 begin
-                    if Rec.GetFilter("Company SystemId") <> '' then
-                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"))
-                    else begin
-                        Shop.SetRange(Code, Rec."Shop Code");
-                        SyncCatalogsPrices.SetTableView(Shop);
-                        SyncCatalogsPrices.Run();
+                    if Rec.GetFilter("Shop Code") <> '' then begin
+                        Shop.Get(Rec."Shop Code");
+                        if Shop."Allow Background Syncs" then
+                            BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"), Rec."Catalog Type")
+                        else begin
+                            Shop.SetRange(Code, Rec.GetFilter("Shop Code"));
+                            SyncCatalogsPrices.SetTableView(Shop);
+                            SyncCatalogsPrices.UseRequestPage(false);
+                        end;
                     end;
+                    SyncCatalogsPrices.SetCatalogType(Rec."Catalog Type");
+                    SyncCatalogsPrices.Run();
                 end;
             }
         }

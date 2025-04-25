@@ -1130,7 +1130,7 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.ProductPricesSync(Rec);
                         if Rec."B2B Enabled" then begin
                             BackgroundSyncs.CompanySync(Rec);
-                            BackgroundSyncs.CatalogPricesSync(Rec, '');
+                            BackgroundSyncs.CatalogPricesSync(Rec, '', "Shpfy Catalog Type"::" ");
                         end;
                     end;
                 }

@@ -24,7 +24,7 @@ report 30116 "Shpfy Sync Catalog Prices"
 
             trigger OnAfterGetRecord()
             begin
-                if CompanyId <> '' then
+                if (CatalogType = CatalogType::Company) and (CompanyId <> '') then
                     SyncCatalogPrices.SetCompanyId(CompanyId);
                 SyncCatalogPrices.Run(Shop);
             end;
@@ -51,4 +51,11 @@ report 30116 "Shpfy Sync Catalog Prices"
         SyncCatalogPrices: Codeunit "Shpfy Sync Catalog Prices";
         CompanyId: Text;
         NoShopSelectedErr: Label 'You must select a shop to sync prices for.';
+        CatalogType: Enum "Shpfy Catalog Type";
+
+    internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        CatalogType := ShopifyCatalogType;
+        SyncCatalogPrices.SetCatalogType(ShopifyCatalogType);
+    end;
 }

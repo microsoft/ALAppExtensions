@@ -172,10 +172,11 @@ page 30159 "Shpfy Catalogs"
                     BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                 begin
                     if Rec.GetFilter("Company SystemId") <> '' then
-                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"))
+                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"), Rec."Catalog Type")
                     else begin
                         Shop.SetRange(Code, Rec."Shop Code");
                         SyncCatalogsPrices.SetTableView(Shop);
+                        SyncCatalogsPrices.SetCatalogType(Rec."Catalog Type");
                         SyncCatalogsPrices.Run();
                     end;
                 end;

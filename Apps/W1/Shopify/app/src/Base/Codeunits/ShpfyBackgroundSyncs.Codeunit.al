@@ -453,31 +453,41 @@ codeunit 30101 "Shpfy Background Syncs"
         ProductsSync(Shop, true);
     end;
 
-    internal procedure CatalogPricesSync(ShopCode: Code[20]; CompanyId: Text)
+    internal procedure CatalogPricesSync(ShopCode: Code[20]; CompanyId: Text; ShopifyCatalogType: Enum "Shpfy Catalog Type")
     var
         Shop: Record "Shpfy Shop";
     begin
         if Shop.Get(ShopCode) then begin
             Shop.SetRecFilter();
-            CatalogPricesSync(Shop, CompanyId);
+            CatalogPricesSync(Shop, CompanyId, ShopifyCatalogType);
         end;
     end;
 
-    internal procedure CatalogPricesSync(var Shop: Record "Shpfy Shop"; CompanyId: Text)
+    internal procedure CatalogPricesSync(var Shop: Record "Shpfy Shop"; CompanyId: Text; ShopifyCatalogType: Enum "Shpfy Catalog Type")
     var
-        Parameters: Text;
         SyncTypeLbl: Label 'Catalog Prices';
-        CatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><Options><Field name="CompanyId">%1</Field></Options><DataItems><DataItem name="Shop">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Company Id, %2 = Shop Record View', Locked = true;
     begin
         Shop.SetRange("Allow Background Syncs", true);
-        if not Shop.IsEmpty then begin
-            Parameters := StrSubstNo(CatalogPricesParametersTxt, CompanyId, Shop.GetView());
-            EnqueueJobEntry(Report::"Shpfy Sync Catalog Prices", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeLbl, Shop.GetFilter(Code)), true, true);
-        end;
+        if not Shop.IsEmpty then
+            EnqueueJobEntry(Report::"Shpfy Sync Catalog Prices", GetSyncCatalogPricesParameters(Shop, CompanyId, ShopifyCatalogType), StrSubstNo(SyncDescriptionTxt, SyncTypeLbl, Shop.GetFilter(Code)), true, true);
+
         Shop.SetRange("Allow Background Syncs", false);
-        if not Shop.IsEmpty then begin
-            Parameters := StrSubstNo(CatalogPricesParametersTxt, CompanyId, Shop.GetView());
-            EnqueueJobEntry(Report::"Shpfy Sync Catalog Prices", Parameters, StrSubstNo(SyncDescriptionTxt, SyncTypeLbl, Shop.GetFilter(Code)), false, true);
+        if not Shop.IsEmpty then
+            EnqueueJobEntry(Report::"Shpfy Sync Catalog Prices", GetSyncCatalogPricesParameters(Shop, CompanyId, ShopifyCatalogType), StrSubstNo(SyncDescriptionTxt, SyncTypeLbl, Shop.GetFilter(Code)), false, true);
+    end;
+
+    local procedure GetSyncCatalogPricesParameters(var Shop: Record "Shpfy Shop"; CompanyId: Text; ShopifyCatalogType: Enum "Shpfy Catalog Type"): Text
+    var
+        CompanyCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><Options><Field name="CompanyId">%1</Field></Options><DataItems><DataItem name="Shop">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Company Id, %2 = Shop Record View', Locked = true;
+        MarketCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><DataItems><DataItem name="Shop">%1</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
+    begin
+        case ShopifyCatalogType of
+            ShopifyCatalogType::Company:
+                exit(StrSubstNo(CompanyCatalogPricesParametersTxt, CompanyId, Shop.GetView()));
+            ShopifyCatalogType::Market:
+                exit(StrSubstNo(MarketCatalogPricesParametersTxt, Shop.GetView()));
+            ShopifyCatalogType::" ":
+                exit(StrSubstNo(MarketCatalogPricesParametersTxt, Shop.GetView()));
         end;
     end;
 

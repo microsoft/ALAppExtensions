@@ -35,6 +35,7 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
         CatalogAPI: Codeunit "Shpfy Catalog API";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         CompanyId: Text;
+        CatalogType: Enum "Shpfy Catalog Type";
 
     internal procedure SyncCatalogPrices(var Catalog: Record "Shpfy Catalog")
     var
@@ -107,5 +108,10 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
     internal procedure SetCompanyId(ShopifyCompanyId: Text)
     begin
         CompanyId := ShopifyCompanyId;
+    end;
+
+    internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        CatalogType := ShopifyCatalogType;
     end;
 }
