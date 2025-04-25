@@ -106,9 +106,9 @@ codeunit 6120 "E-Doc. Transfer Shpt. To XML"
     end;
 
     /// <summary>
-    /// Gets the XML document as a tempblob
+    /// Gets the XML document as a temporary blob.
     /// </summary>
-    /// <param name="Return value: TempBlob"></param>
+    /// <param name="TempBlob">Return value: Temp Blob codeunit containing the document</param>
     internal procedure GetTransferShipmentXML(var TempBlob: Codeunit "Temp Blob")
     begin
         this.TransferShipmentXML.WriteTo(TempBlob.CreateOutStream());

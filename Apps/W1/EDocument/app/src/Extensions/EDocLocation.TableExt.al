@@ -9,9 +9,9 @@ tableextension 6102 "E-Doc. Location" extends Location
         field(6100; "Tranfer Doc. Sending Profile"; Code[10])
         {
             Caption = 'Transfer Doc. Sending Profile';
-            ToolTip = 'Specifies the document sending profile that is used for transfer shipment documents.';
             DataClassification = CustomerContent;
             TableRelation = "Document Sending Profile";
+            ToolTip = 'Specifies the document sending profile that is used for transfer shipment documents.';
         }
     }
 }

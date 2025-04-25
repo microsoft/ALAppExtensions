@@ -20,9 +20,9 @@ pageextension 6103 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Open E-Document';
+                    Enabled = HasEDocument;
                     Image = CopyDocument;
                     ToolTip = 'Opens electronic document card.';
-                    Enabled = HasEDocument;
 
                     trigger OnAction()
                     var
