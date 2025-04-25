@@ -586,6 +586,98 @@ codeunit 139881 "PowerBI Sales Test"
         Assert.AreEqual(OpportunityEntry."Sales Cycle Code", JsonMgt.GetValue('opportunityEntrySalesCycleCode'), 'Opportunity Entry Sales Cycle Code does not match.');
         Assert.AreEqual(Format(OpportunityEntry."Sales Cycle Stage"), JsonMgt.GetValue('opportunityEntrySalesCycleStage'), 'Opportunity Entry Sales Cycle Stage does not match.');
         Assert.AreEqual(OpportunityEntry."Sales Cycle Stage Description", JsonMgt.GetValue('opportunityEntrySalesCycleStageDescription'), 'Opportunity Entry Sales Cycle Stage Description does not match.');
+        Assert.AreEqual(OpportunityEntry."Close Opportunity Code", JsonMgt.GetValue('opportunityEntryCloseOpportunityCode'), 'Opportunity Entry Close Opportunity Code does not match.');
         Assert.AreEqual(OpportunityEntry."Contact No.", JsonMgt.GetValue('opportunityContactNo'), 'Opportunity Entry Contact No does not match.');
+    end;
+
+    [Test]
+    procedure TestGetSalesCycleStage()
+    var
+        SalesCycle: Record "Sales Cycle";
+        SalesCycleStage: Record "Sales Cycle Stage";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        Initialize();
+
+        // [GIVEN] A Sales Cycle Stage is created
+        if SalesCycle.FindLast() then;
+        SalesCycle.Init();
+        SalesCycle.Code := CopyStr(LibRandom.RandText(10), 1, 10);
+        SalesCycle.Insert();
+
+
+        if SalesCycleStage.FindLast() then;
+        SalesCycleStage.Init();
+        SalesCycleStage."Sales Cycle Code" := SalesCycle.Code;
+        SalesCycleStage.Description := CopyStr(LibRandom.RandText(100), 1, 100);
+        SalesCycleStage.Insert();
+        Commit();
+
+        // [WHEN] Get request for Sales Cycle Stage is made
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Cycle Stages");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'salesCycleCode eq ''' + SalesCycle.Code + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the sales cycle stage information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifySalesCycleStage(Response, SalesCycleStage);
+    end;
+
+    local procedure VerifySalesCycleStage(Response: Text; SalesCycleStage: Record "Sales Cycle Stage")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.salesCycleCode == ''' + SalesCycleStage."Sales Cycle Code" + ''')]'), 'Sales Cycle Code not found.');
+        Assert.AreEqual(SalesCycleStage."Sales Cycle Code", JsonMgt.GetValue('salesCycleCode'), 'Sales cycle code does not match.');
+        Assert.AreEqual(Format(SalesCycleStage.Stage, 0, 9), JsonMgt.GetValue('salesCycleStage'), 'Sales cycle stage does not match.');
+        Assert.AreEqual(SalesCycleStage.Description, JsonMgt.GetValue('salesCycleStageDescription'), 'Sales cycle description does not match.');
+    end;
+
+    [Test]
+    procedure TestCloseOpportunityCode()
+    var
+        CloseOpportunityCode: Record "Close Opportunity Code";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        Initialize();
+
+        // [GIVEN] A Close Opportunity Code is created
+        if CloseOpportunityCode.FindLast() then;
+        CloseOpportunityCode.Init();
+        CloseOpportunityCode.Code := CopyStr(LibRandom.RandText(10), 1, 10);
+        CloseOpportunityCode.Description := CopyStr(LibRandom.RandText(100), 1, 100);
+        CloseOpportunityCode.Type := CloseOpportunityCode.Type::Won;
+        CloseOpportunityCode.Insert();
+
+        Commit();
+
+        // [WHEN] Get request for  Close Opportunity Code is made
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Close Opporturnity Codes");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'closeOpportunityCode eq ''' + CloseOpportunityCode.Code + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the close oppportunity code information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifyCloseOpportunityCode(Response, CloseOpportunityCode);
+    end;
+
+    local procedure VerifyCloseOpportunityCode(Response: Text; CloseOpportunityCode: Record "Close Opportunity Code")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.closeOpportunityCode == ''' + CloseOpportunityCode.Code + ''')]'), 'Sales Cycle Code not found.');
+        Assert.AreEqual(CloseOpportunityCode.Code, JsonMgt.GetValue('closeOpportunityCode'), 'Close opportunity code does not match.');
+        Assert.AreEqual(CloseOpportunityCode.Description, JsonMgt.GetValue('closeOpportunityDescription'), 'Close opportunity description does not match.');
+        Assert.AreEqual(Format(CloseOpportunityCode.Type), JsonMgt.GetValue('closeOpportunityType'), 'Close opportunity type does not match.');
     end;
 }

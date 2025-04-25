@@ -21,9 +21,6 @@ codeunit 139643 "IS IRS - Tests"
     var
         PurchasesSetup: Record "Purchases & Payables Setup";
         InvtSetup: Record "Inventory Setup";
-#if not CLEAN24
-        ISCoreAppSetup: Record "IS Core App Setup";
-#endif
     begin
         if Initialized then
             exit;
@@ -36,14 +33,6 @@ codeunit 139643 "IS IRS - Tests"
         PurchasesSetup.Validate("Ext. Doc. No. Mandatory", false);
         PurchasesSetup.Modify();
 
-#if not CLEAN24
-        if not ISCoreAppSetup.Get() then begin
-            ISCoreAppSetup.Init();
-            ISCoreAppSetup.Insert();
-        end;
-        ISCoreAppSetup.Enabled := true;
-        ISCoreAppSetup.Modify(false);
-#endif
         LibraryInvt.NoSeriesSetup(InvtSetup);
 
         Commit();
@@ -369,4 +358,3 @@ codeunit 139643 "IS IRS - Tests"
         ISIRSNotification.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 }
-

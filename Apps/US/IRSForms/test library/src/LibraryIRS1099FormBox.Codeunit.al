@@ -182,6 +182,16 @@ codeunit 148004 "Library IRS 1099 Form Box"
         IRS1099VendorFormBox.PropagateVendorFormBoxSetupToExistingEntries(IRS1099VendorFormBoxSetup);
     end;
 
+    procedure PropagateVendorFormBoxSetupToVendorLedgerEntries(StartingDate: Date; EndingDate: Date; PeriodNo: Code[20]; VendorNoFilter: Text)
+    var
+        IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
+    begin
+        IRS1099VendorFormBoxSetup.SetRange("Period No.", PeriodNo);
+        IRS1099VendorFormBoxSetup.SetFilter("Vendor No.", VendorNoFilter);
+        IRS1099VendorFormBoxSetup.FindSet();
+        IRS1099VendorFormBox.PropagateVendorsFormBoxSetupToExistingEntries(IRS1099VendorFormBoxSetup);
+    end;
+
     procedure VerifyFormBoxSetupCountForVendors(StartingDate: Date; EndingDate: Date; ExpectedCount: Integer)
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";

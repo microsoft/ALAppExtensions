@@ -174,6 +174,12 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetPageUrlFromObjectId(Page::"Return Reason Code - PBI API"));
             PowerBIEndpoint::"Inv. Adj. Ent Order":
                 exit(GetQueryUrlFromObjectId(Query::"Inv. Adj. Ent Order - PBI API"));
+            PowerBIEndpoint::"Close Opporturnity Codes":
+                exit(GetPageUrlFromObjectId(Page::"Close Opp. Code - PBI API"));
+            PowerBIEndpoint::"Sales Cycle Stages":
+                exit(GetPageUrlFromObjectId(Page::"Sales Cycle Stage - PBI API"));
+            PowerBIEndpoint::"Sustainability Goals":
+                exit(GetQueryUrlFromObjectId(Query::"Sustainability Goals - PBI API"));
         end;
     end;
 

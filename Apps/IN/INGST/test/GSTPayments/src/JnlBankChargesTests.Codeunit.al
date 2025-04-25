@@ -360,6 +360,35 @@ codeunit 18273 "Jnl Bank Charges Tests"
         VerifyGLEntryCount(GenJournalLine."Document Type"::Payment, DocumentNo, 34);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromBankReceiptVoucherWithCurrencyCodeBankChargesAvailment()
+    var
+        BankAccount: Record "Bank Account";
+        GenJournalLine: Record "Gen. Journal Line";
+        Customer: Record Customer;
+        DocumentNo: Code[20];
+        VoucherType: Enum "Gen. Journal Template Type";
+        GSTCustomerType: Enum "GST Customer Type";
+    begin
+        // [SCENARIO] [Bank charge on voucher- Gst Rounding precision issue]
+        Initialize();
+        // [GIVEN] Created GST Setup and Bank Charges Setup 
+        CreateGSTSetup(GSTCustomerType::Registered, false);
+        Customer.Get(LibraryStorage.Get(CustomerNoLbl));
+        Customer.Validate("Currency Code", 'USD');
+        Customer.Modify();
+        CreateForexBankChargeSetup(BankAccount, VoucherType::"Bank Receipt Voucher", true);
+
+        // [WHEN] Create and Post Bank Receipt Voucher with Bank Charges
+        CreateGenJournalLineForCustomerToBank(GenJournalLine, BankAccount."No.");
+        DocumentNo := CreateJournalBankCharge(GenJournalLine, LibraryRandom.RandDecInRange(1, 500, 0));
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [THEN] GST ledger entries are created and Verified
+        VerifyGLEntryCount(GenJournalLine."Document Type"::Payment, DocumentNo, 3);
+    end;
+
     local procedure Initialize()
     begin
         FillCompanyInformation();
@@ -707,6 +736,34 @@ codeunit 18273 "Jnl Bank Charges Tests"
         CreateSecondBankCharge(ForeignExchange);
     end;
 
+    local procedure CreateForexBankChargeSetup(
+        var BankAccount: Record "Bank Account";
+        VoucherType: Enum "Gen. Journal Template Type";
+        IntraState: Boolean)
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        FromState: Record State;
+        ToState: Record State;
+    begin
+        LibraryERM.CreateBankAccount(BankAccount);
+        FromState.Get(LibraryStorage.Get(FromStateCodeLbl));
+        ToState.Get(LibraryStorage.Get(ToStateCodeLbl));
+        if IntraState then
+            BankAccount.Validate("State Code", LibraryStorage.Get(ToStateCodeLbl))
+        else
+            BankAccount.Validate("State Code", LibraryStorage.Get(FromStateCodeLbl));
+        BankAccount.Validate("GST Registration No.", LibraryGST.GenerateGSTRegistrationNo(CopyStr(ToState."State Code (GST Reg. No.)", 1, 2), LibraryGST.CreatePANNos()));
+        BankAccount.Validate("GST Registration Status", BankAccount."GST Registration Status"::Registered);
+        BankAccount.Modify(true);
+        LibraryStorage.Set(BankAccountLbl, BankAccount."No.");
+        CreateNoSeries();
+        CreateVoucherAccountSetup(VoucherType, CopyStr(LibraryStorage.Get(LocationCodeLbl), 1, 10));
+        CreateGenJnlTemplateAndBatch(GenJournalTemplate, GenJournalBatch, CopyStr(LibraryStorage.Get(LocationCodeLbl), 1, 10), VoucherType);
+        CreateBankCharge(false);
+        CreateForexExchangeSecondBankCharge(true);
+    end;
+
     local procedure CreateBankCharge(ForeignExchange: Boolean)
     var
         BankCharge: Record "Bank Charge";
@@ -755,6 +812,31 @@ codeunit 18273 "Jnl Bank Charges Tests"
         LibraryStorage.Set(SecondBankChargeLbl, BankCharge.Code);
         if ForeignExchange then
             CreateBankDeemedValueSetup();
+    end;
+
+    local procedure CreateForexExchangeSecondBankCharge(ForeignExchange: Boolean)
+    var
+        BankCharge: Record "Bank Charge";
+        GLAccount: Record "G/L Account";
+        InputCreditAvailment: Boolean;
+    begin
+        LibraryERM.CreateGLAccount(GLAccount);
+        BankCharge.Init();
+        BankCharge.Validate(Code, LibraryUtility.GenerateRandomCode(BankCharge.FieldNo(Code), Database::"Bank Charge"));
+        BankCharge.Validate(Description, BankCharge.Code);
+        BankCharge.Validate(Account, GLAccount."No.");
+        BankCharge.Validate("Foreign Exchange", ForeignExchange);
+        BankCharge.Validate("GST Group Code", LibraryStorage.Get(GSTGroupCodeLbl));
+        BankCharge.Validate("HSN/SAC Code", LibraryStorage.Get(HSNSACCodeLbl));
+        Evaluate(InputCreditAvailment, LibraryStorage.Get(InputCreditAvailmentLbl));
+        if InputCreditAvailment then
+            BankCharge.Validate("GST Credit", BankCharge."GST Credit"::Availment)
+        else
+            BankCharge.Validate("GST Credit", BankCharge."GST Credit"::"Non-Availment");
+        BankCharge.Insert();
+        LibraryStorage.Set(SecondBankChargeLbl, BankCharge.Code);
+        if ForeignExchange then
+            CreateBankDeemedValueSetupWithForexExchange();
     end;
 
     procedure CreateGLAccountWithStraightLineDeferral(var DeferralCode: Code[10]): Code[20]
@@ -836,6 +918,22 @@ codeunit 18273 "Jnl Bank Charges Tests"
         BankChargeDeemedValueSetup.Init();
         BankChargeDeemedValueSetup.Validate("Bank Charge Code", LibraryStorage.Get(BankChargeLbl));
         BankChargeDeemedValueSetup.Validate("Lower Limit", LibraryRandom.RandDecInRange(0, 500, 0));
+        BankChargeDeemedValueSetup.Validate("Upper Limit", LibraryRandom.RandDecInRange(500, 1000, 0));
+        BankChargeDeemedValueSetup.Validate(Formula, BankChargeDeemedValueSetup.Formula::Comparative);
+        BankChargeDeemedValueSetup.Validate("Min. Deemed Value", LibraryRandom.RandDecInRange(500, 1000, 0));
+        BankChargeDeemedValueSetup.Validate("Max. Deemed Value", LibraryRandom.RandDecInRange(500, 1000, 0));
+        BankChargeDeemedValueSetup.Validate("Deemed %", LibraryRandom.RandDecInRange(500, 1000, 0));
+        BankChargeDeemedValueSetup.Validate("Fixed Amount", LibraryRandom.RandDecInRange(100, 500, 0));
+        BankChargeDeemedValueSetup.Insert();
+    end;
+
+    local procedure CreateBankDeemedValueSetupWithForexExchange()
+    var
+        BankChargeDeemedValueSetup: Record "Bank Charge Deemed Value Setup";
+    begin
+        BankChargeDeemedValueSetup.Init();
+        BankChargeDeemedValueSetup.Validate("Bank Charge Code", LibraryStorage.Get(SecondBankChargeLbl));
+        BankChargeDeemedValueSetup."Lower Limit" := LibraryRandom.RandDecInRange(0, 500, 0);
         BankChargeDeemedValueSetup.Validate("Upper Limit", LibraryRandom.RandDecInRange(500, 1000, 0));
         BankChargeDeemedValueSetup.Validate(Formula, BankChargeDeemedValueSetup.Formula::Comparative);
         BankChargeDeemedValueSetup.Validate("Min. Deemed Value", LibraryRandom.RandDecInRange(500, 1000, 0));

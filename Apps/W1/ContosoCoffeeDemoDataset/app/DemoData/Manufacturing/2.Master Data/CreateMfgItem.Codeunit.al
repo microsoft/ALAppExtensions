@@ -1,4 +1,17 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Manufacturing;
+
+using Microsoft.Inventory.Item;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
+using Microsoft.Manufacturing.StandardCost;
+using Microsoft.Inventory.Costing;
+using Microsoft.Manufacturing.Setup;
+
 codeunit 4770 "Create Mfg Item"
 {
     InherentEntitlements = X;
@@ -34,64 +47,64 @@ codeunit 4770 "Create Mfg Item"
         // Contoso coffee 
         // Manufacturing scenario #1: BOM/Routing/Standard Cost/Prod Order
         ContosoItem.InsertItem(SPSCM1009(), Enum::"Item Type"::Inventory, AirpotTok, ContosoUtilities.AdjustPrice(399), 0, CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), MfgPostingGroup.Finished(), Enum::"Costing Method"::Standard, DefaultUOMCode, MfgItemCategory.CommercialModelCode(), '',
-            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 0.001, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotPicture(), '');
+            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 0.001, '', '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotPicture(), '');
 
         ContosoItem.InsertItem('SP-SCM1008', Enum::"Item Type"::Inventory, AirpotLiteTok, ContosoUtilities.AdjustPrice(349), 0, CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), MfgPostingGroup.Finished(), Enum::"Costing Method"::Standard, DefaultUOMCode, MfgItemCategory.CommercialModelCode(), '',
-            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotLiteWhitePicture(), '');
+            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotLiteWhitePicture(), '');
 
         ContosoItem.InsertItem(SPBOM2000(), Enum::"Item Type"::Inventory, ReservoirAssemblyTok, 0, 0, CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM2001(), Enum::"Item Type"::Inventory, ReservoirTok, 0, ContosoUtilities.AdjustPrice(14.94), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '266666', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '266666', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM2002(), Enum::"Item Type"::Inventory, HeatingElementTok, 0, ContosoUtilities.AdjustPrice(24.24), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45455', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45455', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM2003(), Enum::"Item Type"::Inventory, WaterTubingTok, 0, ContosoUtilities.AdjustPrice(6.93), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '11111', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '11111', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM2004(), Enum::"Item Type"::Inventory, ReservoirTestKitTok, 0, ContosoUtilities.AdjustPrice(18), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'A-12122', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'A-12122', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM2005(), Enum::"Item Type"::"Non-Inventory", SiliconeAdhesiveTok, 0, ContosoUtilities.AdjustPrice(17.16), CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, '', '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '232002', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '232002', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1101(), Enum::"Item Type"::Inventory, HousingAirpotTok, 0, ContosoUtilities.AdjustPrice(36.26), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'ADG-4577', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'ADG-4577', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1102(), Enum::"Item Type"::Inventory, FilterBasketTok, 0, ContosoUtilities.AdjustPrice(28.13), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'GG-78827', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'GG-78827', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1103(), Enum::"Item Type"::Inventory, FootTok, 0, ContosoUtilities.AdjustPrice(2.99), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '4577-4555', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '4577-4555', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1104(), Enum::"Item Type"::Inventory, WarmingPlateTok, 0, ContosoUtilities.AdjustPrice(14.61), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'WW4577', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'WW4577', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1105(), Enum::"Item Type"::Inventory, SwitchOnOffTok, 0, ContosoUtilities.AdjustPrice(3.11), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'HH-45888', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'HH-45888', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1106(), Enum::"Item Type"::Inventory, OnOffLightTok, 0, ContosoUtilities.AdjustPrice(3.05), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'PP-45656', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'PP-45656', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1107(), Enum::"Item Type"::Inventory, CircuitBoardTok, 0, ContosoUtilities.AdjustPrice(6.23), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'PP-7397', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'PP-7397', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1108(), Enum::"Item Type"::Inventory, PowerCordTok, 0, ContosoUtilities.AdjustPrice(5.99), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45888', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45888', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1109(), Enum::"Item Type"::Inventory, GlassCarafeTok, 0, ContosoUtilities.AdjustPrice(16.01), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45889', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '45889', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1110(), Enum::"Item Type"::"Non-Inventory", MachineScrewPanHeadTok, 0, ContosoUtilities.AdjustPrice(0.1), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-812', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-812', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1111(), Enum::"Item Type"::"Non-Inventory", NutTok, 0, ContosoUtilities.AdjustPrice(0.06), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-816', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-816', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1112(), Enum::"Item Type"::"Non-Inventory", WasherTok, 0, ContosoUtilities.AdjustPrice(0.05), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), '', Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-819', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-819', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
     end;
 
     local procedure CreateItemTrackingItems()
@@ -101,16 +114,16 @@ codeunit 4770 "Create Mfg Item"
         // Manufacturing scenario #2: Item Tracking: consumption/output
         // Dependency scenario #1
         ContosoItem.InsertItem(SPSCM1011(), Enum::"Item Type"::Inventory, AirpotDuoTok, ContosoUtilities.AdjustPrice(499), 0, CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), MfgPostingGroup.Finished(), Enum::"Costing Method"::Specific, DefaultUOMCode, MfgItemCategory.CommercialModelCode(), CommonItemTracking.SNSpecificTrackingCode(),
-            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotDuoPicture(), '');  //Item Tracking SNALL
+            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAirPotDuoPicture(), '');  //Item Tracking SNALL
 
         ContosoItem.InsertItem(SPBOM1201(), Enum::"Item Type"::Inventory, HousingAirpotDuoTok, 0, ContosoUtilities.AdjustPrice(34.1), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'A-4577', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), 'A-4577', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM1207(), Enum::"Item Type"::Inventory, IoTSensorTok, 0, ContosoUtilities.AdjustPrice(8.88), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), CommonItemTracking.SNSpecificTrackingCode(),
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '2777775', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');  //Item Tracking SNALL
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '2777775', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');  //Item Tracking SNALL
 
         ContosoItem.InsertItem(SPBOM1208(), Enum::"Item Type"::Inventory, FaciaPanelWithDisplayTok, 0, ContosoUtilities.AdjustPrice(14.11), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-45888', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 1, CommonVendor.DomesticVendor1(), '88-45888', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
     end;
 
     local procedure CreateFlushingItems()
@@ -141,16 +154,16 @@ codeunit 4770 "Create Mfg Item"
         // Manufacturing scenario #4: Variants, Phantom BOM
         // Dependency scenario #1,2,3 (reuse components)
         ContosoItem.InsertItem(SPSCM1006(), Enum::"Item Type"::Inventory, AutoDripLiteTok, ContosoUtilities.AdjustPrice(149), 0, CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), MfgPostingGroup.Finished(), Enum::"Costing Method"::FIFO, DefaultUOMCode, MfgItemCategory.ConsumerModelCode(), '',
-            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAutoDripLiteBlackPicture(), '');
+            0, '', '', 10, Enum::"Replenishment System"::"Prod. Order", 1, '', '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ManufacturingMedia.GetAutoDripLiteBlackPicture(), '');
 
         ContosoItem.InsertItem(SPBOM3001(), Enum::"Item Type"::Inventory, PaintBlackTok, 0, ContosoUtilities.AdjustPrice(1.6), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, CommonUOM.Can(), MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B1', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B1', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM3002(), Enum::"Item Type"::Inventory, PaintRedTok, 0, ContosoUtilities.AdjustPrice(1.6), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, CommonUOM.Can(), MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B2', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B2', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
 
         ContosoItem.InsertItem(SPBOM3003(), Enum::"Item Type"::Inventory, PaintWhiteTok, 0, ContosoUtilities.AdjustPrice(1.6), CommonPostingGroup.RawMaterial(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.RawMaterial(), Enum::"Costing Method"::FIFO, CommonUOM.Can(), MfgItemCategory.PartCode(), '',
-            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B3', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
+            0, '', '', 0, Enum::"Replenishment System"::Purchase, 0.001, CommonVendor.DomesticVendor1(), '4599-B3', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::"Lot-for-Lot", true, '<1W>', ContosoUtilities.EmptyPicture(), '');
     end;
 
     var

@@ -20,19 +20,15 @@ codeunit 14602 "IS Core Upgrade"
 
     local procedure TransferISCpecificData()
     var
-#if CLEAN24
         UpgradeTag: Codeunit "Upgrade Tag";
         EnableISCoreApp: Codeunit "Enable IS Core App";
-#endif
     begin
-#if CLEAN24
         if UpgradeTag.HasUpgradeTag(EnableISCoreApp.GetISCoreAppUpdateTag()) then
             exit;
             
         EnableISCoreApp.TransferData();
 
         UpgradeTag.SetUpgradeTag(EnableISCoreApp.GetISCoreAppUpdateTag());
-#endif
     end;
 
     local procedure UpdateDocumentRetentionPeriod()

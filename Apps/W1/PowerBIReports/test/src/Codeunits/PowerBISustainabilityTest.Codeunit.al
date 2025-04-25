@@ -3,7 +3,10 @@ namespace Microsoft.Finance.PowerBIReports.Test;
 using Microsoft.HumanResources.Payables;
 using Microsoft.PowerBIReports.Test;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Scorecard;
+using Microsoft.Inventory.Location;
 using System.Text;
+using System.Security.User;
 
 codeunit 139890 "PowerBI Sustainability Test"
 {
@@ -138,5 +141,94 @@ codeunit 139890 "PowerBI Sustainability Test"
         Assert.AreEqual(EmployeeLedgerEntry."Description", JsonMgt.GetValue('description'), 'Description No did not match.');
         Assert.AreEqual(Format(EmployeeLedgerEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension Set ID did not match.');
         Assert.AreEqual(Format(EmployeeLedgerEntry.Amount / 1.0, 0, 9), JsonMgt.GetValue('amount'), 'Amount does not match.');
+    end;
+
+    [Test]
+    procedure TestSustainabilityGoal()
+    var
+        SustainabilityGoal: Record "Sustainability Goal";
+        SustainabilityScorecard: Record "Sustainability Scorecard";
+        UserSetup: Record "User Setup";
+        RespCenter: Record "Responsibility Center";
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Insert a Sustainability Goal
+
+        if not UserSetup.Get(UserId()) then begin
+            UserSetup.Init();
+            UserSetup."User ID" := CopyStr(UserId(), 1, 50);
+            UserSetup."Sustainability Manager" := true;
+            UserSetup.Insert();
+        end else begin
+            UserSetup."Sustainability Manager" := true;
+            UserSetup.Modify();
+        end;
+
+        if not RespCenter.FindFirst() then begin
+            RespCenter.Init();
+            RespCenter.Code := CopyStr(LibRandom.RandText(10), 1, 10);
+            RespCenter.Insert();
+        end;
+
+
+        SustainabilityScorecard.Init();
+        SustainabilityScorecard."No." := CopyStr(LibRandom.RandText(20), 1, 20);
+        SustainabilityScorecard.Name := CopyStr(LibRandom.RandText(100), 1, 100);
+        SustainabilityScorecard.Insert();
+
+        SustainabilityGoal.Init();
+        SustainabilityGoal."No." := CopyStr(LibRandom.RandText(20), 1, 20);
+        SustainabilityGoal."Scorecard No." := SustainabilityScorecard."No.";
+        SustainabilityGoal."Line No." := LibRandom.RandInt(10);
+        SustainabilityGoal.Name := CopyStr(LibRandom.RandText(100), 1, 100);
+        SustainabilityGoal.Owner := UserSetup."User ID";
+        SustainabilityGoal."Country/Region Code" := 'US';
+        SustainabilityGoal."Responsibility Center" := RespCenter.Code;
+        SustainabilityGoal."Start Date" := WorkDate();
+        SustainabilityGoal."End Date" := WorkDate() + 30;
+        SustainabilityGoal."Target Value for CO2" := LibRandom.RandDec(50, 2);
+        SustainabilityGoal."Target Value for CH4" := LibRandom.RandDec(50, 2);
+        SustainabilityGoal."Target Value for N2O" := LibRandom.RandDec(50, 2);
+        SustainabilityGoal."Target Value for Waste Int." := LibRandom.RandDec(50, 2);
+        SustainabilityGoal."Target Value for Water Int." := LibRandom.RandDec(50, 2);
+        SustainabilityGoal."Main Goal" := true;
+        SustainabilityGoal."Baseline Start Date" := WorkDate();
+        SustainabilityGoal."Baseline End Date" := WorkDate() + 30;
+        SustainabilityGoal.Insert();
+        Commit();
+
+        // [WHEN] Get request for Sustainability Goal is made
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sustainability Goals");
+        LibGraphMgt.GetFromWebService(Response, TargetURL);
+
+        // [THEN] The response contains the sustainability goal information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifySustainabilityGoal(Response, SustainabilityGoal);
+    end;
+
+    procedure VerifySustainabilityGoal(Response: Text; SustainabilityGoal: Record "Sustainability Goal")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.no == ''' + SustainabilityGoal."No." + ''')]'), 'Sustainability goal not found.');
+        Assert.AreEqual(SustainabilityGoal."No.", JsonMgt.GetValue('no'), 'No. did not match.');
+        Assert.AreEqual(SustainabilityGoal."Scorecard No.", JsonMgt.GetValue('scoreCardNo'), 'Scorecard No. did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Line No.", 0, 9), JsonMgt.GetValue('lineNo'), 'Line No. did not match.');
+        Assert.AreEqual(SustainabilityGoal.Name, JsonMgt.GetValue('name'), 'Name did not match.');
+        Assert.AreEqual(SustainabilityGoal.Owner, JsonMgt.GetValue('owner'), 'Owner did not match.');
+        Assert.AreEqual(SustainabilityGoal."Country/Region Code", JsonMgt.GetValue('countryRegion'), '"Country/Region Code did not match.');
+        Assert.AreEqual(SustainabilityGoal."Responsibility Center", JsonMgt.GetValue('responsibilityCentre'), 'Responsibility Center did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Target Value for CO2" / 1.0, 0, 9), JsonMgt.GetValue('targetValueForCo2'), 'Target Value for CO2 did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Target Value for CH4" / 1.0, 0, 9), JsonMgt.GetValue('targetValueForCh4'), 'Target Value for CH4 did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Target Value for N2O" / 1.0, 0, 9), JsonMgt.GetValue('targetValueForN2O'), 'Target Value for N2O did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Target Value for Water Int." / 1.0, 0, 9), JsonMgt.GetValue('targetValueForWaterIntensity'), 'Target Value For Water Intensity did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Target Value for Waste Int." / 1.0, 0, 9), JsonMgt.GetValue('targetValueForWasteIntensity'), 'Target Value For Waste Intensity did not match.');
+        Assert.AreEqual(SustainabilityGoal."Main Goal" ? 'True' : 'False', JsonMgt.GetValue('mainGoal'), 'Main Goal did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Start Date", 0, 9), JsonMgt.GetValue('startDate'), 'Start Date did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."End Date", 0, 9), JsonMgt.GetValue('endDate'), 'End Date did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Baseline Start Date", 0, 9), JsonMgt.GetValue('baselineStartDate'), 'Baseline Start Date did not match.');
+        Assert.AreEqual(Format(SustainabilityGoal."Baseline End Date", 0, 9), JsonMgt.GetValue('baselineEndDate'), 'Baseline End Date did not match.');
     end;
 }

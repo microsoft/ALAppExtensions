@@ -1,4 +1,13 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Period;
+
 codeunit 5225 "Create Accounting Period"
 {
     InherentEntitlements = X;
@@ -41,7 +50,7 @@ codeunit 5225 "Create Accounting Period"
         AccountingPeriod.SetRange("Starting Date", FiscalYearStartDate, FiscalYearEndDate);
         AccountingPeriod.ModifyAll(Closed, true);
 
-        AccountingPeriod.SetRange("Starting Date", FiscalYearStartDate, FiscalYearEndDate);
+        AccountingPeriod.SetRange("Starting Date", FiscalYearStartDate, CalcDate('<1M>', FiscalYearEndDate));
         AccountingPeriod.ModifyAll("Date Locked", true);
     end;
 }

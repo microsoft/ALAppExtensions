@@ -273,6 +273,46 @@ codeunit 139883 "E-Doc Process Test"
         Assert.RecordIsEmpty(PurchaseHeader);
     end;
 
+    #region HistoricalMatchingTest
+
+    [Test]
+    procedure AddHistoricalMatches()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EDocRecordLink: Record "E-Doc. Record Link";
+    begin
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+
+        EDocRecordLink.DeleteAll();
+
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams);
+
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+
+        EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Header");
+        EDocRecordLink.SetRange("Target SystemId", PurchaseHeader.SystemId);
+        Assert.RecordCount(EDocRecordLink, 1);
+
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        if PurchaseLine.FindSet() then
+            repeat
+                EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Line");
+                EDocRecordLink.SetRange("Target SystemId", PurchaseLine.SystemId);
+                Assert.RecordCount(EDocRecordLink, 1);
+            until PurchaseLine.Next() = 0;
+    end;
+
+    #endregion
+
+
     local procedure Initialize(Integration: Enum "Service Integration")
     var
         TransformationRule: Record "Transformation Rule";
@@ -306,4 +346,6 @@ codeunit 139883 "E-Doc Process Test"
 
         IsInitialized := true;
     end;
+
+
 }

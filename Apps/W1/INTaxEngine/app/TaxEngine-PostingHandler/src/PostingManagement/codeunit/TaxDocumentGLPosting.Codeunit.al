@@ -89,7 +89,7 @@ codeunit 20341 "Tax Document GL Posting"
     begin
         if QtyToInvoice = 0 then
             exit;
-            
+
         TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", RecID);
         if TaxTransactionValue.FindSet() then
@@ -340,8 +340,14 @@ codeunit 20341 "Tax Document GL Posting"
         ReversalAmount: Decimal;
         ReversalAmountLCY: Decimal;
         DocumentRecord: Variant;
+        IsHandled: Boolean;
     begin
+        OnBeforePostTaxJournal(GenJnlPostLine, GenJournalLine, IsHandled);
+        if IsHandled then
+            exit;
+
         TaxPostingBufferMgmt.GetGroupTaxJournal(GenJournalLine."Tax ID", TransactionPostingBuffer);
+        OnFindTransationPostingBuffer(TransactionPostingBuffer, GenJnlPostLine, GenJournalLine);
         if TransactionPostingBuffer.FindSet() then
             repeat
                 if TransactionPostingBuffer."Account No." <> '' then begin
@@ -373,6 +379,7 @@ codeunit 20341 "Tax Document GL Posting"
                         TaxGenJnlLine.Validate("Amount (LCY)", TransactionPostingBuffer."Amount (LCY)");
                     end;
 
+                    OnAfterCopyTaxGenJnlLine(TaxGenJnlLine, GenJournalLine, TransactionPostingBuffer, GenJnlPostLine);
                     if TaxGenJnlLine.Amount <> 0 then
                         TransactionPostingBuffer."G/L Entry No" := GenJnlPostLine.RunWithCheck(TaxGenJnlLine);
                 end;
@@ -401,6 +408,8 @@ codeunit 20341 "Tax Document GL Posting"
                         TaxGenJnlLine."Shortcut Dimension 2 Code");
 
                     TaxGenJnlLine."Posting No. Series" := GenJournalLine."Posting No. Series";
+
+                    OnAfterCopyTaxGenJnlLineForReverseCharge(TaxGenJnlLine, GenJournalLine, TransactionPostingBuffer, GenJnlPostLine, TempTransactionValue);
                     GenJnlPostLine.RunWithCheck(TaxGenJnlLine);
                 end;
                 TaxPostingBufferMgmt.ClearGroupingBuffers(TransactionPostingBuffer, TempTransactionValue);
@@ -477,6 +486,26 @@ codeunit 20341 "Tax Document GL Posting"
 
     [IntegrationEvent(false, false)]
     procedure OnPrepareTransValueToPost(var TempTransValue: Record "Tax Transaction Value" temporary; var IsModified: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnBeforePostTaxJournal(var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnFindTransationPostingBuffer(var TransactionPostingBuffer: Record "Transaction Posting Buffer" temporary; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyTaxGenJnlLineForReverseCharge(var TaxGenJnlLine: Record "Gen. Journal Line"; var GenJournalLine: Record "Gen. Journal Line"; TransactionPostingBuffer: Record "Transaction Posting Buffer" temporary; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var TempTransactionValue: Record "Tax Transaction Value" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyTaxGenJnlLine(var TaxGenJnlLine: Record "Gen. Journal Line"; var GenJournalLine: Record "Gen. Journal Line"; TransactionPostingBuffer: Record "Transaction Posting Buffer" temporary; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     begin
     end;
 

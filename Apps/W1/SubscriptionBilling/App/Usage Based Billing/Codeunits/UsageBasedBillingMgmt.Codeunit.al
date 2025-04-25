@@ -15,7 +15,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         FieldMustBeFilledErr: Label 'The Field "%1" must contain a value.', Comment = '%1 = Field name';
         ProgressLbl: Label '#1###################################### \Progress @2@@@@@@@@@@@@@@@@@@';
         ProcessingInterruptedTxt: Label 'Processing interrupted.';
-        ItemBlockedErr: Label 'You cannot connect Subscription to Subscription %1 because Item %2 from Subscription is blocked.', Comment = '%1 = Subscription No., %2 = Item No.';
+        ItemBlockedErr: Label 'You cannot connect Supplier Subscription to Subscription %1 because Item %2 from Subscription is blocked.', Comment = '%1 = Subscription No., %2 = Item No.';
         MultipleServiceObjectsQst: Label 'Subscription %1 is to be connected with the entry %2 and other subscriptions. Continue?', Comment = '%1 = Subscription No., %2 = Usage Data Subscription Entry No.';
         NoReferenceCommitmentFoundErr: Label 'For Item "%1" no Subscription Line with %2 was found.', Comment = '%1 = Item No., %2 = Usage Based Billing flag';
         DisconnectFromSubscriptionQst: Label 'Do you want to disconnect from the subscription?';

@@ -180,6 +180,14 @@ codeunit 18246 "GST Journal Validations"
             JnlBankCharges.TestField("GST Group Code");
     end;
 
+    procedure JournalBankChargesforForexExchangeGSTInvRounding(var JnlBankCharges: Record "Journal Bank Charges")
+    begin
+        if JnlBankCharges."Foreign Exchange" then begin
+            GetRoundingPrecision(JnlBankCharges);
+            JnlBankCharges.Modify();
+        end;
+    end;
+
     procedure Clearfields(var JnlBankCharges: Record "Journal Bank Charges")
     begin
         Clear(JnlBankCharges.Amount);

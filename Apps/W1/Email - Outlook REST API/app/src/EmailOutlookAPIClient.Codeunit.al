@@ -9,14 +9,10 @@ using System.Azure.Identity;
 using System.Text;
 using System.Utilities;
 
-#if not CLEAN24
-codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client", "Email - Outlook API Client v2", "Email - Outlook API Client v3", "Email - Outlook API Client v4"
-#else
 #if not CLEAN26
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v3", "Email - Outlook API Client v4"
 #else
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v4"
-#endif
 #endif
 {
     var
@@ -67,14 +63,6 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         TelemetryMarkingEmailAsReadTxt: Label 'Marking email as read.', Locked = true;
         TelemetryFailedStatusCodeTxt: Label 'Failed with status code %1.', Comment = '%1 - Http status code', Locked = true;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
-    procedure GetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250]): Boolean
-    begin
-        exit(TryGetAccountInformation(AccessToken, Email, Name));
-    end;
-#endif
 
     [NonDebuggable]
     procedure GetAccountInformation(AccessToken: SecretText; var Email: Text[250]; var Name: Text[250]): Boolean
@@ -82,35 +70,6 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         exit(TryGetAccountInformation(AccessToken, Email, Name));
     end;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [TryFunction]
-    [Obsolete('Replaced by TryGetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
-    procedure TryGetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250])
-    var
-        AccountHttpClient: HttpClient;
-        AccountRequestHeaders: HttpHeaders;
-        AccountResponseMessage: HttpResponseMessage;
-        ResponseContent: Text;
-        JObject: JsonObject;
-        JToken: JsonToken;
-    begin
-        AccountRequestHeaders := AccountHttpClient.DefaultRequestHeaders();
-        AccountRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
-
-        if not AccountHttpClient.Get(GraphURLTxt + '/v1.0/me', AccountResponseMessage) then
-            exit;
-
-        AccountResponseMessage.Content().ReadAs(ResponseContent);
-        JObject.ReadFrom(ResponseContent);
-
-        JObject.Get('userPrincipalName', JToken);
-        Email := CopyStr(JToken.AsValue().AsText(), 1, 250);
-
-        JObject.Get('displayName', JToken);
-        Name := CopyStr(JToken.AsValue().AsText(), 1, 250);
-    end;
-#endif
 
     [NonDebuggable]
     [TryFunction]
@@ -139,23 +98,6 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         Name := CopyStr(JToken.AsValue().AsText(), 1, 250);
     end;
 
-#if not CLEAN24
-    /// <summary>
-    /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests.
-    /// </summary>
-    /// <error>User is external and cannot authenticate to the exchange server.</error>
-    /// <param name="AccessToken">Access token of the account.</param>
-    /// <param name="MessageJson">The JSON representing the email message.</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by SendEmail with SecretText data type for AccessToken parameter.', '24.0')]
-    procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
-    var
-        AT: SecretText;
-    begin
-        AT := AccessToken;
-        SendEmail(AT, MessageJson);
-    end;
-#endif
 
     /// <summary>
     /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests.

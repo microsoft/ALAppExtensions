@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -168,32 +168,12 @@ page 6121 "E-Document"
                 Visible = false;
                 Enabled = false;
             }
-#if not CLEAN24
-            group(EDocServiceStatus)
-            {
-                Visible = false;
-                Enabled = false;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Part inside group moved out';
-                ObsoleteState = Pending;
-            }
-#endif
             part(ErrorMessagesPart; "Error Messages Part")
             {
                 Visible = HasErrorsOrWarnings;
                 ShowFilter = false;
                 UpdatePropagation = Both;
             }
-#if not CLEAN24
-            group("Errors and Warnings")
-            {
-                Visible = false;
-                Enabled = false;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Part inside group moved out';
-                ObsoleteState = Pending;
-            }
-#endif
         }
         area(FactBoxes)
         {
@@ -373,24 +353,6 @@ page 6121 "E-Document"
                             Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
                 }
-#if not CLEAN24
-                action(UpdateOrder)
-                {
-                    Caption = 'Update Order';
-                    ToolTip = 'Updates related order.';
-                    Image = UpdateDescription;
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'Update order changed to "Receive E-Document To" on Vendor';
-                    ObsoleteState = Pending;
-
-                    trigger OnAction()
-                    begin
-                        exit;
-                    end;
-                }
-#endif
                 action(MatchToOrder)
                 {
                     Caption = 'Match Purchase Order';
@@ -495,46 +457,6 @@ page 6121 "E-Document"
                 Caption = 'Troubleshoot';
                 Visible = false;
             }
-#if not CLEAN24            
-            group(Out)
-            {
-                Caption = 'Outgoing';
-                Visible = false;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Actionrefs moved to process category';
-                ObsoleteState = Pending;
-            }
-            group(In)
-            {
-                Caption = 'Incoming';
-                Visible = false;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Actionrefs moved to process category';
-                ObsoleteState = Pending;
-                actionref(GetBasicInfo_Promoted; GetBasicInfo)
-                {
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'Actionref removed';
-                    ObsoleteState = Pending;
-                }
-                group(CreateDoc)
-                {
-                    Visible = false;
-                    ShowAs = SplitButton;
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'CreateDoc group removed';
-                    ObsoleteState = Pending;
-
-                    actionref(UpdateOrder_Promoted; UpdateOrder)
-                    {
-                        Visible = false;
-                        ObsoleteTag = '24.0';
-                        ObsoleteReason = 'Update order changed to "Receive E-Document To" on Vendor';
-                        ObsoleteState = Pending;
-                    }
-                }
-            }
-#endif
         }
         area(Prompting)
         {

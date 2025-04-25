@@ -621,27 +621,33 @@ codeunit 11724 "Cash Desk Management CZP"
     var
         CashDeskCZP: Record "Cash Desk CZP";
     begin
+        CashDeskCueCZP.FilterGroup(2);
         SetCashDeskFilter(CashDeskCZP);
         CashDeskCZP.FilterGroup(2);
         CashDeskCZP.CopyFilter("No.", CashDeskCueCZP."Cash Desk Filter");
+        CashDeskCueCZP.FilterGroup(0);
     end;
 
     procedure SetCashDeskFilter(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     var
         CashDeskCZP: Record "Cash Desk CZP";
     begin
+        CashDocumentHeaderCZP.FilterGroup(2);
         SetCashDeskFilter(CashDeskCZP);
         CashDeskCZP.FilterGroup(2);
         CashDeskCZP.CopyFilter("No.", CashDocumentHeaderCZP."Cash Desk No.");
+        CashDocumentHeaderCZP.FilterGroup(0);
     end;
 
     procedure SetCashDeskFilter(var PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP")
     var
         CashDeskCZP: Record "Cash Desk CZP";
     begin
+        PostedCashDocumentHdrCZP.FilterGroup(2);
         SetCashDeskFilter(CashDeskCZP);
         CashDeskCZP.FilterGroup(2);
         CashDeskCZP.CopyFilter("No.", PostedCashDocumentHdrCZP."Cash Desk No.");
+        PostedCashDocumentHdrCZP.FilterGroup(0);
     end;
 
     local procedure IsCashDeskUserEmpty(): Boolean

@@ -59,7 +59,9 @@ codeunit 6385 "Outlook Processing"
         BuildDocumentsArray(EmailInbox, DocumentsArray);
         BuildDocumentsList(Documents, DocumentsArray);
 
-        OutlookSetup."Last Sync At" := CurrentDateTime();
+        // set the last synch time 1 minute before now.
+        // this is OK because we are filtering on 'Read' emails, so we will not read twice
+        OutlookSetup."Last Sync At" := CurrentDateTime() - 60000;
         OutlookSetup.Modify();
     end;
 
