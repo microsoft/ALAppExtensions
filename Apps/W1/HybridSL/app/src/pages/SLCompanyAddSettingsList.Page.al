@@ -46,12 +46,6 @@ page 47017 "SL Company Add. Settings List"
                     ToolTip = 'Specify the oldest General Ledger year to be migrated. The year selected and all future years will be migrated to Business Central.';
                     Width = 4;
                 }
-                field("Migrate Open POs"; Rec."Migrate Open POs")
-                {
-                    Caption = 'Open POs';
-                    Enabled = false;
-                    ToolTip = 'Specify whether to migrate open Purchase Orders. This is a future feature.';
-                }
                 field("Migrate GL Module"; Rec."Migrate GL Module")
                 {
                     Caption = 'GL Module';
@@ -59,18 +53,41 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Payables Module"; Rec."Migrate Payables Module")
                 {
-                    Caption = 'Payables Module';
-                    ToolTip = 'Specify whether to migrate the Payables module.';
+                    Caption = 'AP Module';
+                    ToolTip = 'Specify whether to migrate the Accounts Payables module.';
+                }
+                field("Migrate Open POs"; Rec."Migrate Open POs")
+                {
+                    Caption = 'Open POs';
+                    Enabled = false;
+                    ToolTip = 'Specify whether to migrate open Purchase Orders.';
+                    Visible = false;
                 }
                 field("Migrate Receivables Module"; Rec."Migrate Receivables Module")
                 {
-                    Caption = 'Receivables Module';
-                    ToolTip = 'Specify whether to migrate the Receivables module.';
+                    Caption = 'AR Module';
+                    ToolTip = 'Specify whether to migrate the Accounts Receivables module.';
                 }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                     Caption = 'Inventory Module';
                     ToolTip = 'Specify whether to migrate the Inventory module.';
+                }
+                field("Include Project Module"; Rec."Include Project Module")
+                {
+                    Caption = 'Project Module';
+                    ToolTip = 'Specify whether to migrate the Project Controller module.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then begin
+                            Rec.Validate("Project Master Only", Rec."Include Project Module");
+                            Rec.Validate("Include Plan Status Projects", Rec."Include Project Module");
+                            Rec.Validate("Task Master Only", Rec."Include Project Module");
+                            Rec.Validate("Resource Master Only", Rec."Include Project Module");
+                            Rec.Validate("Include Hold Status Resources", Rec."Include Project Module");
+                        end;
+                    end;
                 }
                 field("Migrate Only GL Master"; Rec."Migrate Only GL Master")
                 {
@@ -79,18 +96,92 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Only Payables Master"; Rec."Migrate Only Payables Master")
                 {
-                    Caption = 'Payables Master Only';
-                    ToolTip = 'Specify whether to migrate Payables master data only.';
+                    Caption = 'AP Master Only';
+                    ToolTip = 'Specify whether to migrate Accounts Payables master data only.';
                 }
                 field("Migrate Only Rec. Master"; Rec."Migrate Only Rec. Master")
                 {
                     Caption = 'Rec. Master Only';
-                    ToolTip = 'Specify whether to migrate Receivables master data only.';
+                    ToolTip = 'Specify whether to migrate Accounts Receivables master data only.';
                 }
                 field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
                 {
                     Caption = 'Inventory Master Only';
                     ToolTip = 'Specify whether to migrate Inventory master data only.';
+                }
+                field("Resource Master Only"; Rec."Resource Master Only")
+                {
+                    Caption = 'Resources Only';
+                    ToolTip = 'Specify whether to migrate Project Employee/Resources master data only.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then
+                            if Rec."Resource Master Only" then
+                                Rec.Validate("Include Project Module", Rec."Resource Master Only")
+                            else
+                                Rec.Validate("Include Hold Status Resources", Rec."Resource Master Only");
+                    end;
+                }
+                field("Include Hold Status Resources"; Rec."Include Hold Status Resources")
+                {
+                    Caption = 'Include Hold Status';
+                    ToolTip = 'Specify whether to include resources with a status of hold.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then
+                            if Rec."Include Hold Status Resources" then begin
+                                Rec.Validate("Resource Master Only", Rec."Include Hold Status Resources");
+                                Rec.Validate("Include Project Module", Rec."Include Hold Status Resources");
+                            end;
+                    end;
+                }
+                field("Project Master Only"; Rec."Project Master Only")
+                {
+                    Caption = 'Projects Only';
+                    ToolTip = 'Specify whether to migrate Project master data only.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then
+                            if Rec."Project Master Only" then begin
+                                Rec.Validate("Task Master Only", Rec."Project Master Only");
+                                Rec.Validate("Include Project Module", Rec."Project Master Only");
+                            end
+                            else begin
+                                Rec.Validate("Include Plan Status Projects", Rec."Project Master Only");
+                                Rec.Validate("Task Master Only", Rec."Project Master Only");
+                            end;
+                    end;
+                }
+                field("Include Plan Status Projects"; Rec."Include Plan Status Projects")
+                {
+                    Caption = 'Include Plan Status';
+                    ToolTip = 'Specify whether to include projects with a status of plan.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then
+                            if Rec."Include Plan Status Projects" then begin
+                                Rec.Validate("Project Master Only", Rec."Include Plan Status Projects");
+                                Rec.Validate("Include Project Module", Rec."Include Plan Status Projects");
+                            end;
+                    end;
+                }
+                field("Task Master Only"; Rec."Task Master Only")
+                {
+                    Caption = 'Tasks Only';
+                    ToolTip = 'Specify whether to migrate Task master data only.';
+
+                    trigger OnValidate()
+                    begin
+                        if this.PrepSettingsForFieldUpdate() then
+                            if Rec."Task Master Only" then begin
+                                Rec.Validate("Project Master Only", Rec."Task Master Only");
+                                Rec.Validate("Include Project Module", Rec."Task Master Only");
+                            end;
+                    end;
                 }
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
@@ -184,4 +275,14 @@ page 47017 "SL Company Add. Settings List"
             }
         }
     }
+
+    internal procedure PrepSettingsForFieldUpdate(): Boolean
+    begin
+        this.SLCompanyAdditionalSettings.SetFilter(Name, '<>%1', '');
+        this.SLCompanyAdditionalSettings.SetRange("Migration Completed", false);
+        exit(this.SLCompanyAdditionalSettings.FindSet());
+    end;
+
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
 }

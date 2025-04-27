@@ -87,6 +87,15 @@ codeunit 47012 "SL Hybrid Wizard"
         Enabled := true;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", CanRunDiagnostic, '', false, false)]
+    local procedure OnCanRunDiagnostic(var CanRun: Boolean)
+    begin
+        if not (GetSLMigrationEnabled()) then
+            exit;
+
+        CanRun := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnCanSetupAdlMigration, '', false, false)]
     local procedure OnCanSetupAdlMigration(var CanSetup: Boolean)
     begin
@@ -265,6 +274,15 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL SalesTax", 'SalesTax');
         UpdateOrInsertRecord(Database::"SL SegDef", 'SegDef');
         UpdateOrInsertRecord(Database::"SL Terms", 'Terms');
+        // Projects
+        UpdateOrInsertRecord(Database::"SL PJAddr", 'PJAddr');
+        UpdateOrInsertRecord(Database::"SL PJCode", 'PJCode');
+        UpdateOrInsertRecord(Database::"SL PJEmploy", 'PJEmploy');
+        UpdateOrInsertRecord(Database::"SL PJEmpPjt", 'PJEmpPjt');
+        UpdateOrInsertRecord(Database::"SL PJEquip", 'PJEquip');
+        UpdateOrInsertRecord(Database::"SL PJEQRate", 'PJEQRate');
+        UpdateOrInsertRecord(Database::"SL PJPent", 'PJPent');
+        UpdateOrInsertRecord(Database::"SL PJProj", 'PJProj');
     end;
 
     internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
