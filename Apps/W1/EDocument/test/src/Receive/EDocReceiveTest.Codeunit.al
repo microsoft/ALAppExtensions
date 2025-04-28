@@ -1489,20 +1489,6 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocument.DeleteAll();
     end;
 
-    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
-    begin
-        EDocService."Lookup Account Mapping" := false;
-        EDocService."Lookup Item GTIN" := false;
-        EDocService."Lookup Item Reference" := false;
-        EDocService."Resolve Unit Of Measure" := false;
-        EDocService."Validate Line Discount" := false;
-        EDocService."Verify Totals" := false;
-        EDocService."Use Batch Processing" := false;
-        EDocService."Validate Receiving Company" := false;
-        EDocService."Create Journal Lines" := false;
-        EDocService.Modify(false);
-    end;
-
     local procedure CreatePurchaseInvoiceWithLines(var PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; var Vendor: Record Vendor)
     var
         i: Integer;
