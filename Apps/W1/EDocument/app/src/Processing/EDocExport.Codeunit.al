@@ -220,7 +220,6 @@ codeunit 6102 "E-Doc. Export"
         SalesHeader: Record "Sales Header";
         PurchHeader: Record "Purchase Header";
         FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
-        TransferShipmentHeader: Record "Transfer Shipment Header";
         SalesDocumentType: Enum "Sales Document Type";
         PurchDocumentType: Enum "Purchase Document Type";
         RemainingAmount, InterestAmount, AdditionalFee, VATAmount : Decimal;
@@ -348,12 +347,7 @@ codeunit 6102 "E-Doc. Export"
                     EDocument."Amount Incl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo("Amount Including VAT")).Value;
                 end;
             Database::"Transfer Shipment Header":
-                begin
-                    EDocument."Document Type" := EDocument."Document Type"::"Transfer Shipment";
-                    EDocument."Document No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("No.")).Value;
-                    EDocument."Posting Date" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Posting Date")).Value;
-                    EDocument."Source Type" := EDocument."Source Type"::Location;
-                end;
+                this.PopulateTransferShipmentEDocument(EDocument, SourceDocumentHeader);
         end;
     end;
 
@@ -510,6 +504,16 @@ codeunit 6102 "E-Doc. Export"
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
     begin
         exit(EDocServiceSupportedType.Get(EDocService.Code, DocumentType));
+    end;
+
+    local procedure PopulateTransferShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Transfer Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Location;
     end;
 
     var

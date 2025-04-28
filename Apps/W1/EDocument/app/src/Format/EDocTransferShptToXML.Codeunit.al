@@ -9,7 +9,7 @@ using Microsoft.Inventory.Transfer;
 using System.Xml;
 using Microsoft.Foundation.Company;
 
-codeunit 6120 "E-Doc. Transfer Shpt. To XML"
+codeunit 6123 "E-Doc. Transfer Shpt. To XML"
 {
     TableNo = "Transfer Shipment Header";
 

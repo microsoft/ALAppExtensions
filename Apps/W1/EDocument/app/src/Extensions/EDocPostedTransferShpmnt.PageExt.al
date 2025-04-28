@@ -40,10 +40,10 @@ pageextension 6103 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
 
     trigger OnAfterGetRecord()
     begin
-        HasEDocument := CheckIfEDocumentExists(Rec.RecordId);
+        HasEDocument := EDocumentExists(Rec.RecordId);
     end;
 
-    local procedure CheckIfEDocumentExists(DocumentRecordId: RecordId): Boolean
+    local procedure EDocumentExists(DocumentRecordId: RecordId): Boolean
     var
         EDocument: Record "E-Document";
     begin
