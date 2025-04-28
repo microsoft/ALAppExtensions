@@ -252,6 +252,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL UpdateLocPmtTerms" = X,
         codeunit "Shpfy GQL UpdateOrderAttr" = X,
         codeunit "Shpfy GQL UpdateProductImage" = X,
+        codeunit "Shpfy GQL UpdateProductOption" = X,
         codeunit "Shpfy GQL VariantById" = X,
         codeunit "Shpfy GQL VariantIds" = X,
         codeunit "Shpfy GQL VariantImages" = X,
@@ -264,9 +265,6 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy IDocSource Refund" = X,
         codeunit "Shpfy Import Order" = X,
         codeunit "Shpfy Initial Import" = X,
-#if not CLEAN24
-        codeunit "Shpfy Install Mgt." = X,
-#endif
         codeunit "Shpfy Installer" = X,
         codeunit "Shpfy Inventory API" = X,
         codeunit "Shpfy Inventory Events" = X,
@@ -390,6 +388,7 @@ permissionset 30104 "Shpfy - Objects"
         page "Shpfy Companies" = X,
         page "Shpfy Company Card" = X,
         page "Shpfy Comp. Locations" = X,
+        page "Shpfy Comp. Locations Subform" = X,
         page "Shpfy Connector Guide" = X,
         page "Shpfy Credit Card Companies" = X,
         page "Shpfy Customer Adresses" = X,

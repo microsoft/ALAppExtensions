@@ -12,6 +12,7 @@ using Microsoft.eServices.EDocument.Processing.Import;
 table 6124 "E-Document Log"
 {
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {
@@ -121,6 +122,24 @@ table 6124 "E-Document Log"
         EDocLogEntryNoExportMsg: Label 'E-Document log entry does not contain data to export.';
         NonEmptyTempBlobErr: Label 'Temp blob is not empty.';
         EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
+
+
+    trigger OnDelete()
+    begin
+        DeleteRelatedDataStorage(Rec."E-Doc. Data Storage Entry No.");
+    end;
+
+    local procedure DeleteRelatedDataStorage(EntryNo: Integer)
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+    begin
+        if EntryNo = 0 then
+            exit;
+
+        EDocDataStorage.SetRange("Entry No.", EntryNo);
+        if not EDocDataStorage.IsEmpty() then
+            EDocDataStorage.DeleteAll(true);
+    end;
 
     internal procedure ExportDataStorage()
     var

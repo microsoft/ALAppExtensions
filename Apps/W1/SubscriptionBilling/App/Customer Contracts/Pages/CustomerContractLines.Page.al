@@ -32,7 +32,7 @@ page 8075 "Customer Contract Lines"
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
 
                     trigger OnAssistEdit()
                     begin
@@ -75,7 +75,7 @@ page 8075 "Customer Contract Lines"
                 }
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnDrillDown()
                     begin

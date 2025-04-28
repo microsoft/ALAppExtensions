@@ -157,21 +157,6 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
         exit(NewSecretKey);
     end;
 
-#if not CLEAN24
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Use "GetSecretAsSecretText instead.', '24.0')]
-    procedure GetSecret(SecretKey: Guid): Text
-    var
-        ClientSecretText: Text;
-    begin
-        if not IsNullGuid(SecretKey) then
-            if not GetSecretAsSecretText(SecretKey).IsEmpty() then
-                ClientSecretText := GetSecretAsSecretText(SecretKey).Unwrap();
-
-        exit(ClientSecretText);
-    end;
-#endif
 
     [Scope('OnPrem')]
     procedure GetSecretAsSecretText(SecretKey: Guid): SecretText

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 130630 "No Transactions Subscriber"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Global Triggers", 'GetDatabaseTableTriggerSetup', '', false, false)]

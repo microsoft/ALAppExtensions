@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5376 "Create E-Document Transactions"
 {
     InherentEntitlements = X;
@@ -43,12 +44,12 @@ codeunit 5376 "Create E-Document Transactions"
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 10, CommonUoM.Piece(), 219);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 2");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1000', 15, CommonUoM.Piece(), 124);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 5, CommonUoM.Piece(), 235);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 2");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateWhseItem.Item2(), 150, CommonUoM.Piece(), 125, 20);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1003', 25, CommonUoM.Piece(), 170, 10);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1004', 50, CommonUoM.Piece(), 120);
@@ -57,14 +58,14 @@ codeunit 5376 "Create E-Document Transactions"
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WDB-1007', 15, CommonUoM.Piece(), 119);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 3");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1004', 60, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1005', 60, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1004', 40, CommonUoM.Piece(), 110);
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'WRB-1005', 40, CommonUoM.Piece(), 110);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
 
-        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 1");
+        PurchaseHeader := CreateOrder(EDocumentModuleSetup."Vendor No. 3");
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, 'GRH-1001', 20, CommonUoM.Piece(), 289);
         PostPurchaseOrder(PurchaseHeader, PurchaseOrdersList);
     end;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -204,16 +204,9 @@ table 31106 "VAT Ctrl. Report Header CZL"
         VATCtrlReportHeader: Record "VAT Ctrl. Report Header CZL";
         NoSeries: Codeunit "No. Series";
         NoSeriesCode: Code[20];
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := NoSeriesCode;
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -222,10 +215,6 @@ table 31106 "VAT Ctrl. Report Header CZL"
                 VATCtrlReportHeader.SetLoadFields("No.");
                 while VATCtrlReportHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, WorkDate(), "No.");
-            end;
-#endif
         end;
         InitRecord();
     end;
@@ -237,9 +226,6 @@ table 31106 "VAT Ctrl. Report Header CZL"
 
     var
         VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         VATCtrlReportMgtCZL: Codeunit "VAT Ctrl. Report Mgt. CZL";
         VATCtrlRepExpRunnerCZL: Codeunit "VAT Ctrl. Rep. Exp. Runner CZL";
         RecordRenameErr: Label 'You cannot rename a %1.', Comment = '%1 = Header No.';

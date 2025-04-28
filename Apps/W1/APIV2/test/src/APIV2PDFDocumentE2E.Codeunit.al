@@ -18,6 +18,7 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         SalesCreditMemoServiceNameTxt: Label 'salesCreditMemos';
         PurchaseInvoiceServiceNameTxt: Label 'purchaseInvoices';
         QuoteServiceNameTxt: Label 'salesQuotes';
+        OrderServiceNameTxt: Label 'salesOrders';
         PurchaseCreditMemoServiceNameTxt: Label 'purchaseCreditMemos';
 
     local procedure Initialize()
@@ -172,6 +173,40 @@ codeunit 139841 "APIV2 - PDF Document E2E"
         // [THEN] we receive the binary file with the printed quote
         LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlob, TargetURL, 'application/octet-stream', 200);
         SalesHeader.Get(SalesHeader."Document Type"::Quote, QuoteID1);
+        Assert.AreEqual(1, SalesHeader."No. Printed", 'Sales quote is not marked as printed');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure TestGetPDFSalesOrder()
+    var
+        SalesHeader: Record "Sales Header";
+        TempBlob: Codeunit "Temp Blob";
+        OrderID: Text;
+        ID: Text;
+        TargetURL: Text;
+        SubPageWithContentTxt: Text;
+    begin
+        // [FEATURE] [Sales] [Order]
+        // [SCENARIO 184721] Create Sales order and use pdfDocument navigation property to get the corresponding PDF
+        // [GIVEN] a sales order
+        Initialize();
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        OrderID := SalesHeader."No.";
+        ID := SalesHeader.SystemId;
+        Assert.AreNotEqual('', ID, 'ID must not be empty');
+
+        // [WHEN] GET the pdfDocument subpage content on the draft order
+        TargetURL :=
+          LibraryGraphMgt.CreateTargetURLWithSubpage(ID, Page::"APIV2 - Sales Orders", OrderServiceNameTxt, PDFDocumentServiceNameTxt);
+        SubPageWithContentTxt := PDFDocumentServiceNameTxt + '/pdfDocumentContent';
+        TargetURL := LibraryGraphMgt.StrReplace(TargetURL, PDFDocumentServiceNameTxt, SubPageWithContentTxt);
+        Commit();
+
+        // [THEN] receive the binary file with the printed order
+        LibraryGraphMgt.GetBinaryFromWebServiceAndCheckResponseCode(TempBlob, TargetURL, 'application/octet-stream', 200);
+        SalesHeader.Get(SalesHeader."Document Type"::Order, OrderID);
+        Assert.AreEqual(1, SalesHeader."No. Printed", 'Sales order is not marked as printed');
     end;
 
     [Test]

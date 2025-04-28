@@ -28,7 +28,7 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
         }
     }
 
-    internal procedure IsIntrastatTransaction(): Boolean
+    procedure IsIntrastatTransaction(): Boolean
     var
         CountryRegion: Record "Country/Region";
         IsHandled: Boolean;

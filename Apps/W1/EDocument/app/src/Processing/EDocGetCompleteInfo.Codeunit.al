@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 6151 "E-Doc. Get Complete Info"
 {
     Access = Internal;

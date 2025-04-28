@@ -422,11 +422,11 @@ codeunit 147108 "CD WMS"
 
     local procedure CreateSalesOrder(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; ItemNo: Code[20]; Quantity: Decimal)
     var
-        ManufacturingSetup: Record "Manufacturing Setup";
+        InventorySetup: Record "Inventory Setup";
     begin
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        ManufacturingSetup.Get();
-        SalesHeader.Validate("Shipment Date", CalcDate(ManufacturingSetup."Default Safety Lead Time", SalesHeader."Shipment Date"));
+        InventorySetup.Get();
+        SalesHeader.Validate("Shipment Date", CalcDate(InventorySetup."Default Safety Lead Time", SalesHeader."Shipment Date"));
         SalesHeader.Modify(true);
 
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, ItemNo, Quantity);

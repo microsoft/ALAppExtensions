@@ -35,6 +35,27 @@ codeunit 6135 "E-Document WorkFlow Processing"
             until Workflow.Next() = 0;
     end;
 
+    internal procedure GetEDocumentServicesInWorkflow(WorkFlow: Record Workflow; var EDocumentService: Record "E-Document Service"): Boolean
+    var
+        WorkflowStepArgument: Record "Workflow Step Argument";
+        WorkflowStep: Record "Workflow Step";
+        Filter: Text;
+    begin
+        WorkflowStep.SetRange("Workflow Code", Workflow.Code);
+        WorkflowStep.SetRange(Type, WorkflowStep.Type::Response);
+        if WorkflowStep.FindSet() then
+            repeat
+                WorkflowStepArgument.Get(WorkflowStep.Argument);
+                AddFilter(Filter, WorkflowStepArgument."E-Document Service");
+            until WorkflowStep.Next() = 0;
+
+        if Filter = '' then
+            exit(false);
+
+        EDocumentService.SetFilter(Code, Filter);
+        exit(true);
+    end;
+
     internal procedure DoesFlowHasEDocService(var EDocServices: Record "E-Document Service"; WorkfLowCode: Code[20]): Boolean
     var
         WorkflowStepArgument: Record "Workflow Step Argument";

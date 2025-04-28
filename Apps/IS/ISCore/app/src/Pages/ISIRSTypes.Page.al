@@ -4,10 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.IRS;
 
-#if not CLEAN24
-using Microsoft.Finance;
-using Microsoft.Finance.VAT.Setup;
-#endif
 
 page 14602 "IS IRS Types"
 {
@@ -42,16 +38,4 @@ page 14602 "IS IRS Types"
     {
     }
 
-#if not CLEAN24
-    trigger OnOpenPage()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Page.Run(Page::"IRS Type");
-            Error('');
-        end;
-    end;
-#endif
 }
-

@@ -67,7 +67,7 @@ page 8078 "Vendor Contract Line Subpage"
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -120,6 +120,7 @@ page 8078 "Vendor Contract Line Subpage"
                 }
                 field("Service Object Quantity"; ServiceCommitment.Quantity)
                 {
+                    Caption = 'Quantity';
                     ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnValidate()

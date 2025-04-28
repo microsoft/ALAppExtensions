@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2506 "Purchasing Rcpt Line Items"
 {
     QueryType = Normal;

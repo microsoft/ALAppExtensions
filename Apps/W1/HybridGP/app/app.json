@@ -39,7 +39,7 @@
       "publisher": "Microsoft"
     }
   ],
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 1,

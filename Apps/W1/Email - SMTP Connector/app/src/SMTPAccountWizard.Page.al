@@ -98,8 +98,6 @@ page 4511 "SMTP Account Wizard"
             field(ServerUrl; Rec.Server)
             {
                 ApplicationArea = All;
-                Caption = 'Server Url';
-                ToolTip = 'Specifies the name of the SMTP server.';
                 ShowMandatory = true;
                 NotBlank = true;
 

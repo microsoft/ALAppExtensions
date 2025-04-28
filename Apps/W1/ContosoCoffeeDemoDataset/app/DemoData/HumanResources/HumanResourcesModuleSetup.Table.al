@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.HumanResources;
+
+using Microsoft.HumanResources.Employee;
+
 table 4770 "Human Resources Module Setup"
 {
     DataClassification = CustomerContent;

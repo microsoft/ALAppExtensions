@@ -16,12 +16,10 @@ using Microsoft.Utilities;
 
 codeunit 8063 "Sales Documents"
 {
-    Access = Internal;
     SingleInstance = true;
 
     var
         SalesServiceCommMgmt: Codeunit "Sales Subscription Line Mgmt.";
-        ContractsItemManagement: Codeunit "Sub. Contracts Item Management";
         CalledFromContractRenewal: Boolean;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeDeleteEvent, '', false, false)]
@@ -345,7 +343,7 @@ codeunit 8063 "Sales Documents"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnPostUpdateOrderLineOnSetDefaultQtyBlank, '', false, false)]
-    local procedure UpdateQuantitesOnPostUpdateOrderLineOnSetDefaultQtyBlank(var TempSalesLine: Record "Sales Line" temporary)
+    local procedure UpdateQuantitiesOnPostUpdateOrderLineOnSetDefaultQtyBlank(var TempSalesLine: Record "Sales Line" temporary)
     begin
         //The function makes sure that Shipped and Invoiced quantities for Subscription Items are properly set
         if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItemToShip(TempSalesLine) then
@@ -362,6 +360,8 @@ codeunit 8063 "Sales Documents"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnInsertShipmentLineOnAfterInitQuantityFields, '', false, false)]
     local procedure UpdateInvoicedQtyOnShipmentLineOnBeforeModifySalesShptLine(var SalesShptLine: Record "Sales Shipment Line")
+    var
+        ContractsItemManagement: Codeunit "Sub. Contracts Item Management";
     begin
         //The function makes sure that Shipped and Invoiced quantities for Subscription Items are properly set for Sales Shipment Line
         if not (SalesShptLine.Type = SalesShptLine.Type::Item) then
@@ -520,7 +520,7 @@ codeunit 8063 "Sales Documents"
         OnCreateSubscriptionHeaderFromSalesLineAfterInsertSubscriptionHeader(ServiceObject, SalesHeader, SalesLine);
     end;
 
-    procedure AllSalesLinesAreServiceCommitmentItems(SalesHeader: Record "Sales Header"): Boolean
+    internal procedure AllSalesLinesAreServiceCommitmentItems(SalesHeader: Record "Sales Header"): Boolean
     var
         SalesLine: Record "Sales Line";
         ServiceCommitmentItemFound: Boolean;
@@ -726,7 +726,7 @@ codeunit 8063 "Sales Documents"
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnCreateSubscriptionHeaderFromSalesLineBeforeInsertSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; SalesSubscriptionLine: Record "Sales Subscription Line"; SalesLine: Record "Sales Line")
     begin
     end;

@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Bank;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Bank.PositivePay;
+using Microsoft.Bank.ElectronicFundsTransfer;
+using Microsoft.DemoData.Foundation;
+
 codeunit 10502 "Create Bank Ex/Import SetupUS"
 {
     InherentEntitlements = X;

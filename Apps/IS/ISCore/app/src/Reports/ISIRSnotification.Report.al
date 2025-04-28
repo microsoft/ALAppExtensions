@@ -6,9 +6,6 @@ namespace Microsoft.Finance;
 
 using System.Utilities;
 using Microsoft.Foundation.Company;
-#if not CLEAN24
-using Microsoft.Finance.VAT.Reporting;
-#endif
 
 report 14608 "IS IRS notification"
 {
@@ -82,18 +79,8 @@ report 14608 "IS IRS notification"
     }
 
     trigger OnInitReport()
-#if not CLEAN24
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-#endif
     begin
         CompanyInfo.Get();
-#if not CLEAN24
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Report.Run(Report::"IRS notification");
-            Error('');
-        end;
-#endif
     end;
 
     var
@@ -107,4 +94,3 @@ report 14608 "IS IRS notification"
         VersionOfNavisionCaptionLbl: Label 'It is also confirmed that the company uses a version of Navision that complies with the regulation.';
         ManagerCaptionLbl: Label 'Manager';
 }
-

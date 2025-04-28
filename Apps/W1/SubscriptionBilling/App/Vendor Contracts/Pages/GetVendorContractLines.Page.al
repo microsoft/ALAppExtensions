@@ -121,7 +121,7 @@ page 8095 "Get Vendor Contract Lines"
                 }
                 field("Service Object Quantity"; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }

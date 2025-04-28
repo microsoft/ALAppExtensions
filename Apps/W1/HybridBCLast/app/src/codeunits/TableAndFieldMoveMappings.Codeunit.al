@@ -17,12 +17,16 @@ codeunit 40030 "Table and Field Move Mappings"
         BaseApplicationTok: Label 'Base Application', Locked = true;
         BusinessFoundationAppIdLbl: Label 'f3552374-a1f2-4356-848e-196002525837', Locked = true;
         BusinessFoundationTok: Label 'Business Foundation', Locked = true;
+        SubBillingAppIdLbl: Label '3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c', Locked = true;
+        SubBillingOldTok: Label 'Subscription & Recurring Billing', Locked = true;
+        SubBillingNewTok: Label 'Subscription Billing', Locked = true;
         SQLInvalidCharsLbl: Label '.""\/''%][', Locked = true;
 
     local procedure AddMappings()
     begin
         AddNoSeriesMappings();
         AddAuditCodesMappings();
+        AddSubBillingMappings();
     end;
 
     local procedure AddNoSeriesMappings()
@@ -50,12 +54,6 @@ codeunit 40030 "Table and Field Move Mappings"
             exit;
         AppliesFromVersion := Version.Create(24, 0);
 
-#if not CLEAN24
-#pragma warning disable AL0432
-        AddTableMappingFromBaseappToBusinessFoundation(Database::"No. Series Line Sales", AppliesFromVersion, true);
-        AddTableMappingFromBaseappToBusinessFoundation(Database::"No. Series Line Purchase", AppliesFromVersion, true);
-#pragma warning Restore AL0432
-#endif
         FieldNos.AddRange(12100, 12101, 12102, 12103);
         AddTableFieldMappingListFromBusinessFoundationToBaseApp(Database::"No. Series", FieldNos, AppliesFromVersion, true);
     end;
@@ -116,12 +114,111 @@ codeunit 40030 "Table and Field Move Mappings"
         AddTableFieldMappingListFromBusinessFoundationToBaseApp(Database::"Source Code", FieldNos, AppliesFromVersion, true);
     end;
 
+    local procedure AddSubBillingMappings()
+    var
+        TableNos: List of [Integer];
+        FieldNos: List of [Integer];
+        AppliesFromVersion: Version;
+    begin
+        AppliesFromVersion := Version.Create(26, 0);
+
+        TableNos.AddRange(8051, 8004, 8001, 8002, 8019, 8062, 8065, 8066, 8072, 8010, 8008, 8009, 8007, 8068, 8069, 8056, 8016, 8053, 8052, 8063, 8058, 8005, 8054, 8055, 8012);
+        AddTableMappingListSubBilling(TableNos, AppliesFromVersion, true);
+
+        FieldNos.AddRange(20, 21, 30, 31, 33, 34, 39, 52);
+        AddTableFieldMappingListSubBilling(8061, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(20, 21, 30, 31, 33, 34, 39, 52);
+        AddTableFieldMappingListSubBilling(8064, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(4, 5, 6);
+        AddTableFieldMappingListSubBilling(8003, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.Add(4);
+        AddTableFieldMappingListSubBilling(8017, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(5, 6, 7, 9, 10);
+        AddTableFieldMappingListSubBilling(8006, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.Add(6);
+        AddTableFieldMappingListSubBilling(8018, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 3, 4, 6);
+        AddTableFieldMappingListSubBilling(8051, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 3, 7, 8, 9, 10, 13, 14, 15);
+        AddTableFieldMappingListSubBilling(8004, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 2, 10, 11, 12, 13, 14, 201);
+        AddTableFieldMappingListSubBilling(8001, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 3, 6, 7, 14, 19, 26, 27);
+        AddTableFieldMappingListSubBilling(8002, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 3, 6, 7, 14, 19, 27, 33, 39, 1005, 8007, 8008, 8010);
+        AddTableFieldMappingListSubBilling(8019, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 100, 101, 102, 106);
+        AddTableFieldMappingListSubBilling(8062, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 100, 101, 102, 106);
+        AddTableFieldMappingListSubBilling(8065, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 5, 22, 23, 24);
+        AddTableFieldMappingListSubBilling(8066, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 5, 22, 23, 24);
+        AddTableFieldMappingListSubBilling(8072, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 7);
+        AddTableFieldMappingListSubBilling(8010, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 100);
+        AddTableFieldMappingListSubBilling(8008, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 3, 5, 6, 7, 8, 11, 12, 19, 28, 100, 104);
+        AddTableFieldMappingListSubBilling(8009, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(4, 5, 6, 10, 12, 14, 15, 16, 17, 19);
+        AddTableFieldMappingListSubBilling(8007, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(20, 21, 22, 31, 50, 51);
+        AddTableFieldMappingListSubBilling(8068, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(20, 21, 22);
+        AddTableFieldMappingListSubBilling(8069, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.Add(28);
+        AddTableFieldMappingListSubBilling(8057, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 3, 6, 7, 14, 19, 27, 33);
+        AddTableFieldMappingListSubBilling(8059, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(2, 5, 8, 9, 16, 21, 29, 35, 41, 42, 96);
+        AddTableFieldMappingListSubBilling(8073, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(1, 12);
+        AddTableFieldMappingListSubBilling(8056, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+        FieldNos.AddRange(6, 7, 21, 22, 23);
+        AddTableFieldMappingListSubBilling(8016, FieldNos, AppliesFromVersion, true);
+        Clear(FieldNos);
+    end;
+
     local procedure AddTableMappingListFromBaseappToBusinessFoundation(TableNos: List of [Integer]; AppliesFromVersion: Version; PerCompany: Boolean)
     var
         TableNo: Integer;
     begin
         foreach TableNo in TableNos do
             AddTableMappingFromBaseappToBusinessFoundation(TableNo, AppliesFromVersion, PerCompany);
+    end;
+
+    local procedure AddTableMappingListSubBilling(TableNos: List of [Integer]; AppliesFromVersion: Version; PerCompany: Boolean)
+    var
+        TableNo: Integer;
+    begin
+        foreach TableNo in TableNos do
+            AddTableMappingSubBilling(TableNo, AppliesFromVersion, PerCompany);
     end;
 
     local procedure AddTableMappingFromBaseappToBusinessFoundation(TableNo: Integer; AppliesFromVersion: Version; PerCompany: Boolean)
@@ -134,12 +231,30 @@ codeunit 40030 "Table and Field Move Mappings"
         AddTableMapping(BaseAppAppIdLbl, BaseApplicationTok, RecordRef.Number, CopyStr(RecordRef.Name, 1, 30), false, '', BusinessFoundationAppIdLbl, BusinessFoundationTok, RecordRef.Number, CopyStr(RecordRef.Name, 1, 30), false, '', AppliesFromVersion, CurrModuleInfo.Id, PerCompany);
     end;
 
+    local procedure AddTableMappingSubBilling(TableNo: Integer; AppliesFromVersion: Version; PerCompany: Boolean)
+    var
+        RecordRef: RecordRef;
+        CurrModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrModuleInfo);
+        RecordRef.Open(TableNo);
+        AddTableMapping(SubBillingAppIdLbl, SubBillingOldTok, RecordRef.Number, CopyStr(RecordRef.Name, 1, 30), false, '', SubBillingAppIdLbl, SubBillingNewTok, RecordRef.Number, CopyStr(RecordRef.Name, 1, 30), true, '', AppliesFromVersion, CurrModuleInfo.Id, PerCompany);
+    end;
+
     local procedure AddTableFieldMappingListFromBusinessFoundationToBaseApp(TableNo: Integer; FieldNos: List of [Integer]; AppliesFromVersion: Version; PerCompany: Boolean)
     var
         FieldNo: Integer;
     begin
         foreach FieldNo in FieldNos do
             AddTableFieldMappingFromBusinessFoundationToBaseApp(TableNo, FieldNo, AppliesFromVersion, PerCompany);
+    end;
+
+    local procedure AddTableFieldMappingListSubBilling(TableNo: Integer; FieldNos: List of [Integer]; AppliesFromVersion: Version; PerCompany: Boolean)
+    var
+        FieldNo: Integer;
+    begin
+        foreach FieldNo in FieldNos do
+            AddTableFieldMappingSubBilling(TableNo, FieldNo, AppliesFromVersion, PerCompany);
     end;
 
     local procedure AddTableFieldMappingFromBusinessFoundationToBaseApp(TableNo: Integer; FieldNo: Integer; AppliesFromVersion: Version; PerCompany: Boolean)
@@ -150,6 +265,16 @@ codeunit 40030 "Table and Field Move Mappings"
         NavApp.GetCurrentModuleInfo(CurrModuleInfo);
         Field.Get(TableNo, FieldNo);
         AddTableFieldMapping(BusinessFoundationAppIdLbl, BusinessFoundationTok, Field.TableName, Field.FieldName, false, '', BaseAppAppIdLbl, BaseApplicationTok, Field.TableName, true, Field.TableName, Field.FieldName, AppliesFromVersion, CurrModuleInfo.Id, PerCompany);
+    end;
+
+    local procedure AddTableFieldMappingSubBilling(TableNo: Integer; FieldNo: Integer; AppliesFromVersion: Version; PerCompany: Boolean)
+    var
+        Field: Record Field;
+        CurrModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrModuleInfo);
+        Field.Get(TableNo, FieldNo);
+        AddTableFieldMapping(SubBillingAppIdLbl, SubBillingOldTok, Field.TableName, Field.FieldName, false, '', SubBillingAppIdLbl, SubBillingNewTok, Field.TableName, true, Field.TableName, Field.FieldName, AppliesFromVersion, CurrModuleInfo.Id, PerCompany);
     end;
 
     local procedure AddTableMapping(FromAppID: Guid; FromAppName: Text[150]; FromTableNo: Integer; FromTableName: Text[150]; FromIsExtensionTable: Boolean; FromBaseTableName: Text[150]; ToAppID: Guid; ToAppName: Text[150]; ToTableNo: Integer; ToTableName: Text[150]; ToIsExtensionTable: Boolean; ToBaseTableName: Text[150]; AppliesFromVersion: Version; InserterAppID: Guid; PerCompany: Boolean)

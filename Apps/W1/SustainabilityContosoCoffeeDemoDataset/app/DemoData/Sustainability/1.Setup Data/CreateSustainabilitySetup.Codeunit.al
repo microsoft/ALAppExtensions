@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5212 "Create Sustainability Setup"
 {
     InherentEntitlements = X;

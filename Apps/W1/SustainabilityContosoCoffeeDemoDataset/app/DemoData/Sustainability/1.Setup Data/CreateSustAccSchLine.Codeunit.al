@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5244 "Create Sust. Acc. Sch. Line"
 {
     InherentEntitlements = X;

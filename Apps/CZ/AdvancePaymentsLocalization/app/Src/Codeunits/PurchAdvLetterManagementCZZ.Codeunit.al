@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -34,7 +34,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PostingDateEmptyErr: Label 'Posting Date cannot be empty.';
         LaterPostingDateQst: Label 'The linked advance letter %1 is paid after %2. If you continue, the advance letter won''t be deducted.\\Do you want to continue?', Comment = '%1 = advance letter no., %2 = posting date';
         ExceededUsageAmountErr: Label 'Post VAT Document higher than usage is not possible.';
-        ApplyVATCoefficientQst: Label 'Do you want to apply VAT coefficient?';
         NonDeductVATPostedMsg: Label 'Non-deductible VAT has been successfully posted.';
         VATUsageExistErr: Label 'It''s not possible to post non-deductible VAT when there are already VAT usage entries.';
 
@@ -334,7 +333,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         VATDocumentCZZ: Page "VAT Document CZZ";
         DocumentNo: Code[20];
         IsHandled: Boolean;
-        IsPostNonDeductibleVATConfirmed: Boolean;
         DocumentDate: Date;
         VATDate: Date;
         OriginalDocumentVATDate: Date;
@@ -391,21 +389,15 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             OriginalDocumentVATDate, ExternalDocumentNo, TempAdvancePostingBufferCZZ);
 
         if NonDeductibleVATCZZ.IsNonDeductibleVATEnabled() then
-            if TempAdvancePostingBufferCZZ.IsNonDeductibleVATAllowedInBuffer() then begin
-                IsPostNonDeductibleVATConfirmed := AdvanceLetterTemplateCZZ."Automatic Post Non-Ded. VAT";
-                if not IsPostNonDeductibleVATConfirmed then
-                    IsPostNonDeductibleVATConfirmed := ConfirmManagement.GetResponse(ApplyVATCoefficientQst);
-            end;
-
-        if IsPostNonDeductibleVATConfirmed then
-            if NonDeductibleVATCZL.CheckNonDeductibleVATSetupToDate(VATDate, false) then begin
-                TempAdvancePostingBufferCZZ.FindSet();
-                repeat
-                    TempAdvancePostingBufferCZZ."Non-Deductible VAT %" :=
-                        NonDeductibleVATCZZ.GetNonDeductibleVATPct(TempAdvancePostingBufferCZZ, VATDate);
-                    TempAdvancePostingBufferCZZ.Modify();
-                until TempAdvancePostingBufferCZZ.Next() = 0;
-            end;
+            if TempAdvancePostingBufferCZZ.IsNonDeductibleVATAllowedInBuffer() then
+                if NonDeductibleVATCZL.CheckNonDeductibleVATSetupToDate(VATDate, false) then begin
+                    TempAdvancePostingBufferCZZ.FindSet();
+                    repeat
+                        TempAdvancePostingBufferCZZ."Non-Deductible VAT %" :=
+                            NonDeductibleVATCZZ.GetNonDeductibleVATPct(TempAdvancePostingBufferCZZ, VATDate);
+                        TempAdvancePostingBufferCZZ.Modify();
+                    until TempAdvancePostingBufferCZZ.Next() = 0;
+                end;
 
         Clear(AdvancePostingParametersCZZ);
         AdvancePostingParametersCZZ."Document Type" := Enum::"Gen. Journal Document Type"::Invoice;
@@ -1078,7 +1070,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     procedure ApplyAdvanceLetter(var PurchInvHeader: Record "Purch. Inv. Header")
     var
-        AdvanceLetterApplication: Record "Advance Letter Application CZZ";
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         ConfirmManagement: Codeunit "Confirm Management";
@@ -1086,51 +1078,31 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         ApplyAdvanceLetterQst: Label 'Apply Advance Letter?';
         CannotApplyErr: Label 'You cannot apply more than %1.', Comment = '%1 = Remaining amount to apply';
     begin
-        AdvanceLetterApplication.SetRange("Document Type", AdvanceLetterApplication."Document Type"::"Posted Purchase Invoice");
-        AdvanceLetterApplication.SetRange("Document No.", PurchInvHeader."No.");
-        if AdvanceLetterApplication.IsEmpty() then
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvanceLetterApplicationCZZ."Document Type"::"Posted Purchase Invoice");
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", PurchInvHeader."No.");
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
             LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Posted Purchase Invoice", PurchInvHeader."No.", PurchInvHeader."Pay-to Vendor No.", PurchInvHeader."Posting Date", PurchInvHeader."Currency Code");
 
-        if AdvanceLetterApplication.IsEmpty() then
+        if AdvanceLetterApplicationCZZ.IsEmpty() then
             exit;
 
         if not ConfirmManagement.GetResponseOrDefault(ApplyAdvanceLetterQst, false) then
             exit;
 
-        CheckAdvancePayment(AdvanceLetterApplication."Document Type"::"Posted Purchase Invoice", PurchInvHeader);
-        AdvanceLetterApplication.CalcSums(Amount);
+        CheckAdvancePayment(AdvanceLetterApplicationCZZ."Document Type"::"Posted Purchase Invoice", PurchInvHeader);
+        AdvanceLetterApplicationCZZ.CalcSums(Amount);
         VendorLedgerEntry.SetCurrentKey("Document No.");
         VendorLedgerEntry.SetRange("Document No.", PurchInvHeader."No.");
         VendorLedgerEntry.SetRange(Open, true);
+        OnApplyAdvanceLetterOnAfterSetVendorLedgerEntryFilter(VendorLedgerEntry, PurchInvHeader, AdvanceLetterApplicationCZZ);
         VendorLedgerEntry.FindLast();
         VendorLedgerEntry.CalcFields("Remaining Amount");
-        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplication, VendorLedgerEntry);
-        if AdvanceLetterApplication.Amount > -VendorLedgerEntry."Remaining Amount" then
+        OnApplyAdvanceLetterOnBeforeTestAmount(AdvanceLetterApplicationCZZ, VendorLedgerEntry);
+        if AdvanceLetterApplicationCZZ.Amount > -VendorLedgerEntry."Remaining Amount" then
             Error(CannotApplyErr, -VendorLedgerEntry."Remaining Amount");
 
         PurchAdvLetterPostCZZ.PostAdvanceLetterApplying(PurchInvHeader, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
-#if not CLEAN24
-    [Obsolete('Replaced by CheckAdvancePayment with Variant parameter.', '24.0')]
-    procedure CheckAdvancePayement(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20])
-    var
-        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        ConfirmManagement: Codeunit "Confirm Management";
-        UsageQst: Label 'Usage all applicated advances is not possible.\Continue?';
-    begin
-        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
-        AdvanceLetterApplicationCZZ.SetRange("Document No.", DocumentNo);
-        if AdvanceLetterApplicationCZZ.FindSet() then
-            repeat
-                PurchAdvLetterHeaderCZZ.SetAutoCalcFields("To Use");
-                PurchAdvLetterHeaderCZZ.Get(AdvanceLetterApplicationCZZ."Advance Letter No.");
-                if PurchAdvLetterHeaderCZZ."To Use" < AdvanceLetterApplicationCZZ.Amount then
-                    if not ConfirmManagement.GetResponseOrDefault(UsageQst, false) then
-                        Error('');
-            until AdvanceLetterApplicationCZZ.Next() = 0;
-    end;
-#endif
 
     procedure CheckAdvancePayment(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentHeader: Variant)
     var
@@ -1345,110 +1317,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
     begin
         PreviewMode := NewPerviewMode;
     end;
-#if not CLEAN24
-#pragma warning disable AL0432
-    internal procedure RaiseOnBeforePostPaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnBeforePostPaymentRepos(GenJournalLine, purchAdvLetterHeaderCZZ, PostedGenJournalLine);
-    end;
-
-    internal procedure RaiseOnAfterPostPaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnAfterPostPaymentRepos(GenJournalLine, purchAdvLetterHeaderCZZ, PostedGenJournalLine);
-    end;
-
-    internal procedure RaiseOnBeforePostPayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnBeforePostPayment(GenJournalLine, purchAdvLetterHeaderCZZ, PostedGenJournalLine);
-    end;
-
-    internal procedure RaiseOnAfterPostPayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnAfterPostPayment(GenJournalLine, purchAdvLetterHeaderCZZ, PostedGenJournalLine);
-    end;
-
-    internal procedure RaiseOnAfterInitGenJnlLineFromVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnAfterInitGenJnlLineFromVendLedgEntry(VendorLedgerEntry, GenJournalLine);
-    end;
-
-    internal procedure RaiseOnAfterInitGenJnlLineFromAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnAfterInitGenJnlLineFromAdvance(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, GenJournalLine);
-    end;
-
-    internal procedure RaiseOnPostAdvancePaymentVATOnBeforeGenJnlPostLine(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, GenJournalLine);
-    end;
-
-    internal procedure RaiseOnBeforePostAdvancePaymentUsage(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20]; var PurchInvHeader: Record "Purch. Inv. Header"; var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean; var IsHandled: Boolean)
-    begin
-        OnBeforePostAdvancePaymentUsage(
-            AdvLetterUsageDocTypeCZZ, DocumentNo, PurchInvHeader, VendorLedgerEntry, GenJnlPostLine, Preview, IsHandled);
-    end;
-
-    internal procedure RaiseOnPostAdvancePaymentUsageOnBeforeLoopPurchAdvLetterEntry(var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
-    begin
-        OnPostAdvancePaymentUsageOnBeforeLoopPurchAdvLetterEntry(AdvanceLetterApplicationCZZ, PurchAdvLetterEntryCZZ);
-    end;
-
-    internal procedure RaiseOnBeforePostAdvancePayment(VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"; LinkAmount: Decimal; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean);
-    begin
-        OnBeforePostAdvancePayment(VendorLedgerEntry, GenJournalLine, LinkAmount, GenJnlPostLine, IsHandled);
-    end;
-
-    internal procedure RaiseOnBeforePostClosePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnBeforePostClosePayment(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnAfterPostClosePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnAfterPostClosePayment(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnBeforePostClosePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnBeforePostClosePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnAfterPostClosePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnAfterPostClosePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnBeforePostReversePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnBeforePostReversePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnAfterPostReversePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnAfterPostReversePaymentRepos(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnBeforePostReversePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnBeforePostReversePayment(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnAfterPostReversePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-        OnAfterPostReversePayment(GenJournalLine, PurchAdvLetterHeaderCZZ);
-    end;
-
-    internal procedure RaiseOnBeforePostReversePaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; PostingDate: Date; var Preview: Boolean; var IsHandled: Boolean)
-    begin
-        OnBeforePostReversePaymentVAT(PurchAdvLetterEntryCZZ, PostingDate, Preview, IsHandled);
-    end;
-
-    internal procedure RaiseOnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry, GenJournalLine);
-    end;
-#pragma warning restore AL0432
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertAdvEntry(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var Preview: Boolean)
@@ -1469,151 +1337,32 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
     local procedure OnUpdateStatus(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; DocStatus: Enum "Advance Letter Doc. Status CZZ")
     begin
     end;
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentOnBeforePostPaymentApplication event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostPaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentOnAfterPostPaymentApplication event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostPaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentOnBeforePostAdvancePayment event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostPayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentOnAfterPostAdvancePayment event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostPayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostedGenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif    
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostPaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; PostingDate: Date; var IsHandled: Boolean)
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnReverseAdvancePaymentOnBeforePostInvoiceApplication event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostReversePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif    
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnReverseAdvancePaymentOnAfterPostInvoiceApplication event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostReversePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnReverseAdvancePaymentOnBeforePostAdvancePaymentUsage event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostReversePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnReverseAdvancePaymentOnAfterPostAdvancePaymentUsage event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostReversePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif    
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnBeforeReverseAdvancePaymentVAT event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostReversePaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; PostingDate: Date; var Preview: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-#endif     
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentClosingEntryOnBeforePostBalance event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostClosePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif 
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentClosingEntryOnAfterPostBalance event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostClosePaymentRepos(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif 
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentClosingEntryOnBeforePost event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostClosePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif 
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentClosingEntryOnAfterPost event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterPostClosePayment(var GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by events in "Gen. Journal Line CZZ" table extension, e.g. one of the events OnAfterCopyFromVendorLedgerEntryCZZ.', '24.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnAfterInitGenJnlLineFromVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
-#if not CLEAN24
-    [Obsolete('Replaced by events in "Gen. Journal Line CZZ" table extension, e.g. one of the events OnAfterCopyGenJnlLineFromPurchAdvLetterHeaderCZZ.', '24.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnAfterInitGenJnlLineFromAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif    
 
     [IntegrationEvent(true, false)]
     local procedure OnApplyAdvanceLetterOnBeforeTestAmount(var AdvanceLetterApplication: Record "Advance Letter Application CZZ"; VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnBeforePostAdvancePayment event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostAdvancePayment(VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"; LinkAmount: Decimal; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean);
-    begin
-    end;
-#endif     
 
     [IntegrationEvent(false, false)]
     local procedure OnLinkAdvanceLetterOnBeforeModifyAdvanceLetterApplication(var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; var TempAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ" temporary; var ModifyRecord: Boolean)
@@ -1625,34 +1374,13 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentUsageOnAfterSetPurchAdvLetterEntryFilter event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnPostAdvancePaymentUsageOnBeforeLoopPurchAdvLetterEntry(var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
-    begin
-    end;
-#endif     
 
     [IntegrationEvent(true, false)]
     local procedure OnPostAdvanceCreditMemoVATOnAfterGetDocument(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var PostingDate: Date; var VATDate: Date; var OriginalDocumentVATDate: Date)
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnBeforePostAdvancePaymentUsage event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnBeforePostAdvancePaymentUsage(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20]; var PurchInvHeader: Record "Purch. Inv. Header"; var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-#endif     
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnPostAdvancePaymentVATOnBeforePostVATDocumentAmounts event in "Purch. Adv. Letter-Post CZZ" codeunit.', '24.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif 
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCheckAdvancePayment(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentHeader: Variant; var IsHandled: Boolean);
@@ -1666,6 +1394,11 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnCheckAdvancePaymentOnAfterSetFilters(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnApplyAdvanceLetterOnAfterSetVendorLedgerEntryFilter(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var PurchInvHeader: Record "Purch. Inv. Header"; var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
     begin
     end;
 }

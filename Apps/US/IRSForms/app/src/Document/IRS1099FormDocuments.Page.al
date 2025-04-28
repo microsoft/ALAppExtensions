@@ -98,6 +98,48 @@ page 10036 "IRS 1099 Form Documents"
                     IRS1099FormDocument.RecreateForm(Rec);
                 end;
             }
+            action(ReleaseAll)
+            {
+                Caption = 'Release All';
+                Image = ReleaseDoc;
+                ToolTip = 'Release all selected opened forms.';
+
+                trigger OnAction()
+                var
+                    IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+                    IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+                begin
+                    IRS1099FormDocHeader := Rec;
+                    CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
+                    IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Open);
+
+                    if IRS1099FormDocHeader.FindSet() then
+                        repeat
+                            IRS1099FormDocument.Release(IRS1099FormDocHeader);
+                        until IRS1099FormDocHeader.Next() = 0;
+                end;
+            }
+            action(ReopenAll)
+            {
+                Caption = 'Reopen All';
+                Image = ReOpen;
+                ToolTip = 'Reopen all selected released forms.';
+
+                trigger OnAction()
+                var
+                    IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+                    IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+                begin
+                    IRS1099FormDocHeader := Rec;
+                    CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
+                    IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+
+                    if IRS1099FormDocHeader.FindSet() then
+                        repeat
+                            IRS1099FormDocument.Reopen(IRS1099FormDocHeader);
+                        until IRS1099FormDocHeader.Next() = 0;
+                end;
+            }
             action(SendEmail)
             {
                 Caption = 'Send Email';
@@ -107,12 +149,17 @@ page 10036 "IRS 1099 Form Documents"
                 trigger OnAction()
                 var
                     IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
-                    IRS1099SendEmail: Report "IRS 1099 Send Email";
+                    IRS1099SendEmailReport: Report "IRS 1099 Send Email";
+                    IRS1099SendEmail: Codeunit "IRS 1099 Send Email";
                 begin
+                    IRS1099SendEmail.CheckEmailSetup();
+
                     IRS1099FormDocHeader := Rec;
                     CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
-                    IRS1099SendEmail.SetTableView(IRS1099FormDocHeader);
-                    IRS1099SendEmail.RunModal();
+                    IRS1099SendEmail.CheckCanSendMultipleEmails(IRS1099FormDocHeader);
+
+                    IRS1099SendEmailReport.SetTableView(IRS1099FormDocHeader);
+                    IRS1099SendEmailReport.RunModal();
                 end;
             }
             action(ActivityLog)

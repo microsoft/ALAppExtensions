@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -69,11 +69,6 @@ table 6103 "E-Document Service"
         field(6; "Update Order"; Boolean)
         {
             Caption = 'Update Order';
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
-            ObsoleteTag = '24.0';
-#endif
         }
         field(7; "Create Journal Lines"; Boolean)
         {
@@ -190,12 +185,22 @@ table 6103 "E-Document Service"
             DataClassification = SystemMetadata;
             NotBlank = true;
             InitValue = 0T;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(20; "Import Minutes between runs"; Integer)
         {
             Caption = 'Minutes between runs';
             DataClassification = SystemMetadata;
             InitValue = 1440;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(21; "Batch Mode"; Enum "E-Document Batch Mode")
         {
@@ -335,7 +340,11 @@ table 6103 "E-Document Service"
 
     internal procedure GetDefaultImportParameters() EDocImportParameters: Record "E-Doc. Import Parameters"
     begin
-        EDocImportParameters."Step to Run" := IsAutomaticProcessingEnabled() ? "Import E-Document Steps"::"Finish draft" : "Import E-Document Steps"::"Prepare draft";
+        if Rec."Import Process" = "Import Process"::"Version 1.0" then begin
+            EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+            EDocImportParameters."Create Document V1 Behavior" := IsAutomaticProcessingEnabled();
+        end else
+            EDocImportParameters."Step to Run" := IsAutomaticProcessingEnabled() ? "Import E-Document Steps"::"Finish draft" : "Import E-Document Steps"::"Prepare draft";
     end;
 
     internal procedure ToString(): Text

@@ -8,6 +8,8 @@ using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6138 "E-Document Service Status"
 {
+    ReplicateData = false;
+
     fields
     {
         field(1; "E-Document Entry No"; Integer)

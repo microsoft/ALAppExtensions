@@ -1,3 +1,4 @@
+#pragma warning disable AS0049, AS0009, AS0005, AS0125
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,12 +7,18 @@ namespace Microsoft.EServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Vendor;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Purchases.Document;
 
 table 6102 "E-Document Header Mapping"
 {
-    InherentEntitlements = X;
-    InherentPermissions = X;
+    Access = Internal;
+    ReplicateData = false;
+#pragma warning disable AS0034
+    InherentEntitlements = RIMDX;
+    InherentPermissions = RIMDX;
+#pragma warning restore AS0034
+
     fields
     {
         field(1; "E-Document Entry No."; Integer)
@@ -50,4 +57,10 @@ table 6102 "E-Document Header Mapping"
         end;
     end;
 
+    internal procedure GetEDocumentPurchaseHeader() EDocumentPurchaseHeader: Record "E-Document Purchase Header"
+    begin
+        if EDocumentPurchaseHeader.Get(Rec."E-Document Entry No.") then;
+    end;
+
 }
+#pragma warning restore AS0049, AS0009, AS0005, AS0125

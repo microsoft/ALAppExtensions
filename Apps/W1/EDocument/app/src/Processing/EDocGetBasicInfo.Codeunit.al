@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 6150 "E-Doc. Get Basic Info"
 {
     Access = Internal;

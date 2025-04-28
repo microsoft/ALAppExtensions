@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -21,6 +21,7 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31186 "Sales Quote CZL"
@@ -216,10 +217,16 @@ report 31186 "Sales Quote CZL"
             column(Amount_SalesHeader; Amount)
             {
             }
+            column(Formatted_Amount_SalesHeader; format(Amount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+            {
+            }
             column(AmountIncludingVAT_SalesHeaderCaption; FieldCaption("Amount Including VAT"))
             {
             }
             column(AmountIncludingVAT_SalesHeader; "Amount Including VAT")
+            {
+            }
+            column(Formatted_AmountIncludingVAT_SalesHeader; format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
             {
             }
             column(QuoteValidUntilDate_SalesHeaderCaption; QuoteValidUntilDateLbl)
@@ -228,14 +235,6 @@ report 31186 "Sales Quote CZL"
             column(QuoteValidUntilDate_SalesHeader; Format("Quote Valid Until Date"))
             {
             }
-#if not CLEAN24
-            column(QuoteValidUntilDateFormat_SalesHeader; Format("Quote Valid Until Date"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore. Use the field QuoteValidUntilDate_SalesHeader instead.';
-            }
-#endif
             column(DocFooterText; DocFooterText)
             {
             }
@@ -334,6 +333,9 @@ report 31186 "Sales Quote CZL"
                     column(UnitPrice_SalesLine; "Unit Price")
                     {
                     }
+                    column(Formatted_UnitPrice_SalesLine; format("Unit Price", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+                    {
+                    }
                     column(LineDiscount_SalesLineCaption; FieldCaption("Line Discount %"))
                     {
                     }
@@ -352,10 +354,16 @@ report 31186 "Sales Quote CZL"
                     column(LineAmount_SalesLine; "Line Amount")
                     {
                     }
+                    column(Formatted_LineAmount_SalesLine; format("Line Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+                    {
+                    }
                     column(InvDiscountAmount_SalesLineCaption; FieldCaption("Inv. Discount Amount"))
                     {
                     }
                     column(InvDiscountAmount_SalesLine; "Inv. Discount Amount")
+                    {
+                    }
+                    column(Formatted_InvDiscountAmount_SalesLine; format("Inv. Discount Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
                     {
                     }
                 }
@@ -529,6 +537,7 @@ report 31186 "Sales Quote CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
+        AutoFormat: Codeunit "Auto Format";
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Quote';
         PageLbl: Label 'Page';

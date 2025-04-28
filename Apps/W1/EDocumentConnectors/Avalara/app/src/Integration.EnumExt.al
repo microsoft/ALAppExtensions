@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 #if not CLEAN26
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.

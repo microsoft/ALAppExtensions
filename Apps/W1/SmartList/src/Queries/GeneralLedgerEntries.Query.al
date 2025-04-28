@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2401 "General Ledger Entries"
 {
     QueryType = Normal;

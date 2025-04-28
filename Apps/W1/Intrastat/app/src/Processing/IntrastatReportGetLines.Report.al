@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -222,53 +222,6 @@ report 4810 "Intrastat Report Get Lines"
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"FA Entry");
             end;
         }
-#if not CLEAN24
-        dataitem("Value Entry"; "Value Entry")
-        {
-            DataItemTableView = sorting("Entry No.");
-            ObsoleteReason = 'Generates false quantity in a period where an item is not moved';
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-
-            trigger OnAfterGetRecord()
-            var
-                IsSkipped: Boolean;
-            begin
-                if ShowItemCharges then begin
-                    IntrastatReportLine2.SetRange("Source Entry No.", "Item Ledger Entry No.");
-                    if IntrastatReportLine2.FindFirst() then
-                        CurrReport.Skip();
-
-                    if "Item Ledger Entry".Get("Item Ledger Entry No.") then begin
-                        if "Item Ledger Entry"."Posting Date" in [StartDate .. EndDate] then
-                            CurrReport.Skip();
-                        if Country.Get(IntrastatReportMgt.GetIntrastatBaseCountryCode("Item Ledger Entry")) and (Country."EU Country/Region Code" = '') then
-                            CurrReport.Skip();
-                        if not HasCrossedBorder("Item Ledger Entry") then
-                            CurrReport.Skip();
-                        IsSkipped := false;
-                        OnAfterSkipValueEntry(StartDate, EndDate, "Value Entry", "Item Ledger Entry", IsSkipped);
-                        if IsSkipped then
-                            CurrReport.Skip();
-                        InsertValueEntryLine();
-                    end;
-                end;
-            end;
-
-            trigger OnPreDataItem()
-            begin
-                SetRange("Posting Date", StartDate, EndDate);
-                SetFilter("Item Charge No.", '<> %1', '');
-                "Item Ledger Entry".SetRange("Posting Date");
-
-                IntrastatReportLine2.SetRange("Intrastat No.", IntrastatReportHeader."No.");
-                IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
-                IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"Item Entry");
-
-                OnAfterValueEntryOnPreDataItem(IntrastatReportHeader, "Value Entry", "Item Ledger Entry");
-            end;
-        }
-#endif        
     }
 
     requestpage
@@ -334,18 +287,6 @@ report 4810 "Intrastat Report Get Lines"
                         Caption = 'Skip Zero Amounts';
                         ToolTip = 'Specifies that item ledger entries without amounts will not be included in the batch job.';
                     }
-#if not CLEAN24
-                    field(ShowingItemCharges; ShowItemCharges)
-                    {
-                        ApplicationArea = All;
-                        ObsoleteReason = 'Generates false quantity in a period where an item is not moved';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '24.0';
-                        Visible = false;
-                        Caption = 'Show Item Charge Entries';
-                        ToolTip = 'Specifies if you want to show direct costs that your company has assigned and posted as item charges.';
-                    }
-#endif
                     field(SkipNotInvoiced; SkipNotInvoicedEntries)
                     {
                         ApplicationArea = All;
@@ -442,10 +383,6 @@ report 4810 "Intrastat Report Get Lines"
         IndirectCostPctReq: Decimal;
         SkipRecalcZeroAmounts: Boolean;
         SkipZeroAmounts: Boolean;
-#if not CLEAN24
-        [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-        ShowItemCharges: Boolean;
-#endif
         SkipNotInvoicedEntries: Boolean;
         AmtRoundingDirection: Text[1];
 
@@ -924,56 +861,6 @@ report 4810 "Intrastat Report Get Lines"
         exit(true);
     end;
 
-#if not CLEAN24
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    local procedure InsertValueEntryLine()
-    var
-        Location: Record Location;
-        IsHandled: Boolean;
-    begin
-        IntrastatReportLine.Init();
-        IntrastatReportLine."Intrastat No." := IntrastatReportHeader."No.";
-        IntrastatReportLine."Line No." += 10000;
-        IntrastatReportLine.Date := "Value Entry"."Posting Date";
-        IntrastatReportLine."Country/Region Code" := "Item Ledger Entry"."Country/Region Code";
-        IntrastatReportLine."Transaction Type" := "Item Ledger Entry"."Transaction Type";
-        IntrastatReportLine."Transport Method" := "Item Ledger Entry"."Transport Method";
-        IntrastatReportLine."Source Entry No." := "Item Ledger Entry"."Entry No.";
-        IntrastatReportLine.Quantity := "Item Ledger Entry".Quantity;
-        IntrastatReportLine."Document No." := "Value Entry"."Document No.";
-        IntrastatReportLine."Item No." := "Item Ledger Entry"."Item No.";
-        IntrastatReportLine."Entry/Exit Point" := "Item Ledger Entry"."Entry/Exit Point";
-        IntrastatReportLine.Area := "Item Ledger Entry".Area;
-        IntrastatReportLine."Transaction Specification" := "Item Ledger Entry"."Transaction Specification";
-        IntrastatReportLine."Location Code" := "Item Ledger Entry"."Location Code";
-        IntrastatReportLine.Amount := Round(Abs("Value Entry"."Sales Amount (Actual)"), 1, AmtRoundingDirection);
-
-        SetJnlLineType(IntrastatReportLine, "Value Entry"."Document Type");
-
-        if (IntrastatReportLine."Country/Region Code" = '') or
-           (IntrastatReportLine."Country/Region Code" = CompanyInfo."Country/Region Code")
-        then
-            if "Item Ledger Entry"."Location Code" = '' then
-                IntrastatReportLine."Country/Region Code" := CompanyInfo."Ship-to Country/Region Code"
-            else begin
-                Location.Get("Item Ledger Entry"."Location Code");
-                IntrastatReportLine."Country/Region Code" := Location."Country/Region Code"
-            end;
-
-        IntrastatReportLine.Validate("Item No.");
-        IntrastatReportLine.Validate("Source Type", IntrastatReportLine."Source Type"::"Item Entry");
-        IntrastatReportLine.Validate(Quantity, Round(Abs(IntrastatReportLine.Quantity), 0.00001));
-        IntrastatReportLine.Validate("Cost Regulation %", IndirectCostPctReq);
-
-        IsHandled := false;
-        OnBeforeInsertValueEntryLine(IntrastatReportLine, "Item Ledger Entry", IsHandled);
-        if not IsHandled then
-            IntrastatReportLine.Insert();
-
-        IntrastatReportLine."Record ID Filter" := Format(IntrastatReportLine.RecordId);
-        IntrastatReportLine.Modify();
-    end;
-#endif
     local procedure IsService(ItemLedgEntry: Record "Item Ledger Entry"): Boolean
     var
         SalesShipmentLine: Record "Sales Shipment Line";
@@ -1236,21 +1123,6 @@ report 4810 "Intrastat Report Get Lines"
             end;
     end;
 
-#if not CLEAN24
-    local procedure SetJnlLineType(var IntrastatReportLine3: Record "Intrastat Report Line"; ValueEntryDocumentType: Enum "Item Ledger Document Type")
-    begin
-        if IntrastatReportLine3.Quantity < 0 then begin
-            if ValueEntryDocumentType = "Value Entry"."Document Type"::"Sales Credit Memo" then
-                IntrastatReportLine3.Type := IntrastatReportLine3.Type::Receipt
-            else
-                IntrastatReportLine3.Type := IntrastatReportLine3.Type::Shipment
-        end else
-            if ValueEntryDocumentType = "Value Entry"."Document Type"::"Purchase Credit Memo" then
-                IntrastatReportLine3.Type := IntrastatReportLine3.Type::Shipment
-            else
-                IntrastatReportLine3.Type := IntrastatReportLine3.Type::Receipt;
-    end;
-#endif
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterCheckItemLedgerEntry(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; var CurrReportSkip: Boolean)
@@ -1303,13 +1175,6 @@ report 4810 "Intrastat Report Get Lines"
     begin
     end;
 
-#if not CLEAN24
-    [IntegrationEvent(true, false)]
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    local procedure OnAfterValueEntryOnPreDataItem(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeHasCrossedBorder(ItemLedgerEntry: Record "Item Ledger Entry"; var Result: Boolean; var IsHandled: Boolean)
@@ -1351,13 +1216,6 @@ report 4810 "Intrastat Report Get Lines"
     begin
     end;
 
-#if not CLEAN24
-    [IntegrationEvent(false, false)]
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    local procedure OnBeforeInsertValueEntryLine(var IntrastatReportLine: Record "Intrastat Report Line"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
-    begin
-    end;
-#endif
     [IntegrationEvent(false, false)]
     local procedure OnCalculateTotalsOnBeforeSumTotals(var ItemLedgerEntry: Record "Item Ledger Entry"; IntrastatReportHeader: Record "Intrastat Report Header"; var TotalAmt: Decimal; var TotalCostAmt: Decimal)
     begin

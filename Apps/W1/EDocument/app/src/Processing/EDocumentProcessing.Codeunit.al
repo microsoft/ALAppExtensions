@@ -310,6 +310,19 @@ codeunit 6108 "E-Document Processing"
             Clear(DocumentSendingProfile);
     end;
 
+    internal procedure GetDocSendingProfileForCust(CustomerNo: Code[20]; var DocumentSendingProfile: Record "Document Sending Profile"): Boolean
+    var
+        Customer: Record Customer;
+    begin
+        if Customer.Get(CustomerNo) then
+            if DocumentSendingProfile.Get(Customer."Document Sending Profile") then
+                exit(true);
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if DocumentSendingProfile.FindFirst() then
+            exit(true);
+    end;
+
     local procedure GetPostedRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean
     var
         RelatedRecordRef: RecordRef;

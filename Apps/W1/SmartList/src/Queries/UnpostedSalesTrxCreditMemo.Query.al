@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2458 "Unposted Sales Trx Credit Memo"
 {
     QueryType = Normal;

@@ -23,6 +23,8 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.TestLibraries.Foundation.NoSeries;
+using System.TestLibraries.Utilities;
 
 #endregion Using
 
@@ -422,8 +424,16 @@ codeunit 139685 "Contract Test Library"
 
     procedure CreateVendorContract(var VendorContract: Record "Vendor Subscription Contract"; VendorNo: Code[20])
     var
+        ServiceContractSetup: Record "Subscription Contract Setup";
         VendorContractNo: Code[20];
     begin
+        // set no. series for vendor contract
+        ServiceContractSetup.Get();
+        if ServiceContractSetup."Vend. Sub. Contract Nos." = '' then begin
+            ServiceContractSetup."Vend. Sub. Contract Nos." := CreateNoSeries();
+            ServiceContractSetup.Modify();
+        end;
+
         VendorContractNo := PrefixTok + 'VEC000000';
         repeat
             VendorContractNo := IncStr(VendorContractNo);
@@ -437,6 +447,18 @@ codeunit 139685 "Contract Test Library"
 
         OnCreateVendorSubscriptionContractOnBeforeModify(VendorContract);
         VendorContract.Modify(true);
+    end;
+
+    procedure CreateNoSeries(): Code[20]
+    var
+        LibraryNoSeries: Codeunit "Library - No. Series";
+        Any: Codeunit Any;
+        NoSeriesCode: Code[20];
+    begin
+        Any.SetDefaultSeed();
+        NoSeriesCode := CopyStr(Any.AlphabeticText(10), 1, 10);
+        LibraryNoSeries.CreateNoSeries(NoSeriesCode, true, true, false);
+        exit(NoSeriesCode)
     end;
 
     procedure CreateVendorContractAndCreateContractLinesForItems(var VendorContract: Record "Vendor Subscription Contract"; var ServiceObject: Record "Subscription Header"; VendorNo: Code[20])

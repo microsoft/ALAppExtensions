@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 31318 "Posted Transfer Shpt. Subf CZ" extends "Posted Transfer Shpt. Subform"
 {
     layout

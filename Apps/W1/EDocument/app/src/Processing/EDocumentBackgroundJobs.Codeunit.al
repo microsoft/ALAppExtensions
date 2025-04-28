@@ -117,7 +117,6 @@ codeunit 6133 "E-Document Background Jobs"
     procedure HandleRecurrentImportJob(var EDocumentService: Record "E-Document Service")
     begin
         if EDocumentService."Auto Import" then begin
-            EDocumentService.TestField("Import Start Time");
             EDocumentService.TestField("Import Minutes between runs");
             ScheduleRecurrentImportJob(EDocumentService);
         end else

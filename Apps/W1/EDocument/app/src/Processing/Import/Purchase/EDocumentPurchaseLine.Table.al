@@ -1,3 +1,4 @@
+#pragma warning disable AS0049, AS0009, AS0005, AS0125
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8,22 +9,25 @@ using Microsoft.eServices.EDocument;
 
 table 6101 "E-Document Purchase Line"
 {
-    InherentEntitlements = X;
-    InherentPermissions = X;
+    Access = Internal;
+    ReplicateData = false;
+#pragma warning disable AS0034
+    InherentEntitlements = RIMDX;
+    InherentPermissions = RIMDX;
+#pragma warning restore AS0034
 
     fields
     {
-        field(1; "E-Document Line Id"; Integer)
-        {
-            Caption = 'Line Id';
-            DataClassification = SystemMetadata;
-            AutoIncrement = true;
-            Editable = false;
-        }
-        field(2; "E-Document Entry No."; Integer)
+        field(1; "E-Document Entry No."; Integer)
         {
             Caption = 'E-Document Entry No.';
             TableRelation = "E-Document"."Entry No";
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(2; "Line No."; Integer)
+        {
+            Caption = 'Line No.';
             DataClassification = SystemMetadata;
             Editable = false;
         }
@@ -91,10 +95,11 @@ table 6101 "E-Document Purchase Line"
     }
     keys
     {
-        key(PK; "E-Document Line Id")
+        key(PK; "E-Document Entry No.", "Line No.")
         {
             Clustered = true;
         }
     }
 
 }
+#pragma warning restore AS0049, AS0009, AS0005, AS0125

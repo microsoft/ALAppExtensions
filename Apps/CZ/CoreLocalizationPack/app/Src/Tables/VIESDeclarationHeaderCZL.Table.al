@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -568,18 +568,10 @@ table 31075 "VIES Declaration Header CZL"
     var
         VIESDeclarationHeader: Record "VIES Declaration Header CZL";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
         NoSeriesCode: Code[20];
     begin
         if "No." = '' then begin
             NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := NoSeriesCode;
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -588,10 +580,6 @@ table 31075 "VIES Declaration Header CZL"
                 VIESDeclarationHeader.SetLoadFields("No.");
                 while VIESDeclarationHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, WorkDate(), "No.");
-            end;
-#endif
         end;
         InitRecord();
     end;

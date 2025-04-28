@@ -10,7 +10,7 @@
   "help": "https://go.microsoft.com/fwlink/?linkid=2135559",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "ExtensionLogo.png",
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "application": "27.0.0.0",
   "dependencies": [
     {

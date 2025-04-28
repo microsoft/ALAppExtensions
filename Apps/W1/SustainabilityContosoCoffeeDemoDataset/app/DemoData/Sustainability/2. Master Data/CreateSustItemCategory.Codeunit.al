@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5255 "Create Sust Item Category"
 {
     InherentEntitlements = X;

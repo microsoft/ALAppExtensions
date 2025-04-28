@@ -1,3 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Inventory.Location;
+using Microsoft.Warehouse.Structure;
+using Microsoft.Warehouse.Setup;
+using Microsoft.Warehouse.Activity;
+using Microsoft.Manufacturing.Setup;
+using Microsoft.Projects.Project.Setup;
+using Microsoft.Assembly.Document;
+
 codeunit 5147 "Contoso Warehouse"
 {
     InherentEntitlements = X;

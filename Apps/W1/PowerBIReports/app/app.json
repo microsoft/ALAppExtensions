@@ -1,6 +1,6 @@
 {
   "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
-  "name": "PowerBI Reports",
+  "name": "Power BI Report embeddings for Dynamics 365 Business Central",
   "publisher": "Microsoft",
   "brief": "Analyse Business Central data in Power BI",
   "description": "Core Connector for Power BI allows you to easily integrate Business Central data with Power BI.",
@@ -11,11 +11,18 @@
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
   "logo": "assets/ExtensionLogo.png",
+  "target": "OnPrem",
   "dependencies": [
     {
       "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
       "name": "Sustainability",
       "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c",
+      "publisher": "Microsoft",
+      "name": "Subscription Billing",
       "version": "27.0.0.0"
     }
   ],
@@ -28,7 +35,7 @@
   ],
   "screenshots": [],
   "application": "27.0.0.0",
-  "platform": "26.0.0.0",
+  "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 36950,
@@ -36,7 +43,7 @@
     },
     {
       "from": 37055,
-      "to": 37069
+      "to": 37083
     }
   ],
   "features": [

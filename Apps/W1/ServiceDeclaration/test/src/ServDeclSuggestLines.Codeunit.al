@@ -313,6 +313,48 @@ codeunit 139905 "Serv. Decl. Suggest Lines"
         ServDeclLine.TestField("Purchase Amount (LCY)", PurchLine.Amount);
     end;
 
+    [Test]
+    procedure ServDeclWithMixOfSalesAndPurchaseLines1()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ServiceDeclarationHeader: Record "Service Declaration Header";
+        ServiceDeclarationLine: Record "Service Declaration Line";
+        VATReportsConfiguration: Record "VAT Reports Configuration";
+    begin
+        // [SCENARIO 572646] Service Declaration Lines are deleting when the Service Declaration Header is deleted.
+        Initialize();
+
+        // [GIVEN] Setup 0365.
+        LibraryLowerPermissions.SetO365Setup();
+
+        // [GIVEN] Add Sales Document.
+        LibraryLowerPermissions.AddSalesDocsPost();
+
+        // [GIVEN] Create Sales Document with Service Type Code.
+        LibraryServiceDeclaration.CreateSalesDocWithServTransTypeCode(SalesHeader, SalesLine);
+
+        // [GIVEN] Post Sales Document.
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [GIVEN] Find VAT Reports Configuration.
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"Service Declaration");
+        VATReportsConfiguration.FindFirst();
+
+        // [GIVEN] Create Service Declaration Header.
+        CreateServDeclHeader(ServiceDeclarationHeader, VATReportsConfiguration."VAT Report Version", SalesHeader."Posting Date");
+
+        // [GIVEN] Run Suggest Lines.
+        codeunit.Run(VATReportsConfiguration."Suggest Lines Codeunit ID", ServiceDeclarationHeader);
+
+        // [WHEN] Delete Service Declaration Header.
+        ServiceDeclarationHeader.Delete(true);
+
+        // [THEN] Service Declaration Line must be deleted.
+        ServiceDeclarationLine.SetRange("Document No.", ServiceDeclarationHeader."No.");
+        Assert.RecordIsEmpty(ServiceDeclarationLine);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Serv. Decl. Suggest Lines");

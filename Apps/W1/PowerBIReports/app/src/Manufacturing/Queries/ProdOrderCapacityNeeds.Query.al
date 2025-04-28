@@ -28,6 +28,9 @@ query 36987 "Prod. Order Capacity Needs"
             column(workCenterNo; "Work Center No.") { }
             column(workCenterGroupCode; "Work Center Group Code") { }
             column(date; Date) { }
+            column(no; "No.") { }
+            column(type; Type) { }
+            column(neededTimeMs; "Needed Time (ms)") { }
             column(neededTime; "Needed Time") { }
             column(lineNo; "Line No.") { }
         }

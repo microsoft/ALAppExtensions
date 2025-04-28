@@ -17,6 +17,13 @@ codeunit 6132 "E-Document Log"
         tabledata "E-Document Service Status" = im,
         tabledata "E-Document Integration Log" = im;
 
+    var
+        TempDataStorageEntry: Record "E-Doc. Data Storage" temporary;
+        EDocLog: Record "E-Document Log";
+        EDocDataStorageAlreadySetErr: Label 'E-Doc. Data Storage can not be overwritten with new entry';
+        EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
+
+
     internal procedure SetFields(EDocument: Record "E-Document")
     var
         EDocumentService: Record "E-Document Service";
@@ -146,7 +153,13 @@ codeunit 6132 "E-Document Log"
         if (EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration") and
         (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::"No Integration") then
             exit;
+#else
+        if (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::"No Integration") then
+            exit;
 #endif
+
+        if HttpRequest.GetRequestUri() = '' then
+            exit;
 
         EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
@@ -247,6 +260,7 @@ codeunit 6132 "E-Document Log"
     var
         EDocumentLog: Record "E-Document Log";
         EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocLog: Record "E-Document Log";
     begin
         EDocDataStorage.SetAutoCalcFields("Data Storage");
         if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, EDocumentServiceStatus) then
@@ -261,11 +275,6 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.FindLast();
         EDocumentService.Get(EDocumentLog."Service Code");
     end;
-
-    var
-        TempDataStorageEntry: Record "E-Doc. Data Storage" temporary;
-        EDocLog: Record "E-Document Log";
-        EDocDataStorageAlreadySetErr: Label 'E-Doc. Data Storage can not be overwritten with new entry';
 
 #if not CLEAN26
     [IntegrationEvent(false, false)]
