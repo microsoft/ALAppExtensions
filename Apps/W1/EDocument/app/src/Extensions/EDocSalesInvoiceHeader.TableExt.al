@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using System.Automation;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Foundation.Reporting;
@@ -30,11 +31,17 @@ tableextension 6102 "E-Doc. Sales Invoice Header" extends "Sales Invoice Header"
     /// </summary>
     internal procedure CreateEDocument()
     var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        Customer: Record Customer;
+        Workflow: Record Workflow;
         EDocExport: Codeunit "E-Doc. Export";
         SalesInvoiceRecordRef: RecordRef;
     begin
         SalesInvoiceRecordRef.GetTable(Rec);
-        EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef);
+        Customer.Get(Rec."Bill-to Customer No.");
+        DocumentSendingProfile.Get(Customer."Document Sending Profile");
+        Workflow.Get(DocumentSendingProfile."Electronic Service Flow");
+        EDocExport.CheckAndCreateEDocument(SalesInvoiceRecordRef, Workflow, "E-Document Type"::"Sales Invoice");
     end;
 
     /// <summary>

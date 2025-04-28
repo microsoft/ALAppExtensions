@@ -77,8 +77,6 @@ codeunit 6102 "E-Doc. Export"
     local procedure CreateEDocument(EDocument: Record "E-Document"; var DocumentHeader: RecordRef; var EDocumentService: Record "E-Document Service"; EDocumentType: Enum "E-Document Type")
     var
         EDocumentLog: Codeunit "E-Document Log";
-        EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
-        EDocExport: Codeunit "E-Doc. Export";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         SupportedServices: List of [Code[20]];
         Code: Code[20];
@@ -508,10 +506,13 @@ codeunit 6102 "E-Doc. Export"
         exit(EDocServiceSupportedType.Get(EDocService.Code, EDocSourceType));
     end;
 
-    internal procedure CheckAndCreateEDocument(SourceDocumentHeader: RecordRef)
+    internal procedure CheckAndCreateEDocument(
+        SourceDocumentHeader: RecordRef;
+        Workflow: Record Workflow;
+        EDocumentType: Enum "E-Document Type")
     begin
         this.CheckEDocument(SourceDocumentHeader, "E-Document Processing Phase"::Create);
-        this.CreateEDocument(SourceDocumentHeader);
+        this.CreateEDocument(SourceDocumentHeader, Workflow, EDocumentType);
     end;
 
     local procedure IsDocumentTypeSupported(EDocService: Record "E-Document Service"; DocumentType: Enum "E-Document Type"): Boolean
