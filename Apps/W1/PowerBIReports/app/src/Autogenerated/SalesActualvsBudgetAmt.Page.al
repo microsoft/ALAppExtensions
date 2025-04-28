@@ -1,3 +1,4 @@
+#if not CLEAN26
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -6,12 +7,15 @@ page 37008 "Sales Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Sales Actual vs. Budget Amount';
     AboutTitle = 'About Sales Actual vs. Budget Amount';
     AboutText = 'The Sales Actual vs. Budget Amount report provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
-    Extensible = false;
-
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+    ObsoleteTag = '26.0';
     layout
     {
         area(Content)
@@ -24,30 +28,16 @@ page 37008 "Sales Actual vs. Budget Amt."
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
+                
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }
@@ -68,4 +58,5 @@ page 37008 "Sales Actual vs. Budget Amt."
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sales Report Id"));
     end;
 }
+#endif
 

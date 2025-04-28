@@ -59,7 +59,9 @@ codeunit 6385 "Outlook Processing"
         BuildDocumentsArray(EmailInbox, DocumentsArray);
         BuildDocumentsList(Documents, DocumentsArray);
 
-        OutlookSetup."Last Sync At" := CurrentDateTime();
+        // set the last synch time 1 minute before now.
+        // this is OK because we are filtering on 'Read' emails, so we will not read twice
+        OutlookSetup."Last Sync At" := CurrentDateTime() - 60000;
         OutlookSetup.Modify();
     end;
 
@@ -97,8 +99,7 @@ codeunit 6385 "Outlook Processing"
                                 Clear(TempBlob);
                                 Attachment.Add('messageid', EmailInbox."Message Id");
                                 Attachment.Add('externalmessageid', EmailInbox."External Message Id");
-                                Attachment.Add('attachmentid', EmailMessage.Attachments_GetId());
-                                Attachment.Add('contentid', EmailMessage.Attachments_GetContentId());
+                                Attachment.Add('id', EmailMessage.Attachments_GetId());
                                 Attachment.Add('size', EmailMessage.Attachments_GetLength());
                                 Attachment.Add('contentType', EmailMessage.Attachments_GetContentType());
                                 Attachment.Add('name', EmailMessage.Attachments_GetName());
@@ -176,8 +177,9 @@ codeunit 6385 "Outlook Processing"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         DocumentOutStream: OutStream;
         InStream: InStream;
-        FileId, AttachmentId, ExternalMessageId, MessageId : Text;
+        FileId, ExternalMessageId, MessageId : Text;
         AttachmentFound: Boolean;
+        AttachmentId: BigInteger;
     begin
         CheckSetupEnabled(OutlookSetup);
 
@@ -189,7 +191,7 @@ codeunit 6385 "Outlook Processing"
         if EmailMessage.Get(MessageId) then
             if EmailMessage.Attachments_First() then
                 repeat
-                    if EmailMessage.Attachments_GetContentId() = AttachmentId then begin
+                    if EmailMessage.Attachments_GetId() = AttachmentId then begin
                         AttachmentFound := true;
                         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
                         EmailMessage.Attachments_GetContent(InStream);
@@ -197,26 +199,26 @@ codeunit 6385 "Outlook Processing"
                         CopyStream(DocumentOutStream, InStream);
                         if not ReceiveContext.GetTempBlob().HasValue() then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(NoContentErr, FileId));
-                        UpdateEDocumentAfterMailAttachmentDownload(Edocument, ExternalMessageId, FileId, AttachmentId);
-                        UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+                        UpdateEDocumentAfterMailAttachmentDownload(Edocument, ExternalMessageId, Format(AttachmentId));
+                        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
                     end;
                 until (EmailMessage.Attachments_Next() = 0) or AttachmentFound;
     end;
 
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext)
+    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text)
     begin
-        ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::"Ready For Processing");
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
     end;
 
-    internal procedure UpdateEDocumentAfterMailAttachmentDownload(var EDocument: Record "E-Document"; ExternalMailMessageId: Text; FileId: Text; MailAttachmentId: Text)
+    internal procedure UpdateEDocumentAfterMailAttachmentDownload(var EDocument: Record "E-Document"; ExternalMailMessageId: Text; MailAttachmentId: Text)
     begin
         EDocument."Mail Message Id" := CopyStr(ExternalMailMessageId, 1, MaxStrLen(EDocument."Mail Message Id"));
-        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
         EDocument."Mail Message Attachment Id" := CopyStr(MailAttachmentId, 1, MaxStrLen(EDocument."Mail Message Attachment Id"));
         EDocument.Modify();
     end;
 
-    internal procedure ExtractMessageAndAttachmentIds(DocumentMetadataBlob: Codeunit "Temp Blob"; var MessageId: Text; var ExternalMessageId: Text; var FileId: Text; var MailAttachmentId: Text)
+    internal procedure ExtractMessageAndAttachmentIds(DocumentMetadataBlob: Codeunit "Temp Blob"; var MessageId: Text; var ExternalMessageId: Text; var FileId: Text; var MailAttachmentId: BigInteger)
     var
         Instream: InStream;
         ItemObject: JsonObject;
@@ -227,8 +229,10 @@ codeunit 6385 "Outlook Processing"
         ItemObject.ReadFrom(ContentData);
         MessageId := ItemObject.GetText('messageid');
         ExternalMessageId := ItemObject.GetText('externalmessageid');
-        MailAttachmentId := ItemObject.GetText('contentid');
         FileId := ItemObject.GetText('name');
+        if not Evaluate(MailAttachmentId, ItemObject.GetText('id')) then
+            if ItemObject.GetText('id') <> '' then
+                Error(InvalidAttachmentIdErr, FileId);
     end;
 
     var
@@ -236,4 +240,5 @@ codeunit 6385 "Outlook Processing"
         NoContentErr: Label 'Empty content retrieved from the service for file: %1.', Comment = '%1 - file name';
         IntegrationNotEnabledErr: Label '%1 must be enabled.', Comment = '%1 - a table caption, Sharepoint Document Import Setup';
         MailMessageIdEmptyErr: Label 'Mail Message Id is empty on e-document %1.', Comment = '%1 - an integer';
+        InvalidAttachmentIdErr: Label 'Failed to determine id for attachment %1.', Comment = '%1 - a file name';
 }

@@ -24,29 +24,31 @@ codeunit 36961 "Setup Helper"
         end;
     end;
 
-    procedure GetReportIdAndEnsureSetup(ReportName: Text; FieldId: Integer): Guid
+    procedure GetReportIdAndEnsureSetup(ReportName: Text; FieldId: Integer) ReportId: Guid
+    var
+        AssistedSetup: Page "PowerBI Assisted Setup";
+        FinanceAppNotSetupErr: Label 'Your %1 Report has not been setup in PowerBI Reports Setup. You need to set up this report in order to view it.', Comment = '%1 = report name';
+    begin
+        ReportId := GetReportId(FieldId);
+        if IsNullGuid(ReportId) then begin
+            if AssistedSetup.RunModal() = Action::OK then;
+            ReportId := GetReportId(FieldId);
+            if IsNullGuid(ReportId) then
+                Error(FinanceAppNotSetupErr, ReportName);
+        end;
+    end;
+
+    local procedure GetReportId(FieldId: Integer): Guid
     var
         PowerBiReportsSetup: Record "PowerBI Reports Setup";
-        AssistedSetup: Page "Assisted Setup";
-
         RecRef: RecordRef;
         FldRef: FieldRef;
-        FinanceAppNotSetupErr: Label 'Your %1 Report has not been setup in PowerBI Reports Setup. You need to set up this reports in order to view it.', Comment = '%1 = report name';
     begin
         if PowerBiReportsSetup.Get() then begin
             RecRef.Get(PowerBiReportsSetup.RecordId());
             FldRef := RecRef.Field(FieldId);
+            exit(FldRef.Value());
         end;
-        if IsNullGuid(FldRef.Value()) then begin
-            if AssistedSetup.RunModal() = Action::OK then;
-            if PowerBiReportsSetup.Get() then begin
-                RecRef.Get(PowerBiReportsSetup.RecordId());
-                FldRef := RecRef.Field(FieldId);
-            end;
-            if IsNullGuid(FldRef.Value()) then
-                Error(FinanceAppNotSetupErr, ReportName);
-        end;
-        exit(FldRef.Value());
     end;
 
     procedure LookupPowerBIReport(var ReportId: Guid; var ReportName: Text[200]): Boolean
@@ -99,14 +101,13 @@ codeunit 36961 "Setup Helper"
 
     procedure InitializeEmbeddedAddin(PowerBIManagement: ControlAddIn PowerBIManagement; ReportId: Guid; ReportPageTok: Text)
     var
-        PowerBIServiceMgt: Codeunit "Power BI Service Mgt.";
         Language: Codeunit Language;
+        PowerBIServiceMgt: Codeunit "Power BI Service Mgt.";
         PowerBIEmbedReportUrlTemplateTxt: Label 'https://app.powerbi.com/reportEmbed?reportId=%1', Locked = true;
     begin
         PowerBiServiceMgt.InitializeAddinToken(PowerBIManagement);
-        PowerBIManagement.SetLocale(Language.GetCurrentCultureName());
+        PowerBiManagement.SetLocale(Language.GetUserLanguageTag());
         PowerBIManagement.SetFiltersVisible(true);
-        PowerBIManagement.AddBottomPadding(true);
         PowerBIManagement.SetPageSelectionVisible(ReportPageTok = '');
 
         PowerBIManagement.EmbedPowerBIReport(
@@ -126,5 +127,19 @@ codeunit 36961 "Setup Helper"
         Notify.Message(StrSubstNo(ErrorNotificationMsg, ErrorCategory, ErrorMessage));
         Notify.Scope := NotificationScope::LocalScope;
         NotificationLifecycleMgt.SendNotification(Notify, PowerBIContextSettings.RecordId());
+    end;
+
+    procedure LogReportLoaded(CorrelationId: Guid)
+    var
+        PowerBIServiceMgt: Codeunit "Power BI Service Mgt.";
+    begin
+        PowerBIServiceMgt.LogVisualLoaded(CorrelationId, Enum::"Power BI Element Type"::Report);
+    end;
+
+    procedure LogError(Operation: Text; ErrorText: Text)
+    var
+        PowerBIServiceMgt: Codeunit "Power BI Service Mgt.";
+    begin
+        PowerBIServiceMgt.LogEmbedError(Operation);
     end;
 }

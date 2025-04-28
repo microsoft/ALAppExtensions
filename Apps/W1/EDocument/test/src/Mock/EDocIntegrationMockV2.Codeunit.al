@@ -49,8 +49,13 @@ codeunit 139658 "E-Doc. Integration Mock V2" implements IDocumentSender, IDocume
     end;
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
+    var
+        Status: Enum "E-Document Service Status";
+        Update: Boolean;
     begin
-
+        OnGetCancellation(EDocument, EDocumentService, ActionContext.Http().GetHttpRequestMessage(), ActionContext.Http().GetHttpResponseMessage(), Status, Update);
+        ActionContext.Status().SetStatus(Status);
+        exit(Update);
     end;
 
     procedure OpenServiceIntegrationSetupPage(var EDocumentService: Record "E-Document Service"): Boolean
@@ -86,5 +91,11 @@ codeunit 139658 "E-Doc. Integration Mock V2" implements IDocumentSender, IDocume
     local procedure OnGetApproval(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"; var Update: Boolean);
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetCancellation(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var Status: Enum "E-Document Service Status"; var Update: Boolean);
+    begin
+    end;
+
 
 }

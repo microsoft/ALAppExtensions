@@ -41,6 +41,42 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         OutlookProcessing.MarkMessageAsRead(EDocument, EDocumentService);
     end;
 
+    procedure SelectEmailAccountV3(var EmailAccount: Record "Email Account"): Boolean
+    var
+        EmailAccounts: Page "Email Accounts";
+    begin
+        if not EmailAccountV3Exists() then begin
+            Page.RunModal(Page::"Email Account Wizard");
+            if not EmailAccountV3Exists() then
+                exit(false);
+        end;
+        EmailAccounts.EnableLookupMode();
+        EmailAccounts.FilterConnectorV3Accounts(true);
+        if EmailAccounts.RunModal() <> Action::LookupOK then
+            exit(false);
+
+        EmailAccounts.GetAccount(EmailAccount);
+        exit(not IsNullGuid(EmailAccount."Account Id"));
+    end;
+
+    local procedure EmailAccountV3Exists(): Boolean
+    var
+        TempEmailAccounts: Record "Email Account" temporary;
+        EmailAccount: Codeunit "Email Account";
+        EmailConnector: Interface "Email Connector";
+    begin
+        EmailAccount.GetAllAccounts(false, TempEmailAccounts);
+        if TempEmailAccounts.IsEmpty() then
+            exit(false);
+        TempEmailAccounts.FindSet();
+        repeat
+            EmailConnector := TempEmailAccounts.Connector;
+            if EmailConnector is "Email Connector v3" then
+                exit(true);
+        until TempEmailAccounts.Next() = 0;
+        exit(false);
+    end;
+
     internal procedure SetConditionalVisibilityFlag(var VisibilityFlag: Boolean)
     var
         OutlookSetup: Record "Outlook Setup";
@@ -48,6 +84,18 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         if OutlookSetup.Get() then
             if OutlookSetup.Enabled then
                 VisibilityFlag := true;
+    end;
+
+    internal procedure SetConditionalVisibilityFlag(var EDocument: Record "E-Document"; var VisibilityFlag: Boolean)
+    var
+        EDocumentService: Record "E-Document Service";
+    begin
+        if not EDocumentService.Get(EDocument.Service) then begin
+            VisibilityFlag := false;
+            exit;
+        end;
+
+        VisibilityFlag := (EDocumentService."Service Integration V2" = EDocumentService."Service Integration V2"::Outlook);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
@@ -66,8 +114,14 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         exit(Action + ' ' + SetupTableName + ConnectorTelemetrySnippetTxt);
     end;
 
+    internal procedure WebLinkText(): Text
+    begin
+        exit(WebLinkTxt);
+    end;
+
     var
         OutlookProcessing: Codeunit "Outlook Processing";
         SendNotSupportedErr: label 'Sending document is not supported in this context.';
         ConnectorTelemetrySnippetTxt: label ' for Microsoft 365 E-Document connector.', Locked = true;
+        WebLinkTxt: label 'https://outlook.office365.com/owa/?ItemID=%1&exvsurl=1&viewmodel=ReadMessageItem', Locked = true;
 }

@@ -1,3 +1,42 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using System.Integration;
+using Microsoft.CRM.Segment;
+using System;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Planning;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Payables;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Budget;
+using Microsoft.Integration.PowerBI;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Sales.RoleCenters;
+using Microsoft.Inventory;
+using Microsoft.CRM.Opportunity;
+using Microsoft.Utilities;
+using Microsoft.Finance.Dimension;
+using Microsoft.Bank.Ledger;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Projects.Resources.Ledger;
+using Microsoft.AccountantPortal;
+using Microsoft.Foundation.Task;
+using Microsoft.Integration.Entity;
+using System.Automation;
+
 codeunit 5690 "Create Web Services"
 {
     Access = Internal;
@@ -42,7 +81,6 @@ codeunit 5690 "Create Web Services"
         WebServiceManagement.CreateWebService(WebService."Object Type"::Codeunit, Codeunit::"Page Summary Provider", 'SummaryProvider', true);
         WebServiceManagement.CreateWebService(WebService."Object Type"::Codeunit, Codeunit::"Page Action Provider", 'PageActionProvider', true);
 
-        WebServiceManagement.CreateWebService(WebService."Object Type"::Page, PAGE::"Acc. Sched. KPI WS Dimensions", PowerBIFinance(), true);
         WebServiceManagement.CreateWebService(WebService."Object Type"::Query, QUERY::"Dimension Sets", '', true);
         WebServiceManagement.CreateWebService(WebService."Object Type"::Page, PAGE::"Sales Order", '', true);
     end;

@@ -7,7 +7,7 @@ page 8058 "Service Comm. Package Lines"
     DelayedInsert = true;
     LinksAllowed = false;
     PageType = ListPart;
-    SourceTable = "Service Comm. Package Line";
+    SourceTable = "Subscription Package Line";
     ApplicationArea = All;
 
     layout
@@ -20,13 +20,13 @@ page 8058 "Service Comm. Package Lines"
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies whether a service commitment should be invoiced to a vendor (purchase invoice) or to a customer (sales invoice).';
+                    ToolTip = 'Specifies whether a Subscription Line should be invoiced to a vendor (purchase invoice) or to a customer (sales invoice).';
                 }
                 field(Template; Rec.Template)
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies a code to identify this service commitment template.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package Line Template.';
                 }
                 field(Description; Rec.Description)
                 {
@@ -38,67 +38,67 @@ page 8058 "Service Comm. Package Lines"
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies whether the service commitment is invoiced via a contract. Service commitments with invoicing via sales are not charged. Only the items are billed.';
+                    ToolTip = 'Specifies whether the Subscription Line is invoiced via a contract. Subscription Lines with invoicing via sales are not charged. Only the items are billed.';
                 }
                 field("Invoicing Item No."; Rec."Invoicing Item No.")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic service commmitment.';
+                    ToolTip = 'Specifies which item will be used in contract invoice for invoicing of the periodic Subscription Line.';
                 }
                 field("Calculation Base Type"; Rec."Calculation Base Type")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies how the price for service commitment is calculated. "Item Price" uses the list price defined on the Item. "Document Price" uses the price from the sales document. "Document Price And Discount" uses the price and the discount from the sales document.';
+                    ToolTip = 'Specifies how the price for Subscription Line is calculated. "Item Price" uses the list price defined on the Item. "Document Price" uses the price from the sales document. "Document Price And Discount" uses the price and the discount from the sales document.';
                 }
                 field("Calculation Base %"; Rec."Calculation Base %")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies the percentage at which the price of the service commitment is calculated. 100% means that the the price is the same as the calculation base (item or document).';
+                    ToolTip = 'Specifies the percentage at which the price of the Subscription Line is calculated. 100% means that the the price is the same as the calculation base (item or document).';
                 }
                 field("Billing Base Period"; Rec."Billing Base Period")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies the period to which the service commitment amount relates. For example, enter 1M if the amount relates to one month or 12M if the amount relates to 1 year.';
+                    ToolTip = 'Specifies the period to which the Subscription Line amount relates. For example, enter 1M if the amount relates to one month or 12M if the amount relates to 1 year.';
                 }
                 field("Billing Rhythm"; Rec."Billing Rhythm")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies the rhythm in which the service commitment is calculated. Using a date formula, the rhythm can be defined as monthly, quarterly or annual calculation.';
+                    ToolTip = 'Specifies the rhythm in which the Subscription Line is calculated. Using a date formula, the rhythm can be defined as monthly, quarterly or annual calculation.';
                 }
-                field("Service Comm. Start Formula"; Rec."Service Comm. Start Formula")
+                field("Service Comm. Start Formula"; Rec."Sub. Line Start Formula")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies when a service commitment is valid. The validity can be automatically changed to the first of the following month using date formula. If the field remains empty, the service commitment is valid after shipment.';
+                    ToolTip = 'Specifies when a Subscription Line is valid. The validity can be automatically changed to the first of the following month using date formula. If the field remains empty, the Subscription Line is valid after shipment.';
                 }
                 field("Initial Term"; Rec."Initial Term")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies a date formula for calculating the minimum term of the service commitment. If the minimum term is filled and no extension term is entered, the end of service commitment is automatically set to the end of the initial term.';
+                    ToolTip = 'Specifies a date formula for calculating the minimum term of the Subscription Line. If the minimum term is filled and no extension term is entered, the end of Subscription Line is automatically set to the end of the initial term.';
                 }
                 field("Extension Term"; Rec."Extension Term")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of service is automatically set to the end of the initial term or notice period.';
+                    ToolTip = 'Specifies a date formula for automatic renewal after initial term and the rhythm of the update of "Notice possible to" and "Term Until". If the field is empty and the initial term or notice period is filled, the end of Subscription Line is automatically set to the end of the initial term or notice period.';
                 }
                 field("Notice Period"; Rec."Notice Period")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the service commitment ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
+                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the Subscription Line ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
                 }
                 field(Discount; Rec.Discount)
                 {
                     Style = Strong;
                     StyleExpr = Bold;
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
                 field("Period Calculation"; Rec."Period Calculation")
                 {
@@ -147,7 +147,7 @@ page 8058 "Service Comm. Package Lines"
 
     trigger OnAfterGetRecord()
     begin
-        Bold := (ItemNo <> '') and (PackageCode <> '') and (Rec."Package Code" = PackageCode);
+        Bold := (ItemNo <> '') and (PackageCode <> '') and (Rec."Subscription Package Code" = PackageCode);
         PricingUnitCostSurchargeEditable := Rec."Usage Based Pricing" = Enum::"Usage Based Pricing"::"Unit Cost Surcharge";
     end;
 
@@ -156,10 +156,12 @@ page 8058 "Service Comm. Package Lines"
         Bold := false;
         ServiceContractSetup.Get();
         Rec."Period Calculation" := ServiceContractSetup."Default Period Calculation";
+        Rec."Billing Base Period" := ServiceContractSetup."Default Billing Base Period";
+        Rec."Billing Rhythm" := ServiceContractSetup."Default Billing Rhythm";
     end;
 
     var
-        ServiceContractSetup: Record "Service Contract Setup";
+        ServiceContractSetup: Record "Subscription Contract Setup";
         ShowAllPackageLines: Boolean;
         PricingUnitCostSurchargeEditable: Boolean;
         ItemNo: Code[20];
@@ -187,17 +189,17 @@ page 8058 "Service Comm. Package Lines"
 
     local procedure SetDefaultFilters()
     var
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
         PackageFilter: Text;
     begin
         if ShowAllPackageLines then begin
             PackageFilter := ItemServCommitmentPackage.GetPackageFilterForItem(ItemNo);
             if PackageFilter = '' then
-                Rec.SetRange("Package Code", '')
+                Rec.SetRange("Subscription Package Code", '')
             else
-                Rec.SetFilter("Package Code", PackageFilter);
+                Rec.SetFilter("Subscription Package Code", PackageFilter);
         end else
-            Rec.SetRange("Package Code", PackageCode);
+            Rec.SetRange("Subscription Package Code", PackageCode);
         CurrPage.Update(false);
     end;
 }

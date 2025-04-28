@@ -365,6 +365,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         if VATPeriodCZL.Next() > 0 then
             EndDate := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
         UpdateDateParameters();
+        Attachments := CalcAttachmentsCount();
+        Comments := CalcCommentsCount();
     end;
 
     local procedure SetUseAmtsInAddCurr()

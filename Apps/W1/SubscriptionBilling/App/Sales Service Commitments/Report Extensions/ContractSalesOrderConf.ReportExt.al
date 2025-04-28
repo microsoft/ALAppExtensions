@@ -7,9 +7,6 @@ using Microsoft.Sales.Document;
 
 reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Order Conf."
 {
-    RDLCLayout = './Sales Service Commitments/Report Extensions/StandardSalesOrderConf.rdl';
-    WordLayout = './Sales Service Commitments/Report Extensions/StandardSalesOrderConf.docx';
-
     dataset
     {
         modify(Header)
@@ -108,6 +105,23 @@ reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Orde
         }
 
     }
+    rendering
+    {
+        layout("SalesOrderConfForSubscriptionBilling.rdlc")
+        {
+            Type = RDLC;
+            LayoutFile = './Sales Service Commitments/Report Extensions/Layouts/SalesOrderConfForSubscriptionBilling.rdlc';
+            Caption = 'Sales Order Confirmation for Subscription Billing (RDLC)';
+            Summary = 'The Sales Order Confirmation for Subscription Billing (RDLC) is the most detailed layout and provides most flexible layout options.';
+        }
+        layout("SalesOrderConfForSubscriptionBilling.docx")
+        {
+            Type = Word;
+            LayoutFile = './Sales Service Commitments/Report Extensions/Layouts/SalesOrderConfForSubscriptionBilling.docx';
+            Caption = 'Sales Order Confirmation for Subscription Billing (Word)';
+            Summary = 'The Sales Order Confirmation for Subscription Billing (Word) provides a simple layout that is also relatively easy for an end-user to modify.';
+        }
+    }
     var
         TempServiceCommitmentForLineCaption: Record "Name/Value Buffer" temporary;
         SalesReportPrintoutMgmt: Codeunit "Sales Report Printout Mgmt.";
@@ -119,7 +133,7 @@ reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Orde
         ServiceCommitmentForLine.DeleteAll(false);
         TempServiceCommitmentForLineCaption.Reset();
         TempServiceCommitmentForLineCaption.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
+        OnBeforeFillSubscriptionLinesForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
         SalesReportPrintoutMgmt.FillServiceCommitmentsForLine(Header, ServiceCommitmentForLine, TempServiceCommitmentForLineCaption);
     end;
 
@@ -129,17 +143,17 @@ reportextension 8010 "Contract Sales Order Conf." extends "Standard Sales - Orde
         ServiceCommitmentsGroup.DeleteAll(false);
         ServiceCommitmentsGroupPerPeriod.Reset();
         ServiceCommitmentsGroupPerPeriod.DeleteAll(false);
-        OnBeforeFillServiceCommitmentsGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
+        OnBeforeFillSubscriptionLinesGroupPerPeriod(Header, ServiceCommitmentsGroupPerPeriod);
         SalesReportPrintoutMgmt.FillServiceCommitmentsGroups(Header, ServiceCommitmentsGroupPerPeriod, ServiceCommitmentsGroup);
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsForLine(Header: Record "Sales Header"; var ServiceCommitmentForLine: Record "Sales Line"; var ServiceCommitmentForLineCaption: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesForLine(Header: Record "Sales Header"; var SubscriptionLineForLine: Record "Sales Line"; var SubscriptionLineForLineCaption: Record "Name/Value Buffer")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeFillServiceCommitmentsGroupPerPeriod(Header: Record "Sales Header"; var ServiceCommitmentsGroupPerPeriod: Record "Name/Value Buffer")
+    local procedure OnBeforeFillSubscriptionLinesGroupPerPeriod(Header: Record "Sales Header"; var SubscriptionLinesGroupPerPeriod: Record "Name/Value Buffer")
     begin
     end;
 }

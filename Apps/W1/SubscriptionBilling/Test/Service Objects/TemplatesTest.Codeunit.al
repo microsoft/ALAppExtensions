@@ -11,35 +11,37 @@ codeunit 139887 "Templates Test"
     var
         Item: Record Item;
         ItemTempl: Record "Item Templ.";
-        ItemTemplateServiceCommitmentPackage: Record "Item Templ. Serv. Comm. Pack.";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ItemTemplateServiceCommitmentPackage: Record "Item Templ. Sub. Package";
         NonstockItem: Record "Nonstock Item";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
         Assert: Codeunit Assert;
-        ItemTemplMgt: Codeunit "Item Templ. Mgt.";
-        LibraryTemplates: Codeunit "Library - Templates";
-        LibraryInventory: Codeunit "Library - Inventory";
         ContractTestLibrary: Codeunit "Contract Test Library";
+        ItemTemplMgt: Codeunit "Item Templ. Mgt.";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryTemplates: Codeunit "Library - Templates";
+
+    #region Tests
 
     [Test]
     procedure CheckIfItemTemplateFieldIsTransferredToItem()
     var
         i: Integer;
-        ItemValueTxt: Label 'Item should have the same value for %1 as the Item Template.';
+        ItemValueTxt: Label 'Item should have the same value for %1 as the Item Template.', Locked = true;
     begin
         // Check if new field is part of the item after creating from item template
         for i := 1 to 3 do begin
             LibraryTemplates.CreateItemTemplateWithData(ItemTempl);
-            if i in [2, 3] then //Enum::"Item Service Commitment Type"::::"Service Commitment Item", Enum::"Item Service Commitment Type"::::"Invoicing Item"
+            if i in [2, 3] then // Enum::"Item Service Commitment Type"::::"Subscription Item", Enum::"Item Service Commitment Type"::::"Invoicing Item"
                 ItemTempl.Validate(Type, ItemTempl.Type::"Non-Inventory");
-            ItemTempl.Validate("Service Commitment Option", Enum::"Item Service Commitment Type".FromInteger(i));
+            ItemTempl.Validate("Subscription Option", Enum::"Item Service Commitment Type".FromInteger(i));
             ItemTempl.Modify(false);
             Item.Init();
             Item."No." := '';
             Item.Insert(true);
             ItemTemplMgt.ApplyItemTemplate(Item, ItemTempl, true);
-            Assert.AreEqual(ItemTempl."Service Commitment Option", Item."Service Commitment Option", StrSubstNo(ItemValueTxt, Item.FieldCaption("Service Commitment Option")));
+            Assert.AreEqual(ItemTempl."Subscription Option", Item."Subscription Option", StrSubstNo(ItemValueTxt, Item.FieldCaption("Subscription Option")));
         end;
     end;
 
@@ -50,39 +52,17 @@ codeunit 139887 "Templates Test"
         TestItemTemplatesServiceCommitmentPackagesAreDeletedFromItemTemplate("Item Service Commitment Type"::"Invoicing Item");
     end;
 
-    local procedure TestItemTemplatesServiceCommitmentPackagesAreDeletedFromItemTemplate(ServiceCommitmentOption: Enum "Item Service Commitment Type")
-    begin
-        //GIVEN Create service commitment package, item template, nonstoc item and assigne service commitment packages to item template
-        SetupItemTemplateServiceCommitmentPackage();
-        //WHEN Change Service Commitment Option 
-        ItemTempl.Validate("Service Commitment Option", ServiceCommitmentOption);
-        //THEN check if all ther records are deleted
-        ItemTemplateServiceCommitmentPackage.Reset();
-        ItemTemplateServiceCommitmentPackage.SetRange("Item Template Code", ItemTempl.Code);
-        asserterror ItemTemplateServiceCommitmentPackage.FindSet();
-    end;
-
     [Test]
     [HandlerFunctions('MessageHandler')]
     procedure CheckItemServiceCommitmentPackageForItemCreatedFromNonstockItemUsingItemTemplate()
     begin
-        //GIVEN Create service commitment package, item template, and assign service commitment packages to item template
+        // [GIVEN] Create Subscription Package, item template, and assign Subscription Packages to item template
         SetupItemTemplateServiceCommitmentPackage();
-        //WHEN Create Item from catalog item
+        // [WHEN] Create Item from catalog item
         TestItemCreatedFromNonstockItemUsingItemTemplate();
-        ItemTempl.Validate("Service Commitment Option", "Item Service Commitment Type"::"Service Commitment Item");
+        ItemTempl.Validate("Subscription Option", "Item Service Commitment Type"::"Service Commitment Item");
         ItemTempl.Modify(false);
         TestItemCreatedFromNonstockItemUsingItemTemplate();
-    end;
-
-    local procedure TestItemCreatedFromNonstockItemUsingItemTemplate()
-    begin
-        LibraryInventory.CreateNonStockItemWithItemTemplateCode(NonstockItem, ItemTempl.Code); // MessageHandler
-        //THEN Check if Service commitment packages are assigned to item, and other fields from item template
-        NonstockItem.Get(NonstockItem."Entry No.");
-        Item.Get(NonstockItem."Item No.");
-        TestItemServiceCommitmentPackageFromItemTempl(Item."No.");
-        Assert.AreEqual(ItemTempl."Service Commitment Option", Item."Service Commitment Option", 'Service Commitment Option from Item template is not transferred to Item.');
     end;
 
     [Test]
@@ -90,26 +70,30 @@ codeunit 139887 "Templates Test"
     var
         IsHandled: Boolean;
     begin
-        //GIVEN Create service commitment package, item template, and assign service commitment packages to item template
+        // [GIVEN] Create Subscription Package, item template, and assign Subscription Packages to item template
         SetupItemTemplateServiceCommitmentPackage();
-        //WHEN Create Item from item template
+        // [WHEN] Create Item from item template
         ItemTemplMgt.CreateItemFromTemplate(Item, IsHandled, ItemTempl.Code);
-        //THEN Check if Service commitment packages are assigned to item, and other fields from item template
+        // [THEN] Check if Subscription Packages are assigned to item, and other fields from item template
         TestItemServiceCommitmentPackageFromItemTempl(Item."No.");
-        Assert.AreEqual(ItemTempl."Service Commitment Option", Item."Service Commitment Option", 'Service Commitment Option from Item template is not transferred to Item.');
+        Assert.AreEqual(ItemTempl."Subscription Option", Item."Subscription Option", 'Service Commitment Option from Item template is not transferred to Item.');
 
         Clear(Item);
-        ItemTempl.Validate("Service Commitment Option", "Item Service Commitment Type"::"Service Commitment Item");
+        ItemTempl.Validate("Subscription Option", "Item Service Commitment Type"::"Service Commitment Item");
         ItemTempl.Modify(false);
         ItemTemplMgt.CreateItemFromTemplate(Item, IsHandled, ItemTempl.Code);
-        Assert.AreEqual(ItemTempl."Service Commitment Option", Item."Service Commitment Option", 'Service Commitment Option from Item template is not transferred to Item.');
+        Assert.AreEqual(ItemTempl."Subscription Option", Item."Subscription Option", 'Service Commitment Option from Item template is not transferred to Item.');
 
         Clear(Item);
-        ItemTempl.Validate("Service Commitment Option", "Item Service Commitment Type"::"Invoicing Item");
+        ItemTempl.Validate("Subscription Option", "Item Service Commitment Type"::"Invoicing Item");
         ItemTempl.Modify(false);
         ItemTemplMgt.CreateItemFromTemplate(Item, IsHandled, ItemTempl.Code);
-        Assert.AreEqual(ItemTempl."Service Commitment Option", Item."Service Commitment Option", 'Service Commitment Option from Item template is not transferred to Item.');
+        Assert.AreEqual(ItemTempl."Subscription Option", Item."Subscription Option", 'Service Commitment Option from Item template is not transferred to Item.');
     end;
+
+    #endregion Tests
+
+    #region Procedures
 
     local procedure InsertItemTemplateServiceCommitmentPackage()
     begin
@@ -133,7 +117,7 @@ codeunit 139887 "Templates Test"
         LibraryTemplates.CreateItemTemplateWithData(ItemTempl);
         ItemTempl.Validate("Inventory Posting Group", '');
         ItemTempl.Validate(Type, "Item Type"::"Non-Inventory");
-        ItemTempl.Validate("Service Commitment Option", "Item Service Commitment Type"::"Sales with Service Commitment");
+        ItemTempl.Validate("Subscription Option", "Item Service Commitment Type"::"Sales with Service Commitment");
         ItemTempl.Modify(false);
         InsertItemTemplateServiceCommitmentPackage();
         ItemTemplateServiceCommitmentPackage.Reset();
@@ -141,20 +125,48 @@ codeunit 139887 "Templates Test"
         ItemTemplateServiceCommitmentPackage.FindSet();
     end;
 
+    local procedure TestItemCreatedFromNonstockItemUsingItemTemplate()
+    begin
+        LibraryInventory.CreateNonStockItemWithItemTemplateCode(NonstockItem, ItemTempl.Code); // MessageHandler
+        // [THEN] Check if Subscription Packages are assigned to item, and other fields from item template
+        NonstockItem.Get(NonstockItem."Entry No.");
+        Item.Get(NonstockItem."Item No.");
+        TestItemServiceCommitmentPackageFromItemTempl(Item."No.");
+        Assert.AreEqual(ItemTempl."Subscription Option", Item."Subscription Option", 'Service Commitment Option from Item template is not transferred to Item.');
+    end;
+
+    local procedure TestItemTemplatesServiceCommitmentPackagesAreDeletedFromItemTemplate(ServiceCommitmentOption: Enum "Item Service Commitment Type")
+    begin
+        // [GIVEN] Create Subscription Package, item template, nonstock item and assigned Subscription Packages to item template
+        SetupItemTemplateServiceCommitmentPackage();
+        // [WHEN] Change Subscription Option
+        ItemTempl.Validate("Subscription Option", ServiceCommitmentOption);
+        // [THEN] check if all the records are deleted
+        ItemTemplateServiceCommitmentPackage.Reset();
+        ItemTemplateServiceCommitmentPackage.SetRange("Item Template Code", ItemTempl.Code);
+        Assert.RecordIsEmpty(ItemTemplateServiceCommitmentPackage);
+    end;
+
     local procedure TestItemServiceCommitmentPackageFromItemTempl(ItemNo: Code[20])
     var
-        ItemServiceCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServiceCommitmentPackage: Record "Item Subscription Package";
     begin
         ItemTemplateServiceCommitmentPackage.SetRange("Item Template Code", ItemTempl.Code);
         ItemTemplateServiceCommitmentPackage.FindSet();
         repeat
             ItemServiceCommitmentPackage.Get(ItemNo, ItemTemplateServiceCommitmentPackage.Code);
-            Assert.AreEqual(ItemTemplateServiceCommitmentPackage.Standard, ItemServiceCommitmentPackage.Standard, 'Service Commitment Package is not transferred to Item');
+            Assert.AreEqual(ItemTemplateServiceCommitmentPackage.Standard, ItemServiceCommitmentPackage.Standard, 'Service Commitment Package is not transferred to the Item.');
         until ItemTemplateServiceCommitmentPackage.Next() = 0;
     end;
+
+    #endregion Procedures
+
+    #region Handlers
 
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
     end;
+
+    #endregion Handlers
 }

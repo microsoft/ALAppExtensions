@@ -37,7 +37,7 @@ table 30102 "Shpfy Shop"
         }
         field(2; "Shopify URL"; Text[250])
         {
-            Caption = 'Shopify URL';
+            Caption = 'Shopify Admin URL';
             Access = Internal;
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
@@ -47,11 +47,7 @@ table 30102 "Shpfy Shop"
                 AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
                 if ("Shopify URL" <> '') then begin
-                    if not "Shopify URL".ToLower().StartsWith('https://') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
-
-                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+                    AuthenticationMgt.CorrectShopUrl("Shopify URL");
 
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
@@ -71,6 +67,8 @@ table 30102 "Shpfy Shop"
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                    if Rec.Enabled then
+                        Session.LogAuditMessage(StrSubstNo(ShopifyConsentProvidedLbl, UserSecurityId(), CompanyName()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
@@ -231,13 +229,8 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             InitValue = true;
             ObsoleteReason = 'Replaced with action "Add Customer to Shopify" in Shopify Customers page.';
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
         }
 #endif
         field(30; "Shopify Can Update Customer"; Boolean)
@@ -726,19 +719,8 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
             ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
-#if CLEAN24
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-
-            trigger OnValidate()
-            begin
-                if "Replace Order Attribute Value" then
-                    UpdateOrderAttributes(Rec.Code);
-            end;
-#endif
         }
 #endif
         field(128; "Return Location Priority"; Enum "Shpfy Return Location Priority")
@@ -774,6 +756,11 @@ table 30102 "Shpfy Shop"
             Caption = 'Sync Business Central Doc. No. as Attribute';
             DataClassification = SystemMetadata;
             InitValue = true;
+        }
+        field(134; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
+        {
+            Caption = 'Company Tax Id Mapping';
+            DataClassification = CustomerContent;
         }
         field(200; "Shop Id"; Integer)
         {
@@ -825,6 +812,7 @@ table 30102 "Shpfy Shop"
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
         BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
+        ShopifyConsentProvidedLbl: Label 'Shopify - consent provided by UserSecurityId %1 for company %2.', Comment = '%1 - User Security ID, %2 - Company name', Locked = true;
 
     [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: SecretText
@@ -1030,24 +1018,6 @@ table 30102 "Shpfy Shop"
         exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
     end;
 
-#if not CLEAN24
-    local procedure UpdateOrderAttributes(ShopCode: Code[20])
-    var
-        OrderHeader: Record "Shpfy Order Header";
-        OrderAttribute: Record "Shpfy Order Attribute";
-    begin
-        OrderHeader.SetRange("Shop Code", ShopCode);
-        if OrderHeader.FindSet() then
-            repeat
-                OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
-                if OrderAttribute.FindSet() then
-                    repeat
-                        OrderAttribute."Attribute Value" := OrderAttribute.Value;
-                        OrderAttribute.Modify();
-                    until OrderAttribute.Next() = 0;
-            until OrderHeader.Next() = 0;
-    end;
-#endif
 
     internal procedure SyncCountries()
     begin

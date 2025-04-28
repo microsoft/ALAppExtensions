@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1915 "MigrationQB Dashboard Mgt"
 {
     var

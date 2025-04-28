@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 30363 "Shpfy Webhook Notification"
 {
     TableNo = "Webhook Notification";
@@ -10,8 +11,8 @@ codeunit 30363 "Shpfy Webhook Notification"
     var
         ShopNotFoundTxt: Label 'Shop is not found in company %1.', Comment = '%1 = Company name', Locked = true;
         ProcessingNotificationTxt: Label 'Processing notification in company %1.', Comment = '%1 = Company name', Locked = true;
-        BulkOperationTopicLbl: Label 'bulk_operations/finish', Locked = true;
-        OrdersCreateTopicLbl: Label 'orders/create', Locked = true;
+        BulkOperationTopicLbl: Label 'BULK_OPERATIONS_FINISH', Locked = true;
+        OrdersCreateTopicLbl: Label 'ORDERS_CREATE', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
 
     local procedure HandleOnShopifyWebhookNotificationInsert(var WebhookNotification: Record "Webhook Notification")

@@ -8,7 +8,7 @@ pageextension 8071 "Purch Invoice Subform" extends "Purch. Invoice Subform"
     {
         addafter(Description)
         {
-            field("Attached to Contract Line"; Rec."Attached to Contract line")
+            field("Attached to Contract Line"; Rec."Attached to Sub. Contract line")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies that the invoice line is linked to a contract line.';
@@ -49,12 +49,16 @@ pageextension 8071 "Purch Invoice Subform" extends "Purch. Invoice Subform"
                     UsageDataBilling.ShowForPurchaseDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
                 end;
             }
+        }
+        addlast("F&unctions")
+        {
+
             action("Assign Contract Line")
             {
                 ApplicationArea = All;
                 Caption = 'Assign Contract Line';
                 Image = GetOrder;
-                ToolTip = 'Select a corresponding Vendor Contract line.';
+                ToolTip = 'Select a corresponding Vendor Subscription Contract line.';
                 Enabled = ContractLineCanBeAssigned;
 
                 trigger OnAction()
@@ -74,7 +78,7 @@ pageextension 8071 "Purch Invoice Subform" extends "Purch. Invoice Subform"
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IsConnectedToBillingLine: Boolean;
         ContractLineCanBeAssigned: Boolean;
         UsageDataEnabled: Boolean;

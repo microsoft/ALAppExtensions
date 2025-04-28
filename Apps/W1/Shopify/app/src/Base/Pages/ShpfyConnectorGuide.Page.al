@@ -121,9 +121,9 @@ page 30136 "Shpfy Connector Guide"
 
                 field(ShopUrl; ShopUrl)
                 {
-                    Caption = 'Shop URL';
+                    Caption = 'Shopify Admin URL';
                     ApplicationArea = All;
-                    ToolTip = 'Shopify shop URL.';
+                    ToolTip = 'Specifies the URL of the Shopify Admin you are connecting to. Use the format: "https://{store ID}.myshopify.com". You can build the URL by combining the store ID from the admin URL, e.g., "admin.shopify.com/store/{store ID}" and ".myshopify.com". Simply copy the URL from the Shopify Admin, and the connector will convert it to the required format. Ensure you copy the URL from the Shopify Admin, not the online store, as the online store may display a redirect URL.';
 
                     trigger OnValidate()
                     var
@@ -132,6 +132,7 @@ page 30136 "Shpfy Connector Guide"
                         if ShopUrl = '' then
                             NextActionEnabled := false
                         else begin
+                            AuthenticationMgt.CorrectShopUrl(ShopUrl);
                             if not AuthenticationMgt.IsValidShopUrl(ShopUrl) then
                                 Error(InvalidShopUrlErr);
                             NextActionEnabled := true;
@@ -571,7 +572,7 @@ page 30136 "Shpfy Connector Guide"
         until IsStepAvailable();
 
         if Step = Step::Step5 then
-                ItemTemplateCode := GetItemTemplCode();
+            ItemTemplateCode := GetItemTemplCode();
 
         if Step = Step::Step6 then
             CustomerTemplateCode := GetCustomerTemplCode();
@@ -839,7 +840,7 @@ page 30136 "Shpfy Connector Guide"
             Shop.Validate("Customer Templ. Code", GetCustomerTemplCode())
         else
             if ImportCustomers then
-                Shop.Validate("Customer Templ. Code", CustomerTemplateCode);               
+                Shop.Validate("Customer Templ. Code", CustomerTemplateCode);
         Shop.Validate("Auto Create Unknown Customers", true);
         Shop.Validate("Customer Import From Shopify", Shop."Customer Import From Shopify"::AllCustomers);
 

@@ -4,11 +4,11 @@ using System.Utilities;
 
 page 8006 "Contract Renewal Selection"
 {
-    Caption = 'Select Contract Lines for Renewal';
+    Caption = 'Select Subscription Contract Lines for Renewal';
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = Worksheet;
-    SourceTable = "Customer Contract Line";
+    SourceTable = "Cust. Sub. Contract Line";
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -23,7 +23,7 @@ page 8006 "Contract Renewal Selection"
                 field(AddVendorServicesCtrl; AddVendorServices)
                 {
                     CaptionClass = GetAddVendorServicesCaption();
-                    ToolTip = 'Selecting this Option will also select and add the related Vendor Contract Lines.';
+                    ToolTip = 'Selecting this Option will also select and add the related Vendor Subscription Contract Lines.';
 
                     trigger OnValidate()
                     begin
@@ -50,19 +50,19 @@ page 8006 "Contract Renewal Selection"
                         end;
 
                     }
-                    field("Service Start Date"; TempServiceCommitment."Service Start Date")
+                    field("Service Start Date"; TempServiceCommitment."Subscription Line Start Date")
                     {
                         Editable = false;
-                        Caption = 'Service Start Date';
+                        Caption = 'Subscription Line Start Date';
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the date from which the service is valid and will be invoiced.';
+                        ToolTip = 'Specifies the date from which the Subscription Line is valid and will be invoiced.';
                     }
-                    field("Service End Date"; TempServiceCommitment."Service End Date")
+                    field("Service End Date"; TempServiceCommitment."Subscription Line End Date")
                     {
                         Editable = false;
-                        Caption = 'Service End Date';
+                        Caption = 'Subscription Line End Date';
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the date up to which the service is valid.';
+                        ToolTip = 'Specifies the date up to which the Subscription Line is valid.';
                     }
                     field(RenewalTermCtrl; RenewalTerm)
                     {
@@ -70,24 +70,24 @@ page 8006 "Contract Renewal Selection"
                         Enabled = RenewalTermEnabled;
                         ShowMandatory = true;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the service and can be changed manually.';
+                        ToolTip = 'Specifies a date formula by which the Contract Line is renewed and the end of the Contract Line is extended. It is automatically preset with the initial term of the Subscription Line and can be changed manually.';
 
                         trigger OnValidate()
                         begin
-                            Rec.TestField("Service Object No.");
-                            Rec.TestField("Service Commitment Entry No.");
+                            Rec.TestField("Subscription Header No.");
+                            Rec.TestField("Subscription Line Entry No.");
 
                             TempServiceCommitment."Renewal Term" := RenewalTerm;
                             TempServiceCommitment.Modify(false);
                             CurrPage.Update(false);
                         end;
                     }
-                    field("Service Object No."; Rec."Service Object No.")
+                    field("Service Object No."; Rec."Subscription Header No.")
                     {
                         Editable = false;
                         Visible = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the number of the service object no.';
+                        ToolTip = 'Specifies the number of the Subscription.';
 
                         trigger OnAssistEdit()
                         begin
@@ -100,13 +100,13 @@ page 8006 "Contract Renewal Selection"
                         Editable = false;
                         Visible = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the Serial No. assigned to the service object.';
+                        ToolTip = 'Specifies the Serial No. assigned to the Subscription.';
                     }
-                    field("Service Object Description"; Rec."Service Object Description")
+                    field("Service Object Description"; Rec."Subscription Description")
                     {
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies a description of the service object.';
+                        ToolTip = 'Specifies a description of the Subscription.';
 
                         trigger OnAssistEdit()
                         begin
@@ -119,19 +119,19 @@ page 8006 "Contract Renewal Selection"
                         Editable = false;
                         Visible = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the reference by which the customer identifies the service object.';
+                        ToolTip = 'Specifies the reference by which the customer identifies the Subscription.';
                     }
-                    field("Service Commitment Description"; Rec."Service Commitment Description")
+                    field("Service Commitment Description"; Rec."Subscription Line Description")
                     {
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the description of the service.';
+                        ToolTip = 'Specifies the description of the Subscription Line.';
                     }
-                    field("Service Object Quantity"; Rec."Service Obj. Quantity Decimal")
+                    field("Service Object Quantity"; Rec."Service Object Quantity")
                     {
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Number of units of service object.';
+                        ToolTip = 'Specifies the number of units of Subscription.';
 
                         trigger OnDrillDown()
                         begin
@@ -144,7 +144,7 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Price';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the price of the service with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                        ToolTip = 'Specifies the price of the Subscription Line with quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                         Visible = false;
                     }
                     field("Discount %"; TempServiceCommitment."Discount %")
@@ -152,7 +152,7 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Discount %';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the percent of the discount for the service.';
+                        ToolTip = 'Specifies the percent of the discount for the Subscription Line.';
                         BlankZero = true;
                         Visible = false;
                     }
@@ -161,16 +161,16 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Discount Amount';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the amount of the discount for the service.';
+                        ToolTip = 'Specifies the amount of the discount for the Subscription Line.';
                         BlankZero = true;
                         Visible = false;
                     }
-                    field("Service Amount"; TempServiceCommitment."Service Amount")
+                    field("Service Amount"; TempServiceCommitment.Amount)
                     {
-                        Caption = 'Service Amount';
+                        Caption = 'Amount';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the amount for the service including discount.';
+                        ToolTip = 'Specifies the amount for the Subscription Line including discount.';
                         BlankZero = true;
                     }
                     field("Price (LCY)"; TempServiceCommitment."Price (LCY)")
@@ -178,7 +178,7 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Price (LCY)';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the price of the service in client currency related to quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
+                        ToolTip = 'Specifies the price of the Subscription Line in client currency related to quantity of 1 in the billing period. The price is calculated from Base Price and Base Price %.';
                         Visible = false;
                         BlankZero = true;
                     }
@@ -187,16 +187,16 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Discount Amount (LCY)';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the discount amount in client currency that is granted on the service.';
+                        ToolTip = 'Specifies the discount amount in client currency that is granted on the Subscription Line.';
                         Visible = false;
                         BlankZero = true;
                     }
-                    field("Service Amount (LCY)"; TempServiceCommitment."Service Amount (LCY)")
+                    field("Service Amount (LCY)"; TempServiceCommitment."Amount (LCY)")
                     {
-                        Caption = 'Service Amount (LCY)';
+                        Caption = 'Amount (LCY)';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the amount in client currency for the service including discount.';
+                        ToolTip = 'Specifies the amount in client currency for the Subscription Line including discount.';
                         Visible = false;
                         BlankZero = true;
                     }
@@ -205,7 +205,7 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Currency Code';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the currency of amounts in the service.';
+                        ToolTip = 'Specifies the currency of amounts in the Subscription Line.';
                         Visible = false;
                     }
                     field("Next Billing Date"; TempServiceCommitment."Next Billing Date")
@@ -228,7 +228,7 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Calculation Base %';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the percent at which the price of the service will be calculated. 100% means that the price corresponds to the Base Price.';
+                        ToolTip = 'Specifies the percent at which the price of the Subscription Line will be calculated. 100% means that the price corresponds to the Base Price.';
                         BlankZero = true;
                     }
                     field("Term Until"; TempServiceCommitment."Term Until")
@@ -236,20 +236,20 @@ page 8006 "Contract Renewal Selection"
                         Caption = 'Term Until';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the earliest regular date for the end of the service, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
+                        ToolTip = 'Specifies the earliest regular date for the end of the Subscription Line, taking into account the initial term, extension term and a notice period. An initial term of 24 months results in a fixed term of 2 years. An extension period of 12 months postpones this date by 12 months.';
                     }
                     field("Initial Term"; TempServiceCommitment."Initial Term")
                     {
                         Caption = 'Initial Term';
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies a date formula for calculating the minimum term of the service commitment. If the minimum term is filled and no extension term is entered, the end of service commitment is automatically set to the end of the initial term.';
+                        ToolTip = 'Specifies a date formula for calculating the minimum term of the Subscription Line. If the minimum term is filled and no extension term is entered, the end of Subscription Line is automatically set to the end of the initial term.';
                         Visible = false;
                     }
-                    field("Planned Serv. Comm. exists"; Rec."Planned Serv. Comm. exists")
+                    field("Planned Serv. Comm. exists"; Rec."Planned Sub. Line exists")
                     {
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies if a planned Renewal exists for the service commitment.';
+                        ToolTip = 'Specifies if a planned Renewal exists for the Subscription Line.';
                     }
                     field(LineCheckTextCtrl; LineCheckText)
                     {
@@ -266,7 +266,7 @@ page 8006 "Contract Renewal Selection"
 
     trigger OnOpenPage()
     var
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         InitTempServiceCommitment();
         if Rec.FindFirst() then
@@ -276,8 +276,7 @@ page 8006 "Contract Renewal Selection"
     trigger OnAfterGetRecord()
     begin
         InitializePageVariables();
-        Rec.LoadAmountsForContractLine(TempServiceCommitment.Price, TempServiceCommitment."Discount %", TempServiceCommitment."Discount Amount",
-                                       TempServiceCommitment."Service Amount", TempServiceCommitment."Calculation Base Amount", TempServiceCommitment."Calculation Base %");
+        Rec.LoadServiceCommitmentForContractLine(TempServiceCommitment);
 
         LineCheckText := '';
         if not CheckContractLine(Rec) then begin
@@ -288,8 +287,8 @@ page 8006 "Contract Renewal Selection"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         DataIncompleteCloseAnywayQst: Label 'At least one check failed. Do you want to close the page and abort the process?\\The following error was found:\%1';
         ErrorDuringProcessingMsg: Label 'The following  error occured while processing:\\%1';
     begin
@@ -315,7 +314,7 @@ page 8006 "Contract Renewal Selection"
         end;
     end;
 
-    local procedure SelectLinesWithRenewalTerm(var CustomerContractLine: Record "Customer Contract Line")
+    local procedure SelectLinesWithRenewalTerm(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     begin
         CustomerContractLine.Reset();
         CustomerContractLine.Copy(Rec);
@@ -326,39 +325,39 @@ page 8006 "Contract Renewal Selection"
         CustomerContractLine.MarkedOnly(true);
     end;
 
-    local procedure ServiceHasRenewalTerm(var CustomerContractLine: Record "Customer Contract Line"): Boolean
+    local procedure ServiceHasRenewalTerm(var CustomerContractLine: Record "Cust. Sub. Contract Line"): Boolean
     var
-        ServiceCommitment: Record "Service Commitment";
-        TempServiceCommitment2: Record "Service Commitment" temporary;
+        ServiceCommitment: Record "Subscription Line";
+        TempServiceCommitment2: Record "Subscription Line" temporary;
         EmptyDateFormula: DateFormula;
     begin
-        CustomerContractLine.TestField("Service Object No.");
-        CustomerContractLine.TestField("Service Commitment Entry No.");
+        CustomerContractLine.TestField("Subscription Header No.");
+        CustomerContractLine.TestField("Subscription Line Entry No.");
 
         TempServiceCommitment2 := TempServiceCommitment;
-        if TempServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.") then begin
+        if TempServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.") then begin
             ServiceCommitment := TempServiceCommitment;
             TempServiceCommitment := TempServiceCommitment2;
         end else
-            ServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
+            ServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
         exit(ServiceCommitment."Renewal Term" <> EmptyDateFormula);
     end;
 
 
     local procedure InitializePageVariables()
     begin
-        if not TempServiceCommitment.Get(Rec."Service Commitment Entry No.") then
+        if not TempServiceCommitment.Get(Rec."Subscription Line Entry No.") then
             Clear(TempServiceCommitment);
         RenewalTerm := TempServiceCommitment."Renewal Term";
-        RenewalTermEnabled := TempServiceCommitment."Service Object No." <> '';
-        if not ServiceObject.Get(Rec."Service Object No.") then
+        RenewalTermEnabled := TempServiceCommitment."Subscription Header No." <> '';
+        if not ServiceObject.Get(Rec."Subscription Header No.") then
             Clear(ServiceObject);
     end;
 
     local procedure AddVendorServicesToBuffer()
     var
-        ServiceCommitmentVend: Record "Service Commitment";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ServiceCommitmentVend: Record "Subscription Line";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         ContractRenewalMgt.FilterServCommVendFromServCommCust(TempServiceCommitment, ServiceCommitmentVend);
         if ServiceCommitmentVend.FindSet() then
@@ -372,53 +371,53 @@ page 8006 "Contract Renewal Selection"
     end;
 
     [TryFunction]
-    internal procedure CheckContractLine(var CustomerContractLine: Record "Customer Contract Line")
+    internal procedure CheckContractLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
-        SavedServiceCommitment: Record "Service Commitment";
-        ServiceCommitment: Record "Service Commitment";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        SavedServiceCommitment: Record "Subscription Line";
+        ServiceCommitment: Record "Subscription Line";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         EmptyDateFormula: DateFormula;
         ContractRenewalDocumentAlreadyExistsErr: Label 'A Sales document already exists for %1 %2, %3 %4.';
         ContractRenewalLineAlreadyExistsErr: Label 'A Contract Renewal Line already exists for %1 %2, %3 %4.';
     begin
-        if CustomerContractLine."Contract Line Type" <> CustomerContractLine."Contract Line Type"::"Service Commitment" then
+        if CustomerContractLine.IsCommentLine() then
             exit;
-        CustomerContractLine.TestField("Service Object No.");
-        CustomerContractLine.TestField("Service Commitment Entry No.");
+        CustomerContractLine.TestField("Subscription Header No.");
+        CustomerContractLine.TestField("Subscription Line Entry No.");
 
-        // Check against Temp. Service Commitment since it might be changed
-        if TempServiceCommitment."Entry No." <> CustomerContractLine."Service Commitment Entry No." then begin
+        // Check against Temp. Subscription Line since it might be changed
+        if TempServiceCommitment."Entry No." <> CustomerContractLine."Subscription Line Entry No." then begin
             // find the temp. record and reset the position afterwards
             SavedServiceCommitment := TempServiceCommitment;
-            TempServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.");
+            TempServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.");
             ServiceCommitment := TempServiceCommitment;
             TempServiceCommitment := SavedServiceCommitment;
         end else
             ServiceCommitment := TempServiceCommitment; // not yet buffered
         if ServiceCommitment."Renewal Term" = EmptyDateFormula then
             exit;
-        ServiceCommitment.TestField("Service End Date");
+        ServiceCommitment.TestField("Subscription Line End Date");
 
-        CustomerContractLine.CalcFields("Planned Serv. Comm. exists");
-        CustomerContractLine.TestField("Planned Serv. Comm. exists", false);
+        CustomerContractLine.CalcFields("Planned Sub. Line exists");
+        CustomerContractLine.TestField("Planned Sub. Line exists", false);
         if ContractRenewalLineExists(CustomerContractLine) then
-            Error(ContractRenewalLineAlreadyExistsErr, CustomerContractLine.TableCaption, CustomerContractLine."Service Object No.",
+            Error(ContractRenewalLineAlreadyExistsErr, CustomerContractLine.TableCaption, CustomerContractLine."Subscription Header No.",
                                                        CustomerContractLine.FieldCaption("Line No."), CustomerContractLine."Line No.");
 
-        if ContractRenewalMgt.ExistsInSalesOrderOrSalesQuote(Enum::"Service Partner"::Customer, CustomerContractLine."Contract No.", CustomerContractLine."Line No.") then
-            Error(ContractRenewalDocumentAlreadyExistsErr, CustomerContractLine.TableCaption, CustomerContractLine."Service Object No.",
+        if ContractRenewalMgt.ExistsInSalesOrderOrSalesQuote(Enum::"Service Partner"::Customer, CustomerContractLine."Subscription Contract No.", CustomerContractLine."Line No.") then
+            Error(ContractRenewalDocumentAlreadyExistsErr, CustomerContractLine.TableCaption, CustomerContractLine."Subscription Header No.",
                                                            CustomerContractLine.FieldCaption("Line No."), CustomerContractLine."Line No.");
         OnAfterCheckContractLine(CustomerContractLine);
     end;
 
-    local procedure ContractRenewalLineExists(var CustomerContractLine: Record "Customer Contract Line"): Boolean
+    local procedure ContractRenewalLineExists(var CustomerContractLine: Record "Cust. Sub. Contract Line"): Boolean
     var
-        ContractRenewalLine: Record "Contract Renewal Line";
+        ContractRenewalLine: Record "Sub. Contract Renewal Line";
     begin
         ContractRenewalLine.Reset();
-        ContractRenewalLine.SetCurrentKey("Linked to Contract No.", "Linked to Contract Line No.");
-        ContractRenewalLine.SetRange("Linked to Contract No.", CustomerContractLine."Contract No.");
-        ContractRenewalLine.SetRange("Linked to Contract Line No.", CustomerContractLine."Line No.");
+        ContractRenewalLine.SetCurrentKey("Linked to Sub. Contract No.", "Linked to Sub. Contr. Line No.");
+        ContractRenewalLine.SetRange("Linked to Sub. Contract No.", CustomerContractLine."Subscription Contract No.");
+        ContractRenewalLine.SetRange("Linked to Sub. Contr. Line No.", CustomerContractLine."Line No.");
         exit(not ContractRenewalLine.IsEmpty());
     end;
 
@@ -429,14 +428,14 @@ page 8006 "Contract Renewal Selection"
 
     local procedure TransferChangedValuesFromBufferToServiceCommitment()
     var
-        ServiceCommitment: Record "Service Commitment";
-        ServiceCommitmentVend: Record "Service Commitment";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentVend: Record "Subscription Line";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         TempServiceCommitment.Reset();
         if TempServiceCommitment.FindSet() then
             repeat
-                TempServiceCommitment.TestField("Service Object No.");
+                TempServiceCommitment.TestField("Subscription Header No.");
                 TempServiceCommitment.TestField("Entry No.");
                 ServiceCommitment.Get(TempServiceCommitment."Entry No.");
                 if ServiceCommitment."Renewal Term" <> TempServiceCommitment."Renewal Term" then begin
@@ -444,7 +443,7 @@ page 8006 "Contract Renewal Selection"
                     ServiceCommitment.Modify(true);
                 end;
 
-                // Transfer Renewal term from Customer-Service to Vendor-Service
+                // Transfer Renewal term from Customer-Subscription to Vendor-Subscription
                 if AddVendorServices then begin
                     ContractRenewalMgt.FilterServCommVendFromServCommCust(TempServiceCommitment, TempServiceCommitmentVend);
                     if TempServiceCommitmentVend.FindSet() then
@@ -456,21 +455,21 @@ page 8006 "Contract Renewal Selection"
                             end;
                         until TempServiceCommitmentVend.Next() = 0;
                 end;
-                OnTransferChangedValuesFromBufferToServiceCommitment(ServiceCommitment, TempServiceCommitment);
+                OnTransferChangedValuesFromBufferToSubscriptionLine(ServiceCommitment, TempServiceCommitment);
             until TempServiceCommitment.Next() = 0;
     end;
 
     local procedure GetAddVendorServicesCaption(): Text
     var
-        AddVendorContractLinesLbl: Label 'Add Vendor Contract Lines (%1)';
+        AddVendorContractLinesLbl: Label 'Add Vendor Subscription Contract Lines (%1)';
     begin
         exit(StrSubstNo(AddVendorContractLinesLbl, TempServiceCommitmentVend.Count()))
     end;
 
     local procedure InitTempServiceCommitment()
     var
-        CustomerContractLine: Record "Customer Contract Line";
-        ServiceCommitment: Record "Service Commitment";
+        CustomerContractLine: Record "Cust. Sub. Contract Line";
+        ServiceCommitment: Record "Subscription Line";
     begin
         TempServiceCommitment.Reset();
         if not TempServiceCommitment.IsEmpty() then
@@ -478,33 +477,33 @@ page 8006 "Contract Renewal Selection"
         CustomerContractLine.Copy(Rec);
         if CustomerContractLine.FindSet() then
             repeat
-                if not TempServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.") then
-                    if ServiceCommitment.Get(CustomerContractLine."Service Commitment Entry No.") then begin
+                if not TempServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.") then
+                    if ServiceCommitment.Get(CustomerContractLine."Subscription Line Entry No.") then begin
                         TempServiceCommitment := ServiceCommitment;
                         TempServiceCommitment.Insert(false);
                         AddVendorServicesToBuffer();
                     end;
             until CustomerContractLine.Next() = 0;
-        OnAfterInitTempServiceCommitment(TempServiceCommitment);
+        OnAfterInitTempSubscriptionLine(TempServiceCommitment);
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnTransferChangedValuesFromBufferToServiceCommitment(var ServiceCommitment: Record "Service Commitment"; var ServiceCommitmentBuffer: Record "Service Commitment" temporary)
+    local procedure OnTransferChangedValuesFromBufferToSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; var SubscriptionLineBuffer: Record "Subscription Line" temporary)
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnAfterInitTempServiceCommitment(var TempServiceCommitment: Record "Service Commitment" temporary)
+    local procedure OnAfterInitTempSubscriptionLine(var TempSubscriptionLine: Record "Subscription Line" temporary)
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnAfterCheckContractLine(var CustomerContractLine: Record "Customer Contract Line")
+    local procedure OnAfterCheckContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 
     var
-        ServiceObject: Record "Service Object";
+        ServiceObject: Record "Subscription Header";
         ConfirmManagement: Codeunit "Confirm Management";
         RenewalTerm: DateFormula;
         AddVendorServices: Boolean;
@@ -512,8 +511,8 @@ page 8006 "Contract Renewal Selection"
         SalesQuoteCreated: Boolean;
 
     protected var
-        TempServiceCommitment: Record "Service Commitment" temporary;
-        TempServiceCommitmentVend: Record "Service Commitment" temporary;
+        TempServiceCommitment: Record "Subscription Line" temporary;
+        TempServiceCommitmentVend: Record "Subscription Line" temporary;
         LineFormatStyleExpression: Text;
         LineCheckText: Text[250];
 }

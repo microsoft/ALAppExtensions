@@ -230,6 +230,32 @@ table 4810 "Intrastat Report Setup"
             Caption = 'Purchase Intrastat Info Based On';
             ToolTip = 'Specifies based on which vendor code Intrastat settings are added to the document.';
         }
+        field(38; "Transaction Type Mandatory"; Boolean)
+        {
+            Caption = 'Transaction Type Mandatory';
+            ToolTip = 'Specifies if it is mandatory to enter a transaction type on a document header.';
+        }
+        field(39; "Transaction Spec. Mandatory"; Boolean)
+        {
+            Caption = 'Transaction Spec. Mandatory';
+            ToolTip = 'Specifies if it is mandatory to enter a transaction specification on a document header.';
+        }
+        field(40; "Transport Method Mandatory"; Boolean)
+        {
+            Caption = 'Transport Method Mandatory';
+            ToolTip = 'Specifies if it is mandatory to enter a transport method on a document header.';
+        }
+        field(41; "Shipment Method Mandatory"; Boolean)
+        {
+            Caption = 'Shipment Method Mandatory';
+            ToolTip = 'Specifies if it is mandatory to enter a shipment method on a document header.';
+        }
+        field(42; "Max. No. of Lines in File"; Integer)
+        {
+            Caption = 'Max. No. of Lines in File';
+            ToolTip = 'Specifies the maximum number of lines in the Intrastat file.';
+            MinValue = 0;
+        }
     }
 
     keys

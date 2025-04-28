@@ -11,15 +11,15 @@ using Microsoft.Inventory.Tracking;
 using Microsoft.Warehouse.Activity;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Utilities;
 
 codeunit 8063 "Sales Documents"
 {
-    Access = Internal;
     SingleInstance = true;
 
     var
-        SalesServiceCommMgmt: Codeunit "Sales Service Commitment Mgmt.";
+        SalesServiceCommMgmt: Codeunit "Sales Subscription Line Mgmt.";
         CalledFromContractRenewal: Boolean;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeDeleteEvent, '', false, false)]
@@ -77,6 +77,8 @@ codeunit 8063 "Sales Documents"
         if not (Rec."Document Type" in [Rec."Document Type"::Invoice, Rec."Document Type"::"Credit Memo"]) then
             exit;
 
+        Rec.InitCachedVar();
+
         if (not Rec.IsLineAttachedToBillingLine()) or
             (Rec."Recurring Billing from" = 0D) or
             (Rec."Recurring Billing to" = 0D)
@@ -102,13 +104,30 @@ codeunit 8063 "Sales Documents"
     local procedure SetVATProductPostingGroupInContractRenewalLineOnAfterAssignFieldsForNo(var SalesLine: Record "Sales Line")
     var
         Item: Record Item;
+        GLAccount: Record "G/L Account";
+        ServiceObject: Record "Subscription Header";
     begin
         if not SalesLine.IsLineWithServiceObject() then
             exit;
-        if not SalesLine.GetItemFromServiceObject(Item) then
+
+        ServiceObject.Get(SalesLine."No.");
+        if ServiceObject."Source No." = '' then
             exit;
 
-        SalesLine.Validate("VAT Prod. Posting Group", Item."VAT Prod. Posting Group");
+        case ServiceObject.Type of
+            ServiceObject.Type::Item:
+                begin
+                    Item.Get(ServiceObject."Source No.");
+                    Item.TestField("VAT Prod. Posting Group");
+                    SalesLine.Validate("VAT Prod. Posting Group", Item."VAT Prod. Posting Group");
+                end;
+            ServiceObject.Type::"G/L Account":
+                begin
+                    GLAccount.Get(ServiceObject."Source No.");
+                    GLAccount.TestField("VAT Prod. Posting Group");
+                    SalesLine.Validate("VAT Prod. Posting Group", GLAccount."VAT Prod. Posting Group");
+                end;
+        end;
     end;
 
     local procedure ResetServiceCommitmentAndDeleteBillingLinesForSalesLine(SalesLine: Record "Sales Line")
@@ -226,7 +245,7 @@ codeunit 8063 "Sales Documents"
     var
         IsHandled: Boolean;
     begin
-        OnBeforeClearQtyToInvoiceOnForServiceCommitmentItem(IsHandled);
+        OnBeforeClearQtyToInvoiceOnForSubscriptionItem(IsHandled);
         if IsHandled then
             exit;
         if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(SalesLine, false) then
@@ -239,8 +258,8 @@ codeunit 8063 "Sales Documents"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterCopyToTempLines, '', false, false)]
     local procedure ResetValueForServiceCommitmentItemsBeforePosting(var TempSalesLine: Record "Sales Line")
     begin
-        //The function resets the amounts for Sales Lines with Service Commitment Items in order to create correct GLentries and Customer Ledger Entries
-        //In this context the Service Commitment Items are never invoiced. The Service Commitments Items can only be invoiced over Contracts
+        //The function resets the amounts for Sales Lines with Subscription Items in order to create correct GLentries and Customer Ledger Entries
+        //In this context the Subscription Items are never invoiced. The Subscription Items can only be invoiced over Contracts
         if TempSalesLine.FindSet() then
             repeat
                 if CheckResetValueForServiceCommitmentItems(TempSalesLine) then begin
@@ -258,7 +277,7 @@ codeunit 8063 "Sales Documents"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnBeforeUpdatePostingNo, '', false, false)]
     local procedure SkipInitializingPostingNo(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     begin
-        //The function makes sure that for a sales document containing only Service Commitment Items no Posting No. is being reserved
+        //The function makes sure that for a sales document containing only Subscription Items no Posting No. is being reserved
         if SalesHeader.Invoice then
             if AllSalesLinesAreServiceCommitmentItems(SalesHeader) then
                 IsHandled := true;
@@ -267,7 +286,7 @@ codeunit 8063 "Sales Documents"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnInsertPostedHeadersOnBeforeInsertInvoiceHeader, '', false, false)]
     local procedure SkipInsertingSalesInvoiceHeaderIfOnlyServiceCommitmentItemsExist(SalesHeader: Record "Sales Header"; var IsHandled: Boolean; SalesInvHeader: Record "Sales Invoice Header"; var GenJnlLineDocType: Enum "Gen. Journal Document Type"; var GenJnlLineDocNo: Code[20]; var GenJnlLineExtDocNo: Code[35])
     begin
-        //The function makes sure that for a sales document containing only Service Commitment Items no Posted Invoice is being created
+        //The function makes sure that for a sales document containing only Subscription Items no Posted Invoice is being created
         if SalesHeader.Invoice then
             if AllSalesLinesAreServiceCommitmentItems(SalesHeader) then
                 IsHandled := true;
@@ -279,8 +298,8 @@ codeunit 8063 "Sales Documents"
         ParentSalesLine: Record "Sales Line";
     begin
         //The function skips inserting Sales Invoice Lines in three cases:
-        //When a SalesLine is a Service Commitment Item that is not a part of a bundle
-        //When a SalesLine is attached to a Service Commitment Item (Extended Text)
+        //When a SalesLine is a Subscription Item that is not a part of a bundle
+        //When a SalesLine is attached to a Subscription Item (Extended Text)
 
         if SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(SalesLine, false) then
             IsHandled := true;
@@ -293,7 +312,7 @@ codeunit 8063 "Sales Documents"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterInsertShipmentLine, '', false, false)]
     local procedure CreateServiceObjectWithSerialNoOnAfterInsertShipmentLine(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var SalesShptLine: Record "Sales Shipment Line")
     begin
-        //The function creates Service Object for Sales Line with Service Commitments
+        //The function creates Subscription for Sales Line with Subscription Lines
         CreateServiceObjectFromSales(SalesHeader, SalesLine, SalesShptLine);
     end;
 
@@ -302,7 +321,7 @@ codeunit 8063 "Sales Documents"
     var
         SalesHeader: Record "Sales Header";
     begin
-        //The function creates Service Object for Sales Line with Service Commitments
+        //The function creates Subscription for Sales Line with Subscription Lines
         SalesHeader.Get(SalesOrderLine."Document Type", SalesOrderLine."Document No.");
         CreateServiceObjectFromSales(SalesHeader, SalesOrderLine, SalesShptLine);
     end;
@@ -312,7 +331,7 @@ codeunit 8063 "Sales Documents"
         TempTrackingSpecBuffer: Record "Tracking Specification" temporary;
         ItemTrackingDocMgt: Codeunit "Item Tracking Doc. Management";
     begin
-        //The function creates Service Object for Sales Line with Service Commitments
+        //The function creates Subscription for Sales Line with Subscription Lines
         if SalesServiceCommMgmt.IsSalesLineWithSalesServiceCommitmentsToShip(SalesLine, SalesShptLine.Quantity) then begin
             ItemTrackingDocMgt.RetrieveDocumentItemTracking(TempTrackingSpecBuffer, SalesShptLine."Document No.", Database::"Sales Shipment Header", 0);
             TempTrackingSpecBuffer.SetRange("Source Ref. No.", SalesShptLine."Line No.");
@@ -324,9 +343,9 @@ codeunit 8063 "Sales Documents"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnPostUpdateOrderLineOnSetDefaultQtyBlank, '', false, false)]
-    local procedure UpdateQuantitesOnPostUpdateOrderLineOnSetDefaultQtyBlank(var TempSalesLine: Record "Sales Line" temporary)
+    local procedure UpdateQuantitiesOnPostUpdateOrderLineOnSetDefaultQtyBlank(var TempSalesLine: Record "Sales Line" temporary)
     begin
-        //The function makes sure that Shipped and Invoiced quantities for Service Commitment Items are properly set
+        //The function makes sure that Shipped and Invoiced quantities for Subscription Items are properly set
         if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItemToShip(TempSalesLine) then
             exit;
 
@@ -341,11 +360,13 @@ codeunit 8063 "Sales Documents"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnInsertShipmentLineOnAfterInitQuantityFields, '', false, false)]
     local procedure UpdateInvoicedQtyOnShipmentLineOnBeforeModifySalesShptLine(var SalesShptLine: Record "Sales Shipment Line")
+    var
+        ContractsItemManagement: Codeunit "Sub. Contracts Item Management";
     begin
-        //The function makes sure that Shipped and Invoiced quantities for Service Commitment Items are properly set for Sales Shipment Line
+        //The function makes sure that Shipped and Invoiced quantities for Subscription Items are properly set for Sales Shipment Line
         if not (SalesShptLine.Type = SalesShptLine.Type::Item) then
             exit;
-        if not SalesServiceCommMgmt.IsServiceCommitmentItem(SalesShptLine."No.") then
+        if not ContractsItemManagement.IsServiceCommitmentItem(SalesShptLine."No.") then
             exit;
 
         SalesShptLine."Quantity Invoiced" := SalesShptLine.Quantity;
@@ -358,8 +379,8 @@ codeunit 8063 "Sales Documents"
     var
         SalesLine: Record "Sales Line";
     begin
-        //The function makes sure that amounts are reset to previous values for Sales Lines with Service Commitment Items
-        //The function makes sure that Qty. To Invoice for Service Commitment Items is properly set to 0 as it should never have the non-zero value
+        //The function makes sure that amounts are reset to previous values for Sales Lines with Subscription Items
+        //The function makes sure that Qty. To Invoice for Subscription Items is properly set to 0 as it should never have the non-zero value
         //The Qty. To Invoice is normally being set to Qty. to Ship at this point
         if not SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(TempSalesLine, true) then
             exit;
@@ -378,11 +399,11 @@ codeunit 8063 "Sales Documents"
 
     local procedure CheckResetValueForServiceCommitmentItems(var TempSalesLine: Record "Sales Line") ResetValueForServiceCommitmentItems: Boolean
     var
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         IsHandled: Boolean;
     begin
         ResetValueForServiceCommitmentItems := false;
-        OnCheckResetValueForServiceCommitmentItems(TempSalesLine, ResetValueForServiceCommitmentItems, IsHandled);
+        OnCheckResetValueForSubscriptionItems(TempSalesLine, ResetValueForServiceCommitmentItems, IsHandled);
         if IsHandled then
             exit(ResetValueForServiceCommitmentItems);
         exit(SalesServiceCommMgmt.IsSalesLineWithServiceCommitmentItem(TempSalesLine, true) or ContractRenewalMgt.IsContractRenewal(TempSalesLine));
@@ -403,13 +424,13 @@ codeunit 8063 "Sales Documents"
 
     local procedure CreateServiceObjectFromSalesLine(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; SerialNo: Code[50]; QtyPerSerialNo: Decimal)
     var
-        ServiceObject: Record "Service Object";
-        SalesServiceCommitment: Record "Sales Service Commitment";
-        ServiceCommitment: Record "Service Commitment";
+        ServiceObject: Record "Subscription Header";
+        SalesServiceCommitment: Record "Sales Subscription Line";
+        ServiceCommitment: Record "Subscription Line";
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeCreateServiceObjectFromSalesLine(ServiceObject, SalesHeader, SalesLine, SerialNo, QtyPerSerialNo, IsHandled);
+        OnBeforeCreateSubscriptionHeaderFromSalesLine(ServiceObject, SalesHeader, SalesLine, SerialNo, QtyPerSerialNo, IsHandled);
         if IsHandled then
             exit;
 
@@ -422,17 +443,17 @@ codeunit 8063 "Sales Documents"
         if SalesServiceCommitment.FindSet() then
             repeat
                 ServiceCommitment.Init();
-                ServiceCommitment."Service Object No." := ServiceObject."No.";
+                ServiceCommitment."Subscription Header No." := ServiceObject."No.";
                 ServiceCommitment."Entry No." := 0;
 
                 ServiceCommitment."Customer Price Group" := SalesLine."Customer Price Group";
-                if SalesServiceCommitment."Agreed Serv. Comm. Start Date" <> 0D then
-                    ServiceCommitment.Validate("Service Start Date", SalesServiceCommitment."Agreed Serv. Comm. Start Date")
+                if SalesServiceCommitment."Agreed Sub. Line Start Date" <> 0D then
+                    ServiceCommitment.Validate("Subscription Line Start Date", SalesServiceCommitment."Agreed Sub. Line Start Date")
                 else
-                    if Format(SalesServiceCommitment."Service Comm. Start Formula") = '' then
-                        ServiceCommitment.Validate("Service Start Date", SalesLine."Shipment Date")
+                    if Format(SalesServiceCommitment."Sub. Line Start Formula") = '' then
+                        ServiceCommitment.Validate("Subscription Line Start Date", SalesLine."Shipment Date")
                     else
-                        ServiceCommitment.Validate("Service Start Date", CalcDate(SalesServiceCommitment."Service Comm. Start Formula", SalesLine."Shipment Date"));
+                        ServiceCommitment.Validate("Subscription Line Start Date", CalcDate(SalesServiceCommitment."Sub. Line Start Formula", SalesLine."Shipment Date"));
                 ServiceCommitment.CopyFromSalesServiceCommitment(SalesServiceCommitment);
                 if SalesServiceCommitment.Discount then
                     ServiceCommitment.Validate("Calculation Base Amount", ServiceCommitment."Calculation Base Amount" * -1);
@@ -442,30 +463,27 @@ codeunit 8063 "Sales Documents"
                 ServiceCommitment.CalculateInitialServiceEndDate();
                 ServiceCommitment.CalculateInitialCancellationPossibleUntilDate();
                 ServiceCommitment.SetCurrencyData(SalesHeader."Currency Factor", SalesHeader."Posting Date", SalesHeader."Currency Code");
-                ServiceCommitment.SetLCYFields(ServiceCommitment.Price, ServiceCommitment."Service Amount", ServiceCommitment."Discount Amount", ServiceCommitment."Calculation Base Amount");
-
-                if ServiceCommitment."Invoicing Item No." <> '' then
-                    ServiceCommitment.SetDefaultDimensionFromItem(ServiceCommitment."Invoicing Item No.", false)
-                else
-                    ServiceCommitment.SetDefaultDimensionFromItem(ServiceObject."Item No.", false);
+                ServiceCommitment.SetLCYFields(true);
+                ServiceCommitment.SetDefaultDimensions(false);
                 ServiceCommitment.GetCombinedDimensionSetID(SalesLine."Dimension Set ID", ServiceCommitment."Dimension Set ID");
                 ServiceCommitment."Renewal Term" := ServiceCommitment."Initial Term";
-                OnCreateServiceObjectFromSalesLineBeforeInsertServiceCommitment(ServiceCommitment, SalesServiceCommitment, SalesLine);
+                OnCreateSubscriptionHeaderFromSalesLineBeforeInsertSubscriptionLine(ServiceCommitment, SalesServiceCommitment, SalesLine);
+                ServiceCommitment.CalculateServiceAmount(ServiceCommitment.FieldNo("Discount %"));
                 ServiceCommitment.Insert(false);
-                ServiceCommitment.UpdateServiceCommitment(ServiceCommitment.FieldNo("Discount %"));
-                OnCreateServiceObjectFromSalesLineAfterInsertServiceCommitment(ServiceCommitment, SalesServiceCommitment, SalesLine);
+                OnCreateSubscriptionHeaderFromSalesLineAfterInsertSubscriptionLine(ServiceCommitment, SalesServiceCommitment, SalesLine);
             until SalesServiceCommitment.Next() = 0;
-        OnAfterCreateServiceObjectFromSalesLine(ServiceObject, SalesHeader, SalesLine);
+        OnAfterCreateSubscriptionHeaderFromSalesLine(ServiceObject, SalesHeader, SalesLine);
     end;
 
-    internal procedure CreateServiceObject(var ServiceObject: Record "Service Object"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; Quantity: Decimal; SerialNo: Code[50])
+    internal procedure CreateServiceObject(var ServiceObject: Record "Subscription Header"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; Quantity: Decimal; SerialNo: Code[50])
     var
     begin
         ServiceObject.Init();
         ServiceObject.SetHideValidationDialog(true);
-        ServiceObject."Item No." := SalesLine."No.";
+        ServiceObject.Type := ServiceObject.Type::Item;
+        ServiceObject."Source No." := SalesLine."No.";
         ServiceObject.Validate(Description, SalesLine.Description);
-        ServiceObject.Validate("Quantity Decimal", Abs(Quantity));
+        ServiceObject.Validate(Quantity, Abs(Quantity));
 
         ServiceObject."Serial No." := SerialNo;
         ServiceObject.Validate("Unit of Measure", SalesLine."Unit of Measure Code");
@@ -497,12 +515,12 @@ codeunit 8063 "Sales Documents"
         ServiceObject."Customer Price Group" := SalesHeader."Customer Price Group";
         ServiceObject."Customer Reference" := SalesHeader."Your Reference";
         ServiceObject."Variant Code" := SalesLine."Variant Code";
-        OnCreateServiceObjectFromSalesLineBeforeInsertServiceObject(ServiceObject, SalesHeader, SalesLine);
+        OnCreateSubscriptionHeaderFromSalesLineBeforeInsertSubscriptionHeader(ServiceObject, SalesHeader, SalesLine);
         ServiceObject.Insert(true);
-        OnCreateServiceObjectFromSalesLineAfterInsertServiceObject(ServiceObject, SalesHeader, SalesLine);
+        OnCreateSubscriptionHeaderFromSalesLineAfterInsertSubscriptionHeader(ServiceObject, SalesHeader, SalesLine);
     end;
 
-    procedure AllSalesLinesAreServiceCommitmentItems(SalesHeader: Record "Sales Header"): Boolean
+    internal procedure AllSalesLinesAreServiceCommitmentItems(SalesHeader: Record "Sales Header"): Boolean
     var
         SalesLine: Record "Sales Line";
         ServiceCommitmentItemFound: Boolean;
@@ -556,11 +574,11 @@ codeunit 8063 "Sales Documents"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Whse.-Activity-Post", OnUpdateSourceDocumentOnAfterSalesLineModify, '', false, false)]
     local procedure ModifyShipmentDateFromInventoryPickPostingDate(var SalesLine: Record "Sales Line"; WarehouseActivityLine: Record "Warehouse Activity Line")
     var
-        ServiceContractSetup: Record "Service Contract Setup";
+        ServiceContractSetup: Record "Subscription Contract Setup";
         WarehouseActivityHeader: Record "Warehouse Activity Header";
     begin
         ServiceContractSetup.Get();
-        if not (ServiceContractSetup."Serv. Start Date for Inv. Pick" = ServiceContractSetup."Serv. Start Date for Inv. Pick"::"Posting Date") then
+        if not (ServiceContractSetup."Sub. Line Start Date Inv. Pick" = ServiceContractSetup."Sub. Line Start Date Inv. Pick"::"Posting Date") then
             exit;
         if not (WarehouseActivityLine."Activity Type" = WarehouseActivityLine."Activity Type"::"Invt. Pick") then
             exit;
@@ -625,8 +643,8 @@ codeunit 8063 "Sales Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        SalesInvLine."Contract No." := BillingLine."Contract No.";
-        SalesInvLine."Contract Line No." := BillingLine."Contract Line No.";
+        SalesInvLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        SalesInvLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Cr.Memo Line", OnAfterInitFromSalesLine, '', false, false)]
@@ -637,8 +655,8 @@ codeunit 8063 "Sales Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        SalesCrMemoLine."Contract No." := BillingLine."Contract No.";
-        SalesCrMemoLine."Contract Line No." := BillingLine."Contract Line No.";
+        SalesCrMemoLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        SalesCrMemoLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 
     internal procedure SetCalledFromContractRenewal(NewCalledFromContractRenewal: Boolean)
@@ -681,6 +699,8 @@ codeunit 8063 "Sales Documents"
     begin
         if ToSalesHeader."Recurring Billing" then
             exit;
+        if not ToSalesLine.IsSalesDocumentTypeWithServiceCommitments() then
+            exit;
         if ToSalesLine.Type <> ToSalesLine.Type::Item then
             exit;
         Item.Get(ToSalesLine."No.");
@@ -692,37 +712,37 @@ codeunit 8063 "Sales Documents"
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnCheckResetValueForServiceCommitmentItems(var TempSalesLine: Record "Sales Line"; var ResetValueForServiceCommitmentItems: Boolean; var IsHandled: Boolean)
+    local procedure OnCheckResetValueForSubscriptionItems(var TempSalesLine: Record "Sales Line"; var ResetValueForSubscriptionItems: Boolean; var IsHandled: Boolean)
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnCreateServiceObjectFromSalesLineBeforeInsertServiceObject(var ServiceObject: Record "Service Object"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    local procedure OnCreateSubscriptionHeaderFromSalesLineBeforeInsertSubscriptionHeader(var SubscriptionHeader: Record "Subscription Header"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnCreateServiceObjectFromSalesLineAfterInsertServiceObject(var ServiceObject: Record "Service Object"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    local procedure OnCreateSubscriptionHeaderFromSalesLineAfterInsertSubscriptionHeader(var SubscriptionHeader: Record "Subscription Header"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateSubscriptionHeaderFromSalesLineBeforeInsertSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; SalesSubscriptionLine: Record "Sales Subscription Line"; SalesLine: Record "Sales Line")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnCreateServiceObjectFromSalesLineBeforeInsertServiceCommitment(var ServiceCommitment: Record "Service Commitment"; SalesServiceCommitment: Record "Sales Service Commitment"; SalesLine: Record "Sales Line")
+    local procedure OnCreateSubscriptionHeaderFromSalesLineAfterInsertSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; SalesSubscriptionLine: Record "Sales Subscription Line"; SalesLine: Record "Sales Line")
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnCreateServiceObjectFromSalesLineAfterInsertServiceCommitment(var ServiceCommitment: Record "Service Commitment"; SalesServiceCommitment: Record "Sales Service Commitment"; SalesLine: Record "Sales Line")
+    local procedure OnBeforeCreateSubscriptionHeaderFromSalesLine(SubscriptionHeader: Record "Subscription Header"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; SerialNo: Code[50]; QtyPerSerialNo: Decimal; var IsHandled: Boolean)
     begin
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeCreateServiceObjectFromSalesLine(ServiceObject: Record "Service Object"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; SerialNo: Code[50]; QtyPerSerialNo: Decimal; var IsHandled: Boolean)
-    begin
-    end;
-
-    [InternalEvent(false, false)]
-    local procedure OnAfterCreateServiceObjectFromSalesLine(ServiceObject: Record "Service Object"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    local procedure OnAfterCreateSubscriptionHeaderFromSalesLine(SubscriptionHeader: Record "Subscription Header"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     begin
     end;
 
@@ -737,7 +757,7 @@ codeunit 8063 "Sales Documents"
     end;
 
     [InternalEvent(false, false)]
-    local procedure OnBeforeClearQtyToInvoiceOnForServiceCommitmentItem(var IsHandled: Boolean)
+    local procedure OnBeforeClearQtyToInvoiceOnForSubscriptionItem(var IsHandled: Boolean)
     begin
     end;
 }

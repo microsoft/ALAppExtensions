@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Purchases;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+
 codeunit 5689 "Create Posted Purchase Data"
 {
     trigger OnRun()

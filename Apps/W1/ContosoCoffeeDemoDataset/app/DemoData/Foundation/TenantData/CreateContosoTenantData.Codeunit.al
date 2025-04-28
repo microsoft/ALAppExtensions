@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using System.Environment.Configuration;
+using System.Reflection;
+using Microsoft.Integration.Graph;
+using Microsoft.DemoTool;
+using System.Utilities;
+
 codeunit 5691 "Create Contoso Tenant Data"
 {
     InherentEntitlements = X;
@@ -99,12 +112,27 @@ codeunit 5691 "Create Contoso Tenant Data"
     begin
         // Virtual table does not support ModifyAll
         FeatureKey.SetRange("Is One Way", false); // only enable features that can be disabled
-        FeatureKey.SetFilter(ID, '<>PowerAutomateCopilot&<>CalcOnlyVisibleFlowFields');
         if FeatureKey.FindSet(true) then
             repeat
-                FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
-                FeatureKey.Modify();
+                if not ExcludeNewFeature(FeatureKey) then begin
+                    FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
+                    FeatureKey.Modify();
+                end;
             until FeatureKey.Next() = 0;
+    end;
+
+    local procedure ExcludeNewFeature(FeatureKey: Record "Feature Key"): Boolean
+    begin
+        if FeatureKey.ID in ['PowerAutomateCopilot',
+                             'CalcOnlyVisibleFlowFields',
+                             'ConcurrentInventoryPosting',
+                             'ConcurrentJobPosting',
+                             'ConcurrentResourcePosting',
+                             'SemanticMetadataSearch']
+        then
+            exit(true);
+
+        exit(false)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Graph Mgt - General Tools", 'OnGetIsAPIEnabled', '', false, false)]

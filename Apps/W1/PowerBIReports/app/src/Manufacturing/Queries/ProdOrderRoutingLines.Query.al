@@ -20,24 +20,13 @@ query 36990 "Prod. Order Routing Lines"
     {
         dataitem(ProdOrderRoutingLine; "Prod. Order Routing Line")
         {
-            column(status; Status)
-            {
-            }
-            column(prodOrderNo; "Prod. Order No.")
-            {
-            }
-            column(type; Type)
-            {
-            }
-            column(no; "No.")
-            {
-            }
-            column(description; Description)
-            {
-            }
-            column(locationCode; "Location Code")
-            {
-            }
+            column(routingStatus; "Routing Status") { }
+            column(status; Status) { }
+            column(prodOrderNo; "Prod. Order No.") { }
+            column(type; Type) { }
+            column(no; "No.") { }
+            column(description; Description) { }
+            column(locationCode; "Location Code") { }
             column(expectedCapacityNeed; "Expected Capacity Need")
             {
                 Method = Sum;
@@ -50,30 +39,23 @@ query 36990 "Prod. Order Routing Lines"
             {
                 Method = Sum;
             }
-            column(endingDate; "Ending Date")
-            {
-            }
-            column(routingNo; "Routing No.")
-            {
-            }
-            column(routingReferenceNo; "Routing Reference No.")
-            {
-            }
-            column(operationNo; "Operation No.")
-            {
-            }
-            column(workCenterGroupCode; "Work Center Group Code")
-            {
-            }
-            column(routingLinkCode; "Routing Link Code")
-            {
-            }
+            column(endingDate; "Ending Date") { }
+            column(routingNo; "Routing No.") { }
+            column(routingReferenceNo; "Routing Reference No.") { }
+            column(operationNo; "Operation No.") { }
+            column(workCenterNo; "Work Center No.") { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(routingLinkCode; "Routing Link Code") { }
+            column(setupTime; "Setup Time") { }
+            column(runTime; "Run Time") { }
+            column(waitTime; "Wait Time") { }
+            column(moveTime; "Move Time") { }
+            column(startingDateTime; "Starting Date-Time") { }
+            column(endingDateTime; "Ending Date-Time") { }
             dataitem(Location; Location)
             {
                 DataItemLink = Code = ProdOrderRoutingLine."Location Code";
-                column(locationName; Name)
-                {
-                }
+                column(locationName; Name) { }
             }
         }
     }

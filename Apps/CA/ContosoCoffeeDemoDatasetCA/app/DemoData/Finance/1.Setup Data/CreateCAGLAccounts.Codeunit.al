@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Inventory.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 27009 "Create CA GL Accounts"
 {
     InherentPermissions = X;
@@ -407,6 +425,7 @@ codeunit 27009 "Create CA GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(ShortTermLiabilitiesTotalName(), '24500');
         ContosoGLAccount.AddAccountForLocalization(DeferralRevenueName(), '25301');
         ContosoGLAccount.AddAccountForLocalization(LongTermLiabilitiesTotalName(), '25400');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '25700');
         ContosoGLAccount.AddAccountForLocalization(TotalLiabilitiesName(), '25995');
         ContosoGLAccount.AddAccountForLocalization(EquityName(), '30000');
         ContosoGLAccount.AddAccountForLocalization(NetIncomeForTheYearName(), '30400');

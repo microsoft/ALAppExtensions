@@ -11,6 +11,7 @@ table 6139 "E-Doc. Service Data Exch. Def."
 {
     Access = Internal;
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {

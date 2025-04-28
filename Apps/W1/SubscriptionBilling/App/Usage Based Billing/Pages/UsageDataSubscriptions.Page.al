@@ -3,7 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 page 8042 "Usage Data Subscriptions"
 {
     ApplicationArea = All;
-    SourceTable = "Usage Data Subscription";
+    SourceTable = "Usage Data Supp. Subscription";
     Caption = 'Usage Data Subscriptions';
     UsageCategory = Lists;
     PageType = List;
@@ -45,14 +45,14 @@ page 8042 "Usage Data Subscriptions"
                     ToolTip = 'Specifies the name of the customer to which this subscription refers.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the service object to which this subscription refers.';
+                    ToolTip = 'Specifies the number of the Subscription to which this subscription refers.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
-                field("Service Commitment"; Rec."Service Commitment Entry No.")
+                field("Service Commitment"; Rec."Subscription Line Entry No.")
                 {
-                    ToolTip = 'Specifies the service to which this subscription is linked.';
+                    ToolTip = 'Specifies the Subscription Line to which this subscription is linked.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
                 field("Product Name"; Rec."Product Name")
@@ -133,16 +133,16 @@ page 8042 "Usage Data Subscriptions"
             action(ExtendContract)
             {
                 Caption = 'Extend Contract';
-                ToolTip = 'Opens the action for creating a service object with services that directly extend the specified contracts.';
+                ToolTip = 'Opens the action for creating a Subscription with Subscription Lines that directly extend the specified contracts.';
                 Image = AddAction;
 
                 trigger OnAction()
                 var
-                    UsageDataCustomer: Record "Usage Data Customer";
+                    UsageDataCustomer: Record "Usage Data Supp. Customer";
                     ExtendContractPage: Page "Extend Contract";
                 begin
-                    if Rec."Service Commitment Entry No." <> 0 then
-                        Error(AlreadyConnectedErr, Rec."Service Object No.", Rec."Service Commitment Entry No.");
+                    if Rec."Subscription Line Entry No." <> 0 then
+                        Error(AlreadyConnectedErr, Rec."Subscription Header No.", Rec."Subscription Line Entry No.");
 
                     ExtendContractPage.SetParameters(UsageDataCustomer."Customer No.", '', Rec."Start Date", UsageDataCustomer."Customer No." <> '');
                     ExtendContractPage.SetUsageBasedParameters(Rec."Supplier No.", Rec."Entry No.");
@@ -171,13 +171,13 @@ page 8042 "Usage Data Subscriptions"
     local procedure SetUsageDataSubscriptionStyleExpresion()
     begin
         UsageDataSubscriptionStyle := 'Standard';
-        if Rec."Service Commitment Entry No." = 0 then
+        if Rec."Subscription Line Entry No." = 0 then
             UsageDataSubscriptionStyle := 'StandardAccent';
         if Rec."Processing Status" = Enum::"Processing Status"::Error then
             UsageDataSubscriptionStyle := 'Attention';
     end;
 
     var
-        AlreadyConnectedErr: Label 'This Subscription is already connected to Service Object %1 Service Commitment %2. Contract extension is not possible.';
+        AlreadyConnectedErr: Label 'This Subscription is already connected to Subscription %1 Subscription Line %2. Contract extension is not possible.';
         UsageDataSubscriptionStyle: Text;
 }

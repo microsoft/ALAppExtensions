@@ -8,5 +8,5 @@ using Microsoft.EServices.EDocumentConnector;
 
 permissionsetextension 6374 "Avl. EDoc. Connector - Edit" extends "EDocConnector - Edit"
 {
-    IncludedPermissionSets = Edit;
+    IncludedPermissionSets = "Avalara Edit";
 }

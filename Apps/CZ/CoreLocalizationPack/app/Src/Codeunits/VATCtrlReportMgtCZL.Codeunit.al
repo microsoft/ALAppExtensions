@@ -320,7 +320,9 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         Base, Amount : Decimal;
     begin
-        if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
+        if GeneralLedgerSetup."Functional Currency CZL" and
+          (GeneralLedgerSetup."Additional Reporting Currency" <> '')
+        then begin
             Base := TempVATEntry."Additional-Currency Base";
             Amount := TempVATEntry."Additional-Currency Amount";
         end else begin

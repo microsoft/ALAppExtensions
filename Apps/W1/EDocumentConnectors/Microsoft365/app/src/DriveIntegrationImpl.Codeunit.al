@@ -54,7 +54,7 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
         EDocumentLog: Record "E-Document Log";
         FileInStr: InStream;
     begin
-        if not LowerCase(EDocument."File Id").EndsWith('pdf') then
+        if not LowerCase(EDocument."File Name").EndsWith('pdf') then
             exit;
 
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
@@ -68,10 +68,10 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
             Error(NoFileErr, EDocument.TableCaption());
 
         if not EDocDataStorage."Data Storage".HasValue() then
-            Error(NoFileContentErr, EDocument."File Id", EDocDataStorage.TableCaption());
+            Error(NoFileContentErr, EDocDataStorage.Name, EDocDataStorage.TableCaption());
 
         EDocDataStorage."Data Storage".CreateInStream(FileInStr);
-        File.ViewFromStream(FileInStr, EDocument."File Id", true);
+        File.ViewFromStream(FileInStr, EDocDataStorage.Name, true);
     end;
 
     internal procedure SetConditionalVisibilityFlag(var VisibilityFlag: Boolean)
@@ -119,14 +119,19 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
     local procedure HandleOnBeforeExportDataStorage(EDocumentLog: Record "E-Document Log"; var FileName: Text)
     var
         EDocument: Record "E-Document";
+        EDocDataStorage: Record "E-Doc. Data Storage";
     begin
         if not EDocument.Get(EDocumentLog."E-Doc. Entry No") then
             exit;
 
-        if EDocument."File Id" = '' then
+        if EDocument."File Name" = '' then
             exit;
 
-        FileName := EDocument."File Id";
+        FileName := EDocument."File Name";
+
+        if EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then
+            if EDocDataStorage."Data Type" <> EDocDataStorage."Data Type"::Unspecified then
+                FileName += ('.' + Format(EDocDataStorage."Data Type"));
     end;
 
     var

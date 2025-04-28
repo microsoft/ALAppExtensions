@@ -41,6 +41,7 @@ codeunit 139632 "Shpfy Create Item Variant Test"
         // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
         BindSubscription(CreateItemAsVariantSub);
         CreateItemAsVariant.SetParentProduct(ParentProductId);
+        CreateItemAsVariant.CheckProductAndShopSettings();
         CreateItemAsVariant.CreateVariantFromItem(Item);
         VariantId := CreateItemAsVariantSub.GetNewVariantId();
         UnbindSubscription(CreateItemAsVariantSub);
@@ -50,6 +51,51 @@ codeunit 139632 "Shpfy Create Item Variant Test"
         LibraryAssert.AreEqual(Item."No.", ShpfyVariant.Title, 'Title not set');
         LibraryAssert.AreEqual(Item."No.", ShpfyVariant."Option 1 Value", 'Option 1 Value not set');
         LibraryAssert.AreEqual('Variant', ShpfyVariant."Option 1 Name", 'Option 1 Name not set');
+        LibraryAssert.AreEqual(ParentProductId, ShpfyVariant."Product Id", 'Parent product not set');
+        LibraryAssert.IsTrue(ShpfyProduct.Get(ParentProductId), 'Parent product not found');
+        LibraryAssert.IsTrue(ShpfyProduct."Has Variants", 'Has Variants not set');
+    end;
+
+    [Test]
+    procedure UnitTestCreateVariantFromItemWithNonDefaultOption()
+    var
+        Item: Record Item;
+        ParentItem: Record "Item";
+        ShpfyVariant: Record "Shpfy Variant";
+        ShpfyProduct: Record "Shpfy Product";
+        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        CreateItemAsVariant: Codeunit "Shpfy Create Item As Variant";
+        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
+        ParentProductId: BigInteger;
+        VariantId: BigInteger;
+        OptionName: Text;
+    begin
+        // [SCENARIO] Create a variant from a given item
+        Initialize();
+
+        // [GIVEN] Parent Item
+        ParentItem := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ParentProductId := CreateShopifyProduct(ParentItem.SystemId);
+        // [GIVEN] Item
+        Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Non default option for the product in Shopify
+        OptionName := Any.AlphabeticText(10);
+        CreateItemAsVariantSub.SetNonDefaultOption(OptionName);
+
+        // [WHEN] Invoke CreateItemAsVariant.CreateVariantFromItem
+        BindSubscription(CreateItemAsVariantSub);
+        CreateItemAsVariant.SetParentProduct(ParentProductId);
+        CreateItemAsVariant.CheckProductAndShopSettings();
+        CreateItemAsVariant.CreateVariantFromItem(Item);
+        VariantId := CreateItemAsVariantSub.GetNewVariantId();
+        UnbindSubscription(CreateItemAsVariantSub);
+
+        // [THEN] Variant is created
+        LibraryAssert.IsTrue(ShpfyVariant.Get(VariantId), 'Variant not created');
+        LibraryAssert.AreEqual(Item."No.", ShpfyVariant.Title, 'Title not set');
+        LibraryAssert.AreEqual(Item."No.", ShpfyVariant."Option 1 Value", 'Option 1 Value not set');
+        LibraryAssert.AreEqual(OptionName, ShpfyVariant."Option 1 Name", 'Option 1 Name not set');
         LibraryAssert.AreEqual(ParentProductId, ShpfyVariant."Product Id", 'Parent product not set');
         LibraryAssert.IsTrue(ShpfyProduct.Get(ParentProductId), 'Parent product not found');
         LibraryAssert.IsTrue(ShpfyProduct."Has Variants", 'Has Variants not set');
@@ -80,31 +126,6 @@ codeunit 139632 "Shpfy Create Item Variant Test"
 
         // [THEN] Options are returned
         LibraryAssert.AreEqual(1, Options.Count(), 'Options not returned');
-    end;
-
-    [Test]
-    procedure UnitTestDeleteProductVariant()
-    var
-        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
-        VariantAPI: Codeunit "Shpfy Variant API";
-        VariantId: BigInteger;
-        ActualQueryTxt: Text;
-    begin
-        // [SCENARIO] Delete a product variant
-        Initialize();
-
-        // [GIVEN] Shopify Variant Id
-        VariantId := Any.IntegerInRange(10000, 99999);
-
-        // [WHEN] Invoke ProductAPI.DeleteProductVariant
-        BindSubscription(CreateItemAsVariantSub);
-        VariantAPI.DeleteProductVariant(VariantId);
-        ActualQueryTxt := CreateItemAsVariantSub.GetGraphQueryTxt();
-        UnbindSubscription(CreateItemAsVariantSub);
-
-        // [THEN] Query is correct
-        LibraryAssert.IsTrue(ActualQueryTxt.Contains('{"query":"mutation {productVariantDelete('), 'Query not correct');
-        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('id: \"gid://shopify/ProductVariant/%1\"', VariantId)), 'Variant Id not set');
     end;
 
     [Test]

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 6161 "E-Doc. Vendor Page" extends "Vendor Card"
 {
     layout

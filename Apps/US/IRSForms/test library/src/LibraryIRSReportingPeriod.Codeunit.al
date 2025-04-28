@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 codeunit 148000 "Library IRS Reporting Period"
 {
     var
@@ -25,6 +27,16 @@ codeunit 148000 "Library IRS Reporting Period"
         exit(IRSReportingPeriod."No.");
     end;
 
+    procedure CreateSpecificReportingPeriod(PeriodNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    var
+        IRSReportingPeriod: Record "IRS Reporting Period";
+    begin
+        IRSReportingPeriod."No." := PeriodNo;
+        IRSReportingPeriod.Validate("Starting Date", StartingDate);
+        IRSReportingPeriod.Validate("Ending Date", EndingDate);
+        IRSReportingPeriod.Insert(true);
+    end;
+
     procedure GetReportingPeriod(PostingDate: Date): Code[20]
     begin
         exit(GetReportingPeriod(PostingDate, PostingDate));
@@ -42,5 +54,15 @@ codeunit 148000 "Library IRS Reporting Period"
         IRSReportingPeriod: Record "IRS Reporting Period";
     begin
         IRSReportingPeriod.DeleteAll(true);
+    end;
+
+    procedure GetPostingDate(): Date
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetCurrentKey("Posting Date", "G/L Account No.", "Dimension Set ID");
+        if GLEntry.FindLast() then
+            exit(CalcDate('<1Y>', GLEntry."Posting Date"));
+        exit(WorkDate());
     end;
 }

@@ -6,7 +6,6 @@ namespace Microsoft.Purchases.Document;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch;
-using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 
 pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 {
@@ -100,10 +99,8 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 
 
     trigger OnOpenPage()
-    var
-        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
-        CopilotVisible := EDocPOMatching.IsCopilotVisible();
+        CopilotVisible := false; // 573812
     end;
 
     trigger OnAfterGetCurrRecord()

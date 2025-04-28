@@ -7,6 +7,7 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
         NewVariantId: BigInteger;
         DefaultVariantId: BigInteger;
         MultipleOptions: Boolean;
+        OptionName: Text;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
     local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
@@ -24,13 +25,11 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
     var
         Uri: Text;
         GraphQlQuery: Text;
-        CreateItemVariantTok: Label '{"query":"mutation { productVariantCreate(input: {productId: \"gid://shopify/Product/', locked = true;
+        CreateItemVariantTok: Label '{"query":"mutation { productVariantsBulkCreate(productId: \"gid://shopify/Product/', locked = true;
         GetOptionsStartTok: Label '{"query":"{product(id: \"gid://shopify/Product/', locked = true;
         GetOptionsEndTok: Label '\") {id title options {id name}}}"}', Locked = true;
-        RemoveVariantStartTok: Label '{"query":"mutation {productVariantDelete(id: \"gid://shopify/ProductVariant/', Locked = true;
-        RemoveVariantEndTok: Label '\") {deletedProductVariantId userErrors{field message}}}"}', Locked = true;
         GetVariantsTok: Label 'variants(first:200){pageInfo{hasNextPage} edges{cursor node{legacyResourceId updatedAt}}}', Locked = true;
-
+        ProductOptionUpdateStartTok: Label '{"query": "mutation { productOptionUpdate(productId:', locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -47,13 +46,10 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
                                         HttpResponseMessage := GetProductMultipleOptionsResponse()
                                     else
                                         HttpResponseMessage := GetProductOptionsResponse();
-                                GraphQlQuery.StartsWith(RemoveVariantStartTok) and GraphQlQuery.EndsWith(RemoveVariantEndTok):
-                                    begin
-                                        HttpResponseMessage := GetRemoveVariantResponse();
-                                        GraphQueryTxt := GraphQlQuery;
-                                    end;
                                 GraphQlQuery.Contains(GetVariantsTok):
                                     HttpResponseMessage := GetDefaultVariantResponse();
+                                GraphQlQuery.StartsWith(ProductOptionUpdateStartTok):
+                                    HttpResponseMessage := GetUpdateVariantResponse();
                             end;
                 end;
         end;
@@ -80,19 +76,12 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
         BodyTxt: Text;
         ResInStream: InStream;
     begin
+        if OptionName = '' then
+            OptionName := 'Title';
+
         NavApp.GetResource('Products/ProductOptionsResponse.txt', ResInStream, TextEncoding::UTF8);
         ResInStream.ReadText(BodyTxt);
-        HttpResponseMessage.Content.WriteFrom(BodyTxt);
-        exit(HttpResponseMessage);
-    end;
-
-    local procedure GetRemoveVariantResponse(): HttpResponseMessage
-    var
-        HttpResponseMessage: HttpResponseMessage;
-        BodyTxt: Text;
-    begin
-        BodyTxt := '{}';
-        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        HttpResponseMessage.Content.WriteFrom(StrSubstNo(BodyTxt, OptionName));
         exit(HttpResponseMessage);
     end;
 
@@ -120,6 +109,16 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
         exit(HttpResponseMessage);
     end;
 
+    local procedure GetUpdateVariantResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: Text;
+    begin
+        Body := '{}';
+        HttpResponseMessage.Content.WriteFrom(Body);
+        exit(HttpResponseMessage);
+    end;
+
     procedure GetNewVariantId(): BigInteger
     begin
         exit(NewVariantId);
@@ -132,11 +131,16 @@ codeunit 139627 "Shpfy CreateItemAsVariantSub"
 
     procedure SetMultipleOptions(NewMultipleOptions: Boolean)
     begin
-        this.MultipleOptions := NewMultipleOptions;
+        MultipleOptions := NewMultipleOptions;
     end;
 
     procedure SetDefaultVariantId(NewDefaultVariantId: BigInteger)
     begin
-        this.DefaultVariantId := NewDefaultVariantId;
+        DefaultVariantId := NewDefaultVariantId;
+    end;
+
+    procedure SetNonDefaultOption(NewOptionName: Text)
+    begin
+        OptionName := NewOptionName;
     end;
 }

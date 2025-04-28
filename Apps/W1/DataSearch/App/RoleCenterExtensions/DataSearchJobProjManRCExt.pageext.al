@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2693 "Data Search Job ProjMan RC Ext" extends "Job Project Manager RC"
 {
     ObsoleteState = Pending;

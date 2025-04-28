@@ -21,7 +21,7 @@ using Microsoft.Inventory.Ledger;
 page 8084 "Sub. Billing Role Center"
 {
 
-    Caption = 'Subscription & Recurring Billing';
+    Caption = 'Subscription Billing';
     PageType = RoleCenter;
     ApplicationArea = Basic, Suite;
 
@@ -31,11 +31,11 @@ page 8084 "Sub. Billing Role Center"
         {
             part(Headline; "Sub. Billing Headline RC")
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
             }
             part(ManagementActivities; "Sub. Billing Activities")
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
             }
         }
     }
@@ -46,12 +46,20 @@ page 8084 "Sub. Billing Role Center"
             group(SalesAndPurchases)
             {
                 Caption = 'Sales & Purchases';
+                action("Sales Quotes")
+                {
+                    ApplicationArea = RelationshipMgmt;
+                    Caption = 'Sales Quotes';
+                    Image = Quote;
+                    RunObject = Page "Sales Quotes";
+                    ToolTip = 'Make offers to customers to sell certain products on certain delivery and payment terms. While you negotiate with a customer, you can change and resend the sales quote as much as needed. When the customer accepts the offer, you convert the sales quote to a sales invoice or a sales order in which you process the sale.';
+                }
                 action(SalesOrder)
                 {
                     Caption = 'Sales Orders';
                     Image = Order;
                     RunObject = page "Sales Order List";
-                    ToolTip = 'Executes the Sales Orders action.';
+                    ToolTip = 'Record your agreements with customers to sell certain products on certain delivery and payment terms. Sales orders, unlike sales invoices, allow you to ship partially, deliver directly from your vendor to your customer, initiate warehouse handling, and print various customer-facing documents. Sales invoicing is integrated in the sales order process.';
                 }
                 action(SalesInvoices)
                 {
@@ -105,7 +113,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(UsageDataSubscriptions)
                 {
-                    Caption = 'Usage Data Subscriptions';
+                    Caption = 'Usage Data Supp. Subscriptions';
                     RunObject = page "Usage Data Subscriptions";
                     ToolTip = 'Opens the list of Usage Data Subscriptions.';
                 }
@@ -119,7 +127,7 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
             group(Job)
             {
-                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
@@ -128,7 +136,7 @@ page 8084 "Sub. Billing Role Center"
                 ToolTip = 'Create, plan, and execute tasks in project management. ';
                 action(Jobs)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -139,7 +147,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(Open)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -150,7 +158,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsPlannedAndQuotd)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -161,7 +169,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsComplet)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -172,7 +180,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobsUnassign)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -183,7 +191,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobTasks)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -194,7 +202,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobRegister)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -205,7 +213,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobPlanningLines)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -215,7 +223,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobJournals)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -226,7 +234,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(JobGLJournals)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -238,7 +246,7 @@ page 8084 "Sub. Billing Role Center"
                 }
                 action(RecurringJobJournals)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -290,7 +298,7 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
                 action(JobRegisters)
                 {
-                    ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                    ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                     ObsoleteState = Pending;
                     ObsoleteTag = '26.0';
                     Visible = false;
@@ -328,31 +336,31 @@ page 8084 "Sub. Billing Role Center"
                 ToolTip = 'View the setup.';
                 action(ServiceContractSetup)
                 {
-                    Caption = 'Service Contract Setup';
+                    Caption = 'Subscription Contract Setup';
                     Image = ServiceAgreement;
                     RunObject = page "Service Contract Setup";
-                    ToolTip = 'View or edit Service Contract Setup.';
+                    ToolTip = 'View or edit Subscription Contract Setup.';
                 }
                 action(ContractTypes)
                 {
-                    Caption = 'Contract Types';
+                    Caption = 'Subscription Contract Types';
                     Image = FileContract;
                     RunObject = page "Contract Types";
-                    ToolTip = 'View or edit Contract Types.';
+                    ToolTip = 'View or edit Subscription Contract Types.';
                 }
                 action(ServiceCommitmentTemplates)
                 {
-                    Caption = 'Service Commitment Templates';
+                    Caption = 'Sub. Package Line Templates';
                     Image = Template;
                     RunObject = page "Service Commitment Templates";
-                    ToolTip = 'View or edit Service Commitment Templates.';
+                    ToolTip = 'View or edit Subscription Package Line Templates.';
                 }
                 action(ServiceCommitmentPackages)
                 {
-                    Caption = 'Service Commitment Packages';
+                    Caption = 'Subscription Packages';
                     Image = Template;
                     RunObject = page "Service Commitment Packages";
-                    ToolTip = 'View or edit Service Commitment Packages.';
+                    ToolTip = 'View or edit Subscription Packages.';
                 }
             }
         }
@@ -360,7 +368,7 @@ page 8084 "Sub. Billing Role Center"
         {
             action(CustomersList)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Customers';
                 Image = Customer;
                 RunObject = page "Customer List";
@@ -368,7 +376,7 @@ page 8084 "Sub. Billing Role Center"
             }
             action(VendorsList)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Vendors';
                 Image = Vendor;
                 RunObject = page "Vendor List";
@@ -377,11 +385,11 @@ page 8084 "Sub. Billing Role Center"
 #if not CLEAN26
             action(JobsList)
             {
-                ObsoleteReason = 'Removed as it jobs are not relevant in context of Subscription Billing';
+                ObsoleteReason = 'Removed as projects are not relevant in context of Subscription Billing';
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Projects';
                 Image = Job;
                 RunObject = page "Job List";
@@ -390,7 +398,7 @@ page 8084 "Sub. Billing Role Center"
 #endif
             action(ItemsList)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Items';
                 Image = Item;
                 RunObject = page "Item List";
@@ -398,80 +406,87 @@ page 8084 "Sub. Billing Role Center"
             }
             action(ServiceObjectsList)
             {
-                ApplicationArea = Jobs;
-                Caption = 'Service Objects';
+                ApplicationArea = All;
+                Caption = 'Subscriptions';
                 Image = ServiceSetup;
                 RunObject = page "Service Objects";
-                ToolTip = 'Detailed information on the Service Objects. The Service Objects shows the article for which it was created and the services that belong to it. The amount and the details of the provision can be seen. The service recipient indicates to which customer the service item was sold. Different delivery and billing addresses provide information about who the item was delivered to and who received the invoice. In addition, the services are shown in detail and can be edited.';
+                ToolTip = 'Detailed information on the Subscriptions. The Subscriptions shows the item for which it was created and the Subscription Lines that belong to it. The amount and the details of the provision can be seen. The service recipient indicates to which customer the Subscription Item was sold. Different delivery and billing addresses provide information about who the item was delivered to and who received the invoice. In addition, the Subscription Lines are shown in detail and can be edited.';
             }
             action(CustomerContractsList)
             {
-                ApplicationArea = Jobs;
-                Caption = 'Customer Contracts';
+                ApplicationArea = All;
+                Caption = 'Customer Sub. Contracts';
                 Image = Customer;
                 RunObject = page "Customer Contracts";
-                ToolTip = 'Detailed information on Customer Contracts that include recurring services. A Customer Contract is used to calculate these services based on the parameters specified in the service. The services are presented in detail and can be edited. In addition, commercial information as well as delivery and billing addresses can be stored in a Contract.';
+                ToolTip = 'Detailed information on Customer Subscription Contracts that include recurring subscriptions. A Customer Subscription Contract is used to calculate these Subscription Lines based on the parameters specified in the Subscription Lines. The Subscription Lines are presented in detail and can be edited. In addition, commercial information as well as delivery and billing addresses can be stored in a Contract.';
             }
             action(VendorContractsList)
             {
-                ApplicationArea = Jobs;
-                Caption = 'Vendor Contracts';
+                ApplicationArea = All;
+                Caption = 'Vendor Sub. Contracts';
                 Image = Vendor;
                 RunObject = page "Vendor Contracts";
-                ToolTip = 'Detailed information on Vendor Contracts that include recurring services. A Vendor Contract is used to calculate these services based on the parameters specified in the service. The services are presented in detail and can be edited. In addition, commercial information can be stored in a Contract.';
+                ToolTip = 'Detailed information on Vendor Subscription Contracts that include recurring subscriptions. A Vendor Subscription Contract is used to calculate these Subscription Lines based on the parameters specified in the Subscription Lines. The Subscription Lines are presented in detail and can be edited. In addition, commercial information can be stored in a Contract.';
             }
         }
         area(processing)
         {
             action(RecurringBilling)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Recurring Billing';
                 RunObject = page "Recurring Billing";
-                ToolTip = 'Opens the page for creating billing proposals for Recurring Services.';
+                ToolTip = 'Opens the page for creating billing proposals for Recurring subscriptions.';
+            }
+            action(ContractDeferralsRelease)
+            {
+                ApplicationArea = All;
+                Caption = 'Contract Deferrals Release';
+                RunObject = report "Contract Deferrals Release";
+                ToolTip = 'Releases the deferrals for the all contracts.';
             }
             group(New)
             {
                 Caption = 'New';
                 action(ServiceCommitmentTemplate)
                 {
-                    Caption = 'Service Commitment Template';
+                    Caption = 'Subscription Package Line Template';
                     Image = ApplyTemplate;
                     RunObject = page "Service Commitment Templates";
                     RunPageMode = Create;
-                    ToolTip = 'Create a new Service Commitment Template.';
+                    ToolTip = 'Create a new Subscription Package Line Template.';
                 }
                 action(ServiceCommitmentPackage)
                 {
-                    Caption = 'Service Commitment Package';
+                    Caption = 'Subscription Package';
                     Image = ServiceLedger;
                     RunObject = page "Service Commitment Package";
                     RunPageMode = Create;
-                    ToolTip = 'Create a new Service Commitment Package.';
+                    ToolTip = 'Create a new Subscription Package.';
                 }
                 action(ServiceObject)
                 {
-                    Caption = 'Service Object';
+                    Caption = 'Subscription';
                     Image = NewOrder;
                     RunObject = Page "Service Object";
                     RunPageMode = Create;
-                    ToolTip = 'Create a new Service Object.';
+                    ToolTip = 'Create a new Subscription.';
                 }
                 action(CustomerContract)
                 {
-                    Caption = 'Customer Contract';
+                    Caption = 'Customer Subscription Contract';
                     Image = NewOrder;
                     RunObject = page "Customer Contract";
                     RunPageMode = Create;
-                    ToolTip = 'Create a new Customer Contract.';
+                    ToolTip = 'Create a new Customer Subscription Contract.';
                 }
                 action(VendorContract)
                 {
-                    Caption = 'Vendor Contract';
+                    Caption = 'Vendor Subscription Contract';
                     Image = NewOrder;
                     RunObject = page "Vendor Contract";
                     RunPageMode = Create;
-                    ToolTip = 'Create a new Vendor Contract.';
+                    ToolTip = 'Create a new Vendor Subscription Contract.';
                 }
             }
             group(Reports)
@@ -479,27 +494,27 @@ page 8084 "Sub. Billing Role Center"
                 Caption = 'Reports';
                 action(OverviewOfContractComponents)
                 {
-                    ApplicationArea = Jobs;
-                    Caption = 'Overview of Contract Components';
+                    ApplicationArea = All;
+                    Caption = 'Overview of Subscription Contract components';
                     Image = "Report";
                     RunObject = Report "Overview Of Contract Comp";
                     ToolTip = 'Analyze components of your contracts.';
                 }
                 action(CustomerContractDeferralsAnalysis)
                 {
-                    ApplicationArea = Jobs;
-                    Caption = 'Customer Contract Deferrals Analysis';
+                    ApplicationArea = All;
+                    Caption = 'Customer Subscription Contract Deferrals Analysis';
                     Image = "Report";
                     RunObject = Report "Cust. Contr. Def. Analysis";
-                    ToolTip = 'Analyze customer contract deferrals.';
+                    ToolTip = 'Analyze Customer Subscription Contract deferrals.';
                 }
                 action(VendorContractDeferralsAnalysis)
                 {
-                    ApplicationArea = Jobs;
-                    Caption = 'Vendor Contract Deferrals Analysis';
+                    ApplicationArea = All;
+                    Caption = 'Vendor Subscription Contract Deferrals Analysis';
                     Image = "Report";
                     RunObject = Report "Vend Contr. Def. Analysis";
-                    ToolTip = 'Analyze vendor contract deferrals.';
+                    ToolTip = 'Analyze Vendor Subscription Contract deferrals.';
                 }
             }
             group(History)
@@ -507,35 +522,35 @@ page 8084 "Sub. Billing Role Center"
                 Caption = 'History';
                 action("Posted Customer Contract Invoices")
                 {
-                    Caption = 'Posted Customer Contract Invoices';
+                    Caption = 'Posted Customer Subscription Contract Invoices';
                     Image = PostedOrder;
                     RunObject = page "Posted Sales Invoices";
                     RunPageView = where("Recurring Billing" = const(true));
-                    ToolTip = 'Open the list of Posted Sales Invoices for Customer Contracts.';
+                    ToolTip = 'Open the list of Posted Sales Invoices for Customer Subscription Contracts.';
                 }
                 action("Posted Customer Contract Credit Memos")
                 {
-                    Caption = 'Posted Customer Contract Credit Memos';
+                    Caption = 'Posted Customer Subscription Contract Credit Memos';
                     Image = PostedOrder;
                     RunObject = page "Posted Sales Credit Memos";
                     RunPageView = where("Recurring Billing" = const(true));
-                    ToolTip = 'Open the list of Posted Sales Credit Memos for Customer Contracts.';
+                    ToolTip = 'Open the list of Posted Sales Credit Memos for Customer Subscription Contracts.';
                 }
                 action("Posted Vendor Contract Invoices")
                 {
-                    Caption = 'Posted Vendor Contract Invoices';
+                    Caption = 'Posted Vendor Subscription Contract Invoices';
                     Image = PostedOrder;
                     RunObject = page "Posted Purchase Invoices";
                     RunPageView = where("Recurring Billing" = const(true));
-                    ToolTip = 'Open the list of Posted Purchase Invoices for Vendor Contracts.';
+                    ToolTip = 'Open the list of Posted Purchase Invoices for Vendor Subscription Contracts.';
                 }
                 action("Posted Vendor Contract Credit Memos")
                 {
-                    Caption = 'Posted Vendor Contract Credit Memos';
+                    Caption = 'Posted Vendor Subscription Contract Credit Memos';
                     Image = PostedOrder;
                     RunObject = page "Posted Purchase Credit Memos";
                     RunPageView = where("Recurring Billing" = const(true));
-                    ToolTip = 'Open the list of Posted Purchase Credit Memos for Vendor Contracts.';
+                    ToolTip = 'Open the list of Posted Purchase Credit Memos for Vendor Subscription Contracts.';
                 }
             }
         }

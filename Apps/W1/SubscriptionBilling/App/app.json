@@ -1,10 +1,10 @@
 {
   "id": "3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c",
-  "name": "Subscription & Recurring Billing",
+  "name": "Subscription Billing",
   "publisher": "Microsoft",
-  "version": "26.0.0.0",
-  "brief": "Sell and manage recurring services",
-  "description": "The app enables the selling of recurring services and provides accurate billing for a wide range of pricing models.",
+  "version": "27.0.0.0",
+  "brief": "Sell and manage recurring subscriptions",
+  "description": "The app enables the selling of recurring subscriptions and provides accurate billing for a wide range of pricing models.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
@@ -16,12 +16,17 @@
   "internalsVisibleTo": [
     {
       "id": "2ac317ef-11a5-4753-92f4-31c84b520c7b",
-      "name": "Subscription & Recurring Billing Test",
+      "name": "Subscription Billing Test",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "8a3db2bc-9378-4d0f-b89a-a7dea0555449",
+      "name": "Subscription Billing Demo Data",
       "publisher": "Microsoft"
     }
   ],
-  "platform": "26.0.0.0",
-  "application": "26.0.0.0",
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 8000,

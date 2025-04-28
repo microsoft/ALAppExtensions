@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19011 "India Migartion Assisted Setup"
 {
     var

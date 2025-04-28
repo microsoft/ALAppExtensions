@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
+
 page 6125 "E-Document Logs"
 {
     ApplicationArea = Basic, Suite;
@@ -53,6 +55,11 @@ page 6125 "E-Document Logs"
                     field(Status; Rec.Status)
                     {
                         ToolTip = 'Specifies the status of the document.';
+                    }
+                    field("Import Processing Status"; Rec."Processing Status")
+                    {
+                        ToolTip = 'Specifies the processing status of the document.';
+                        Visible = ShowImportProcessingStatus;
                     }
                     field("Created At"; Rec.SystemCreatedAt)
                     {
@@ -117,12 +124,24 @@ page 6125 "E-Document Logs"
         }
     }
 
+    trigger OnOpenPage()
+    var
+        EDocument: Record "E-Document";
+        EDocumentLog: Record "E-Document Log";
+    begin
+        EDocumentLog.Copy(Rec);
+        if EDocumentLog.FindFirst() then;
+        if EDocument.Get(EDocumentLog."E-Doc. Entry No") then;
+        ShowImportProcessingStatus := (EDocument.GetEDocumentService().GetImportProcessVersion() <> "E-Document Import Process"::"Version 1.0") and (EDocument.Direction = "E-Document Direction"::Incoming);
+    end;
+
     trigger OnAfterGetCurrRecord()
     begin
         IsExportEnabled := Rec."E-Doc. Data Storage Entry No." <> 0;
     end;
 
     var
+        ShowImportProcessingStatus: Boolean;
         IsExportEnabled: Boolean;
         RecordDoesNotHaveMappingLogsMsg: Label '%1 Log entry type does not support Mapping Logs.', Comment = '%1 - The log status indicating the type';
         NoMappingLogsFoundMsg: Label 'No Mapping Logs were found for this entry. Mapping Logs are only generated when E-Document Service %1 has defined export/import mapping rules.', Comment = '%1 - E-Document Service code';

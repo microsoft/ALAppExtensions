@@ -21,8 +21,8 @@ pageextension 8002 "Contract Contact List" extends "Contact List"
         {
             action(OverviewOfContractComponents)
             {
-                Caption = 'Overview of contract components';
-                ToolTip = 'View a detailed list of services for the selected contact(s).';
+                Caption = 'Overview of Subscription Contract components';
+                ToolTip = 'View a detailed list of Subscription Lines for the selected contact(s).';
                 Image = QualificationOverview;
                 ApplicationArea = All;
                 RunObject = Report "Overview Of Contract Comp";

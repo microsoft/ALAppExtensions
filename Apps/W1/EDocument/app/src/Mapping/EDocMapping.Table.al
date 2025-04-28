@@ -13,6 +13,7 @@ table 6118 "E-Doc. Mapping"
     Extensible = false;
     Caption = 'E-Document Mapping';
     DataClassification = CustomerContent;
+    ReplicateData = false;
 
     fields
     {

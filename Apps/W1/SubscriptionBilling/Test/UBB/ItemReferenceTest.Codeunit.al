@@ -10,45 +10,42 @@ codeunit 139889 "Item Reference Test"
     TestPermissions = Disabled;
     Access = Internal;
 
-    [Test]
-    procedure TestItemReferenceSyncWithItemVendorOnValidate()
-    begin
-        Reset();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        LibraryPurchase.CreateVendor(Vendor);
-        LibraryItemReference.CreateItemReference(ItemReference, Item."No.", Enum::"Item Reference Type"::Vendor, Vendor."No.");
-        CreateUsageDataSupplier();
-        UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
-        ItemReference.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
-        ItemReference.Modify(true);
-        ItemVendor.Get(Vendor."No.", ItemReference."Item No.", ItemReference."Variant Code");
-        ItemVendor.TestField("Supplier Ref. Entry No.", ItemReference."Supplier Ref. Entry No.");
-    end;
+    var
+        Item: Record Item;
+        ItemReference: Record "Item Reference";
+        ItemVendor: Record "Item Vendor";
+        UsageDataSupplier: Record "Usage Data Supplier";
+        UsageDataSupplierReference: Record "Usage Data Supplier Reference";
+        Vendor: Record Vendor;
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryItemReference: Codeunit "Library - Item Reference";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryRandom: Codeunit "Library - Random";
+        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
+
+    #region Tests
 
     [Test]
-    procedure TestItemReferenceSyncWithItemVendorOnInsert()
+    procedure ExpectErrorOnChangeServiceCommitmentOption()
     begin
-        Reset();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        Initialize();
+        LibraryInventory.CreateItem(Item);
         LibraryPurchase.CreateVendor(Vendor);
         CreateUsageDataSupplier();
         UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
 
-        ItemReference.Init();
-        ItemReference.Validate("Item No.", Item."No.");
-        ItemReference.Validate("Reference Type", Enum::"Item Reference Type"::Vendor);
-        ItemReference.Validate("Reference Type No.", Vendor."No.");
-        ItemReference.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
-        ItemReference.Insert(true);
-
-        ItemVendor.Get(Vendor."No.", ItemReference."Item No.", ItemReference."Variant Code");
-        ItemVendor.TestField("Supplier Ref. Entry No.", ItemReference."Supplier Ref. Entry No.");
+        ItemVendor.Init();
+        ItemVendor.Validate("Item No.", Item."No.");
+        ItemVendor.Validate("Vendor No.", Vendor."No.");
+        ItemVendor.Insert(true);
+        asserterror ItemVendor.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
     end;
 
     [Test]
     procedure ExpectErrorOnValidateItemReferenceWithNonServiceCommitmentItem()
     begin
-        Reset();
+        Initialize();
         LibraryInventory.CreateItem(Item);
         LibraryPurchase.CreateVendor(Vendor);
         CreateUsageDataSupplier();
@@ -62,9 +59,41 @@ codeunit 139889 "Item Reference Test"
     end;
 
     [Test]
+    procedure ExpectErrorOnValidateItemVendorWithNonServiceCommitmentItem()
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibraryPurchase.CreateVendor(Vendor);
+        CreateUsageDataSupplier();
+        UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
+
+        ItemVendor.Init();
+        ItemVendor.Validate("Item No.", Item."No.");
+        ItemVendor.Validate("Vendor No.", Vendor."No.");
+        ItemVendor.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
+        ItemVendor.Insert(true);
+        asserterror Item.Validate("Subscription Option", Enum::"Item Service Commitment Type"::"Invoicing Item");
+    end;
+
+    [Test]
+    procedure TestItemReferenceSyncWithItemVendorOnValidate()
+    begin
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryItemReference.CreateItemReference(ItemReference, Item."No.", Enum::"Item Reference Type"::Vendor, Vendor."No.");
+        CreateUsageDataSupplier();
+        UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
+        ItemReference.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
+        ItemReference.Modify(true);
+        ItemVendor.Get(Vendor."No.", ItemReference."Item No.", ItemReference."Variant Code");
+        ItemVendor.TestField("Supplier Ref. Entry No.", ItemReference."Supplier Ref. Entry No.");
+    end;
+
+    [Test]
     procedure TestItemVendorSyncWithItemReferenceOnInsert()
     begin
-        Reset();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         LibraryPurchase.CreateVendor(Vendor);
         CreateUsageDataSupplier();
@@ -83,7 +112,7 @@ codeunit 139889 "Item Reference Test"
     [Test]
     procedure TestItemVendorSyncWithItemReferenceOnValidate()
     begin
-        Reset();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         LibraryPurchase.CreateVendor(Vendor);
         CreateUsageDataSupplier();
@@ -100,40 +129,11 @@ codeunit 139889 "Item Reference Test"
         ItemReference.TestField("Supplier Ref. Entry No.", ItemReference."Supplier Ref. Entry No.");
     end;
 
-    [Test]
-    procedure ExpectErrorOnValidateItemVendorWithNonServiceCommitmentItem()
-    begin
-        Reset();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        LibraryPurchase.CreateVendor(Vendor);
-        CreateUsageDataSupplier();
-        UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
+    #endregion Tests
 
-        ItemVendor.Init();
-        ItemVendor.Validate("Item No.", Item."No.");
-        ItemVendor.Validate("Vendor No.", Vendor."No.");
-        ItemVendor.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
-        ItemVendor.Insert(true);
-        asserterror Item.Validate("Service Commitment Option", Enum::"Item Service Commitment Type"::"Invoicing Item");
-    end;
+    #region Procedures
 
-    [Test]
-    procedure ExpectErrorOnChangeServiceCommitmentOption()
-    begin
-        Reset();
-        LibraryInventory.CreateItem(Item);
-        LibraryPurchase.CreateVendor(Vendor);
-        CreateUsageDataSupplier();
-        UsageBasedBTestLibrary.CreateUsageDataSupplierReference(UsageDataSupplierReference, UsageDataSupplier."No.", "Usage Data Reference Type"::Product);
-
-        ItemVendor.Init();
-        ItemVendor.Validate("Item No.", Item."No.");
-        ItemVendor.Validate("Vendor No.", Vendor."No.");
-        ItemVendor.Insert(true);
-        asserterror ItemVendor.Validate("Supplier Ref. Entry No.", UsageDataSupplierReference."Entry No.");
-    end;
-
-    procedure CreateUsageDataSupplier()
+    local procedure CreateUsageDataSupplier()
     begin
         UsageDataSupplier.Init();
         UsageDataSupplier."No." := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(UsageDataSupplier."No."));
@@ -141,7 +141,7 @@ codeunit 139889 "Item Reference Test"
         UsageDataSupplier.Insert(false);
     end;
 
-    local procedure Reset()
+    local procedure Initialize()
     begin
         ClearAll();
         UsageDataSupplierReference.Reset();
@@ -152,25 +152,6 @@ codeunit 139889 "Item Reference Test"
         ItemVendor.DeleteAll(false);
     end;
 
-    procedure UpdateServiceCommitmentTemplateWithUsageBasedFields(var ServiceCommitmentTemplate: Record "Service Commitment Template"; UsageBasedPricing: Enum "Usage Based Pricing"; PricingUnitCostSurcharPerc: Decimal)
-    begin
-        ServiceCommitmentTemplate."Usage Based Billing" := true;
-        ServiceCommitmentTemplate."Usage Based Pricing" := UsageBasedPricing;
-        ServiceCommitmentTemplate."Pricing Unit Cost Surcharge %" := PricingUnitCostSurcharPerc;
-        ServiceCommitmentTemplate.Modify(false);
-    end;
+    #endregion Procedures
 
-    var
-        Item: Record Item;
-        Vendor: Record Vendor;
-        ItemReference: Record "Item Reference";
-        ItemVendor: Record "Item Vendor";
-        UsageDataSupplier: Record "Usage Data Supplier";
-        UsageDataSupplierReference: Record "Usage Data Supplier Reference";
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        LibraryInventory: Codeunit "Library - Inventory";
-        LibraryItemReference: Codeunit "Library - Item Reference";
-        LibraryPurchase: Codeunit "Library - Purchase";
-        UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
 }

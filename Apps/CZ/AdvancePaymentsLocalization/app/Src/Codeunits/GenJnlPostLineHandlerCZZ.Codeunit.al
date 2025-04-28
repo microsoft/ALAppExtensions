@@ -53,6 +53,18 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
             GenJnlLine."Allow Application" := false;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempVendLedgEntryOnAfterSetFiltersBlankAppliesToDocNo', '', false, false)]
+    local procedure OnPrepareTempVendLedgEntryOnAfterSetFiltersBlankAppliesToDocNo(GenJournalLine: Record "Gen. Journal Line"; var OldVendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+        if (GenJournalLine."Advance Letter No. CZZ" <> '') or (GenJournalLine."Adv. Letter Template Code CZZ" <> '') then begin
+            // If the advance letter is posting then the manual application method must be used
+            OldVendorLedgerEntry.SetRange("Posting Date");
+            OldVendorLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
+        end else
+            // If the advance letter is not posting then the vendor ledger entries applied to advance letter mustn't be used for application
+            OldVendorLedgerEntry.SetRange("Advance Letter No. CZZ", '');
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId', '', false, false)]
     local procedure OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId(GenJournalLine: Record "Gen. Journal Line"; var OldCustLedgerEntry: Record "Cust. Ledger Entry")
     begin

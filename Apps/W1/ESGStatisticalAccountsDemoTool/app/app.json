@@ -1,0 +1,45 @@
+{
+  "id": "d196d21b-75c3-45da-831b-345055b9d25f",
+  "name": "ESG Statistical Accounts Demo Tool",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "To help partners demonstrate the capabilities of Statistical accounts related to the ESG features, we are making demo data available for various Statistical accounts scenarios.",
+  "description": "Statistical specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various Statistical account scenarios related to the ESG.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2187180",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "./ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "ea130081-c669-460f-a5f4-5dde14f03131",
+      "name": "Statistical Accounts",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+      "name": "Contoso Coffee Demo Dataset",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 5236,
+      "to": 5277
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ],
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
+}

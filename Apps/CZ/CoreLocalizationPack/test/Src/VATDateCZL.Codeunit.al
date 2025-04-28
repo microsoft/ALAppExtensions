@@ -45,20 +45,12 @@ codeunit 148054 "VAT Date CZL"
         if isInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"VAT Date CZL");
-#if not CLEAN24
-        UserSetup.ModifyAll(UserSetup."Allow VAT Posting From CZL", 0D);
-        UserSetup.ModifyAll(UserSetup."Allow VAT Posting To CZL", 0D);
-#endif
         UserSetup.ModifyAll(UserSetup."Allow VAT Date From", 0D);
         UserSetup.ModifyAll(UserSetup."Allow VAT Date To", 0D);
 
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::Blank;
-#if not CLEAN24
-        GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
-        GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;
-#endif
         GeneralLedgerSetup.Modify();
 
         VATSetup.Get();

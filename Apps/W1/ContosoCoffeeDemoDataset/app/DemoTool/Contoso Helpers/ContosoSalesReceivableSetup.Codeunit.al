@@ -1,3 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Sales.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Warehouse.Structure;
+using Microsoft.Pricing.Calculation;
+using Microsoft.DemoTool;
+
 codeunit 5269 "Contoso Sales Receivable Setup"
 {
     InherentEntitlements = X;
@@ -44,6 +58,7 @@ codeunit 5269 "Contoso Sales Receivable Setup"
             SalesReceivablesSetup.Validate("VAT Bus. Posting Gr. (Price)", VATBusPostingGrPrice);
         SalesReceivablesSetup.Validate("Report Output Type", ReportOutputType);
         SalesReceivablesSetup.Validate("Document Default Line Type", DocumentDefaultLineType);
+        SalesReceivablesSetup.Validate("Allow Multiple Posting Groups", AllowMultiplePostingGroups);
         SalesReceivablesSetup.Validate("Check Multiple Posting Groups", CheckMultiplePostingGroups);
         SalesReceivablesSetup.Validate("Auto Post Non-Invt. via Whse.", AutoPostNonInvtviaWhse);
         SalesReceivablesSetup.Validate("Posted Return Receipt Nos.", PostedReturnReceiptNos);
