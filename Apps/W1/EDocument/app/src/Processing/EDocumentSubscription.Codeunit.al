@@ -246,7 +246,6 @@ codeunit 6103 "E-Document Subscription"
         if not EDocument.GetBySystemId(Rec."E-Document Link") then
             exit;
 
-        EDocServiceStatusDeleted := Enum::"E-Document Service Status"::"Imported Document Deleted";
         EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
 
         Clear(EDocument."Document No.");
@@ -256,7 +255,6 @@ codeunit 6103 "E-Document Subscription"
 
         EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatusDeleted);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatusDeleted);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatusDeleted);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Eval. Data", 'OnCreateEvaluationDataOnAfterClassifyTablesToNormal', '', false, false)]
@@ -404,6 +402,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
         ConfirmDeleteQst: Label 'This purchase document is created from an E-Document. Do you want to proceed with deletion?';
-        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
 }
