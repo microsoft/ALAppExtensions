@@ -6,7 +6,7 @@ namespace Microsoft.Integration.Shopify;
 page 30159 "Shpfy Catalogs"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Catalogs';
+    Caption = 'Shopify B2B Catalogs';
     InsertAllowed = false;
     PageType = List;
     SourceTable = "Shpfy Catalog";
