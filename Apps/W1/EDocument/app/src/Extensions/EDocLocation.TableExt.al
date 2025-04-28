@@ -6,7 +6,7 @@ tableextension 6102 "E-Doc. Location" extends Location
 {
     fields
     {
-        field(6100; "Tranfer Doc. Sending Profile"; Code[10])
+        field(6100; "Tranfer Doc. Sending Profile"; Code[20])
         {
             Caption = 'Transfer Doc. Sending Profile';
             DataClassification = CustomerContent;
