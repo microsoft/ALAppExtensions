@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using System.Telemetry;
 using System.Utilities;
 using Microsoft.eServices.EDocument.Processing.Import;
 
@@ -261,27 +260,11 @@ codeunit 6132 "E-Document Log"
     var
         EDocumentLog: Record "E-Document Log";
         EDocDataStorage: Record "E-Doc. Data Storage";
-        EDocumentHelper: Codeunit "E-Document Processing";
-        Telemetry: Codeunit Telemetry;
-        TelemetryDimensions: Dictionary of [Text, Text];
+        EDocLog: Record "E-Document Log";
     begin
         EDocDataStorage.SetAutoCalcFields("Data Storage");
-        EDocumentLog.SetLoadFields("E-Doc. Entry No", Status);
-        EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
-        EDocumentLog.SetRange("Service Code", EDocumentService.Code);
-#if not CLEAN26
-        EDocumentLog.SetRange("Service Integration", EDocumentService."Service Integration");
-#endif
-        EDocumentLog.SetRange("Service Integration V2", EDocumentService."Service Integration V2");
-        EDocumentLog.SetRange("Document Format", EDocumentService."Document Format");
-        EDocumentLog.SetRange("Processing Status", "Import E-Doc. Proc. Status"::Unprocessed);
-        EDocumentLog.SetRange(Status, EDocumentServiceStatus);
-        if not EDocumentLog.FindLast() then begin
-            EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
-            Telemetry.LogMessage('0000LCE', EDocTelemetryGetLogFailureLbl, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
-            exit(false);
-        end;
-        exit(EDocumentLog.GetDataStorage(TempBlob));
+        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, EDocumentServiceStatus) then
+            exit(EDocumentLog.GetDataStorage(TempBlob));
     end;
 
     internal procedure GetLastServiceFromLog(EDocument: Record "E-Document") EDocumentService: Record "E-Document Service"

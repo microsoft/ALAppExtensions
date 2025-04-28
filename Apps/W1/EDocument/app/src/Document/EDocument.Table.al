@@ -228,6 +228,17 @@ table 6121 "E-Document"
             ToolTip = 'Specifies the service integration to use for the E-Document.';
             Editable = false;
         }
+        /// <summary>
+        /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
+        /// </summary>
+        field(39; "Send E-Document via Email"; Boolean)
+        {
+            Caption = 'Send E-Document via Email';
+            DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
+        }
     }
     keys
     {
