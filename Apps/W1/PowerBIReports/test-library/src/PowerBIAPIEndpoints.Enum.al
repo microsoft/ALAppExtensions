@@ -173,4 +173,40 @@ enum 139793 "PowerBI API Endpoints"
     value(58; "Work Center Groups")
     {
     }
+    value(59; "Employee Ledger Entry")
+    {
+    }
+    value(60; "Sustainability Ledger Entry")
+    {
+    }
+    value(61; "Sales Lines")
+    {
+    }
+    value(62; "Opportunity")
+    {
+    }
+    value(63; "Opportunity Entries")
+    {
+    }
+    value(64; Contacts)
+    {
+    }
+    value(65; "Item Categories")
+    {
+    }
+    value(66; "Return Reason Codes")
+    {
+    }
+    value(67; "Inv. Adj. Ent Order")
+    {
+    }
+    value(68; "Sales Cycle Stages")
+    {
+    }
+    value(69; "Close Opporturnity Codes")
+    {
+    }
+    value(70; "Sustainability Goals")
+    {
+    }
 }

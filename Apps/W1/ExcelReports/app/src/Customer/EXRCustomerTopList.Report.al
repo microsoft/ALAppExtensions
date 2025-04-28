@@ -11,9 +11,9 @@ using Microsoft.ExcelReports;
 report 4409 "EXR Customer Top List"
 {
     ApplicationArea = All;
-    Caption = 'Customer - Top List Excel (Preview)';
+    Caption = 'Customer - Top List (Excel)';
     DataAccessIntent = ReadOnly;
-    DefaultRenderingLayout = CustomerTopTrendExcel;
+    DefaultRenderingLayout = CustomerTopListExcel;
     ExcelLayoutMultipleDataSheets = true;
     UsageCategory = ReportsAndAnalysis;
 
@@ -45,8 +45,8 @@ report 4409 "EXR Customer Top List"
 
     requestpage
     {
-        AboutText = 'This report contains aggregated sales (LCY) and balance (LCY) data for the top number of customers selected. The data is aggregated for the period specified in the request page''s Datefilter parameter.';
-        AboutTitle = 'Customer - Top Trends';
+        AboutTitle = 'About Customer - Top List (Excel)';
+        AboutText = 'Review customers with the most transactions in a selected period. Identify sales trends and manage debt collections. Amounts are shown in local currency (LCY).';
         SaveValues = true;
         layout
         {
@@ -74,6 +74,14 @@ report 4409 "EXR Customer Top List"
                         Caption = 'Quantity';
                         ToolTip = 'Specifies the number of Customers that will be included in the report.';
                     }
+                    // Used to set the date filter on the report header across multiple languages
+                    field(RequestDateFilter; DateFilter)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Date Filter';
+                        ToolTip = 'Specifies the Date Filter applied to the EXR Top Customer Report Buffer.';
+                        Visible = false;
+                    }
                 }
             }
         }
@@ -83,15 +91,20 @@ report 4409 "EXR Customer Top List"
             NoOfRecordsToPrint := 10;
             ChangeShowType(GlobalExtTopCustomerReportBuffer."Ranking Based On"::"Sales (LCY)");
         end;
+
+        trigger OnClosePage()
+        begin
+            DateFilter := TopCustomerData.GetFilter("Date Filter");
+        end;
     }
     rendering
     {
-        layout(CustomerTopTrendExcel)
+        layout(CustomerTopListExcel)
         {
-            Caption = 'Customer - Top Trends Excel';
+            Caption = 'Customer - Top List (Excel)';
             LayoutFile = './ReportLayouts/Excel/Customer/CustomerTopListExcel.xlsx';
             Type = Excel;
-            Summary = 'Built in layout for the Customer - Top Trends excel report. This report contains aggregated sales (LCY) and balance (LCY) data for the top number of customers selected. Report uses Query connections.';
+            Summary = 'Built in layout for the Customer - Top List (Excel) report. This report contains aggregated sales (LCY) and balance (LCY) data for the top number of customers selected. Report uses Query connections.';
         }
     }
     labels
@@ -99,11 +112,23 @@ report 4409 "EXR Customer Top List"
         DataRetrieved = 'Data retrieved:';
         RankAccordingTo = 'Rank according to:';
         TopCustomerListLabel = 'Top Customer List';
+        TopCustomerListPrint = 'Top Customer List (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        TopCustomerListAnalysis = 'Top Customer List (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         DateFilterLabel = 'Date Filter:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     var
         ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+        DateFilter: Text;
 
     protected var
         GlobalExtTopCustomerReportBuffer: Record "EXR Top Customer Report Buffer";

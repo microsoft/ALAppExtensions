@@ -19,7 +19,7 @@ query 36986 "Item Ledger Entries - Prod."
     {
         dataitem(ItemLedgerEntry; "Item Ledger Entry")
         {
-            DataItemTableFilter = "Entry Type" = filter(Output | Consumption);
+            DataItemTableFilter = "Order Type" = filter(Production);
             column(entryType; "Entry Type")
             {
             }
@@ -56,6 +56,9 @@ query 36986 "Item Ledger Entries - Prod."
                 Method = Sum;
             }
             column(dimensionSetID; "Dimension Set ID")
+            {
+            }
+            column(positive; Positive)
             {
             }
             dataitem(Location; Location)

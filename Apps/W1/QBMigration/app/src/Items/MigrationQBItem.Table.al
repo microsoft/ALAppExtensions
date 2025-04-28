@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 1916 "MigrationQB Item"
 {
     DataCaptionFields = Name;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 8047 "Vendor Contract Lines API"
 {
     APIGroup = 'subsBilling';
@@ -7,7 +8,7 @@ page 8047 "Vendor Contract Lines API"
     EntityName = 'vendorContractLines';
     EntitySetName = 'vendorContractLines';
     PageType = API;
-    SourceTable = "Vendor Contract Line";
+    SourceTable = "Vend. Sub. Contract Line";
     Editable = false;
     DataAccessIntent = ReadOnly;
 
@@ -17,16 +18,16 @@ page 8047 "Vendor Contract Lines API"
         {
             repeater(General)
             {
-                field(contractNo; Rec."Contract No.")
+                field(contractNo; Rec."Subscription Contract No.")
                 {
                 }
                 field(contractLineNo; Rec."Line No.")
                 {
                 }
-                field(serviceObjectNo; Rec."Service Object No.")
+                field(serviceObjectNo; Rec."Subscription Header No.")
                 {
                 }
-                field(serviceCommitmentLineNo; Rec."Service Commitment Entry No.")
+                field(serviceCommitmentLineNo; Rec."Subscription Line Entry No.")
                 {
                 }
                 part(VendContractDeferralsAPI; "Vend. Contract Deferrals API")
@@ -34,7 +35,7 @@ page 8047 "Vendor Contract Lines API"
                     Caption = 'vendorContractDeferrals', Locked = true;
                     EntityName = 'vendorContractDeferrals';
                     EntitySetName = 'vendorContractDeferrals';
-                    SubPageLink = "Contract No." = field("Contract No."), "Contract Line No." = field("Line No.");
+                    SubPageLink = "Subscription Contract No." = field("Subscription Contract No."), "Subscription Contract Line No." = field("Line No.");
                 }
             }
         }

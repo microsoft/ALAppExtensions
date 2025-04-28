@@ -55,7 +55,6 @@ codeunit 139883 "E-Doc Process Test"
         Assert.IsTrue(IBlobType.IsStructured(), 'New entry should always be structured');
     end;
 
-
     [Test]
     procedure ProcessingDoesSequenceOfSteps()
     var
@@ -136,6 +135,7 @@ codeunit 139883 "E-Doc Process Test"
         PurchaseHeader.Insert();
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
         EDocumentPurchaseHeader."Purchase Order No." := PurchaseHeader."No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := '13124234';
         EDocumentPurchaseHeader.Insert();
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
@@ -175,7 +175,7 @@ codeunit 139883 "E-Doc Process Test"
         Vendor."VAT Registration No." := 'EDOCTESTTAXID001';
         Vendor.Insert();
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
-        EDocumentPurchaseHeader."Vendor Tax Id" := Vendor."VAT Registration No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor."VAT Registration No.";
         EDocumentPurchaseHeader.Insert();
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
@@ -219,7 +219,7 @@ codeunit 139883 "E-Doc Process Test"
         TextToAccountMapping.Insert();
 
         EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
-        EDocumentPurchaseHeader."Vendor Tax Id" := Vendor."VAT Registration No.";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor."VAT Registration No.";
         EDocumentPurchaseHeader.Insert();
         EDocumentPurchaseLine."E-Document Entry No." := EDocument."Entry No";
         EDocumentPurchaseLine.Description := 'Test description';
@@ -231,7 +231,7 @@ codeunit 139883 "E-Doc Process Test"
 
         EDocumentHeaderMapping := EDocument.GetEDocumentHeaderMapping();
         Assert.AreEqual(Vendor."No.", EDocumentHeaderMapping."Vendor No.", 'The vendor should be found when the tax id is specified and it matches the one in BC.');
-        EDocumentLineMapping.Get(EDocumentPurchaseLine."E-Document Line Id");
+        EDocumentLineMapping.Get(EDocument."Entry No", EDocumentPurchaseLine."Line No.");
         Assert.AreEqual("Purchase Line Type"::"G/L Account", EDocumentLineMapping."Purchase Line Type", 'The purchase line type should be set to G/L Account.');
         Assert.AreEqual(GLAccount."No.", EDocumentLineMapping."Purchase Type No.", 'The G/L Account configured in the Text-to-Account Mapping should be found.');
 
@@ -261,7 +261,7 @@ codeunit 139883 "E-Doc Process Test"
 
         EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Draft Ready");
         EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
-        EDocImportParameters."Finish Purchase Draft Impl." := "E-Doc. Create Purchase Invoice"::"Mock Create Purchase Invoice";
+        EDocImportParameters."Processing Customizations" := "E-Doc. Proc. Customizations"::"Mock Create Purchase Invoice";
         EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
 
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
@@ -273,11 +273,52 @@ codeunit 139883 "E-Doc Process Test"
         Assert.RecordIsEmpty(PurchaseHeader);
     end;
 
+    #region HistoricalMatchingTest
+
+    [Test]
+    procedure AddHistoricalMatches()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EDocRecordLink: Record "E-Doc. Record Link";
+    begin
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+
+        EDocRecordLink.DeleteAll();
+
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams);
+
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+
+        EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Header");
+        EDocRecordLink.SetRange("Target SystemId", PurchaseHeader.SystemId);
+        Assert.RecordCount(EDocRecordLink, 1);
+
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        if PurchaseLine.FindSet() then
+            repeat
+                EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Line");
+                EDocRecordLink.SetRange("Target SystemId", PurchaseLine.SystemId);
+                Assert.RecordCount(EDocRecordLink, 1);
+            until PurchaseLine.Next() = 0;
+    end;
+
+    #endregion
+
+
     local procedure Initialize(Integration: Enum "Service Integration")
     var
         TransformationRule: Record "Transformation Rule";
         EDocument: Record "E-Document";
         EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocumentsSetup: Record "E-Documents Setup";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
@@ -298,10 +339,13 @@ codeunit 139883 "E-Doc Process Test"
         EDocumentService."Import Process" := "E-Document Import Process"::"Version 2.0";
         EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PDF Mock";
         EDocumentService.Modify();
+        EDocumentsSetup.InsertNewExperienceSetup();
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
 
         IsInitialized := true;
     end;
+
+
 }

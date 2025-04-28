@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 139517 "Dig. Vouchers Disable Enforce"
 {
     EventSubscriberInstance = Manual;

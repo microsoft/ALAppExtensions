@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 14112 PackageNoInformationExt extends "Package No. Information"
 {
     fields

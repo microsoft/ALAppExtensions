@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14607 "IS Small Business Owner RC" extends "Small Business Owner RC"
 {
     actions

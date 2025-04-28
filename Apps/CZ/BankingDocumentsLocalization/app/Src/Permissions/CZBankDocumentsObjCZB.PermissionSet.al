@@ -1,4 +1,5 @@
-﻿permissionset 11792 "CZ Bank Documents - Obj. CZB"
+#pragma warning disable AA0247
+permissionset 11792 "CZ Bank Documents - Obj. CZB"
 {
     Access = Public;
     Assignable = false;

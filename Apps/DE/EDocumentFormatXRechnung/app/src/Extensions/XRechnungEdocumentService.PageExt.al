@@ -9,10 +9,21 @@ pageextension 13915 "XRechnung-Edocument Service" extends "E-Document Service"
 {
     layout
     {
+#if not CLEAN27
         addafter(ImportParamenters)
         {
             group(Export)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Rearranging the fields.';
+                ObsoleteTag = '27.0';
+#else
+        addlast(ExportProcessing)
+        {
+            group(BuyerReference)
+            {
+                ShowCaption = false;
+#endif
                 field("Buyer Reference Mandatory"; Rec."Buyer Reference Mandatory")
                 {
                     ApplicationArea = All;

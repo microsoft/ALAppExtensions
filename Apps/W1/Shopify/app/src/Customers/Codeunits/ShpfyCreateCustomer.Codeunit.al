@@ -115,6 +115,7 @@ codeunit 30110 "Shpfy Create Customer"
         ShopifyTaxArea: Record "Shpfy Tax Area";
         CustContUpdate: Codeunit "CustCont-Update";
         CustomerTemplMgt: Codeunit "Customer Templ. Mgt.";
+        UpdateCustomer: Codeunit "Shpfy Update Customer";
         ICounty: Interface "Shpfy ICounty";
         CountryCode: Code[20];
         CurrentTemplateCode: Code[20];
@@ -151,15 +152,18 @@ codeunit 30110 "Shpfy Create Customer"
 
         if CompanyLocation."Phone No." <> '' then
             Customer.Validate("Phone No.", CompanyLocation."Phone No.");
-            
+
         if ShopifyTaxArea.Get(CompanyLocation."Country/Region Code", CompanyLocation."Province Name") then begin
             if (ShopifyTaxArea."Tax Area Code" <> '') then begin
                 Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
                 Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
             end;
             if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
-            Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
+                Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
         end;
+
+        if CompanyLocation."Shpfy Payment Terms Id" <> 0 then
+            Customer.Validate("Payment Terms Code", UpdateCustomer.GetPaymentTermsCodeFromShopifyPaymentTermsId(CompanyLocation."Shpfy Payment Terms Id"));
 
         Customer.Modify();
 

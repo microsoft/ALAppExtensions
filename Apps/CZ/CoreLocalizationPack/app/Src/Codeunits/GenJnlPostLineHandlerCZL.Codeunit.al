@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -24,6 +24,7 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
                   tabledata "G/L Entry - VAT Entry Link" = d;
 
     var
+        GenJnlPostLineMgtCZL: Codeunit "Gen. Jnl.-Post Line Mgt. CZL";
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertGlobalGLEntry', '', false, false)]
@@ -38,19 +39,13 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterFindAmtForAppln', '', false, false)]
     local procedure ExchangeRatesAdjOnAfterFindAmtForAppln(var NewCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var OldCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var OldCVLedgEntryBuf2: Record "CV Ledger Entry Buffer"; var AppliedAmount: Decimal; var AppliedAmountLCY: Decimal; var OldAppliedAmount: Decimal)
     begin
-        if NewCVLedgEntryBuf."Currency Code" = OldCVLedgEntryBuf2."Currency Code" then
-            AppliedAmountLCY := Round(AppliedAmount / OldCVLedgEntryBuf."Adjusted Currency Factor")
-        else
-            if NewCVLedgEntryBuf."Currency Code" <> '' then
-                AppliedAmountLCY := Round(OldAppliedAmount / OldCVLedgEntryBuf."Adjusted Currency Factor")
-            else
-                AppliedAmountLCY := Round(AppliedAmount / NewCVLedgEntryBuf."Adjusted Currency Factor");
+        GenJnlPostLineMgtCZL.CalcAppliedAmountLCY(NewCVLedgEntryBuf, OldCVLedgEntryBuf, OldCVLedgEntryBuf2, OldAppliedAmount, AppliedAmount, AppliedAmountLCY);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterCalcCurrencyRealizedGainLoss', '', false, false)]
     local procedure ExchangeRatesAdjOnAfterCalcCurrencyRealizedGainLoss(var CVLedgEntryBuf: Record "CV Ledger Entry Buffer"; AppliedAmount: Decimal; AppliedAmountLCY: Decimal; var RealizedGainLossLCY: Decimal)
     begin
-        RealizedGainLossLCY := AppliedAmountLCY - Round(AppliedAmount / CVLedgEntryBuf."Adjusted Currency Factor");
+        GenJnlPostLineMgtCZL.CalcRealizedGainLossLCY(CVLedgEntryBuf, AppliedAmount, AppliedAmountLCY, RealizedGainLossLCY);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCalcCurrencyUnrealizedGainLoss', '', false, false)]
@@ -59,7 +54,7 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
         if IsHandled then
             exit;
 
-        IsHandled := true;
+        IsHandled := GenJnlPostLineMgtCZL.IsCalcCurrencyUnrealizedGainLossSuppressed();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostCustOnAfterAssignCurrencyFactors', '', false, false)]
@@ -329,18 +324,12 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitVAT', '', false, false)]
     local procedure UpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
     var
-#if not CLEAN24
-        GenJournalLineHandler: Codeunit "Gen. Journal Line Handler CZL";
-#endif
         IsHandled: Boolean;
     begin
         OnBeforeUpdateVATAmountOnAfterInitVAT(GenJournalLine, GLEntry, IsHandled);
         if IsHandled then
             exit;
 
-#if not CLEAN24
-        GenJournalLineHandler.UpdateVATAmountOnAfterInitVAT(GenJournalLine, GLEntry);
-#else
         if (GenJournalLine."Gen. Posting Type" = GenJournalLine."Gen. Posting Type"::" ") or
            (GenJournalLine."VAT Posting" <> GenJournalLine."VAT Posting"::"Automatic VAT Entry") or
            (GenJournalLine."VAT Calculation Type" <> GenJournalLine."VAT Calculation Type"::"Normal VAT") or
@@ -350,7 +339,6 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
 
         GLEntry.Amount := GenJournalLine."VAT Base Amount (LCY)";
         GLEntry."VAT Amount" := GenJournalLine."VAT Amount (LCY)";
-#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckPurchExtDocNoProcedure', '', false, false)]

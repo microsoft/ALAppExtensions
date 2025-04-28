@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Service.Resources;
+using Microsoft.DemoTool;
+
 codeunit 5120 "Contoso Resource"
 {
     InherentEntitlements = X;

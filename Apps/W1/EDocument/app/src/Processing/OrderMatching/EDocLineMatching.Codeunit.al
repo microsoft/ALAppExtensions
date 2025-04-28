@@ -9,7 +9,6 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Item;
 using System.Utilities;
 
-
 codeunit 6164 "E-Doc. Line Matching"
 {
     Access = Internal;
@@ -380,26 +379,36 @@ codeunit 6164 "E-Doc. Line Matching"
         TextToAccountMapping: Record "Text-to-Account Mapping";
         RecordMatchMgt: Codeunit "Record Match Mgt.";
     begin
-        if TempPurchaseLine.MaxQtyToInvoice() <= TempPurchaseLine."Qty. to Invoice" then
+        // Match G/L Account lines that have remaining quantity
+        if (TempPurchaseLine.Type <> Enum::"Purchase Line Type"::Item) and (TempPurchaseLine.Quantity - TempPurchaseLine."Quantity Invoiced" <= 0) then
             exit(false);
 
-        if TempPurchaseLine.Type = Enum::"Purchase Line Type"::Item then begin
-            ItemReference.SetRange("Item No.", TempPurchaseLine."No.");
-            ItemReference.SetRange("Unit of Measure", TempPurchaseLine."Unit of Measure Code");
-            ItemReference.SetRange("Reference Type", Enum::"Item Reference Type"::Vendor);
-            ItemReference.SetRange("Reference Type No.", EDocument."Bill-to/Pay-to No.");
-            ItemReference.SetRange("Reference No.", TempEDocumentImportedLine."No.");
-            if not ItemReference.IsEmpty() then
-                exit(true); // An item reference matches the two lines (Item matches)
+        if (TempPurchaseLine.Type = Enum::"Purchase Line Type"::Item) and (TempPurchaseLine.MaxQtyToInvoice() <= TempPurchaseLine."Qty. to Invoice") then
+            exit(false);
+
+        if not TempEDocumentImportedLine."Converted to Internal Notation" then begin
+            // Item Reference and Text to Account Mapping should only be used if we haven't already converted the line to internal notation
+            if TempPurchaseLine.Type = Enum::"Purchase Line Type"::Item then begin
+                ItemReference.SetRange("Item No.", TempPurchaseLine."No.");
+                ItemReference.SetRange("Unit of Measure", TempPurchaseLine."Unit of Measure Code");
+                ItemReference.SetRange("Reference Type", Enum::"Item Reference Type"::Vendor);
+                ItemReference.SetRange("Reference Type No.", EDocument."Bill-to/Pay-to No.");
+                ItemReference.SetRange("Reference No.", TempEDocumentImportedLine."No.");
+                if not ItemReference.IsEmpty() then
+                    exit(true); // An item reference matches the two lines (Item matches)
+            end;
+
+            if TempPurchaseLine.Type = Enum::"Purchase Line Type"::"G/L Account" then begin
+                TextToAccountMapping.SetRange("Vendor No.", EDocument."Bill-to/Pay-to No.");
+                TextToAccountMapping.SetRange("Debit Acc. No.", TempPurchaseLine."No.");
+                TextToAccountMapping.SetRange("Mapping Text", TempEDocumentImportedLine."No.");
+                if not TextToAccountMapping.IsEmpty() then
+                    exit(true); // A Text to account mapping matches the two lines (G/L Account matches)
+            end;
         end;
 
-        if TempPurchaseLine.Type = Enum::"Purchase Line Type"::"G/L Account" then begin
-            TextToAccountMapping.SetRange("Vendor No.", EDocument."Bill-to/Pay-to No.");
-            TextToAccountMapping.SetRange("Debit Acc. No.", TempPurchaseLine."No.");
-            TextToAccountMapping.SetRange("Mapping Text", TempEDocumentImportedLine."No.");
-            if not TextToAccountMapping.IsEmpty() then
-                exit(true); // A Text to account mapping matches the two lines (G/L Account matches)
-        end;
+        if TempEDocumentImportedLine."Converted to Internal Notation" and (TempEDocumentImportedLine."No." = TempPurchaseLine."No.") then
+            exit(true);
 
         if RecordMatchMgt.CalculateStringNearness(TempPurchaseLine.Description, TempEDocumentImportedLine.Description, 4, 100) > 80 then
             exit(true);
@@ -438,8 +447,8 @@ codeunit 6164 "E-Doc. Line Matching"
         FullMatch: Boolean;
     begin
         // Calculate the quantity that is available to match for purchase order line
-        TotalThatCanBeInvoiced := (TempPurchaseLine."Quantity Received" - TempPurchaseLine."Quantity Invoiced") - TempPurchaseLine."Qty. to Invoice";
-        if TotalThatCanBeInvoiced < 1 then
+        TotalThatCanBeInvoiced := CalculateAmountThatCanBeInvoiced(TempPurchaseLine);
+        if TotalThatCanBeInvoiced <= 0 then
             exit;
 
         // Calculate the quantity available to match for this imported line. 
@@ -484,7 +493,7 @@ codeunit 6164 "E-Doc. Line Matching"
 
         if TempPurchaseLine.FindSet() then
             repeat
-                TotalThatCanBeInvoiced := (TempPurchaseLine."Quantity Received" - TempPurchaseLine."Quantity Invoiced") - TempPurchaseLine."Qty. to Invoice";
+                TotalThatCanBeInvoiced := CalculateAmountThatCanBeInvoiced(TempPurchaseLine);
                 if TotalThatCanBeInvoiced > 0 then
                     TempPurchaseLine.Mark(true);
             until TempPurchaseLine.Next() = 0;
@@ -573,6 +582,13 @@ codeunit 6164 "E-Doc. Line Matching"
             end else
                 Message(PurchaseLineCreatedMsg);
         end;
+    end;
+
+    local procedure CalculateAmountThatCanBeInvoiced(var TempPurchaseLine: Record "Purchase Line" temporary): Decimal
+    begin
+        if TempPurchaseLine.Type <> Enum::"Purchase Line Type"::Item then
+            exit((TempPurchaseLine.Quantity - TempPurchaseLine."Quantity Invoiced") - TempPurchaseLine."Qty. to Invoice");
+        exit((TempPurchaseLine."Quantity Received" - TempPurchaseLine."Quantity Invoiced") - TempPurchaseLine."Qty. to Invoice");
     end;
 
     [IntegrationEvent(true, false)]

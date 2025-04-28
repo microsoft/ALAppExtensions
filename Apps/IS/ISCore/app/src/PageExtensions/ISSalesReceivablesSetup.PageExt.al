@@ -14,10 +14,6 @@ pageextension 14606 "IS Sales & Receivables Setup" extends "Sales & Receivables 
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the company complies with the requirement of tracking invoicing electronically, when printing invoices in single copy.';
-#if not CLEAN24
-                Visible = IsISCoreAppEnabled;
-                Enabled = IsISCoreAppEnabled;
-#endif
             }
         }
     }

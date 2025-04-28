@@ -314,9 +314,7 @@ table 11756 "Registration Log CZL"
         InitRegistrationLogDetailFromRec(RegistrationLogDetail, FieldName, CurrentValue);
         RegistrationLogDetail.Response := CopyStr(ResponseValue, 1, MaxStrLen(RegistrationLogDetail.Response));
 
-        if (RegistrationLogDetail."Current Value" = RegistrationLogDetail.Response) and
-           (RegistrationLogDetail.Response <> '')
-        then
+        if RegistrationLogDetail."Current Value" = RegistrationLogDetail.Response then
             RegistrationLogDetail.Status := RegistrationLogDetail.Status::Valid;
         RegistrationLogDetail.Insert();
 

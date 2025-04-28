@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Document;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 /// <summary>
 /// Dealing with the creation of the purchase invoice after the draft has been populated.
@@ -19,7 +21,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseHeader: Record "Purchase Header";
         IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseInvoice;
     begin
-        IEDocumentFinishPurchaseDraft := EDocImportParameters."Finish Purchase Draft Impl.";
+        IEDocumentFinishPurchaseDraft := EDocImportParameters."Processing Customizations";
         PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseInvoice(EDocument);
         PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
         PurchaseHeader.TestField("No.");
@@ -50,29 +52,40 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentHeaderMapping: Record "E-Document Header Mapping";
         EDocumentLineMapping: Record "E-Document Line Mapping";
         PurchaseLine: Record "Purchase Line";
+        EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
         EDocumentHeaderMapping := EDocument.GetEDocumentHeaderMapping();
-        PurchaseHeader.Validate("Pay-to Vendor No.", EDocumentHeaderMapping."Vendor No.");
+        PurchaseHeader.SetRange("Buy-from Vendor No.", EDocumentHeaderMapping."Vendor No."); // Setting the filter, so that the insert trigger assigns the right vendor to the purchase header
         PurchaseHeader."Document Type" := "Purchase Document Type"::Invoice;
         PurchaseHeader."Vendor Invoice No." := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
         PurchaseHeader.Insert(true);
+
+        // Track changes for history
+        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseHeader, PurchaseHeader);
+
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         if EDocumentPurchaseLine.FindSet() then
             repeat
-                if EDocumentLineMapping.Get(EDocumentPurchaseLine."E-Document Line Id") then;
+                if EDocumentLineMapping.Get(EDocument."Entry No", EDocumentPurchaseLine."Line No.") then;
                 PurchaseLine."Document Type" := PurchaseHeader."Document Type";
                 PurchaseLine."Document No." := PurchaseHeader."No.";
                 PurchaseLine."Line No." += 10000;
-
                 PurchaseLine."Unit of Measure Code" := EDocumentLineMapping."Unit of Measure";
                 PurchaseLine.Type := EDocumentLineMapping."Purchase Line Type";
-                PurchaseLine."No." := EDocumentLineMapping."Purchase Type No.";
+                PurchaseLine.Validate("No.", EDocumentLineMapping."Purchase Type No.");
                 PurchaseLine.Description := EDocumentPurchaseLine.Description;
                 PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
                 PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
+                PurchaseLine.Validate("Deferral Code", EDocumentLineMapping."Deferral Code");
+                PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentLineMapping."Shortcut Dimension 1 Code");
+                PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentLineMapping."Shortcut Dimension 2 Code");
                 PurchaseLine.Insert();
+
+                // Track changes for history
+                EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
+
             until EDocumentPurchaseLine.Next() = 0;
     end;
 

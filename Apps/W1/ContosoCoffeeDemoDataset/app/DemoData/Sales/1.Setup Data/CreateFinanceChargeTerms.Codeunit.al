@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.FinanceCharge;
+
 codeunit 5202 "Create Finance Charge Terms"
 {
     InherentEntitlements = X;

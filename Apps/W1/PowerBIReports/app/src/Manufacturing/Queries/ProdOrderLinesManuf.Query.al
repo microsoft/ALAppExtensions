@@ -19,21 +19,11 @@ query 36989 "Prod. Order Lines - Manuf."
     {
         dataitem(ProdOrderLine; "Prod. Order Line")
         {
-            column(prodOrderStatus; Status)
-            {
-            }
-            column(prodOrderNo; "Prod. Order No.")
-            {
-            }
-            column(prodOrderLineNo; "Line No.")
-            {
-            }
-            column(itemNo; "Item No.")
-            {
-            }
-            column(locationCode; "Location Code")
-            {
-            }
+            column(prodOrderStatus; Status) { }
+            column(prodOrderNo; "Prod. Order No.") { }
+            column(prodOrderLineNo; "Line No.") { }
+            column(itemNo; "Item No.") { }
+            column(locationCode; "Location Code") { }
             column(quantityBase; "Quantity (Base)")
             {
                 Method = Sum;
@@ -42,24 +32,20 @@ query 36989 "Prod. Order Lines - Manuf."
             {
                 Method = Sum;
             }
-            column(dueDate; "Due Date")
-            {
-            }
-            column(routingNo; "Routing No.")
-            {
-            }
-            column(routingReferenceNo; "Routing Reference No.")
-            {
-            }
-            column(dimensionSetID; "Dimension Set ID")
-            {
-            }
+            column(dueDate; "Due Date") { }
+            column(routingNo; "Routing No.") { }
+            column(routingReferenceNo; "Routing Reference No.") { }
+            column(routingType; "Routing Type") { }
+            column(dimensionSetID; "Dimension Set ID") { }
+            column(finishedQtyBase; "Finished Qty. (Base)") { }
+            column(scrapPrc; "Scrap %") { }
+            column(overheadRate; "Overhead Rate") { }
+            column(planningLevelCode; "Planning Level Code") { }
+            column(indirectCostPercent; "Indirect Cost %") { }
             dataitem(Location; Location)
             {
                 DataItemLink = Code = ProdOrderLine."Location Code";
-                column(locationName; Name)
-                {
-                }
+                column(locationName; Name) { }
             }
         }
     }

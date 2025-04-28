@@ -23,7 +23,7 @@ page 8032 "Generic Import Settings Card"
                 {
                     ToolTip = 'Defines whether the associated customers should also be created as usage data when importing the billing data.';
                 }
-                field("Create Subscriptions"; Rec."Create Subscriptions")
+                field("Create Subscriptions"; Rec."Create Supplier Subscriptions")
                 {
                     ToolTip = 'Specifies whether the associated subscriptions should also be created as usage data when importing the billing data.';
                 }

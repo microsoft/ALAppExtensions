@@ -245,6 +245,7 @@ codeunit 30171 "Shpfy Create Item"
                     end;
             end;
         Clear(Item."Item Category Code");
+        Clear(Item."Base Unit of Measure");
         CreateItemFromTemplate(Item, CurrentTemplateCode, ItemNo);
         Item.Description := ShopifyProduct.Title;
 

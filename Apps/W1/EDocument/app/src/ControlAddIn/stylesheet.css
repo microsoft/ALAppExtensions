@@ -1,0 +1,31 @@
+#pdf-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+#pdf-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#page-count-container {
+    margin-left: auto;
+}
+
+#edoc-pdf-contents {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#edoc-pdf-canvas {
+    width: 100%;
+    height: auto;
+}
+
+#edoc-pdf-container {
+    flex-grow: 1;
+    overflow-y: auto;
+}

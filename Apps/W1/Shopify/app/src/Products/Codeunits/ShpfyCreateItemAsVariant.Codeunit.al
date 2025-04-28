@@ -14,7 +14,8 @@ codeunit 30343 "Shpfy Create Item As Variant"
         VariantApi: Codeunit "Shpfy Variant API";
         ProductApi: Codeunit "Shpfy Product API";
         Events: Codeunit "Shpfy Product Events";
-        Options: Dictionary of [Text, Text];
+        OptionId: BigInteger;
+        OptionName: Text;
 
     trigger OnRun()
     begin
@@ -34,21 +35,23 @@ codeunit 30343 "Shpfy Create Item As Variant"
 
         CreateProduct.CreateTempShopifyVariantFromItem(Item, TempShopifyVariant);
         TempShopifyVariant.Title := Item."No.";
-        if Options.Count = 1 then
-            TempShopifyVariant."Option 1 Name" := CopyStr(Options.Values.Get(1), 1, MaxStrLen(TempShopifyVariant."Option 1 Name"))
-        else
+
+        if not ShopifyProduct."Has Variants" and (OptionName = 'Title') then begin
+            // Shopify automatically deletes the default variant (Title) when adding a new one so first we need to update the default variant to have a different name (Variant)
+            UpdateProductOption('Variant');
             TempShopifyVariant."Option 1 Name" := 'Variant';
+        end else
+            TempShopifyVariant."Option 1 Name" := CopyStr(OptionName, 1, MaxStrLen(TempShopifyVariant."Option 1 Name"));
         TempShopifyVariant."Option 1 Value" := Item."No.";
 
         Events.OnAfterCreateTempShopifyVariant(Item, TempShopifyVariant);
         TempShopifyVariant.Modify();
 
-        if VariantApi.AddProductVariants(TempShopifyVariant, ShopifyProduct.Id, "Shpfy Variant Create Strategy"::DEFAULT) then begin
+        if VariantApi.AddProductVariant(TempShopifyVariant, ShopifyProduct.Id, "Shpfy Variant Create Strategy"::DEFAULT) then begin
             ShopifyProduct."Has Variants" := true;
             ShopifyProduct.Modify(true);
         end;
     end;
-
 
     /// <summary>
     /// Checks if items can be added as variants to the product. The items cannot be added as variants if:
@@ -57,6 +60,8 @@ codeunit 30343 "Shpfy Create Item As Variant"
     /// </summary>
     internal procedure CheckProductAndShopSettings()
     var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        Options: Dictionary of [Text, Text];
         MultipleOptionsErr: Label 'The product has more than one option. Items cannot be added as variants to a product with multiple options.';
         UOMAsVariantEnabledErr: Label 'Items cannot be added as variants to a product with the "%1" setting enabled for this store.', Comment = '%1 - UoM as Variant field caption';
     begin
@@ -67,6 +72,9 @@ codeunit 30343 "Shpfy Create Item As Variant"
 
         if Options.Count > 1 then
             Error(MultipleOptionsErr);
+
+        OptionId := CommunicationMgt.GetIdOfGId(Options.Keys.Get(1));
+        OptionName := Options.Values.Get(1);
     end;
 
     /// <summary>
@@ -77,6 +85,11 @@ codeunit 30343 "Shpfy Create Item As Variant"
     begin
         ShopifyProduct.Get(ShopifyProductId);
         SetShop(ShopifyProduct."Shop Code");
+    end;
+
+    local procedure UpdateProductOption(NewOptionName: Text)
+    begin
+        ProductApi.UpdateProductOption(ShopifyProduct.Id, OptionId, NewOptionName);
     end;
 
     local procedure SetShop(ShopCode: Code[20])

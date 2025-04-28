@@ -14,10 +14,6 @@ pageextension 14602 "IS Chart of Accounts" extends "Chart of Accounts"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Internal Revenue Service (IRS) tax numbers for the account.';
-#if not CLEAN24
-                Visible = IsISCoreAppEnabled;
-                Enabled = IsISCoreAppEnabled;
-#endif
             }
         }
     }

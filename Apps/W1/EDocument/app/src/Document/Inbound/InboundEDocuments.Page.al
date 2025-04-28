@@ -2,24 +2,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AS0031, AS0032
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Attachment;
 using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.Purchases.Vendor;
 
 page 6105 "Inbound E-Documents"
 {
     ApplicationArea = Basic, Suite;
     SourceTable = "E-Document";
     PageType = List;
-    UsageCategory = Lists;
-    AdditionalSearchTerms = 'Edoc,Inbound,Incoming,E-Doc,Electronic Document,EDocuments,E Documents,E invoices,Einvoices,Electronic';
     RefreshOnActivate = true;
     Editable = false;
-    DeleteAllowed = false;
+    DeleteAllowed = true;
     InsertAllowed = false;
-    SourceTableView = sorting("Entry No") order(descending) where(Direction = const("E-Document Direction"::Incoming));
+    SourceTableView = sorting(SystemCreatedAt) order(descending) where(Direction = const("E-Document Direction"::Incoming));
 
     layout
     {
@@ -29,56 +29,53 @@ page 6105 "Inbound E-Documents"
             repeater(DocumentList)
             {
                 ShowCaption = false;
-                field("Entry No"; Rec."Entry No")
+                field("Document Name"; DocumentNameTxt)
                 {
-                    Caption = 'Entry No.';
-                    ToolTip = 'Specifies the entry number.';
-
+                    Caption = 'Document';
+                    ToolTip = 'Specifies the unique name for the document.';
                     trigger OnDrillDown()
                     begin
-                        OpenCardPage();
+                        EDocumentHelper.OpenDraftPage(Rec);
                     end;
                 }
-                field("Vendor Name"; Rec."Bill-to/Pay-to Name")
+                field(SystemCreatedAt; Rec.SystemCreatedAt)
                 {
-                    Caption = 'Vendor Name';
+                    Caption = 'Received At';
+                    ToolTip = 'Specifies the date and time when the electronic document was created.';
+                }
+                field(Service; Rec.Service)
+                {
+                    Caption = 'Service';
+                    ToolTip = 'Specifies the service code of the electronic document.';
+                }
+                field("Service Integration"; Rec."Service Integration")
+                {
+                    Caption = 'Service Integration';
+                    ToolTip = 'Specifies the integration code of the electronic document.';
+                }
+                field("Vendor Name"; VendorNameTxt)
+                {
+                    Caption = 'Sender';
                     ToolTip = 'Specifies the vendor name of the electronic document.';
                 }
-                field("Status"; Rec.Status)
+                field("Import Processing Status"; ImportProcessingStatus)
                 {
-                    Caption = 'Document Status';
-                    ToolTip = 'Specifies the status of the electronic document.';
+                    Caption = 'Processing Status';
+                    ToolTip = 'Specifies the processing status of the inbound electronic document.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
+                    Caption = 'Finalized Document Type';
                     ToolTip = 'Specifies the document type of the electronic document.';
                 }
                 field("Document Record ID"; RecordLinkTxt)
                 {
-                    Caption = 'Document';
+                    Caption = 'Finalized Document No.';
                     ToolTip = 'Specifies the document created from the electronic document.';
                     trigger OnDrillDown()
                     begin
                         Rec.ShowRecord();
                     end;
-                }
-                field("File Name"; Rec."File Name")
-                {
-                    ToolTip = 'Specifies the name of the source file.';
-
-                    trigger OnDrillDown()
-                    begin
-                        Rec.ViewSourceFile();
-                    end;
-                }
-                field("File Type"; Rec."File Type")
-                {
-                    ToolTip = 'Specifies the type of the source file.';
-                    Visible = false;
-                }
-                field(Service; Rec.Service)
-                {
-                    ToolTip = 'Specifies the service code of the electronic document.';
                 }
             }
         }
@@ -94,7 +91,7 @@ page 6105 "Inbound E-Documents"
             }
             part(InboundEDocFactbox; "Inbound E-Doc. Factbox")
             {
-                Caption = 'Details';
+                Caption = 'E-Document';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
             }
@@ -128,7 +125,7 @@ page 6105 "Inbound E-Documents"
             }
             action(ImportManually)
             {
-                Caption = 'Import other File';
+                Caption = 'Import other file';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
 
@@ -137,22 +134,26 @@ page 6105 "Inbound E-Documents"
                     NewFromFile();
                 end;
             }
-            action(Process)
+            action(OpenDraftDocument)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Process';
+                Caption = 'Open draft document';
                 ToolTip = 'Process the selected electronic document.';
-                Image = Process;
+                Image = PurchaseInvoice;
                 Enabled = Rec."Entry No" <> 0;
 
                 trigger OnAction()
                 var
                     EDocImportParameters: Record "E-Doc. Import Parameters";
-                    EDocumentHelper: Codeunit "E-Document Helper";
+                    EDocImport: Codeunit "E-Doc. Import";
+                    ImportEDocumentProcess: Codeunit "Import E-Document Process";
                 begin
-                    EDocImportParameters."Step to Run" := EDocImportParameters."Step to Run"::"Prepare draft";
-                    ProcessEDocument(Rec, EDocImportParameters);
-                    EDocumentHelper.OpenDraftPage(Rec);
+                    if ImportEDocumentProcess.IsEDocumentInStateGE(Rec, Enum::"Import E-Doc. Proc. Status"::"Ready for draft") then
+                        EDocumentHelper.OpenDraftPage(Rec)
+                    else begin
+                        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+                        EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+                    end;
                 end;
             }
             action(EDocumentServices)
@@ -172,7 +173,7 @@ page 6105 "Inbound E-Documents"
             action(ViewFile)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'View file';
+                Caption = 'View source file';
                 ToolTip = 'View the source file.';
                 Image = ViewDetails;
 
@@ -211,21 +212,63 @@ page 6105 "Inbound E-Documents"
                 {
                 }
             }
-            actionref(Promoted_Process; Process) { }
-            actionref(Promoted_EDocumentServices; EDocumentServices) { }
             actionref(Promoted_ViewFile; ViewFile) { }
+            actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }
 
     var
-        ProcessDialogMsg: Label 'Processing pdf to %1...', Comment = '%1 - The end step to process to.';
-        RecordLinkTxt: Text;
+        EDocumentHelper: Codeunit "E-Document Helper";
+        ImportProcessingStatus: Enum "Import E-Doc. Proc. Status";
+        ProcessDialogMsg: Label 'Processing pdf...';
+        RecordLinkTxt, VendorNameTxt, DocumentNameTxt : Text;
 
     trigger OnAfterGetRecord()
     var
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
+        ImportProcessingStatus := Rec.GetEDocumentImportProcessingStatus();
         RecordLinkTxt := EDocumentProcessing.GetRecordLinkText(Rec);
+        PopulateDocumentNameTxt();
+        PopulateVendorNameTxt();
+    end;
+
+    local procedure PopulateDocumentNameTxt()
+    var
+        CaptionBuilder: TextBuilder;
+    begin
+        if Rec."File Name" <> '' then
+            CaptionBuilder.Append(Rec."File Name" + ' - ')
+        else
+            CaptionBuilder.Append('Draft document - ');
+
+        CaptionBuilder.Append(Format(Rec."Entry No"));
+        DocumentNameTxt := CaptionBuilder.ToText();
+    end;
+
+    local procedure PopulateVendorNameTxt()
+    var
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        Vendor: Record Vendor;
+    begin
+        VendorNameTxt := Rec."Bill-to/Pay-to Name";
+        EDocumentHeaderMapping := Rec.GetEDocumentHeaderMapping();
+        if Vendor.Get(EDocumentHeaderMapping."Vendor No.") then
+            VendorNameTxt := Vendor.Name
+        else begin
+            EDocumentPurchaseHeader := EDocumentHeaderMapping.GetEDocumentPurchaseHeader();
+            if EDocumentPurchaseHeader."Vendor Company Name" <> '' then
+                VendorNameTxt := EDocumentPurchaseHeader."Vendor Company Name";
+        end;
+    end;
+
+    trigger OnOpenPage()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            Error('');
     end;
 
     local procedure NewFromFile()
@@ -242,7 +285,6 @@ page 6105 "Inbound E-Documents"
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
-        EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
         FileName: Text;
         InStr: InStream;
@@ -253,11 +295,7 @@ page 6105 "Inbound E-Documents"
         EDocumentService.GetPDFReaderService();
         EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::PDF, FileName, InStr);
 
-        if EDocumentService."Automatic Import Processing" = Enum::"E-Doc. Automatic Processing"::No then
-            exit;
-
-        EDocImportParameters."Step to Run" := EDocImportParameters."Step to Run"::"Prepare draft";
-        ProcessEDocument(EDocument, EDocImportParameters);
+        ProcessEDocument(EDocument);
     end;
 
     local procedure NewFromXml()
@@ -275,35 +313,25 @@ page 6105 "Inbound E-Documents"
             exit;
 
         EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, FileName, InStr);
+        ProcessEDocument(EDocument);
     end;
 
-    local procedure ProcessEDocument(var EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters")
+    local procedure ProcessEDocument(var EDocument: Record "E-Document")
     var
         EDocImport: Codeunit "E-Doc. Import";
-        EDocumentHelper: Codeunit "E-Document Helper";
         Progress: Dialog;
     begin
         if not EDocumentHelper.EnsureInboundEDocumentHasService(EDocument) then
             exit;
 
-        Progress.Open(StrSubstNo(ProcessDialogMsg, Format(EDocImportParameters."Step to Run")));
-        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+        Progress.Open(ProcessDialogMsg);
+        if not EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument) then
+            exit;
         Progress.Close();
-    end;
-
-    local procedure OpenCardPage()
-    var
-        IStructuredDataProcess: Interface IProcessStructuredData;
-    begin
-        case Rec.Direction of
-            Rec.Direction::Incoming:
-                begin
-                    IStructuredDataProcess := Rec."Structured Data Process";
-                    IStructuredDataProcess.OpenDraftPage(Rec);
-                end;
-            Rec.Direction::Outgoing:
-                exit;
-        end
+        if EDocument.GetEDocumentImportProcessingStatus() = "Import E-Doc. Proc. Status"::"Draft Ready" then
+            EDocumentHelper.OpenDraftPage(EDocument);
     end;
 
 }
+
+#pragma warning restore AS0031, AS0032

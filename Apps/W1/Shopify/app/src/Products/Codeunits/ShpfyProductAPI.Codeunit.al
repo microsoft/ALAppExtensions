@@ -188,6 +188,7 @@ codeunit 30176 "Shpfy Product API"
         exit(Product."Image Id");
     end;
 
+    [TryFunction]
     internal procedure UpdateProductImage(Parameters: Dictionary of [Text, Text])
     begin
         CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductImage, Parameters);
@@ -631,5 +632,15 @@ codeunit 30176 "Shpfy Product API"
         GraphQueryBuilder.Append('{userErrors {field, message}}');
         GraphQueryBuilder.Append('}"}');
         exit(GraphQueryBuilder.ToText());
+    end;
+
+    internal procedure UpdateProductOption(ProductId: BigInteger; OptionId: BigInteger; NewOptionName: Text)
+    var
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('ProductId', Format(ProductId));
+        Parameters.Add('OptionId', Format(OptionId));
+        Parameters.Add('OptionName', NewOptionName);
+        CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductOption, Parameters);
     end;
 }

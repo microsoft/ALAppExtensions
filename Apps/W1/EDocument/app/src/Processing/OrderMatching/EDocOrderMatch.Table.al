@@ -8,6 +8,7 @@ table 6164 "E-Doc. Order Match"
 {
     DataClassification = CustomerContent;
     Access = Internal;
+    ReplicateData = false;
 
     fields
     {

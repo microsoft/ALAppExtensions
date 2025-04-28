@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Manufacturing;
+
+using Microsoft.Manufacturing.Setup;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
+
 codeunit 4768 "Create Mfg Posting Setup"
 {
     InherentEntitlements = X;
@@ -37,7 +48,7 @@ codeunit 4768 "Create Mfg Posting Setup"
         MfgGLAccount: Codeunit "Create Mfg GL Account";
         MfgPostingGroup: Codeunit "Create Mfg Posting Group";
     begin
-        ContosoPostingSetup.InsertGeneralPostingSetup('', MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), '', MfgGLAccount.DirectCostAppliedCap(), MfgGLAccount.OverheadAppliedCap(), MfgGLAccount.PurchaseVarianceCap());
+        ContosoPostingSetup.InsertGeneralPostingSetup('', MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), CommonGLAccount.InventoryAdjRawMat(), MfgGLAccount.DirectCostAppliedCap(), MfgGLAccount.OverheadAppliedCap(), MfgGLAccount.PurchaseVarianceCap());
         ContosoPostingSetup.InsertGeneralPostingSetup(CommonPostingGroup.Domestic(), MfgPostingGroup.Manufacturing(), CommonGLAccount.SalesDomestic(), CommonGLAccount.PurchaseDomestic(), CommonGLAccount.InventoryAdjRawMat(), CommonGLAccount.DirectCostAppliedRawMat(), CommonGLAccount.OverheadAppliedRawMat(), CommonGLAccount.PurchaseVarianceRawMat());
     end;
 
@@ -59,9 +70,6 @@ codeunit 4768 "Create Mfg Posting Setup"
         ManufacturingSetup.Validate("Dynamic Low-Level Code", true);
 
         ManufacturingSetup.Validate("Show Capacity In", MfgCapUnitOfMeasure.Minutes());
-
-        ManufacturingSetup.Validate("Combined MPS/MRP Calculation", true);
-        Evaluate(ManufacturingSetup."Default Safety Lead Time", '<1D>');
 
         if ManufacturingSetup."Work Center Nos." = '' then
             ManufacturingSetup.Validate("Work Center Nos.", MfgNoSeries.WorkCenter());

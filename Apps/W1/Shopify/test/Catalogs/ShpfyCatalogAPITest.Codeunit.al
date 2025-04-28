@@ -61,4 +61,45 @@ codeunit 139645 "Shpfy Catalog API Test"
         LibraryAssert.IsTrue(Result, 'ExtractShopifyCatalogPrices');
         LibraryAssert.RecordIsNotEmpty(TempCatalogPrice);
     end;
+
+    [Test]
+    procedure UnitTestCreateCatalog()
+    var
+        Shop: Record "Shpfy Shop";
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        Catalog: Record "Shpfy Catalog";
+        CatalogAPI: Codeunit "Shpfy Catalog API";
+        ShopifyInitializeTest: Codeunit "Shpfy Initialize Test";
+        CatalogAPISubscribers: Codeunit "Shpfy Catalog API Subscribers";
+        LibrarySales: Codeunit "Library - Sales";
+    begin
+        // [SCENARIO] Create a catalog for a company.
+
+        // [GIVEN] Shop
+        Shop := ShopifyInitializeTest.CreateShop();
+        // [GIVEN] Customer
+        LibrarySales.CreateCustomer(Customer);
+        // [GIVEN] A company record.
+        CreateCompany(ShopifyCompany, Customer.SystemId);
+
+        // [WHEN] Invoke CatalogAPI.CreateCatalog
+        BindSubscription(CatalogAPISubscribers);
+        CatalogAPI.CreateCatalog(ShopifyCompany, Customer);
+        UnbindSubscription(CatalogAPISubscribers);
+
+        // [THEN] A catalog is created.
+        Catalog.SetRange("Company SystemId", ShopifyCompany.SystemId);
+        Catalog.FindFirst();
+        LibraryAssert.AreEqual(Customer."No.", Catalog."Customer No.", 'Customer No. is not transferred to catalog');
+    end;
+
+    local procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; CustomerSystemId: Guid)
+    var
+        ShopifyCompanyInitialize: Codeunit "Shpfy Company Initialize";
+    begin
+        ShopifyCompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        ShopifyCompany."Customer SystemId" := CustomerSystemId;
+        ShopifyCompany.Modify(false);
+    end;
 }

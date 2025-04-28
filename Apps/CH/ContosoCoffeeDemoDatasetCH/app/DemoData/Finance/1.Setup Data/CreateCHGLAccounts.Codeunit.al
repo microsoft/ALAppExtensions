@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Enums;
+
 codeunit 11580 "Create CH GL Accounts"
 {
     InherentPermissions = X;
@@ -489,6 +507,7 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(LtReserveRepairsName(), '2600');
         ContosoGLAccount.AddAccountForLocalization(LongTermWarrantyWorkName(), '2630');
         ContosoGLAccount.AddAccountForLocalization(LtReserveDeferredTaxName(), '2640');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '2790');
         ContosoGLAccount.AddAccountForLocalization(TotalLongTermLiabilitiesName(), '2798');
         ContosoGLAccount.AddAccountForLocalization(TotalLiabilitiesName(), '2799');
         ContosoGLAccount.AddAccountForLocalization(ShareholdersEquityName(), '28');
@@ -707,7 +726,7 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.InsertGLAccount(CreateGLAccount.CapitalStock(), CreateGLAccount.CapitalStockName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Equity, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CreateGLAccount.JobCosts(), CreateGLAccount.JobCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CreateGLAccount.Cleaning(), CreateGLAccount.CleaningName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(CreateGLAccount.Postage(), CreateGLAccount.PostageName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting,  CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(),  '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(CreateGLAccount.Postage(), CreateGLAccount.PostageName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), '', true, false, false);
         ContosoGLAccount.InsertGLAccount(PostAcc(), PostAccName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, true, false);
         ContosoGLAccount.InsertGLAccount(BankCredit(), BankCreditName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, true, false);
         ContosoGLAccount.InsertGLAccount(BankCreditForeignCurrency(), BankCreditForeignCurrencyName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, true, false);

@@ -6,12 +6,16 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.Currency;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 table 6121 "E-Document"
 {
@@ -218,6 +222,12 @@ table 6121 "E-Document"
             Caption = 'Structured Data Process';
             ToolTip = 'Specifies the structured data process to run on the E-Document data.';
         }
+        field(38; "Service Integration"; Enum "Service Integration")
+        {
+            Caption = 'Service Integration';
+            ToolTip = 'Specifies the service integration to use for the E-Document.';
+            Editable = false;
+        }
     }
     keys
     {
@@ -228,7 +238,117 @@ table 6121 "E-Document"
         key(Key2; "Document Record ID")
         {
         }
+        key(Key3; "Incoming E-Document No.", "Bill-to/Pay-to No.", "Document Date", "Entry No")
+        {
+        }
+        key(Key4; SystemCreatedAt)
+        {
+        }
     }
+
+    trigger OnDelete()
+    begin
+        if (Rec.Status = Rec.Status::Processed) then
+            Error(this.DeleteProcessedNotAllowedErr);
+
+        if (Rec."Document Record ID".TableNo <> 0) then
+            Error(this.DeleteLinkedNotAllowedErr);
+
+        if (not Rec.IsDuplicate()) then
+            if not GuiAllowed() then
+                Error(DeleteUniqueNotAllowedErr)
+            else
+                if not Confirm(this.DeleteConfirmQst) then
+                    Error('');
+
+        this.DeleteRelatedRecords();
+    end;
+
+    /// <summary>
+    /// Inserts a new E-Document record with the specified parameters.
+    /// </summary>
+    internal procedure Create(
+        EDocumentDirection: Enum "E-Document Direction";
+        EDocumentType: Enum "E-Document Type";
+        EDocumentService: Record "E-Document Service"
+    )
+    begin
+        Rec."Entry No" := 0;
+        Rec.Direction := EDocumentDirection;
+        Rec."Document Type" := EDocumentType;
+        Rec.Service := EDocumentService.Code;
+        Rec."Service Integration" := EDocumentService."Service Integration V2";
+        Rec.Insert(true);
+    end;
+
+    internal procedure IsDuplicate(): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
+        EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
+        EDocument.SetRange("Document Date", Rec."Document Date");
+        EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
+        exit(not EDocument.IsEmpty());
+    end;
+
+    internal procedure GetTotalAmountIncludingVAT(): Decimal
+    var
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        if Rec."Amount Incl. VAT" <> 0 then
+            exit(Rec."Amount Incl. VAT");
+        if Rec.Direction = Rec.Direction::Outgoing then
+            exit(-Rec."Amount Incl. VAT");
+        if GetEDocumentService()."Import Process" = "E-Document Import Process"::"Version 1.0" then
+            exit(Rec."Amount Incl. VAT");
+        EDocumentPurchaseHeader.GetFromEDocument(Rec);
+        exit(EDocumentPurchaseHeader.Total);
+    end;
+
+    local procedure DeleteRelatedRecords()
+    var
+        DocumentAttachment: Record "Document Attachment";
+        EDocMappingLog: Record "E-Doc. Mapping Log";
+        EDocumentIntegrationLog: Record "E-Document Integration Log";
+        EDocumentLog: Record "E-Document Log";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentLineMapping: Record "E-Document Line Mapping";
+        IProcessStructuredData: Interface IProcessStructuredData;
+    begin
+        EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        if not EDocumentLog.IsEmpty() then
+            EDocumentLog.DeleteAll(true);
+
+        EDocumentIntegrationLog.SetRange("E-Doc. Entry No", Rec."Entry No");
+        if not EDocumentIntegrationLog.IsEmpty() then
+            EDocumentIntegrationLog.DeleteAll(true);
+
+        EDocumentServiceStatus.SetRange("E-Document Entry No", Rec."Entry No");
+        if not EDocumentServiceStatus.IsEmpty() then
+            EDocumentServiceStatus.DeleteAll(true);
+
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        DocumentAttachment.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not DocumentAttachment.IsEmpty() then
+            DocumentAttachment.DeleteAll(true);
+
+        EDocMappingLog.SetRange("E-Doc Entry No.", Rec."Entry No");
+        if not EDocMappingLog.IsEmpty() then
+            EDocMappingLog.DeleteAll(true);
+
+        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocumentHeaderMapping.IsEmpty() then
+            EDocumentHeaderMapping.DeleteAll(true);
+
+        EDocumentLineMapping.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocumentLineMapping.IsEmpty() then
+            EDocumentLineMapping.DeleteAll(true);
+
+        IProcessStructuredData := Rec."Structured Data Process";
+        IProcessStructuredData.CleanUpDraft(Rec);
+    end;
 
     internal procedure PreviewContent()
     var
@@ -345,6 +465,10 @@ table 6121 "E-Document"
 
     var
         ToStringLbl: Label '%1,%2,%3,%4', Locked = true;
+        DeleteLinkedNotAllowedErr: Label 'The E-Document is linked to sales or purchase document and cannot be deleted.';
+        DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
+        DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted without a confirmation in the user interface.';
         NoFileErr: label 'No previewable attachment exists for this %2.', Comment = '%1 - a table caption';
         NoFileContentErr: label 'Previewing file %1 failed. The file was found in table %2, but it has no content.', Comment = '%1 - a file name; %2 - a table caption';
+        DeleteConfirmQst: label 'Are you sure? You may not be able to retrieve this E-Document again.\\ Do you want to continue?';
 }

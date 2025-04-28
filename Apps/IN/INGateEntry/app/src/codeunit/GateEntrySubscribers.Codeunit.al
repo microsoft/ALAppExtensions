@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -78,10 +78,6 @@ codeunit 18604 "Gate Entry Subscribers"
     local procedure UpdateNoSeriesOnAfterInsertEvent(var Rec: Record "Gate Entry Header")
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         Rec."Document Date" := WorkDate();
         Rec."Document Time" := Time;
@@ -94,33 +90,15 @@ codeunit 18604 "Gate Entry Subscribers"
             Rec."Entry Type"::Inward:
                 if Rec."No." = '' then begin
                     InventorySetup.TestField("Inward Gate Entry Nos.");
-#if not CLEAN24
-                    IsHandled := false;
-                    NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(InventorySetup."Inward Gate Entry Nos.", Rec."No. Series", Rec."Posting Date", Rec."No.", Rec."No. Series", IsHandled);
-                    if not IsHandled then begin
-#endif
                         if not NoSeries.AreRelated(InventorySetup."Inward Gate Entry Nos.", Rec."No. Series") then
                             Rec."No. Series" := InventorySetup."Inward Gate Entry Nos.";
                         Rec."No." := NoSeries.GetNextNo(Rec."No. Series", Rec."Posting Date");
-#if not CLEAN24
-                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries(Rec."No. Series", InventorySetup."Inward Gate Entry Nos.", Rec."Posting Date", Rec."No.");
-                    end;
-#endif
                 end;
             Rec."Entry Type"::Outward:
                 if Rec."No." = '' then begin
                     InventorySetup.TestField("Outward Gate Entry Nos.");
-#if not CLEAN24
-                    IsHandled := false;
-                    NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(InventorySetup."Outward Gate Entry Nos.", Rec."No. Series", Rec."Posting Date", Rec."No.", Rec."No. Series", IsHandled);
-                    if not IsHandled then begin
-#endif
                         Rec."No. Series" := InventorySetup."Outward Gate Entry Nos.";
                         Rec."No." := NoSeries.GetNextNo(Rec."No. Series", Rec."Posting Date");
-#if not CLEAN24
-                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries(Rec."No. Series", InventorySetup."Outward Gate Entry Nos.", Rec."Posting Date", Rec."No.");
-                    end;
-#endif
                 end;
         end;
     end;

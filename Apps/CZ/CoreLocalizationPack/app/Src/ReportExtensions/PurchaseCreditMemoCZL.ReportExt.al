@@ -64,7 +64,8 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
                     end else begin
                         AdditionalTempVATAmountLine.GetLine(Number);
                         VALVATBaseCZL := AdditionalTempVATAmountLine."Additional-Currency Base CZL";
-                        VALVATAmountCZL := AdditionalTempVATAmountLine."Additional-Currency Amount CZL";
+                        if AdditionalTempVATAmountLine."VAT Amount" <> 0 then
+                            VALVATAmountCZL := AdditionalTempVATAmountLine."Additional-Currency Amount CZL";
                     end;
                 end;
 
@@ -102,16 +103,15 @@ reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo
                         if ("Purch. Cr. Memo Hdr."."Currency Code" = GeneralLedgerSetup."LCY Code") or ("Purch. Cr. Memo Hdr."."Currency Code" = '') then
                             VALSpecHeaderCZL := '';
                     end else begin
+                        if AdditionalTempVATAmountLine."VAT Amount" = 0 then
+                            AdditionalTempVATAmountLine."Additional-Currency Amount CZL" := 0;
                         if ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 0) and ("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" <> 1) then begin
                             VALSpecHeaderCZL := VATAmountSpecificationTxt + Format(GeneralLedgerSetup."Additional Reporting Currency");
-                            if CalculatedExchRate <> 1 then begin
-                                CurrencyExchangeRate.FindCurrency("Purch. Cr. Memo Hdr."."Posting Date", "Purch. Cr. Memo Hdr."."Currency Code", 1);
-                                CalculatedExchRate := Round(((1 / "Purch. Cr. Memo Hdr."."Currency Factor") / (1 / "Purch. Cr. Memo Hdr."."Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
-                            end else begin
-                                CurrencyExchangeRate."Exchange Rate Amount" := 1;
-                                CalculatedExchRate := Round("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                            end;
-                            VALExchRateCZL := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Cr. Memo Hdr."."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
+                            if ("Purch. Cr. Memo Hdr."."VAT Currency Factor CZL" = 0) or ((AdditionalTempVATAmountLine."VAT Base" + AdditionalTempVATAmountLine."VAT Amount") = 0) then
+                                CalculatedExchRate := Round("Purch. Cr. Memo Hdr."."Additional Currency Factor CZL", 0.00001)
+                            else
+                                CalculatedExchRate := Round((AdditionalTempVATAmountLine."Additional-Currency Base CZL" + AdditionalTempVATAmountLine."Additional-Currency Amount CZL") / (AdditionalTempVATAmountLine."VAT Base" + AdditionalTempVATAmountLine."VAT Amount"), 0.00001);
+                            VALExchRateCZL := StrSubstNo(ExchRateAdditionalLbl, 1, "Purch. Cr. Memo Hdr."."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                         end;
                         if (CalculatedExchRate = 1) or ("Purch. Cr. Memo Hdr."."Currency Code" = GeneralLedgerSetup."Additional Reporting Currency") then
                             VALSpecHeaderCZL := '';

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 5286 "G/L Entry By Trans. SAF-T"
 {
     DataAccessIntent = ReadOnly;

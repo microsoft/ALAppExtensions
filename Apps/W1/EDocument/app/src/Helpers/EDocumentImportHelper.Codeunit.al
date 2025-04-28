@@ -12,6 +12,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
+using System.Reflection;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
@@ -651,6 +652,14 @@ codeunit 6109 "E-Document Import Helper"
         exit('');
     end;
 
+    internal procedure ProcessField(EDocument: Record "E-Document"; RecRef: RecordRef; Field: Record Field; DocumentFieldRef: FieldRef)
+    begin
+        if Field.Type = Field.Type::Decimal then
+            ProcessDecimalField(EDocument, RecRef, Field."No.", DocumentFieldRef.Value())
+        else
+            ProcessField(EDocument, RecRef, Field."No.", DocumentFieldRef.Value());
+    end;
+
     internal procedure ProcessFieldNoValidate(RecRef: RecordRef; FieldNo: Integer; Value: Text[250])
     var
         FieldRef: FieldRef;
@@ -665,6 +674,14 @@ codeunit 6109 "E-Document Import Helper"
     begin
         FieldRef := RecRef.Field(FieldNo);
         SetFieldValue(EDocument, FieldRef, Value);
+    end;
+
+    internal procedure ProcessDecimalField(EDocument: Record "E-Document"; RecRef: RecordRef; FieldNo: Integer; Value: Decimal)
+    var
+        FieldRef: FieldRef;
+    begin
+        FieldRef := RecRef.Field(FieldNo);
+        SetDecimalFieldValue(EDocument, FieldRef, Value);
     end;
 
     internal procedure GetCurrencyRoundingPrecision(CurrencyCode: Code[10]): Decimal
@@ -881,6 +898,17 @@ codeunit 6109 "E-Document Import Helper"
         if StrPos(VatRegNo, UpperCase(CountryRegionCode)) = 1 then
             VatRegNo := DelStr(VatRegNo, 1, StrLen(CountryRegionCode));
         exit(VatRegNo);
+    end;
+
+    local procedure SetDecimalFieldValue(EDocument: Record "E-Document"; var FieldRef: FieldRef; Value: Decimal)
+    var
+        ConfigValidateManagement: Codeunit "Config. Validate Management";
+        ErrorText: Text;
+    begin
+        // ConfigValidateManagement works with XML formats, but we need to adapt it to the regional settings
+        ErrorText := ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, Format(Value, 0, 9), false);
+        if ErrorText <> '' then
+            EDocErrorHelper.LogSimpleErrorMessage(EDocument, ErrorText);
     end;
 
     local procedure SetFieldValue(EDocument: Record "E-Document"; var FieldRef: FieldRef; Value: Text[250])

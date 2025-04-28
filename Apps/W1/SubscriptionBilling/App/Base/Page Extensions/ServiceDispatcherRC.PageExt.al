@@ -18,8 +18,8 @@ pageextension 8081 "Service Dispatcher RC" extends "Service Dispatcher Role Cent
                 ObsoleteState = Pending;
                 ObsoleteTag = '26.0';
                 Visible = false;
-                ApplicationArea = Jobs;
-                Caption = 'Subscription & Recurring Billing';
+                ApplicationArea = All;
+                Caption = 'Subscription Billing';
             }
         }
     }

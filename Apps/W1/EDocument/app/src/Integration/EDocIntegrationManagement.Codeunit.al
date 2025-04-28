@@ -144,13 +144,13 @@ codeunit 6134 "E-Doc. Integration Management"
 
                 EDocumentLog.InsertIntegrationLog(EDocument, EDocService, HttpRequest, HttpResponse);
                 EDocumentProcessing.InsertServiceStatus(EDocument, EDocService, EDocumentServiceStatus);
-                EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocumentServiceStatus);
+                EDocumentProcessing.ModifyEDocumentStatus(EDocument);
 
                 EDocImport.V1_AfterInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse);
             end;
 
-            if (not IsProcessed) and EDocService.IsAutomaticProcessingEnabled() then
-                EDocImport.V1_ProcessImportedDocument(EDocument, EDocService, TempBlob);
+            if (not IsProcessed) then
+                EDocImport.V1_ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Create Journal Lines", EDocService.IsAutomaticProcessingEnabled());
 
             if EDocErrorHelper.HasErrors(EDocument) then begin
                 EDocumentLog.SetFields(EDocument, EDocService);
@@ -180,11 +180,14 @@ codeunit 6134 "E-Doc. Integration Management"
 
         for Index := 1 to DocumentsMetadata.Count() do begin
 
-            EDocument."Entry No" := 0;
+            EDocument.Create(
+                Enum::"E-Document Direction"::Incoming,
+                Enum::"E-Document Type"::None,
+                EDocumentService
+            );
+
             EDocument."Index In Batch" := Index;
-            EDocument.Direction := EDocument.Direction::Incoming;
-            EDocument.Service := EDocumentService.Code;
-            EDocument.Insert();
+            EDocument.Modify();
 
             EDocumentLog.SetFields(EDocument, EDocumentService);
 
@@ -233,7 +236,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocLog := EDocumentLog.InsertLog(ReceiveContext.Status().GetStatus());
 
         EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, ReceiveContext.Status().GetStatus());
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, ReceiveContext.Status().GetStatus());
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
         EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
 
         EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
@@ -536,7 +539,7 @@ codeunit 6134 "E-Doc. Integration Management"
     begin
         EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
         EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
-        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
     end;
 
     local procedure DetermineServiceStatus(SendContext: Codeunit SendContext; IsAsync: Boolean; SendingWasSuccessful: Boolean): Enum "E-Document Service Status"

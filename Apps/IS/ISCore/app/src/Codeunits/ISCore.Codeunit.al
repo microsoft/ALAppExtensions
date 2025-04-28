@@ -29,33 +29,14 @@ codeunit 14600 "IS Core"
         ClassifyTablesToNormal();
     end;
 
-#if not CLEAN24
-    [Obsolete('The table used to enable IS Core App.', '24.0')]
-    [EventSubscriber(ObjectType::Table, Database::"IS Core App Setup", OnAfterValidateEvent, Enabled, false, false)]
-    local procedure OnAfterValidateEnabledISCoreApp(var Rec: Record "IS Core App Setup")
-    begin
-        if Rec.Enabled then
-            Page.Run(PAGE::"IS Core App Setup Wizard");
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales & Receivables Setup", OnAfterValidateEvent, "Electronic Invoicing Reminder", false, false)]
     local procedure OnAfterValidateElectronicInvoicing(var Rec: Record "Sales & Receivables Setup")
     var
-#if not CLEAN24
-        [Obsolete('The table used to enable IS Core App.', '24.0')]
-        ISCoreAppSetup: Record "IS Core App Setup";
-#endif
     begin
-#if not CLEAN24
-        if ISCoreAppSetup.Enabled then begin
-#endif
             if Rec."Electronic Invoicing Reminder" then
                 Message(ReminderMsg);
             Rec.Modify();
-#if not CLEAN24
-        end;
-#endif
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Cust Ledg Entry", OnPreparePaymentExportDataCLEOnBeforeTempPaymentExportDataInsert, '', false, false)]
