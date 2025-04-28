@@ -309,17 +309,11 @@ codeunit 1690 "Bank Deposit-Post"
     local procedure SetBalancingEntryToPostedDepositLines(BankDepositHeader: Record "Bank Deposit Header"; GLEntry: Record "G/L Entry")
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
-#if not CLEAN24
-        GenJournalLine: Record "Gen. Journal Line";
-#endif
     begin
         PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
         PostedBankDepositLine.FindSet();
         repeat
             PostedBankDepositLine."Bank Account Ledger Entry No." := GLEntry."Entry No.";
-#if not CLEAN24
-            OnBeforePostedBankDepositLineModify(PostedBankDepositLine, GenJournalLine);
-#endif
             PostedBankDepositLine.Modify();
         until PostedBankDepositLine.Next() = 0;
     end;
@@ -540,13 +534,6 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Posted Bank Deposit Lines are not modified after created anymore, they are created with the required information. Adapt the logic to use OnBeforePostedBankDepositLineInsert. This procedure is only called when setting the balancing entries to all the posted deposit lines and GenJournalLine is meaningless.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostedBankDepositLineModify(var PostedBankDepositLine: Record "Posted Bank Deposit Line"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnRunOnAfterPostBalancingEntry(var GenJournalLine: Record "Gen. Journal Line")
@@ -563,6 +550,5 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 }
-
 
 

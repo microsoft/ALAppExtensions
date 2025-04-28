@@ -26,8 +26,5 @@ permissionset 14600 "IS Core - Objects"
         codeunit "IS Core Upgrade" = X,
         page "IS IRS Groups" = X,
         page "IS IRS Numbers" = X,
-#if not CLEAN24
-        page "IS Core App Setup Wizard" = X,
-#endif
         page "IS IRS Types" = X;
 }

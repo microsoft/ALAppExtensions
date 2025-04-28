@@ -1,4 +1,14 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.CRM;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Duplicates;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5351 "Create Dup. Search Str. Setup"
 {
     InherentEntitlements = X;

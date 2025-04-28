@@ -4,21 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Journal;
 
-#if not CLEAN24
-using Microsoft.Finance.GeneralLedger.Ledger;
-#endif
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Purchases.Document;
-#if not CLEAN24
-using Microsoft.Purchases.Payables;
-#endif
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
-#if not CLEAN24
-using Microsoft.Sales.Receivables;
-#endif
 using Microsoft.Service.Document;
 
 codeunit 11746 "Gen. Journal Line Handler CZL"
@@ -111,12 +102,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
         GenJournalLine."Registration No. CZL" := PurchaseHeader."Registration No. CZL";
         GenJournalLine."Tax Registration No. CZL" := PurchaseHeader."Tax Registration No. CZL";
-#if not CLEAN24
-#pragma warning disable AL0432
-        if not PurchaseHeader.IsEU3PartyTradeFeatureEnabled() then
-            GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."EU 3-Party Intermed. Role CZL" := PurchaseHeader."EU 3-Party Intermed. Role CZL";
         GenJournalLine."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
         GenJournalLine."Additional Currency Factor CZL" := PurchaseHeader."Additional Currency Factor CZL";
@@ -139,70 +124,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
             GenJournalLine.SetRange("Document Type");
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by GetReceivablesAccNoCZL function in Cust. Ledger Entry table.', '24.0')]
-    procedure GetReceivablesAccNo(CustLedgerEntry: Record "Cust. Ledger Entry"): Code[20]
-    var
-        CustomerPostingGroup: Record "Customer Posting Group";
-        GLAccountNo: Code[20];
-        IsHandled: Boolean;
-    begin
-        IsHandled := false;
-#pragma warning disable AL0432
-        OnBeforeGetReceivablesAccountNo(CustLedgerEntry, GLAccountNo, IsHandled);
-#pragma warning restore AL0432
-        if IsHandled then
-            exit(GLAccountNo);
-
-        CustLedgerEntry.TestField("Customer Posting Group");
-        CustomerPostingGroup.Get(CustLedgerEntry."Customer Posting Group");
-        CustomerPostingGroup.TestField("Receivables Account");
-        exit(CustomerPostingGroup.GetReceivablesAccount());
-    end;
-
-    [Obsolete('Replaced by GetPayablesAccNoCZL function in Vendor Ledger Entry table.', '24.0')]
-    procedure GetPayablesAccNo(VendorLedgerEntry: Record "Vendor Ledger Entry"): Code[20]
-    var
-        VendorPostingGroup: Record "Vendor Posting Group";
-        GLAccountNo: Code[20];
-        IsHandled: Boolean;
-    begin
-        IsHandled := false;
-#pragma warning disable AL0432
-        OnBeforeGetPayablesAccountNo(VendorLedgerEntry, GLAccountNo, IsHandled);
-#pragma warning restore AL0432
-        if IsHandled then
-            exit(GLAccountNo);
-
-        VendorLedgerEntry.TestField("Vendor Posting Group");
-        VendorPostingGroup.Get(VendorLedgerEntry."Vendor Posting Group");
-        VendorPostingGroup.TestField("Payables Account");
-        exit(VendorPostingGroup.GetPayablesAccount());
-    end;
-
-#endif
-#if not CLEAN24
-    internal procedure UpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
-    var
-        IsHandled: Boolean;
-    begin
-#pragma warning disable AL0432
-        OnBeforeUpdateVATAmountOnAfterInitVAT(GenJournalLine, GLEntry, IsHandled);
-#pragma warning restore AL0432
-        if IsHandled then
-            exit;
-
-        if (GenJournalLine."Gen. Posting Type" = GenJournalLine."Gen. Posting Type"::" ") or
-           (GenJournalLine."VAT Posting" <> GenJournalLine."VAT Posting"::"Automatic VAT Entry") or
-           (GenJournalLine."VAT Calculation Type" <> GenJournalLine."VAT Calculation Type"::"Normal VAT") or
-           (GenJournalLine."VAT Difference" <> 0)
-        then
-            exit;
-
-        GLEntry.Amount := GenJournalLine."VAT Base Amount (LCY)";
-        GLEntry."VAT Amount" := GenJournalLine."VAT Amount (LCY)";
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromSalesHeaderPrepmt', '', false, false)]
     local procedure CopyVATDateOnAfterCopyGenJnlLineFromSalesHeaderPrepmt(SalesHeader: Record "Sales Header"; var GenJournalLine: Record "Gen. Journal Line")
@@ -228,23 +149,4 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by OnBeforeGetReceivablesAccountNoCZL function in "Cust. Ledger Entry" table.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeGetReceivablesAccountNo(CustLedgerEntry: Record "Cust. Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
-    begin
-    end;
-
-    [Obsolete('Replaced by OnBeforeGetPayablesAccountNoCZL event in "Vendor Ledger Entry" table.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeGetPayablesAccountNo(VendorLedgerEntry: Record "Vendor Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
-    begin
-    end;
-
-    [Obsolete('Replaced by OnBeforeUpdateVATAmountOnAfterInitVAT event in "Gen.Jnl. Post Line Handler CZL" codeunit.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeUpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
-    begin
-    end;
-#endif
 }

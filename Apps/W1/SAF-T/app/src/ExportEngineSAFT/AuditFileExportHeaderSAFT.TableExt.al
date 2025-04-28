@@ -10,6 +10,7 @@ tableextension 5284 "Audit File Export Header SAF-T" extends "Audit File Export 
     {
         field(5280; "Export Currency Information"; Boolean)
         {
+            Caption = 'Export Currency Information';
             DataClassification = CustomerContent;
             InitValue = true;
         }

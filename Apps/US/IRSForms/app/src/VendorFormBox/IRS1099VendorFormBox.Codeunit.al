@@ -24,4 +24,12 @@ codeunit 10037 "IRS 1099 Vendor Form Box"
         IRS1099PropagateVendorSetup.SetTableView(IRS1099VendorFormBoxSetup);
         IRS1099PropagateVendorSetup.Run();
     end;
+
+    procedure PropagateVendorsFormBoxSetupToExistingEntries(var IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup")
+    var
+        IRS1099PropagateVendorSetup: Report "IRS 1099 Propagate Vend. Setup";
+    begin
+        IRS1099PropagateVendorSetup.SetTableView(IRS1099VendorFormBoxSetup);
+        IRS1099PropagateVendorSetup.Run();
+    end;
 }

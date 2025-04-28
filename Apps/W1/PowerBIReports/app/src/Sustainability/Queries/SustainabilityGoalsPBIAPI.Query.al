@@ -33,6 +33,8 @@ query 37021 "Sustainability Goals - PBI API"
             column(mainGoal; "Main Goal") { }
             column(startDate; "Start Date") { }
             column(endDate; "End Date") { }
+            column(baselineStartDate; "Baseline Start Date") { }
+            column(baselineEndDate; "Baseline End Date") { }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -327,17 +327,10 @@ table 31256 "Payment Order Header CZB"
     var
         PaymentOrderHeader: Record "Payment Order Header CZB";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Payment Order Nos. CZB");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Payment Order Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := BankAccount."Payment Order Nos. CZB";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -346,10 +339,6 @@ table 31256 "Payment Order Header CZB"
                 PaymentOrderHeader.SetLoadFields("No.");
                 while PaymentOrderHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Payment Order Nos. CZB", 0D, "No.");
-            end;
-#endif
         end;
     end;
 
@@ -363,9 +352,6 @@ table 31256 "Payment Order Header CZB"
     var
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         BankingApprovalsMgtCZB: Codeunit "Banking Approvals Mgt. CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         UpdateCurrFactorQst: Label 'Do you want to update the exchange rate?';

@@ -1,5 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Finance;
+
 codeunit 8108 "Create Sub. Bill. GL Account"
 {
     InherentEntitlements = X;

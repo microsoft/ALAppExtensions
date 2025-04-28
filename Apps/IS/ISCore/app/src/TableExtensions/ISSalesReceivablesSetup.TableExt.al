@@ -18,9 +18,6 @@ tableextension 14603 "IS Sales & Receivables Setup" extends "Sales & Receivables
 
     procedure GetLegalStatementLabel(): Text
     begin
-#if not CLEAN24
-        if not ISCoreAppSetup.IsEnabled() then
-#endif
             if "Electronic Invoicing Reminder" then
                 exit(LocalLegalStatementCaptionLbl);
     end;

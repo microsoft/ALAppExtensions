@@ -1,13 +1,10 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.History;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN24
-using Microsoft.Finance.EU3PartyTrade;
-#endif
 using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Credit Memo"
@@ -163,20 +160,6 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
                     Editable = false;
                     ToolTip = 'Specifies the area code used in the invoice';
                 }
-#if not CLEAN24
-                field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'EU 3-Party Trade (Obsolete)';
-                    Editable = false;
-                    ToolTip = 'Specifies whether the document is part of a three-party trade.';
-                    Visible = not EU3PartyTradeFeatureEnabled;
-                    Enabled = not EU3PartyTradeFeatureEnabled;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
-                }
-#endif
                 field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
                 {
                     ApplicationArea = Basic, Suite;
@@ -277,9 +260,6 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 
     trigger OnOpenPage()
     begin
-#if not CLEAN24
-        EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
-#endif
         AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
     end;
 
@@ -290,17 +270,7 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-#if not CLEAN24
-#pragma warning disable AL0432
-        EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         ChangeExchangeRate: Page "Change Exchange Rate";
-#if not CLEAN24
-#pragma warning disable AL0432
-        EU3PartyTradeFeatureEnabled: Boolean;
-#pragma warning restore AL0432
-#endif
         VATLCYCorrectionCZLVisible: Boolean;
         AddCurrencyVisible: Boolean;
 

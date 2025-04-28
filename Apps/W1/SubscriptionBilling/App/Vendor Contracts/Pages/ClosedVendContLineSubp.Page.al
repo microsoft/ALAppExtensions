@@ -55,7 +55,7 @@ page 8089 "Closed Vend. Cont. Line Subp."
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Editable = false;
                     trigger OnAssistEdit()
                     begin
@@ -93,7 +93,7 @@ page 8089 "Closed Vend. Cont. Line Subp."
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
                     Editable = false;
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnDrillDown()
                     begin

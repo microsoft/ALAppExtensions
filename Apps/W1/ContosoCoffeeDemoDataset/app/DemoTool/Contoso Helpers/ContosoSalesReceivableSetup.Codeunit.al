@@ -1,4 +1,17 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Sales.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Warehouse.Structure;
+using Microsoft.Pricing.Calculation;
+using Microsoft.DemoTool;
+
 codeunit 5269 "Contoso Sales Receivable Setup"
 {
     InherentEntitlements = X;

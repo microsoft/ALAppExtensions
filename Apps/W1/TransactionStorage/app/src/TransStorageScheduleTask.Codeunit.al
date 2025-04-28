@@ -1,9 +1,6 @@
 namespace System.DataAdministration;
 
 using Microsoft.Foundation.Company;
-#if not CLEAN24
-using System.Azure.KeyVault;
-#endif
 using System.Environment;
 using System.Telemetry;
 
@@ -24,10 +21,6 @@ codeunit 6207 "Trans. Storage Schedule Task"
         TaskScheduledTxt: Label 'A new task for export has been scheduled.', Locked = true;
         CannotCreateTaskErr: Label 'The task for export cannot be created.', Locked = true;
         TaskDeletedErr: Label 'Export task was removed by user', Locked = true;
-#if not CLEAN24
-        TransactionStorageFeatureEnabledKeyTok: Label 'TransactionStorage-Enabled', Locked = true;
-        CannotGetStorageNameFromKeyVaultErr: Label 'Cannot get storage account name from Azure Key Vault using key %1', Locked = true;
-#endif
 
     internal procedure ScheduleTaskToExport()
     var
@@ -39,10 +32,6 @@ codeunit 6207 "Trans. Storage Schedule Task"
         if IsValidTaskExist() then
             exit;
 
-#if not CLEAN24
-        if not IsFeatureEnabled() then
-            exit;
-#endif
         if not IsSaaSProductionCompany() then
             exit;
 
@@ -141,20 +130,6 @@ codeunit 6207 "Trans. Storage Schedule Task"
 
         exit(true);
     end;
-#if not CLEAN24
-    [NonDebuggable]
-    local procedure IsFeatureEnabled(): Boolean
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-        FeatureEnabledValue: Text;
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(TransactionStorageFeatureEnabledKeyTok, FeatureEnabledValue) then begin
-            FeatureTelemetry.LogError('0000LZM', TransactionStorageTok, '', StrSubstNo(CannotGetStorageNameFromKeyVaultErr, TransactionStorageFeatureEnabledKeyTok));
-            exit(false);
-        end;
-        exit(FeatureEnabledValue = 'True');
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Scheduled Task", 'OnAfterDeleteEvent', '', false, false)]
     local procedure LogTaskDeletionOnAfterDeleteEvent(var Rec: Record "Scheduled Task")

@@ -11,6 +11,7 @@ tableextension 5280 "Company Contact SAF-T" extends "Company Information"
     {
         field(5280; "Contact No. SAF-T"; Code[20])
         {
+            Caption = 'Contact No. SAF-T';
             TableRelation = Employee;
         }
     }

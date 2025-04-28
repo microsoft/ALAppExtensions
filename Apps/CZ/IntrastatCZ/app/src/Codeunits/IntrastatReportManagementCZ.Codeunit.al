@@ -549,52 +549,6 @@ codeunit 31302 IntrastatReportManagementCZ
         end;
     end;
 
-#if not CLEAN24
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertValueEntryLine', '', false, false)]
-    local procedure OnBeforeInsertValueEntryLine(var IntrastatReportLine: Record "Intrastat Report Line"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
-    var
-        IntrastatReportHeader: Record "Intrastat Report Header";
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-        SpecificMovementCZ: Record "Specific Movement CZ";
-        TempSalesHeader: Record "Sales Header" temporary;
-        DocumentType: Enum "Item Ledger Document Type";
-        RoundingDirection: Text[1];
-    begin
-        IntrastatReportHeader.Get(IntrastatReportLine."Intrastat No.");
-        IntrastatReportLine."Partner VAT ID" := '';
-        IntrastatReportLine."Statistics Period" := IntrastatReportHeader."Statistics Period";
-        IntrastatReportLine.Type := ItemLedgerEntry.GetIntrastatReportLineType();
-        IntrastatReportLine.Amount := ItemLedgerEntry.GetIntrastatAmountSign() * IntrastatReportLine.Amount;
-        IntrastatReportLine.Validate(Quantity, ItemLedgerEntry.GetIntrastatQuantitySign() * IntrastatReportLine.Quantity);
-        IntrastatReportLine.Validate("Source Type");
-        if IntrastatReportLine."Specific Movement CZ" = '' then begin
-            SpecificMovementCZ.GetOrCreate(SpecificMovementCZ.GetStandardCode());
-            IntrastatReportLine."Specific Movement CZ" := SpecificMovementCZ.Code;
-        end;
-
-        DocumentType := GetDocumentType(IntrastatReportLine.Date, IntrastatReportLine."Document No.");
-        if GetDocument(DocumentType, IntrastatReportLine."Document No.", TempSalesHeader) and
-           (TempSalesHeader."Currency Code" <> '')
-        then begin
-            RoundingDirection := IntrastatReportSetup.GetRoundingDirectionCZ();
-            IntrastatReportLine.Amount :=
-                Round(
-                    CalculateExchangeAmount(
-                        IntrastatReportLine.Amount,
-                        TempSalesHeader."Currency Factor",
-                        TempSalesHeader."VAT Currency Factor CZL"),
-                    1, RoundingDirection);
-            IntrastatReportLine."Indirect Cost" :=
-                Round(
-                    CalculateExchangeAmount(
-                        IntrastatReportLine."Indirect Cost",
-                        TempSalesHeader."Currency Factor",
-                        TempSalesHeader."VAT Currency Factor CZL"),
-                    1, RoundingDirection);
-        end;
-    end;
-#endif
     procedure GetDocument(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20]; var SalesHeader: Record "Sales Header") IsDocumentExist: Boolean
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";

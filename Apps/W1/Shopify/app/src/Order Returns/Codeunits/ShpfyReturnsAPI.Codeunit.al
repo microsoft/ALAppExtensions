@@ -7,6 +7,8 @@ codeunit 30250 "Shpfy Returns API"
         JsonHelper: Codeunit "Shpfy Json Helper";
         ReturnEnumConvertor: Codeunit "Shpfy Return Enum Convertor";
         Parameters: Dictionary of [Text, Text];
+        CategoryTok: Label 'Shopify Integration', Locked = true;
+        OrderLineMultipleLocMsg: Label 'Order line %1 has multiple locations %2 and %3', Locked = true;
 
     internal procedure GetReturns(OrderId: BigInteger; JReturns: JsonObject)
     var
@@ -143,7 +145,7 @@ codeunit 30250 "Shpfy Returns API"
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.reverseFulfillmentOrder.lineItems.pageInfo.hasNextPage');
     end;
 
-    local procedure CollectLocationsFromLineDispositions(JLine: JsonToken; ReturnLocations: Dictionary of [BigInteger, BigInteger])
+    local procedure CollectLocationsFromLineDispositions(JLine: JsonToken; var ReturnLocations: Dictionary of [BigInteger, BigInteger])
     var
         OrderLineId: BigInteger;
         LocationId: BigInteger;
@@ -163,6 +165,15 @@ codeunit 30250 "Shpfy Returns API"
         foreach Disposition in Dispositions do
             if LocationId <> JsonHelper.GetValueAsBigInteger(Disposition, 'location.legacyResourceId') then
                 exit;
+
+        if ReturnLocations.ContainsKey(OrderLineId) then begin
+            if LocationId <> ReturnLocations.Get(OrderLineId) then begin
+                Session.LogMessage('0000P74', StrSubstNo(OrderLineMultipleLocMsg, OrderLineId, LocationId, ReturnLocations.Get(OrderLineId)), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                // If the location is different, we cannot determine the return location for the line (same item from different return lines stocked to different locations)
+                ReturnLocations.Remove(OrderLineId);
+            end;
+            exit;
+        end;
 
         ReturnLocations.Add(OrderLineId, LocationId);
     end;

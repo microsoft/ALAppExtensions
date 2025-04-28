@@ -1,4 +1,15 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.Inventory.Journal;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+
 codeunit 5110 "Create Svc Item Jnl Lines"
 {
     InherentEntitlements = X;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -45,28 +45,6 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default original document VAT date type for purchase document (posting date, document date, VAT date or blank).';
                 }
-#if not CLEAN24
-                field("Allow VAT Posting From CZL"; Rec."Allow VAT Posting From CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Allow VAT Posting From (Obsolete)';
-                    ToolTip = 'Specifies the earliest VAT date on which posting to the company is allowed.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'Replaced by "Allow VAT Date From" field from "VAT Setup" table.';
-                    Visible = false;
-                }
-                field("Allow VAT Posting To CZL"; Rec."Allow VAT Posting To CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Allow VAT Posting To (Obsolete)';
-                    ToolTip = 'Specifies the latest VAT date on which posting to the company is allowed.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '24.0';
-                    ObsoleteReason = 'Replaced by "Allow VAT Date To" field from "VAT Setup" table.';
-                    Visible = false;
-                }
-#endif
                 field("Allow VAT Date From CZL"; VATSetup."Allow VAT Date From")
                 {
                     ApplicationArea = VAT;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -6,9 +6,6 @@ namespace Microsoft.Sales.Receivables;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
-#if not CLEAN24
-using Microsoft.Finance.GeneralLedger.Journal;
-#endif
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Sales.Customer;
 
@@ -41,8 +38,8 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
         field(11720; "Bank Account Code CZL"; Code[20])
         {
             Caption = 'Bank Account Code';
-            TableRelation = if ("Document Type" = filter(Payment | Invoice | "Finance Charge Memo" | Reminder)) "Bank Account" else
-            if ("Document Type" = filter("Credit Memo" | Refund)) "Customer Bank Account".Code where("Customer No." = field("Customer No."));
+            TableRelation = if ("Document Type" = filter(Refund | Invoice | "Finance Charge Memo" | Reminder)) "Bank Account" else
+            if ("Document Type" = filter("Credit Memo" | Payment)) "Customer Bank Account".Code where("Customer No." = field("Customer No."));
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -55,7 +52,7 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
                     exit;
                 end;
                 case "Document Type" of
-                    "Document Type"::Payment, "Document Type"::"Finance Charge Memo",
+                    "Document Type"::Refund, "Document Type"::"Finance Charge Memo",
                     "Document Type"::Invoice, "Document Type"::Reminder:
                         begin
                             BankAccount.Get("Bank Account Code CZL");
@@ -66,7 +63,7 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
                               BankAccount.IBAN,
                               BankAccount."SWIFT Code");
                         end;
-                    "Document Type"::"Credit Memo", "Document Type"::Refund:
+                    "Document Type"::"Credit Memo", "Document Type"::Payment:
                         begin
                             TestField("Customer No.");
                             CustomerBankAccount.Get("Customer No.", "Bank Account Code CZL");
@@ -165,11 +162,7 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
 
     procedure GetReceivablesAccNoCZL(): Code[20]
     var
-#if not CLEAN24
-        GenJournalLineHandler: Codeunit "Gen. Journal Line Handler CZL";
-#else
         CustomerPostingGroup: Record "Customer Posting Group";
-#endif
         GLAccountNo: Code[20];
         IsHandled: Boolean;
     begin
@@ -178,16 +171,10 @@ tableextension 11720 "Cust. Ledger Entry CZL" extends "Cust. Ledger Entry"
         if IsHandled then
             exit(GLAccountNo);
 
-#if not CLEAN24
-#pragma warning disable AL0432
-        exit(GenJournalLineHandler.GetReceivablesAccNo(Rec));
-#pragma warning restore AL0432
-#else
         TestField("Customer Posting Group");
         CustomerPostingGroup.Get("Customer Posting Group");
         CustomerPostingGroup.TestField("Receivables Account");
         exit(CustomerPostingGroup.GetReceivablesAccount());
-#endif
     end;
 
     [IntegrationEvent(false, false)]

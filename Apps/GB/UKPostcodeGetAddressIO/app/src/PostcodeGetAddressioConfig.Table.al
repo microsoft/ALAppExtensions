@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -22,20 +22,6 @@ table 9092 "Postcode GetAddress.io Config"
         key(Key1; "Primary Key") { }
     }
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Use GetAPIKeyAsSecret() instead.', '24.0')]
-    procedure GetAPIKey(APIKeyGUID: Guid): Text
-    var
-        APIPassword: SecretText;
-    begin
-        if IsNullGuid(APIKeyGUID) or not IsolatedStorage.Get(APIKeyGUID, Datascope::Company, APIPassword) then
-            exit('');
-
-        exit(APIPassword.Unwrap());
-    end;
-#endif
 
     [Scope('OnPrem')]
     procedure GetAPIPasswordAsSecret(APIKeyGUID: Guid): SecretText
@@ -48,17 +34,6 @@ table 9092 "Postcode GetAddress.io Config"
         exit(APIPassword);
     end;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Use SaveAPIKeyAsSecret() instead.', '24.0')]
-    procedure SaveAPIKey(var APIKeyGUID: Guid; APIKeyValue: Text[250])
-    var
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-    begin
-        SaveAPIKeyAsSecret(APIKeyGUID, APIKeyValue);
-    end;
-#endif
 
     [Scope('OnPrem')]
     procedure SaveAPIKeyAsSecret(var APIKeyGUID: Guid; APIKeyValue: SecretText)
@@ -85,4 +60,3 @@ table 9092 "Postcode GetAddress.io Config"
     end;
 
 }
-

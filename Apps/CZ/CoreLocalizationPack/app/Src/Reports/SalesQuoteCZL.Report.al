@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -235,14 +235,6 @@ report 31186 "Sales Quote CZL"
             column(QuoteValidUntilDate_SalesHeader; Format("Quote Valid Until Date"))
             {
             }
-#if not CLEAN24
-            column(QuoteValidUntilDateFormat_SalesHeader; Format("Quote Valid Until Date"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore. Use the field QuoteValidUntilDate_SalesHeader instead.';
-            }
-#endif
             column(DocFooterText; DocFooterText)
             {
             }

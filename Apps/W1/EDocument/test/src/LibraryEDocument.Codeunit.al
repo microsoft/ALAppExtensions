@@ -206,6 +206,18 @@ codeunit 139629 "Library - E-Document"
         EDocumentServiceStatus.Insert();
     end;
 
+
+    procedure CreateInboundPEPPOLDocumentToState(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; FileName: Text; EDocImportParams: Record "E-Doc. Import Parameters")
+    var
+        EDocIMport: Codeunit "E-Doc. Import";
+        InStream: InStream;
+    begin
+        NavApp.GetResource(FileName, InStream, TextEncoding::UTF8);
+        EDocIMport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, 'TestFile', InStream);
+        EDocIMport.ProcessIncomingEDocument(EDocument, EDocImportParams);
+    end;
+
+
     procedure CreateDocSendingProfile(var DocumentSendingProfile: Record "Document Sending Profile")
     begin
         DocumentSendingProfile.Init();

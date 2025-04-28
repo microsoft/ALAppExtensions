@@ -648,7 +648,11 @@ report 31018 "Sales - Invoice with Adv. CZZ"
 
                 trigger OnPreDataItem()
                 begin
+#if not CLEAN27
                     NoOfLoops := Abs(NoOfCop) + Customer."Invoice Copies" + 1;
+#else
+                    NoOfLoops := Abs(NoOfCop) + 1;
+#endif
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 

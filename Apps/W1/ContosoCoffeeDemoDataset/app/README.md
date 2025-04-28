@@ -28,7 +28,7 @@ Data in a demo data module is divided into four distinct layers:
    - Posting open documents to facilitate reporting demonstrations.
 ## 3. Module Dependency:
 To speed up productivity when building demo data modules, the tool is designed to support dependcies between modules. below is a graph of all current modules and their dependencies.
-![ContosoDemoDataDependency.png](/.docs/DemoDataDependencies.png)
+![ContosoDemoDataDependency.png](./.docs/DemoDataDependencies.png)
 ## 4. Speed up productivity:
 ### 1. Helpers Codeunit
 Added helpers codeunit under the tool that makes it easy to insert/update record for commonly used tables.
@@ -43,13 +43,14 @@ The tool is a 1st party app, which means it is open source and partner can both 
 # Major changes:
 ## Creating new company wizard:
 This change required breaking changes to the company creation wizard. Previously, the wizard loaded the demo data packages and imported/applied them. With the new tool, users can select the specific modules they need to demo in the new company, and only those modules and their dependencies will be executed.
-![CreateCompanyWizard1.png](/.docs/CreateCompanyWizard1.png)
-![CreateCompanyWizard2.png](/.docs/CreateCompanyWizard2.png)
+
+![CreateCompanyWizard1.png](./.docs/CreateCompanyWizard1.png)
+![CreateCompanyWizard2.png](./.docs/CreateCompanyWizard2.png)
 
 ## Breaking changes:
 
 
 # Getting started:
-You can find a step-by-step guide here [Getting Started](/Getting-Started.md)
+You can find a step-by-step guide here [Getting Started](./Getting-Started.md)
 # Coding patterns:
-You can find all the coding patterns here [CodingPatterns](/Coding-Patterns.md)
+You can find all the coding patterns here [CodingPatterns](./Coding-Patterns.md)

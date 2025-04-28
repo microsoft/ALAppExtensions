@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -38,10 +38,6 @@ codeunit 11742 "VAT Date Handler CZL"
                   tabledata "Vendor Ledger Entry" = m;
 
     var
-#if not CLEAN24
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        UserSetup: Record "User Setup";
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 
     [EventSubscriber(ObjectType::Table, Database::"G/L Entry", 'OnAfterCopyGLEntryFromGenJnlLine', '', false, false)]
@@ -106,41 +102,6 @@ codeunit 11742 "VAT Date Handler CZL"
         else
             Error(VATPeriodNotExistErr, VATPeriodCZL.TableCaption(), VATDate);
     end;
-#if not CLEAN24
-
-    [Obsolete('Replaced by IsVATDateInAllowedPeriod function in User Setup Management codeunit', '24.0')]
-    procedure VATDateNotAllowed(VATDate: Date): Boolean
-    var
-        SetupRecordID: RecordId;
-    begin
-#pragma warning disable AL0432
-        exit(IsVATDateCZLNotAllowed(VATDate, SetupRecordID));
-#pragma warning restore AL0432
-    end;
-
-    [Obsolete('Replaced by IsVATDateInAllowedPeriod function in User Setup Management codeunit', '24.0')]
-    procedure IsVATDateCZLNotAllowed(VATDate: Date; var SetupRecordID: RecordId): Boolean
-    var
-        VATAllowPostingFrom: Date;
-        VATAllowPostingTo: Date;
-    begin
-        if UserId <> '' then
-            if UserSetup.Get(UserId) then begin
-                VATAllowPostingFrom := UserSetup."Allow VAT Posting From CZL";
-                VATAllowPostingTo := UserSetup."Allow VAT Posting To CZL";
-                SetupRecordID := UserSetup.RecordId;
-            end;
-        if (VATAllowPostingFrom = 0D) and (VATAllowPostingTo = 0D) then begin
-            GeneralLedgerSetup.Get();
-            VATAllowPostingFrom := GeneralLedgerSetup."Allow VAT Posting From CZL";
-            VATAllowPostingTo := GeneralLedgerSetup."Allow VAT Posting To CZL";
-            SetupRecordID := GeneralLedgerSetup.RecordId;
-        end;
-        if VATAllowPostingTo = 0D then
-            VATAllowPostingTo := DMY2Date(31, 12, 9999);
-        exit((VATDate < VATAllowPostingFrom) or (VATDate > VATAllowPostingTo));
-    end;
-#endif
 
     internal procedure IsVATDateInAllowedPeriod(VATDate: Date; var SetupRecordID: RecordID; var FieldNo: Integer): Boolean
     var

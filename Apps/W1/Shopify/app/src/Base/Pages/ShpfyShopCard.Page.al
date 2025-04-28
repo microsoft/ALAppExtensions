@@ -363,17 +363,6 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether Shopify can update customers when synchronizing from Shopify.';
                 }
-#if not CLEAN24
-                field(ExportCustomerToShopify; Rec."Export Customer To Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies if you want to export all customers with a valid e-mail address from D365BC to Shopify.';
-                    Visible = false;
-                    ObsoleteReason = 'Replaced with action Add Customers in Shopify Customers page.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '24.0';
-                }
-#endif
                 field(CanUpdateShopifyCustomer; Rec."Can Update Shopify Customer")
                 {
                     ApplicationArea = All;
@@ -529,23 +518,6 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies if Business Central document no. is synchronized to Shopify as order attribute.';
                     Enabled = Rec."Allow Outgoing Requests" or Rec."Order Attributes To Shopify";
                 }
-#if not CLEAN24
-                field(ReplaceOrderAttributeValue; Rec."Replace Order Attribute Value")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Feature Update: Enable Longer Order Attribute Value Length';
-                    ToolTip = 'Specifies if the connector stores order attribute values in a new field with a length of 2048 characters. Starting from version 27.0, this new field will be the only option available. However, until version 27.0 administrators can choose to continue using the old field if needed.';
-                    Enabled = not ReplaceOrderAttributeValueDisabled;
-                    ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '24.0';
-
-                    trigger OnValidate()
-                    begin
-                        CurrPage.Update(true);
-                    end;
-                }
-#endif
                 field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
                 {
                     ApplicationArea = All;
@@ -1197,9 +1169,6 @@ page 30101 "Shpfy Shop Card"
         IsReturnRefundsVisible: Boolean;
         ApiVersion: Text;
         ApiVersionExpiryDate: Date;
-#if not CLEAN24
-        ReplaceOrderAttributeValueDisabled: Boolean;
-#endif
         ScopeChangeConfirmLbl: Label 'The access scope of shop %1 for the Shopify connector has changed. Do you want to request a new access token?', Comment = '%1 - Shop Code';
 
     trigger OnOpenPage()
@@ -1232,9 +1201,6 @@ page 30101 "Shpfy Shop Card"
     trigger OnAfterGetCurrRecord()
     begin
         CheckReturnRefundsVisible();
-#if not CLEAN24
-        CheckReplaceOrderAttributeValueDisabled();
-#endif
     end;
 
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
@@ -1255,24 +1221,4 @@ page 30101 "Shpfy Shop Card"
         IsReturnRefundsVisible := Rec."Return and Refund Process" <> "Shpfy ReturnRefund ProcessType"::" ";
     end;
 
-#if not CLEAN24
-    local procedure CheckReplaceOrderAttributeValueDisabled()
-    var
-        OrderHeader: Record "Shpfy Order Header";
-        OrderAttribute: Record "Shpfy Order Attribute";
-    begin
-        if Rec."Replace Order Attribute Value" then begin
-            OrderHeader.SetRange("Shop Code", Rec.Code);
-            if OrderHeader.FindSet() then
-                repeat
-                    OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
-                    if not OrderAttribute.IsEmpty() then begin
-                        ReplaceOrderAttributeValueDisabled := true;
-                        exit;
-                    end;
-                until OrderHeader.Next() = 0;
-        end;
-    end;
-#endif
 }
-

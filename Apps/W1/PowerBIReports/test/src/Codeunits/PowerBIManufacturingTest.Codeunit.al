@@ -74,12 +74,13 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for Inventory Adjmt. entries is made
         TargetURL := PowerBIAPIRequests.GetEndpointURL(PowerBIAPIEndpoints::"Inv. Adj. Ent Order");
         UriBuilder.Init(TargetURL);
+        UriBuilder.AddODataQueryParameter('$filter', 'itemNo eq ''' + Item."No." + '''');
         UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the Inventory Adjmt. entries information
         Assert.AreNotEqual('', Response, ResponseEmptyErr);
-        InventoryAdjmtEntry.SetFilter(InventoryAdjmtEntry."Completely Invoiced", 'true');
+        InventoryAdjmtEntry.SetFilter(InventoryAdjmtEntry."Item No.", Item."No.");
         if InventoryAdjmtEntry.FindSet() then begin
             Index := 0;
             repeat
@@ -104,6 +105,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(Format(InventoryAdjmtEntry."Single-Level Cap. Ovhd Cost" / 1.0, 0, 9), JsonMgt.GetValue('singleLevelCapOvhdCost'), 'Inventory Adjustment entry singleLevelCapOvhdCost does not match.');
         Assert.AreEqual(Format(InventoryAdjmtEntry."Single-Level Mfg. Ovhd Cost" / 1.0, 0, 9), JsonMgt.GetValue('singleLevelMfgOvhdCost'), 'Inventory Adjustment entry singleLevelMfgOvhdCost does not match.');
         Assert.AreEqual(InventoryAdjmtEntry."Is Finished" ? 'True' : 'False', JsonMgt.GetValue('iSFinished'), 'Inventory Adjustment entry iSFinished does not match.');
+        Assert.AreEqual(InventoryAdjmtEntry."Completely Invoiced" ? 'True' : 'False', JsonMgt.GetValue('completelyInvoiced'), 'Inventory Adjustmentr entry completely invoiced does not match.');
+        Assert.AreEqual(Format(InventoryAdjmtEntry."Indirect Cost %" / 1.0, 0, 9), JsonMgt.GetValue('indirectCostPercent'), 'Inventory Adjustment entry indirect cost percentage does not match.');
+        Assert.AreEqual(Format(InventoryAdjmtEntry."Overhead Rate" / 1.0, 0, 9), JsonMgt.GetValue('overheadRate'), 'Inventory Adjustment entry overhead rate does not match.');
     end;
 
 
@@ -152,6 +156,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(Format(CalendarEntry.Date, 0, 9), JsonMgt.GetValue('date'), 'Calendar entry date does not match.');
         Assert.AreEqual(Format(CalendarEntry."Capacity (Effective)" / 1.0, 0, 9), JsonMgt.GetValue('capacityEffective'), 'Calendar entry capacity effective does not match.');
         Assert.AreEqual(Format(CalendarEntry."Capacity (Total)" / 1.0, 0, 9), JsonMgt.GetValue('capacityTotal'), 'Calendar entry capacity total does not match.');
+        Assert.AreEqual(CalendarEntry."Work Center No.", JsonMgt.GetValue('workCenterNo'), 'Work center no. does not match.');
     end;
 
     [Test]
@@ -237,6 +242,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(WorkCenter.Name, JsonMgt.GetValue('name'), 'Work center name does not match.');
         Assert.AreEqual(WorkCenter."Work Center Group Code", JsonMgt.GetValue('workCenterGroupCode'), 'Work center work center group code does not match.');
         Assert.AreEqual(WorkCenter."Subcontractor No.", JsonMgt.GetValue('subcontractorNo'), 'Subcontractor no. does not match.');
+        Assert.AreEqual(WorkCenter."Unit of Measure Code", JsonMgt.GetValue('unitOfMeasureCode'), 'Unit of measure code does not match.');
         WorkCenterGroup.Get(WorkCenter."Work Center Group Code");
         Assert.AreEqual(WorkCenterGroup.Name, JsonMgt.GetValue('workCenterGroupName'), 'Work center work center group name does not match.');
     end;
@@ -310,6 +316,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(Format(ProdOrderLine."Scrap %" / 1.0, 0, 9), JsonMgt.GetValue('scrapPrc'), 'Scrap % did not match.');
         Assert.AreEqual(Format(ProdOrderLine."Overhead Rate" / 1.0, 0, 9), JsonMgt.GetValue('overheadRate'), 'Overhead rate did not match.');
         Assert.AreEqual(Format(ProdOrderLine."Planning Level Code", 0, 9), JsonMgt.GetValue('planningLevelCode'), 'PLanning level code did not match.');
+        Assert.AreEqual(Format(ProdOrderLine."Indirect Cost %", 0, 9), JsonMgt.GetValue('indirectCostPercent'), 'Indirect cost percentage did not match.');
         Location.Get(ProdOrderLine."Location Code");
         Assert.AreEqual(Location.Name, JsonMgt.GetValue('locationName'), 'Location name did not match.');
     end;
@@ -462,6 +469,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(Format(ProdOrderRoutingLine."Run Time" / 1.0, 0, 9), JsonMgt.GetValue('runTime'), 'Run time did not match.');
         Assert.AreEqual(Format(ProdOrderRoutingLine."Wait Time" / 1.0, 0, 9), JsonMgt.GetValue('waitTime'), 'Wait time did not match.');
         Assert.AreEqual(Format(ProdOrderRoutingLine."Move Time" / 1.0, 0, 9), JsonMgt.GetValue('moveTime'), 'Move time did not match.');
+        Assert.AreEqual(Format(ProdOrderRoutingLine."Starting Date-Time"), JsonMgt.GetValue('startingDateTime'), 'Starting date-time did not match.');
+        Assert.AreEqual(Format(ProdOrderRoutingLine."Ending Date-Time"), JsonMgt.GetValue('endingDateTime'), 'Ending date-time did not match.');
     end;
 
     [Test]
@@ -640,6 +649,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         JsonMgt.InitializeObject(Response);
         Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.orderNo == ''' + Format(CapacityLedgerEntry."Order No.") + ''')]'), 'Capacity ledger entry not found.');
+        Assert.AreEqual(Format(CapacityLedgerEntry."Entry No."), JsonMgt.GetValue('entryNo'), 'Entry no. did not match.');
         Assert.AreEqual(Format(CapacityLedgerEntry."Order Type"), JsonMgt.GetValue('orderType'), 'Order type did not match.');
         Assert.AreEqual(CapacityLedgerEntry."Order No.", JsonMgt.GetValue('orderNo'), 'Order no. did not match.');
         Assert.AreEqual(Format(CapacityLedgerEntry."Order Line No."), JsonMgt.GetValue('orderLineNo'), 'Order line no. did not match.');
@@ -662,8 +672,12 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(CapacityLedgerEntry."Work Center Group Code", JsonMgt.GetValue('workCenterGroupCode'), 'Work center group code did not match.');
         Assert.AreEqual(CapacityLedgerEntry."Scrap Code", JsonMgt.GetValue('scrapCode'), 'Scrap code did not match.');
         Assert.AreEqual(Format(CapacityLedgerEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID did not match.');
-        Assert.AreEqual(CapacityLedgerEntry."Work Center No.", JsonMgt.GetValue('workCenterNo'), 'Work center no did not match');
-        Assert.AreEqual(CapacityLedgerEntry."Work Shift Code", JsonMgt.GetValue('workShiftCode'), 'Work shift code did not match');
+        Assert.AreEqual(CapacityLedgerEntry."Work Center No.", JsonMgt.GetValue('workCenterNo'), 'Work center no did not match.');
+        Assert.AreEqual(CapacityLedgerEntry."Work Shift Code", JsonMgt.GetValue('workShiftCode'), 'Work shift code did not match.');
+        Assert.AreEqual(CapacityLedgerEntry.Subcontracting ? 'True' : 'False', JsonMgt.GetValue('subcontracting'), 'Subcontracting did not match');
+        Assert.AreEqual(Format(CapacityLedgerEntry."Qty. per Cap. Unit of Measure", 0, 9), JsonMgt.GetValue('qtyPerCapUnitOfMeasure'), 'Quanity per capacity unit of measure did not match.');
+        Assert.AreEqual(CapacityLedgerEntry."Cap. Unit of Measure Code", JsonMgt.GetValue('capUnitOfMeasureCode'), 'Capacity unit of measure code did not match.');
+        Assert.AreEqual(Format(CapacityLedgerEntry."Qty. per Unit of Measure", 0, 9), JsonMgt.GetValue('qtyPerUnitOfMeasure'), 'Quantity per unit of measure did not match.');
     end;
 
     [Test]
@@ -737,6 +751,9 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Assert.AreEqual(Format(ProdOrderCapNeeded."Work Center No."), JsonMgt.GetValue('workCenterNo'), 'Work Center No. did not match.');
         Assert.AreEqual(Format(ProdOrderCapNeeded."Work Center Group Code"), JsonMgt.GetValue('workCenterGroupCode'), 'Work Center Group Code did not match.');
         Assert.AreEqual(Format(ProdOrderCapNeeded.Date, 0, 9), JsonMgt.GetValue('date'), 'Date did not match.');
+        Assert.AreEqual(ProdOrderCapNeeded."No.", JsonMgt.GetValue('no'), 'No. did not match.');
+        Assert.AreEqual(Format(ProdOrderCapNeeded.Type), JsonMgt.GetValue('type'), 'Type did not match.');
+        Assert.AreEqual(Format(ProdOrderCapNeeded."Needed Time (ms)" / 1.0, 0, 9), JsonMgt.GetValue('neededTimeMs'), 'Needed Time (ms) did not match.');
         Assert.AreEqual(Format(ProdOrderCapNeeded."Needed Time" / 1.0, 0, 9), JsonMgt.GetValue('neededTime'), 'Needed time did not match.');
     end;
 

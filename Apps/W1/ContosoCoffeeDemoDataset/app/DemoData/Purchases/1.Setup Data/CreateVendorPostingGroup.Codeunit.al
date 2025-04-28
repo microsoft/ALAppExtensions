@@ -1,4 +1,13 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Purchases;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Finance;
+
 codeunit 5568 "Create Vendor Posting Group"
 {
     InherentEntitlements = X;
