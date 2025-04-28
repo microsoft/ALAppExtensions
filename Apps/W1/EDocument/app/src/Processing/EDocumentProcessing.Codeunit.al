@@ -340,23 +340,16 @@ codeunit 6108 "E-Document Processing"
     /// <param name="LocationCode" ></param>
     /// <returns>Boolean value = True if document sending profile was found</returns>
     internal procedure GetDocSendingProfileForTransferShipment(var DocumentSendingProfile: Record "Document Sending Profile"; LocationCode: Code[20]): Boolean
-    begin
-        DocumentSendingProfile := GetDocSendingProfileForTransferShipment(LocationCode);
-        if not DocumentSendingProfile.IsEmpty() then
-            exit(true);
-    end;
-
-    local procedure GetDocSendingProfileForTransferShipment(LocationCode: Code[20]) DocumentSendingProfile: Record "Document Sending Profile"
     var
         Location: Record "Location";
     begin
         if Location.Get(LocationCode) then
             if DocumentSendingProfile.Get(Location."Tranfer Doc. Sending Profile") then
-                exit(DocumentSendingProfile);
+                exit(true);
 
         DocumentSendingProfile.SetRange(Default, true);
         if DocumentSendingProfile.FindFirst() then
-            exit(DocumentSendingProfile);
+            exit(true);
     end;
 
     local procedure GetPostedRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean

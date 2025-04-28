@@ -1942,13 +1942,16 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryWarehouse.CreateLocation(FromLocation);
         LibraryWarehouse.CreateLocation(ToLocation);
         LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
         LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroup);
         LibraryInventory.CreateInventoryPostingSetup(InventoryPostingSetupFromLocation, FromLocation.Code, InventoryPostingGroup.Code);
         LibraryInventory.UpdateInventoryPostingSetup(FromLocation, InventoryPostingGroup.Code);
+
         InventoryPostingSetupFromLocation.Get(FromLocation.Code, InventoryPostingGroup.Code);
         InventoryPostingSetupToLocation := InventoryPostingSetupFromLocation;
         InventoryPostingSetupToLocation."Location Code" := ToLocation.Code;
         InventoryPostingSetupToLocation.Insert(false);
+
         InventoryPostingSetupInTransitLocation := InventoryPostingSetupFromLocation;
         InventoryPostingSetupInTransitLocation."Location Code" := InTransitLocation.Code;
         InventoryPostingSetupInTransitLocation.Insert(false);
