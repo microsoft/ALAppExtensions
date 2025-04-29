@@ -1764,7 +1764,7 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         // [FEATURE] [E-Document] [Processing] 
         // [SCENARIO] Check that E-Document is created when posting transfer shipment
-        Initialize(Enum::"Service Integration"::"Mock");
+        this.Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] E-Document service with format peppol
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
