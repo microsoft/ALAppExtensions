@@ -57,4 +57,28 @@ codeunit 139639 "Shpfy Catalog Initialize"
         JResult.ReadFrom(Format(ResultTxt).Replace('{{ProductId}}', Format(ProductId)));
         exit(JResult);
     end;
+
+    internal procedure MarketCatalogResponse(): JsonObject
+    var
+        JResult: JsonObject;
+        ResultTxt: Text;
+        ResInStream: InStream;
+    begin
+        NavApp.GetResource('Catalogs/MarketCatalogResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(ResultTxt);
+        JResult.ReadFrom(ResultTxt);
+        exit(JResult);
+    end;
+
+    internal procedure MarketCatalogPriceResponse(ProductId: Integer): JsonObject
+    var
+        JResult: JsonObject;
+        ResultTxt: Text;
+        ResInStream: InStream;
+    begin
+        NavApp.GetResource('Catalogs/MarketCatalogPriceResponse.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(ResultTxt);
+        JResult.ReadFrom(Format(ResultTxt).Replace('{{ProductId}}', Format(ProductId)));
+        exit(JResult);
+    end;
 }
