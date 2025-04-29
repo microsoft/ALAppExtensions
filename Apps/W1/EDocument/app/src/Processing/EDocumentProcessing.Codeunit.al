@@ -344,7 +344,7 @@ codeunit 6108 "E-Document Processing"
     /// Get the document sending profile for transfer shipment.
     /// </summary>
     /// <param name="DocumentSendingProfile">Return value: Document sending profile used for provided location code.</param>
-    /// <param name="LocationCode" >Transfer To location code.</param>
+    /// <param name="LocationCode">Transfer To location code.</param>
     /// <returns>True if document sending profile for Transfer Shipment was found.</returns>
     internal procedure GetDocSendingProfileForTransferShipment(var DocumentSendingProfile: Record "Document Sending Profile"; LocationCode: Code[20]): Boolean
     var
