@@ -115,8 +115,10 @@ table 4580 "Ext. SharePoint Account"
     begin
         if not IsNullGuid(Rec."Certificate Key") then begin
             TryDeleteIsolatedStorageValue(Rec."Certificate Key");
-            TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
             Clear(Rec."Certificate Key");
+        end;
+        if not IsNullGuid(Rec."Certificate Password Key") then begin
+            TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
             Clear(Rec."Certificate Password Key");
         end;
     end;
@@ -180,5 +182,26 @@ table 4580 "Ext. SharePoint Account"
     begin
         if not IsolatedStorage.Get(Format(StorageKey), DataScope::Company, Value) then
             Error(ErrorMessage);
+    end;
+
+    /// <summary>
+    /// Opens a file dialog and uploads a certificate file, converting it to base64 format.
+    /// </summary>
+    /// <param name="ErrorOnFailure">Specifies whether to throw an error if the upload fails.</param>
+    internal procedure UploadCertificateFile() CertificateBase64: SecretText
+    var
+        Base64Convert: Codeunit System.Text."Base64 Convert";
+        UploadResult: Boolean;
+        InStr: InStream;
+        CertificateFilterTxt: Label 'Certificate Files (*.pfx;*.cer;*.crt)|*.pfx;*.cer;*.crt|All Files (*.*)|*.*';
+        FileNotUploadedErr: Label 'Certificate file was not uploaded.';
+    begin
+        UploadResult := UploadIntoStream(CertificateFilterTxt, InStr);
+
+        if not UploadResult then
+            Error(FileNotUploadedErr);
+
+        CertificateBase64 := Base64Convert.ToBase64(InStr);
+        exit(CertificateBase64);
     end;
 }

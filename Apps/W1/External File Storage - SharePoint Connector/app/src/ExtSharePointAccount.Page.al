@@ -69,15 +69,17 @@ page 4580 "Ext. SharePoint Account"
                     ShowCaption = false;
                     Visible = CertificateVisible;
 
-                    field(CertificateField; Certificate)
+                    field(CertificateUploadStatus; CertificateStatusText)
                     {
-                        Caption = 'Certificate (Base64-encoded)';
-                        ExtendedDatatype = Masked;
-                        ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in Microsoft Entra ID. This provides a more secure authentication method than Client Secret.';
+                        Caption = 'Certificate';
+                        Editable = false;
+                        ToolTip = 'Specifies the certificate file used for authentication. Click here to upload a new certificate file (.pfx, .cer, or .crt).';
 
-                        trigger OnValidate()
+                        trigger OnDrillDown()
                         begin
+                            Certificate := Rec.UploadCertificateFile();
                             Rec.SetCertificate(Certificate);
+                            UpdateCertificateStatus();
                         end;
                     }
 
@@ -104,10 +106,10 @@ page 4580 "Ext. SharePoint Account"
         CertificateVisible: Boolean;
         [NonDebuggable]
         ClientSecret: Text;
-        [NonDebuggable]
-        Certificate: Text;
+        Certificate: SecretText;
         [NonDebuggable]
         CertificatePassword: Text;
+        CertificateStatusText: Text;
 
     trigger OnOpenPage()
     begin
@@ -121,6 +123,7 @@ page 4580 "Ext. SharePoint Account"
 
         MaskSensitiveFields();
         UpdateAuthTypeVisibility();
+        UpdateCertificateStatus();
     end;
 
     local procedure MaskSensitiveFields()
@@ -132,9 +135,6 @@ page 4580 "Ext. SharePoint Account"
         if not IsNullGuid(Rec."Client Secret Key") then
             ClientSecret := '***';
 
-        if not IsNullGuid(Rec."Certificate Key") then
-            Certificate := '***';
-
         if not IsNullGuid(Rec."Certificate Password Key") then
             CertificatePassword := '***';
     end;
@@ -143,5 +143,19 @@ page 4580 "Ext. SharePoint Account"
     begin
         ClientSecretVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::"Client Secret";
         CertificateVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::Certificate;
+
+        if CertificateVisible then
+            UpdateCertificateStatus();
+    end;
+
+    local procedure UpdateCertificateStatus()
+    var
+        NoCertificateLbl: Label 'No certificate (click to upload)';
+        CertificateUploadedLbl: Label 'Certificate uploaded (click to change)';
+    begin
+        if IsNullGuid(Rec."Certificate Key") then
+            CertificateStatusText := NoCertificateLbl
+        else
+            CertificateStatusText := CertificateUploadedLbl;
     end;
 }
