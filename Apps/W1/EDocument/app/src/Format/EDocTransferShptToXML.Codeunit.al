@@ -40,7 +40,6 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
 
         this.XMLDOMManagement.AddElement(this.RootNode, 'ID', TransferShipmentHeader."No.", '', ChildNode);
         this.XMLDOMManagement.AddElement(this.RootNode, 'IssueDate', Format(TransferShipmentHeader."Posting Date", 0, 9), '', ChildNode);
-
         this.XMLDOMManagement.AddElement(this.RootNode, 'SupplierInformation', '', '', ChildNode);
         AddCompanyInfoToXML(ChildNode);
 
@@ -108,10 +107,9 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
     /// <summary>
     /// Gets the XML document as a temporary blob.
     /// </summary>
-    /// <param name="TempBlob">Return value: Temp Blob codeunit containing the document</param>
+    /// <param name="TempBlob">Return value: Temp Blob codeunit containing the document.</param>
     internal procedure GetTransferShipmentXML(var TempBlob: Codeunit "Temp Blob")
     begin
         this.TransferShipmentXML.WriteTo(TempBlob.CreateOutStream());
     end;
-
 }
