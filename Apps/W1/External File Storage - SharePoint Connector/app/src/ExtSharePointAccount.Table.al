@@ -193,7 +193,7 @@ table 4580 "Ext. SharePoint Account"
         Base64Convert: Codeunit System.Text."Base64 Convert";
         UploadResult: Boolean;
         InStr: InStream;
-        CertificateFilterTxt: Label 'Certificate Files (*.pfx;*.cer;*.crt)|*.pfx;*.cer;*.crt|All Files (*.*)|*.*';
+        CertificateFilterTxt: Label 'Certificate Files (*.pfx;*.p12)|*.pfx;*.p12|All Files (*.*)|*.*';
         FileNotUploadedErr: Label 'Certificate file was not uploaded.';
     begin
         UploadResult := UploadIntoStream(CertificateFilterTxt, InStr);
