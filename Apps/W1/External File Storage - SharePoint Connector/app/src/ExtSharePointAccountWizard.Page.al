@@ -101,12 +101,19 @@ page 4581 "Ext. SharePoint Account Wizard"
                 ShowCaption = false;
                 Visible = CertificateVisible;
 
-                field(CertificateField; Certificate)
+                field(CertificateUploadStatus; CertificateStatusText)
                 {
-                    Caption = 'Certificate (Base64-encoded)';
-                    ExtendedDatatype = Masked;
+                    Caption = 'Certificate';
+                    Editable = false;
                     ShowMandatory = true;
-                    ToolTip = 'Specifies the Base64-encoded certificate for the Application (client) configured in Microsoft Entra ID. This provides a more secure authentication method than Client Secret.';
+                    ToolTip = 'Specifies the certificate file used for authentication. Click here to upload a certificate file (.pfx, .cer, or .crt).';
+
+                    trigger OnDrillDown()
+                    begin
+                        Certificate := Rec.UploadCertificateFile();
+                        UpdateCertificateStatus();
+                        IsNextEnabled := SharePointConnectorImpl.IsAccountValid(Rec);
+                    end;
                 }
 
                 field(CertificatePasswordField; CertificatePassword)
@@ -188,10 +195,10 @@ page 4581 "Ext. SharePoint Account Wizard"
         SharePointConnectorImpl: Codeunit "Ext. SharePoint Connector Impl";
         [NonDebuggable]
         ClientSecret: Text;
-        [NonDebuggable]
-        Certificate: Text;
+        Certificate: SecretText;
         [NonDebuggable]
         CertificatePassword: Text;
+        CertificateStatusText: Text;
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
         ClientSecretVisible: Boolean;
@@ -208,6 +215,7 @@ page 4581 "Ext. SharePoint Account Wizard"
             TopBannerVisible := MediaResources."Media Reference".HasValue();
 
         UpdateAuthTypeVisibility();
+        UpdateCertificateStatus();
     end;
 
     internal procedure GetAccount(var FileAccount: Record "File Account"): Boolean
@@ -224,5 +232,19 @@ page 4581 "Ext. SharePoint Account Wizard"
     begin
         ClientSecretVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::"Client Secret";
         CertificateVisible := Rec."Authentication Type" = Enum::"Ext. SharePoint Auth Type"::Certificate;
+
+        if CertificateVisible then
+            UpdateCertificateStatus();
+    end;
+
+    local procedure UpdateCertificateStatus()
+    var
+        NoCertificateUploadedLbl: Label 'Click to upload certificate file...';
+        CertificateUploadedLbl: Label 'Certificate uploaded (click to change)';
+    begin
+        if Certificate.IsEmpty() then
+            CertificateStatusText := NoCertificateUploadedLbl
+        else
+            CertificateStatusText := CertificateUploadedLbl;
     end;
 }

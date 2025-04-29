@@ -11,6 +11,7 @@ namespace System.ExternalFileStorage;
 enum 4585 "Ext. SharePoint Auth Type"
 {
     Extensible = false;
+    Access = Public;
 
     /// <summary>
     /// Authenticate using Client ID and Client Secret.
