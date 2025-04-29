@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 40141 "GP Migration Error Overview"
 {
     ReplicateData = false;

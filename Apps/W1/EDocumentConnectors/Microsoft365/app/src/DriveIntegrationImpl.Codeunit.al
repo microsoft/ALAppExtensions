@@ -119,6 +119,7 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
     local procedure HandleOnBeforeExportDataStorage(EDocumentLog: Record "E-Document Log"; var FileName: Text)
     var
         EDocument: Record "E-Document";
+        EDocDataStorage: Record "E-Doc. Data Storage";
     begin
         if not EDocument.Get(EDocumentLog."E-Doc. Entry No") then
             exit;
@@ -127,6 +128,10 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
             exit;
 
         FileName := EDocument."File Name";
+
+        if EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then
+            if EDocDataStorage."Data Type" <> EDocDataStorage."Data Type"::Unspecified then
+                FileName += ('.' + Format(EDocDataStorage."Data Type"));
     end;
 
     var

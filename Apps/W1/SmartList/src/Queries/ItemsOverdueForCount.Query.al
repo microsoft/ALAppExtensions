@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2557 "Items Overdue For Count"
 {
     QueryType = Normal;

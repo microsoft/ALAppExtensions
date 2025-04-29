@@ -8,9 +8,6 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT;
-#if not CLEAN24
-using Microsoft.Finance;
-#endif
 
 report 14601 "IS VAT Reconciliation A"
 {
@@ -318,17 +315,6 @@ report 14601 "IS VAT Reconciliation A"
         VatReceivableVarTxt: Label 'Attention! Variance in VAT receivable. Calculated VAT receivable. %1 %. Variance %2 kr.', Comment = '%1 = VAT percentage, %2 = VAT variance amount;';
         VatPayableVarTxt: Label 'Attention! Variance in VAT payable. Calculated VAT payable. %1 %. Variance %2 kr.', Comment = '%1 = VAT percentage, %2 = VAT variance amount;';
 
-#if not CLEAN24
-    trigger OnInitReport()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Report.Run(Report::"VAT Reconciliation A");
-            Error('');
-        end;
-    end;
-#endif
 
     procedure FindPeriod()
     begin
@@ -398,4 +384,3 @@ report 14601 "IS VAT Reconciliation A"
             Error(PeriodMustBeCustomErr);
     end;
 }
-

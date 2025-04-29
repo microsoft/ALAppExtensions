@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Common;
+
+using Microsoft.Sales.Setup;
+using Microsoft.Purchases.Setup;
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.NoSeries;
+
 codeunit 5128 "Create Common No Series"
 {
     InherentEntitlements = X;

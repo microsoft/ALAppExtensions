@@ -56,6 +56,7 @@ codeunit 139629 "Library - E-Document"
         WorkflowSetup: Codeunit "Workflow Setup";
         WorkflowCode: Code[20];
     begin
+        LibraryWorkflow.DeleteAllExistingWorkflows();
         WorkflowSetup.InitWorkflow();
         SetupCompanyInfo();
 
@@ -205,6 +206,18 @@ codeunit 139629 "Library - E-Document"
         EDocumentServiceStatus.Insert();
     end;
 
+
+    procedure CreateInboundPEPPOLDocumentToState(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; FileName: Text; EDocImportParams: Record "E-Doc. Import Parameters")
+    var
+        EDocIMport: Codeunit "E-Doc. Import";
+        InStream: InStream;
+    begin
+        NavApp.GetResource(FileName, InStream, TextEncoding::UTF8);
+        EDocIMport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, 'TestFile', InStream);
+        EDocIMport.ProcessIncomingEDocument(EDocument, EDocImportParams);
+    end;
+
+
     procedure CreateDocSendingProfile(var DocumentSendingProfile: Record "Document Sending Profile")
     begin
         DocumentSendingProfile.Init();
@@ -218,16 +231,23 @@ codeunit 139629 "Library - E-Document"
         Workflow: Record Workflow;
         WorkflowStepResponse: Record "Workflow Step";
         WorkflowStepArgument: Record "Workflow Step Argument";
+        WorkflowStep: Record "Workflow Step";
         EDocWorkflowSetup: Codeunit "E-Document Workflow Setup";
-        EventConditions: Text;
         EDocCreatedEventID, SendEDocResponseEventID : Integer;
     begin
         // Create a simple workflow
         // Send to Service 'ServiceCode' when using Document Sending Profile 'DocSendingProfile' 
+        WorkflowStep.SetRange("Function Name", EDocWorkflowSetup.EDocCreated());
+        WorkflowStep.SetRange("Entry Point", true);
+        if WorkflowStep.FindSet() then
+            repeat
+                Workflow.Get(WorkflowStep."Workflow Code");
+                if not Workflow.Template then
+                    exit;
+            until WorkflowStep.Next() = 0;
+
         LibraryWorkflow.CreateWorkflow(Workflow);
-        EventConditions := CreateWorkflowEventConditionDocSendingProfileFilter(DocSendingProfileCode);
         EDocCreatedEventID := LibraryWorkflow.InsertEntryPointEventStep(Workflow, EDocWorkflowSetup.EDocCreated());
-        LibraryWorkflow.InsertEventArgument(EDocCreatedEventID, EventConditions);
         SendEDocResponseEventID := LibraryWorkflow.InsertResponseStep(Workflow, EDocWorkflowSetup.EDocSendEDocResponseCode(), EDocCreatedEventID);
 
         WorkflowStepResponse.Get(Workflow.Code, SendEDocResponseEventID);

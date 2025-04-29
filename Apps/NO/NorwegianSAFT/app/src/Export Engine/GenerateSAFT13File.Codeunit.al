@@ -100,7 +100,7 @@ codeunit 10692 "Generate SAF-T 1.3 File"
             Window.Update(1, GeneratingHeaderTxt);
         CompanyInformation.get();
         SAFTXMLHelper.AddNewXMLNode('Header', '');
-        SAFTXMLHelper.AppendXMLNode('AuditFileVersion', '1.0');
+        SAFTXMLHelper.AppendXMLNode('AuditFileVersion', '1.3');
         if CompanyInformation."Country/Region Code" <> '' then begin
             CountryRegion.Get(CompanyInformation."Country/Region Code");
             if CountryRegion."ISO Code" = '' then

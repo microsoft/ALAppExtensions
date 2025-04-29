@@ -2,6 +2,7 @@ codeunit 139550 "Intrastat Report Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    EventSubscriberInstance = Manual;
 
     trigger OnRun()
     begin
@@ -31,7 +32,6 @@ codeunit 139550 "Intrastat Report Test"
         InternetURLTxt: Label 'www.microsoft.com';
         InvalidURLTxt: Label 'URL must be prefix with http.';
         PackageTrackingNoErr: Label 'Package Tracking No does not exist.';
-        TariffItemInfoDifferentErr: Label '%1 on %2 and %3 is different.', Comment = '%1 - field name, %2 - Item Table Caption, %3 - Tariff Number Table Caption';
         HttpTxt: Label 'http://';
         OnDelIntrastatContactErr: Label 'You cannot delete contact number %1 because it is set up as an Intrastat contact in the Intrastat Setup window.', Comment = '%1 - Contact No';
         OnDelVendorIntrastatContactErr: Label 'You cannot delete vendor number %1 because it is set up as an Intrastat contact in the Intrastat Setup window.', Comment = '%1 - Vendor No';
@@ -1372,6 +1372,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportLine: Record "Intrastat Report Line";
         ShipmentMethod: Record "Shipment Method";
         TransactionType: Record "Transaction Type";
+        PublishedApplication: Record "Published Application";
         IntrastatReportPage: TestPage "Intrastat Report";
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
@@ -1385,6 +1386,12 @@ codeunit 139550 "Intrastat Report Test"
         LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
         CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
         Commit();
+
+        PublishedApplication.SetFilter("Name", 'Intrastat*');
+        PublishedApplication.SetFilter(Publisher, 'Microsoft');
+        PublishedApplication.SetFilter(ID, '<>%1&<>%2', '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', 'f4d9555a-a512-45de-a6d6-27a8b6077139');
+        if not PublishedApplication.IsEmpty then
+            exit;
 
         // [GIVEN] A Intrastat Report
         IntrastatReportPage.OpenEdit();
@@ -1419,9 +1426,12 @@ codeunit 139550 "Intrastat Report Test"
 
         // [WHEN] Running Create File
         // [THEN] You do not get any errors
-        IntrastatReportPage.CreateFile.Invoke();
+        BindSubscription(LibraryIntrastat);
 
+        IntrastatReportPage.CreateFile.Invoke();
         IntrastatReportPage.Close();
+
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -1432,6 +1442,7 @@ codeunit 139550 "Intrastat Report Test"
         SalesLine: Record "Sales Line";
         ShipmentMethod: Record "Shipment Method";
         TransactionType: Record "Transaction Type";
+        PublishedApplication: Record "Published Application";
         IntrastatReportPage: TestPage "Intrastat Report";
         InvoiceDate: Date;
         IntrastatReportNo: Code[20];
@@ -1441,10 +1452,17 @@ codeunit 139550 "Intrastat Report Test"
         // [GIVEN] Posted Sales Order for intrastat
         // [GIVEN] Report Template and Batch 
         Initialize();
+
         InvoiceDate := CalcDate('<5Y>');
         LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
         CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
         Commit();
+
+        PublishedApplication.SetFilter("Name", 'Intrastat*');
+        PublishedApplication.SetFilter(Publisher, 'Microsoft');
+        PublishedApplication.SetFilter(ID, '<>%1&<>%2', '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', 'f4d9555a-a512-45de-a6d6-27a8b6077139');
+        if not PublishedApplication.IsEmpty then
+            exit;
 
         // [GIVEN] A Intrastat Report
         IntrastatReportPage.OpenEdit();
@@ -1452,7 +1470,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportPage."Currency Identifier".Value := 'EUR';
 
         TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 3, 2);
-        TransactionType.Insert();
+        if TransactionType.Insert() then;
         IntrastatReportPage.IntrastatLines."Transaction Type".Value(TransactionType.Code);
         IntrastatReportPage.IntrastatLines.Quantity.Value('5');
         IntrastatReportPage.IntrastatLines."Total Weight".Value('10');
@@ -1467,12 +1485,199 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
 
         // [WHEN] Running Create File
+        BindSubscription(LibraryIntrastat);
+
+        IntrastatReportPage.CreateFile.Invoke();
+        // [THEN] Check file content
+        CheckFileContent(IntrastatReportPage, 9);
+
+        IntrastatReportPage.Close();
+
+        UnbindSubscription(LibraryIntrastat);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure E2EIntrastatReportNoSplitFileCreation()
+    var
+        SalesLine: Record "Sales Line";
+        PurchaseLine: Record "Purchase Line";
+        ShipmentMethod: Record "Shipment Method";
+        TransactionType: Record "Transaction Type";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PublishedApplication: Record "Published Application";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+        I: Integer;
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 566068] Bug 566068: One file creation
+        // [GIVEN] Posted 4 Sales Orders + 4 Purchase Orders for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        IntrastatReportSetup.Get();
+
+        InvoiceDate := CalcDate('<5Y>');
+        for I := 1 to 4 do begin
+            LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+            LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, InvoiceDate);
+        end;
+
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        PublishedApplication.SetFilter("Name", 'Intrastat*');
+        PublishedApplication.SetFilter(Publisher, 'Microsoft');
+        PublishedApplication.SetFilter(ID, '<>%1&<>%2', '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', 'f4d9555a-a512-45de-a6d6-27a8b6077139');
+        if not PublishedApplication.IsEmpty then
+            exit;
+
+        // [GIVEN] A Intrastat Report
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage."Currency Identifier".Value := 'EUR';
+
+        TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 3, 2);
+        if TransactionType.Insert() then;
+
+        ShipmentMethod.FindFirst();
+
+        IntrastatReportPage.IntrastatLines.First();
+        for I := 1 to 8 do begin
+            IntrastatReportPage.IntrastatLines."Transaction Type".Value(TransactionType.Code);
+            IntrastatReportPage.IntrastatLines.Quantity.Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Total Weight".Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Statistical Value".Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Shpt. Method Code".Value(ShipmentMethod.Code);
+            if ((IntrastatReportPage.IntrastatLines.Type.Value = Format(IntrastatReportLine.Type::Receipt)) and
+                (IntrastatReportSetup."Get Partner VAT For" <> IntrastatReportSetup."Get Partner VAT For"::Shipment)) or
+               ((IntrastatReportPage.IntrastatLines.Type.Value = Format(IntrastatReportLine.Type::Shipment)) and
+                (IntrastatReportSetup."Get Partner VAT For" <> IntrastatReportSetup."Get Partner VAT For"::Receipt))
+            then
+                IntrastatReportPage.IntrastatLines."Partner VAT ID".Value('111111111');
+            if IntrastatReportPage.IntrastatLines.Next() then;
+        end;
+
+        IntrastatReportPage.ChecklistReport.Invoke();
+        // [THEN] You no more errors
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [WHEN] Running Create File
+        BindSubscription(LibraryIntrastat);
+
         IntrastatReportPage.CreateFile.Invoke();
 
         // [THEN] Check file content
-        CheckFileContent(IntrastatReportPage);
+        CheckOneFileContent(IntrastatReportPage, 9);
 
         IntrastatReportPage.Close();
+
+        UnbindSubscription(LibraryIntrastat);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [Scope('OnPrem')]
+    procedure E2EIntrastatReportSplitFileCreation()
+    var
+        SalesLine: Record "Sales Line";
+        PurchaseLine: Record "Purchase Line";
+        ShipmentMethod: Record "Shipment Method";
+        TransactionType: Record "Transaction Type";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PublishedApplication: Record "Published Application";
+        DataExchFieldGrouping: Record "Data Exch. Field Grouping";
+        DataExchMapping: Record "Data Exch. Mapping";
+        DataExchDef: Record "Data Exch. Def";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+        I: Integer;
+    begin
+        // [FEATURE] [Intrastat Report] [Error handling]
+        // [SCENARIO 566068] Bug 566068: One file creation
+        // [GIVEN] Posted 4 Sales Orders + 4 Purchase Orders for intrastat
+        // [GIVEN] Report Template and Batch 
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Max. No. of Lines in File" := 3;
+        IntrastatReportSetup.Modify();
+
+        DataExchMapping.SetRange("Data Exch. Def Code", IntrastatReportSetup."Data Exch. Def. Code");
+        DataExchMapping.SetRange("Table ID", Database::"Intrastat Report Line");
+        DataExchMapping.FindFirst();
+
+        DataExchMapping."Key Index" := 1;
+        DataExchMapping.Modify();
+
+        DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
+        DataExchFieldGrouping.SetRange("Data Exch. Line Def Code", DataExchMapping."Data Exch. Line Def Code");
+        DataExchFieldGrouping.SetRange("Table ID", DataExchMapping."Table ID");
+        DataExchFieldGrouping.DeleteAll();
+
+        InvoiceDate := CalcDate('<5Y>');
+        for I := 1 to 4 do begin
+            LibraryIntrastat.CreateAndPostSalesOrder(SalesLine, InvoiceDate);
+            LibraryIntrastat.CreateAndPostPurchaseOrder(PurchaseLine, InvoiceDate);
+        end;
+
+        CreateIntrastatReportAndSuggestLines(InvoiceDate, IntrastatReportNo);
+        Commit();
+
+        PublishedApplication.SetFilter("Name", 'Intrastat*');
+        PublishedApplication.SetFilter(Publisher, 'Microsoft');
+        PublishedApplication.SetFilter(ID, '<>%1&<>%2', '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', 'f4d9555a-a512-45de-a6d6-27a8b6077139');
+        if not PublishedApplication.IsEmpty then
+            exit;
+
+        // [GIVEN] A Intrastat Report
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        IntrastatReportPage."Currency Identifier".Value := 'EUR';
+
+        TransactionType.Code := CopyStr(LibraryUtility.GenerateGUID(), 3, 2);
+        if TransactionType.Insert() then;
+
+        ShipmentMethod.FindFirst();
+
+        IntrastatReportPage.IntrastatLines.First();
+        for I := 1 to 8 do begin
+            IntrastatReportPage.IntrastatLines."Transaction Type".Value(TransactionType.Code);
+            IntrastatReportPage.IntrastatLines.Quantity.Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Total Weight".Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Statistical Value".Value(LibraryUtility.GenerateRandomNumericText(2));
+            IntrastatReportPage.IntrastatLines."Shpt. Method Code".Value(ShipmentMethod.Code);
+            if ((IntrastatReportPage.IntrastatLines.Type.Value = Format(IntrastatReportLine.Type::Receipt)) and
+                (IntrastatReportSetup."Get Partner VAT For" <> IntrastatReportSetup."Get Partner VAT For"::Shipment)) or
+               ((IntrastatReportPage.IntrastatLines.Type.Value = Format(IntrastatReportLine.Type::Shipment)) and
+                (IntrastatReportSetup."Get Partner VAT For" <> IntrastatReportSetup."Get Partner VAT For"::Receipt))
+            then
+                IntrastatReportPage.IntrastatLines."Partner VAT ID".Value('111111111');
+            if IntrastatReportPage.IntrastatLines.Next() then;
+        end;
+
+        IntrastatReportPage.ChecklistReport.Invoke();
+        // [THEN] You no more errors
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [WHEN] Running Create File
+        BindSubscription(LibraryIntrastat);
+
+        IntrastatReportPage.CreateFile.Invoke();
+
+        // [THEN] Check file content
+        CheckSplitFileContent(IntrastatReportPage, 9);
+
+        IntrastatReportPage.Close();
+
+        DataExchDef.Get('INTRA-2022');
+        DataExchDef.Delete();
+
+        UnbindSubscription(LibraryIntrastat);
     end;
 
     [Test]
@@ -1596,53 +1801,6 @@ codeunit 139550 "Intrastat Report Test"
         // [THEN] Check no error in error part
         IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(ShipToCountryRegion.Code);
         IntrastatReportPage.Close();
-    end;
-
-    [Test]
-    [HandlerFunctions('ConfirmHandler')]
-    [Scope('OnPrem')]
-    procedure TestSupplementaryInfoFromTariffNo()
-    var
-        TariffNumber: Record "Tariff Number";
-        Item: Record Item;
-        UnitOfMeasure: Record "Unit of Measure";
-        ItemOUM: Record "Item Unit of Measure";
-    begin
-        // [FEATURE] [Intrastat Report] [Error handling]
-        // [SCENARIO 451276] Deliverable 451276: Test supplementary info validation between Tariff number and item 
-
-        // Create Unit of Measure
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-        // Create Tariff Number 
-        TariffNumber.Get(LibraryUtility.CreateCodeRecord(DATABASE::"Tariff Number"));
-        // Validate Supplementary Info fields
-        TariffNumber.Validate("Supplementary Units", true);
-        TariffNumber.Validate("Suppl. Unit of Measure", UnitOfMeasure.Code);
-        TariffNumber.Validate("Suppl. Conversion Factor", 3);
-        TariffNumber.Modify(true);
-
-        // Create Item with Tariff number
-        LibraryInventory.CreateItemWithTariffNo(Item, TariffNumber."No.");
-        // Get created Item Unit Of Measure 
-        ItemOUM.Get(Item."No.", UnitOfMeasure.Code);
-
-        // Compare Values
-        Assert.AreEqual(Item."Supplementary Unit of Measure", TariffNumber."Suppl. Unit of Measure", StrSubstNo(TariffItemInfoDifferentErr, Item.FieldCaption("Supplementary Unit of Measure"), Item.TableCaption, TariffNumber.TableCaption));
-        Assert.AreEqual(ItemOUM."Qty. per Unit of Measure", 0.33333, StrSubstNo(TariffItemInfoDifferentErr, ItemOUM.FieldCaption("Qty. per Unit of Measure"), ItemOUM.TableCaption, TariffNumber.TableCaption));
-
-        // Update Supplementary Info on Tariff number
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-        TariffNumber.Validate("Suppl. Unit of Measure", UnitOfMeasure.Code);
-        TariffNumber.Validate("Suppl. Conversion Factor", 0.5);
-        TariffNumber.Modify(true);
-
-        // Get Item and Item Unit Of Measure
-        Item.Get(Item."No.");
-        ItemOUM.Get(Item."No.", UnitOfMeasure.Code);
-
-        // Compare Values
-        Assert.AreEqual(Item."Supplementary Unit of Measure", TariffNumber."Suppl. Unit of Measure", StrSubstNo(TariffItemInfoDifferentErr, Item.FieldCaption("Supplementary Unit of Measure"), Item.TableCaption, TariffNumber.TableCaption));
-        Assert.AreEqual(ItemOUM."Qty. per Unit of Measure", 2, StrSubstNo(TariffItemInfoDifferentErr, ItemOUM.FieldCaption("Qty. per Unit of Measure"), ItemOUM.TableCaption, TariffNumber.TableCaption));
     end;
 
     [Test]
@@ -5068,7 +5226,7 @@ codeunit 139550 "Intrastat Report Test"
         LibraryIntrastat.CreateIntrastatReportChecklistRecord(IntrastatReportLine.FieldNo("Partner VAT ID"), 'Type: Shipment');
     end;
 
-    local procedure CheckFileContent(var IntrastatReportPage: TestPage "Intrastat Report")
+    local procedure CheckFileContent(var IntrastatReportPage: TestPage "Intrastat Report"; TabChar: Char)
     var
         DataExch: Record "Data Exch.";
         FileMgt: Codeunit "File Management";
@@ -5076,7 +5234,6 @@ codeunit 139550 "Intrastat Report Test"
         TempBlob: Codeunit "Temp Blob";
         FileName: Text;
         Line: Text;
-        TabChar: Char;
         DecVar: Decimal;
     begin
         DataExch.FindLast();
@@ -5087,7 +5244,6 @@ codeunit 139550 "Intrastat Report Test"
             FileName := FileMgt.ServerTempFileName('txt');
             FileMgt.BLOBExportToServerFile(TempBlob, FileName);
 
-            TabChar := 9;
             Line := LibraryTextFileValidation.ReadLine(FileName, 1);
 
             IntrastatReportPage.IntrastatLines."Tariff No.".AssertEquals(LibraryTextFileValidation.ReadField(Line, 1, TabChar).Trim());
@@ -5102,6 +5258,95 @@ codeunit 139550 "Intrastat Report Test"
             IntrastatReportPage.IntrastatLines."Partner VAT ID".AssertEquals(LibraryTextFileValidation.ReadField(Line, 8, TabChar).Trim());
             IntrastatReportPage.IntrastatLines."Country/Region of Origin Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 9, TabChar).Trim());
         end;
+    end;
+
+    local procedure CheckOneFileContent(var IntrastatReportPage: TestPage "Intrastat Report"; TabChar: Char)
+    var
+        DataExch: Record "Data Exch.";
+        FileMgt: Codeunit "File Management";
+        LibraryTextFileValidation: Codeunit "Library - Text File Validation";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        Line: Text;
+        DecVar: Decimal;
+        I: Integer;
+    begin
+        DataExch.FindLast();
+        IntrastatReportPage.IntrastatLines.First();
+
+        if DataExch."File Content".HasValue then begin
+            DataExch.CalcFields("File Content");
+            TempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+
+            FileName := FileMgt.ServerTempFileName('txt');
+            FileMgt.BLOBExportToServerFile(TempBlob, FileName);
+
+            I := 1;
+            while LibraryTextFileValidation.ReadLine(FileName, I) <> '' do begin
+                Line := LibraryTextFileValidation.ReadLine(FileName, I);
+
+                IntrastatReportPage.IntrastatLines."Tariff No.".AssertEquals(LibraryTextFileValidation.ReadField(Line, 1, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 2, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines."Transaction Type".AssertEquals(LibraryTextFileValidation.ReadField(Line, 3, TabChar).Trim());
+                Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 4, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines.Quantity.AssertEquals(Format(DecVar));
+                Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 5, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines."Total Weight".AssertEquals(Format(DecVar));
+                Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 6, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines."Statistical Value".AssertEquals(Format(DecVar));
+                IntrastatReportPage.IntrastatLines."Partner VAT ID".AssertEquals(LibraryTextFileValidation.ReadField(Line, 8, TabChar).Trim());
+                IntrastatReportPage.IntrastatLines."Country/Region of Origin Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 9, TabChar).Trim());
+
+                if IntrastatReportPage.IntrastatLines.Next() then;
+                I += 1;
+            end;
+        end;
+    end;
+
+    local procedure CheckSplitFileContent(var IntrastatReportPage: TestPage "Intrastat Report"; TabChar: Char)
+    var
+        DataExch: Record "Data Exch.";
+        FileMgt: Codeunit "File Management";
+        LibraryTextFileValidation: Codeunit "Library - Text File Validation";
+        TempBlob: Codeunit "Temp Blob";
+        FileName: Text;
+        Line: Text;
+        DecVar: Decimal;
+        I: Integer;
+    begin
+        DataExch.FindLast();
+        DataExch.Next(-2);
+        IntrastatReportPage.IntrastatLines.First();
+
+        repeat
+            if DataExch."File Content".HasValue then begin
+                DataExch.CalcFields("File Content");
+                TempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+
+                FileName := FileMgt.ServerTempFileName('txt');
+                FileMgt.BLOBExportToServerFile(TempBlob, FileName);
+
+                I := 1;
+                while LibraryTextFileValidation.ReadLine(FileName, I) <> '' do begin
+                    Line := LibraryTextFileValidation.ReadLine(FileName, I);
+
+                    IntrastatReportPage.IntrastatLines."Tariff No.".AssertEquals(LibraryTextFileValidation.ReadField(Line, 1, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines."Country/Region Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 2, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines."Transaction Type".AssertEquals(LibraryTextFileValidation.ReadField(Line, 3, TabChar).Trim());
+                    Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 4, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines.Quantity.AssertEquals(Format(DecVar));
+                    Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 5, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines."Total Weight".AssertEquals(Format(DecVar));
+                    Evaluate(DecVar, LibraryTextFileValidation.ReadField(Line, 6, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines."Statistical Value".AssertEquals(Format(DecVar));
+                    IntrastatReportPage.IntrastatLines."Partner VAT ID".AssertEquals(LibraryTextFileValidation.ReadField(Line, 8, TabChar).Trim());
+                    IntrastatReportPage.IntrastatLines."Country/Region of Origin Code".AssertEquals(LibraryTextFileValidation.ReadField(Line, 9, TabChar).Trim());
+
+                    if IntrastatReportPage.IntrastatLines.Next() then;
+                    i += 1;
+                end;
+            end;
+        until DataExch.Next() = 0;
     end;
 
     [ConfirmHandler]

@@ -87,7 +87,7 @@ page 8006 "Contract Renewal Selection"
                         Editable = false;
                         Visible = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the number of the Subscription No.';
+                        ToolTip = 'Specifies the number of the Subscription.';
 
                         trigger OnAssistEdit()
                         begin
@@ -131,7 +131,7 @@ page 8006 "Contract Renewal Selection"
                     {
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Number of units of Subscription.';
+                        ToolTip = 'Specifies the number of units of Subscription.';
 
                         trigger OnDrillDown()
                         begin

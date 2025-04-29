@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using System.Environment.Configuration;
+using Microsoft.Utilities;
+
 pageextension 5279 "Accessible Companies Contoso" extends "Accessible Companies"
 {
     layout

@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.Currency;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 17167 "Create Currency Ex. Rate AU"
 {
     SingleInstance = true;

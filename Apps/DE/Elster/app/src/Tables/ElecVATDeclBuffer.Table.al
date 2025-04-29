@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 11027 "Elec. VAT Decl. Buffer"
 {
     TableType = Temporary;

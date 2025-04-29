@@ -63,6 +63,33 @@ codeunit 148004 "Library IRS 1099 Form Box"
         IRS1099FormBox.Insert(true);
     end;
 
+    procedure CreateSingleFormStatementLine(ReportingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20])
+    begin
+        CreateSpecificFormStatementLine(ReportingDate, ReportingDate, FormNo, FormBoxNo, LibraryUtility.GenerateGUID());
+    end;
+
+    procedure CreateSpecificFormStatementLine(StartingDate: Date; EndingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20]; Description: Text)
+    var
+        IRS1099FormStatementLine: Record "IRS 1099 Form Statement Line";
+        PeriodNo: Code[20];
+        StatementLineNo: Integer;
+    begin
+        PeriodNo := LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate);
+        IRS1099FormStatementLine.SetRange("Period No.", PeriodNo);
+        IRS1099FormStatementLine.SetRange("Form No.", FormNo);
+        if IRS1099FormStatementLine.FindLast() then
+            StatementLineNo := IRS1099FormStatementLine."Line No.";
+
+        StatementLineNo += 10000;
+        IRS1099FormStatementLine.Validate("Period No.", PeriodNo);
+        IRS1099FormStatementLine.Validate("Form No.", FormNo);
+        IRS1099FormStatementLine.Validate("Line No.", StatementLineNo);
+        IRS1099FormStatementLine.Validate("Print Value Type", Enum::"IRS 1099 Print Value Type"::Amount);
+        IRS1099FormStatementLine.Validate("Row No.", FormBoxNo);
+        IRS1099FormStatementLine.Validate("Description", Description);
+        IRS1099FormStatementLine.Insert(true);
+    end;
+
     procedure CreateVendorNoWithFormBox(ReportingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20]): Code[20]
     begin
         exit(CreateVendorNoWithFormBox(ReportingDate, ReportingDate, FormNo, FormBoxNo));
@@ -153,6 +180,16 @@ codeunit 148004 "Library IRS 1099 Form Box"
     begin
         IRS1099VendorFormBoxSetup.Get(LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate), VendorNo);
         IRS1099VendorFormBox.PropagateVendorFormBoxSetupToExistingEntries(IRS1099VendorFormBoxSetup);
+    end;
+
+    procedure PropagateVendorFormBoxSetupToVendorLedgerEntries(StartingDate: Date; EndingDate: Date; PeriodNo: Code[20]; VendorNoFilter: Text)
+    var
+        IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
+    begin
+        IRS1099VendorFormBoxSetup.SetRange("Period No.", PeriodNo);
+        IRS1099VendorFormBoxSetup.SetFilter("Vendor No.", VendorNoFilter);
+        IRS1099VendorFormBoxSetup.FindSet();
+        IRS1099VendorFormBox.PropagateVendorsFormBoxSetupToExistingEntries(IRS1099VendorFormBoxSetup);
     end;
 
     procedure VerifyFormBoxSetupCountForVendors(StartingDate: Date; EndingDate: Date; ExpectedCount: Integer)

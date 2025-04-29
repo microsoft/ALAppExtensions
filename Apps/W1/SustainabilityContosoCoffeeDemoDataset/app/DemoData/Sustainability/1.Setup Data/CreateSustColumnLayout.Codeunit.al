@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5247 "Create Sust. Column Layout"
 {
     InherentEntitlements = X;
@@ -20,9 +21,9 @@ codeunit 5247 "Create Sust. Column Layout"
 
     local procedure InsertPeriodFormula(Period: Integer): Text[10]
     var
-        ColumnLayout: Record "Column Layout";
+        PeriodFormulaParser: Codeunit "Period Formula Parser";
     begin
-        exit(StrSubstNo('%1%2', Period, ColumnLayout.GetPeriodName()));
+        exit(StrSubstNo('%1%2', Period, PeriodFormulaParser.GetPeriodName()));
     end;
 
     var

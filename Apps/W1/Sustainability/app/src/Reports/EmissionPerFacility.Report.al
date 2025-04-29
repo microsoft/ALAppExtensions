@@ -140,6 +140,7 @@ report 6211 "Emission Per Facility"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     trigger OnPreReport()

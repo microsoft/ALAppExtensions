@@ -94,7 +94,6 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         SaveValues = true;
         AboutTitle = 'About Trial Balance/Previous Year (Excel)';
         AboutText = 'View a trial balance with debit/credit columns for net change and balance for this year and previous year directly in Excel. See amounts in both local currency (LCY) and additional reporting currency (ACY), the latter only showing data if Additional Reporting Currency is in use. In addition to debit/credit for net change and balance the report shows the net debit/credit amount for both net change and balance for comparison. Data is summarized for the period specified in the report''s request page''s Date Filter parameter and grouped by the 2 global dimensions per G/L account category.';
-
         layout
         {
             area(content)
@@ -148,6 +147,7 @@ report 4407 "EXR Trial Bal. Prev Year Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     begin

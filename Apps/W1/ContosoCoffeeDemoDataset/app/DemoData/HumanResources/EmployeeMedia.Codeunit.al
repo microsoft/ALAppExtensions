@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.HumanResources;
+
+using System.Utilities;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5172 "Employee Media"
 {
     Access = Internal;

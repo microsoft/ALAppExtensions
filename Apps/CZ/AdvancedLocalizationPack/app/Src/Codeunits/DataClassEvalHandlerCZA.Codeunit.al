@@ -6,7 +6,9 @@ namespace Microsoft.Utilities;
 #if not CLEAN26
 using Microsoft.Assembly.Document;
 #endif
+#if not CLEAN27
 using Microsoft.Assembly.History;
+#endif
 #if not CLEAN26
 using Microsoft.Assembly.Setup;
 #endif
@@ -50,8 +52,10 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         ItemJournalLine: Record "Item Journal Line";
         ItemLedgerEntry: Record "Item Ledger Entry";
         ManufacturingSetup: Record "Manufacturing Setup";
+#if not CLEAN27
         PostedAssemblyHeader: Record "Posted Assembly Header";
         PostedAssemblyLine: Record "Posted Assembly Line";
+#endif
         StandardItemJournalLine: Record "Standard Item Journal Line";
         ValueEntry: Record "Value Entry";
         TransferRoute: Record "Transfer Route";
@@ -108,8 +112,12 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
 #pragma warning restore AL0432
 #endif
         DataClassificationMgt.SetFieldToNormal(Database::"Manufacturing Setup", ManufacturingSetup.FieldNo("Exact Cost Rev.Mand. Cons. CZA"));
+#if not CLEAN27
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Header", PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Posted Assembly Line", PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Standard Item Journal Line", StandardItemJournalLine.FieldNo("New Location Code CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Invoice-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("Delivery-to Source No. CZA"));

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1912 "MigrationQB Customer Migrator"
 {
     TableNo = "MigrationQB Customer";

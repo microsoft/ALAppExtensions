@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 14104 "Customs Declarations"
 {
     ApplicationArea = Basic, Suite;

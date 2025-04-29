@@ -31,6 +31,16 @@ table 4511 "SMTP Account"
         field(3; "Server"; Text[250])
         {
             DataClassification = CustomerContent;
+            Caption = 'Server Address';
+            ToolTip = 'Specifies the address of the SMTP server. For example, smtp.office365.com.';
+
+            trigger OnValidate()
+            begin
+                if Server.StartsWith('http://') then
+                    Server := CopyStr(Server.Replace('http://', ''), 1, MaxStrLen(Server));
+                if Server.StartsWith('https://') then
+                    Server := CopyStr(Server.Replace('https://', ''), 1, MaxStrLen(Server));
+            end;
         }
 
         field(5; "User Name"; Text[250])

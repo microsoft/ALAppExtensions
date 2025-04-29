@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2681 "Data Search Accountant RC Ext" extends "Accountant Role Center"
 {
     ObsoleteState = Pending;

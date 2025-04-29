@@ -1,3 +1,4 @@
+#pragma warning disable AS0050
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -12,6 +13,7 @@ page 6184 "E-Doc. Read. Purch. Lines"
     Caption = 'Lines';
     SourceTable = "E-Document Purchase Line";
     Editable = false;
+    Extensible = false;
     PageType = ListPart;
 
     layout
@@ -74,3 +76,4 @@ page 6184 "E-Doc. Read. Purch. Lines"
         }
     }
 }
+#pragma warning restore AS0050

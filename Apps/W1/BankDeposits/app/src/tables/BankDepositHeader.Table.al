@@ -325,9 +325,6 @@ table 1690 "Bank Deposit Header"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         BankDepositHeader: Record "Bank Deposit Header";
         GenJournalBatch: Record "Gen. Journal Batch";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlManagement: Codeunit GenJnlManagement;
         PostingDescriptionTxt: Label 'Deposit %1 %2', Comment = '%1 - the caption of field No.; %2 - the value of field No.';
@@ -349,18 +346,10 @@ table 1690 "Bank Deposit Header"
             if "No." = '' then begin
                 TestNoSeries();
                 NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
-                if not IsHandled then begin
-#endif
                     "No. Series" := NoSeriesCode;
                     if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                         "No. Series" := xRec."No. Series";
                     "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
-#if not CLEAN24
-                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Posting Date", "No.");
-                end;
-#endif
             end;
 
         OnInitInsertOnBeforeInitRecord(xRec);
@@ -612,4 +601,3 @@ table 1690 "Bank Deposit Header"
     begin
     end;
 }
-

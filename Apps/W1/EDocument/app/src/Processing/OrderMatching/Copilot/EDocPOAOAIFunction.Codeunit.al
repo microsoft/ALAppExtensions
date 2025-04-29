@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
 {
     Access = Internal;

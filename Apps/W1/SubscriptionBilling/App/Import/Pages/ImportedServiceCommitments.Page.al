@@ -68,7 +68,7 @@ page 8009 "Imported Service Commitments"
                 }
                 field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                 }
                 field("Calculation Base Amount"; Rec."Calculation Base Amount")
                 {

@@ -8,19 +8,19 @@ interface "Shpfy IBulk Operation"
     Access = Internal;
 
     /// <summary>
-    /// GetGraphQL.
+    /// Provides the GraphQL query for the bulk operation.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
     procedure GetGraphQL(): Text;
 
     /// <summary>
-    /// GetGraphQL.
+    /// Provides the request input for the bulk operation.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
     procedure GetInput(): Text;
 
     /// <summary>
-    /// GetName.
+    /// Provides the name of the bulk operation.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
     procedure GetName(): Text[250];
@@ -30,4 +30,16 @@ interface "Shpfy IBulk Operation"
     /// </summary>
     /// <returns>Return value of type Text.</returns>
     procedure GetType(): Text;
+
+    /// <summary>
+    /// Reverts the failed requests for the bulk operation.
+    /// </summary>
+    /// <param name="BulkOperation">The bulk operation record.</param>
+    procedure RevertFailedRequests(var BulkOperation: Record "Shpfy Bulk Operation");
+
+    /// <summary>
+    /// Reverts all requests for the bulk operation.
+    /// </summary>
+    /// <param name="BulkOperation">The bulk operation record.</param>
+    procedure RevertAllRequests(var BulkOperation: Record "Shpfy Bulk Operation");
 }

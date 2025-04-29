@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+		        "name": "core",
+			"path": "app"
+		},
+		{		        
+			"name": "test",
+			"path": "test"
+		}
+	]
+}

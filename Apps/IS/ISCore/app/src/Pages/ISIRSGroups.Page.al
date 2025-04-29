@@ -5,10 +5,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.IRS;
 
-#if not CLEAN24
-using Microsoft.Finance;
-using Microsoft.Finance.VAT.Setup;
-#endif
 
 page 14600 "IS IRS Groups"
 {
@@ -40,16 +36,4 @@ page 14600 "IS IRS Groups"
         }
     }
 
-#if not CLEAN24
-    trigger OnOpenPage()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Page.RunModal(Page::"IRS Group");
-            Error('');
-        end;
-    end;
-#endif
 }
-

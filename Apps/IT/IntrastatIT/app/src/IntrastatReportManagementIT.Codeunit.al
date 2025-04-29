@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ codeunit 148121 "Intrastat Report Management IT"
                 DataExchangeDefinitionCode := IntrastatReportSetup."Data Exch. Def. Code CSQ";
         end;
 
-        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch);
+        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch, IntrastatReportSetup."Max. No. of Lines in File");
         DataExch.CalcFields("File Content");
         IntrastatReportHeader.Validate("Dispatches Reported", true);
         IntrastatReportHeader.Validate("Arrivals Reported", true);
@@ -258,29 +258,6 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
-#if not CLEAN24
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterValueEntryOnPreDataItem', '', true, true)]
-    local procedure OnAfterValueEntryOnPreDataItem(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
-    begin
-        if not IntrastatReportHeader."Corrective Entry" then
-            ValueEntry.SetFilter("Document Type", '<>%1&<>%2&<>%3&<>%4&<>%5',
-                ValueEntry."Document Type"::"Sales Return Receipt", ValueEntry."Document Type"::"Sales Credit Memo",
-                ValueEntry."Document Type"::"Purchase Return Shipment", ValueEntry."Document Type"::"Purchase Credit Memo",
-                ValueEntry."Document Type"::"Service Credit Memo")
-        else
-            ValueEntry.SetFilter("Document Type", '<>%1&<>%2&<>%3&<>%4&<>%5&<>%6&<>%7&<>%8',
-                ValueEntry."Document Type"::"Sales Shipment", ValueEntry."Document Type"::"Sales Invoice",
-                ValueEntry."Document Type"::"Purchase Receipt", ValueEntry."Document Type"::"Purchase Invoice",
-                ValueEntry."Document Type"::"Transfer Shipment", ValueEntry."Document Type"::"Transfer Receipt",
-                ValueEntry."Document Type"::"Service Shipment", ValueEntry."Document Type"::"Service Invoice");
-
-        if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases then
-            ValueEntry.SetFilter("Item Ledger Entry Type", '%1|%2', "Item Ledger Entry Type"::Purchase, "Item Ledger Entry Type"::Transfer)
-        else
-            ValueEntry.SetRange("Item Ledger Entry Type", "Item Ledger Entry Type"::Sale);
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCheckDropShipment', '', true, true)]
     local procedure OnBeforeCheckDropShipment(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; Country: Record "Country/Region"; var Result: Boolean; var IsHandled: Boolean)

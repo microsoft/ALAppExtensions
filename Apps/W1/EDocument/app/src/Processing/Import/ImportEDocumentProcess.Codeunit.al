@@ -67,7 +67,7 @@ codeunit 6104 "Import E-Document Process"
                     EDocImportParameters."Purch. Journal V1 Behavior"::"Create purchase document":
                         CreateJournalLineV1 := false;
                 end;
-                EDocImport.V1_ProcessEDocument(EDocument, CreateJournalLineV1)
+                EDocImport.V1_ProcessEDocument(EDocument, CreateJournalLineV1, EDocImportParameters."Create Document V1 Behavior");
             end
         end
         else begin
@@ -269,6 +269,11 @@ codeunit 6104 "Import E-Document Process"
         end;
     end;
 
+    procedure OpenTermsAndConditions(TermsNotification: Notification)
+    begin
+        Hyperlink(TermsAndConditionsHyperlinkTxt)
+    end;
+
     local procedure AttachUnstructuredDataAsAttachment(EDocument: Record "E-Document"; FromBlob: Codeunit "Temp Blob")
     var
         EDocAttachmentProcessor: Codeunit "E-Doc. Attachment Processor";
@@ -276,6 +281,16 @@ codeunit 6104 "Import E-Document Process"
     begin
         FromBlob.CreateInStream(InStream);
         EDocAttachmentProcessor.Insert(EDocument, InStream, EDocument."File Name");
+    end;
+
+    internal procedure AIGeneratedContentText(): Text
+    begin
+        exit(AIGeneratedContentTxt);
+    end;
+
+    internal procedure TermsAndConditionsText(): Text
+    begin
+        exit(TermsAndConditionsTxt);
     end;
 
     var
@@ -288,4 +303,7 @@ codeunit 6104 "Import E-Document Process"
         UndoStep: Boolean;
         UnstructuredBlobTypeWithNoConverterErr: Label 'Cant process E-Document as data type does not have a converter implemented.';
         UnstructuredBlobConversionErr: Label 'Conversion of the source document to structured format failed. Verify that the source document is not corrupted.';
+        AIGeneratedContentTxt: Label 'Data was read from a PDF - check for accuracy. AI-generated content may be incorrect.​';
+        TermsAndConditionsTxt: Label 'Terms and Conditions';
+        TermsAndConditionsHyperlinkTxt: Label 'https://www.microsoft.com/en-us/business-applications/legal/supp-powerplatform-preview', Locked = true;
 }

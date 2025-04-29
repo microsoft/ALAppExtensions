@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.Sales.Customer;
+using Microsoft.DemoData.Foundation;
+
 codeunit 14618 "Create Customer IS"
 {
     SingleInstance = true;
@@ -30,6 +40,7 @@ codeunit 14618 "Create Customer IS"
         Customer.Validate(City, City);
         Customer.Validate("VAT Registration No.", VatRegNo);
         Customer.Validate("Post Code", PostCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
     end;
 

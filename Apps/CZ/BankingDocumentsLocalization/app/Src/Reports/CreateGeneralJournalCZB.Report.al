@@ -220,13 +220,12 @@ report 31287 "Create General Journal CZB"
 
         GenJournalLine.Validate("Posting Date", IssBankStatementHeaderCZB."Document Date");
         GenJournalLine.Validate("Document No.", IssBankStatementHeaderCZB."No.");
+        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
         case IssBankStatementLineCZB.Type of
             IssBankStatementLineCZB.Type::Customer:
                 begin
                     GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Customer);
-                    if IssBankStatementLineCZB.Positive then
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment)
-                    else
+                    if not IssBankStatementLineCZB.Positive then
                         GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
                 end;
             IssBankStatementLineCZB.Type::Vendor:
@@ -234,16 +233,14 @@ report 31287 "Create General Journal CZB"
                     GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Vendor);
                     if IssBankStatementLineCZB.Positive then
                         GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund)
-                    else
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
                 end;
             IssBankStatementLineCZB.Type::"Bank Account":
                 GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::"Bank Account");
             IssBankStatementLineCZB.Type::Employee:
                 begin
                     GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
-                    if not IssBankStatementLineCZB.Positive then
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
+                    if IssBankStatementLineCZB.Positive then
+                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::" ");
                 end;
         end;
 

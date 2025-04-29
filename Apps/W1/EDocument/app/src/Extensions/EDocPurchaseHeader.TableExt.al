@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 6169 "E-Doc. Purchase Header" extends "Purchase Header"
 {
 

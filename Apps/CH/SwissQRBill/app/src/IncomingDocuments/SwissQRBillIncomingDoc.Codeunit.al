@@ -190,10 +190,14 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
             if IncomingDocument."Document Date" <> 0D then
                 Validate("Document Date", IncomingDocument."Document Date");
-
-            Validate("Posting Description", CopyStr(IncomingDocument."Swiss QR-Bill Unstr. Message", 1, MaxStrLen("Posting Description")));
-            Validate("Payment Reference", DelChr(IncomingDocument."Swiss QR-Bill Reference No."));
-            Validate("Vendor Invoice No.", IncomingDocument."Vendor Invoice No.");
+            if IncomingDocument."Swiss QR-Bill Unstr. Message" <> '' then
+                Validate("Posting Description", CopyStr(IncomingDocument."Swiss QR-Bill Unstr. Message", 1, MaxStrLen("Posting Description")));
+            if IncomingDocument."Swiss QR-Bill Reference No." <> '' then
+                Validate("Payment Reference", DelChr(IncomingDocument."Swiss QR-Bill Reference No."));
+            if IncomingDocument."Vendor Invoice No." <> '' then
+                Validate("Vendor Invoice No.", IncomingDocument."Vendor Invoice No.");
+            if IncomingDocument."Vendor Bank Account No." <> '' then
+                Validate("Bank Code", IncomingDocument."Vendor Bank Account No.");
 
             "Swiss QR-Bill IBAN" := IncomingDocument."Vendor IBAN";
             "Swiss QR-Bill Currency" := IncomingDocument."Currency Code";
@@ -220,11 +224,16 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
     var
         TempSwissQRBillBuffer: Record "Swiss QR-Bill Buffer" temporary;
         SwissQRBillDecode: Codeunit "Swiss QR-Bill Decode";
+        IsHandled: Boolean;
         QRCodeText: Text;
         FileName: Text;
     begin
-        if not QRBillImport(QRCodeText, FileName, FromFile) then
-            exit(false);
+        IsHandled := false;
+        OnQRBillImportDecodeBeforeQRBillImport(IncomingDocument,QRCodeText,IsHandled);
+
+        if not IsHandled then
+            if not QRBillImport(QRCodeText, FileName, FromFile) then
+                exit(false);
 
         if not IncomingDocument.IsTemporary() then begin
             if IncomingDocument."Entry No." = 0 then
@@ -697,6 +706,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
 
     [IntegrationEvent(false, false)]
     local procedure OnUpdatePurchDocFromIncDocOnBeforeModify(var PurchaseHeader: Record "Purchase Header"; var IncomingDocument: Record "Incoming Document")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnQRBillImportDecodeBeforeQRBillImport(var IncomingDocument: Record "Incoming Document"; var QRCodeText: Text; var IsHandled : Boolean)
     begin
     end;
 }

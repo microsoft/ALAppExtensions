@@ -185,8 +185,8 @@ page 8038 "Usage Data Generic Import"
             }
             action(ConnectSubscriptionToServiceObject)
             {
-                Caption = 'Connect Subscription to Subscription';
-                ToolTip = 'Opens the page for connecting subscriptions to Subscriptions, filtered to the currently selected subscription.';
+                Caption = 'Connect Supplier Subscriptions to Subscriptions';
+                ToolTip = 'Opens the page for connecting Supplier Subscriptions to Subscriptions, filtered to the currently selected subscription.';
                 Image = AddAction;
                 RunObject = page "Connect Subscription To SO";
                 RunPageLink = "Supplier Reference" = field("Supp. Subscription ID");

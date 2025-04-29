@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Setup;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Pricing.Calculation;
+
 codeunit 4781 "Contoso Purchase"
 {
     InherentEntitlements = X;
@@ -102,7 +114,7 @@ codeunit 4781 "Contoso Purchase"
 
         PurchaseLine.Validate(Quantity, Quantity);
 
-        if PurchaseLine."Unit Cost" <> 0 then
+        if UnitCost <> 0 then
             PurchaseLine.Validate("Direct Unit Cost", UnitCost);
 
         PurchaseLine.Insert(true);

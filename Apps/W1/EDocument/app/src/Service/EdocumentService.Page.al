@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -221,17 +221,6 @@ page 6133 "E-Document Service"
                     ObsoleteTag = '26.0';
                     ObsoleteState = Pending;
                     ObsoleteReason = 'Replaced with field "Service Integration V2"';
-                }
-#endif
-#if not CLEAN24
-                field("Update Order"; Rec."Update Order")
-                {
-                    ToolTip = 'Specifies if corresponding purchase order must be updated.';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteTag = '24.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
                 }
 #endif
             }
