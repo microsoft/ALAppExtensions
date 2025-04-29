@@ -117,13 +117,11 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentExport: Codeunit "E-Doc. Shipment Export To XML";
         TempBlob: Codeunit "Temp Blob";
-        InStream: InStream;
     begin
         ShipmentRecRef.SetTable(SalesShipmentHeader);
         SalesShipmentExport.Run(SalesShipmentHeader);
         SalesShipmentExport.GetShipmentXml(TempBlob);
-        TempBlob.CreateInStream(InStream);
-        CopyStream(OutStr, InStream);
+        CopyStream(OutStr, TempBlob.CreateInStream());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
