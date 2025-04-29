@@ -10,6 +10,11 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
 {
     TableNo = "Sales Shipment Header";
 
+    var
+        XMLDOMManagement: Codeunit "XML DOM Management";
+        ShipmentXML: XmlDocument;
+        RootNode: XmlNode;
+
     trigger OnRun()
     var
         SalesShipmentLine: Record "Sales Shipment Line";
@@ -120,6 +125,10 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
             this.XMLDOMManagement.AddElement(Node, NodeName, NodeValue, Namespace, ChildNode);
     end;
 
+    /// <summary>
+    /// Gets the XML document as a temporary blob.
+    /// </summary>
+    /// <param name="TempBlob">Return value: Temp Blob codeunit containing the document.</param>
     internal procedure GetShipmentXml(var TempBlob: Codeunit "Temp Blob")
     var
         OutStream: OutStream;
@@ -127,9 +136,4 @@ codeunit 6120 "E-Doc. Shipment Export To XML"
         TempBlob.CreateOutStream(OutStream);
         this.ShipmentXML.WriteTo(OutStream);
     end;
-
-    var
-        XMLDOMManagement: Codeunit "XML DOM Management";
-        ShipmentXML: XmlDocument;
-        RootNode: XmlNode;
 }
