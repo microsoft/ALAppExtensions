@@ -246,7 +246,6 @@ codeunit 6103 "E-Document Subscription"
         CreateEDocumentFromPostedDocument(TransferShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Transfer Shipment");
     end;
 
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Eval. Data", 'OnCreateEvaluationDataOnAfterClassifyTablesToNormal', '', false, false)]
     local procedure ClassifyDataSensitivity()
     var
