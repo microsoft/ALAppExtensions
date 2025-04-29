@@ -333,9 +333,7 @@ codeunit 6108 "E-Document Processing"
             exit(true);
     end;
 
-    local procedure GetDocSendingProfileForTransferShipment(LocationCode: Code[20]): Record "Document Sending Profile"
-    var
-        DocumentSendingProfile: Record "Document Sending Profile";
+    local procedure GetDocSendingProfileForTransferShipment(LocationCode: Code[20]) DocumentSendingProfile: Record "Document Sending Profile"
     begin
         GetDocSendingProfileForTransferShipment(DocumentSendingProfile, LocationCode);
     end;

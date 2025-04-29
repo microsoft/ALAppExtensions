@@ -866,4 +866,16 @@ codeunit 139629 "Library - E-Document"
         LibraryVariableStorage.Enqueue(EDocument);
     end;
 
+    internal procedure GetWorkflowFromService(EDocService: Record "E-Document Service") Workflow: Record Workflow;
+    var
+        WorkflowStep: Record "Workflow Step";
+        WorkflowStepArgument: Record "Workflow Step Argument";
+    begin
+        WorkflowStepArgument.SetRange("E-Document Service", EDocService.Code);
+        WorkflowStepArgument.FindFirst();
+        WorkflowStep.SetRange(Argument, WorkflowStepArgument.ID);
+        WorkflowStep.FindFirst();
+        Workflow.Get(WorkflowStep."Workflow Code");
+    end;
+
 }

@@ -1770,7 +1770,7 @@ codeunit 139624 "E-Doc E2E Test"
         this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
         this.EDocumentService.Modify(false);
         // [GIVEN] Document Sending Profile
-        DocumentSendingProfile.Get(Customer."Document Sending Profile");
+        CreateDocSendingProfileForLocation(DocumentSendingProfile);
         // [GIVEN] Transfer locations with posting setup
         CreateLocationsWithPostingSetups(FromLocation, ToLocation, InTransitLocation, InventoryPostingGroup);
         // [GIVEN] Item with inventory stock in from location
@@ -1985,6 +1985,17 @@ codeunit 139624 "E-Doc E2E Test"
         TransferShipmentHeader.FindFirst();
         EDocument.SetRange("Document Record ID", TransferShipmentHeader.RecordId);
         Assert.IsFalse(EDocument.IsEmpty(), 'E-Document not created for Transfer Shipment Header');
+    end;
+
+    local procedure CreateDocSendingProfileForLocation(var DocumentSendingProfile: Record "Document Sending Profile")
+    var
+        Workflow: Record "Workflow";
+    begin
+        LibraryEDoc.CreateDocSendingProfile(DocumentSendingProfile);
+        Workflow := LibraryEDoc.GetWorkflowFromService(EDocumentService);
+        DocumentSendingProfile."Electronic Document" := DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow";
+        DocumentSendingProfile."Electronic Service Flow" := Workflow.Code;
+        DocumentSendingProfile.Modify(false);
     end;
 
 #if not CLEAN26
