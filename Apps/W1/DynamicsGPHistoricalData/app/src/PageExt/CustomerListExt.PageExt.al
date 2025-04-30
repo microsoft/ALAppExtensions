@@ -72,17 +72,26 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 Image = Archive;
                 Visible = GPHistDataAvailable;
 
-                actionref("GP Rec. Docs_Promoted"; "GP Rec. Docs")
-                {
-                }
                 actionref("GP All Rec. Docs_Promoted"; "GP All Rec. Docs")
-                {
-                }
-                actionref("GP Sales Trx._Promoted"; "GP Sales Trx.")
                 {
                 }
                 actionref("GP All Sales Trx._Promoted"; "GP All Sales Trx.")
                 {
+                }
+
+                group(Category_GPGLDetail_Selected)
+                {
+                    Caption = 'Selected Customer';
+                    ShowAs = Standard;
+                    Image = Customer;
+                    Visible = GPHistDataAvailable;
+
+                    actionref("GP Rec. Docs_Promoted"; "GP Rec. Docs")
+                    {
+                    }
+                    actionref("GP Sales Trx._Promoted"; "GP Sales Trx.")
+                    {
+                    }
                 }
             }
         }

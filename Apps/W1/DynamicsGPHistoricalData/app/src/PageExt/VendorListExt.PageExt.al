@@ -72,17 +72,26 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                 Image = Archive;
                 Visible = GPHistDataAvailable;
 
-                actionref("GP Payables Docs_Promoted"; "GP Payables Docs")
-                {
-                }
                 actionref("GP All Payables Docs_Promoted"; "GP All Payables Docs")
-                {
-                }
-                actionref("GP Purchase Recv._Promoted"; "GP Purchase Recv.")
                 {
                 }
                 actionref("GP All Purchase Recv._Promoted"; "GP All Purchase Recv.")
                 {
+                }
+
+                group(Category_GPGLDetail_Selected)
+                {
+                    Caption = 'Selected Vendor';
+                    ShowAs = Standard;
+                    Image = Vendor;
+                    Visible = GPHistDataAvailable;
+
+                    actionref("GP Payables Docs_Promoted"; "GP Payables Docs")
+                    {
+                    }
+                    actionref("GP Purchase Recv._Promoted"; "GP Purchase Recv.")
+                    {
+                    }
                 }
             }
         }
