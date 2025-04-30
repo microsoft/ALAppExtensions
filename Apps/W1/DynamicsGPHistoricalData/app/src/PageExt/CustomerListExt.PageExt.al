@@ -13,7 +13,7 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 action("GP Rec. Docs")
                 {
                     ApplicationArea = All;
-                    Caption = 'Customer AR Transactions';
+                    Caption = 'Customer Receivables Transactions';
                     Image = Documents;
                     ToolTip = 'View the GP receivables transactions for the customer.';
                     Visible = GPRecvDataAvailable;
@@ -25,6 +25,15 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                         HistReceivablesDocuments.SetFilterCustomerNo(Rec."No.");
                         HistReceivablesDocuments.Run();
                     end;
+                }
+                action("GP All Rec. Docs")
+                {
+                    ApplicationArea = All;
+                    Caption = 'All Receivables Transactions';
+                    Image = ViewWorksheet;
+                    RunObject = Page "Hist. Receivables Documents";
+                    ToolTip = 'View all GP receivables transactions.';
+                    Visible = GPRecvDataAvailable;
                 }
                 action("GP Sales Trx.")
                 {
@@ -41,15 +50,6 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                         HistSalesTrxHeaders.SetFilterCustomerNo(Rec."No.");
                         HistSalesTrxHeaders.Run();
                     end;
-                }
-                action("GP All Rec. Docs")
-                {
-                    ApplicationArea = All;
-                    Caption = 'All Receivables Transactions';
-                    Image = ViewWorksheet;
-                    RunObject = Page "Hist. Receivables Documents";
-                    ToolTip = 'View all GP receivables transactions.';
-                    Visible = GPRecvDataAvailable;
                 }
                 action("GP All Sales Trx.")
                 {
@@ -75,10 +75,10 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                 actionref("GP Rec. Docs_Promoted"; "GP Rec. Docs")
                 {
                 }
-                actionref("GP Sales Trx._Promoted"; "GP Sales Trx.")
+                actionref("GP All Rec. Docs_Promoted"; "GP All Rec. Docs")
                 {
                 }
-                actionref("GP All Rec. Docs_Promoted"; "GP All Rec. Docs")
+                actionref("GP Sales Trx._Promoted"; "GP Sales Trx.")
                 {
                 }
                 actionref("GP All Sales Trx._Promoted"; "GP All Sales Trx.")

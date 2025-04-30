@@ -13,7 +13,7 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                 action("GP Payables Docs")
                 {
                     ApplicationArea = All;
-                    Caption = 'Vendor AP Transactions';
+                    Caption = 'Vendor Payables Transactions';
                     Image = Documents;
                     ToolTip = 'View the GP payables transactions for the vendor.';
                     Visible = GPPayablesDataAvailable;
@@ -25,6 +25,15 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                         HistPayablesDocuments.SetFilterVendorNo(Rec."No.");
                         HistPayablesDocuments.Run();
                     end;
+                }
+                action("GP All Payables Docs")
+                {
+                    ApplicationArea = All;
+                    Caption = 'All Payables Transactions';
+                    Image = ViewWorksheet;
+                    RunObject = Page "Hist. Payables Documents";
+                    ToolTip = 'View all GP payables transactions.';
+                    Visible = GPPayablesDataAvailable;
                 }
                 action("GP Purchase Recv.")
                 {
@@ -41,15 +50,6 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                         HistPurchaseRecvHeaders.SetFilterVendorNo(Rec."No.");
                         HistPurchaseRecvHeaders.Run();
                     end;
-                }
-                action("GP All Payables Docs")
-                {
-                    ApplicationArea = All;
-                    Caption = 'All AP Transactions';
-                    Image = ViewWorksheet;
-                    RunObject = Page "Hist. Payables Documents";
-                    ToolTip = 'View all GP payables transactions.';
-                    Visible = GPPayablesDataAvailable;
                 }
                 action("GP All Purchase Recv.")
                 {
@@ -75,10 +75,10 @@ pageextension 41019 "Vendor List Ext." extends "Vendor List"
                 actionref("GP Payables Docs_Promoted"; "GP Payables Docs")
                 {
                 }
-                actionref("GP Purchase Recv._Promoted"; "GP Purchase Recv.")
+                actionref("GP All Payables Docs_Promoted"; "GP All Payables Docs")
                 {
                 }
-                actionref("GP All Payables Docs_Promoted"; "GP All Payables Docs")
+                actionref("GP Purchase Recv._Promoted"; "GP Purchase Recv.")
                 {
                 }
                 actionref("GP All Purchase Recv._Promoted"; "GP All Purchase Recv.")
