@@ -2,8 +2,6 @@ namespace Microsoft.SubscriptionBilling;
 
 codeunit 8017 "Date Time Management"
 {
-    Access = Internal;
-
     procedure IsLastDayOfMonth(ThisDate: Date): Boolean
     begin
         exit(CalcDate('<CM>', ThisDate) = ThisDate);
@@ -14,7 +12,7 @@ codeunit 8017 "Date Time Management"
         ThisDate := CalcDate('<CM>', ThisDate)
     end;
 
-    internal procedure GetNumberOfDecimals(UnitPrice: Decimal) NoOfDecimals: Integer
+    procedure GetNumberOfDecimals(UnitPrice: Decimal) NoOfDecimals: Integer
     var
         BreakLoop: Boolean;
     begin
@@ -28,7 +26,7 @@ codeunit 8017 "Date Time Management"
         until BreakLoop;
     end;
 
-    internal procedure GetRoundingPrecision(NoOfDecimals: Integer) RoundingPrecision: Decimal
+    procedure GetRoundingPrecision(NoOfDecimals: Integer) RoundingPrecision: Decimal
     var
         i: Integer;
     begin
@@ -37,7 +35,7 @@ codeunit 8017 "Date Time Management"
             RoundingPrecision /= 10;
     end;
 
-    internal procedure GetMaxDate(DateList: List of [Date]) MaxDate: Date
+    procedure GetMaxDate(DateList: List of [Date]) MaxDate: Date
     var
         CurrentDate: Date;
     begin

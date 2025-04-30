@@ -73,12 +73,6 @@ page 8033 "Create Usage B. Cust. B. Docs"
         BillingRhytmFilter: Text;
         NoInvoiceCreatedErr: Label 'No contract lines were found that can be billed with the specified parameters.';
 
-    internal procedure GetData(var NewDocumentDate: Date; var NewPostingDate: Date; var NewPostDocument: Boolean)
-    begin
-        NewDocumentDate := DocumentDate;
-        NewPostingDate := PostingDate;
-        NewPostDocument := PostDocument;
-    end;
 
     local procedure CreateBillingDocumentForContract()
     var

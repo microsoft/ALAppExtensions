@@ -326,6 +326,13 @@ codeunit 18469 "Subcontracting Subscribers"
                 Error(VendorTypeErr, Vendor."No.");
     end;
 
+    [EventSubscriber(ObjectType::Table, database::"Tracking Specification", 'OnAfterIsReclass', '', false, false)]
+    local procedure OnAfterIsReclassSubcon(TrackingSpecification: Record "Tracking Specification"; var Reclass: Boolean)
+    begin
+        if (TrackingSpecification."Source Type" = Database::"Sub Order Component List") and (TrackingSpecification."Source Subtype" = 0) then
+            Reclass := true;
+    end;
+
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";

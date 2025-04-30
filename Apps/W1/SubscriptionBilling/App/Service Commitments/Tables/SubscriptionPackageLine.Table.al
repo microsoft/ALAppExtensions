@@ -6,7 +6,6 @@ table 8056 "Subscription Package Line"
 {
     Caption = 'Subscription Package Line';
     DataClassification = CustomerContent;
-    Access = Internal;
 
     fields
     {
@@ -52,6 +51,7 @@ table 8056 "Subscription Package Line"
                     Rec."Usage Based Billing" := ServiceCommitmentTemplate."Usage Based Billing";
                     Rec."Usage Based Pricing" := ServiceCommitmentTemplate."Usage Based Pricing";
                     Rec."Pricing Unit Cost Surcharge %" := ServiceCommitmentTemplate."Pricing Unit Cost Surcharge %";
+                    Rec."Create Contract Deferrals" := ServiceCommitmentTemplate."Create Contract Deferrals";
                 end;
             end;
         }
@@ -66,8 +66,11 @@ table 8056 "Subscription Package Line"
 
             trigger OnValidate()
             begin
-                if "Invoicing via" = "Invoicing via"::Sales then
+                if "Invoicing via" = "Invoicing via"::Sales then begin
                     "Invoicing Item No." := '';
+                    "Create Contract Deferrals" := "Create Contract Deferrals"::No;
+                end else
+                    "Create Contract Deferrals" := "Create Contract Deferrals"::"Contract-dependent";
                 ErrorIfInvoicingViaIsNotContractForDiscount();
             end;
         }
@@ -159,6 +162,10 @@ table 8056 "Subscription Package Line"
         field(18; "Price Binding Period"; DateFormula)
         {
             Caption = 'Price Binding Period';
+        }
+        field(40; "Create Contract Deferrals"; Enum "Create Contract Deferrals")
+        {
+            Caption = 'Create Contract Deferrals';
         }
         field(59; "Period Calculation"; enum "Period Calculation")
         {
@@ -282,6 +289,12 @@ table 8056 "Subscription Package Line"
         if Rec.Discount then
             if Rec."Usage Based Billing" then
                 Error(RecurringDiscountCannotBeGrantedErr);
+    end;
+
+    internal procedure FilterOnPackageCode(PackageCode: Code[20])
+    begin
+        Rec.Reset();
+        Rec.SetRange("Subscription Package Code", PackageCode);
     end;
 
     internal procedure IsPartnerVendor(): Boolean

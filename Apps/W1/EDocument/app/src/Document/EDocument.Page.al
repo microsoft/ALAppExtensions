@@ -465,7 +465,7 @@ page 6121 "E-Document"
                 Caption = 'Match Purchase Order';
                 ToolTip = 'Match E-document lines to Purchase Order.';
                 Image = SparkleFilled;
-                Visible = ShowMapToOrder and CopilotVisible;
+                Visible = ShowMapToOrder;
 
                 trigger OnAction()
                 var
@@ -480,13 +480,11 @@ page 6121 "E-Document"
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
-        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
         ShowMapToOrder := false;
         HasErrorsOrWarnings := false;
         HasErrors := false;
         IsProcessed := false;
-        CopilotVisible := EDocPOMatching.IsCopilotVisible();
         NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
     end;
 

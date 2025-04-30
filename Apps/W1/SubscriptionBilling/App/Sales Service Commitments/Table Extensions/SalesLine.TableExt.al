@@ -57,7 +57,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         }
         modify("No.")
         {
-            TableRelation = if (Type = const("Service Object")) "Subscription Header";
+            TableRelation = if (Type = const("Service Object")) "Subscription Header" where("End-User Customer No." = field("Sell-to Customer No."));
 
             trigger OnAfterValidate()
             var
@@ -134,7 +134,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         }
     }
     var
-        BillingLineexist, IsBillingLineCached : Boolean;
+        BillingLineExist, IsBillingLineCached : Boolean;
     trigger OnDelete()
     begin
         DeleteSalesServiceCommitment();
@@ -222,6 +222,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
                 SalesServiceCommitment.CalculateCalculationBaseAmount();
             until SalesServiceCommitment.Next() = 0;
         end;
+        OnAfterUpdateSalesSubscriptionLineCalculationBaseAmount(SalesLine, xSalesLine);
     end;
 
     internal procedure IsServiceCommitmentItem(): Boolean
@@ -234,11 +235,18 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     end;
 
     local procedure ErrorIfServiceObjectTypeCannotBeSelectedManually()
+    var
+        IsHandled: Boolean;
     begin
-        if CurrFieldNo = 0 then
+        IsHandled := false;
+        OnBeforeErrorIfServiceObjectTypeCannotBeSelectedManually(Rec, CurrFieldNo, IsHandled);
+        if IsHandled then
             exit;
-        if Rec.Type = Enum::"Sales Line Type"::"Service Object" then
-            Error(TypeCannotBeSelectedManuallyErr, Rec.Type);
+
+        if (CurrFieldNo = 0) or (not Rec.IsTypeServiceObject()) then
+            exit;
+
+        Error(TypeCannotBeSelectedManuallyErr, Rec.Type);
     end;
 
     internal procedure SetExcludeFromDocTotal()
@@ -253,7 +261,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         IsContractRenewalLocal := Rec.IsContractRenewal();
 
         if IsContractRenewalLocal then begin
-            if Rec.Type = Rec.Type::"Service Object" then
+            if Rec.IsTypeServiceObject() then
                 Rec.Validate("Exclude from Doc. Total", IsContractRenewalLocal);
         end else
             if (Rec.Type = Rec.Type::Item) and (Rec."No." <> '') and (not Rec.IsLineAttachedToBillingLine()) then
@@ -263,6 +271,11 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     internal procedure IsLineWithServiceObject(): Boolean
     begin
         exit((Rec.Type = "Sales Line Type"::"Service Object") and (Rec."No." <> ''));
+    end;
+
+    internal procedure IsTypeServiceObject(): Boolean
+    begin
+        exit(Rec.Type = "Sales Line Type"::"Service Object");
     end;
 
     internal procedure InsertDescriptionSalesLine(SourceSalesHeader: Record "Sales Header"; NewDescription: Text; AttachedToLineNo: Integer)
@@ -295,11 +308,37 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     begin
         if not IsBillingLineCached then begin
             BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
-            BillingLineexist := not BillingLine.IsEmpty();
+            BillingLineExist := not BillingLine.IsEmpty();
             IsBillingLineCached := true;
         end;
 
-        exit(BillingLineexist);
+        exit(BillingLineExist);
+    end;
+
+    internal procedure CreateContractDeferrals(): Boolean
+    var
+        CustomerSubscriptionContract: Record "Customer Subscription Contract";
+        SubscriptionLine: Record "Subscription Line";
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        if not BillingLine.FindFirst() then
+            exit;
+
+        if not SubscriptionLine.Get(BillingLine."Subscription Line Entry No.") then
+            exit;
+
+        case SubscriptionLine."Create Contract Deferrals" of
+            Enum::"Create Contract Deferrals"::"Contract-dependent":
+                begin
+                    CustomerSubscriptionContract.Get(BillingLine."Subscription Contract No.");
+                    exit(CustomerSubscriptionContract."Create Contract Deferrals");
+                end;
+            Enum::"Create Contract Deferrals"::Yes:
+                exit(true);
+            Enum::"Create Contract Deferrals"::No:
+                exit(false);
+        end;
     end;
 
     internal procedure IsContractRenewalQuote(): Boolean
@@ -318,8 +357,18 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         exit(not SalesServiceCommitment.IsEmpty());
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeSetExcludeFromDocTotal(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateSalesSubscriptionLineCalculationBaseAmount(var SalesLine: Record "Sales Line"; xSalesLine: Record "Sales Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeErrorIfServiceObjectTypeCannotBeSelectedManually(var SalesLine: Record "Sales Line"; FieldNo: Integer; var IsHandled: Boolean)
     begin
     end;
 }

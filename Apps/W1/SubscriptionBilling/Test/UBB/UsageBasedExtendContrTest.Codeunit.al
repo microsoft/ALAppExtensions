@@ -1,6 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
 using System.IO;
+using System.TestLibraries.Utilities;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
@@ -41,6 +42,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         CreateServiceCommitment: Codeunit "Create Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
         UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
+        LibraryUtility: Codeunit "Library - Utility";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         RecordRef: RecordRef;
         i: Integer;
         ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
@@ -165,6 +168,37 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         SetupUsageBasedBilling();
     end;
 
+    [Test]
+    [HandlerFunctions('ExtendContractModalPageHandler2,AssignServiceCommPackagesModalPageHandler,SendNotificationHandler')]
+    procedure UT_CheckNotificationsInExtendContractPage()
+    var
+        UsageDataGenericImport: Record "Usage Data Generic Import";
+        UsageDataGenericImportPage: TestPage "Usage Data Generic Import";
+    begin
+        //[SCENARIO]: Setup item with service commitment packages; None of the packages will have lines marked as Usage Based Billing
+        //[SCENARIO]: Expect that notification is sent when Extend contract is invoked from Usage Data Generic Import page
+        ClearAll();
+        LibraryVariableStorage.Clear();
+        ContractTestLibrary.InitContractsApp();
+
+        // [GIVEN] Create an item with service commitment option
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        SetupItemWithMultipleServiceCommitmentPackages(false);
+
+        // [GIVEN] Setup Usage Data Supplier,Generic Import Settings, Usage Data Import, Usage Data Generic Import
+        MockUsageDataSupplier();
+        MockGenericImportSettings();
+        MockUsageDataImport();
+        MockUsageDataGenericImport(UsageDataGenericImport);
+
+        // [WHEN] Open the Usage Data Generic Import page and invoke Extend Contract
+        UsageDataGenericImportPage.OpenEdit();
+        UsageDataGenericImportPage.GoToRecord(UsageDataGenericImport);
+
+        //Test is performed inside the handler
+        UsageDataGenericImportPage.ExtendContract.Invoke(); //ExtendContractModalPageHandler2,AssignServiceCommPackagesModalPageHandler,SendNotificationHandler
+        LibraryVariableStorage.AssertEmpty();
+    end;
     #endregion Tests
 
     #region Procedures
@@ -225,13 +259,13 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         UsageBasedBTestLibrary.CreateDataExchangeFieldMapping(DataExchFieldMapping, DataExchDef.Code, DataExchLineDef.Code, RecordRef);
     end;
 
-    local procedure SetupItemWithMultipleServiceCommitmentPackages()
+    local procedure SetupItemWithMultipleServiceCommitmentPackages(UsageBasedBilling: Boolean)
     begin
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDec(100, 2);
         Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
         ServiceCommitmentTemplate."Invoicing via" := Enum::"Invoicing Via"::Contract;
-        ServiceCommitmentTemplate."Usage Based Billing" := true;
+        ServiceCommitmentTemplate."Usage Based Billing" := UsageBasedBilling;
         ServiceCommitmentTemplate.Modify(false);
 
         // Standard Subscription Package with two Subscription Package Lines
@@ -278,6 +312,36 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         Report.Run(Report::"Create Service Objects", false, false, ImportedServiceObject); // MessageHandler
     end;
 
+    local procedure MockGenericImportSettings()
+    begin
+        GenericImportSettings.Init();
+        GenericImportSettings."Usage Data Supplier No." := UsageDataSupplier."No.";
+        GenericImportSettings."Process without UsageDataBlobs" := true;
+        GenericImportSettings.Insert();
+    end;
+
+    local procedure MockUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import")
+    begin
+        UsageDataGenericImport.InitFromUsageDataImport(UsageDataImport);
+        UsageDataGenericImport."Product ID" := LibraryUtility.GenerateRandomText(80);
+        UsageDataGenericImport."Supp. Subscription ID" := LibraryUtility.GenerateRandomText(80);
+        UsageDataGenericImport.Insert();
+    end;
+
+    local procedure MockUsageDataImport()
+    begin
+        UsageDataImport.Init();
+        UsageDataImport."Supplier No." := UsageDataSupplier."No.";
+        UsageDataImport.Insert();
+    end;
+
+    local procedure MockUsageDataSupplier()
+    begin
+        UsageDataSupplier.Init();
+        UsageDataSupplier."No." := LibraryUtility.GenerateRandomCode20(UsageDataSupplier.FieldNo("No."), Database::"Usage Data Supplier");
+        UsageDataSupplier.Insert();
+    end;
+
     local procedure SetupCustomerContract()
     begin
         ContractTestLibrary.CreateCustomer(Customer);
@@ -287,7 +351,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     local procedure SetupUsageBasedBilling()
     begin
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        SetupItemWithMultipleServiceCommitmentPackages();
+        SetupItemWithMultipleServiceCommitmentPackages(true);
         CreateCustomerAndVendorContracts();
         SetupUsageDataForProcessingToGenericImport();
         InvokeExtendContractFromSubscription();
@@ -359,6 +423,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     procedure AssignServiceCommPackagesModalPageHandler(var AssignServiceCommPackages: TestPage "Assign Service Comm. Packages")
     begin
         AssignServiceCommPackages.First();
+        AssignServiceCommPackages.Selected.SetValue(true);
         AssignServiceCommPackages.OK().Invoke();
     end;
 
@@ -376,9 +441,28 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         ExtendContract."Perform Extension".Invoke();
     end;
 
+    [ModalPageHandler]
+    procedure ExtendContractModalPageHandler2(var ExtendContract: TestPage "Extend Contract")
+    var
+        NoUBBServiceCommitmentPackFound1Msg: Label 'No standard Subscription Package for usage-based billing is assigned to the item %1.', Locked = true;
+        NoUBBServiceCommitmentPackFound2Msg: Label 'None of the selected Subscription Package are intended for usage-based billing.', Locked = true;
+    begin
+        Clear(LibraryVariableStorage); //clear previous messages; values are saved OnOpenPage
+        ExtendContract.ItemNo.SetValue(Item."No.");
+        AssertThat.AreEqual(StrSubstNo(NoUBBServiceCommitmentPackFound1Msg, ExtendContract.ItemNo.Value), LibraryVariableStorage.DequeueText(), 'Notification message is not correct.');
+        ExtendContract.AdditionalServiceCommitments.AssistEdit();
+        AssertThat.AreEqual(NoUBBServiceCommitmentPackFound2Msg, LibraryVariableStorage.DequeueText(), 'Notification message is not correct.');
+    end;
+
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
+    end;
+
+    [SendNotificationHandler]
+    procedure SendNotificationHandler(var Notification: Notification): Boolean
+    begin
+        LibraryVariableStorage.Enqueue(Notification.Message);
     end;
 
     [ModalPageHandler]

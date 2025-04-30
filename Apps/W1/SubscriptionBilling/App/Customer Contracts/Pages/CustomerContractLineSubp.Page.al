@@ -321,6 +321,16 @@ page 8068 "Customer Contract Line Subp."
                         UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Term Until"));
                     end;
                 }
+                field("Notice Period"; ServiceCommitment."Notice Period")
+                {
+                    Caption = 'Notice Period';
+                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the subscription line ends. The rhythm of the update of "Notice possible to" and "Term until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
+                    Visible = false;
+                    trigger OnValidate()
+                    begin
+                        UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Notice Period"));
+                    end;
+                }
                 field("Initial Term"; ServiceCommitment."Initial Term")
                 {
                     Caption = 'Initial Term';
@@ -361,6 +371,14 @@ page 8068 "Customer Contract Line Subp."
                 {
                     Editable = false;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
+                }
+                field("Create Contract Deferrals"; ServiceCommitment."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                    trigger OnValidate()
+                    begin
+                        UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Create Contract Deferrals"));
+                    end;
                 }
                 field("Price Binding Period"; ServiceCommitment."Price Binding Period")
                 {
@@ -567,11 +585,17 @@ page 8068 "Customer Contract Line Subp."
     begin
         if (Today() > ServiceCommitment."Subscription Line End Date") and (ServiceCommitment."Next Billing Date" > ServiceCommitment."Subscription Line End Date") and (ServiceCommitment."Subscription Line End Date" <> 0D) then
             NextBillingDateStyleExpr := 'Ambiguous';
+        OnAfterSetNextBillingDateStyle(Rec, ServiceCommitment, NextBillingDateStyleExpr);
     end;
 
     local procedure UpdateEditableOnRow()
     begin
         IsCommentLineEditable := Rec.IsCommentLine();
         IsDiscountLine := ServiceCommitment.Discount;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetNextBillingDateStyle(CustSubContractLine: Record "Cust. Sub. Contract Line"; SubscriptionLine: Record "Subscription Line"; var NextBillingDateStyleExpr: Text)
+    begin
     end;
 }

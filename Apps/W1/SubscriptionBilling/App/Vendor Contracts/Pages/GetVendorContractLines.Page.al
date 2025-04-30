@@ -341,7 +341,7 @@ page 8095 "Get Vendor Contract Lines"
         Rec.Validate(Amount, VendorInvoiceAmount);
     end;
 
-    internal procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
+    local procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
     begin
         PurchaseHeader.TestField("Document Type", PurchaseHeader."Document Type"::Invoice);
         PurchaseHeader.TestField(Status, PurchaseHeader.Status::Open);
