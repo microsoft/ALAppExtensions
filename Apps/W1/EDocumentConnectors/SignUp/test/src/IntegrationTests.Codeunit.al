@@ -520,7 +520,7 @@ codeunit 148193 IntegrationTests
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('GetMetadataProfileHandler')]
     procedure GetMetadataProfiles()
     var
         SignUpMetadataProfile: Record "SignUp Metadata Profile";
@@ -557,15 +557,13 @@ codeunit 148193 IntegrationTests
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
-                LoadResourceIntoHttpResponse('AccessToken.json', Response);
+                LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
                 GetStatusResponse(Response);
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions'):
-                LoadResourceIntoHttpResponse('SubmitDocumentResponse.json', Response);
+                LoadResourceIntoHttpResponse('GetSentDocumentStatus.txt', Response);
         end;
     end;
-
-    // Get https://edoc.exflow.io/api/v2/Peppol/inbox/transactions
 
     [HttpClientHandler]
     internal procedure ReceiveDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
@@ -574,12 +572,13 @@ codeunit 148193 IntegrationTests
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
-                LoadResourceIntoHttpResponse('AccessToken.json', Response);
+                LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions/[0-9a-zA-Z-]+'):
+                LoadResourceIntoHttpResponse('GetTargetDocumentRequest.txt', Response);
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions'):
                 LoadResourceIntoHttpResponse('GetReceivedDocumentsRequest.txt', Response);
         end;
     end;
-
 
     [HttpClientHandler]
     internal procedure ServiceDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
@@ -587,31 +586,21 @@ codeunit 148193 IntegrationTests
         Regex: Codeunit Regex;
     begin
         if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
-            LoadResourceIntoHttpResponse('AccessToken.json', Response)
+            LoadResourceIntoHttpResponse('GetAccessToken.txt', Response)
         else
             Response.HttpStatusCode := 500;
     end;
 
-    //Post https://login.microsoftonline.com/eef4ab2c-2b10-4380-bf4b-214157971162/oauth2/token
-    // Post https://edoc.exflow.io/api/v2/Peppol/outbox/transactions
-
-
-    // Post https://localhost:8080/signup/oauth2/token
-    // Post https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions
-    // Get https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
-    // Get https://localhost:8080/signup/200/response-pending/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
-    // Get https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
-    // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
-    // Patch https://localhost:8080/signup/200/response-error/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/acknowledge
-    // Get https://localhost:8080/signup/200/api/v2/Peppol/outbox/transactions/485959a5-4a96-4a41-a208-13c30bb7e4d3/status
-    // Post https://localhost:8080/signup/500/api/v2/Peppol/outbox/transactions
-    // Get https://localhost:8080/signup/200/api/v2/Peppol/metadataprofile
-
-
-
-
-
-
+    [HttpClientHandler]
+    internal procedure GetMetadataProfileHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
+            LoadResourceIntoHttpResponse('GetAccessToken.txt', Response)
+        else
+            LoadResourceIntoHttpResponse('GetMetadataProfile.txt', Response);
+    end;
     #endregion
 
     #region local methods
@@ -766,9 +755,9 @@ codeunit 148193 IntegrationTests
     begin
         case this.DocumentStatus of
             this.DocumentStatus::Processing:
-                LoadResourceIntoHttpResponse('DocumentStatusProcessing.json', Response);
+                LoadResourceIntoHttpResponse('GetSentDocumentStatusInProgress.txt', Response);
             this.DocumentStatus::Error:
-                LoadResourceIntoHttpResponse('DocumentStatusError.json', Response);
+                LoadResourceIntoHttpResponse('GetSentDocumentStatusError.txt', Response);
         end;
     end;
     #endregion
