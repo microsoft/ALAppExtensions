@@ -99,7 +99,12 @@ table 4580 "Ext. SharePoint Account"
         TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
     end;
 
+#if CLEAN28
+    internal procedure SetClientSecret(ClientSecret: SecretText)
+#else
+    [Obsolete('Should not be external visible. Will be set to internal.', '26.0')]
     procedure SetClientSecret(ClientSecret: SecretText)
+#endif
     begin
         if IsNullGuid(Rec."Client Secret Key") then
             Rec."Client Secret Key" := CreateGuid();
