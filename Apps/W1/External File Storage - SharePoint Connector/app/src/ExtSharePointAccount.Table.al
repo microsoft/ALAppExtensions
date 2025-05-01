@@ -128,7 +128,12 @@ table 4580 "Ext. SharePoint Account"
         end;
     end;
 
+#if CLEAN28
+    internal procedure GetClientSecret(ClientSecretKey: Guid): SecretText
+#else
+    [Obsolete('Should not be external visible. Will be set to internal.', '26.0')]
     procedure GetClientSecret(ClientSecretKey: Guid): SecretText
+#endif
     begin
         exit(GetIsolatedStorageValue(ClientSecretKey, UnableToGetClientMsg));
     end;
