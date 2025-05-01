@@ -1,6 +1,7 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Foundation.Reporting;
+using System.Utilities;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Document;
@@ -170,14 +171,13 @@ codeunit 30038 "APIV2 - Send Sales Document"
 
     local procedure SendCreditMemoCancelationEmail(SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     var
-
         TempSalesHeader: Record "Sales Header" temporary;
         ReportSelections: Record "Report Selections";
         DocumentMailing: Codeunit "Document-Mailing";
+        TempBlobEmailBody: Codeunit "Temp Blob";
         ReportSelectionUsage: Enum "Report Selection Usage";
         RecordVariant: Variant;
         EmailAddress: Text[250];
-        ServerEmailBodyFilePath: Text[250];
         EmailBodyTxt: Text;
         EmptyInStream: InStream;
     begin
@@ -188,9 +188,9 @@ codeunit 30038 "APIV2 - Send Sales Document"
         EmailAddress := GetSendToEmailAddress(SalesCrMemoHeader);
         EmailBodyTxt := GetCreditMemoEmailBody(SalesCrMemoHeader);
         ReportSelections.GetEmailBodyTextForCust(
-          ServerEmailBodyFilePath, ReportSelectionUsage::"S.Invoice", RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
+          TempBlobEmailBody, ReportSelectionUsage::"S.Invoice", RecordVariant, SalesCrMemoHeader."Bill-to Customer No.", EmailAddress, EmailBodyTxt);
         DocumentMailing.EmailFileWithSubjectAndReportUsage(
-         EmptyInStream, '', ServerEmailBodyFilePath, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
+         EmptyInStream, '', TempBlobEmailBody, StrSubstNo(CancelationEmailSubjectTxt, TempSalesHeader."Document Type"::"Credit Memo"),
          SalesCrMemoHeader."No.", EmailAddress, Format(TempSalesHeader."Document Type"::"Credit Memo"), true, 2);
     end;
 

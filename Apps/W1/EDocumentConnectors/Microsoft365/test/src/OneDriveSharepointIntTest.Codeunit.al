@@ -491,7 +491,7 @@ codeunit 148196 "OneDrive Sharepoint Int. Test"
         LocalOutStream.WriteText(Format(EDocument."Index In Batch"));
 
         DriveProcessing.UpdateEDocumentAfterDocumentDownload(EDocument, DocumentId);
-        DriveProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
+        DriveProcessing.UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId, EDocumentService);
     end;
 
     internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)

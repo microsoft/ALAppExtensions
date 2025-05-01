@@ -109,6 +109,8 @@ codeunit 31362 "Match Bank Payment CZB"
                             GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
                     end;
                     GenJournalLine.Validate("Account No.", SearchRuleLineCZB."Account No.");
+                    GenJournalLine.InitDocumentTypeCZB();
+                    GenJournalLine.Validate("Document Type");
                     GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
                     GenJournalLine.Description := OriginalGenJournalLine.Description;
                     GenJournalLine.Modify();
@@ -214,17 +216,8 @@ codeunit 31362 "Match Bank Payment CZB"
                             GenJournalLine.Validate(Amount, OriginalGenJournalLine.Amount);
                         if GenJournalLine.Description <> OriginalGenJournalLine.Description then
                             GenJournalLine.Description := OriginalGenJournalLine.Description;
-                        case GenJournalLine."Account Type" of
-                            GenJournalLine."Account Type"::Customer:
-                                if GenJournalLine.Amount > 0 then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
-                            GenJournalLine."Account Type"::Vendor:
-                                if GenJournalLine.Amount < 0 then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
-                            GenJournalLine."Account Type"::Employee:
-                                if GenJournalLine.Amount < 0 then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::" ");
-                        end;
+                        GenJournalLine.InitDocumentTypeCZB();
+                        GenJournalLine.Validate("Document Type");
 
                         OnAfterValidateGenJournalLine(TempMatchBankPaymentBufferCZB, GenJournalLine, SearchRuleLineCZB);
                         GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";

@@ -73,11 +73,14 @@ codeunit 139688 "Recurring Billing Test"
         EndDate: Date;
         StartDate: Date;
     begin
-        // [SCENARIO] When Customer Subscription Contract has Subscription Line Start Date at the end of the month, the proposed billing lines should convert the whole period including the last day of the contract
+        // [SCENARIO] When Customer Subscription Contract has Subscription Line Start Date at the end of the month, the proposed billing lines should covert the whole period including the last day of the contract
+
+        // Fixing rare date constellation when the Start Date number is larger than the End Date number and Start Date month has more days than the End Date month.
+        // Basically any month with 31 days which is followed by a month with less days fits, e.g. January to February, March to April, August to September, etc.
         Initialize();
 
-        StartDate := CalcDate('<-CM-5M-1D>', Today()); // Last day of the month, e.g. 31.03.2023
-        EndDate := CalcDate('<-CM-4M-1D>', Today()); // Last day of the next month, e.g. 30.04.2023
+        StartDate := CalcDate('<CY-4M>', Today()); // Last day of the month, e.g. 31.08.2023
+        EndDate := CalcDate('<CY-3M>', Today()); // Last day of the next month, e.g. 30.09.2023
 
         // [GIVEN] Subscription Item
         ContractTestLibrary.CreateItemForServiceObject(Item, false, Enum::"Item Service Commitment Type"::"Service Commitment Item", "Item Type"::"Non-Inventory");
@@ -103,11 +106,11 @@ codeunit 139688 "Recurring Billing Test"
         ContractTestLibrary.AssignServiceObjectForItemToCustomerContract(CustomerContract, ServiceObject, false);
 
         // [GIVEN] Billing Template for Customer Subscription Contract for complete period - last day of the month following to the next one
-        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '<CM+2M>', '<CM+2M>', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
+        ContractTestLibrary.CreateRecurringBillingTemplate(BillingTemplate, '', '', CustomerContract.GetView(), Enum::"Service Partner"::Customer);
         BillingTemplate.SetRecFilter();
 
         // [WHEN] Create Billing Proposal for Customer Subscription Contract
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, EndDate + 1);
 
         // [THEN] Billing Lines are created for Customer Subscription Contract for complete period
         BillingLine.Reset();

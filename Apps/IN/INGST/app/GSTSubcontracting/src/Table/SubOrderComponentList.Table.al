@@ -396,6 +396,7 @@ table 18479 "Sub Order Component List"
     begin
         TestField("Item No.");
         InitTrackingSpecification(TrackingSpecification);
+        ItemTrackingForm.SetRunMode(Enum::"Item Tracking Run Mode"::Reclass);
         ItemTrackingForm.SetSourceSpec(TrackingSpecification, WorkDate());
         ItemTrackingForm.RunModal();
     end;

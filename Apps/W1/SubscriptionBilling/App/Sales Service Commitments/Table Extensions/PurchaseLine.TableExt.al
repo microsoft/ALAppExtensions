@@ -53,6 +53,32 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         exit(not BillingLine.IsEmpty());
     end;
 
+    internal procedure CreateContractDeferrals(): Boolean
+    var
+        VendorSubscriptionContract: Record "Vendor Subscription Contract";
+        SubscriptionLine: Record "Subscription Line";
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        if not BillingLine.FindFirst() then
+            exit;
+
+        if not SubscriptionLine.Get(BillingLine."Subscription Line Entry No.") then
+            exit;
+
+        case SubscriptionLine."Create Contract Deferrals" of
+            Enum::"Create Contract Deferrals"::"Contract-dependent":
+                begin
+                    VendorSubscriptionContract.Get(BillingLine."Subscription Contract No.");
+                    exit(VendorSubscriptionContract."Create Contract Deferrals");
+                end;
+            Enum::"Create Contract Deferrals"::Yes:
+                exit(true);
+            Enum::"Create Contract Deferrals"::No:
+                exit(false);
+        end;
+    end;
+
     internal procedure IsContractLineAssignable(): Boolean
     var
         Item: Record Item;

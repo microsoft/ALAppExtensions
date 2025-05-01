@@ -15,7 +15,6 @@ table 8064 "Billing Line Archive"
     LookupPageId = "Archived Billing Lines";
     DrillDownPageId = "Archived Billing Lines";
     Caption = 'Archived Billing Line';
-    Access = Internal;
 
     fields
     {

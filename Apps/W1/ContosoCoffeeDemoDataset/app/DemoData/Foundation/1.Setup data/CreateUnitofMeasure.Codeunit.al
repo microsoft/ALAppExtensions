@@ -39,6 +39,7 @@ codeunit 5248 "Create Unit of Measure"
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Ton(), TonneLbl, 'TN');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(KWH(), KWHLbl, 'KWH');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(CM(), CMLbl, 'CM');
+        ContosoUnitOfMeasure.InsertUnitOfMeasure(M3(), CubicMetreLbl, 'M3');
     end;
 
     local procedure CreateUnitOfMeasureTranslation()
@@ -137,6 +138,11 @@ codeunit 5248 "Create Unit of Measure"
         exit(CMTok);
     end;
 
+    procedure M3(): Code[10]
+    begin
+        exit(M3Tok);
+    end;
+
     var
         HourLbl: Label 'Hour', MaxLength = 50;
         HourTok: Label 'HOUR', MaxLength = 10;
@@ -172,4 +178,6 @@ codeunit 5248 "Create Unit of Measure"
         KWHLbl: Label 'KW Hour', MaxLength = 50;
         CMTok: Label 'CM', MaxLength = 10;
         CMLbl: Label 'Centimeter', MaxLength = 50;
+        M3Tok: Label 'M3', MaxLength = 10;
+        CubicMetreLbl: Label 'Cubic metre', MaxLength = 50;
 }

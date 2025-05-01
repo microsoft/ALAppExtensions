@@ -927,10 +927,10 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
-                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                        "No. Series" := xRec."No. Series";
-                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+                "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
             end;
 
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
@@ -1713,6 +1713,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "SWIFT Code" <> '' then
                 SWIFT := "SWIFT Code";
         end;
+        if IBANCode <> '' then
+            IBANCode := DelChr(IBANCode, '=', ' ');
 
         CalcFields("Amount Including VAT");
 

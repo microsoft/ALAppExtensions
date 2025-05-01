@@ -10,6 +10,8 @@ permissionsetextension 12214 "Serv. Decl. IT - Objects" extends "Serv. Decl. - O
         page "Serv. Decl. Lines IT" = X,
 
         codeunit "Serv. Decl. Exp. Ext. IT" = X,
+#if not CLEAN27
         codeunit "Serv. Decl. Get Totals IT" = X,
+#endif
         codeunit "Service Declaration Mgt. IT" = X;
 }

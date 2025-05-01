@@ -8,8 +8,6 @@ using Microsoft.Finance.Currency;
 
 codeunit 8062 "Billing Proposal"
 {
-    Access = Internal;
-
     var
         SalesHeader: Record "Sales Header";
         PurchaseHeader: Record "Purchase Header";
@@ -30,7 +28,7 @@ codeunit 8062 "Billing Proposal"
         BillingLinesForAllContractLinesExistsErr: Label 'There are billing lines for all contract lines. For contract lines with billing lines, the invoice must be created in recurring billing.';
         BillingPeriodStart, BillingPeriodEnd : Date;
 
-    internal procedure InitTempTable(var TempBillingLine: Record "Billing Line" temporary; GroupBy: Enum "Contract Billing Grouping")
+    procedure InitTempTable(var TempBillingLine: Record "Billing Line" temporary; GroupBy: Enum "Contract Billing Grouping")
     var
         BillingLine: Record "Billing Line";
         TempBillingLine2: Record "Billing Line" temporary;
@@ -234,7 +232,7 @@ codeunit 8062 "Billing Proposal"
             RecalculateHarmonizedBillingFieldsBasedOnNextBillingDate(BillingLine, ContractNo);
     end;
 
-    internal procedure ProcessServiceCommitment(var ServiceCommitment: Record "Subscription Line"; var BillingLine: Record "Billing Line"; BillingTemplate: Record "Billing Template"; var BillingDate: Date; var BillingToDate: Date)
+    local procedure ProcessServiceCommitment(var ServiceCommitment: Record "Subscription Line"; var BillingLine: Record "Billing Line"; BillingTemplate: Record "Billing Template"; var BillingDate: Date; var BillingToDate: Date)
     var
         UsageDataBilling: Record "Usage Data Billing";
         SkipServiceCommitment: Boolean;
@@ -391,7 +389,12 @@ codeunit 8062 "Billing Proposal"
     var
         Currency: Record Currency;
         GLSetup: Record "General Ledger Setup";
+        IsHandled: Boolean;
     begin
+        OnBeforeCalculateBillingLineUnitAmountsAndServiceAmount(BillingLine, ServiceCommitment, IsHandled);
+        if IsHandled then
+            exit;
+
         if SetBillingLineUnitPriceAndServiceAmountsFromUsageDataBilling(BillingLine, ServiceCommitment) then
             exit;
         GLSetup.Get();
@@ -494,7 +497,7 @@ codeunit 8062 "Billing Proposal"
                 BillingPeriodEnd := CustomerContract."Next Billing To" - 1;
     end;
 
-    internal procedure CalculateNextBillingToDateForServiceCommitment(ServiceCommitment: Record "Subscription Line"; BillingFromDate: Date) NextBillingToDate: Date
+    procedure CalculateNextBillingToDateForServiceCommitment(ServiceCommitment: Record "Subscription Line"; BillingFromDate: Date) NextBillingToDate: Date
     var
         CustomerContract: Record "Customer Subscription Contract";
         SupplierChargeEndDate: Date;
@@ -768,7 +771,7 @@ codeunit 8062 "Billing Proposal"
         TempBillingTemplate.Insert(false);
     end;
 
-    internal procedure CreateBillingDocument(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; DocumentDate: Date; PostingDate: Date; PostDocument: Boolean; OpenDocument: Boolean): Boolean
+    procedure CreateBillingDocument(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; DocumentDate: Date; PostingDate: Date; PostDocument: Boolean; OpenDocument: Boolean): Boolean
     var
         BillingLine: Record "Billing Line";
     begin
@@ -912,58 +915,63 @@ codeunit 8062 "Billing Proposal"
         end;
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBillingLineFromSubscriptionLine(var BillingLine: Record "Billing Line"; SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeProcessContractSubscriptionLines(var SubscriptionLine: Record "Subscription Line"; BillingDate: Date; BillingToDate: Date; BillingRhythmFilterText: Text; BillingTemplate: Record "Billing Template")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterProcessContractSubscriptionLines(var SubscriptionLine: Record "Subscription Line"; BillingDate: Date; BillingToDate: Date; BillingRhythmFilterText: Text)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateBillingProposalFromContract(ContractNo: Code[20]; BillingRhytmFilter: Text; ServicePartner: Enum "Service Partner"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateNextBillingToDateForSubscriptionLine(var NextBillingToDate: Date; SubscriptionLine: Record "Subscription Line"; BillingFromDate: Date)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertBillingLineUpdateBillingLine(var BillingLine: Record "Billing Line"; SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInitTempTable(var TempBillingLine: Record "Billing Line" temporary; GroupBy: Enum "Contract Billing Grouping")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateNextBillingDateInUpdateBillingLine(var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterSubscriptionLineGetInUpdateBillingToDate(var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnCheckSkipSubscriptionLineOnElse(SubscriptionLine: Record "Subscription Line"; var SkipSubscriptionLine: Boolean)
     begin
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateBillingProposalBeforeApplyFilterToContract(var FilterText: Text; var BillingTemplate: Record "Billing Template"; BillingDate: Date; BillingToDate: Date)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalculateBillingLineUnitAmountsAndServiceAmount(var BillingLine: Record "Billing Line"; SubscriptionLine: Record "Subscription Line"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -16,12 +16,12 @@ codeunit 10544 "VAT Audit GB"
     var
         FeatureKeyIdTok: Label 'PrintVATAuditReports', Locked = true;
 
-    procedure IsEnabled() IsEnabled: Boolean
+    procedure IsEnabled() Result: Boolean
     var
         FeatureManagementFacade: Codeunit "Feature Management Facade";
     begin
-        IsEnabled := FeatureManagementFacade.IsEnabled(FeatureKeyIdTok);
-        OnAfterCheckFeatureEnabled(IsEnabled);
+        Result := FeatureManagementFacade.IsEnabled(FeatureKeyIdTok);
+        OnAfterCheckFeatureEnabled(Result);
     end;
 
     procedure GetFeatureKeyId(): Text

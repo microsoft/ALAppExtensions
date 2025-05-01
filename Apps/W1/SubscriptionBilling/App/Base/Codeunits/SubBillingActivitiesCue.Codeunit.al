@@ -13,17 +13,13 @@ codeunit 8071 "Sub. Billing Activities Cue"
         ResultsGlobal: Dictionary of [Text, Text];
 
     trigger OnRun()
-    var
-        Parameters: Dictionary of [Text, Text];
     begin
-        Parameters := Page.GetBackgroundParameters();
-
-        CalculateFieldValues(Parameters, ResultsGlobal);
+        CalculateFieldValues(ResultsGlobal);
 
         Page.SetBackgroundTaskResult(ResultsGlobal);
     end;
 
-    procedure CalculateFieldValues(Parameters: Dictionary of [Text, Text]; var ReturnResults: Dictionary of [Text, Text])
+    local procedure CalculateFieldValues(var ReturnResults: Dictionary of [Text, Text])
     var
         SubscriptionBillingCue: Record "Subscription Billing Cue";
     begin
@@ -50,7 +46,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         SubscriptionBillingCue."Last Updated On" := CurrentDateTime();
     end;
 
-    procedure EvaluateResults(var Results: Dictionary of [Text, Text]; var SubscriptionBillingCue: Record "Subscription Billing Cue")
+    internal procedure EvaluateResults(var Results: Dictionary of [Text, Text]; var SubscriptionBillingCue: Record "Subscription Billing Cue")
     var
         ResultValue: Text;
     begin
@@ -85,7 +81,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         Page.Run(Page::"Overdue Service Commitments", TemporaryOverdueServiceCommitments);
     end;
 
-    procedure GetMyJobsFilter() FilterText: Text
+    internal procedure GetMyJobsFilter() FilterText: Text
     var
         MyJobs: Record "My Job";
     begin
@@ -98,22 +94,22 @@ codeunit 8071 "Sub. Billing Activities Cue"
             until MyJobs.Next() = 0;
     end;
 
-    procedure RevenueCurrentMonth() Result: Decimal
+    local procedure RevenueCurrentMonth(): Decimal
     begin
         exit(GetRevenue(true));
     end;
 
-    procedure CostCurrentMonth() Result: Decimal
+    local procedure CostCurrentMonth(): Decimal
     begin
         exit(GetCost(true));
     end;
 
-    procedure RevenuePreviousMonth() Result: Decimal
+    local procedure RevenuePreviousMonth(): Decimal
     begin
         exit(GetRevenue(false));
     end;
 
-    procedure CostPreviousMonth() Result: Decimal
+    local procedure CostPreviousMonth(): Decimal
     begin
         exit(GetCost(false));
     end;
@@ -156,7 +152,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         exit(PurchInvLine.Amount - PurchCrMemoLine.Amount);
     end;
 
-    procedure GetDateFilterFormulas(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
+    internal procedure GetDateFilterFormulas(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
     begin
         if CurrentMonth then begin
             DateFilterFrom := '<-CM>';

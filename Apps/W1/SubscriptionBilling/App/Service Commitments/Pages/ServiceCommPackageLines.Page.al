@@ -100,6 +100,12 @@ page 8058 "Service Comm. Package Lines"
                     StyleExpr = Bold;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    Style = Strong;
+                    StyleExpr = Bold;
+                    ToolTip = 'Specifies whether deferrals are created for new Subscription lines.';
+                }
                 field("Period Calculation"; Rec."Period Calculation")
                 {
                     Style = Strong;
@@ -158,6 +164,7 @@ page 8058 "Service Comm. Package Lines"
         Rec."Period Calculation" := ServiceContractSetup."Default Period Calculation";
         Rec."Billing Base Period" := ServiceContractSetup."Default Billing Base Period";
         Rec."Billing Rhythm" := ServiceContractSetup."Default Billing Rhythm";
+        Rec."Create Contract Deferrals" := ServiceContractSetup."Create Contract Deferrals";
     end;
 
     var

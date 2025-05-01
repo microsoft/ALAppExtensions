@@ -82,6 +82,27 @@ codeunit 6381 "Drive Processing"
             exit(IdToken.AsValue().AsText())
     end;
 
+    procedure GetName(FolderSharedLink: Text[2048]): Text
+    var
+        GraphClient: Codeunit "Graph Client";
+        Base64Convert: Codeunit "Base64 Convert";
+        MyFolderIdLink, Base64SharedLink, ErrorMessageTxt : Text;
+        FilesJson: JsonObject;
+        IdToken: JsonToken;
+    begin
+        Base64SharedLink := Base64Convert.ToBase64(FolderSharedLink);
+        Base64SharedLink := 'u!' + Base64SharedLink.TrimEnd('=').Replace('/', '_').Replace('+', '-');
+        MyFolderIdLink := GetGraphSharesURL() + Base64SharedLink + '/driveItem?$select=id,name';
+        if not GraphClient.GetDriveFolderInfo(MyFolderIdLink, FilesJson) then begin
+            ErrorMessageTxt := GetLastErrorText() + GetLastErrorCallStack();
+            ClearLastError();
+            Error(ErrorMessageTxt);
+        end;
+
+        if FilesJson.Get('name', IdToken) then
+            exit(IdToken.AsValue().AsText())
+    end;
+
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
         GraphClient: Codeunit "Graph Client";
@@ -202,13 +223,14 @@ codeunit 6381 "Drive Processing"
         CopyStream(DocumentOutStream, DocumentInStream);
 
         UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId);
-        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
+        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId, EDocumentService);
     end;
 
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text)
+    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text; var EDocumentService: Record "E-Document Service")
     begin
         ReceiveContext.SetName(CopyStr(FileId, 1, 250));
         ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
+        ReceiveContext.SetSourceDetails(GetSourceDetails(EDocumentService."Service Integration V2"));
     end;
 
     internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text)
@@ -294,6 +316,29 @@ codeunit 6381 "Drive Processing"
                 Error(UnsupportedIntegrationTypeErr);
         end;
         exit(SiteId);
+    end;
+
+    local procedure GetSourceDetails(var ServiceIntegration: Enum "Service Integration"): Text
+    var
+        SharepointSetup: Record "Sharepoint Setup";
+        OneDriveSetup: Record "OneDrive Setup";
+        DocumentsFolderName: Text;
+    begin
+        case ServiceIntegration of
+            ServiceIntegration::SharePoint:
+                begin
+                    CheckSetupEnabled(SharepointSetup);
+                    CheckFolderSharedLinkNotEmpty(SharepointSetup."Documents Folder", SharepointSetup.TableCaption());
+                    DocumentsFolderName := SharepointSetup."Documents Folder Name";
+                end;
+            ServiceIntegration::OneDrive:
+                begin
+                    CheckSetupEnabled(OneDriveSetup);
+                    CheckFolderSharedLinkNotEmpty(OneDriveSetup."Documents Folder", OneDriveSetup.TableCaption());
+                    DocumentsFolderName := OneDriveSetup."Documents Folder Name";
+                end;
+        end;
+        exit(DocumentsFolderName);
     end;
 
     local procedure GetImportedDocumentsFolderId(var ServiceIntegration: Enum "Service Integration"): Text
