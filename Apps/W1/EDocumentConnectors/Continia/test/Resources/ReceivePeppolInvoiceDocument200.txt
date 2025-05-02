@@ -131,7 +131,7 @@
     <cac:Item>
       <cbc:Name>LONDON Swivel Chair, blue</cbc:Name>
       <cac:SellersItemIdentification>
-        <cbc:ID>1908-S</cbc:ID>
+        <cbc:ID>Item1</cbc:ID>
       </cac:SellersItemIdentification>
       <cac:ClassifiedTaxCategory>
         <cbc:ID>S</cbc:ID>

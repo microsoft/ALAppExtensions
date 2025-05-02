@@ -1,4 +1,5 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.EServices.EDocumentConnector.Continia;
 using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Customer;
@@ -1111,15 +1112,14 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         ContiniaConnectionSetup.DeleteAll();
         ContiniaConnectionSetup.Init();
         ContiniaConnectionSetup.Insert(true);
-
         PurchaseHeader.DeleteAll();
 
         if IsInitialized then
             exit;
         LibraryEDocument.SetupStandardVAT();
         LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
-
         LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"Service Integration"::Continia);
+        CreateTestItem();
         EDocumentService.Validate("Auto Import", true);
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
@@ -1133,8 +1133,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         Vendor.Modify();
 
-        CreateTestItem();
-
         ConnectorLibrary.PrepareParticipation(EDocumentService);
 
         IsInitialized := true;
@@ -1145,16 +1143,30 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         Item: Record Item;
         ItemReference: Record "Item Reference";
         UnitofMeasure: Record "Unit of Measure";
+        VATPostingSetup: Record "VAT Posting Setup";
+        ItemNoTok: Label 'Item1', Locked = true;
     begin
         // Create a test item
-        LibraryInventory.CreateItem(Item);
+        if Item.Get(ItemNoTok) then
+            Item.Delete();
+        LibraryEDocument.CreateGenericItem(Item);
+        Item.Rename(ItemNoTok);
+        Item.Description := 'LONDON Swivel Chair, blue';
 #pragma warning disable AA0210
         UnitofMeasure.SetRange("International Standard Code", TestItemIsoUomTok);
 #pragma warning restore AA0210
         UnitofMeasure.FindFirst();
         Item.Validate("Base Unit of Measure", UnitofMeasure.Code);
         Item.Modify(true);
-        LibraryItemReference.CreateItemReferenceWithNo(ItemReference, TestVendorItemNoTok, Item."No.", Enum::"Item Reference Type"::Vendor, Vendor."No.");
+        LibraryItemReference.CreateItemReferenceWithNo(ItemReference, ItemNoTok, Item."No.", Enum::"Item Reference Type"::Vendor, Vendor."No.");
+        if not VATPostingSetup.GET(Vendor."VAT Bus. Posting Group", Item."VAT Prod. Posting Group") then begin
+            VATPostingSetup.Init();
+            VATPostingSetup."VAT Bus. Posting Group" := Vendor."VAT Bus. Posting Group";
+            VATPostingSetup."VAT Prod. Posting Group" := Item."VAT Prod. Posting Group";
+            VATPostingSetup."VAT %" := 20;
+            VATPostingSetup."Tax Category" := 'S';
+            VATPostingSetup.Insert();
+        end;
     end;
 
     local procedure TestEDocumentPage(EDocument: Record "E-Document"; EDocumentStatus: Enum "E-Document Status"; EDocServiceStatus: Enum "E-Document Service Status"; EDocLogList: List of [Enum "E-Document Service Status"]; ErrorMessageType: Text; ErrorMessage: Text)
@@ -1236,7 +1248,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         LibraryPermission: Codeunit "Library - Lower Permissions";
         LibraryJobQueue: Codeunit "Library - Job Queue";
         Assert: Codeunit Assert;
-        LibraryInventory: Codeunit "Library - Inventory";
         LibraryItemReference: Codeunit "Library - Item Reference";
         ConnectorLibrary: Codeunit "Continia Connector Library";
         ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
@@ -1244,7 +1255,6 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
-        TestVendorItemNoTok: Label '1908-S', Locked = true;
         TestItemIsoUomTok: Label 'EA', Locked = true;
         DocumentUriPatternTok: Label '%1/documents.xml', Comment = '%1 - Base URL', Locked = true;
         ParticipationProfileDocumentsUriPatternTok: Label '%1/networks/%2/participations/%3/profiles/%4/documents.xml', Comment = '%1 - Base URL, %2- Participation Id, %3 - Profile Id', Locked = true;
