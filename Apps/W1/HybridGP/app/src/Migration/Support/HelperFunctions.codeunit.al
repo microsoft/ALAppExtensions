@@ -2235,6 +2235,14 @@ codeunit 4037 "Helper Functions"
         exit(true);
     end;
 
+    internal procedure RunPreMigrationCleanup()
+    var
+        Dimension: Record Dimension;
+    begin
+        if not Dimension.IsEmpty() then
+            Dimension.DeleteAll(true);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnSkipPostingGLAccounts(var SkipPosting: Boolean)
     begin
