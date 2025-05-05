@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.API;
 
-page 6102 "E-Document Files API"
+page 6111 "E-Document Files API"
 {
     PageType = API;
     Caption = 'eDocumentsFileAPI';

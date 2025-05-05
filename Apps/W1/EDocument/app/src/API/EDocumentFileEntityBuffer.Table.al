@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 
-table 6108 "E-Document File Entity Buffer"
+table 6112 "E-Document File Entity Buffer"
 {
     Caption = 'E-Document File Entity Buffer';
     TableType = Temporary;

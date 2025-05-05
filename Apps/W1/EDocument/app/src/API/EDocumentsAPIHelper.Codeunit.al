@@ -8,7 +8,7 @@ using Microsoft.eServices.EDocument;
 using System.Utilities;
 using System.Environment;
 
-codeunit 6120 "E-Documents API Helper"
+codeunit 6129 "E-Documents API Helper"
 {
     internal procedure LoadEDocumentFile(var TempEDocumentsFileBuffer: Record "E-Document File Entity Buffer" temporary; EDocumentNoFilter: Text)
     var

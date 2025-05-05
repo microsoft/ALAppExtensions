@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.API;
 
-page 6101 "E-Documents API"
+page 6112 "E-Documents API"
 {
     PageType = API;
 

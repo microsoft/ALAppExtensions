@@ -1,4 +1,20 @@
-table 6109 "E-Document Entity Buffer"
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.eServices.EDocument.API;
+
+using Microsoft.eServices.EDocument;
+using System.Reflection;
+using Microsoft.Foundation.Reporting;
+using System.IO;
+using Microsoft.Finance.Currency;
+using System.Automation;
+using System.Threading;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Integration;
+
+table 6111 "E-Document Entity Buffer"
 {
     Caption = 'E-Document Entity Buffer';
     DataClassification = CustomerContent;

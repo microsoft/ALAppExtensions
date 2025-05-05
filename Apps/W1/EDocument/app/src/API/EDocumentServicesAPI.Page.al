@@ -1,8 +1,12 @@
-namespace app.app;
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 
-page 6104 "E-Document Services API"
+page 6113 "E-Document Services API"
 {
     PageType = API;
 

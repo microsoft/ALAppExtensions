@@ -7,7 +7,7 @@ namespace Microsoft.eServices.EDocument.API;
 using Microsoft.eServices.EDocument;
 using System.Integration;
 
-codeunit 6121 "E-Document External Events"
+codeunit 6127 "E-Document External Events"
 {
     var
         EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
