@@ -36,12 +36,12 @@ codeunit 6139 "E-Document Workflow Setup"
         Workflow.Modify();
     end;
 
-    procedure EDocReceived(): Code[128]
+    internal procedure EDocReceived(): Code[128]
     begin
         exit('EDOCRECEIVED');
     end;
 
-    procedure EDocImport(): Code[128]
+    internal procedure EDocImport(): Code[128]
     begin
         exit('EDOCIMPORT');
     end;
@@ -56,7 +56,7 @@ codeunit 6139 "E-Document Workflow Setup"
         exit('EDOCCREATEDEVENT')
     end;
 
-    procedure EDocStatusChanged(): code[128];
+    internal procedure EDocStatusChanged(): code[128];
     begin
         exit('EDOCSENT')
     end;
