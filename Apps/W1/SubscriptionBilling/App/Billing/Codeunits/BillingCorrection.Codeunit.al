@@ -7,7 +7,6 @@ using Microsoft.Purchases.Document;
 codeunit 8061 "Billing Correction"
 {
     SingleInstance = true;
-    Access = Internal;
 
     var
         NewerInvoiceExistErr: Label 'The Subscription Line has already been invoiced until %1. In order to cancel the invoice, please cancel the newer invoices first.';
@@ -219,17 +218,17 @@ codeunit 8061 "Billing Correction"
         CreateBillingLineFromBillingLineArchive(ToPurchLine, ServiceCommitment, FromPurchaseHeader."No.", DocLineNo);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateBillingLineFromBillingLineArchive(var RRef: RecordRef; BillingLineArchive: Record "Billing Line Archive")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateBillingLineFromBillingLineArchiveAfterInsertToSalesLine(var ToSalesLine: Record "Sales Line"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateNextBillingDateInCreateBillingLineFromBillingLineArchive(var SubscriptionLine: Record "Subscription Line")
     begin
     end;

@@ -104,6 +104,7 @@ page 8063 "Assigned Items"
         ItemList: Page "Item List";
     begin
         Item2.SetRange("Subscription Option", Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        OnAssignItemsOnAfterItem2SetFilters(PackageCode, Item2);
         if Item2.FindSet() then
             repeat
                 if not ItemServCommitmentPackage.Get(Item2."No.", PackageCode) then
@@ -127,5 +128,10 @@ page 8063 "Assigned Items"
     begin
         if ConfirmManagement.GetResponse(DeletionQst, false) then
             ItemServCommitmentPackage.DeleteAll(false);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAssignItemsOnAfterItem2SetFilters(PackageCode: Code[20]; var Item2: Record Item)
+    begin
     end;
 }

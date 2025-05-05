@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#if not CLEAN27
 namespace Microsoft.Service.Reports;
 
 using System.IO;
@@ -9,6 +10,9 @@ using System.IO;
 codeunit 12215 "Serv. Decl. Get Totals IT"
 {
     TableNo = "Data Exch.";
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
+    ObsoleteReason = 'Calculating the sum of rounded values is moved to codeunit 12214 "Serv. Decl. Exp. Ext. IT".';
 
     trigger OnRun()
     var
@@ -27,7 +31,7 @@ codeunit 12215 "Serv. Decl. Get Totals IT"
             DataExchField.SetRange("Column No.", DataExchFieldMapping."Column No.");
             if DataExchField.FindSet() then
                 repeat
-                    Evaluate(DecVar, DataExchField.GetValue());
+                    Evaluate(DecVar, DataExchField.GetValue().TrimStart('0'));
                     TotalRoundedAmount += Round(DecVar, 1);
                 until DataExchField.Next() = 0;
         end;
@@ -35,3 +39,4 @@ codeunit 12215 "Serv. Decl. Get Totals IT"
         LocalServiceDeclarationMgt.SetTotals(TotalRoundedAmount, DataExchField."Line No.");
     end;
 }
+#endif

@@ -29,6 +29,12 @@ page 6105 "Inbound E-Documents"
             repeater(DocumentList)
             {
                 ShowCaption = false;
+                field("Entry No"; Rec."Entry No")
+                {
+                    Caption = 'Entry No.';
+                    ToolTip = 'Specifies the unique number of the electronic document.';
+                    Visible = false;
+                }
                 field("Document Name"; DocumentNameTxt)
                 {
                     Caption = 'Document';
@@ -45,13 +51,19 @@ page 6105 "Inbound E-Documents"
                 }
                 field(Service; Rec.Service)
                 {
+                    Visible = false;
                     Caption = 'Service';
                     ToolTip = 'Specifies the service code of the electronic document.';
                 }
                 field("Service Integration"; Rec."Service Integration")
                 {
-                    Caption = 'Service Integration';
-                    ToolTip = 'Specifies the integration code of the electronic document.';
+                    Caption = 'Source';
+                    ToolTip = 'Specifies the source of the electronic document.';
+                }
+                field("Source Details"; Rec."Source Details")
+                {
+                    Caption = 'Source Details';
+                    ToolTip = 'Specifies the details about the source of the electronic document.';
                 }
                 field("Vendor Name"; VendorNameTxt)
                 {
@@ -101,37 +113,43 @@ page 6105 "Inbound E-Documents"
     {
         area(Processing)
         {
-            action(ImportPdf)
+
+            fileuploadaction(ImportPdf)
             {
                 Caption = 'Import PDF';
                 ToolTip = 'Create an electronic document by importing a PDF file.';
+                AllowedFileExtensions = '.pdf';
+                AllowMultipleFiles = true;
                 Image = SendAsPDF;
 
-                trigger OnAction()
+                trigger OnAction(Files: List of [FileUpload])
                 begin
-                    NewFromPdf();
+                    NewFromPdf(Files);
                 end;
             }
-            action(ImportXML)
+            fileuploadaction(ImportXML)
             {
                 Caption = 'Import XML';
                 ToolTip = 'Create an electronic document by importing an XML file.';
+                AllowedFileExtensions = '.xml';
+                AllowMultipleFiles = true;
                 Image = XMLFile;
 
-                trigger OnAction()
+                trigger OnAction(Files: List of [FileUpload])
                 begin
-                    NewFromXml();
+                    NewFromXml(Files);
                 end;
             }
-            action(ImportManually)
+            fileuploadaction(ImportManually)
             {
                 Caption = 'Import other file';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
+                AllowMultipleFiles = true;
 
-                trigger OnAction()
+                trigger OnAction(Files: List of [FileUpload])
                 begin
-                    NewFromFile();
+                    NewFromFile(Files);
                 end;
             }
             action(OpenDraftDocument)
@@ -220,7 +238,6 @@ page 6105 "Inbound E-Documents"
     var
         EDocumentHelper: Codeunit "E-Document Helper";
         ImportProcessingStatus: Enum "Import E-Doc. Proc. Status";
-        ProcessDialogMsg: Label 'Processing pdf...';
         RecordLinkTxt, VendorNameTxt, DocumentNameTxt : Text;
 
     trigger OnAfterGetRecord()
@@ -271,65 +288,100 @@ page 6105 "Inbound E-Documents"
             Error('');
     end;
 
-    local procedure NewFromFile()
+    #region File Upload Actions
+
+    local procedure NewFromFile(Files: List of [FileUpload])
     var
-        EDocument: Record "E-Document";
-        EDocImport: Codeunit "E-Doc. Import";
+        EDocumentService: Record "E-Document Service";
     begin
-        EDocImport.UploadDocument(EDocument);
-        if EDocument."Entry No" = 0 then
+        if not ChooseEDocumentService(EDocumentService) then
             exit;
+
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::Unspecified);
     end;
 
-    local procedure NewFromPdf()
+    local procedure NewFromPdf(Files: List of [FileUpload])
     var
-        EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
-        EDocImport: Codeunit "E-Doc. Import";
-        FileName: Text;
-        InStr: InStream;
     begin
-        if not UploadIntoStream('', '', '', FileName, InStr) then
-            exit;
-
         EDocumentService.GetPDFReaderService();
-        EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::PDF, FileName, InStr);
-
-        ProcessEDocument(EDocument);
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::PDF);
     end;
 
-    local procedure NewFromXml()
+    local procedure NewFromXml(Files: List of [FileUpload])
+    var
+        EDocumentService: Record "E-Document Service";
+    begin
+        if not ChooseEDocumentService(EDocumentService) then
+            exit;
+
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::XML);
+    end;
+
+    local procedure ProcessFilesUploads(EDocumentService: Record "E-Document Service"; Files: List of [FileUpload]; Type: Enum "E-Doc. Data Storage Blob Type")
     var
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         EDocImport: Codeunit "E-Doc. Import";
-        FileName: Text;
-        InStr: InStream;
+        File: FileUpload;
+        InStream: InStream;
+        OpenDraft, Processed : Boolean;
+        DocumentIndex: Integer;
+        TotalFiles, ProcessedFiles, FailedFiles : Integer;
+        Progress: Dialog;
+        Msg: Label 'Processing documents...\To Import:#1#######\Failed:#2#######\Imported:#3#######', Comment = '#1 Number of to import, #2 Number of failed, #3 = Number of imported';
     begin
-        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
-            exit;
+        DocumentIndex := 1;
+        if GuiAllowed() then begin
+            TotalFiles := Files.Count();
+            Progress.Open(Msg, TotalFiles, FailedFiles, ProcessedFiles);
+            Progress.Update(1, TotalFiles);
+            Progress.Update(2, FailedFiles);
+            Progress.Update(3, ProcessedFiles);
+        end;
+        foreach File in Files do begin
+            Clear(EDocument);
 
-        if not UploadIntoStream('', '', '', FileName, InStr) then
-            exit;
+            // Open last document in the list
+            OpenDraft := Files.Count() = DocumentIndex;
+            DocumentIndex += 1;
 
-        EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, FileName, InStr);
-        ProcessEDocument(EDocument);
+            File.CreateInStream(InStream);
+            EDocImport.CreateFromType(EDocument, EDocumentService, Type, File.FileName, InStream);
+            Processed := ProcessEDocument(EDocument, OpenDraft);
+
+            if GuiAllowed() then begin
+                ProcessedFiles += 1;
+                if not Processed then
+                    FailedFiles += 1;
+                Progress.Update(2, FailedFiles);
+                Progress.Update(3, ProcessedFiles);
+            end;
+        end;
+
+        if GuiAllowed then
+            Progress.Close();
     end;
 
-    local procedure ProcessEDocument(var EDocument: Record "E-Document")
+    #endregion File Upload Actions
+
+    local procedure ProcessEDocument(var EDocument: Record "E-Document"; OpenDraft: Boolean) Success: Boolean
     var
         EDocImport: Codeunit "E-Doc. Import";
-        Progress: Dialog;
     begin
         if not EDocumentHelper.EnsureInboundEDocumentHasService(EDocument) then
             exit;
 
-        Progress.Open(ProcessDialogMsg);
         if not EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument) then
             exit;
-        Progress.Close();
-        if EDocument.GetEDocumentImportProcessingStatus() = "Import E-Doc. Proc. Status"::"Draft Ready" then
+
+        Success := EDocument.GetEDocumentImportProcessingStatus() = "Import E-Doc. Proc. Status"::"Draft Ready";
+        if Success and OpenDraft then
             EDocumentHelper.OpenDraftPage(EDocument);
+    end;
+
+    local procedure ChooseEDocumentService(var EDocumentService: Record "E-Document Service"): Boolean
+    begin
+        exit(Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK);
     end;
 
 }

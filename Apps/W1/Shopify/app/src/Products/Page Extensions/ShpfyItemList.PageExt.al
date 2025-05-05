@@ -43,7 +43,7 @@ pageextension 30120 "Shpfy Item List" extends "Item List"
             ShopifyEnabled := ShopMgt.IsEnabled();
     end;
 
-    trigger OnAfterGetRecord()
+    trigger OnAfterGetCurrRecord()
     begin
         if GuiAllowed() then
             if ShopifyEnabled then

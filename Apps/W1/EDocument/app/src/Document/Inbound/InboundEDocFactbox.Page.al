@@ -126,7 +126,7 @@ page 6108 "Inbound E-Doc. Factbox"
 
     var
         IsPdf, ControlAddInReady : Boolean;
-        ImportProcessingStatusVisible, Visible, Loaded : Boolean;
+        ImportProcessingStatusVisible, Visible : Boolean;
         EDocSystemCreatedAt: DateTime;
         EDocSystemCreatedBy: Text;
 
@@ -168,7 +168,7 @@ page 6108 "Inbound E-Doc. Factbox"
         if not ControlAddInReady then
             exit;
 
-        if (EDocument."Unstructured Data Entry No." <> 0) and (not Loaded) then begin
+        if (EDocument."Unstructured Data Entry No." <> 0) then begin
             Visible := true;
             EDocumentDataStorage.Get(EDocument."Unstructured Data Entry No.");
             EDocumentDataStorage.CalcFields("Data Storage");
@@ -177,7 +177,6 @@ page 6108 "Inbound E-Doc. Factbox"
             TempBlob.CreateInStream(InStreamVar);
             PDFAsTxt := Base64Convert.ToBase64(InStreamVar);
             CurrPage.PDFViewer.LoadPDF(PDFAsTxt);
-            Loaded := true;
         end;
         CurrPage.PDFViewer.SetVisible(Visible);
     end;

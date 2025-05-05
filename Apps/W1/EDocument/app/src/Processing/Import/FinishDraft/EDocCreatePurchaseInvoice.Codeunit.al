@@ -72,7 +72,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 PurchaseLine."Document Type" := PurchaseHeader."Document Type";
                 PurchaseLine."Document No." := PurchaseHeader."No.";
                 PurchaseLine."Line No." += 10000;
-                PurchaseLine."Unit of Measure Code" := EDocumentLineMapping."Unit of Measure";
+                PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentLineMapping."Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
                 PurchaseLine.Type := EDocumentLineMapping."Purchase Line Type";
                 PurchaseLine.Validate("No.", EDocumentLineMapping."Purchase Type No.");
                 PurchaseLine.Description := EDocumentPurchaseLine.Description;
@@ -81,6 +81,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 PurchaseLine.Validate("Deferral Code", EDocumentLineMapping."Deferral Code");
                 PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentLineMapping."Shortcut Dimension 1 Code");
                 PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentLineMapping."Shortcut Dimension 2 Code");
+                EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentLineMapping, PurchaseLine);
                 PurchaseLine.Insert();
 
                 // Track changes for history

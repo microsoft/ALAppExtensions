@@ -182,6 +182,33 @@ page 30017 "APIV2 - Employees"
                 {
                     Caption = 'Statistics Group Code';
                 }
+                field(bankBranchNumber; Rec."Bank Branch No.")
+                {
+                    Caption = 'Bank Branch No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Bank Branch No."));
+                    end;
+                }
+                field(bankAccountNumber; Rec."Bank Account No.")
+                {
+                    Caption = 'Bank Account No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Bank Account No."));
+                    end;
+                }
+                field(iban; Rec.IBAN)
+                {
+                    Caption = 'IBAN';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo(IBAN));
+                    end;
+                }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';

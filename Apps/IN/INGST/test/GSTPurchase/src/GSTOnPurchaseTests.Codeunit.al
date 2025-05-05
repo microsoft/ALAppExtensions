@@ -1179,6 +1179,41 @@ codeunit 18131 "GST On Purchase Tests"
         LibraryGST.VerifyGLEntries(VendorLedgerEntryPayment."Document Type", VendorLedgerEntryPayment."Document No.", 6);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchInvServicesForRegVendorWithOfflineApplicationApplyPaymentToInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentType: Enum "Purchase Document Type";
+        LineType: Enum "Sales Line Type";
+        TemplateType: Enum "Gen. Journal Template Type";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [Check if the system is Successfully posting offline application of GST payment to Invoice of Services Registered Vendor where Input Tax Credit is available - Inter-State through Purchase Invoice]
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Vendor with input Tax Credit is availment where Jurisdiction type is Interstate
+        InitializeShareStep(true, false, false);
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Bank Payment Voucher with GST Advance Payment
+        CreateGenJnlLineForVoucherWithAdvancePayment(GenJournalLine, TemplateType::"Bank Payment Voucher");
+        Storage.Set(PaymentDocNoLbl, GenJournalLine."Document No.");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [WHEN] Create and Post Purchase Orderwhere line type is G/L account
+        PostedDocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Apply Vendor Ledger Entry and Verify
+        LibraryERM.ApplyVendorLedgerEntries(GenJournalDocumentType::Payment, GenJournalDocumentType::Invoice, (Storage.Get(PaymentDocNoLbl)), PostedDocumentNo);
+        VerifyAdvInvoiceApplied(PostedDocumentNo);
+    end;
+
     local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
@@ -1455,6 +1490,18 @@ codeunit 18131 "GST On Purchase Tests"
     begin
         VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Payment);
         VendorLedgerEntry.SetRange("Document No.", Storage.Get(PaymentDocNoLbl));
+        VendorLedgerEntry.FindFirst();
+        VendorLedgerEntry.CalcFields(Amount, "Remaining Amount");
+
+        Assert.AreNotEqual(VendorLedgerEntry.Amount, VendorLedgerEntry."Remaining Amount", StrSubstNo(VendLedgerEntryVerifyErr, VendorLedgerEntry.FieldName("Remaining Amount"), VendorLedgerEntry.TableCaption));
+    end;
+
+    local procedure VerifyAdvInvoiceApplied(PostedDocumentNo: Code[20])
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
+        VendorLedgerEntry.SetRange("Document No.", PostedDocumentNo);
         VendorLedgerEntry.FindFirst();
         VendorLedgerEntry.CalcFields(Amount, "Remaining Amount");
 

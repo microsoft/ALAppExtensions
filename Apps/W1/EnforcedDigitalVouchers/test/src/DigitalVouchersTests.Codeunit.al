@@ -29,6 +29,7 @@ codeunit 139515 "Digital Vouchers Tests"
         DoYouWantToPostQst: Label 'Do you want to post the journal lines?';
         PaymentLineAppliedMsg: Label '%1 payment lines out of 1 are applied.\\', Comment = '%1 - number';
         DoYouWantTPostPmtQst: Label 'Do you want to post the payments?';
+        LinesPostedMsg: Label 'The journal lines were successfully posted.';
 
     trigger OnRun()
     begin
@@ -256,19 +257,20 @@ codeunit 139515 "Digital Vouchers Tests"
 
     [Test]
     [HandlerFunctions('ConfirmHandler,ErrorMessagePageHandler')]
-    procedure PostGeneralJournalLineWithRequiredAttachmentAndNoDigitalVoucher()
+    procedure PostBlankDocumentGeneralJournalLineWithRequiredAttachmentAndNoDigitalVoucher()
     var
         GenJournalLine: Record "Gen. Journal Line";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
         BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
     begin
-        // [SCENARIO 537136] Stan cannot post a general journal line with required attachment and no digital voucher
+        // [SCENARIO 554830] Stan cannot post a blank document general journal line with required attachment and no digital voucher
 
         Initialize();
+        EnableDigitalVoucherFeature();
         BindSubscription(DigVouchersDisableEnforce);
-        // [GIVEN] Digital voucher entry setup for general journal is "Attachment"
-        InitSetupCheckOnly("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] General journal line is created
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment" and "Consider Blank. Doc Type" option is enabled
+        InitSetupCheckWithConsiderBlankDocType("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment, true);
+        // [GIVEN] General journal line with "Document Type" = "" is created
         LibraryJournals.CreateGenJournalLineWithBatch(
             GenJournalLine, GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account",
             LibraryERm.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
@@ -282,6 +284,111 @@ codeunit 139515 "Digital Vouchers Tests"
         // Verified in the ErrorMessagePageHandler
 
         LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure PostBlankDocumentGeneralJournalLineWithoutVoucherAndNoConsiderBlankDocTypeOption()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        GLEntry: Record "G/L Entry";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        DocNo: Code[20];
+    begin
+        // [SCENARIO 554830] Stan can post a blank document general journal line without digital voucher and disabled "Consider Blank. Document Type" option
+
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment" and "Consider Blank Doc. Type" option is disabled
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] General journal line with "Document Type" = "" is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account",
+            LibraryERm.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        DocNo := GenJournalLine."Document No.";
+        LibraryVariableStorage.Enqueue(DoYouWantToPostQst);
+        LibraryVariableStorage.Enqueue(true);
+        LibraryVariableStorage.Enqueue(LinesPostedMsg);
+        // [WHEN] Post general journal
+        BatchProcessingMgt.BatchProcessGenJournalLine(GenJournalLine, Codeunit::"Gen. Jnl.-Post");
+
+        // [THEN] General ledger entries are posted without the digital voucher
+        GLEntry.SetRange("Posting Date", GenJournalLine."Posting Date");
+        GLEntry.SetRange("Document No.", DocNo);
+        Assert.RecordCount(GLEntry, 2);
+
+        LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure PostBlankDocTypeWithGenerateAutomaticallyAndConsiderBlankDocType()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        IncomingDocument: Record "Incoming Document";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        DocNo: Code[20];
+        PostingDate: Date;
+    begin
+        // [SCENARIO 554830] Stan can post blank document general journal line with automatically generated voucher when "Consider Blank Doc. Type" option is enabled
+
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment", "Generate Automatically" option is enabled and "Consider Blank Doc. Type" option is enabled
+        InitSetupGenerateAutomaticallyAndConsiderBlankDocType("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment, true);
+        // [GIVEN] General journal line with "Document Type" = "" is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account",
+            LibraryERm.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        DocNo := GenJournalLine."Document No.";
+        PostingDate := GenJournalLine."Posting Date";
+        // [WHEN] Post general journal line
+        Codeunit.Run(Codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
+
+        // [THEN] Digital voucher is generated for the general journal line
+        Assert.IsTrue(
+            IncomingDocument.FindByDocumentNoAndPostingDate(
+                IncomingDocument, DocNo, Format(PostingDate)),
+            'Digital voucher has not been generated');
+
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure NoDigitalVoucherIsGeneratedForBlankDocGenJnlLineWhenConsiderBlankDocTypeIsOff()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        IncomingDocument: Record "Incoming Document";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        DocNo: Code[20];
+        PostingDate: Date;
+    begin
+        // [SCENARIO 554830] No digital voucher is generated for blank document general journal line when "Consider Blank Doc. Type" option is disabled
+
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment", "Generate Automatically" option is enabled and "Consider Blank Doc. Type" option is disabled
+        InitSetupGenerateAutomaticallyAndConsiderBlankDocType("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment, false);
+        // [GIVEN] General journal line with "Document Type" = "" is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account",
+            LibraryERm.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        DocNo := GenJournalLine."Document No.";
+        PostingDate := GenJournalLine."Posting Date";
+        // [WHEN] Post general journal line
+        Codeunit.Run(Codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
+
+        // [THEN] Digital voucher is not generated for the general journal line
+        Assert.IsFalse(
+            IncomingDocument.FindByDocumentNoAndPostingDate(
+                IncomingDocument, DocNo, Format(PostingDate)),
+            'Digital voucher has been generated');
+
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
@@ -1007,20 +1114,30 @@ codeunit 139515 "Digital Vouchers Tests"
 
     local procedure InitSetupCheckOnly(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type")
     begin
-        InitSetup(EntryType, CheckType, false, false);
+        InitSetup(EntryType, CheckType, false, false, false);
+    end;
+
+    local procedure InitSetupCheckWithConsiderBlankDocType(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type"; ConsiderBlankDocType: Boolean)
+    begin
+        InitSetup(EntryType, CheckType, false, false, ConsiderBlankDocType);
     end;
 
     local procedure InitSetupGenerateAutomatically(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type")
     begin
-        InitSetup(EntryType, CheckType, true, false);
+        InitSetup(EntryType, CheckType, true, false, false);
+    end;
+
+    local procedure InitSetupGenerateAutomaticallyAndConsiderBlankDocType(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type"; ConsiderBlankDocType: Boolean)
+    begin
+        InitSetup(EntryType, CheckType, true, false, ConsiderBlankDocType);
     end;
 
     local procedure InitSetupGenerateAutomaticallySkipIfManuallyAdded(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type")
     begin
-        InitSetup(EntryType, CheckType, true, true);
+        InitSetup(EntryType, CheckType, true, true, false);
     end;
 
-    local procedure InitSetup(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type"; GenerateAutomatically: Boolean; SkipIsManuallyAdded: Boolean)
+    local procedure InitSetup(EntryType: Enum "Digital Voucher Entry Type"; CheckType: Enum "Digital Voucher Check Type"; GenerateAutomatically: Boolean; SkipIsManuallyAdded: Boolean; ConsiderBlankDocType: Boolean)
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
@@ -1030,6 +1147,7 @@ codeunit 139515 "Digital Vouchers Tests"
         DigitalVoucherEntrySetup."Check Type" := CheckType;
         DigitalVoucherEntrySetup."Generate Automatically" := GenerateAutomatically;
         DigitalVoucherEntrySetup."Skip If Manually Added" := SkipIsManuallyAdded;
+        DigitalVoucherEntrySetup."Consider Blank Doc. Type" := ConsiderBlankDocType;
         DigitalVoucherEntrySetup.Insert();
     end;
 

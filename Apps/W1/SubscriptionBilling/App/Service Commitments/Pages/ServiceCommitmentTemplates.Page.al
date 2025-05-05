@@ -52,6 +52,10 @@ page 8055 "Service Commitment Templates"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether usage data is used as the basis for billing via contracts.';
                 }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether deferrals are created for new Subscription Package lines.';
+                }
                 field(sageBasedPricing; Rec."Usage Based Pricing")
                 {
                     ApplicationArea = All;
@@ -76,6 +80,13 @@ page 8055 "Service Commitment Templates"
         PricingUnitCostSurchargeEditable := Rec."Usage Based Pricing" = Enum::"Usage Based Pricing"::"Unit Cost Surcharge";
     end;
 
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        SubscriptionContractSetup.Get();
+        Rec."Create Contract Deferrals" := SubscriptionContractSetup."Create Contract Deferrals";
+    end;
+
     var
+        SubscriptionContractSetup: Record "Subscription Contract Setup";
         PricingUnitCostSurchargeEditable: Boolean;
 }

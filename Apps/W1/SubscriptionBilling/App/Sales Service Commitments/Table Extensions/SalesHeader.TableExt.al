@@ -17,7 +17,8 @@ tableextension 8053 "Sales Header" extends "Sales Header"
             DataClassification = CustomerContent;
         }
     }
-    internal procedure GetLastLineNo(): Integer
+
+    local procedure GetLastLineNo(): Integer
     var
         SalesLine: Record "Sales Line";
     begin

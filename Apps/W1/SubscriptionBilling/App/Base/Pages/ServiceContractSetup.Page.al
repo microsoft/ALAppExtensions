@@ -39,6 +39,10 @@ page 8051 "Service Contract Setup"
                 {
                     ToolTip = 'Specifies the default rhythm in which the Subscription Line is calculated. Using a date formula, the rhythm can be defined as monthly, quarterly or annual calculation.';
                 }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether deferrals are created for new Subscription lines by default.';
+                }
             }
             group(Dimensions)
             {
