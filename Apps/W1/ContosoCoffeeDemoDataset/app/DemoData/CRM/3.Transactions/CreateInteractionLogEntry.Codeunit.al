@@ -1,4 +1,18 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.CRM;
+
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.CRM.Contact;
+using Microsoft.Sales.Customer;
+using Microsoft.CRM.Interaction;
+using Microsoft.CRM.Segment;
+using Microsoft.Purchases.Vendor;
+
 codeunit 5679 "Create Interaction Log Entry"
 {
     InherentEntitlements = X;

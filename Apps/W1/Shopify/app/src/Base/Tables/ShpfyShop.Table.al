@@ -229,13 +229,8 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             InitValue = true;
             ObsoleteReason = 'Replaced with action "Add Customer to Shopify" in Shopify Customers page.';
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
         }
 #endif
         field(30; "Shopify Can Update Customer"; Boolean)
@@ -724,19 +719,8 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
             ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
-#if CLEAN24
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-
-            trigger OnValidate()
-            begin
-                if "Replace Order Attribute Value" then
-                    UpdateOrderAttributes(Rec.Code);
-            end;
-#endif
         }
 #endif
         field(128; "Return Location Priority"; Enum "Shpfy Return Location Priority")
@@ -1034,24 +1018,6 @@ table 30102 "Shpfy Shop"
         exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
     end;
 
-#if not CLEAN24
-    local procedure UpdateOrderAttributes(ShopCode: Code[20])
-    var
-        OrderHeader: Record "Shpfy Order Header";
-        OrderAttribute: Record "Shpfy Order Attribute";
-    begin
-        OrderHeader.SetRange("Shop Code", ShopCode);
-        if OrderHeader.FindSet() then
-            repeat
-                OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
-                if OrderAttribute.FindSet() then
-                    repeat
-                        OrderAttribute."Attribute Value" := OrderAttribute.Value;
-                        OrderAttribute.Modify();
-                    until OrderAttribute.Next() = 0;
-            until OrderHeader.Next() = 0;
-    end;
-#endif
 
     internal procedure SyncCountries()
     begin

@@ -4,7 +4,6 @@ using System.Utilities;
 
 codeunit 8023 "Create Usage Data Billing"
 {
-    Access = Internal;
     TableNo = "Usage Data Import";
 
     var
@@ -134,12 +133,12 @@ codeunit 8023 "Create Usage Data Billing"
         exit(RetryFailedUsageDataImport);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLine(var TempSubscriptionLine: Record "Subscription Line"; var UsageDataBilling: Record "Usage Data Billing")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLines(var TempSubscriptionLine: Record "Subscription Line")
     begin
     end;

@@ -1,7 +1,7 @@
 controladdin "PDF Viewer"
 {
     Scripts =
-        'https://cdn-bc.dynamics-tie.com/common/js/pdfjs-4.10.38/pdf.min.mjs',
+        'https://cdn-bc.dynamics.com/common/js/pdfjs-4.10.38/pdf.min.mjs',
         'script.js';
 
     StartupScript = 'startup.js';

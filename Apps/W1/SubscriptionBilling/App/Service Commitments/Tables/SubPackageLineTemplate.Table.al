@@ -8,7 +8,6 @@ table 8054 "Sub. Package Line Template"
     DataClassification = CustomerContent;
     DrillDownPageId = "Service Commitment Templates";
     LookupPageId = "Service Commitment Templates";
-    Access = Internal;
 
     fields
     {
@@ -27,8 +26,11 @@ table 8054 "Sub. Package Line Template"
             InitValue = Contract;
             trigger OnValidate()
             begin
-                if "Invoicing via" = "Invoicing via"::Sales then
+                if "Invoicing via" = "Invoicing via"::Sales then begin
                     "Invoicing Item No." := '';
+                    "Create Contract Deferrals" := "Create Contract Deferrals"::No;
+                end else
+                    "Create Contract Deferrals" := "Create Contract Deferrals"::"Contract-dependent";
                 ErrorIfInvoicingViaIsNotContractForDiscount();
             end;
         }
@@ -70,6 +72,10 @@ table 8054 "Sub. Package Line Template"
                 ErrorIfInvoicingItemIsNotServiceCommitmentItemForDiscount();
                 ErrorIfDiscountUsedWithUsageBasedBilling();
             end;
+        }
+        field(40; "Create Contract Deferrals"; Enum "Create Contract Deferrals")
+        {
+            Caption = 'Create Contract Deferrals';
         }
         field(8000; "Usage Based Billing"; Boolean)
         {

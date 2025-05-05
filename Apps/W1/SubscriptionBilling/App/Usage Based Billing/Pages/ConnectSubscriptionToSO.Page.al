@@ -162,7 +162,7 @@ page 8031 "Connect Subscription To SO"
         {
             action("Connect Subscriptions to Service Objects")
             {
-                Caption = 'Connect Subscriptions to Subscriptions';
+                Caption = 'Connect Supplier Subscriptions to Subscriptions';
                 ToolTip = 'Connects the selected subscriptions to the selected Subscriptions as specified.';
                 Ellipsis = true;
                 Image = CarryOutActionMessage;

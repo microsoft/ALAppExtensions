@@ -17,7 +17,7 @@ report 30118 "Shpfy Suggest Payments"
         dataitem(OrderTransaction; "Shpfy Order Transaction")
         {
             RequestFilterFields = "Created At";
-            DataItemTableView = sorting(Type) where(Type = filter(Capture | Sale | Refund));
+            DataItemTableView = sorting(Type) where(Type = filter(Capture | Sale | Refund), Status = filter(Success));
 
             trigger OnAfterGetRecord()
             begin

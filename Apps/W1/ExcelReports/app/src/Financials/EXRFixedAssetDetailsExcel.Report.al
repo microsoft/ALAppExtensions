@@ -148,6 +148,7 @@ report 4411 "EXR Fixed Asset Details Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     var

@@ -62,7 +62,7 @@ page 6122 "E-Documents"
         {
             action(ImportManually)
             {
-                Caption = 'New From File';
+                Caption = 'New from file';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
 
@@ -103,7 +103,7 @@ page 6122 "E-Documents"
         {
             action(InboundEDocuments)
             {
-                Caption = 'Inbound E-Documents';
+                Caption = 'Inbound';
                 ToolTip = 'View inbound electronic documents.';
                 Visible = NewEDocumentExperienceActive;
                 RunObject = Page "Inbound E-Documents";
@@ -111,7 +111,7 @@ page 6122 "E-Documents"
             }
             action(OutboundEDocuments)
             {
-                Caption = 'Outbound E-Documents';
+                Caption = 'Outbound';
                 ToolTip = 'View outbound electronic documents.';
                 Visible = NewEDocumentExperienceActive;
                 RunObject = Page "Outbound E-Documents";
@@ -121,10 +121,10 @@ page 6122 "E-Documents"
         area(Promoted)
         {
             actionref(Promoted_ImportManually; ImportManually) { }
-            actionref(Promoted_EDocumentServices; EDocumentServices) { }
             actionref(Promoted_ViewFile; ViewFile) { }
             actionref(Promoted_InboundEDocuments; InboundEDocuments) { }
             actionref(Promoted_OutboundEDocuments; OutboundEDocuments) { }
+            actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }
 

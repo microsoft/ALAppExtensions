@@ -196,7 +196,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
             if (not NewPreserveCloudData) and (IntelligentCloudStatus."Table Id" = Database::"Tenant Media") then
                 Error(NotPossibleToReplaceTenantMediaTableErr);
 
-            if (NewPreserveCloudData) and (IntelligentCloudStatus."Company Name" = '') then
+            if (NewPreserveCloudData) and (IntelligentCloudStatus."Company Name" <> '') then
                 Error(NotPossibleToDeltaSyncDataPerCompanyErr);
 
             InsertInitialLog(IntelligentCloudStatus);

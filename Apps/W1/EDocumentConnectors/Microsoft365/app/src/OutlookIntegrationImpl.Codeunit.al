@@ -41,6 +41,42 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         OutlookProcessing.MarkMessageAsRead(EDocument, EDocumentService);
     end;
 
+    procedure SelectEmailAccountV3(var EmailAccount: Record "Email Account"): Boolean
+    var
+        EmailAccounts: Page "Email Accounts";
+    begin
+        if not EmailAccountV3Exists() then begin
+            Page.RunModal(Page::"Email Account Wizard");
+            if not EmailAccountV3Exists() then
+                exit(false);
+        end;
+        EmailAccounts.EnableLookupMode();
+        EmailAccounts.FilterConnectorV3Accounts(true);
+        if EmailAccounts.RunModal() <> Action::LookupOK then
+            exit(false);
+
+        EmailAccounts.GetAccount(EmailAccount);
+        exit(not IsNullGuid(EmailAccount."Account Id"));
+    end;
+
+    local procedure EmailAccountV3Exists(): Boolean
+    var
+        TempEmailAccounts: Record "Email Account" temporary;
+        EmailAccount: Codeunit "Email Account";
+        EmailConnector: Interface "Email Connector";
+    begin
+        EmailAccount.GetAllAccounts(false, TempEmailAccounts);
+        if TempEmailAccounts.IsEmpty() then
+            exit(false);
+        TempEmailAccounts.FindSet();
+        repeat
+            EmailConnector := TempEmailAccounts.Connector;
+            if EmailConnector is "Email Connector v3" then
+                exit(true);
+        until TempEmailAccounts.Next() = 0;
+        exit(false);
+    end;
+
     internal procedure SetConditionalVisibilityFlag(var VisibilityFlag: Boolean)
     var
         OutlookSetup: Record "Outlook Setup";

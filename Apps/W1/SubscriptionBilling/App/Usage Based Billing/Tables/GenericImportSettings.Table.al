@@ -8,7 +8,6 @@ table 8017 "Generic Import Settings"
     DataClassification = CustomerContent;
     LookupPageId = "Generic Import Settings Card";
     DrillDownPageId = "Generic Import Settings Card";
-    Access = Internal;
 
     fields
     {

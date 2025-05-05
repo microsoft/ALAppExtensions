@@ -5123,6 +5123,47 @@ codeunit 148187 "Sust. Certificate Test"
         // [THEN] Confirmation Box should not pop up as there is no confirm Handler. 
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure VerifyEmissionFieldsMustBeEnabledWhenEnableValueChainTrackingIsEnabled()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        // [SCENARIO 569462] Verify "Use Emissions In Purch. Doc.", "Item Emissions", "Resource Emissions", "Work/Machine Center Emissions" must be enabled in Sustainability Setup.
+        // When "Enable Value Chain Tracking" is enabled.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update Sustainability Setup.
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", false);
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Validate("Resource Emissions", false);
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Validate("Enable Value Chain Tracking", false);
+        SustainabilitySetup.Modify();
+
+        // [WHEN] "Enable Value Chain Tracking" set to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Enable Value Chain Tracking", true);
+
+        // [THEN] Verify "Use Emissions In Purch. Doc.", "Item Emissions", "Resource Emissions", "Work/Machine Center Emissions" must be enabled in Sustainability Setup.
+        Assert.AreEqual(
+            true,
+            SustainabilitySetup."Use Emissions In Purch. Doc.",
+            StrSubstNo(FieldShouldBeEnabledErr, SustainabilitySetup.FieldCaption("Use Emissions In Purch. Doc."), SustainabilitySetup.TableCaption()));
+        Assert.AreEqual(
+            true,
+            SustainabilitySetup."Item Emissions",
+            StrSubstNo(FieldShouldBeEnabledErr, SustainabilitySetup.FieldCaption("Item Emissions"), SustainabilitySetup.TableCaption()));
+        Assert.AreEqual(
+            true,
+            SustainabilitySetup."Resource Emissions",
+            StrSubstNo(FieldShouldBeEnabledErr, SustainabilitySetup.FieldCaption("Resource Emissions"), SustainabilitySetup.TableCaption()));
+        Assert.AreEqual(
+            true,
+            SustainabilitySetup."Work/Machine Center Emissions",
+            StrSubstNo(FieldShouldBeEnabledErr, SustainabilitySetup.FieldCaption("Work/Machine Center Emissions"), SustainabilitySetup.TableCaption()));
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);

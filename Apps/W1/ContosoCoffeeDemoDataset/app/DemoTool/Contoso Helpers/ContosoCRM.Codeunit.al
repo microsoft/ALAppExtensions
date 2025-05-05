@@ -1,4 +1,24 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.CRM.Duplicates;
+using Microsoft.CRM.Interaction;
+using Microsoft.CRM.Setup;
+using Microsoft.CRM.Task;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Opportunity;
+using Microsoft.CRM.Campaign;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.CRM.Team;
+using System.Integration.Word;
+using Microsoft.CRM.Segment;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Profiling;
+using System.Utilities;
+
 codeunit 5180 "Contoso CRM"
 {
     InherentEntitlements = X;

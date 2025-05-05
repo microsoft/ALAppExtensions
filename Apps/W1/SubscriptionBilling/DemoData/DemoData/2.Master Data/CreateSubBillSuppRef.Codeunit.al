@@ -1,5 +1,8 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Purchases;
+using Microsoft.DemoData.Common;
+
 codeunit 8114 "Create Sub. Bill. Supp. Ref."
 {
     InherentEntitlements = X;

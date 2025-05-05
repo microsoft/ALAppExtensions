@@ -99,13 +99,6 @@ page 8001 "Create Billing Document"
         PostingDate: Date;
         BillingDate: Date;
 
-    internal procedure GetData(var NewDocumentDate: Date; var NewPostingDate: Date; var NewPostDocument: Boolean)
-    begin
-        NewDocumentDate := DocumentDate;
-        NewPostingDate := PostingDate;
-        NewPostDocument := PostDocument;
-    end;
-
     local procedure CreateBillingDocumentForContract()
     begin
         BillingProposal.CreateBillingProposalForContract(ServicePartner, ContractNo, '', BillingRhytmFilter, BillingDate, BillingTo);

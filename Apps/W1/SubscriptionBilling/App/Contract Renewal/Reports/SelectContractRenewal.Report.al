@@ -142,11 +142,6 @@ report 8000 "Select Contract Renewal"
         end;
     end;
 
-    internal procedure GetProcessed(): Boolean
-    begin
-        exit(Processed);
-    end;
-
     procedure SetAddVendorServices(NewAddVendorServices: Boolean)
     begin
         AddVendorServices := NewAddVendorServices;

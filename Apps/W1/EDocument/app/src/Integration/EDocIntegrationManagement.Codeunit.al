@@ -187,6 +187,8 @@ codeunit 6134 "E-Doc. Integration Management"
             );
 
             EDocument."Index In Batch" := Index;
+            EDocument."Source Details" := CopyStr(ReceiveContext.GetSourceDetails(), 1, MaxStrLen(EDocument."Source Details"));
+            EDocument."Additional Source Details" := CopyStr(ReceiveContext.GetAdditionalSourceDetails(), 1, MaxStrLen(EDocument."Additional Source Details"));
             EDocument.Modify();
 
             EDocumentLog.SetFields(EDocument, EDocumentService);

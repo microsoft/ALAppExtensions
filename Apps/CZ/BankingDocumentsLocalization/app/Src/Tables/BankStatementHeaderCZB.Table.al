@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -390,18 +390,10 @@ table 31252 "Bank Statement Header CZB"
     var
         BankStatementHeader: Record "Bank Statement Header CZB";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Bank Statement Nos. CZB");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := BankAccount."Bank Statement Nos. CZB";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -410,10 +402,6 @@ table 31252 "Bank Statement Header CZB"
                 BankStatementHeader.SetLoadFields("No.");
                 while BankStatementHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Bank Statement Nos. CZB", 0D, "No.");
-            end;
-#endif
         end;
     end;
 

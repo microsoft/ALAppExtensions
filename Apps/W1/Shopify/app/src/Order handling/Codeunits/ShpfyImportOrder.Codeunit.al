@@ -636,11 +636,6 @@ codeunit 30161 "Shpfy Import Order"
             Clear(OrderAttribute);
             OrderAttribute."Order Id" := ShopifyOrderId;
             OrderAttribute.Key := CopyStr(JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderAttribute."Key")), 1, MaxStrLen(OrderAttribute."Key"));
-#if not CLEAN24
-            if not Shop."Replace Order Attribute Value" then
-                OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value)), 1, MaxStrLen(OrderAttribute.Value))
-            else
-#endif
             OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
 
             if not OrderAttribute.Insert() then

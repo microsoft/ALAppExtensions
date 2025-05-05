@@ -79,6 +79,7 @@ page 8006 "Contract Renewal Selection"
 
                             TempServiceCommitment."Renewal Term" := RenewalTerm;
                             TempServiceCommitment.Modify(false);
+                            OnValidateRenewalTermOnBeforeCurrPageUpdate(Rec, TempServiceCommitment, RenewalTerm);
                             CurrPage.Update(false);
                         end;
                     }
@@ -87,7 +88,7 @@ page 8006 "Contract Renewal Selection"
                         Editable = false;
                         Visible = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Specifies the number of the Subscription No.';
+                        ToolTip = 'Specifies the number of the Subscription.';
 
                         trigger OnAssistEdit()
                         begin
@@ -131,7 +132,7 @@ page 8006 "Contract Renewal Selection"
                     {
                         Editable = false;
                         StyleExpr = LineFormatStyleExpression;
-                        ToolTip = 'Number of units of Subscription.';
+                        ToolTip = 'Specifies the number of units of Subscription.';
 
                         trigger OnDrillDown()
                         begin
@@ -371,7 +372,7 @@ page 8006 "Contract Renewal Selection"
     end;
 
     [TryFunction]
-    internal procedure CheckContractLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    local procedure CheckContractLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
         SavedServiceCommitment: Record "Subscription Line";
         ServiceCommitment: Record "Subscription Line";
@@ -487,18 +488,23 @@ page 8006 "Contract Renewal Selection"
         OnAfterInitTempSubscriptionLine(TempServiceCommitment);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnTransferChangedValuesFromBufferToSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; var SubscriptionLineBuffer: Record "Subscription Line" temporary)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInitTempSubscriptionLine(var TempSubscriptionLine: Record "Subscription Line" temporary)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCheckContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateRenewalTermOnBeforeCurrPageUpdate(var CustSubContractLine: Record "Cust. Sub. Contract Line"; var TempSubscriptionLine: Record "Subscription Line" temporary; RenewalTerm: DateFormula)
     begin
     end;
 

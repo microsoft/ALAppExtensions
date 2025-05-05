@@ -151,6 +151,8 @@ table 6217 "Sustainability Setup"
                 if Rec."Enable Value Chain Tracking" then
                     if not ConfirmManagement.GetResponseOrDefault(ConfirmEnableValueChainTrackingQst, false) then
                         Error('');
+
+                EnableEmissionsWhenValueChainTrackingIsEnabled();
             end;
         }
     }
@@ -186,6 +188,17 @@ table 6217 "Sustainability Setup"
         GetRecordOnce();
 
         exit("Enable Value Chain Tracking");
+    end;
+
+    local procedure EnableEmissionsWhenValueChainTrackingIsEnabled()
+    begin
+        if not Rec."Enable Value Chain Tracking" then
+            exit;
+
+        Rec.Validate("Use Emissions In Purch. Doc.", true);
+        Rec.Validate("Item Emissions", true);
+        Rec.Validate("Resource Emissions", true);
+        Rec.Validate("Work/Machine Center Emissions", true);
     end;
 
     internal procedure GetFormat(FieldNo: Integer): Text

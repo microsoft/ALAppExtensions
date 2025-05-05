@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -89,18 +89,19 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine."Source Curr. VAT Base Amount" := GenJournalLine."Source Currency Amount";
         GenJournalLine."VAT Difference" :=
             Sign * Round(TempInvoicePostingBuffer."VAT Difference" * CurrFactor, Currency."Amount Rounding Precision");
+        GenJournalLine."Non-Deductible VAT %" := TempInvoicePostingBuffer."Non-Deductible VAT %";
+        GenJournalLine."Non-Deductible VAT Base LCY" :=
+            Sign * Round(TempInvoicePostingBuffer."Non-Deductible VAT Base" * CurrFactor, Currency."Amount Rounding Precision");
+        GenJournalLine."Non-Deductible VAT Amount LCY" :=
+            Sign * Round(TempInvoicePostingBuffer."Non-Deductible VAT Amount" * CurrFactor, Currency."Amount Rounding Precision");
+        GenJournalLine."Non-Deductible VAT Diff." :=
+            Sign * Round(TempInvoicePostingBuffer."Non-Deductible VAT Diff." * CurrFactor, Currency."Amount Rounding Precision");
 
         GenJournalLine.Correction := TempInvoicePostingBuffer."Correction CZL" xor IsCorrection;
         GenJournalLine."VAT Bus. Posting Group" := TempInvoicePostingBuffer."VAT Bus. Posting Group";
         GenJournalLine."VAT Prod. Posting Group" := TempInvoicePostingBuffer."VAT Prod. Posting Group";
         GenJournalLine."Gen. Bus. Posting Group" := TempInvoicePostingBuffer."Gen. Bus. Posting Group";
         GenJournalLine."Gen. Prod. Posting Group" := TempInvoicePostingBuffer."Gen. Prod. Posting Group";
-#if not CLEAN24
-#pragma warning disable AL0432
-        if not PurchaseHeader.IsEU3PartyTradeFeatureEnabled() then
-            PurchaseHeader."EU 3 Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3 Party Trade";
         GenJournalLine."EU 3-Party Intermed. Role CZL" := PurchaseHeader."EU 3-Party Intermed. Role CZL";
 
@@ -111,7 +112,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
     var
         GenJournalLine: Record "Gen. Journal Line";
         Amount: Decimal;
-        AccountNo: Code[20];
     begin
         GetCurrency(PurchaseHeader."Currency Code");
         if CurrFactor = 0 then
@@ -119,26 +119,19 @@ codeunit 31039 "Purchase Posting Handler CZL"
 
         case AmountType of
             AmountType::Base:
-                Amount :=
-                    TempInvoicePostingBuffer.Amount -
-                    Round(TempInvoicePostingBuffer.Amount * CurrFactor, Currency."Amount Rounding Precision");
+                Amount := TempInvoicePostingBuffer.Amount;
             AmountType::VAT:
-                begin
-                    Amount :=
-                        TempInvoicePostingBuffer."VAT Amount" -
-                        Round(TempInvoicePostingBuffer."VAT Amount" * CurrFactor, Currency."Amount Rounding Precision");
-                    if Amount < 0 then
-                        AccountNo := Currency."Realized Gains Acc."
-                    else
-                        AccountNo := Currency."Realized Losses Acc.";
-                end;
+                Amount := TempInvoicePostingBuffer."VAT Amount";
         end;
 
         InitGenJournalLine(PurchaseHeader, TempInvoicePostingBuffer, GenJournalLine);
         GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::" ";
-        if AccountNo <> '' then
-            GenJournalLine."Account No." := AccountNo;
-        GenJournalLine.Amount := Amount;
+        if AmountType = AmountType::VAT then
+            if Amount < 0 then
+                GenJournalLine."Account No." := Currency."Realized Gains Acc."
+            else
+                GenJournalLine."Account No." := Currency."Realized Losses Acc.";
+        GenJournalLine.Amount := Amount - Round(Amount * CurrFactor, Currency."Amount Rounding Precision");
 
         GenJnlPostLine.RunWithCheck(GenJournalLine);
     end;
@@ -353,55 +346,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
         end;
     end;
 
-#if not CLEAN24
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPrepareLineOnAfterFillInvoicePostingBuffer', '', false, false)]
-    local procedure SetExtendedAmountsOnPrepareLineOnAfterFillInvoicePostingBuffer(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; PurchLine: Record "Purchase Line")
-    begin
-        InvoicePostingBuffer."Ext. Amount CZL" := PurchLine."Ext. Amount CZL";
-        InvoicePostingBuffer."Ext. Amount Incl. VAT CZL" := PurchLine."Ext. Amount Incl. VAT CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRoundAmountOnBeforeIncrAmount', '', false, false)]
-    local procedure RoundExtendedAmountsOnRoundAmountOnBeforeIncrAmount(PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; var TotalPurchLine: Record "Purchase Line"; var TotalPurchLineLCY: Record "Purchase Line"; var CurrExchRate: Record "Currency Exchange Rate"; var NoVAT: Boolean)
-    begin
-        if PurchaseHeader."Currency Code" = '' then
-            exit;
-
-        PurchaseLine."Ext. Amount Incl. VAT CZL" :=
-            Round(
-                CurrExchRate.ExchangeAmtFCYToLCY(
-                    PurchaseHeader.GetUseDate(), PurchaseHeader."Currency Code",
-                    TotalPurchLine."Amount Including VAT", PurchaseHeader."VAT Currency Factor CZL")) -
-            TotalPurchLineLCY."Ext. Amount Incl. VAT CZL";
-
-        if NoVAT then
-            PurchaseLine."Ext. Amount CZL" := PurchaseLine."Ext. Amount Incl. VAT CZL"
-        else
-            PurchaseLine."Ext. Amount CZL" :=
-                Round(
-                    CurrExchRate.ExchangeAmtFCYToLCY(
-                        PurchaseHeader.GetUseDate(), PurchaseHeader."Currency Code",
-                        TotalPurchLine.Amount, PurchaseHeader."VAT Currency Factor CZL")) -
-                TotalPurchLineLCY."Ext. Amount CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterIncrAmount', '', false, false)]
-    local procedure IncrementExtendedAmountsOnAfterIncrAmount(var TotalPurchLine: Record "Purchase Line"; PurchLine: Record "Purchase Line")
-    begin
-        Increment(TotalPurchLine."Ext. Amount Incl. VAT CZL", PurchLine."Ext. Amount Incl. VAT CZL");
-        Increment(TotalPurchLine."Ext. Amount CZL", PurchLine."Ext. Amount CZL");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterReverseAmount', '', false, false)]
-    local procedure ReverseExtendedAmountsOnAfterReverseAmount(var PurchLine: Record "Purchase Line")
-    begin
-        PurchLine."Ext. Amount CZL" := -PurchLine."Ext. Amount CZL";
-        PurchLine."Ext. Amount Incl. VAT CZL" := -PurchLine."Ext. Amount Incl. VAT CZL";
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeTestPurchLineItemCharge', '', false, false)]
     local procedure SkipCheckOnBeforeTestPurchLineItemCharge(PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
     var

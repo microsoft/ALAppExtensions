@@ -1,4 +1,14 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.DemoTool;
+using System.Utilities;
+using System.Text;
+using System.Environment;
+
 codeunit 5142 "Contoso Utilities"
 {
     InherentEntitlements = X;

@@ -14,71 +14,35 @@ reportextension 14601 "IS Purch Credit Memo" extends "Purchase - Credit Memo"
         {
             trigger OnAfterAfterGetRecord()
             begin
-#if not CLEAN24
-                if IsISCoreAppEnabled then begin
-#endif
                     if LastVATCodeUsed = '' then
                         LastVATCodeUsed := "VAT Identifier";
                     if LastVATCodeUsed <> "VAT Identifier" then
                         MoreThanOneVATCode := true;
-#if not CLEAN24
-                end else begin
-                    if LastVATCode = '' then
-                        LastVATCode := "VAT Identifier";
-                    if LastVATCode <> "VAT Identifier" then
-                        MoreThan1VATCode := true;
-                end;
-#endif
             end;
         }
         modify("Purch. Cr. Memo Hdr.")
         {
             trigger OnAfterAfterGetRecord()
             begin
-#if not CLEAN24
-                if IsISCoreAppEnabled then begin
-#endif
                     MoreThanoneVATCode := false;
                     LastVATCodeUsed := '';
-#if not CLEAN24
-                end else begin
-                    MoreThan1VATCode := false;
-                    LastVATCode := '';
-                end;
-#endif
             end;
         }
         modify(VATCounter)
         {
             trigger OnBeforePostDataItem()
             begin
-#if not CLEAN24
-                if IsISCoreAppEnabled then begin
-#endif
                     if not MoreThanOneVATCode and not AllwaysShowVATSum then
                         CurrReport.Break();
-#if not CLEAN24
-                end else
-                    if not MoreThan1VATCode and not AlwShowVATSum then
-                        CurrReport.Break();
-#endif
             end;
         }
         modify(VATCounterLCY)
         {
             trigger OnBeforePostDataItem()
             begin
-#if not CLEAN24
-                if IsISCoreAppEnabled then begin
-#endif
                     if not MoreThanOneVATCode and not AllwaysShowVATSum then
                         CurrReport.Break();
 
-#if not CLEAN24
-                end else
-                    if not MoreThan1VATCode and not AlwShowVATSum then
-                        CurrReport.Break();
-#endif
             end;
         }
     }
@@ -91,10 +55,6 @@ reportextension 14601 "IS Purch Credit Memo" extends "Purchase - Credit Memo"
                 field(AlwaysShowVATSum; AllwaysShowVATSum)
                 {
                     ApplicationArea = Basic, Suite;
-#if not CLEAN24
-                    Visible = IsISCoreAppEnabled;
-                    Enabled = IsISCoreAppEnabled;
-#endif
                     Caption = 'Always Show VAT Summary';
                     ToolTip = 'Specifies that you want the document to include VAT information.';
                 }

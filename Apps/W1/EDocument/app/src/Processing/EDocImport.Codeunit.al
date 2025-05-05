@@ -99,6 +99,7 @@ codeunit 6140 "E-Doc. Import"
                 if not RunConfiguredImportStep(ImportEDocumentProcess, EDocument) then
                     exit(false)
             end;
+        OnAfterProcessIncomingEDocument(EDocument, EDocImportParameters);
         exit(true);
     end;
 
@@ -109,7 +110,6 @@ codeunit 6140 "E-Doc. Import"
         EDocumentErrorHelper.ClearErrorMessages(EDocument);
         Commit();
         if not ImportEDocumentProcess.Run() then begin
-
             EDocument.SetRecFilter();
             EDocument.FindFirst();
 
@@ -876,6 +876,11 @@ codeunit 6140 "E-Doc. Import"
         DocTypeIsNotSupportedErr: Label 'Document type %1 is not supported.', Comment = '%1 - Document Type';
         FailedToFindVendorErr: Label 'No vendor is set for Edocument';
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterProcessIncomingEDocument(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters")
+    begin
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterProcessImportedDocument(var EDocument: Record "E-Document"; var DocumentHeader: RecordRef)

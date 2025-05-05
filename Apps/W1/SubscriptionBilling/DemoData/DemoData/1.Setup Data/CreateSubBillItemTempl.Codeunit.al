@@ -1,5 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Finance;
+
 codeunit 8122 "Create Sub. Bill. Item Templ."
 {
     InherentEntitlements = X;

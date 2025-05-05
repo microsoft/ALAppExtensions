@@ -11,7 +11,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
         LibrarySales: Codeunit "Library - Sales";
         LibraryPurch: Codeunit "Library - Purchase";
         LibraryInvt: Codeunit "Library - Inventory";
-        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
         LibraryReportDataset: Codeunit "Library - Report Dataset";
@@ -21,9 +20,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
     var
         PurchasesSetup: Record "Purchases & Payables Setup";
         InvtSetup: Record "Inventory Setup";
-#if not CLEAN24
-        ISCoreAppSetup: Record "IS Core App Setup";
-#endif
     begin
         if Initialized then
             exit;
@@ -35,218 +31,10 @@ codeunit 139644 "IS VAT Reporting - Tests"
         PurchasesSetup.Get();
         PurchasesSetup.Validate("Ext. Doc. No. Mandatory", false);
         PurchasesSetup.Modify();
-#if not CLEAN24
-        if not ISCoreAppSetup.Get() then begin
-            ISCoreAppSetup.Init();
-            ISCoreAppSetup.Insert();
-        end;
-        ISCoreAppSetup.Enabled := true;
-        ISCoreAppSetup.Modify(false);
-#endif
 
         LibraryInvt.NoSeriesSetup(InvtSetup);
 
         Commit();
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesBlanketOrderRequestHandler')]
-    [Scope('OnPrem')]
-    procedure SalesBlanketOrder_ShowVATSpec()
-    var
-        SalesHeader: Record "Sales Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreateSalesDoc(SalesHeader, SalesHeader."Document Type"::"Blanket Order");
-        GetSalesHeaderVATAmt(TempVATAmtLine, SalesHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            SalesHeader.SetRecFilter();
-            REPORT.Run(REPORT::"Blanket Sales Order", true, false, SalesHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('SalesBlanketOrderRequestHandler')]
-    [Scope('OnPrem')]
-    procedure SalesBlanketOrder_MultipleVATSpec()
-    var
-        SalesHeader: Record "Sales Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreateSalesDocWithMultipleVAT(SalesHeader, SalesHeader."Document Type"::"Blanket Order");
-        GetSalesHeaderVATAmt(TempVATAmtLine, SalesHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            SalesHeader.SetRecFilter();
-            REPORT.Run(REPORT::"Blanket Sales Order", true, false, SalesHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchOrderRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchOrder_ShowVATSpec()
-    var
-        PurchHeader: Record "Purchase Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchDoc(PurchHeader, PurchHeader."Document Type"::Order);
-        GetPurchHeaderVATAmt(TempVATAmtLine, PurchHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchHeader.SetRecFilter();
-            REPORT.Run(REPORT::Order, true, false, PurchHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchInvoiceRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchInvoice_ShowVATSpec()
-    var
-        PurchInvHeader: Record "Purch. Inv. Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchInvAndPost(PurchInvHeader);
-        GetPurchInvoiceHeaderVATAmt(TempVATAmtLine, PurchInvHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchInvHeader.SetRecFilter();
-            REPORT.Run(REPORT::"Purchase - Invoice", true, false, PurchInvHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier_VATCounter');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchCrMemoRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchCrMemo_ShowVATSpec()
-    var
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchCrMemoAndPost(PurchCrMemoHdr);
-        GetPurchCrMemoHeaderVATAmt(TempVATAmtLine, PurchCrMemoHdr);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchCrMemoHdr.SetRecFilter();
-            REPORT.Run(REPORT::"Purchase - Credit Memo", true, false, PurchCrMemoHdr);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier_VATCounter');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchOrderRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchOrder_MultipleVATSpec()
-    var
-        PurchHeader: Record "Purchase Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchDocWithMultipleVAT(PurchHeader, PurchHeader."Document Type"::Order);
-        GetPurchHeaderVATAmt(TempVATAmtLine, PurchHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchHeader.SetRecFilter();
-            REPORT.Run(REPORT::Order, true, false, PurchHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(AlwaysShowVATSum, TempVATAmtLine, 'VATAmtLineVATIdentifier');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchInvoiceRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchInvoice_MultipleVATSpec()
-    var
-        PurchInvHeader: Record "Purch. Inv. Header";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchInvWithMultipleVATAndPost(PurchInvHeader);
-        GetPurchInvoiceHeaderVATAmt(TempVATAmtLine, PurchInvHeader);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchInvHeader.SetRecFilter();
-            REPORT.Run(REPORT::"Purchase - Invoice", true, false, PurchInvHeader);
-
-            // Verify
-            VerifyShowVATSpecDataset(true, TempVATAmtLine, 'VATAmtLineVATIdentifier_VATCounter');
-        end;
-    end;
-
-    [Test]
-    [HandlerFunctions('PurchCrMemoRequestHandler')]
-    [Scope('OnPrem')]
-    procedure PurchCrMemo_MultipleVATSpec()
-    var
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
-        TempVATAmtLine: Record "VAT Amount Line" temporary;
-        AlwaysShowVATSum: Boolean;
-    begin
-        Initialize();
-
-        CreatePurchCrMemoWithMultipleVATAndPost(PurchCrMemoHdr);
-        GetPurchCrMemoHeaderVATAmt(TempVATAmtLine, PurchCrMemoHdr);
-
-        for AlwaysShowVATSum := false to true do begin
-            // Exercise
-            LibraryVariableStorage.Enqueue(AlwaysShowVATSum);
-            PurchCrMemoHdr.SetRecFilter();
-            REPORT.Run(REPORT::"Purchase - Credit Memo", true, false, PurchCrMemoHdr);
-
-            // Verify
-            VerifyShowVATSpecDataset(true, TempVATAmtLine, 'VATAmtLineVATIdentifier_VATCounter');
-        end;
     end;
 
     [Test]
@@ -379,17 +167,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
         end;
 
         WorkDate := WD;
-    end;
-
-    local procedure VerifyShowVATSpecDataset(AlwaysShowVATSum: Boolean; var VATAmtLine: Record "VAT Amount Line"; VATId: Text)
-    begin
-        LibraryReportDataset.LoadDataSetFile();
-        LibraryReportDataset.Reset();
-        VATAmtLine.FindFirst();
-        repeat
-            LibraryReportDataset.SetRange(VATId, VATAmtLine."VAT Identifier");
-            Assert.AreEqual(AlwaysShowVATSum, LibraryReportDataset.GetNextRow(), '');
-        until VATAmtLine.Next() = 0;
     end;
 
     local procedure VerifyVATReconciliation(var VATAmtLine: Record "VAT Amount Line"; IsSale: Boolean)
@@ -727,58 +504,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
                     InsertLine();
                 end;
             until PurchLine.Next() = 0;
-    end;
-
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure SalesBlanketOrderRequestHandler(var BlanketSalesOrder: TestRequestPage "Blanket Sales Order")
-    var
-        AlwaysShowVATSum: Variant;
-    begin
-        LibraryVariableStorage.Dequeue(AlwaysShowVATSum);
-#if not CLEAN24
-        BlanketSalesOrder.AlwShowVATSum.SetValue := AlwaysShowVATSum;
-#endif
-        BlanketSalesOrder.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
-    end;
-
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure PurchOrderRequestHandler(var "Order": TestRequestPage "Order")
-    var
-        AlwaysShowVATSum: Variant;
-    begin
-        LibraryVariableStorage.Dequeue(AlwaysShowVATSum);
-#if not CLEAN24
-        Order.AlwShowVATSum.SetValue := AlwaysShowVATSum;
-#endif
-        Order.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
-    end;
-
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure PurchInvoiceRequestHandler(var PurchInvoice: TestRequestPage "Purchase - Invoice")
-    var
-        AlwaysShowVATSum: Variant;
-    begin
-        LibraryVariableStorage.Dequeue(AlwaysShowVATSum);
-#if not CLEAN24
-        PurchInvoice.AlwShowVATSum.SetValue := AlwaysShowVATSum;
-#endif
-        PurchInvoice.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
-    end;
-
-    [RequestPageHandler]
-    [Scope('OnPrem')]
-    procedure PurchCrMemoRequestHandler(var PurchCrMemo: TestRequestPage "Purchase - Credit Memo")
-    var
-        AlwaysShowVATSum: Variant;
-    begin
-        LibraryVariableStorage.Dequeue(AlwaysShowVATSum);
-#if not CLEAN24
-        PurchCrMemo.AlwShowVATSum.SetValue := AlwaysShowVATSum;
-#endif
-        PurchCrMemo.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 
     [RequestPageHandler]
